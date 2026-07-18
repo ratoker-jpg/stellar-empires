@@ -10,5 +10,9 @@ export function createInitialGameState(seedSource: string): GameState {
       elapsedSeconds: 0,
     },
     empires: ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'],
+    nextEventSequence: 0,
+    pendingEvents: [],
+    commandLog: [],
+    eventLog: [],
   };
 }
