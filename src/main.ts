@@ -19,9 +19,9 @@ function bootstrap(): void {
   version.textContent = `v${__APP_VERSION__}`;
 
   const initialState = createInitialGameState('stellar-empires-m1');
-  createGame('phaser-game');
+  createGame('phaser-game', initialState);
 
-  status.textContent = `Системы готовы · seed ${initialState.seed}`;
+  status.textContent = `Системы: ${initialState.galaxy.systems.length} · seed ${initialState.seed}`;
   document.documentElement.dataset.appReady = 'true';
 }
 
