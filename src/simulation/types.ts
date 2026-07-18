@@ -8,7 +8,14 @@ export interface GameClock {
 
 export type GameEventPayload =
   | { readonly type: 'NOOP'; readonly label: string }
-  | { readonly type: 'MARKER'; readonly marker: string };
+  | { readonly type: 'MARKER'; readonly marker: string }
+  | {
+      readonly type: 'BUILDING_COMPLETE';
+      readonly planetId: string;
+      readonly queueItemId: string;
+      readonly buildingId: string;
+      readonly targetLevel: number;
+    };
 
 export interface ScheduledGameEvent {
   readonly id: string;
@@ -23,6 +30,18 @@ export type GameCommand =
       readonly type: 'SCHEDULE_EVENT';
       readonly executeAt: number;
       readonly payload: GameEventPayload;
+    }
+  | {
+      readonly type: 'QUEUE_BUILDING';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly buildingId: string;
+    }
+  | {
+      readonly type: 'CANCEL_BUILDING';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly queueItemId: string;
     };
 
 export interface CommandLogEntry {
