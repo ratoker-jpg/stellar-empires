@@ -49,6 +49,8 @@ export function createInitialPlanetStates(galaxy: GalaxyModel): readonly PlanetS
         buildings,
         buildQueue: [],
         economy: createPlanetEconomy(buildings),
+        inventory: { ships: {}, defenses: {} },
+        productionQueues: { shipyard: [], defense: [] },
       });
     }
   }
