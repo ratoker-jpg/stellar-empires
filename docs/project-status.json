@@ -6,9 +6,9 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 23,
-  "lastMergeSha": "44e2245a55dbae8486c1d58e0c0d0b94ae3ed71b",
-  "nextPr": 24,
+  "lastMergedPr": 24,
+  "lastMergeSha": "8d5eb8d5e4fe69db4459c63cb8807e616b706aa0",
+  "nextPr": 25,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
@@ -16,7 +16,7 @@
   "currentMilestone": "MVP persistence, research and production",
   "currentBatch": {
     "standard": [23, 24, 25, 26, 27, 28],
-    "completed": [23],
+    "completed": [23, 24],
     "optionalExtensions": [29, 30],
     "extensionRule": "Use PR 29 and 30 only after PR 23-28 are merged, CI is stable, and inventory/production contracts are settled."
   },
@@ -26,6 +26,8 @@
     "deterministic simulation commands, events, clock, replay and checksum",
     "IndexedDB persistence core and versioned save envelopes",
     "runtime checksum-validated autosave and automatic restore",
+    "manual save slots and JSON import/export",
+    "autosave snapshot rotation, diagnostics and recovery",
     "seeded galaxy model",
     "three planet domains: resource, industry and military",
     "save schema v2 migration from the former four-zone model",
@@ -38,8 +40,6 @@
     "persistent six-PR delivery and AI handoff protocol"
   ],
   "knownLimitations": [
-    "manual save slots and JSON import/export are not exposed in the UI",
-    "snapshot recovery and diagnostic save management are not implemented",
     "research catalog, research queue and technology effects are not implemented",
     "ship and defense inventories and production queues are not implemented",
     "fleets, flights, missions, combat and autonomous bots are not implemented",
