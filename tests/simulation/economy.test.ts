@@ -3,6 +3,7 @@ import { createInitialGameState } from '../../src/simulation/createInitialGameSt
 import {
   accruePlanetEconomy,
   createPlanetEconomy,
+  getSecondsUntilResourceFull,
 } from '../../src/simulation/economy/planetEconomy';
 import { executeCommand } from '../../src/simulation/reducer';
 
@@ -18,12 +19,18 @@ function getPlayerPlanet(seed: string) {
 }
 
 describe('planet economy', () => {
-  it('derives starting production and energy from buildings', () => {
+  it('derives starting production and operating limits from buildings', () => {
     const { planet } = getPlayerPlanet('economy-start');
 
     expect(planet.economy.energy).toEqual({
       produced: 120,
       consumed: 70,
+      efficiencyPermille: 1_000,
+    });
+    expect(planet.economy.population).toEqual({ used: 4, capacity: 50 });
+    expect(planet.economy.stability).toEqual({
+      capacity: 60,
+      demand: 36,
       efficiencyPermille: 1_000,
     });
     expect(planet.economy.resources.metal.productionPerHour).toBe(140);
@@ -81,20 +88,24 @@ describe('planet economy', () => {
     );
   });
 
-  it('reduces production predictably during an energy deficit', () => {
+  it('uses the strictest operating limit during a deficit', () => {
     const economy = createPlanetEconomy([
       { buildingId: 'building.aegis.power-plant', level: 1 },
       { buildingId: 'building.aegis.metal-extractor', level: 10 },
     ]);
 
-    expect(economy.energy.produced).toBe(120);
-    expect(economy.energy.consumed).toBe(180);
     expect(economy.energy.efficiencyPermille).toBe(666);
-    expect(economy.resources.metal.productionPerHour).toBe(932);
+    expect(economy.stability.efficiencyPermille).toBe(500);
+    expect(economy.resources.metal.productionPerHour).toBe(700);
   });
 
-  it('never exceeds storage capacity', () => {
+  it('forecasts storage completion and never exceeds capacity', () => {
     const { planet } = getPlayerPlanet('economy-cap');
+    const stock = planet.economy.resources.metal;
+    expect(getSecondsUntilResourceFull(stock)).toBe(
+      Math.ceil(((stock.capacity - stock.amount) * 3_600) / stock.productionPerHour),
+    );
+
     const nearlyFull = {
       ...planet,
       economy: {
@@ -102,8 +113,8 @@ describe('planet economy', () => {
         resources: {
           ...planet.economy.resources,
           metal: {
-            ...planet.economy.resources.metal,
-            amount: planet.economy.resources.metal.capacity - 1,
+            ...stock,
+            amount: stock.capacity - 1,
           },
         },
       },
@@ -114,5 +125,6 @@ describe('planet economy', () => {
       updated.economy.resources.metal.capacity,
     );
     expect(updated.economy.resources.metal.productionRemainder).toBe(0);
+    expect(getSecondsUntilResourceFull(updated.economy.resources.metal)).toBe(0);
   });
 });
