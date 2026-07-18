@@ -125,6 +125,18 @@
             <div id="faction-showcase" class="faction-showcase"></div>
           </section>
 
+          <section class="panel-block aegis-deck-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-label">Вертикальный набор</p>
+                <h2>Арсенал «Эгиды»</h2>
+              </div>
+              <span class="status-pill status-pill--amber">26 ассетов</span>
+            </div>
+            <p>Здания, корабли, оборона, технологии и эффекты первого игрового цикла.</p>
+            <div id="aegis-asset-deck" class="aegis-asset-deck"></div>
+          </section>
+
           <section class="panel-block metric-grid">
             <div><span>Системы</span><strong id="system-count">—</strong></div>
             <div><span>Империи</span><strong>4</strong></div>
@@ -140,7 +152,7 @@
             <ol class="activity-list">
               <li><time>00:00</time><span>Симуляционное ядро подключено</span></li>
               <li><time>00:00</time><span>Хранилище IndexedDB готово</span></li>
-              <li><time>00:00</time><span>Фракционные прототипы загружены</span></li>
+              <li><time>00:00</time><span>26 ассетов «Эгиды» зарегистрированы</span></li>
             </ol>
           </section>
 
@@ -161,6 +173,17 @@
         <button id="faction-preview-close" class="dialog-close" type="button" aria-label="Закрыть">×</button>
       </div>
       <img id="faction-preview-image" alt="" />
+    </dialog>
+
+    <dialog id="aegis-atlas-dialog" class="asset-dialog asset-dialog--atlas">
+      <div class="asset-dialog__header">
+        <div>
+          <p class="panel-label">Aegis P1 asset atlas</p>
+          <h2 id="aegis-atlas-title">Набор «Эгиды»</h2>
+        </div>
+        <button id="aegis-atlas-close" class="dialog-close" type="button" aria-label="Закрыть">×</button>
+      </div>
+      <img id="aegis-atlas-image" alt="" />
     </dialog>
 
     <noscript>Для запуска Stellar Empires требуется JavaScript.</noscript>
