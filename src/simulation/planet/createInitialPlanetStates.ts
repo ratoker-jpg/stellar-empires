@@ -100,6 +100,7 @@ export function createInitialPlanetStates(galaxy: GalaxyModel): readonly PlanetS
         factionId,
         zones: createZones(buildings),
         buildings,
+        buildQueue: [],
         economy: createPlanetEconomy(buildings),
       });
     }
