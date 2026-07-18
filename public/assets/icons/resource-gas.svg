@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Gas">
+  <defs><radialGradient id="g" cx="38%" cy="30%" r="70%"><stop stop-color="#d9fff2"/><stop offset=".42" stop-color="#5cd59b"/><stop offset="1" stop-color="#174d3c"/></radialGradient></defs>
+  <path d="M32 3 56 17v30L32 61 8 47V17Z" fill="#081320" stroke="#2e7962" stroke-width="2"/>
+  <path d="M21 46c-7-4-7-14 0-18-1-9 9-15 16-10 7-1 12 5 10 11 7 5 3 16-5 17Z" fill="url(#g)" stroke="#bfffe7" stroke-width="1.5"/>
+  <circle cx="25" cy="31" r="4" fill="#edfff9" opacity=".55"/><circle cx="39" cy="25" r="3" fill="#edfff9" opacity=".38"/>
+</svg>
