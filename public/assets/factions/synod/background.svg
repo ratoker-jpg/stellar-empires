@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Фон Машинного Синода">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17152c"/><stop offset=".45" stop-color="#080a14"/><stop offset="1" stop-color="#010308"/></linearGradient><pattern id="g" width="72" height="72" patternUnits="userSpaceOnUse"><path d="M72 0H0V72" fill="none" stroke="#8a6dff" stroke-opacity=".05"/></pattern></defs>
+  <rect width="1600" height="900" fill="url(#b)"/><rect width="1600" height="900" fill="url(#g)"/>
+  <g transform="translate(1260 200)" fill="none"><circle r="480" stroke="#8a6dff" stroke-opacity=".12" stroke-width="4" stroke-dasharray="190 45"/><circle r="360" stroke="#53dcff" stroke-opacity=".1" stroke-width="3" stroke-dasharray="120 34"/><circle r="240" stroke="#53dcff" stroke-opacity=".08" stroke-width="2"/></g>
+  <path d="M0 750C340 530 650 810 1010 570s450-176 590-120v450H0Z" fill="#13172c" opacity=".45"/>
+</svg>
