@@ -8,7 +8,7 @@ export function createInitialGameState(seedSource: string): GameState {
   const galaxy = generateGalaxy(seed);
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     seed,
     clock: {
       startedAt: '2026-07-18T00:00:00.000Z',
