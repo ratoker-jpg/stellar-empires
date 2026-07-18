@@ -3,15 +3,19 @@ import './styles/factions.css';
 import './styles/aegisAssets.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
+import './styles/saveManager.css';
 import { createGame } from './game/createGame';
 import { createInitialGameState } from './simulation/createInitialGameState';
+import type { GameState } from './simulation/types';
 import {
   AutoSaveController,
   type AutoSaveStatus,
 } from './storage/AutoSaveController';
 import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
+import { SaveManager } from './storage/SaveManager';
 import { mountPlanetScreen } from './ui/planetScreen';
+import { mountSaveManager } from './ui/saveManager';
 import { renderAssetShowcases } from './ui/showcase';
 
 function requireElement<T extends HTMLElement>(selector: string): T {
@@ -53,20 +57,27 @@ async function bootstrap(): Promise<void> {
   const systemCount = requireElement<HTMLElement>('#system-count');
   const repository = new IndexedDbSaveRepository();
   let initialState = createInitialGameState('stellar-empires-m1');
+  let runtimeState: GameState = initialState;
   let startupStatus = `Новая партия · seed ${initialState.seed}`;
   let autosave: AutoSaveController | undefined;
+  let saveManager: SaveManager | undefined;
 
   try {
     const restored = await loadAutosave(repository);
 
     if (restored.status === 'loaded') {
       initialState = restored.state;
-      startupStatus = `Партия восстановлена · seed ${initialState.seed}`;
+      runtimeState = restored.state;
+      startupStatus =
+        restored.source === 'snapshot'
+          ? `Партия восстановлена из резерва · seed ${initialState.seed}`
+          : `Партия восстановлена · seed ${initialState.seed}`;
     } else if (restored.status === 'invalid') {
-      startupStatus = `Автосохранение повреждено · новая партия`;
+      startupStatus = 'Сохранения повреждены · новая партия';
       console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
     }
 
+    saveManager = new SaveManager(repository);
     autosave = new AutoSaveController(repository, { onStatus: writeAutoSaveStatus });
   } catch (error: unknown) {
     startupStatus = `Локальное хранилище недоступно · seed ${initialState.seed}`;
@@ -78,7 +89,18 @@ async function bootstrap(): Promise<void> {
 
   createGame('phaser-game', initialState);
   renderAssetShowcases();
-  mountPlanetScreen(initialState, setStatus, (state) => autosave?.request(state));
+  mountPlanetScreen(initialState, setStatus, (state) => {
+    runtimeState = state;
+    autosave?.request(state);
+  });
+
+  if (saveManager !== undefined) {
+    mountSaveManager({
+      manager: saveManager,
+      getState: () => runtimeState,
+      writeStatus: setStatus,
+    });
+  }
 
   const flushAutosave = (): void => {
     void autosave?.flush();

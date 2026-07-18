@@ -1,4 +1,8 @@
 import type { GameState } from '../simulation/types';
+import {
+  AUTOSAVE_SNAPSHOT_SLOT_ID,
+  SaveManager,
+} from './SaveManager';
 import { createSaveEnvelope } from './saveFormat';
 import type { SaveRepository } from './types';
 
@@ -14,6 +18,7 @@ export interface AutoSaveStatus {
 
 export interface AutoSaveControllerOptions {
   readonly slotId?: string;
+  readonly snapshotSlotId?: string | false;
   readonly delayMs?: number;
   readonly now?: () => string;
   readonly onStatus?: (status: AutoSaveStatus) => void;
@@ -21,7 +26,9 @@ export interface AutoSaveControllerOptions {
 
 export class AutoSaveController {
   readonly #repository: SaveRepository;
+  readonly #saveManager: SaveManager;
   readonly #slotId: string;
+  readonly #snapshotSlotId: string | undefined;
   readonly #delayMs: number;
   readonly #now: () => string;
   readonly #onStatus: (status: AutoSaveStatus) => void;
@@ -33,12 +40,21 @@ export class AutoSaveController {
   constructor(repository: SaveRepository, options: AutoSaveControllerOptions = {}) {
     this.#repository = repository;
     this.#slotId = options.slotId ?? AUTOSAVE_SLOT_ID;
+    this.#snapshotSlotId =
+      options.snapshotSlotId === false
+        ? undefined
+        : (options.snapshotSlotId ?? AUTOSAVE_SNAPSHOT_SLOT_ID);
     this.#delayMs = options.delayMs ?? 250;
     this.#now = options.now ?? (() => new Date().toISOString());
     this.#onStatus = options.onStatus ?? (() => undefined);
+    this.#saveManager = new SaveManager(repository, { now: this.#now });
 
     if (this.#slotId.trim().length === 0) {
       throw new Error('Autosave slot id must not be empty.');
+    }
+
+    if (this.#snapshotSlotId !== undefined && this.#snapshotSlotId.trim().length === 0) {
+      throw new Error('Autosave snapshot slot id must not be empty.');
     }
 
     if (!Number.isInteger(this.#delayMs) || this.#delayMs < 0) {
@@ -82,7 +98,12 @@ export class AutoSaveController {
     const envelope = createSaveEnvelope(this.#slotId, state, savedAt);
     this.#onStatus({ phase: 'saving' });
 
-    const write = this.#writeChain.then(() => this.#repository.put(envelope));
+    const write = this.#writeChain.then(async () => {
+      if (this.#snapshotSlotId !== undefined) {
+        await this.#saveManager.snapshot(this.#slotId, this.#snapshotSlotId);
+      }
+      await this.#repository.put(envelope);
+    });
     this.#writeChain = write.catch(() => undefined);
 
     try {
@@ -103,8 +124,8 @@ export class AutoSaveController {
       return;
     }
 
-    await this.flush();
     this.#disposed = true;
+    await this.flush();
     await this.#writeChain;
     this.#onStatus({ phase: 'idle' });
   }

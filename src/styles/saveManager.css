@@ -1,0 +1,134 @@
+.save-manager-dialog {
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(760px, calc(100vh - 32px));
+  padding: 0;
+  border: 1px solid rgba(117, 211, 255, 0.38);
+  border-radius: 12px;
+  color: #eaf7ff;
+  background: linear-gradient(145deg, rgba(8, 18, 30, 0.98), rgba(2, 7, 14, 0.99));
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.72);
+}
+
+.save-manager-dialog::backdrop {
+  background: rgba(0, 4, 10, 0.78);
+  backdrop-filter: blur(5px);
+}
+
+.save-manager-dialog > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid rgba(117, 211, 255, 0.16);
+}
+
+.save-manager-dialog h2,
+.save-manager-dialog p {
+  margin: 0;
+}
+
+.save-manager-controls {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) auto minmax(190px, 1fr);
+  gap: 10px;
+  padding: 18px 22px;
+}
+
+.save-manager-controls input,
+.save-manager-controls button,
+.save-slot-actions button {
+  min-height: 40px;
+  border: 1px solid rgba(117, 211, 255, 0.28);
+  border-radius: 7px;
+  color: inherit;
+  background: rgba(9, 27, 43, 0.86);
+}
+
+.save-manager-controls input {
+  padding: 0 12px;
+}
+
+.save-manager-controls button,
+.save-slot-actions button {
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.save-manager-controls button:hover,
+.save-slot-actions button:hover {
+  border-color: rgba(117, 211, 255, 0.72);
+  background: rgba(18, 53, 78, 0.9);
+}
+
+.save-manager-message {
+  min-height: 22px;
+  padding: 0 22px 12px;
+  color: #87d9ff;
+}
+
+.save-manager-message.is-error {
+  color: #ff9b8f;
+}
+
+.save-manager-list {
+  display: grid;
+  gap: 8px;
+  max-height: 430px;
+  overflow: auto;
+  padding: 0 22px 22px;
+}
+
+.save-slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 14px;
+  border: 1px solid rgba(117, 211, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(5, 16, 27, 0.76);
+}
+
+.save-slot.is-invalid {
+  border-color: rgba(255, 110, 90, 0.35);
+}
+
+.save-slot > div:first-child {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.save-slot strong,
+.save-slot span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.save-slot span {
+  color: #91a8b8;
+  font-size: 0.8rem;
+}
+
+.save-slot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+@media (max-width: 720px) {
+  .save-manager-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .save-slot {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .save-slot-actions {
+    justify-content: flex-start;
+  }
+}
