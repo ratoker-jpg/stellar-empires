@@ -2,6 +2,7 @@ import './styles/main.css';
 import './styles/factions.css';
 import './styles/aegisAssets.css';
 import './styles/planet.css';
+import './styles/planetWorkspace.css';
 import { createGame } from './game/createGame';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import { mountPlanetScreen } from './ui/planetScreen';
