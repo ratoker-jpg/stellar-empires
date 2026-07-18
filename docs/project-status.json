@@ -12,6 +12,7 @@
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
+  "governanceUpdateNote": "On 2026-07-19 the repository owner explicitly authorized a governance-only direct-main documentation update so roadmap PR numbering remained intact. Future substantial changes still use focused pull requests.",
   "currentMilestone": "MVP persistence, research and production",
   "currentBatch": {
     "standard": [23, 24, 25, 26, 27, 28],
@@ -31,7 +32,8 @@
     "planet UI v2 with separate Research, Shipyard, Defense and Fleet routes",
     "P0 visual shell and P1 Aegis vertical-slice assets",
     "Nemexia browser/help research audit",
-    "canonical PR roadmap through Release 1.0"
+    "canonical PR roadmap through Release 1.0",
+    "persistent six-PR delivery and AI handoff protocol"
   ],
   "knownLimitations": [
     "runtime autosave and automatic restore are not connected yet",
