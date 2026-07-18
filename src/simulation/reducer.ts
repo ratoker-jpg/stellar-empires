@@ -335,8 +335,9 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
   }
 
   if (event.payload.type === 'UNIT_PRODUCTION_COMPLETE') {
+    const payload = event.payload;
     const planet = state.planets.find(
-      (candidate) => candidate.id === event.payload.planetId,
+      (candidate) => candidate.id === payload.planetId,
     );
     if (planet === undefined) {
       return state;
@@ -346,7 +347,7 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
       planets: replacePlanet(
         state.planets,
         planet.id,
-        completeUnitProduction(planet, event.payload),
+        completeUnitProduction(planet, payload),
       ),
     };
   }
