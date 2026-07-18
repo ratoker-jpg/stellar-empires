@@ -30,7 +30,10 @@ function ratioPermille(capacity: number, demand: number): number {
   return demand === 0 ? 1_000 : Math.min(1_000, Math.floor((capacity * 1_000) / demand));
 }
 
-function calculateSummary(buildings: readonly PlanetBuildingState[]): EconomySummary {
+function calculateSummary(
+  buildings: readonly PlanetBuildingState[],
+  energyOutputPercent = 0,
+): EconomySummary {
   const production: Record<ResourceId, number> = { metal: 0, crystal: 0, gas: 0 };
   const capacity: Record<ResourceId, number> = {
     metal: BASE_CAPACITY,
@@ -68,6 +71,7 @@ function calculateSummary(buildings: readonly PlanetBuildingState[]): EconomySum
     stabilityDemand += (contribution.stabilityDemand ?? 0) * level;
   }
 
+  energyProduced = Math.floor((energyProduced * (100 + Math.max(0, energyOutputPercent))) / 100);
   const energyEfficiency = ratioPermille(energyProduced, energyConsumed);
   const stabilityEfficiency = ratioPermille(stabilityCapacity, stabilityDemand);
   const productionEfficiency = Math.min(energyEfficiency, stabilityEfficiency);
@@ -115,8 +119,9 @@ function createStock(
 
 export function createPlanetEconomy(
   buildings: readonly PlanetBuildingState[],
+  energyOutputPercent = 0,
 ): PlanetEconomyState {
-  const summary = calculateSummary(buildings);
+  const summary = calculateSummary(buildings, energyOutputPercent);
 
   return {
     resources: {
@@ -133,8 +138,9 @@ export function createPlanetEconomy(
 export function refreshPlanetEconomy(
   economy: PlanetEconomyState,
   buildings: readonly PlanetBuildingState[],
+  energyOutputPercent = 0,
 ): PlanetEconomyState {
-  const summary = calculateSummary(buildings);
+  const summary = calculateSummary(buildings, energyOutputPercent);
 
   return {
     resources: {
@@ -178,12 +184,20 @@ export function getSecondsUntilResourceFull(stock: ResourceStock): number | null
   return Math.ceil((missing * 3_600 - stock.productionRemainder) / stock.productionPerHour);
 }
 
-export function accruePlanetEconomy(planet: PlanetState, seconds: number): PlanetState {
+export function accruePlanetEconomy(
+  planet: PlanetState,
+  seconds: number,
+  energyOutputPercent = 0,
+): PlanetState {
   if (!Number.isInteger(seconds) || seconds < 0) {
     throw new Error('Economy accrual seconds must be a non-negative integer.');
   }
 
-  const economy = refreshPlanetEconomy(planet.economy, planet.buildings);
+  const economy = refreshPlanetEconomy(
+    planet.economy,
+    planet.buildings,
+    energyOutputPercent,
+  );
 
   return {
     ...planet,
@@ -201,6 +215,13 @@ export function accruePlanetEconomy(planet: PlanetState, seconds: number): Plane
 export function accrueAllPlanetEconomies(
   planets: readonly PlanetState[],
   seconds: number,
+  energyOutputByEmpire: Readonly<Record<string, number>> = {},
 ): readonly PlanetState[] {
-  return planets.map((planet) => accruePlanetEconomy(planet, seconds));
+  return planets.map((planet) =>
+    accruePlanetEconomy(
+      planet,
+      seconds,
+      energyOutputByEmpire[planet.ownerEmpireId] ?? 0,
+    ),
+  );
 }
