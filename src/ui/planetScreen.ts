@@ -23,6 +23,7 @@ const ZONE_LABELS: Readonly<Record<PlanetZoneId, string>> = {
 let currentState: GameState | undefined;
 let activeZone: PlanetZoneId = 'resource';
 let statusWriter: (message: string) => void = () => undefined;
+let stateObserver: (state: GameState) => void = () => undefined;
 
 function requireElement<T extends HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector);
@@ -75,6 +76,7 @@ function applyCommand(command: GameCommand, successMessage: string): boolean {
   }
 
   currentState = result.value;
+  stateObserver(currentState);
   statusWriter(successMessage);
   renderPlanetDashboard();
   return true;
@@ -433,9 +435,11 @@ function bindPlanetControls(): void {
 export function mountPlanetScreen(
   initialState: GameState,
   writeStatus: (message: string) => void,
+  onStateChange: (state: GameState) => void = () => undefined,
 ): void {
   currentState = initialState;
   statusWriter = writeStatus;
+  stateObserver = onStateChange;
   bindPlanetControls();
   renderPlanetDashboard();
 }
