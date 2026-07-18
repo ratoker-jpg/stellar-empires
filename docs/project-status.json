@@ -6,9 +6,9 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 26,
-  "lastMergeSha": "36d28efca2e722a868227badfc9a5fe92e860767",
-  "nextPr": 27,
+  "lastMergedPr": 27,
+  "lastMergeSha": "913e5f4f65aa6e5ae65f1929b8cec14846eb8614",
+  "nextPr": 28,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
@@ -16,7 +16,7 @@
   "currentMilestone": "MVP persistence, research and production",
   "currentBatch": {
     "standard": [23, 24, 25, 26, 27, 28],
-    "completed": [23, 24, 25, 26],
+    "completed": [23, 24, 25, 26, 27],
     "optionalExtensions": [29, 30],
     "extensionRule": "Use PR 29 and 30 only after PR 23-28 are merged, CI is stable, and inventory/production contracts are settled."
   },
@@ -26,10 +26,11 @@
     "deterministic simulation commands, events, clock, replay and checksum",
     "IndexedDB persistence core, autosave, manual slots, import/export and recovery",
     "seeded galaxy model",
-    "three planet domains and schema-v3 save migration",
+    "three planet domains and schema-v4 save migration",
     "resource economy with energy, population, stability and storage",
     "deterministic building construction queue",
     "Aegis research catalog, dependency tree, playable queue and real effects",
+    "Aegis unit catalog, planet inventories and serialized production queue contracts",
     "planet UI v2 with Research, Shipyard, Defense and Fleet routes",
     "P0 visual shell and P1 Aegis vertical-slice assets",
     "Nemexia browser/help research audit",
@@ -37,7 +38,7 @@
     "persistent six-PR delivery and AI handoff protocol"
   ],
   "knownLimitations": [
-    "ship and defense inventories and production queues are not implemented",
+    "ship and defense production commands and screens are not implemented",
     "fleets, flights, missions, combat and autonomous bots are not implemented",
     "the current production content is only the first Aegis vertical slice",
     "public Pages deployment should be checked after material UI batches"
