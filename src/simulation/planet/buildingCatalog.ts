@@ -1,3 +1,4 @@
+import type { EconomyContribution } from '../economy/types';
 import type { FactionId, PlanetZoneId } from './types';
 
 export interface BuildingDefinition {
@@ -8,6 +9,7 @@ export interface BuildingDefinition {
   readonly fieldCost: number;
   readonly maxLevel: number;
   readonly assetId: string;
+  readonly economy?: EconomyContribution;
 }
 
 export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
@@ -19,6 +21,10 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     fieldCost: 2,
     maxLevel: 10,
     assetId: 'building.aegis.command',
+    economy: {
+      storageCapacity: { metal: 2_000, crystal: 2_000, gas: 2_000 },
+      energyConsumption: 8,
+    },
   },
   {
     id: 'building.aegis.metal-extractor',
@@ -28,6 +34,10 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     fieldCost: 1,
     maxLevel: 20,
     assetId: 'building.aegis.metal-extractor',
+    economy: {
+      resourceProductionPerHour: { metal: 140 },
+      energyConsumption: 18,
+    },
   },
   {
     id: 'building.aegis.crystal-refinery',
@@ -37,6 +47,10 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     fieldCost: 1,
     maxLevel: 20,
     assetId: 'building.aegis.crystal-refinery',
+    economy: {
+      resourceProductionPerHour: { crystal: 90 },
+      energyConsumption: 20,
+    },
   },
   {
     id: 'building.aegis.gas-extractor',
@@ -46,6 +60,10 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     fieldCost: 1,
     maxLevel: 20,
     assetId: 'building.aegis.gas-extractor',
+    economy: {
+      resourceProductionPerHour: { gas: 60 },
+      energyConsumption: 24,
+    },
   },
   {
     id: 'building.aegis.power-plant',
@@ -55,6 +73,9 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     fieldCost: 1,
     maxLevel: 20,
     assetId: 'building.aegis.power-plant',
+    economy: {
+      energyProduction: 120,
+    },
   },
   {
     id: 'building.aegis.research-lab',
@@ -64,6 +85,9 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     fieldCost: 2,
     maxLevel: 15,
     assetId: 'building.aegis.research-lab',
+    economy: {
+      energyConsumption: 30,
+    },
   },
   {
     id: 'building.aegis.shipyard',
@@ -73,6 +97,9 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     fieldCost: 3,
     maxLevel: 15,
     assetId: 'building.aegis.shipyard',
+    economy: {
+      energyConsumption: 45,
+    },
   },
   {
     id: 'building.aegis.sensor-array',
@@ -82,6 +109,9 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     fieldCost: 1,
     maxLevel: 15,
     assetId: 'building.aegis.sensor-array',
+    economy: {
+      energyConsumption: 16,
+    },
   },
 ] as const;
 
