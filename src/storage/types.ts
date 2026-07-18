@@ -1,6 +1,6 @@
 import type { GameState } from '../simulation/types';
 
-export const SAVE_FORMAT_VERSION = 1 as const;
+export const SAVE_FORMAT_VERSION = 2 as const;
 
 export interface SaveEnvelope {
   readonly formatVersion: typeof SAVE_FORMAT_VERSION;
