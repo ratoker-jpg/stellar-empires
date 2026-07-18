@@ -38,6 +38,28 @@ export function getHangarUsed(planet: PlanetState): number {
   }, 0);
 }
 
+export function getUnitPopulationUsed(planet: PlanetState): number {
+  return AEGIS_UNIT_CATALOG.reduce(
+    (used, definition) =>
+      used + getUnitCount(planet, definition.id, definition.kind) * definition.populationCost,
+    0,
+  );
+}
+
+export function getReservedHangar(planet: PlanetState): number {
+  return [...planet.productionQueues.shipyard, ...planet.productionQueues.defense].reduce(
+    (reserved, item) => reserved + item.hangarReserved,
+    0,
+  );
+}
+
+export function getReservedPopulation(planet: PlanetState): number {
+  return [...planet.productionQueues.shipyard, ...planet.productionQueues.defense].reduce(
+    (reserved, item) => reserved + item.populationReserved,
+    0,
+  );
+}
+
 export interface MissingUnitRequirement {
   readonly type: 'building' | 'technology';
   readonly id: string;
