@@ -1,6 +1,11 @@
-import type { GameState } from '../simulation/types';
+import {
+  createPlanetEconomy,
+  refreshPlanetEconomy,
+} from '../simulation/economy/planetEconomy';
+import type { PlanetEconomyState } from '../simulation/economy/types';
 import type { PlanetBuildingState } from '../simulation/planet/types';
 import { createPlanetZones } from '../simulation/planet/zones';
+import type { GameState } from '../simulation/types';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -30,6 +35,17 @@ function readBuildings(value: unknown): readonly PlanetBuildingState[] | undefin
   return buildings;
 }
 
+function normalizeEconomy(
+  value: unknown,
+  buildings: readonly PlanetBuildingState[],
+): PlanetEconomyState {
+  if (!isRecord(value) || !isRecord(value.resources)) {
+    return createPlanetEconomy(buildings);
+  }
+
+  return refreshPlanetEconomy(value as unknown as PlanetEconomyState, buildings);
+}
+
 function migratePlanet(value: unknown): Record<string, unknown> | undefined {
   if (!isRecord(value)) {
     return undefined;
@@ -45,6 +61,7 @@ function migratePlanet(value: unknown): Record<string, unknown> | undefined {
     ...value,
     buildings,
     zones: createPlanetZones(buildings),
+    economy: normalizeEconomy(value.economy, buildings),
   };
 }
 
