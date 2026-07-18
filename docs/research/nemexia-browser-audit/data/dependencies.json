@@ -1,0 +1,18 @@
+{
+  "nodes":["planet","resource-zone","industry-zone","military-zone","laboratory","basic-sciences","physics","astronomy","shipyard","ships-technology","ships","defense","flights","battles","simulator"],
+  "edges":[
+    {"from":"planet","to":"resource-zone","type":"navigation","status":"CONFIRMED_UI"},
+    {"from":"planet","to":"industry-zone","type":"navigation","status":"CONFIRMED_UI"},
+    {"from":"planet","to":"military-zone","type":"navigation","status":"CONFIRMED_UI"},
+    {"from":"industry-zone","to":"laboratory","type":"navigation","status":"CONFIRMED_UI"},
+    {"from":"laboratory","to":"basic-sciences","type":"category","status":"CONFIRMED_UI"},
+    {"from":"basic-sciences","to":"physics","type":"location","status":"CONFIRMED_UI"},
+    {"from":"shipyard","to":"ships-technology","type":"navigation","status":"CONFIRMED_UI"},
+    {"from":"shipyard","to":"ships","type":"requirement","status":"CONFIRMED_UI","requirement":"Shipyard level 1 satisfied on second server"},
+    {"from":"astronomy","to":"fighter","type":"requirement","status":"LOCKED","requirement":"Astronomy level 3"},
+    {"from":"shipyard","to":"defense","type":"tab","status":"CONFIRMED_UI"},
+    {"from":"shipyard","to":"flights","type":"navigation","status":"CONFIRMED_UI"},
+    {"from":"shipyard","to":"battles","type":"navigation","status":"CONFIRMED_UI"},
+    {"from":"shipyard","to":"simulator","type":"navigation","status":"CONFIRMED_UI"}
+  ]
+}

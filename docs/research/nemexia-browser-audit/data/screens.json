@@ -1,0 +1,16 @@
+[
+  {"path":"screens/01-planet-overview.png","category":"planet","status":"CONFIRMED_UI","note":"Full-page planet overview."},
+  {"path":"screens/02-resource-zone.png","category":"resources","status":"CONFIRMED_UI","note":"Resource-zone production and ozone summary."},
+  {"path":"screens/03-industry-zone.png","category":"buildings","status":"CONFIRMED_UI","note":"Industry-zone landing page."},
+  {"path":"screens/04-military-zone.png","category":"buildings","status":"CONFIRMED_UI","note":"Military-zone landing page."},
+  {"path":"screens/05-commander-ships.png","category":"ships","status":"CONFIRMED_UI","note":"Shipyard lock and navigation."},
+  {"path":"screens/06-technologies.png","category":"technologies","status":"ACTION_REQUIRED","note":"Login redirect; not technology UI."},
+  {"path":"screens/07-industry-unlocked.png","category":"buildings","status":"CONFIRMED_UI","note":"Second server's industry-zone navigation."},
+  {"path":"screens/08-laboratory.png","category":"research","status":"CONFIRMED_UI","note":"Experimental Center level and research groups."},
+  {"path":"screens/09-technologies.png","category":"technologies","status":"CONFIRMED_UI","note":"Research technology list."},
+  {"path":"screens/10-science-physics.png","category":"technologies","status":"CONFIRMED_UI","note":"Physics information card."},
+  {"path":"screens/11-shipyard-unlocked.png","category":"ships","status":"CONFIRMED_UI","note":"Shipyard unit list and requirements."},
+  {"path":"screens/12-defense.png","category":"defenses","status":"UNKNOWN","note":"Defense tab selected; semantic view did not expose distinct defense cards."},
+  {"path":"screens/13-fleets.png","category":"missions","status":"CONFIRMED_UI","note":"Flights mission-selector landing page."},
+  {"path":"screens/14-galaxy-system.png","category":"galaxy","status":"CONFIRMED_UI","note":"Galaxy coordinate/search landing page."}
+]

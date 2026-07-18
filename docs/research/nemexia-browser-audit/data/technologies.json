@@ -1,0 +1,6 @@
+[
+  {"category":"ships","url":"technics.php?showTab=ships","status":"ACTION_REQUIRED","evidence":"First-server technology route redirected to login."},
+  {"category":"research","status":"CONFIRMED_UI","groups":["basic","high-technology","expert","additional"]},
+  {"name":"Physics","group":"basic","location":"laboratory.php?tabId=TabBasic","visible_requirement_value":1,"status":"CONFIRMED_UI"},
+  {"names":["Chemistry","Mathematics","Astronomy","Espionage","Computer Systems","Ship Armor","Fuel Cells","Jet Engines","Laser","Ion","Plasma","Ecology","Hyperspace","Parallel Universes","Improved Construction","Piercing Attack","Maneuver Defense","Critical Hit","Light Armor","Medium Armor","Heavy Armor"],"status":"CONFIRMED_UI","note":"Listed by the research technology page; detailed prerequisites are not claimed."}
+]

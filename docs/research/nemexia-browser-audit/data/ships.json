@@ -1,0 +1,12 @@
+[
+  {"name":"Solar Satellite","status":"CONFIRMED_UI","cost_values_ui_order":[500,2000,500],"time":"00:00:29","availability":"insufficient resources"},
+  {"name":"Spy Bot","status":"LOCKED","requirement":"Shipyard level 3","cost_values_ui_order":[0,1000,0],"time":"00:00:11"},
+  {"name":"Cargo Bot","status":"LOCKED","requirement":"Shipyard level 2","cost_values_ui_order":[2400,1400,0],"time":"00:01:54"},
+  {"name":"Large Cargo Bot","status":"LOCKED","requirement":"Shipyard level 4","cost_values_ui_order":[14900,11700,0],"time":"00:08:52"},
+  {"name":"Colonizer Bot","status":"LOCKED","requirement":"Shipyard level 4","cost_values_ui_order":[12500,25000,10600],"time":"00:11:01"},
+  {"name":"Recycler","status":"LOCKED","requirement":"Shipyard level 4","cost_values_ui_order":[14700,7400,2500],"time":"00:11:05"},
+  {"name":"Fighter","status":"LOCKED","requirement":"Astronomy level 3","cost_values_ui_order":[2400,1600,0],"time":"00:02:32"},
+  {"name":"Interceptor","status":"LOCKED","requirement":"Shipyard level 3","cost_values_ui_order":[7300,6000,0],"time":"00:03:29"},
+  {"name":"Shield Bot","status":"LOCKED","requirement":"Shipyard level 5","cost_values_ui_order":[6200,18600,0],"time":"00:07:46"},
+  {"name":"Titan","status":"LOCKED","requirement":"Shipyard level 14","cost_values_ui_order":[2044900,1635900,409000],"time":"29:12:45"}
+]

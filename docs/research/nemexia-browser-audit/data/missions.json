@@ -1,0 +1,7 @@
+[
+  {"entry":"Flights","status":"CONFIRMED_UI","evidence":"Shipyard navigation"},
+  {"entry":"Battles","status":"CONFIRMED_UI","evidence":"Shipyard navigation"},
+  {"entry":"Simulator","status":"CONFIRMED_UI","evidence":"Shipyard navigation"},
+  {"entry":"Mission types","status":"CONFIRMED_UI","values":["Transport","Espionage","Attack","Dislocation","Colonization","Recycling","Pirate Raid","Gas Extraction","Sun Support","Space Flight","Renegade Espionage","Renegade Attack"],"evidence":"Flights mission selector"},
+  {"entry":"Execution rules and outcomes","status":"ACTION_REQUIRED","evidence":"No fleet was dispatched."}
+]

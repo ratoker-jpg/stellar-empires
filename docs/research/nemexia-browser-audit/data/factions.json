@@ -1,0 +1,7 @@
+[
+  {"name":"Confederation","status":"UNKNOWN","evidence":null},
+  {"name":"Terteths Union","status":"UNKNOWN","evidence":null},
+  {"name":"Noxis","status":"UNKNOWN","evidence":null},
+  {"name":"route-race-1","status":"CONFIRMED_UI","evidence":"zone_resource.php?race=1","note":"Do not map to a named faction without UI evidence."},
+  {"name":"route-race-2","status":"CONFIRMED_UI","evidence":"zone_resource.php?race=2","note":"Do not map to a named faction without UI evidence."}
+]

@@ -1,0 +1,6 @@
+[
+  {"area":"resource","status":"CONFIRMED_UI","evidence":"Resource Zone landing page"},
+  {"area":"industry","status":"CONFIRMED_UI","evidence":"Industry Zone landing page"},
+  {"area":"military","status":"CONFIRMED_UI","evidence":"Military Zone landing page"},
+  {"name":"Shipyard","level":0,"status":"LOCKED","requirement":"Level 1 is required for ship construction"}
+]
