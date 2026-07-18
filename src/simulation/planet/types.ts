@@ -1,6 +1,6 @@
 import type { PlanetEconomyState, ResourceCost } from '../economy/types';
 
-export type PlanetZoneId = 'industrial' | 'military' | 'science' | 'orbital';
+export type PlanetZoneId = 'resource' | 'industry' | 'military';
 
 export type FactionId = 'aegis' | 'synod' | 'veyra';
 
