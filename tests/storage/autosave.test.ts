@@ -34,6 +34,30 @@ describe('runtime autosave', () => {
     expect(statuses).toEqual(['pending', 'pending', 'saving', 'saved']);
   });
 
+  it('rotates the previous valid autosave into a snapshot', async () => {
+    const repository = new InMemorySaveRepository();
+    const initial = createInitialGameState('autosave-snapshot');
+    await repository.put(
+      createSaveEnvelope('autosave', initial, '2026-07-19T00:00:00.000Z'),
+    );
+    const advanced = executeCommand(initial, { type: 'ADVANCE_TIME', seconds: 900 });
+
+    expect(advanced.ok).toBe(true);
+    if (!advanced.ok) {
+      return;
+    }
+
+    const controller = new AutoSaveController(repository, {
+      delayMs: 60_000,
+      now: () => '2026-07-19T00:15:00.000Z',
+    });
+    controller.request(advanced.value);
+    await controller.flush();
+
+    expect((await repository.get('autosave'))?.state.clock.elapsedSeconds).toBe(900);
+    expect((await repository.get('autosave.snapshot'))?.state.clock.elapsedSeconds).toBe(0);
+  });
+
   it('restores a checksum-validated autosave', async () => {
     const repository = new InMemorySaveRepository();
     const state = createInitialGameState('autosave-restore');
@@ -45,10 +69,38 @@ describe('runtime autosave', () => {
       status: 'loaded',
       state,
       savedAt: '2026-07-19T00:01:00.000Z',
+      source: 'primary',
     });
   });
 
-  it('does not restore a corrupted autosave', async () => {
+  it('recovers a corrupted autosave from the last valid snapshot', async () => {
+    const repository = new InMemorySaveRepository();
+    const state = createInitialGameState('autosave-recovery');
+    const primary = createSaveEnvelope(
+      'autosave',
+      state,
+      '2026-07-19T00:02:00.000Z',
+    );
+    await repository.put({ ...primary, checksum: 'corrupted' });
+    await repository.put(
+      createSaveEnvelope(
+        'autosave.snapshot',
+        state,
+        '2026-07-19T00:01:00.000Z',
+      ),
+    );
+
+    const restored = await loadAutosave(repository);
+
+    expect(restored).toMatchObject({
+      status: 'loaded',
+      source: 'snapshot',
+      state,
+    });
+    expect((await repository.get('autosave'))?.checksum).not.toBe('corrupted');
+  });
+
+  it('does not restore corrupted autosave data without a valid snapshot', async () => {
     const repository = new InMemorySaveRepository();
     const state = createInitialGameState('autosave-corrupt');
     const envelope = createSaveEnvelope(
