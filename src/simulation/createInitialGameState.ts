@@ -1,9 +1,11 @@
 import { generateGalaxy } from './galaxy/generateGalaxy';
+import { createInitialPlanetStates } from './planet/createInitialPlanetStates';
 import { normalizeSeed } from './seed';
 import type { GameState } from './types';
 
 export function createInitialGameState(seedSource: string): GameState {
   const seed = normalizeSeed(seedSource);
+  const galaxy = generateGalaxy(seed);
 
   return {
     schemaVersion: 1,
@@ -13,7 +15,8 @@ export function createInitialGameState(seedSource: string): GameState {
       elapsedSeconds: 0,
     },
     empires: ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'],
-    galaxy: generateGalaxy(seed),
+    galaxy,
+    planets: createInitialPlanetStates(galaxy),
     nextEventSequence: 0,
     pendingEvents: [],
     commandLog: [],

@@ -1,4 +1,5 @@
 import type { GalaxyModel } from './galaxy/types';
+import type { PlanetState } from './planet/types';
 
 export interface GameClock {
   readonly startedAt: string;
@@ -40,6 +41,7 @@ export interface GameState {
   readonly clock: GameClock;
   readonly empires: readonly string[];
   readonly galaxy: GalaxyModel;
+  readonly planets: readonly PlanetState[];
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];
