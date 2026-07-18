@@ -21,7 +21,9 @@
 - GitHub Actions проверяет lint, typecheck, tests и production build;
 - merge в `main` публикует GitHub Pages.
 
-Канонический план фиксирует **100 PR до Release 1.0**. После документационного PR #22 остаётся 78 implementation PR — от autosave и исследований до трёх фракций, автономных ботов, коалиций, эндгейма, Beta и релиза.
+Канонический план фиксирует **100 roadmap PR до Release 1.0**. Следующий implementation PR — #23.
+
+Стандартный автономный delivery batch содержит **6 последовательных PR**. AI-исполнитель может без дополнительного согласования расширить связный стабильный пакет до **7–8 PR**.
 
 ## Технологии
 
@@ -68,7 +70,20 @@ npm run preview
 - три планетарных домена: Resource, Industry и Military;
 - Research, Shipyard и Defense — отдельные рабочие экраны, связанные с доменами;
 - оригинальные названия, код, баланс и ассеты;
-- разработка delivery batches минимум по четыре последовательных PR.
+- разработка последовательными delivery batches по шесть PR с безопасным расширением до восьми.
+
+## Продолжение работы новым AI-чатом
+
+Новый AI-сеанс обязан начать с:
+
+1. [`AGENTS.md`](AGENTS.md);
+2. [`docs/17-continuation-guide.md`](docs/17-continuation-guide.md);
+3. [`docs/project-status.json`](docs/project-status.json);
+4. [`docs/16-execution-roadmap.md`](docs/16-execution-roadmap.md);
+5. [`docs/roadmap-pr-index.json`](docs/roadmap-pr-index.json);
+6. проверки последних смерженных PR и фактического `main`.
+
+Так продолжение проекта не зависит от памяти предыдущего чата.
 
 ## Документация
 
@@ -82,7 +97,10 @@ npm run preview
 - [Bot AI](docs/04-bot-ai.md)
 - [Simulation and Data](docs/05-simulation-and-data.md)
 - [Canonical PR #1–#100 Execution Roadmap](docs/16-execution-roadmap.md)
+- [AI Continuation Guide](docs/17-continuation-guide.md)
+- [Current Project Status](docs/project-status.json)
 - [Machine-readable Roadmap Index](docs/roadmap-pr-index.json)
+- [Delivery Batches](docs/14-delivery-batches.md)
 - [Full System Backlog](docs/06-roadmap.md)
 - [Development Rules](docs/07-development-rules.md)
 - [Originality and Assets](docs/08-originality-and-assets.md)
