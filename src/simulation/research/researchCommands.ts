@@ -9,6 +9,7 @@ import type {
   CommandLogEntry,
   CommandResult,
   GameCommand,
+  GameEventPayload,
   GameState,
   ScheduledGameEvent,
 } from '../types';
@@ -27,10 +28,7 @@ import {
 import type { EmpireResearchState } from './types';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [
-    ...state.commandLog,
-    { index: state.commandLog.length, command },
-  ];
+  return [...state.commandLog, { index: state.commandLog.length, command }];
 }
 
 function replacePlanet(
@@ -58,29 +56,53 @@ export function queueResearch(
     return { ok: false, code: 'PLANET_NOT_FOUND', message: 'Research planet not found.' };
   }
   if (planet.ownerEmpireId !== command.empireId) {
-    return { ok: false, code: 'NOT_PLANET_OWNER', message: 'Empire does not own the research planet.' };
+    return {
+      ok: false,
+      code: 'NOT_PLANET_OWNER',
+      message: 'Empire does not own the research planet.',
+    };
   }
 
   const research = getEmpireResearch(state.research, command.empireId);
   if (research === undefined) {
-    return { ok: false, code: 'RESEARCH_STATE_NOT_FOUND', message: 'Empire research state not found.' };
+    return {
+      ok: false,
+      code: 'RESEARCH_STATE_NOT_FOUND',
+      message: 'Empire research state not found.',
+    };
   }
   if (research.queue.length > 0) {
-    return { ok: false, code: 'RESEARCH_QUEUE_BUSY', message: 'Research queue is already occupied.' };
+    return {
+      ok: false,
+      code: 'RESEARCH_QUEUE_BUSY',
+      message: 'Research queue is already occupied.',
+    };
   }
 
   const definition = getResearchDefinition(command.technologyId);
   if (definition === undefined) {
-    return { ok: false, code: 'RESEARCH_NOT_FOUND', message: 'Technology is not registered.' };
+    return {
+      ok: false,
+      code: 'RESEARCH_NOT_FOUND',
+      message: 'Technology is not registered.',
+    };
   }
   if (definition.factionId !== planet.factionId) {
-    return { ok: false, code: 'WRONG_FACTION_RESEARCH', message: 'Technology belongs to another faction.' };
+    return {
+      ok: false,
+      code: 'WRONG_FACTION_RESEARCH',
+      message: 'Technology belongs to another faction.',
+    };
   }
 
   const currentLevel = getResearchLevel(research, definition.id);
   const targetLevel = currentLevel + 1;
   if (targetLevel > definition.maxLevel) {
-    return { ok: false, code: 'RESEARCH_MAX_LEVEL', message: 'Technology is at maximum level.' };
+    return {
+      ok: false,
+      code: 'RESEARCH_MAX_LEVEL',
+      message: 'Technology is at maximum level.',
+    };
   }
 
   const missingRequirements = findMissingResearchRequirements(definition, research, planet);
@@ -105,9 +127,12 @@ export function queueResearch(
 
   const sequence = state.nextEventSequence;
   const queueItemId = `research-${sequence}`;
-  const constructionEffects = calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG);
+  const effects = calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG);
   const baseSeconds = calculateResearchSeconds(definition, targetLevel);
-  const duration = applySpeedPercent(baseSeconds, Math.floor(constructionEffects.constructionSpeedPercent / 2));
+  const duration = applySpeedPercent(
+    baseSeconds,
+    Math.floor(effects.constructionSpeedPercent / 2),
+  );
   const completesAt = state.clock.elapsedSeconds + duration;
   const queueItem = {
     id: queueItemId,
@@ -158,15 +183,27 @@ export function cancelResearch(
 ): CommandResult<GameState> {
   const research = getEmpireResearch(state.research, command.empireId);
   if (research === undefined) {
-    return { ok: false, code: 'RESEARCH_STATE_NOT_FOUND', message: 'Empire research state not found.' };
+    return {
+      ok: false,
+      code: 'RESEARCH_STATE_NOT_FOUND',
+      message: 'Empire research state not found.',
+    };
   }
   const queueItem = research.queue.find((item) => item.id === command.queueItemId);
   if (queueItem === undefined) {
-    return { ok: false, code: 'RESEARCH_QUEUE_ITEM_NOT_FOUND', message: 'Research order not found.' };
+    return {
+      ok: false,
+      code: 'RESEARCH_QUEUE_ITEM_NOT_FOUND',
+      message: 'Research order not found.',
+    };
   }
   const planet = state.planets.find((candidate) => candidate.id === queueItem.planetId);
   if (planet === undefined || planet.ownerEmpireId !== command.empireId) {
-    return { ok: false, code: 'RESEARCH_PLANET_NOT_FOUND', message: 'Research planet not found.' };
+    return {
+      ok: false,
+      code: 'RESEARCH_PLANET_NOT_FOUND',
+      message: 'Research planet not found.',
+    };
   }
 
   const updatedResearch: EmpireResearchState = {
@@ -198,17 +235,17 @@ export function cancelResearch(
 
 export function completeResearch(
   states: readonly EmpireResearchState[],
-  event: Extract<ScheduledGameEvent, { readonly payload: { readonly type: 'RESEARCH_COMPLETE' } }>,
+  payload: Extract<GameEventPayload, { readonly type: 'RESEARCH_COMPLETE' }>,
 ): readonly EmpireResearchState[] {
-  const research = getEmpireResearch(states, event.payload.empireId);
+  const research = getEmpireResearch(states, payload.empireId);
   if (research === undefined) {
     return states;
   }
-  const queueItem = research.queue.find((item) => item.id === event.payload.queueItemId);
+  const queueItem = research.queue.find((item) => item.id === payload.queueItemId);
   if (
     queueItem === undefined ||
-    queueItem.technologyId !== event.payload.technologyId ||
-    queueItem.targetLevel !== event.payload.targetLevel
+    queueItem.technologyId !== payload.technologyId ||
+    queueItem.targetLevel !== payload.targetLevel
   ) {
     return states;
   }
@@ -217,7 +254,7 @@ export function completeResearch(
     ...research,
     levels: {
       ...research.levels,
-      [event.payload.technologyId]: event.payload.targetLevel,
+      [payload.technologyId]: payload.targetLevel,
     },
     queue: research.queue.filter((item) => item.id !== queueItem.id),
   });
