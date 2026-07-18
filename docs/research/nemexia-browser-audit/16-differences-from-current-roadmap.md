@@ -1,31 +1,59 @@
 # 16 — Differences from current roadmap
 
-## Required 17-step migration sequence (future work; not implemented)
+## Confirmed architecture mismatch
 
-1. Freeze existing prototype behaviour with tests/screenshots.
-2. Define original domain vocabulary, avoiding Nemexia names and assets.
-3. Create a versioned `Cost` contract with named fields.
-4. Create entity IDs and a data registry for original buildings/units/research.
-5. Add explicit Resource, Industry, and Military domain tags.
-6. Move existing planet progression data behind those tags without changing balance.
-7. Add an unlock/prerequisite graph with validation.
-8. Model build/research queues as serializable state.
-9. Add capacity/production state as independent, testable services.
-10. Make route/view state derive from domain data rather than copied screens.
-11. Add deterministic simulation hooks for future combat/fleet work.
-12. Introduce read-only inspection panels before write actions.
-13. Add save migration for existing local progress.
-14. Add fixture-based tests for each zone and locked/unlocked state.
-15. Add accessibility and responsive checks for original UI.
-16. Balance only with original tuning data and playtests.
-17. Stage rollout behind a feature flag and retain rollback/export support.
+The current Stellar Empires prototype defines four top-level planet zones:
 
-This is a design migration checklist only. It neither authorizes nor contains game-code changes in this PR.
+- `industrial`;
+- `military`;
+- `science`;
+- `orbital`.
 
-Stellar Empires currently exposes an original Galaxy scene and a Planet screen, while Science, Fleet, Reports, and System navigation are disabled. The browser evidence supports future original work on progression information architecture, zone categories, locks, and a deterministic exploration/fleet loop—but does not justify copying Nemexia layouts, balance, assets, or terminology.
+The browser audit and historical Help both support a three-zone progression model:
 
-Exact gaps in technologies, units, defenses, missions, galaxy entity types, combat, and social systems remain `UNKNOWN` because the captured session did not expose their content.
+- **Resource**;
+- **Industry**;
+- **Military**.
 
-## Required architecture migration (documentation only)
+This does not mean Stellar Empires should copy Nemexia terminology, layouts, values or implementation. It means the existing four-zone prototype should be migrated to an original three-domain structure before more dependent systems are built.
 
-The current Stellar Empires prototype is not organized around Nemexia’s three-zone model. Any future original implementation should explicitly migrate planet progression into **Resource**, **Industry**, and **Military** domain groups before adding their dependent systems. That migration must define stable internal data contracts for named costs, build time, prerequisites, queue state, unlock state, and original UI routes; it must not copy Nemexia screens, art, terms, values, or code. This audit makes no product-code changes.
+## Required 17-step migration sequence
+
+1. Freeze existing prototype behaviour with tests and reference screenshots.
+2. Replace `PlanetZoneId` with versioned original IDs for `resource`, `industry` and `military`.
+3. Remove `science` and `orbital` as top-level planet zones.
+4. Add `resource` as the dedicated extraction, storage, energy and capacity domain.
+5. Move the existing metal, crystal/mineral, gas and power buildings into Resource.
+6. Keep command, logistics and general production infrastructure in Industry.
+7. Move the research laboratory and other science buildings into Industry while retaining Science as a separate game system and screen.
+8. Move the shipyard into Industry or keep it as a separate screen explicitly unlocked from Industry; do not model it as an Orbital zone.
+9. Keep fortifications, sensors and defensive infrastructure in Military.
+10. Update the building catalogue, stable entity IDs, asset references and prerequisite graph for the new domains.
+11. Update initial planet generation, zone field limits, occupied-field accounting and bot fixtures.
+12. Update construction and research queues so their state remains serializable and deterministic.
+13. Update the planet UI, navigation, view models and locked/unlocked states without copying source-game screens.
+14. Add a save-schema migration that maps existing `science` and `orbital` buildings into the new domains and preserves queued work where possible.
+15. Update unit tests, persistence validation, replay/checksum fixtures, accessibility checks and responsive checks.
+16. Update the roadmap and bot-development order so economy, research, shipyard and defence depend on the migrated domain model.
+17. Stage the migration behind a feature flag, retain export/rollback support, and balance only with original tuning data and playtests.
+
+## Data contracts required before implementation
+
+The migration should define stable, versioned contracts for:
+
+- named resource costs;
+- build and research duration;
+- prerequisites and unlocks;
+- zone/domain ownership;
+- queue state;
+- capacity and production effects;
+- asset IDs;
+- save migration metadata.
+
+## Product impact
+
+Stellar Empires currently exposes an original Galaxy scene and a playable Planet screen, while Science, Fleet, Reports and System navigation remain incomplete. The audit supports future original work on progression information architecture, explicit locks, deterministic exploration, fleets, combat and endgame—but it does not justify copying Nemexia art, screens, balance, wording or code.
+
+Current Horus building cards, defence cards, several technology semantics, galaxy result schemas and battle-resolution contracts remain intentionally `UNKNOWN` or `LOCKED`. Historical Help relationships are research evidence, not production balance requirements.
+
+This document is a migration plan only. PR #16 makes no product-code changes.
