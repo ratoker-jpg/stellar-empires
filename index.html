@@ -20,23 +20,23 @@
         <div class="resource-strip" aria-label="Ресурсы империи">
           <div class="resource-chip">
             <img src="./assets/icons/resource-metal.svg" alt="" />
-            <span><small>Металл</small><strong>12 450</strong></span>
-            <em>+48/ч</em>
+            <span><small>Металл</small><strong id="resource-metal-value">—</strong></span>
+            <em id="resource-metal-rate">—</em>
           </div>
           <div class="resource-chip">
             <img src="./assets/icons/resource-crystal.svg" alt="" />
-            <span><small>Кристалл</small><strong>7 820</strong></span>
-            <em>+31/ч</em>
+            <span><small>Кристалл</small><strong id="resource-crystal-value">—</strong></span>
+            <em id="resource-crystal-rate">—</em>
           </div>
           <div class="resource-chip">
             <img src="./assets/icons/resource-gas.svg" alt="" />
-            <span><small>Газ</small><strong>4 260</strong></span>
-            <em>+19/ч</em>
+            <span><small>Газ</small><strong id="resource-gas-value">—</strong></span>
+            <em id="resource-gas-rate">—</em>
           </div>
           <div class="resource-chip">
             <img src="./assets/icons/resource-energy.svg" alt="" />
-            <span><small>Энергия</small><strong>218 / 300</strong></span>
-            <em class="stable">стабильно</em>
+            <span><small>Энергия</small><strong id="resource-energy-value">—</strong></span>
+            <em id="resource-energy-state" class="stable">—</em>
           </div>
         </div>
 
@@ -52,37 +52,105 @@
 
       <main class="game-layout">
         <nav class="side-rail" aria-label="Основная навигация">
-          <button class="rail-button is-active" type="button" aria-label="Галактика">
+          <button id="nav-galaxy" class="rail-button is-active" type="button" aria-label="Галактика">
             <span>✦</span><small>Галактика</small>
           </button>
-          <button class="rail-button" type="button" aria-label="Планета">
+          <button id="nav-planet" class="rail-button" type="button" aria-label="Планета">
             <span>◉</span><small>Планета</small>
           </button>
-          <button class="rail-button" type="button" aria-label="Исследования">
+          <button class="rail-button" type="button" aria-label="Исследования" disabled>
             <span>⌬</span><small>Наука</small>
           </button>
-          <button class="rail-button" type="button" aria-label="Флот">
+          <button class="rail-button" type="button" aria-label="Флот" disabled>
             <span>◆</span><small>Флот</small>
           </button>
-          <button class="rail-button" type="button" aria-label="Отчёты">
+          <button class="rail-button" type="button" aria-label="Отчёты" disabled>
             <span>▤</span><small>Отчёты</small>
           </button>
           <div class="rail-spacer"></div>
-          <button class="rail-button" type="button" aria-label="Настройки">
+          <button class="rail-button" type="button" aria-label="Настройки" disabled>
             <span>⚙</span><small>Система</small>
           </button>
         </nav>
 
-        <section class="game-stage" aria-label="Карта галактики">
-          <div class="stage-chrome stage-chrome--top-left"></div>
-          <div class="stage-chrome stage-chrome--top-right"></div>
-          <div id="phaser-game"></div>
-          <div class="stage-footer">
-            <span>Сектор SE-01</span>
-            <span class="coordinate-readout">X 000 · Y 000</span>
-            <span>Сканирование: пассивное</span>
-          </div>
-        </section>
+        <div class="view-stack">
+          <section id="galaxy-view" class="game-stage" aria-label="Карта галактики">
+            <div class="stage-chrome stage-chrome--top-left"></div>
+            <div class="stage-chrome stage-chrome--top-right"></div>
+            <div id="phaser-game"></div>
+            <div class="stage-footer">
+              <span>Сектор SE-01</span>
+              <span class="coordinate-readout">X 000 · Y 000</span>
+              <span>Сканирование: пассивное</span>
+            </div>
+          </section>
+
+          <section id="planet-view" class="planet-view" aria-label="Управление планетой" hidden>
+            <header class="planet-header">
+              <div>
+                <p class="panel-label">Домашняя колония</p>
+                <h1 id="planet-name">—</h1>
+                <p>Директорат «Эгида» · промышленная специализация</p>
+              </div>
+              <div class="planet-clock">
+                <small>Время мира</small>
+                <strong id="world-time">00:00:00</strong>
+              </div>
+            </header>
+
+            <div class="planet-zone-strip" aria-label="Зоны планеты">
+              <div><span>Промышленная</span><strong id="zone-industrial-fields">—</strong></div>
+              <div><span>Военная</span><strong id="zone-military-fields">—</strong></div>
+              <div><span>Научная</span><strong id="zone-science-fields">—</strong></div>
+              <div><span>Орбитальная</span><strong id="zone-orbital-fields">—</strong></div>
+            </div>
+
+            <div class="planet-content">
+              <section class="building-catalog-panel">
+                <div class="planet-section-heading">
+                  <div>
+                    <p class="panel-label">Инфраструктура</p>
+                    <h2>Здания «Эгиды»</h2>
+                  </div>
+                  <span>Выберите строительство или улучшение</span>
+                </div>
+                <div id="planet-building-grid" class="planet-building-grid"></div>
+              </section>
+
+              <aside class="planet-operations">
+                <section class="operation-card">
+                  <div class="planet-section-heading">
+                    <div>
+                      <p class="panel-label">Очередь</p>
+                      <h2>Строительство</h2>
+                    </div>
+                  </div>
+                  <div id="planet-build-queue" class="planet-build-queue"></div>
+                </section>
+
+                <section class="operation-card">
+                  <p class="panel-label">Управление временем</p>
+                  <div class="time-controls">
+                    <button type="button" data-advance-seconds="60">+1 мин</button>
+                    <button type="button" data-advance-seconds="600">+10 мин</button>
+                    <button type="button" data-advance-seconds="3600">+1 час</button>
+                    <button id="advance-next-event" type="button">До события</button>
+                  </div>
+                  <p class="operation-hint">Время ускоряется только внутри детерминированной симуляции.</p>
+                </section>
+
+                <section class="operation-card economy-report">
+                  <p class="panel-label">Экономический отчёт</p>
+                  <dl>
+                    <div><dt>Эффективность</dt><dd id="economy-efficiency">—</dd></div>
+                    <div><dt>Энергогенерация</dt><dd id="economy-energy-produced">—</dd></div>
+                    <div><dt>Энергопотребление</dt><dd id="economy-energy-consumed">—</dd></div>
+                  </dl>
+                </section>
+              </aside>
+            </div>
+          </section>
+        </div>
 
         <aside class="command-panel" aria-label="Панель управления">
           <section class="panel-block panel-block--hero">
@@ -103,15 +171,12 @@
           <section class="panel-block">
             <div class="panel-heading">
               <div>
-                <p class="panel-label">Выбранная система</p>
-                <h2>Ожидание сигнала</h2>
+                <p class="panel-label">Текущий этап</p>
+                <h2>Планетарная экономика</h2>
               </div>
-              <span class="status-pill">Пассивно</span>
+              <span class="status-pill">M7</span>
             </div>
-            <p>
-              Система галактики уже генерируется из детерминированного seed. Интерактивный
-              выбор будет подключён после визуального пакета.
-            </p>
+            <p>Ресурсы, энергия и строительство уже управляются настоящим симулятором.</p>
           </section>
 
           <section class="panel-block faction-panel">
@@ -139,7 +204,7 @@
 
           <section class="panel-block metric-grid">
             <div><span>Системы</span><strong id="system-count">—</strong></div>
-            <div><span>Империи</span><strong>4</strong></div>
+            <div><span>Колонии</span><strong id="planet-count">—</strong></div>
             <div><span>Режим</span><strong>Solo</strong></div>
             <div><span>Состояние</span><strong>Stable</strong></div>
           </section>
@@ -150,16 +215,11 @@
               <span class="signal-bars" aria-label="Связь стабильна"><i></i><i></i><i></i></span>
             </div>
             <ol class="activity-list">
-              <li><time>00:00</time><span>Симуляционное ядро подключено</span></li>
-              <li><time>00:00</time><span>Хранилище IndexedDB готово</span></li>
-              <li><time>00:00</time><span>26 ассетов «Эгиды» зарегистрированы</span></li>
+              <li><time>00:00</time><span>Экономика подключена к игровым часам</span></li>
+              <li><time>00:00</time><span>Очередь строительства активна</span></li>
+              <li><time>00:00</time><span>Планетарный интерфейс готов</span></li>
             </ol>
           </section>
-
-          <button class="primary-action" type="button" disabled>
-            <span>Открыть систему</span>
-            <small>будет доступно в следующем пакете</small>
-          </button>
         </aside>
       </main>
     </div>
