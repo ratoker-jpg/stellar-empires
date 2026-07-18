@@ -12,6 +12,17 @@ import {
   spendResources,
 } from './planet/buildingProgression';
 import type { PlanetState } from './planet/types';
+import { AEGIS_RESEARCH_CATALOG } from './research/catalog';
+import {
+  applySpeedPercent,
+  calculateResearchEffects,
+} from './research/progression';
+import {
+  cancelResearch,
+  completeResearch,
+  queueResearch,
+} from './research/researchCommands';
+import { getEmpireResearch } from './research/researchState';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -43,15 +54,34 @@ function replacePlanet(
   return planets.map((planet) => (planet.id === planetId ? replacement : planet));
 }
 
+function getResearchEffectsForEmpire(state: GameState, empireId: string) {
+  const research = getEmpireResearch(state.research, empireId);
+  return research === undefined
+    ? undefined
+    : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG);
+}
+
+function getEnergyOutputByEmpire(state: GameState): Readonly<Record<string, number>> {
+  return Object.fromEntries(
+    state.research.map((research) => [
+      research.empireId,
+      calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG).energyOutputPercent,
+    ]),
+  );
+}
+
 function scheduleEvent(
   state: GameState,
   command: Extract<GameCommand, { readonly type: 'SCHEDULE_EVENT' }>,
 ): CommandResult<GameState> {
-  if (command.payload.type === 'BUILDING_COMPLETE') {
+  if (
+    command.payload.type === 'BUILDING_COMPLETE' ||
+    command.payload.type === 'RESEARCH_COMPLETE'
+  ) {
     return {
       ok: false,
       code: 'RESERVED_EVENT_TYPE',
-      message: 'Building completion events can only be created by the construction queue.',
+      message: 'Completion events can only be created by their queues.',
     };
   }
 
@@ -192,8 +222,10 @@ function queueBuilding(
 
   const sequence = state.nextEventSequence;
   const queueItemId = `build-${sequence}`;
-  const completesAt =
-    state.clock.elapsedSeconds + calculateBuildSeconds(definition, targetLevel);
+  const effects = getResearchEffectsForEmpire(state, command.empireId);
+  const baseSeconds = calculateBuildSeconds(definition, targetLevel);
+  const duration = applySpeedPercent(baseSeconds, effects?.constructionSpeedPercent ?? 0);
+  const completesAt = state.clock.elapsedSeconds + duration;
   const queueItem = {
     id: queueItemId,
     buildingId: definition.id,
@@ -288,19 +320,23 @@ function cancelBuilding(
   };
 }
 
-function applyEvent(
-  planets: readonly PlanetState[],
-  event: ScheduledGameEvent,
-): readonly PlanetState[] {
+function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
+  if (event.payload.type === 'RESEARCH_COMPLETE') {
+    return {
+      ...state,
+      research: completeResearch(state.research, event.payload),
+    };
+  }
+
   if (event.payload.type !== 'BUILDING_COMPLETE') {
-    return planets;
+    return state;
   }
 
   const payload = event.payload;
-  const planet = planets.find((candidate) => candidate.id === payload.planetId);
+  const planet = state.planets.find((candidate) => candidate.id === payload.planetId);
 
   if (planet === undefined) {
-    return planets;
+    return state;
   }
 
   const updatedPlanet = completeBuilding(
@@ -310,7 +346,21 @@ function applyEvent(
     payload.queueItemId,
   );
 
-  return replacePlanet(planets, planet.id, updatedPlanet);
+  return {
+    ...state,
+    planets: replacePlanet(state.planets, planet.id, updatedPlanet),
+  };
+}
+
+function accrueStateEconomies(state: GameState, seconds: number): GameState {
+  return {
+    ...state,
+    planets: accrueAllPlanetEconomies(
+      state.planets,
+      seconds,
+      getEnergyOutputByEmpire(state),
+    ),
+  };
 }
 
 function advanceTime(
@@ -329,28 +379,26 @@ function advanceTime(
   const targetTime = state.clock.elapsedSeconds + command.seconds;
   const { due, pending } = partitionDueEvents(state.pendingEvents, targetTime);
   const executedEvents: ExecutedGameEvent[] = [];
-  let planets = state.planets;
+  let working = state;
   let cursor = state.clock.elapsedSeconds;
 
   for (const event of due) {
-    const elapsed = event.executeAt - cursor;
-    planets = accrueAllPlanetEconomies(planets, elapsed);
-    planets = applyEvent(planets, event);
+    working = accrueStateEconomies(working, event.executeAt - cursor);
+    working = applyEvent(working, event);
     cursor = event.executeAt;
     executedEvents.push({ event, executedAt: event.executeAt });
   }
 
-  planets = accrueAllPlanetEconomies(planets, targetTime - cursor);
+  working = accrueStateEconomies(working, targetTime - cursor);
 
   return {
     ok: true,
     value: {
-      ...state,
+      ...working,
       clock: {
-        ...state.clock,
+        ...working.clock,
         elapsedSeconds: targetTime,
       },
-      planets,
       pendingEvents: pending,
       commandLog: appendCommand(state, command),
       eventLog: [...state.eventLog, ...executedEvents],
@@ -366,6 +414,10 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
       return queueBuilding(state, command);
     case 'CANCEL_BUILDING':
       return cancelBuilding(state, command);
+    case 'QUEUE_RESEARCH':
+      return queueResearch(state, command);
+    case 'CANCEL_RESEARCH':
+      return cancelResearch(state, command);
     case 'ADVANCE_TIME':
       return advanceTime(state, command);
   }
