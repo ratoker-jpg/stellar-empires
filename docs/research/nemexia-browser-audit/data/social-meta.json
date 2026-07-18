@@ -1,0 +1,20 @@
+{
+  "server": "horus",
+  "captured_at": "2026-07-18",
+  "account_progress_context": "Authenticated second-server account.",
+  "alliance": {
+    "status": "LOCKED",
+    "url": "alliance.php",
+    "requirement": "Command Chamber level 1",
+    "available_entry_points": ["create alliance", "alliance ranking"],
+    "actions_avoided": ["create alliance", "join/leave alliance"]
+  },
+  "personal": {
+    "status": "CONFIRMED_UI",
+    "url": "options.php",
+    "message_categories": ["personal", "system", "notifications", "administrative", "reports", "team reports", "arena points", "flights", "alliances", "achievements", "sent messages"],
+    "profile_controls": ["profile", "edit profile", "settings", "sitter", "friends", "blacklist", "notes", "protection mode", "vacation mode"],
+    "actions_avoided": ["open messages", "send message", "profile edit", "settings change", "sitter/social actions", "protection/vacation activation"],
+    "notes": "Inventory of exposed features only; no message content or account settings were read."
+  }
+}

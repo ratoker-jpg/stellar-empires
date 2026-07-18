@@ -20,6 +20,8 @@
 | 2026-07-18 | Horus `zone_industry.php` revisit | deeper building-card research | session returned to login; no retry or authentication attempt | ACTION_REQUIRED |
 | 2026-07-18 | Horus `fleets.php?show=Simulator` | battle-simulator structure | captured read-only; Start, Save, Delete, and form edits avoided | CONFIRMED_UI |
 | 2026-07-18 | Horus `ranking.php` | ranking landing page | opened read-only; rows not exposed in semantic view | CONFIRMED_UI |
+| 2026-07-18 | Horus `alliance.php` | alliance entry conditions | read-only; Command Chamber level 1 lock observed | LOCKED |
+| 2026-07-18 | Horus `options.php` | social/profile feature inventory | read-only; messages and settings not opened or changed | CONFIRMED_UI |
 | 2026-07-18 | `http://forums.incuvationgames.com/viewforum.php?f=22` | Help link | not opened after session boundary | UNKNOWN |
 
 No DOM/network/CDP extraction, asset copying, or irreversible UI action was performed. Source UI can change; screenshots provide capture-time evidence only. The user explicitly approved preserving visible in-game names and coordinates.
