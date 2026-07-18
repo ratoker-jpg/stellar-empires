@@ -4,16 +4,16 @@ Read-only research package for the Stellar Empires team. It records a browser ob
 
 ## Evidence policy
 
-Every claim has one of these statuses: `CONFIRMED_UI`, `CONFIRMED_HELP`, `INFERRED`, `UNKNOWN`, `LOCKED`, or `ACTION_REQUIRED`. Values are time-bound and are not canonical mechanics. Screenshots are original UI evidence kept only in `screens/`; no runtime assets were extracted.
+Every claim has one of these statuses: `CONFIRMED_UI`, `CONFIRMED_HELP`, `USER_CONFIRMED`, `INFERRED`, `UNKNOWN`, `LOCKED`, or `ACTION_REQUIRED`. Values are time-bound and are not canonical mechanics. Each evidence record should preserve its server, URL, capture time, account-progress context, screenshot path when safe, and notes. Screenshots are original UI evidence kept only in `screens/`; no runtime assets were extracted.
 
-The observed account was already signed in by the user. No credentials, tokens, purchases, construction, missions, combat, profile changes, or messages were performed. The technology route subsequently returned the login page, so remaining discovery is explicitly incomplete.
+The observed account was already signed in by the user. No credentials, tokens, purchases, construction, missions, combat, profile changes, or messages were performed. Player names, pinpointable coordinates, email, messages, and authentication artefacts are excluded from evidence. The technology/building route subsequently returned the login page, so remaining discovery is explicitly incomplete.
 
 ## Contents
 
-- `01`–`17`: topical evidence notes and adaptation guidance.
+- `01`–`18`: topical evidence notes and adaptation guidance.
 - `source-log.md`: URLs, capture scope, and failures.
 - `data/`: machine-readable observation ledger.
-- `screens/`: six full-page screenshots; `06-technologies.png` documents the authentication boundary, not technology content.
+- `screens/`: redacted capture-time screenshots; `06-technologies.png` documents the authentication boundary, not technology content.
 
 ## Safe continuation
 

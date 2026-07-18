@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Nemexia help home",
+    "url": "https://help.nemexia.com/",
+    "status": "CONFIRMED_HELP",
+    "server": "external-help",
+    "captured_at": "2026-07-18",
+    "screenshot": null,
+    "account_progress_context": "No game account required.",
+    "notes": "2Axion help home exposes a Nemexia entry."
+  },
+  {
+    "title": "Nemexia help index",
+    "url": "https://help.nemexia.com/en_EN/nemexia-new.html",
+    "status": "CONFIRMED_HELP",
+    "server": "external-help",
+    "captured_at": "2026-07-18",
+    "screenshot": null,
+    "account_progress_context": "No game account required.",
+    "notes": "Index lists gameplay, social, and service categories; no mechanics are inferred from labels."
+  },
+  {
+    "title": "Confederation",
+    "url": "https://help.nemexia.com/en_EN/nemexia-new-2373-2393.html",
+    "status": "CONFIRMED_HELP",
+    "server": "external-help",
+    "captured_at": "2026-07-18",
+    "screenshot": null,
+    "account_progress_context": "No game account required.",
+    "notes": "Article link is exposed by the Races navigation."
+  },
+  {
+    "title": "Terteths",
+    "url": "https://help.nemexia.com/en_EN/nemexia-new-2373-2394.html",
+    "status": "CONFIRMED_HELP",
+    "server": "external-help",
+    "captured_at": "2026-07-18",
+    "screenshot": null,
+    "account_progress_context": "No game account required.",
+    "notes": "Article link is exposed by the Races navigation; user confirms the broader name Terteths Union."
+  },
+  {
+    "title": "Noxis",
+    "url": "https://help.nemexia.com/en_EN/nemexia-new-2373-2395.html",
+    "status": "CONFIRMED_HELP",
+    "server": "external-help",
+    "captured_at": "2026-07-18",
+    "screenshot": null,
+    "account_progress_context": "No game account required.",
+    "notes": "Article link is exposed by the Races navigation."
+  }
+]

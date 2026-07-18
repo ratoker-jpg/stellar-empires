@@ -1,6 +1,7 @@
 [
-  {"area":"resource","status":"CONFIRMED_UI","evidence":"Resource Zone landing page"},
-  {"area":"industry","status":"CONFIRMED_UI","evidence":"Industry Zone landing page"},
-  {"area":"military","status":"CONFIRMED_UI","evidence":"Military Zone landing page"},
-  {"name":"Shipyard","level":0,"status":"LOCKED","requirement":"Level 1 is required for ship construction"}
+  {"area":"resource","status":"CONFIRMED_UI","server":"ares","url":"zone_resource.php?race=1","captured_at":"2026-07-18","screenshot":"screens/02-resource-zone.png","account_progress_context":"Early account; cards not expanded.","cost":{"metal":null,"minerals":null,"gas":null,"population":null,"time_seconds":null},"notes":"Resource-zone landing page."},
+  {"area":"industry","status":"CONFIRMED_UI","server":"horus","url":"zone_industry.php","captured_at":"2026-07-18","screenshot":"screens/07-industry-unlocked.png","account_progress_context":"Industry links visible; cards not expanded before session returned to login.","cost":{"metal":null,"minerals":null,"gas":null,"population":null,"time_seconds":null},"notes":"Experimental Center, Shipyard, Spaceport and other industry links are visible."},
+  {"area":"military","status":"CONFIRMED_UI","server":"ares","url":"zone_military.php","captured_at":"2026-07-18","screenshot":"screens/04-military-zone.png","account_progress_context":"Early account; cards not expanded.","cost":{"metal":null,"minerals":null,"gas":null,"population":null,"time_seconds":null},"notes":"Military-zone landing page."},
+  {"name":"Shipyard","level":0,"status":"LOCKED","server":"ares","url":"ships.php?show=CommanderShips","captured_at":"2026-07-18","screenshot":"screens/05-commander-ships.png","account_progress_context":"First-server account.","requirement":"Level 1 is required for ship construction","cost":{"metal":null,"minerals":null,"gas":null,"population":null,"time_seconds":null}},
+  {"name":"Shipyard","level":1,"status":"CONFIRMED_UI","server":"horus","url":"ships.php","captured_at":"2026-07-18","screenshot":"screens/11-shipyard-unlocked.png","account_progress_context":"Second-server account.","cost":{"metal":null,"minerals":null,"gas":null,"population":null,"time_seconds":null},"notes":"Lists basic ship cards; see ships.json."}
 ]

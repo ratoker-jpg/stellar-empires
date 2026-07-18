@@ -1,6 +1,11 @@
 {
   "capture_date":"2026-07-18",
+  "server":"ares",
+  "url":"zone_resource.php?race=1",
+  "screenshot":"screens/02-resource-zone.png",
+  "account_progress_context":"Early first-server account; building levels were not exposed.",
   "sample":{"metal_per_hour":350,"minerals_per_hour":250,"gas_per_hour":100,"ozone_current":14860,"ozone_max":15000},
   "status":"CONFIRMED_UI",
-  "scope":"Single capture-time sample at unknown building levels; not a formula."
+  "scope":"Single capture-time sample at unknown building levels; not a formula.",
+  "notes":"No resource cost, population cost, or construction-time formula is claimed."
 }

@@ -8,4 +8,4 @@ Observed values are a single sample, not a formula: `(metal, minerals, gas) = (3
 | Building level → cost/time | UNKNOWN | visible requirement cards |
 | Ozone/potential modifies economy | UNKNOWN | explanatory panel or controlled observation |
 
-Any future formula must retain the raw observations, levels, timestamp, and source URL in `data/resources.json`.
+Any future formula must retain the raw observations, levels, timestamp, server, source URL, and account-progress context in `data/resources.json`. Values must use named fields (`metal`, `minerals`, `gas`, `population`, `time_seconds`) rather than an unexplained display order.
