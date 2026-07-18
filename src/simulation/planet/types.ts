@@ -1,3 +1,5 @@
+import type { PlanetEconomyState } from '../economy/types';
+
 export type PlanetZoneId = 'industrial' | 'military' | 'science' | 'orbital';
 
 export type FactionId = 'aegis' | 'synod' | 'veyra';
@@ -23,4 +25,5 @@ export interface PlanetState {
   readonly factionId: FactionId;
   readonly zones: Readonly<Record<PlanetZoneId, PlanetZoneState>>;
   readonly buildings: readonly PlanetBuildingState[];
+  readonly economy: PlanetEconomyState;
 }
