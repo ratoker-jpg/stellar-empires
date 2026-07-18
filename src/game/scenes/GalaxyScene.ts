@@ -137,7 +137,7 @@ export class GalaxyScene extends Phaser.Scene {
       .setAlpha(0.92);
 
     this.add
-      .text(38, 52, `${this.#galaxy.systems.length} SYSTEMS · SEED ${this.#galaxy.seed}`, {
+      .text(38, 52, `${this.#galaxy.systems.length} SYSTEMS · DETERMINISTIC MODEL`, {
         color: '#6e8798',
         fontFamily: 'Inter, system-ui, sans-serif',
         fontSize: '10px',
