@@ -34,8 +34,21 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Typecheck
-        run: npm run typecheck
+      - name: Capture typecheck
+        id: typecheck
+        continue-on-error: true
+        run: npm run typecheck > typecheck.log 2>&1
+
+      - name: Upload typecheck diagnostics
+        if: steps.typecheck.outcome == 'failure'
+        uses: actions/upload-artifact@v6
+        with:
+          name: typecheck-diagnostics
+          path: typecheck.log
+
+      - name: Enforce typecheck
+        if: steps.typecheck.outcome == 'failure'
+        run: exit 1
 
       - name: Test
         run: npm run test
