@@ -1,0 +1,53 @@
+{
+  "statusVersion": 1,
+  "updatedAt": "2026-07-19",
+  "repository": "ratoker-jpg/stellar-empires",
+  "defaultBranch": "main",
+  "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
+  "roadmapVersion": 2,
+  "releaseTarget": "1.0",
+  "lastMergedPr": 22,
+  "lastMergeSha": "a4afd2ee0b137232f3a7ca92c86b5ed594d6db29",
+  "nextPr": 23,
+  "standardBatchSize": 6,
+  "maximumAutonomousBatchSize": 8,
+  "minimumNormalBatchSize": 6,
+  "currentMilestone": "MVP persistence, research and production",
+  "currentBatch": {
+    "standard": [23, 24, 25, 26, 27, 28],
+    "optionalExtensions": [29, 30],
+    "extensionRule": "Use PR 29 and 30 only after PR 23-28 are merged, CI is stable, and inventory/production contracts are settled."
+  },
+  "deliveredCapabilities": [
+    "Phaser 4 and TypeScript application scaffold",
+    "GitHub Actions CI and GitHub Pages deployment",
+    "deterministic simulation commands, events, clock, replay and checksum",
+    "IndexedDB persistence core and versioned save envelopes",
+    "seeded galaxy model",
+    "three planet domains: resource, industry and military",
+    "save schema v2 migration from the former four-zone model",
+    "resource economy with energy, population, stability and storage",
+    "deterministic building construction queue",
+    "planet UI v2 with separate Research, Shipyard, Defense and Fleet routes",
+    "P0 visual shell and P1 Aegis vertical-slice assets",
+    "Nemexia browser/help research audit",
+    "canonical PR roadmap through Release 1.0"
+  ],
+  "knownLimitations": [
+    "runtime autosave and automatic restore are not connected yet",
+    "manual save slots and JSON import/export are not exposed in the UI",
+    "research catalog, research queue and technology effects are not implemented",
+    "ship and defense inventories and production queues are not implemented",
+    "fleets, flights, missions, combat and autonomous bots are not implemented",
+    "the current production content is only the first Aegis vertical slice",
+    "public Pages deployment should be checked after material UI batches"
+  ],
+  "requiredStartupReading": [
+    "AGENTS.md",
+    "docs/17-continuation-guide.md",
+    "docs/project-status.json",
+    "docs/16-execution-roadmap.md",
+    "docs/roadmap-pr-index.json",
+    "latest merged GitHub pull requests"
+  ]
+}
