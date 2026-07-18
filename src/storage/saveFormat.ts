@@ -34,7 +34,7 @@ function isGalaxy(value: unknown): boolean {
 function isStateShell(value: unknown): value is Record<string, unknown> {
   if (
     !isRecord(value) ||
-    (value.schemaVersion !== 1 && value.schemaVersion !== 2) ||
+    (value.schemaVersion !== 1 && value.schemaVersion !== 2 && value.schemaVersion !== 3) ||
     typeof value.seed !== 'number' ||
     !Number.isInteger(value.seed) ||
     !isRecord(value.clock)
@@ -85,12 +85,54 @@ function isCurrentPlanet(value: unknown): boolean {
   });
 }
 
+function isResourceCost(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isNonNegativeInteger(value.metal) &&
+    isNonNegativeInteger(value.crystal) &&
+    isNonNegativeInteger(value.gas)
+  );
+}
+
+function isResearchQueueItem(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.technologyId === 'string' &&
+    isNonNegativeInteger(value.targetLevel) &&
+    isNonNegativeInteger(value.startedAt) &&
+    isNonNegativeInteger(value.completesAt) &&
+    value.completesAt >= value.startedAt &&
+    typeof value.planetId === 'string' &&
+    isResourceCost(value.cost)
+  );
+}
+
+function isResearchState(value: unknown): boolean {
+  if (
+    !isRecord(value) ||
+    typeof value.empireId !== 'string' ||
+    !isRecord(value.levels) ||
+    !Array.isArray(value.queue)
+  ) {
+    return false;
+  }
+
+  return (
+    Object.values(value.levels).every(isNonNegativeInteger) &&
+    value.queue.every(isResearchQueueItem)
+  );
+}
+
 function isGameState(value: unknown): value is GameState {
   return (
     isStateShell(value) &&
-    value.schemaVersion === 2 &&
+    value.schemaVersion === 3 &&
     Array.isArray(value.planets) &&
-    value.planets.every(isCurrentPlanet)
+    value.planets.every(isCurrentPlanet) &&
+    Array.isArray(value.research) &&
+    value.research.every(isResearchState) &&
+    value.research.length === value.empires.length
   );
 }
 
