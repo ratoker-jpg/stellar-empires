@@ -296,7 +296,8 @@ function applyEvent(
     return planets;
   }
 
-  const planet = planets.find((candidate) => candidate.id === event.payload.planetId);
+  const payload = event.payload;
+  const planet = planets.find((candidate) => candidate.id === payload.planetId);
 
   if (planet === undefined) {
     return planets;
@@ -304,9 +305,9 @@ function applyEvent(
 
   const updatedPlanet = completeBuilding(
     planet,
-    event.payload.buildingId,
-    event.payload.targetLevel,
-    event.payload.queueItemId,
+    payload.buildingId,
+    payload.targetLevel,
+    payload.queueItemId,
   );
 
   return replacePlanet(planets, planet.id, updatedPlanet);
