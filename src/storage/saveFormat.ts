@@ -14,8 +14,12 @@ function isStringArray(value: unknown): value is readonly string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
 }
 
+function isNonNegativeInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0;
+}
+
 function isGameState(value: unknown): value is GameState {
-  if (!isRecord(value) || value.schemaVersion !== 1) {
+  if (!isRecord(value) || value.schemaVersion !== 1 || typeof value.seed !== 'number') {
     return false;
   }
 
@@ -27,11 +31,9 @@ function isGameState(value: unknown): value is GameState {
 
   return (
     typeof clock.startedAt === 'string' &&
-    Number.isInteger(clock.elapsedSeconds) &&
-    Number(clock.elapsedSeconds) >= 0 &&
+    isNonNegativeInteger(clock.elapsedSeconds) &&
     isStringArray(value.empires) &&
-    Number.isInteger(value.nextEventSequence) &&
-    Number(value.nextEventSequence) >= 0 &&
+    isNonNegativeInteger(value.nextEventSequence) &&
     Array.isArray(value.pendingEvents) &&
     Array.isArray(value.commandLog) &&
     Array.isArray(value.eventLog)
