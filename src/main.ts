@@ -5,6 +5,7 @@ import './styles/planet.css';
 import './styles/planetWorkspace.css';
 import './styles/saveManager.css';
 import './styles/research.css';
+import './styles/production.css';
 import { createGame } from './game/createGame';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
@@ -19,6 +20,7 @@ import {
   applyPlanetScreenCommand,
   mountPlanetScreen,
 } from './ui/planetScreen';
+import { mountProductionScreens } from './ui/productionScreen';
 import { mountResearchScreen } from './ui/researchScreen';
 import { mountSaveManager } from './ui/saveManager';
 import { renderAssetShowcases } from './ui/showcase';
@@ -99,6 +101,10 @@ async function bootstrap(): Promise<void> {
     autosave?.request(state);
   });
   mountResearchScreen({
+    getState: () => runtimeState,
+    execute: applyPlanetScreenCommand,
+  });
+  mountProductionScreens({
     getState: () => runtimeState,
     execute: applyPlanetScreenCommand,
   });
