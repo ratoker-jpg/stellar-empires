@@ -1,0 +1,5 @@
+{
+  "current_ui":{"status":"CONFIRMED_UI","server":"horus","url":"fleets.php?show=Simulator","captured_at":"2026-07-18","screenshot":"screens/15-battle-simulator.png","inputs":["attacker/defender race","population","unit quantities","science/upgrade modifiers","commander","round count","preset selection"],"race_choices":["Confederation","Terteths","Noxis"],"round_choices":[5,8,12],"actions_avoided":["Start","Save","Delete","field edits"]},
+  "historical_help":{"status":"CONFIRMED_HELP","url":"https://help.nemexia.com/en_EN/nemexia-new-2386-2400.html","accessed_at":"2026-07-18","rounds":{"minimum":1,"maximum":12,"selected_caps":[5,8,12]},"resolution":["units are grouped by type","groups select documented priority targets or random eligible targets","civilian and commander ships are targeted last"],"outcomes":["attacker win","attacker loss","draw at round limit"],"loot":"historically capped by cargo and 50% of defender resources (66.6% for Confederation); not verified on Horus"},
+  "unknowns":["current target-priority table","current formula","current debris/recovery","current report schema"]
+}

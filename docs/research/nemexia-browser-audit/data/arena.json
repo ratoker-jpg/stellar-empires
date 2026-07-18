@@ -1,0 +1,10 @@
+{
+  "server": "horus",
+  "captured_at": "2026-07-18",
+  "status": "CONFIRMED_UI",
+  "url": "arena.php",
+  "entry_points": ["join battle", "my battle history", "arena heroes championship"],
+  "schedule": "A new round begins hourly; registration is available 15 minutes before it starts.",
+  "actions_avoided": ["join battle", "open battle history", "tournament action"],
+  "notes": "Read-only landing-page observation only."
+}

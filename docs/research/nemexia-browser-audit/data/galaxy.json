@@ -1,0 +1,7 @@
+{
+  "server":"horus","captured_at":"2026-07-18","account_progress_context":"Authenticated second-server account.",
+  "galaxy_landing":{"status":"CONFIRMED_UI","url":"galaxy.php","notes":"Galaxy and solar coordinate selectors plus Search and Advanced Search entry point."},
+  "advanced_search":{"status":"CONFIRMED_UI","url":"advanced_search.php","modes":["name/alliance","points/coordinates"],"entity_choices":["player","planet","alliance","team planet"],"actions_avoided":["search input","search submission"]},
+  "historical_help":{"status":"CONFIRMED_HELP","url":"https://help.nemexia.com/en_EN/nemexia-new-2375-2372.html","summary":"Galaxy/System/Sun/planet-field taxonomy recorded in galaxy-entities.json."},
+  "unknowns":["current system entity types","probe/attack actions","result schemas","five system-state captures"]
+}

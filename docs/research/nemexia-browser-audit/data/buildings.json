@@ -1,0 +1,9 @@
+{
+  "current_ui_observations":[
+    {"area":"resource","status":"CONFIRMED_UI","server":"ares","url":"zone_resource.php?race=1","captured_at":"2026-07-18","cost":{"metal":null,"minerals":null,"gas":null,"population":null,"time_seconds":null}},
+    {"area":"industry","status":"CONFIRMED_UI","server":"horus","url":"zone_industry.php","captured_at":"2026-07-18","notes":"Industry links visible; no build action or card mutation."},
+    {"area":"military","status":"CONFIRMED_UI","server":"ares","url":"zone_military.php","captured_at":"2026-07-18","cost":{"metal":null,"minerals":null,"gas":null,"population":null,"time_seconds":null}},
+    {"name":"Shipyard","level":1,"status":"CONFIRMED_UI","server":"horus","url":"ships.php","captured_at":"2026-07-18","notes":"Lists basic ship cards; individual building-card cost is not exposed."}
+  ],
+  "historical_help_catalogue":{"status":"CONFIRMED_HELP","accessed_at":"2026-07-18","source_urls":["https://help.nemexia.com/en_EN/nemexia-new-2378-2417.html","https://help.nemexia.com/en_EN/nemexia-new-2378-2420.html","https://help.nemexia.com/en_EN/nemexia-new-2378-2421.html","https://help.nemexia.com/en_EN/nemexia-new-2378-2422.html"],"faction":"Terteths","resource":["Metal Bot","Mineral Bot","Gas Probe","Infrared Transbot","Uranium Bot","Vault"],"military":["Experimental Facility","Shipyard","Stargate","Regulator Palace","Bank"],"industrial":["Construction Yard","Terteth Facility","Metal Depot","Mineral Treasury","Gas Chamber","Junk Yard","Trade Center","Ship Market"],"shared_rules":{"levels":true,"maximum_level":true,"prerequisites":true,"cost_fields":["metal","minerals","gas","energy"],"current_card_costs":"UNKNOWN"}}
+}

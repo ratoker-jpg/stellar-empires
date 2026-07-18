@@ -1,0 +1,14 @@
+{
+  "current_ui":{"status":"CONFIRMED_UI","server":"horus","url":"ships.php","captured_at":"2026-07-18","observation":"The Defence tab became active but exposed no distinct defence cards at Shipyard level 1; no construction was attempted."},
+  "historical_help":{"status":"CONFIRMED_HELP","url":"https://help.nemexia.com/en_EN/nemexia-new-2479.html","accessed_at":"2026-07-18","scope":"Custom configuration for some universes only; requirements and current Horus availability are UNKNOWN.","faction":"Terteths","units":[
+    {"name":"Defence Matrix","cost":{"metal":6800,"minerals":3700,"gas":0,"population":3,"time_seconds":420},"attack":210,"life":2200},
+    {"name":"Laser Matrix","cost":{"metal":11700,"minerals":6300,"gas":0,"population":4,"time_seconds":400},"attack":240,"life":3200},
+    {"name":"Ion Matrix","cost":{"metal":48800,"minerals":26300,"gas":0,"population":15,"time_seconds":2850},"attack":900,"life":13500},
+    {"name":"Plasma Matrix","cost":{"metal":71500,"minerals":38500,"gas":0,"population":20,"time_seconds":3800},"attack":11000,"life":181500},
+    {"name":"Matrix shield","cost":{"metal":96000,"minerals":96000,"gas":0,"population":12,"time_seconds":19200},"attack":1,"life":600000},
+    {"name":"Planet Matrix","cost":{"metal":352000,"minerals":352000,"gas":0,"population":44,"time_seconds":96800},"attack":1,"life":2640000},
+    {"name":"Laser-Ion Matrix","cost":{"metal":109200,"minerals":46800,"gas":0,"population":26,"time_seconds":6240},"attack":10920,"life":196600},
+    {"name":"Plasma-Laser Matrix","cost":{"metal":63000,"minerals":147000,"gas":0,"population":42,"time_seconds":10920},"attack":23100,"life":346500},
+    {"name":"Ion-Plasma Matrix","cost":{"metal":96000,"minerals":160000,"gas":64000,"population":80,"time_seconds":36000},"attack":52000,"life":624000}
+  ]}
+}
