@@ -1,6 +1,7 @@
 import type { GalaxyModel } from './galaxy/types';
 import type { PlanetState } from './planet/types';
 import type { EmpireResearchState } from './research/types';
+import type { UnitKind } from './units/types';
 
 export interface GameClock {
   readonly startedAt: string;
@@ -23,6 +24,14 @@ export type GameEventPayload =
       readonly queueItemId: string;
       readonly technologyId: string;
       readonly targetLevel: number;
+    }
+  | {
+      readonly type: 'UNIT_PRODUCTION_COMPLETE';
+      readonly planetId: string;
+      readonly queueItemId: string;
+      readonly unitId: string;
+      readonly kind: UnitKind;
+      readonly quantity: number;
     };
 
 export interface ScheduledGameEvent {
@@ -60,6 +69,19 @@ export type GameCommand =
   | {
       readonly type: 'CANCEL_RESEARCH';
       readonly empireId: string;
+      readonly queueItemId: string;
+    }
+  | {
+      readonly type: 'QUEUE_UNIT_BATCH';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly unitId: string;
+      readonly quantity: number;
+    }
+  | {
+      readonly type: 'CANCEL_UNIT_BATCH';
+      readonly empireId: string;
+      readonly planetId: string;
       readonly queueItemId: string;
     };
 
