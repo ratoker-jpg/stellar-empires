@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Crystal">
+  <defs><linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1eaff"/><stop offset=".38" stop-color="#8a6dff"/><stop offset="1" stop-color="#3a2672"/></linearGradient></defs>
+  <path d="M32 3 56 17v30L32 61 8 47V17Z" fill="#081320" stroke="#594b89" stroke-width="2"/>
+  <path d="m32 10 13 12-5 25-8 7-10-7-4-25Z" fill="url(#c)" stroke="#d8ccff" stroke-width="1.5"/>
+  <path d="M32 10v44M18 22h27M22 47l10-25 8 25" fill="none" stroke="#f7f2ff" stroke-opacity=".38" stroke-width="1.2"/>
+</svg>
