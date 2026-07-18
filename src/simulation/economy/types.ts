@@ -15,9 +15,22 @@ export interface EnergyBalance {
   readonly efficiencyPermille: number;
 }
 
+export interface PopulationBalance {
+  readonly used: number;
+  readonly capacity: number;
+}
+
+export interface StabilityBalance {
+  readonly capacity: number;
+  readonly demand: number;
+  readonly efficiencyPermille: number;
+}
+
 export interface PlanetEconomyState {
   readonly resources: Readonly<Record<ResourceId, ResourceStock>>;
   readonly energy: EnergyBalance;
+  readonly population: PopulationBalance;
+  readonly stability: StabilityBalance;
 }
 
 export interface EconomyContribution {
@@ -25,4 +38,8 @@ export interface EconomyContribution {
   readonly storageCapacity?: Partial<Readonly<Record<ResourceId, number>>>;
   readonly energyProduction?: number;
   readonly energyConsumption?: number;
+  readonly populationCapacity?: number;
+  readonly populationUse?: number;
+  readonly stabilityCapacity?: number;
+  readonly stabilityDemand?: number;
 }
