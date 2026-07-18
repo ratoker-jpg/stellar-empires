@@ -1,0 +1,37 @@
+{
+  "statusVersion": 1,
+  "updatedAt": "2026-07-19",
+  "repository": "ratoker-jpg/stellar-empires",
+  "lastMergedPr": 30,
+  "nextPr": 31,
+  "completedBatch": [23, 24, 25, 26, 27, 28, 29, 30],
+  "batchMode": "standard-six-plus-two-safe-extensions",
+  "currentSchemaVersion": 6,
+  "currentMilestone": "MVP missions, intelligence and combat",
+  "nextStandardBatch": [31, 32, 33, 34, 35, 36],
+  "optionalExtensions": [37, 38],
+  "delivered": [
+    "runtime autosave and validated restore",
+    "manual save slots, JSON import/export and snapshot recovery",
+    "Aegis research catalog, queue and real effects",
+    "Aegis ship and defense catalog, inventories and production",
+    "serialized fleet composition, cargo, speed and capacity",
+    "deterministic distance, fuel, outbound, holding, recall and return lifecycle"
+  ],
+  "knownLimitations": [
+    "fleet and flight domain logic is delivered but the full mission composer UI starts in PR 31",
+    "transport does not yet unload resources at the target",
+    "deployment, espionage, combat, debris and colonization effects are not implemented",
+    "autonomous bots do not yet operate fleets",
+    "distance, fuel and timing values remain prototype balance"
+  ],
+  "requiredNextReading": [
+    "AGENTS.md",
+    "docs/17-continuation-guide.md",
+    "docs/handoffs/batch-pr23-pr30.md",
+    "docs/handoffs/project-status-after-pr30.json",
+    "docs/16-execution-roadmap.md",
+    "docs/roadmap-pr-index.json",
+    "GitHub PR 23 through 30"
+  ]
+}
