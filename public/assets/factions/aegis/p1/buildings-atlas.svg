@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512" role="img" aria-label="Здания вертикального среза Директората Эгида">
+  <defs>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eef3f5"/><stop offset=".38" stop-color="#a9b7c2"/><stop offset=".72" stop-color="#516572"/><stop offset="1" stop-color="#172631"/></linearGradient>
+    <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#344955"/><stop offset="1" stop-color="#101a22"/></linearGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd98d"/><stop offset="1" stop-color="#b76a21"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#000" flood-opacity=".65"/></filter>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#3dd4d0" stroke-opacity=".04"/></pattern>
+  </defs>
+  <rect width="1024" height="512" fill="#02050a"/><rect width="1024" height="512" fill="url(#grid)"/>
+  <g fill="none" stroke="#3e718e" stroke-opacity=".22"><path d="M256 0v512M512 0v512M768 0v512M0 256h1024"/></g>
+
+  <!-- command center -->
+  <g id="building-command" transform="translate(128 128)" filter="url(#shadow)">
+    <ellipse cy="92" rx="96" ry="23" fill="#000" opacity=".5"/>
+    <path d="M-88 70-66-35 0-91 66-35 88 70 53 98h-106Z" fill="url(#dark)" stroke="#718895" stroke-width="4"/>
+    <path d="M-48 58-35-17 0-52l35 35 13 75-27 22h-42Z" fill="url(#steel)" stroke="#d9e1e5" stroke-width="3"/>
+    <path d="M0-52v132M-35-17 0 5l35-22M-88 70H88" fill="none" stroke="#3dd4d0" stroke-width="5" filter="url(#glow)"/>
+    <path d="M-61 34h122" stroke="#e7a847" stroke-width="5"/>
+  </g>
+
+  <!-- metal extractor -->
+  <g id="building-metal" transform="translate(384 128)" filter="url(#shadow)">
+    <ellipse cy="92" rx="94" ry="22" fill="#000" opacity=".5"/>
+    <path d="M-82 70-66-45-18-82h36l48 37L82 70 44 99h-88Z" fill="url(#dark)" stroke="#718895" stroke-width="4"/>
+    <path d="M-38 52-31-27 0-55l31 28 7 79-25 23h-26Z" fill="url(#steel)"/>
+    <path d="M-53-42-87-75M53-42 87-75M-67 61h134" stroke="#e7a847" stroke-width="6" stroke-linecap="round"/>
+    <circle cy="9" r="20" fill="#0b202a" stroke="#3dd4d0" stroke-width="5" filter="url(#glow)"/>
+  </g>
+
+  <!-- crystal refinery -->
+  <g id="building-crystal" transform="translate(640 128)" filter="url(#shadow)">
+    <ellipse cy="92" rx="94" ry="22" fill="#000" opacity=".5"/>
+    <path d="M-84 73-61-44-21-76h42l40 32L84 73 43 100h-86Z" fill="url(#dark)" stroke="#718895" stroke-width="4"/>
+    <path d="m0-67 32 45-11 72L0 76-21 50l-11-72Z" fill="#8a6dff" stroke="#ddd4ff" stroke-width="4"/>
+    <path d="M-56 56h112M-67-8h29M38-8h29" stroke="#3dd4d0" stroke-width="5"/>
+    <circle cy="7" r="9" fill="#f3efff" filter="url(#glow)"/>
+  </g>
+
+  <!-- gas extractor -->
+  <g id="building-gas" transform="translate(896 128)" filter="url(#shadow)">
+    <ellipse cy="92" rx="94" ry="22" fill="#000" opacity=".5"/>
+    <path d="M-86 72-65-40-24-74h48l41 34L86 72 44 100h-88Z" fill="url(#dark)" stroke="#718895" stroke-width="4"/>
+    <ellipse cx="-28" cy="10" rx="25" ry="50" fill="#2f7c61" stroke="#bfffe7" stroke-width="4"/>
+    <ellipse cx="28" cy="10" rx="25" ry="50" fill="#2f7c61" stroke="#bfffe7" stroke-width="4"/>
+    <path d="M-28-40v-28M28-40v-28M-52 60h104" stroke="#e7a847" stroke-width="5"/>
+    <path d="M-28-2h56" stroke="#3dd4d0" stroke-width="5" filter="url(#glow)"/>
+  </g>
+
+  <!-- power plant -->
+  <g id="building-power" transform="translate(128 384)" filter="url(#shadow)">
+    <ellipse cy="92" rx="96" ry="23" fill="#000" opacity=".5"/>
+    <path d="M-88 70-68-40-24-76h48l44 36L88 70 50 99h-100Z" fill="url(#dark)" stroke="#718895" stroke-width="4"/>
+    <circle cy="6" r="49" fill="#13232d" stroke="#d9e1e5" stroke-width="5"/>
+    <circle cy="6" r="28" fill="url(#amber)" stroke="#fff1bb" stroke-width="5" filter="url(#glow)"/>
+    <path d="M0-43V-83M0 55v31M-49 6h-32M49 6h32" stroke="#3dd4d0" stroke-width="6"/>
+  </g>
+
+  <!-- research lab -->
+  <g id="building-research" transform="translate(384 384)" filter="url(#shadow)">
+    <ellipse cy="92" rx="96" ry="23" fill="#000" opacity=".5"/>
+    <path d="M-86 72-70-40-30-77h60l40 37L86 72 48 100h-96Z" fill="url(#dark)" stroke="#718895" stroke-width="4"/>
+    <path d="M-42 58-30-21 0-54l30 33 12 79-25 22h-34Z" fill="url(#steel)"/>
+    <circle cy="2" r="23" fill="#0a1b25" stroke="#3dd4d0" stroke-width="5" filter="url(#glow)"/>
+    <path d="M-74-21-103-55M74-21l29-34M-66 58h132M0-54v-29" stroke="#e7a847" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <!-- shipyard -->
+  <g id="building-shipyard" transform="translate(640 384)" filter="url(#shadow)">
+    <ellipse cy="94" rx="105" ry="24" fill="#000" opacity=".5"/>
+    <path d="M-101 73-79-48-34-81h68l45 33 22 121-45 29h-112Z" fill="url(#dark)" stroke="#718895" stroke-width="4"/>
+    <path d="M-52 66-43-28-18-54h36l25 26 9 94-29 23h-46Z" fill="#07151e" stroke="#d9e1e5" stroke-width="4"/>
+    <path d="M-34 38 0 12l34 26M-79-5h36M43-5h36" fill="none" stroke="#3dd4d0" stroke-width="5" filter="url(#glow)"/>
+    <path d="M-101 73h202" stroke="#e7a847" stroke-width="6"/>
+  </g>
+
+  <!-- sensor array -->
+  <g id="building-sensor" transform="translate(896 384)" filter="url(#shadow)">
+    <ellipse cy="94" rx="96" ry="23" fill="#000" opacity=".5"/>
+    <path d="M-83 72-61-27-27-61h54l34 34 22 99-39 29h-88Z" fill="url(#dark)" stroke="#718895" stroke-width="4"/>
+    <path d="M0 55V-39" stroke="#d9e1e5" stroke-width="12"/>
+    <path d="M0-34 67-72c11 30-4 65-34 77Z" fill="url(#steel)" stroke="#d9e1e5" stroke-width="4"/>
+    <circle cy="-34" r="12" fill="#3dd4d0" filter="url(#glow)"/>
+    <path d="M-55 62h110" stroke="#e7a847" stroke-width="5"/>
+  </g>
+</svg>
