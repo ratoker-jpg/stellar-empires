@@ -1,5 +1,7 @@
 export type ResourceId = 'metal' | 'crystal' | 'gas';
 
+export type ResourceCost = Readonly<Record<ResourceId, number>>;
+
 export interface ResourceStock {
   readonly amount: number;
   readonly capacity: number;
