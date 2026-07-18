@@ -1,3 +1,4 @@
+import { createPlanetEconomy } from '../economy/planetEconomy';
 import type { GalaxyModel } from '../galaxy/types';
 import { getBuildingDefinition } from './buildingCatalog';
 import type {
@@ -99,6 +100,7 @@ export function createInitialPlanetStates(galaxy: GalaxyModel): readonly PlanetS
         factionId,
         zones: createZones(buildings),
         buildings,
+        economy: createPlanetEconomy(buildings),
       });
     }
   }
