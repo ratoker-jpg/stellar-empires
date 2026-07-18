@@ -35,6 +35,7 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     economy: {
       storageCapacity: { metal: 2_000, crystal: 2_000, gas: 2_000 },
       energyConsumption: 8,
+      populationCapacity: 40,
     },
   },
   {
@@ -51,6 +52,8 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     economy: {
       resourceProductionPerHour: { metal: 140 },
       energyConsumption: 18,
+      populationUse: 1,
+      stabilityDemand: 12,
     },
   },
   {
@@ -67,6 +70,8 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     economy: {
       resourceProductionPerHour: { crystal: 90 },
       energyConsumption: 20,
+      populationUse: 1,
+      stabilityDemand: 12,
     },
   },
   {
@@ -83,6 +88,8 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     economy: {
       resourceProductionPerHour: { gas: 60 },
       energyConsumption: 24,
+      populationUse: 1,
+      stabilityDemand: 12,
     },
   },
   {
@@ -98,6 +105,8 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     requirements: [{ buildingId: 'building.aegis.command', level: 1 }],
     economy: {
       energyProduction: 120,
+      populationUse: 1,
+      stabilityCapacity: 60,
     },
   },
   {
@@ -113,6 +122,8 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     requirements: [{ buildingId: 'building.aegis.command', level: 2 }],
     economy: {
       energyConsumption: 30,
+      populationUse: 2,
+      stabilityDemand: 8,
     },
   },
   {
@@ -128,6 +139,8 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     requirements: [{ buildingId: 'building.aegis.command', level: 2 }],
     economy: {
       energyConsumption: 45,
+      populationUse: 4,
+      stabilityDemand: 15,
     },
   },
   {
@@ -143,6 +156,8 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     requirements: [{ buildingId: 'building.aegis.command', level: 1 }],
     economy: {
       energyConsumption: 16,
+      populationUse: 2,
+      stabilityDemand: 10,
     },
   },
 ] as const;
