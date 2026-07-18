@@ -142,7 +142,7 @@ export class SaveManager {
 
   async snapshot(
     sourceSlotId: string,
-    snapshotSlotId = AUTOSAVE_SNAPSHOT_SLOT_ID,
+    snapshotSlotId: string = AUTOSAVE_SNAPSHOT_SLOT_ID,
   ): Promise<SaveEnvelope | undefined> {
     const source = await this.load(sourceSlotId);
 
@@ -161,7 +161,7 @@ export class SaveManager {
 
   async recover(
     primarySlotId: string,
-    snapshotSlotId = AUTOSAVE_SNAPSHOT_SLOT_ID,
+    snapshotSlotId: string = AUTOSAVE_SNAPSHOT_SLOT_ID,
   ): Promise<RecoveryResult> {
     const primary = await this.load(primarySlotId);
 
