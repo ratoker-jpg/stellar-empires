@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Stellar Empires — одиночная браузерная космическая стратегия с автономными бот-империями."
+    />
+    <meta name="theme-color" content="#07111f" />
+    <title>Stellar Empires</title>
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">STELLAR COMMAND NETWORK</p>
+          <h1>Stellar Empires</h1>
+        </div>
+        <div class="build-badge" id="build-version">v0.1.0</div>
+      </header>
+
+      <main class="game-layout">
+        <section class="game-stage" aria-label="Карта галактики">
+          <div id="phaser-game"></div>
+        </section>
+
+        <aside class="command-panel" aria-label="Панель управления">
+          <div class="panel-block">
+            <p class="panel-label">Состояние</p>
+            <p class="status-line" id="app-status">Запуск систем…</p>
+          </div>
+
+          <div class="panel-block">
+            <p class="panel-label">Текущий этап</p>
+            <h2>M1 · Технический каркас</h2>
+            <p>
+              Phaser отвечает за визуальную сцену. Симуляция, боты и сохранения будут
+              подключаться отдельными модулями.
+            </p>
+          </div>
+
+          <div class="panel-block metric-grid">
+            <div>
+              <span>Фракции</span>
+              <strong>3</strong>
+            </div>
+            <div>
+              <span>Режим</span>
+              <strong>Solo</strong>
+            </div>
+            <div>
+              <span>Рендер</span>
+              <strong>Phaser 4</strong>
+            </div>
+            <div>
+              <span>Сохранение</span>
+              <strong>IndexedDB</strong>
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <noscript>Для запуска Stellar Empires требуется JavaScript.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
