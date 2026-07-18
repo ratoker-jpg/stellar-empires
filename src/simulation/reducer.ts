@@ -31,6 +31,11 @@ import type {
   GameState,
   ScheduledGameEvent,
 } from './types';
+import {
+  cancelUnitBatch,
+  completeUnitProduction,
+  queueUnitBatch,
+} from './units/productionCommands';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
   return [
@@ -76,7 +81,8 @@ function scheduleEvent(
 ): CommandResult<GameState> {
   if (
     command.payload.type === 'BUILDING_COMPLETE' ||
-    command.payload.type === 'RESEARCH_COMPLETE'
+    command.payload.type === 'RESEARCH_COMPLETE' ||
+    command.payload.type === 'UNIT_PRODUCTION_COMPLETE'
   ) {
     return {
       ok: false,
@@ -328,6 +334,24 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
     };
   }
 
+  if (event.payload.type === 'UNIT_PRODUCTION_COMPLETE') {
+    const payload = event.payload;
+    const planet = state.planets.find(
+      (candidate) => candidate.id === payload.planetId,
+    );
+    if (planet === undefined) {
+      return state;
+    }
+    return {
+      ...state,
+      planets: replacePlanet(
+        state.planets,
+        planet.id,
+        completeUnitProduction(planet, payload),
+      ),
+    };
+  }
+
   if (event.payload.type !== 'BUILDING_COMPLETE') {
     return state;
   }
@@ -418,6 +442,10 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
       return queueResearch(state, command);
     case 'CANCEL_RESEARCH':
       return cancelResearch(state, command);
+    case 'QUEUE_UNIT_BATCH':
+      return queueUnitBatch(state, command);
+    case 'CANCEL_UNIT_BATCH':
+      return cancelUnitBatch(state, command);
     case 'ADVANCE_TIME':
       return advanceTime(state, command);
   }
