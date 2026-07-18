@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Контрольный визуальный набор Роя Вейра">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0d150d"/><stop offset=".5" stop-color="#070d08"/><stop offset="1" stop-color="#020504"/></linearGradient>
+    <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c8be91"/><stop offset=".28" stop-color="#788052"/><stop offset=".66" stop-color="#4a5534"/><stop offset="1" stop-color="#20291e"/></linearGradient>
+    <linearGradient id="membrane" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f3aa8c"/><stop offset=".5" stop-color="#e07865"/><stop offset="1" stop-color="#7a3d3c"/></linearGradient>
+    <radialGradient id="life" cx="40%" cy="32%" r="68%"><stop stop-color="#fff3a8"/><stop offset=".32" stop-color="#a8e85e"/><stop offset="1" stop-color="#345723"/></radialGradient>
+    <radialGradient id="planet" cx="36%" cy="28%" r="72%"><stop stop-color="#d8d2a5"/><stop offset=".28" stop-color="#657543"/><stop offset=".62" stop-color="#2d3c26"/><stop offset="1" stop-color="#071009"/></radialGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="0" dy="12" stdDeviation="13" flood-color="#000" flood-opacity=".78"/></filter>
+    <pattern id="veins" width="110" height="85" patternUnits="userSpaceOnUse"><path d="M4 79c30-13 38-47 63-68 14 24 23 49 39 68" fill="none" stroke="#a8e85e" stroke-opacity=".045" stroke-width="2"/></pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#veins)"/>
+  <path d="M0 770c247-235 560-84 760-207 278-170 505-236 840-99v436H0Z" fill="#1b2a19" opacity=".46"/>
+  <g fill="none" stroke="#a8e85e" stroke-opacity=".13"><path d="M40 80h1520M40 820h1520"/><path d="M40 80v740M1560 80v740"/></g>
+  <text x="58" y="62" fill="#a8e85e" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="700" letter-spacing="7">VEYRA BROOD · CONTROL SET</text>
+  <text x="1542" y="62" text-anchor="end" fill="#c8be91" font-family="Inter,Arial,sans-serif" font-size="14" letter-spacing="3">GROWN / ADAPTIVE / REGENERATIVE</text>
+
+  <!-- home planet -->
+  <g transform="translate(215 250)" filter="url(#shadow)">
+    <circle r="128" fill="#a8e85e" opacity=".055"/>
+    <circle r="108" fill="url(#planet)" stroke="#7d8c5c" stroke-width="3"/>
+    <path d="M-97-35c38-40 86-54 143-40 35 9 60 32 75 68-40-8-79 1-115 29-31 24-55 54-72 90-28-39-38-88-31-147Z" fill="#788052" opacity=".74"/>
+    <path d="M-84 52c38-13 82-9 131 14 29 14 49 31 61 52-43 20-88 23-134 7-35-13-54-38-58-73Z" fill="#e07865" opacity=".48"/>
+    <path d="M-68-91c34 43 61 96 81 157M4-106c-2 64 13 130 43 198M76-71C47-26 28 24 19 82" fill="none" stroke="#a8e85e" stroke-width="5" stroke-opacity=".74" filter="url(#glow)"/>
+  </g>
+
+  <!-- command organism -->
+  <g transform="translate(555 270)" filter="url(#shadow)">
+    <ellipse cy="132" rx="145" ry="32" fill="#000" opacity=".45"/>
+    <path d="M-126 93c18-89 45-150 81-183 23-22 48-32 73-30 25 2 48 17 68 44 24 33 43 89 57 169-40 33-89 49-146 47-54-2-98-18-133-47Z" fill="url(#shell)" stroke="#9a986c" stroke-width="5"/>
+    <path d="M-71 81c9-66 27-113 55-142 24-25 48-27 72-5 29 27 49 76 60 147-27 27-57 39-92 36-38-2-70-14-95-36Z" fill="#273522" stroke="#a8e85e" stroke-width="5"/>
+    <ellipse cx="21" cy="22" rx="34" ry="45" fill="url(#life)" filter="url(#glow)"/>
+    <path d="M-85-25-135-70M106-17l53-42M-49 106l-24 45M77 108l33 40" stroke="#c8be91" stroke-width="10" stroke-linecap="round"/>
+    <path d="M-42-50c27 16 48 17 68 3 18-13 33-35 46-67" fill="none" stroke="#e07865" stroke-width="7"/>
+  </g>
+
+  <!-- resource organism -->
+  <g transform="translate(895 260)" filter="url(#shadow)">
+    <ellipse cy="140" rx="136" ry="31" fill="#000" opacity=".44"/>
+    <path d="M-111 96c8-78 28-138 61-178 22-27 45-40 70-39 31 1 58 22 80 62 23 41 38 92 46 155-32 28-75 43-129 44-53 1-96-14-128-44Z" fill="url(#shell)" stroke="#8f9466" stroke-width="5"/>
+    <path d="M-64 78c8-58 22-103 44-135 12-18 26-26 41-24 18 2 35 16 49 43 18 34 28 73 31 116-24 24-51 34-82 31-34-2-62-13-83-31Z" fill="url(#membrane)" stroke="#c98a73" stroke-width="4"/>
+    <path d="M-38-58c15 37 25 82 30 136M26-73c8 38 8 88 0 150M72-42c-16 36-26 75-29 116" fill="none" stroke="#a8e85e" stroke-width="5" filter="url(#glow)"/>
+    <ellipse cx="21" cy="17" rx="22" ry="30" fill="url(#life)"/>
+  </g>
+
+  <!-- defense organism -->
+  <g transform="translate(1250 270)" filter="url(#shadow)">
+    <ellipse cy="132" rx="130" ry="30" fill="#000" opacity=".46"/>
+    <path d="M-109 94c16-72 38-121 67-149 28-27 57-30 86-8 34 26 61 78 80 157-34 31-73 44-117 40-47-3-86-17-116-40Z" fill="url(#shell)" stroke="#92956a" stroke-width="5"/>
+    <path d="M-44 85c1-48 12-87 33-117 18-25 38-32 58-19 26 16 44 62 54 136-20 22-45 31-74 27-31-4-55-13-71-27Z" fill="#26341f" stroke="#a8e85e" stroke-width="5"/>
+    <path d="M14-53 84-137l18 14-48 99" fill="url(#shell)" stroke="#c8be91" stroke-width="5"/>
+    <ellipse cx="27" cy="23" rx="18" ry="27" fill="url(#life)" filter="url(#glow)"/>
+    <path d="M-93 21-145 0M-77 70-133 91M91 61l52 31" stroke="#c8be91" stroke-width="9" stroke-linecap="round"/>
+  </g>
+
+  <!-- scout -->
+  <g transform="translate(305 635)" filter="url(#shadow)">
+    <path d="M-209 19c45-72 103-111 174-116 72-5 145 30 219 104-47 16-81 42-102 79-42-21-84-30-125-26-47 5-86 28-117 69-23-30-39-67-49-110Z" fill="url(#shell)" stroke="#97986c" stroke-width="5"/>
+    <path d="M-99-28c43-42 91-55 143-39 33 10 63 33 90 68-50 2-91 18-123 48-39-20-78-26-117-18Z" fill="url(#membrane)" stroke="#e6a189" stroke-width="4"/>
+    <ellipse cx="22" cy="3" rx="35" ry="24" fill="url(#life)" filter="url(#glow)"/>
+    <path d="M-179-15-232-65M-139 83-188 141M116 65l64 42M157-19l61-48" stroke="#c8be91" stroke-width="10" stroke-linecap="round"/>
+    <path d="M-129-8c33 15 54 41 65 77M90-9C63 17 47 47 42 82" fill="none" stroke="#a8e85e" stroke-width="5"/>
+  </g>
+
+  <!-- combat organism -->
+  <g transform="translate(800 650)" filter="url(#shadow)">
+    <path d="M-267 25c56-94 132-145 229-151 96-6 192 39 288 136-65 18-111 51-139 99-55-27-110-40-165-34-61 7-113 38-154 92-31-39-50-87-59-142Z" fill="url(#shell)" stroke="#9b9c70" stroke-width="6"/>
+    <path d="M-133-45c55-55 118-73 189-51 45 14 85 44 120 91-62 3-113 24-154 63-49-25-98-33-147-24Z" fill="url(#membrane)" stroke="#e7a28a" stroke-width="5"/>
+    <ellipse cx="29" cy="1" rx="46" ry="31" fill="url(#life)" filter="url(#glow)"/>
+    <path d="M-231-26-302-92M-180 104-242 177M150 86l82 55M204-28l78-86M0-117l27-75" stroke="#c8be91" stroke-width="12" stroke-linecap="round"/>
+    <path d="M-164-17c43 20 71 55 86 105M122-17C86 17 65 57 58 103" fill="none" stroke="#a8e85e" stroke-width="6"/>
+  </g>
+
+  <!-- flagship organism -->
+  <g transform="translate(1275 650)" filter="url(#shadow)">
+    <path d="M-300 31c67-110 157-169 270-177 114-8 228 45 341 158-76 22-130 60-163 117-65-32-130-47-195-40-73 8-134 45-183 108-37-46-60-102-70-166Z" fill="url(#shell)" stroke="#a3a476" stroke-width="7"/>
+    <path d="M-151-52c65-65 140-86 224-61 53 16 101 52 142 107-74 3-134 28-182 75-58-30-117-39-175-28Z" fill="url(#membrane)" stroke="#eaa58d" stroke-width="6"/>
+    <ellipse cx="35" cy="2" rx="56" ry="38" fill="url(#life)" filter="url(#glow)"/>
+    <path d="M-261-31-347-109M-202 122-276 209M174 101l96 65M237-34l92-133M2-139l34-92" stroke="#c8be91" stroke-width="14" stroke-linecap="round"/>
+    <path d="M-184-20c50 23 84 65 102 122M144-21C102 18 77 65 69 119" fill="none" stroke="#a8e85e" stroke-width="7"/>
+  </g>
+
+  <!-- portrait -->
+  <g transform="translate(1430 560)">
+    <path d="M-110 228c9-91 35-151 80-181-30-38-32-88-5-125 31-43 92-54 136-23 43 31 54 91 24 135-3 5-7 9-11 13 47 32 73 92 80 181Z" fill="#1b2819" stroke="#61714c" stroke-width="5"/>
+    <path d="M-44-56c25-38 78-49 116-24 37 25 49 76 27 114-21 37-67 52-106 34-43-20-60-72-37-124Z" fill="url(#shell)" stroke="#c8be91" stroke-width="4"/>
+    <path d="M-35-24c14-30 47-46 79-37 30 8 50 34 51 64-25-17-49-22-72-15-20 6-37 19-50 39-13-15-16-33-8-51Z" fill="#20291e"/>
+    <ellipse cx="-2" cy="5" rx="9" ry="13" fill="url(#life)" filter="url(#glow)"/><ellipse cx="49" cy="5" rx="9" ry="13" fill="url(#life)" filter="url(#glow)"/>
+    <path d="M-78 105 20 54l103 53 39 121H-116Z" fill="url(#shell)" stroke="#8c8c62" stroke-width="4"/>
+    <path d="M20 54v174M-43 89 20 122l64-33" stroke="#a8e85e" stroke-width="6"/>
+    <path d="M-70 142-130 111M111 143l60-30" stroke="#c8be91" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>
