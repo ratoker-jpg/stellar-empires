@@ -6,19 +6,20 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 27,
-  "lastMergeSha": "913e5f4f65aa6e5ae65f1929b8cec14846eb8614",
-  "nextPr": 28,
+  "lastMergedPr": 28,
+  "lastMergeSha": "2e974dadf3f7697c494028d99f4a2332f25d4840",
+  "nextPr": 29,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
   "governanceUpdateNote": "On 2026-07-19 the repository owner explicitly authorized governance-only direct-main documentation updates so roadmap PR numbering remains intact. Future substantial changes still use focused pull requests.",
-  "currentMilestone": "MVP persistence, research and production",
+  "currentMilestone": "MVP fleet and flight foundation",
   "currentBatch": {
     "standard": [23, 24, 25, 26, 27, 28],
-    "completed": [23, 24, 25, 26, 27],
+    "completed": [23, 24, 25, 26, 27, 28],
     "optionalExtensions": [29, 30],
-    "extensionRule": "Use PR 29 and 30 only after PR 23-28 are merged, CI is stable, and inventory/production contracts are settled."
+    "extensionsStarted": true,
+    "extensionReason": "PR 23-28 are merged with stable CI, and the settled unit inventory and production contracts provide clear independent foundations for fleet entities and flight lifecycle."
   },
   "deliveredCapabilities": [
     "Phaser 4 and TypeScript application scaffold",
@@ -30,7 +31,7 @@
     "resource economy with energy, population, stability and storage",
     "deterministic building construction queue",
     "Aegis research catalog, dependency tree, playable queue and real effects",
-    "Aegis unit catalog, planet inventories and serialized production queue contracts",
+    "Aegis unit catalog, planet inventories and playable Shipyard and Defense production",
     "planet UI v2 with Research, Shipyard, Defense and Fleet routes",
     "P0 visual shell and P1 Aegis vertical-slice assets",
     "Nemexia browser/help research audit",
@@ -38,8 +39,8 @@
     "persistent six-PR delivery and AI handoff protocol"
   ],
   "knownLimitations": [
-    "ship and defense production commands and screens are not implemented",
-    "fleets, flights, missions, combat and autonomous bots are not implemented",
+    "fleet entities and flight lifecycle are not implemented",
+    "missions, combat and autonomous bots are not implemented",
     "the current production content is only the first Aegis vertical slice",
     "public Pages deployment should be checked after material UI batches"
   ],
