@@ -1,0 +1,105 @@
+.status-pill--amber {
+  border-color: rgb(232 174 75 / 34%);
+  background: rgb(112 71 20 / 24%);
+  color: #efc77c;
+}
+
+.aegis-deck-panel {
+  background:
+    linear-gradient(135deg, rgb(65 52 30 / 22%), transparent 55%),
+    linear-gradient(145deg, rgb(13 32 49 / 82%), rgb(6 16 27 / 88%));
+}
+
+.aegis-asset-deck {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.aegis-atlas-card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 56px;
+  padding: 7px 3px;
+  border: 1px solid rgb(232 174 75 / 18%);
+  border-radius: 6px;
+  background: rgb(7 17 25 / 72%);
+  color: #a8bdc9;
+  cursor: pointer;
+  transition:
+    border-color 130ms ease,
+    background 130ms ease,
+    transform 130ms ease;
+}
+
+.aegis-atlas-card:hover,
+.aegis-atlas-card:focus-visible {
+  border-color: rgb(232 174 75 / 55%);
+  background: rgb(42 36 24 / 58%);
+  color: #f1d59d;
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.aegis-atlas-card strong,
+.aegis-atlas-card small {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aegis-atlas-card strong {
+  font-size: 0.58rem;
+  font-weight: 700;
+}
+
+.aegis-atlas-card small {
+  color: #607989;
+  font-size: 0.51rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.aegis-atlas-card__mark {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 1px solid rgb(61 212 208 / 30%);
+  clip-path: polygon(50% 0, 94% 25%, 94% 75%, 50% 100%, 6% 75%, 6% 25%);
+  background: rgb(17 42 54 / 70%);
+  color: #3dd4d0;
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+.asset-dialog--atlas > img {
+  min-height: min(66vh, 760px);
+}
+
+@media (max-width: 1420px) {
+  .aegis-asset-deck {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1120px) {
+  .aegis-deck-panel {
+    grid-column: 1 / -1;
+  }
+
+  .aegis-asset-deck {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .aegis-asset-deck {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
