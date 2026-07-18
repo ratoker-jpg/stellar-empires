@@ -11,10 +11,9 @@ import {
 
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 const ZONE_LABELS: Readonly<Record<PlanetZoneId, string>> = {
-  industrial: 'Промышленная',
+  resource: 'Ресурсная',
+  industry: 'Промышленная',
   military: 'Военная',
-  science: 'Научная',
-  orbital: 'Орбитальная',
 };
 
 let currentState: GameState | undefined;
@@ -80,16 +79,16 @@ function createCostElement(card: BuildingCardViewModel): HTMLElement {
   const cost = document.createElement('div');
   cost.className = 'building-cost';
 
-  const metal = document.createElement('span');
-  metal.textContent = `M ${NUMBER_FORMAT.format(card.cost.metal)}`;
+  for (const [label, value] of [
+    ['M', card.cost.metal],
+    ['C', card.cost.crystal],
+    ['G', card.cost.gas],
+  ] as const) {
+    const item = document.createElement('span');
+    item.textContent = `${label} ${NUMBER_FORMAT.format(value)}`;
+    cost.append(item);
+  }
 
-  const crystal = document.createElement('span');
-  crystal.textContent = `C ${NUMBER_FORMAT.format(card.cost.crystal)}`;
-
-  const gas = document.createElement('span');
-  gas.textContent = `G ${NUMBER_FORMAT.format(card.cost.gas)}`;
-
-  cost.append(metal, crystal, gas);
   return cost;
 }
 
@@ -189,13 +188,10 @@ function renderBuildQueue(planet: PlanetState): void {
 
   const wrapper = document.createElement('div');
   wrapper.className = 'queue-item';
-
   const title = document.createElement('h3');
   title.textContent = `${definition?.name ?? item.buildingId} · ур. ${item.targetLevel}`;
-
   const description = document.createElement('p');
   description.textContent = `Завершение на отметке ${formatWorldTime(item.completesAt)}`;
-
   const progress = document.createElement('div');
   progress.className = 'queue-progress';
   const progressBar = document.createElement('i');
@@ -221,7 +217,6 @@ function renderBuildQueue(planet: PlanetState): void {
     );
   });
   actions.append(remainingLabel, cancelButton);
-
   wrapper.append(title, description, progress, actions);
   container.append(wrapper);
 }
@@ -297,7 +292,9 @@ function bindPlanetControls(): void {
     renderPlanetDashboard();
   });
 
-  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-advance-seconds]')) {
+  for (const button of document.querySelectorAll<HTMLButtonElement>(
+    '[data-advance-seconds]',
+  )) {
     button.addEventListener('click', () => {
       const seconds = Number(button.dataset.advanceSeconds);
 
