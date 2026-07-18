@@ -1,3 +1,5 @@
+import type { GalaxyModel } from './galaxy/types';
+
 export interface GameClock {
   readonly startedAt: string;
   readonly elapsedSeconds: number;
@@ -37,6 +39,7 @@ export interface GameState {
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
+  readonly galaxy: GalaxyModel;
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];

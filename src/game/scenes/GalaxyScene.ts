@@ -1,29 +1,43 @@
 import Phaser from 'phaser';
+import type { GalaxyModel, StarClass, StarSystemModel } from '../../simulation/galaxy/types';
 
-interface SystemMarker {
-  readonly x: number;
-  readonly y: number;
-  readonly radius: number;
-  readonly color: number;
-  readonly label: string;
+const STAR_COLORS: Readonly<Record<StarClass, number>> = {
+  blue: 0x75c8f0,
+  white: 0xe9f4ff,
+  yellow: 0xf0cf75,
+  orange: 0xe79b58,
+  red: 0xd76868,
+};
+
+function getOwnerColor(system: StarSystemModel): number | undefined {
+  const owner = system.planets.find((planet) => planet.ownerEmpireId !== null)?.ownerEmpireId;
+
+  switch (owner) {
+    case 'player':
+    case 'aegis-bot':
+      return 0x75c8f0;
+    case 'synod-bot':
+      return 0xe2b667;
+    case 'veyra-bot':
+      return 0xc07be6;
+    default:
+      return undefined;
+  }
 }
 
-const SYSTEMS: readonly SystemMarker[] = [
-  { x: 280, y: 220, radius: 34, color: 0x75c8f0, label: 'Aegis Prime' },
-  { x: 695, y: 190, radius: 26, color: 0xe2b667, label: 'Synod Node' },
-  { x: 970, y: 435, radius: 31, color: 0xc07be6, label: 'Veyra Brood' },
-  { x: 520, y: 505, radius: 20, color: 0x79ddb2, label: 'Unclaimed' },
-];
-
 export class GalaxyScene extends Phaser.Scene {
-  public constructor() {
+  readonly #galaxy: GalaxyModel;
+
+  public constructor(galaxy: GalaxyModel) {
     super('GalaxyScene');
+    this.#galaxy = galaxy;
   }
 
   public create(): void {
     this.cameras.main.setBackgroundColor('#02060c');
     this.drawStarfield();
     this.drawGrid();
+    this.drawRoutes();
     this.drawSystems();
     this.drawHeader();
   }
@@ -51,29 +65,46 @@ export class GalaxyScene extends Phaser.Scene {
       graphics.lineBetween(0, y, 1280, y);
     }
 
-    graphics.lineStyle(1, 0x65b9df, 0.25);
-    graphics.strokeCircle(640, 360, 255);
-    graphics.strokeCircle(640, 360, 445);
+    graphics.lineStyle(1, 0x65b9df, 0.22);
+    graphics.strokeRect(80, 80, this.#galaxy.width, this.#galaxy.height);
+  }
+
+  private drawRoutes(): void {
+    const route = this.add.graphics();
+    route.lineStyle(1, 0x56a8cc, 0.17);
+
+    for (let index = 1; index < this.#galaxy.systems.length; index += 1) {
+      const previous = this.#galaxy.systems[index - 1];
+      const current = this.#galaxy.systems[index];
+
+      if (previous !== undefined && current !== undefined) {
+        route.lineBetween(previous.x + 80, previous.y + 80, current.x + 80, current.y + 80);
+      }
+    }
   }
 
   private drawSystems(): void {
-    const route = this.add.graphics();
-    route.lineStyle(2, 0x56a8cc, 0.22);
-    route.lineBetween(280, 220, 520, 505);
-    route.lineBetween(520, 505, 970, 435);
-    route.lineBetween(280, 220, 695, 190);
+    for (const system of this.#galaxy.systems) {
+      const x = system.x + 80;
+      const y = system.y + 80;
+      const radius = 10 + Math.min(system.planets.length, 8) * 1.6;
+      const color = STAR_COLORS[system.starClass];
+      const ownerColor = getOwnerColor(system);
 
-    for (const marker of SYSTEMS) {
-      this.add.circle(marker.x, marker.y, marker.radius + 13, marker.color, 0.08);
-      this.add.circle(marker.x, marker.y, marker.radius + 4, marker.color, 0.17);
-      this.add.circle(marker.x, marker.y, marker.radius, marker.color, 0.92);
-      this.add.circle(marker.x - 8, marker.y - 9, marker.radius * 0.28, 0xffffff, 0.4);
+      if (ownerColor !== undefined) {
+        this.add.circle(x, y, radius + 12, ownerColor, 0.09);
+        this.add.circle(x, y, radius + 6, ownerColor, 0.2);
+      }
+
+      this.add.circle(x, y, radius + 3, color, 0.16);
+      this.add.circle(x, y, radius, color, 0.94);
+      this.add.circle(x - radius * 0.25, y - radius * 0.3, radius * 0.23, 0xffffff, 0.42);
 
       this.add
-        .text(marker.x, marker.y + marker.radius + 20, marker.label, {
+        .text(x, y + radius + 13, system.name, {
           color: '#d9f3ff',
           fontFamily: 'Inter, system-ui, sans-serif',
-          fontSize: '15px',
+          fontSize: '12px',
           fontStyle: '600',
         })
         .setOrigin(0.5, 0);
@@ -92,7 +123,7 @@ export class GalaxyScene extends Phaser.Scene {
       .setAlpha(0.85);
 
     this.add
-      .text(30, 49, 'Prototype sector · deterministic seed', {
+      .text(30, 49, `${this.#galaxy.systems.length} systems · deterministic model`, {
         color: '#8298a8',
         fontFamily: 'Inter, system-ui, sans-serif',
         fontSize: '13px',

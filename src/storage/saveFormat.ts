@@ -18,6 +18,17 @@ function isNonNegativeInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0;
 }
 
+function isGalaxy(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.width === 'number' &&
+    value.width > 0 &&
+    typeof value.height === 'number' &&
+    value.height > 0 &&
+    Array.isArray(value.systems)
+  );
+}
+
 function isGameState(value: unknown): value is GameState {
   if (!isRecord(value) || value.schemaVersion !== 1 || typeof value.seed !== 'number') {
     return false;
@@ -33,6 +44,7 @@ function isGameState(value: unknown): value is GameState {
     typeof clock.startedAt === 'string' &&
     isNonNegativeInteger(clock.elapsedSeconds) &&
     isStringArray(value.empires) &&
+    isGalaxy(value.galaxy) &&
     isNonNegativeInteger(value.nextEventSequence) &&
     Array.isArray(value.pendingEvents) &&
     Array.isArray(value.commandLog) &&
