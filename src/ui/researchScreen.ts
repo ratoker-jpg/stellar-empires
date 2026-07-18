@@ -1,16 +1,23 @@
 import { AEGIS_VERTICAL_SLICE_ASSETS } from '../assets/aegisVerticalSliceAssets';
-import type { GameState } from '../simulation/types';
-import { AEGIS_RESEARCH_CATALOG } from '../simulation/research/catalog';
+import { AEGIS_RESEARCH_CATALOG, getResearchDefinition } from '../simulation/research/catalog';
+import {
+  calculateResearchCost,
+  calculateResearchSeconds,
+} from '../simulation/research/progression';
 import {
   findMissingResearchRequirements,
   getEmpireResearch,
   getResearchLevel,
 } from '../simulation/research/researchState';
+import type { GameCommand, GameState } from '../simulation/types';
+import { formatGameDuration } from './planetViewModel';
 
 export interface ResearchScreenOptions {
   readonly getState: () => GameState;
+  readonly execute: (command: GameCommand, successMessage: string) => boolean;
 }
 
+const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 const CATEGORY_LABELS = {
   infrastructure: 'Инфраструктура',
   energy: 'Энергетика',
@@ -19,6 +26,20 @@ const CATEGORY_LABELS = {
   defense: 'Защита',
   weapons: 'Вооружение',
 } as const;
+
+function canAffordResearch(
+  state: GameState,
+  planetId: string,
+  cost: ReturnType<typeof calculateResearchCost>,
+): boolean {
+  const planet = state.planets.find((candidate) => candidate.id === planetId);
+  return (
+    planet !== undefined &&
+    planet.economy.resources.metal.amount >= cost.metal &&
+    planet.economy.resources.crystal.amount >= cost.crystal &&
+    planet.economy.resources.gas.amount >= cost.gas
+  );
+}
 
 function setTechnologyArtwork(element: HTMLElement, assetId: string): void {
   const asset = AEGIS_VERTICAL_SLICE_ASSETS.find((candidate) => candidate.id === assetId);
@@ -59,11 +80,14 @@ function createDialog(): HTMLDialogElement {
   header.append(text, close);
   const summary = document.createElement('p');
   summary.className = 'research-screen-summary';
-  summary.textContent = 'Технологии открываются через лабораторию и связанные узлы дерева. Запуск очереди появится в следующем PR.';
+  summary.textContent = 'Одна глобальная очередь исследований. Ресурсы резервируются сразу, отмена возвращает 75% стоимости.';
+  const queue = document.createElement('section');
+  queue.id = 'research-screen-queue';
+  queue.className = 'research-screen-queue';
   const grid = document.createElement('div');
   grid.id = 'research-screen-grid';
   grid.className = 'research-screen-grid';
-  dialog.append(header, summary, grid);
+  dialog.append(header, summary, queue, grid);
   document.body.append(dialog);
   return dialog;
 }
@@ -71,8 +95,9 @@ function createDialog(): HTMLDialogElement {
 export function mountResearchScreen(options: ResearchScreenOptions): void {
   const dialog = createDialog();
   const grid = dialog.querySelector<HTMLElement>('#research-screen-grid');
-  if (grid === null) {
-    throw new Error('Research grid is missing.');
+  const queue = dialog.querySelector<HTMLElement>('#research-screen-queue');
+  if (grid === null || queue === null) {
+    throw new Error('Research screen containers are missing.');
   }
 
   const render = (): void => {
@@ -81,16 +106,63 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
     const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player');
     if (research === undefined || planet === undefined) {
       grid.textContent = 'Исследовательские данные недоступны.';
+      queue.replaceChildren();
       return;
+    }
+
+    queue.replaceChildren();
+    const active = research.queue[0];
+    if (active === undefined) {
+      queue.textContent = 'Исследовательская очередь свободна.';
+    } else {
+      const definition = getResearchDefinition(active.technologyId);
+      const duration = Math.max(1, active.completesAt - active.startedAt);
+      const elapsed = Math.max(
+        0,
+        Math.min(duration, state.clock.elapsedSeconds - active.startedAt),
+      );
+      const remaining = Math.max(0, active.completesAt - state.clock.elapsedSeconds);
+      const label = document.createElement('strong');
+      label.textContent = `${definition?.name ?? active.technologyId} · ур. ${active.targetLevel}`;
+      const progress = document.createElement('div');
+      progress.className = 'research-queue-progress';
+      const bar = document.createElement('i');
+      bar.style.width = `${Math.floor((elapsed * 100) / duration)}%`;
+      progress.append(bar);
+      const cancel = document.createElement('button');
+      cancel.type = 'button';
+      cancel.textContent = `Отменить · осталось ${formatGameDuration(remaining)}`;
+      cancel.addEventListener('click', () => {
+        if (
+          options.execute(
+            {
+              type: 'CANCEL_RESEARCH',
+              empireId: 'player',
+              queueItemId: active.id,
+            },
+            'Исследование отменено',
+          )
+        ) {
+          render();
+        }
+      });
+      queue.append(label, progress, cancel);
     }
 
     grid.replaceChildren();
     for (const definition of AEGIS_RESEARCH_CATALOG) {
       const level = getResearchLevel(research, definition.id);
+      const targetLevel = level + 1;
       const missing = findMissingResearchRequirements(definition, research, planet);
       const maxed = level >= definition.maxLevel;
+      const boundedTargetLevel = Math.min(targetLevel, definition.maxLevel);
+      const cost = calculateResearchCost(definition, boundedTargetLevel);
+      const seconds = calculateResearchSeconds(definition, boundedTargetLevel);
+      const affordable = canAffordResearch(state, planet.id, cost);
+      const queueFree = research.queue.length === 0;
+      const available = !maxed && missing.length === 0 && affordable && queueFree;
       const card = document.createElement('article');
-      card.className = `research-card${missing.length === 0 && !maxed ? ' is-ready' : ' is-locked'}`;
+      card.className = `research-card${available ? ' is-ready' : ' is-locked'}`;
       const art = document.createElement('div');
       art.className = 'research-card-art';
       art.setAttribute('role', 'img');
@@ -104,14 +176,41 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
       title.textContent = definition.name;
       const description = document.createElement('p');
       description.textContent = definition.description;
+      const costLine = document.createElement('p');
+      costLine.className = 'research-card-cost';
+      costLine.textContent = `M ${NUMBER_FORMAT.format(cost.metal)} · C ${NUMBER_FORMAT.format(cost.crystal)} · G ${NUMBER_FORMAT.format(cost.gas)} · ${formatGameDuration(seconds)}`;
       const requirements = document.createElement('p');
       requirements.className = 'research-card-requirements';
       requirements.textContent = maxed
         ? 'Максимальный уровень достигнут'
-        : missing.length === 0
-          ? 'Требования выполнены'
-          : `Не выполнено: ${missing.map((item) => `${item.id} ${item.currentLevel}/${item.requiredLevel}`).join(' · ')}`;
-      body.append(meta, title, description, requirements);
+        : missing.length > 0
+          ? `Не выполнено: ${missing.map((item) => `${item.id} ${item.currentLevel}/${item.requiredLevel}`).join(' · ')}`
+          : !affordable
+            ? 'Недостаточно ресурсов'
+            : !queueFree
+              ? 'Очередь занята'
+              : 'Готово к запуску';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'research-action';
+      button.disabled = !available;
+      button.textContent = maxed ? 'Завершено' : `Исследовать уровень ${targetLevel}`;
+      button.addEventListener('click', () => {
+        if (
+          options.execute(
+            {
+              type: 'QUEUE_RESEARCH',
+              empireId: 'player',
+              planetId: planet.id,
+              technologyId: definition.id,
+            },
+            `Исследование запущено · ${definition.name}`,
+          )
+        ) {
+          render();
+        }
+      });
+      body.append(meta, title, description, costLine, requirements, button);
       card.append(art, body);
       grid.append(card);
     }

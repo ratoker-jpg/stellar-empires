@@ -16,6 +16,13 @@ export type GameEventPayload =
       readonly queueItemId: string;
       readonly buildingId: string;
       readonly targetLevel: number;
+    }
+  | {
+      readonly type: 'RESEARCH_COMPLETE';
+      readonly empireId: string;
+      readonly queueItemId: string;
+      readonly technologyId: string;
+      readonly targetLevel: number;
     };
 
 export interface ScheduledGameEvent {
@@ -42,6 +49,17 @@ export type GameCommand =
       readonly type: 'CANCEL_BUILDING';
       readonly empireId: string;
       readonly planetId: string;
+      readonly queueItemId: string;
+    }
+  | {
+      readonly type: 'QUEUE_RESEARCH';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly technologyId: string;
+    }
+  | {
+      readonly type: 'CANCEL_RESEARCH';
+      readonly empireId: string;
       readonly queueItemId: string;
     };
 

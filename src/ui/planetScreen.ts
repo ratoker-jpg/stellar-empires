@@ -432,6 +432,13 @@ function bindPlanetControls(): void {
   });
 }
 
+export function applyPlanetScreenCommand(
+  command: GameCommand,
+  successMessage: string,
+): boolean {
+  return applyCommand(command, successMessage);
+}
+
 export function mountPlanetScreen(
   initialState: GameState,
   writeStatus: (message: string) => void,
