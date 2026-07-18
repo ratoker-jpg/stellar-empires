@@ -2,5 +2,5 @@
   "schema_version": "2.0",
   "allowed_statuses": ["CONFIRMED_UI", "CONFIRMED_HELP", "USER_CONFIRMED", "INFERRED", "UNKNOWN", "LOCKED", "ACTION_REQUIRED"],
   "required_evidence_fields": ["status", "server", "url", "captured_at", "screenshot", "account_progress_context", "notes"],
-  "privacy": "Do not store player names, email, messages, pinpointable coordinates, cookies, tokens, or credentials."
+  "privacy": "Never store email, messages, cookies, tokens, or credentials. Player names and coordinates are retained only because the user explicitly approved them for this audit."
 }

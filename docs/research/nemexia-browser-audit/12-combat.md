@@ -1,5 +1,5 @@
 # 12 — Combat
 
-The Shipyard navigation exposes Battles and Simulator (`CONFIRMED_UI`). No battle was started and no report was opened. Combat inputs, round model, target selection, loot, repair, report format, and effects are `UNKNOWN`.
+The Shipyard navigation exposes Battles and Simulator (`CONFIRMED_UI`). The Horus battle simulator landing screen is now confirmed (`screens/15-battle-simulator.png`): it provides attacker/defender race selectors, unit and population fields, science/upgrade modifier fields, commander selection, a 5/8/12 round selector, and local-looking save/load/delete preset controls.
 
-The audit explicitly excludes starting a real battle. A future read-only pass may inspect an already-existing report or the simulator landing screen if it requires no submission.
+The default selector labels show Confederation, Terteths, and Noxis in the simulator UI (`CONFIRMED_UI`); this confirms the three names as playable race choices but does not establish their mechanics. The Start button was deliberately not pressed, so outcome calculation, target selection, loot, repair, battle reports, and side effects remain `ACTION_REQUIRED` or `UNKNOWN`.
