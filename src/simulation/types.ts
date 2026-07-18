@@ -74,7 +74,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 3;
+  readonly schemaVersion: 4;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
