@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 240" role="img" aria-labelledby="title desc">
+  <title id="title">Stellar Empires</title>
+  <desc id="desc">Original Stellar Empires insignia and wordmark.</desc>
+  <defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eaf7ff"/>
+      <stop offset="0.38" stop-color="#8fb6ca"/>
+      <stop offset="0.7" stop-color="#3e718e"/>
+      <stop offset="1" stop-color="#183449"/>
+    </linearGradient>
+    <linearGradient id="energy" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#47c7f1"/>
+      <stop offset="0.55" stop-color="#a4ebff"/>
+      <stop offset="1" stop-color="#e8ae4b"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="42%" r="58%">
+      <stop offset="0" stop-color="#f7fcff"/>
+      <stop offset="0.28" stop-color="#8be7ff"/>
+      <stop offset="0.72" stop-color="#1e6b8e"/>
+      <stop offset="1" stop-color="#06111d"/>
+    </radialGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g transform="translate(18 18)">
+    <path d="M102 5 186 54v96l-84 49-84-49V54Z" fill="#050b13" stroke="url(#metal)" stroke-width="7"/>
+    <path d="m102 25 64 38v75l-64 38-64-38V63Z" fill="#081b2b" stroke="#3e718e" stroke-width="2"/>
+    <circle cx="102" cy="101" r="38" fill="url(#core)" stroke="#a4ebff" stroke-width="3" filter="url(#glow)"/>
+    <path d="M102 48 119 82l37 6-27 26 7 37-34-18-34 18 7-37-27-26 37-6Z" fill="none" stroke="url(#energy)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M17 76h34M153 76h34M17 126h34M153 126h34" stroke="#47c7f1" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+  </g>
+  <g transform="translate(235 50)">
+    <text x="0" y="62" fill="#eaf7ff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="66" font-weight="700" letter-spacing="6">STELLAR</text>
+    <text x="2" y="126" fill="url(#energy)" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="51" font-weight="550" letter-spacing="12">EMPIRES</text>
+    <path d="M2 146h520" stroke="#3e718e" stroke-width="2"/>
+    <path d="M2 146h260" stroke="#47c7f1" stroke-width="3"/>
+    <text x="2" y="177" fill="#6f8da0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="15" font-weight="600" letter-spacing="5">GALACTIC COMMAND NETWORK</text>
+  </g>
+</svg>
