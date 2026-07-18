@@ -7,6 +7,15 @@ export const RUNTIME_ASSETS = {
   resourceCrystal: `${ASSET_ROOT}icons/resource-crystal.svg`,
   resourceGas: `${ASSET_ROOT}icons/resource-gas.svg`,
   resourceEnergy: `${ASSET_ROOT}icons/resource-energy.svg`,
+  factionAegisEmblem: `${ASSET_ROOT}factions/aegis/emblem.svg`,
+  factionAegisBackground: `${ASSET_ROOT}factions/aegis/background.svg`,
+  factionAegisControlSet: `${ASSET_ROOT}factions/aegis/control-set.svg`,
+  factionSynodEmblem: `${ASSET_ROOT}factions/synod/emblem.svg`,
+  factionSynodBackground: `${ASSET_ROOT}factions/synod/background.svg`,
+  factionSynodControlSet: `${ASSET_ROOT}factions/synod/control-set.svg`,
+  factionVeyraEmblem: `${ASSET_ROOT}factions/veyra/emblem.svg`,
+  factionVeyraBackground: `${ASSET_ROOT}factions/veyra/background.svg`,
+  factionVeyraControlSet: `${ASSET_ROOT}factions/veyra/control-set.svg`,
 } as const;
 
 export type RuntimeAssetKey = keyof typeof RUNTIME_ASSETS;
