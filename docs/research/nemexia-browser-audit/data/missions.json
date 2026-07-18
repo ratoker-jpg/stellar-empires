@@ -1,7 +1,17 @@
-[
-  {"entry":"Flights","status":"CONFIRMED_UI","evidence":"Shipyard navigation"},
-  {"entry":"Battles","status":"CONFIRMED_UI","evidence":"Shipyard navigation"},
-  {"entry":"Simulator","status":"CONFIRMED_UI","evidence":"Shipyard navigation"},
-  {"entry":"Mission types","status":"CONFIRMED_UI","values":["Transport","Espionage","Attack","Dislocation","Colonization","Recycling","Pirate Raid","Gas Extraction","Sun Support","Space Flight","Renegade Espionage","Renegade Attack"],"evidence":"Flights mission selector"},
-  {"entry":"Execution rules and outcomes","status":"ACTION_REQUIRED","evidence":"No fleet was dispatched."}
-]
+{
+  "current_ui":{"status":"CONFIRMED_UI","server":"horus","url":"fleets.php","labels":["Transport","Espionage","Attack","Dislocation","Colonization","Recycling","Pirate Raid","Gas Extraction","Sun Support","Space Flight","Renegade Espionage","Renegade Attack"],"actions_avoided":["fleet selection","target entry","send","recall"]},
+  "historical_help":{"status":"CONFIRMED_HELP","url":"https://help.nemexia.com/en_EN/nemexia-new-2385-2440.html","accessed_at":"2026-07-18","regular_planet_missions":[
+    {"name":"Transport","purpose":"move economic resources or Scrap","target":"own planet; Scrap-only to another player","ships":"at least one ship"},
+    {"name":"Espionage","purpose":"gather information","target":"another player's planet","ships":"spy ships"},
+    {"name":"Attack","purpose":"fight, loot, possibly damage buildings/planet","target":"another player's planet","ships":"at least one attack-capable ship"},
+    {"name":"Stationing","purpose":"leave ships at destination","target":"another planet or Team planet","ships":"at least one ship"},
+    {"name":"Colonization","purpose":"create a planet","target":"empty field","ships":"colonizing ship"},
+    {"name":"Recycling","purpose":"collect Scrap","target":"field with Scrap","ships":"recycling ships"},
+    {"name":"Pirating","purpose":"steal economic resources or Scrap","target":"another player's planet","ships":"pirating-capable ships"},
+    {"name":"Astroploitation","purpose":"collect gas or Scrap","target":"Asteroid","ships":"recycling ships"},
+    {"name":"Sun Support","purpose":"interfere with enemies seeking crystals","target":"attacked Sun","ships":"at least one ship"},
+    {"name":"Space trip","purpose":"move ships away from planet","target":"space","ships":"at least one ship"},
+    {"name":"Renegade Espionage","purpose":"gather NPC information","target":"Renegade","ships":"spy ships"},
+    {"name":"Renegade Attack","purpose":"seek upgrade points","target":"Renegade","ships":"non-spy-only fleet"}
+  ],"limits":["all flights need at least one ship","all but Space trip and Sun attack may be speed-motivated"],"mapping_note":"Current labels differ for several missions; no exact label mapping or current outcomes/recall flow is claimed."}
+}

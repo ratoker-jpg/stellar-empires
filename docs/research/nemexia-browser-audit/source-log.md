@@ -27,4 +27,9 @@
 | 2026-07-18 | Horus `arena.php` | arena schedule and entry points | read-only; did not join a battle | CONFIRMED_UI |
 | 2026-07-18 | `http://forums.incuvationgames.com/viewforum.php?f=22` | Help link | not opened after session boundary | UNKNOWN |
 
+| 2026-07-18 | Help overview articles: Galaxy, Planet, Resources, Buildings, Science, Ships, Commander Ships, Defence | historical mechanics inventory | opened read-only; details recorded in `data/help-articles.json` | CONFIRMED_HELP |
+| 2026-07-18 | Help overview articles: Universe, Crystals, Obelisks, SSG, Flights, Alliance, Battles, Admiral, Renegades | historical strategy/combat inventory | opened read-only; no game action | CONFIRMED_HELP |
+| 2026-07-18 | Help overview articles: Profile, Rankings, Achievements, Services, Arena, New units statistics, faction articles | historical meta/unit inventory | opened read-only; New Units is explicitly some-universes-only | CONFIRMED_HELP |
+| 2026-07-18 | Horus `ships.php` | complete visible Terteth ship-card capture; Defence-tab read | no quantity entered, no construction; Defence cards not exposed at level 1 | CONFIRMED_UI |
+
 No DOM/network/CDP extraction, asset copying, or irreversible UI action was performed. Source UI can change; screenshots provide capture-time evidence only. The user explicitly approved preserving visible in-game names and coordinates.

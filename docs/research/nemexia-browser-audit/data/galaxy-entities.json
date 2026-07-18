@@ -1,0 +1,8 @@
+{
+  "status":"CONFIRMED_HELP",
+  "accessed_at":"2026-07-18",
+  "url":"https://help.nemexia.com/en_EN/nemexia-new-2375-2372.html",
+  "taxonomy":["Universe","Galaxy","Solar system","Sun","Planet field","Planet","Team planet","Asteroid","Renegade","Scrap field","Alliance","Player","Flight","Battle","Crystals","Obelisks","Supreme Starway Gate","Arena"],
+  "historical_topology":{"systems_per_galaxy":40,"planet_fields_per_system":24,"galaxy_creation_threshold_players":700,"max_galaxies":20},
+  "caveat":"Taxonomy and numeric topology come from 2019 Help and must not be treated as current Horus values. Current UI only confirms coordinate selectors, search and Advanced Search."
+}

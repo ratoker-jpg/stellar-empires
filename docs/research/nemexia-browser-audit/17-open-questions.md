@@ -1,9 +1,13 @@
-# 17 — Open questions and next read-only pass
+# 17 — Remaining open questions
 
-1. Re-authenticate in the existing session and confirm the faction/race label without changing it.
-2. Capture individual visible building, technology, ship, and defense cards; record requirements verbatim as `CONFIRMED_UI`.
-3. Open Flights, Galaxy, Battles, Simulator, Alliance, Personal, and Ranking only to inspect landing screens.
-4. Attempt the documented Help URL; if unavailable, then inspect Old Game Help/Game Help and log availability.
-5. Capture the requested galaxy system states only when already visible; do not probe or launch a mission.
+Completed navigation, Help availability, mission-list discovery, simulator structure, galaxy/arena/social landing screens, and full visible Horus ship-card capture have been removed from this list.
 
-Until then all listed systems remain `UNKNOWN`, `LOCKED`, or `ACTION_REQUIRED`; they must not become backlog commitments by inference.
+1. Which historical Help labels/values remain active on current Horus? In particular, do Help-only unit statistics, topology, cancellation ranges, and alliance limits apply? (`UNKNOWN`)
+2. What exact current building-card costs, effects, max levels, and prerequisites are exposed in each zone without starting construction? (`UNKNOWN`)
+3. What current defence cards, requirements, priorities, and statistics become visible after the account's Shipyard gate? (`LOCKED`)
+4. What are the current detailed technology cards for labels that do not exactly match historical Help terminology? (`UNKNOWN`)
+5. How do current Horus mission validation, cargo, fuel, recall, success/failure, and reports behave? Do not dispatch a fleet merely to answer this. (`ACTION_REQUIRED`)
+6. What entity/system states and result schemas appear in the current Galaxy without probing, attacking, or searching for players? (`UNKNOWN`)
+7. What are current battle resolution, debris, recovery, priority and report contracts? No simulator or real battle execution was performed. (`UNKNOWN`)
+
+All future work must stay read-only unless the user explicitly expands authority.

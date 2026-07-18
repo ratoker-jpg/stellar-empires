@@ -1,11 +1,5 @@
 {
-  "capture_date":"2026-07-18",
-  "server":"ares",
-  "url":"zone_resource.php?race=1",
-  "screenshot":"screens/02-resource-zone.png",
-  "account_progress_context":"Early first-server account; building levels were not exposed.",
-  "sample":{"metal_per_hour":350,"minerals_per_hour":250,"gas_per_hour":100,"ozone_current":14860,"ozone_max":15000},
-  "status":"CONFIRMED_UI",
-  "scope":"Single capture-time sample at unknown building levels; not a formula.",
-  "notes":"No resource cost, population cost, or construction-time formula is claimed."
+  "current_ui_sample": {"status":"CONFIRMED_UI","server":"ares","url":"zone_resource.php?race=1","captured_at":"2026-07-18","sample":{"metal_per_hour":350,"minerals_per_hour":250,"gas_per_hour":100,"ozone_current":14860,"ozone_max":15000},"scope":"Single capture-time sample at unknown building levels; not a formula."},
+  "historical_help": {"status":"CONFIRMED_HELP","url":"https://help.nemexia.com/en_EN/nemexia-new-2377-2407.html","accessed_at":"2026-07-18","economic":["Metal","Minerals","Gas"],"other":["Energy","Ozone","Scrap","Population"],"mechanics":["Energy is required by non-energy buildings","Ozone affects planet Energy production","Scrap follows destroyed ships","Population is hangar capacity used by ships and defence","insufficient free Population blocks unit construction"],"cancellation_refunds":{"buildings":"70%","ships_and_defence":"40–60%","research_and_upgrades":"60–80%","building_level_destruction":"50–80%"},"caveat":"Historical Help; no current-Horus formula, capacity progression, or shortage behaviour inferred."},
+  "unknowns":["current production formulas","current storage limits","current Ozone shortage consequences","credits/contracts/debris/rare-resource UI semantics"]
 }
