@@ -145,13 +145,13 @@ export function completeBuilding(
   }
 
   const existing = planet.buildings.find((building) => building.buildingId === buildingId);
-  const buildings =
+  const buildings: readonly PlanetBuildingState[] =
     existing === undefined
       ? [...planet.buildings, { buildingId, level: targetLevel }]
       : planet.buildings.map((building) =>
           building.buildingId === buildingId ? { ...building, level: targetLevel } : building,
         );
-  const zones =
+  const zones: PlanetState['zones'] =
     currentLevel === 0
       ? {
           ...planet.zones,
