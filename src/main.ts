@@ -15,13 +15,15 @@ function requireElement<T extends HTMLElement>(selector: string): T {
 function bootstrap(): void {
   const version = requireElement<HTMLElement>('#build-version');
   const status = requireElement<HTMLElement>('#app-status');
+  const systemCount = requireElement<HTMLElement>('#system-count');
 
   version.textContent = `v${__APP_VERSION__}`;
 
   const initialState = createInitialGameState('stellar-empires-m1');
   createGame('phaser-game', initialState);
 
-  status.textContent = `Системы: ${initialState.galaxy.systems.length} · seed ${initialState.seed}`;
+  systemCount.textContent = String(initialState.galaxy.systems.length);
+  status.textContent = `Онлайн · seed ${initialState.seed}`;
   document.documentElement.dataset.appReady = 'true';
 }
 
