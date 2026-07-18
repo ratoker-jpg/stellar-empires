@@ -7,57 +7,132 @@
       name="description"
       content="Stellar Empires — одиночная браузерная космическая стратегия с автономными бот-империями."
     />
-    <meta name="theme-color" content="#07111f" />
+    <meta name="theme-color" content="#02050a" />
     <title>Stellar Empires</title>
   </head>
   <body>
     <div id="app" class="app-shell">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">STELLAR COMMAND NETWORK</p>
-          <h1>Stellar Empires</h1>
+        <div class="brand-lockup">
+          <img class="brand-logo" src="./assets/brand/logo-primary.svg" alt="Stellar Empires" />
         </div>
-        <div class="build-badge" id="build-version">v0.1.0</div>
+
+        <div class="resource-strip" aria-label="Ресурсы империи">
+          <div class="resource-chip">
+            <img src="./assets/icons/resource-metal.svg" alt="" />
+            <span><small>Металл</small><strong>12 450</strong></span>
+            <em>+48/ч</em>
+          </div>
+          <div class="resource-chip">
+            <img src="./assets/icons/resource-crystal.svg" alt="" />
+            <span><small>Кристалл</small><strong>7 820</strong></span>
+            <em>+31/ч</em>
+          </div>
+          <div class="resource-chip">
+            <img src="./assets/icons/resource-gas.svg" alt="" />
+            <span><small>Газ</small><strong>4 260</strong></span>
+            <em>+19/ч</em>
+          </div>
+          <div class="resource-chip">
+            <img src="./assets/icons/resource-energy.svg" alt="" />
+            <span><small>Энергия</small><strong>218 / 300</strong></span>
+            <em class="stable">стабильно</em>
+          </div>
+        </div>
+
+        <div class="topbar-status">
+          <span class="online-dot" aria-hidden="true"></span>
+          <div>
+            <small>Сеть командования</small>
+            <strong id="app-status">Инициализация…</strong>
+          </div>
+          <span class="build-badge" id="build-version">v0.1.0</span>
+        </div>
       </header>
 
       <main class="game-layout">
+        <nav class="side-rail" aria-label="Основная навигация">
+          <button class="rail-button is-active" type="button" aria-label="Галактика">
+            <span>✦</span><small>Галактика</small>
+          </button>
+          <button class="rail-button" type="button" aria-label="Планета">
+            <span>◉</span><small>Планета</small>
+          </button>
+          <button class="rail-button" type="button" aria-label="Исследования">
+            <span>⌬</span><small>Наука</small>
+          </button>
+          <button class="rail-button" type="button" aria-label="Флот">
+            <span>◆</span><small>Флот</small>
+          </button>
+          <button class="rail-button" type="button" aria-label="Отчёты">
+            <span>▤</span><small>Отчёты</small>
+          </button>
+          <div class="rail-spacer"></div>
+          <button class="rail-button" type="button" aria-label="Настройки">
+            <span>⚙</span><small>Система</small>
+          </button>
+        </nav>
+
         <section class="game-stage" aria-label="Карта галактики">
+          <div class="stage-chrome stage-chrome--top-left"></div>
+          <div class="stage-chrome stage-chrome--top-right"></div>
           <div id="phaser-game"></div>
+          <div class="stage-footer">
+            <span>Сектор SE-01</span>
+            <span class="coordinate-readout">X 000 · Y 000</span>
+            <span>Сканирование: пассивное</span>
+          </div>
         </section>
 
         <aside class="command-panel" aria-label="Панель управления">
-          <div class="panel-block">
-            <p class="panel-label">Состояние</p>
-            <p class="status-line" id="app-status">Запуск систем…</p>
-          </div>
+          <section class="panel-block panel-block--hero">
+            <p class="panel-label">Командный профиль</p>
+            <div class="commander-row">
+              <div class="commander-mark">AE</div>
+              <div>
+                <h2>Директорат «Эгида»</h2>
+                <p>Стартовая империя · промышленная доктрина</p>
+              </div>
+            </div>
+          </section>
 
-          <div class="panel-block">
-            <p class="panel-label">Текущий этап</p>
-            <h2>M1 · Технический каркас</h2>
+          <section class="panel-block">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-label">Выбранная система</p>
+                <h2>Ожидание сигнала</h2>
+              </div>
+              <span class="status-pill">Пассивно</span>
+            </div>
             <p>
-              Phaser отвечает за визуальную сцену. Симуляция, боты и сохранения будут
-              подключаться отдельными модулями.
+              Система галактики уже генерируется из детерминированного seed. Интерактивный
+              выбор будет подключён после визуального пакета.
             </p>
-          </div>
+          </section>
 
-          <div class="panel-block metric-grid">
-            <div>
-              <span>Фракции</span>
-              <strong>3</strong>
+          <section class="panel-block metric-grid">
+            <div><span>Системы</span><strong id="system-count">—</strong></div>
+            <div><span>Империи</span><strong>4</strong></div>
+            <div><span>Режим</span><strong>Solo</strong></div>
+            <div><span>Состояние</span><strong>Stable</strong></div>
+          </section>
+
+          <section class="panel-block activity-block">
+            <div class="panel-heading">
+              <p class="panel-label">Оперативная лента</p>
+              <span class="signal-bars" aria-label="Связь стабильна"><i></i><i></i><i></i></span>
             </div>
-            <div>
-              <span>Режим</span>
-              <strong>Solo</strong>
-            </div>
-            <div>
-              <span>Рендер</span>
-              <strong>Phaser 4</strong>
-            </div>
-            <div>
-              <span>Сохранение</span>
-              <strong>IndexedDB</strong>
-            </div>
-          </div>
+            <ol class="activity-list">
+              <li><time>00:00</time><span>Симуляционное ядро подключено</span></li>
+              <li><time>00:00</time><span>Хранилище IndexedDB готово</span></li>
+              <li><time>00:00</time><span>Галактическая модель сформирована</span></li>
+            </ol>
+          </section>
+
+          <button class="primary-action" type="button" disabled>
+            <span>Открыть систему</span>
+            <small>будет доступно в следующем пакете</small>
+          </button>
         </aside>
       </main>
     </div>

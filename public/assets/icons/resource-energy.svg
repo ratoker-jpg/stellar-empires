@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Energy">
+  <defs><linearGradient id="e" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff4bf"/><stop offset=".42" stop-color="#e8ae4b"/><stop offset="1" stop-color="#8b4d18"/></linearGradient></defs>
+  <path d="M32 3 56 17v30L32 61 8 47V17Z" fill="#081320" stroke="#8a632b" stroke-width="2"/>
+  <path d="M35 9 18 35h12l-3 20 19-30H34Z" fill="url(#e)" stroke="#fff0ae" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M21 42h8M38 19h8" stroke="#fff7cc" stroke-width="2" stroke-linecap="round" opacity=".45"/>
+</svg>

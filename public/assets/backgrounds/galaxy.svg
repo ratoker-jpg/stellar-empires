@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Deep space galaxy background">
+  <defs>
+    <radialGradient id="void" cx="50%" cy="48%" r="75%">
+      <stop offset="0" stop-color="#0b1b2b"/>
+      <stop offset="0.48" stop-color="#050b13"/>
+      <stop offset="1" stop-color="#02050a"/>
+    </radialGradient>
+    <radialGradient id="nebulaA" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#164a70" stop-opacity=".58"/>
+      <stop offset=".42" stop-color="#10334f" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#07111f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nebulaB" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#533d78" stop-opacity=".32"/>
+      <stop offset=".5" stop-color="#302353" stop-opacity=".14"/>
+      <stop offset="1" stop-color="#02050a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nebulaC" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#80592c" stop-opacity=".22"/>
+      <stop offset=".45" stop-color="#4a311a" stop-opacity=".09"/>
+      <stop offset="1" stop-color="#02050a" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur80"><feGaussianBlur stdDeviation="80"/></filter>
+    <filter id="blur30"><feGaussianBlur stdDeviation="30"/></filter>
+    <pattern id="starsSmall" width="137" height="113" patternUnits="userSpaceOnUse">
+      <circle cx="12" cy="18" r=".8" fill="#d8f4ff" opacity=".55"/>
+      <circle cx="82" cy="31" r=".55" fill="#b5dceb" opacity=".36"/>
+      <circle cx="119" cy="84" r=".7" fill="#ffffff" opacity=".46"/>
+      <circle cx="47" cy="99" r=".45" fill="#8ac8e5" opacity=".4"/>
+      <circle cx="132" cy="11" r=".4" fill="#d9bc8e" opacity=".38"/>
+    </pattern>
+    <pattern id="starsMedium" width="313" height="241" patternUnits="userSpaceOnUse">
+      <circle cx="53" cy="71" r="1.4" fill="#eaf7ff" opacity=".8"/>
+      <circle cx="221" cy="39" r="1.1" fill="#a4ebff" opacity=".7"/>
+      <circle cx="284" cy="178" r="1.25" fill="#f0d29a" opacity=".65"/>
+      <circle cx="137" cy="214" r="1" fill="#ffffff" opacity=".72"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#void)"/>
+  <ellipse cx="-40" cy="180" rx="560" ry="370" fill="url(#nebulaA)" filter="url(#blur30)" transform="rotate(-18 0 180)"/>
+  <ellipse cx="1520" cy="160" rx="500" ry="330" fill="url(#nebulaB)" filter="url(#blur30)" transform="rotate(20 1520 160)"/>
+  <ellipse cx="1390" cy="880" rx="540" ry="310" fill="url(#nebulaC)" filter="url(#blur80)"/>
+  <path d="M-80 680C220 520 360 650 650 580S1130 350 1680 520" fill="none" stroke="#123e5b" stroke-opacity=".16" stroke-width="140" filter="url(#blur80)"/>
+  <rect width="1600" height="900" fill="url(#starsSmall)"/>
+  <rect width="1600" height="900" fill="url(#starsMedium)"/>
+  <g opacity=".65">
+    <g transform="translate(214 186)"><circle r="3.2" fill="#dff7ff"/><path d="M-15 0h30M0-15v30" stroke="#8edfff" stroke-width=".8" opacity=".5"/></g>
+    <g transform="translate(1286 248)"><circle r="2.8" fill="#f8e1ad"/><path d="M-12 0h24M0-12v24" stroke="#e8ae4b" stroke-width=".7" opacity=".45"/></g>
+    <g transform="translate(934 708)"><circle r="2.5" fill="#eaf7ff"/><path d="M-11 0h22M0-11v22" stroke="#a4ebff" stroke-width=".7" opacity=".4"/></g>
+  </g>
+  <rect x="20" y="20" width="1560" height="860" rx="32" fill="none" stroke="#47c7f1" stroke-opacity=".035" stroke-width="2"/>
+</svg>
