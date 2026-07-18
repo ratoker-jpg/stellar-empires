@@ -4,6 +4,7 @@ import './styles/aegisAssets.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
 import './styles/saveManager.css';
+import './styles/research.css';
 import { createGame } from './game/createGame';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
@@ -15,6 +16,7 @@ import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
 import { mountPlanetScreen } from './ui/planetScreen';
+import { mountResearchScreen } from './ui/researchScreen';
 import { mountSaveManager } from './ui/saveManager';
 import { renderAssetShowcases } from './ui/showcase';
 
@@ -93,6 +95,7 @@ async function bootstrap(): Promise<void> {
     runtimeState = state;
     autosave?.request(state);
   });
+  mountResearchScreen({ getState: () => runtimeState });
 
   if (saveManager !== undefined) {
     mountSaveManager({

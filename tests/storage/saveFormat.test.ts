@@ -19,8 +19,9 @@ describe('save format', () => {
 
   it('migrates a legacy four-zone save without losing progress', () => {
     const current = createInitialGameState('legacy-save');
+    const { research: _research, ...withoutResearch } = current;
     const legacyState = {
-      ...current,
+      ...withoutResearch,
       schemaVersion: 1,
       planets: current.planets.map((planet) => ({
         ...planet,
@@ -56,13 +57,38 @@ describe('save format', () => {
     );
 
     expect(parsed.value.formatVersion).toBe(2);
-    expect(parsed.value.state.schemaVersion).toBe(2);
+    expect(parsed.value.state.schemaVersion).toBe(3);
     expect(Object.keys(playerAfter?.zones ?? {}).sort()).toEqual(
       ['industry', 'military', 'resource'].sort(),
     );
     expect(playerAfter?.economy).toEqual(playerBefore?.economy);
     expect(playerAfter?.buildings).toEqual(playerBefore?.buildings);
     expect(playerAfter?.buildQueue).toEqual(playerBefore?.buildQueue);
+    expect(parsed.value.state.research).toHaveLength(current.empires.length);
+    expect(parsed.value.state.research.every((entry) => entry.queue.length === 0)).toBe(true);
+  });
+
+  it('migrates schema v2 by adding empty research progress', () => {
+    const current = createInitialGameState('schema-v2');
+    const { research: _research, ...withoutResearch } = current;
+    const stateV2 = { ...withoutResearch, schemaVersion: 2 };
+    const saveV2 = {
+      formatVersion: 2,
+      slotId: 'v2-slot',
+      savedAt: '2026-07-18T12:00:00.000Z',
+      checksum: createStateChecksum(stateV2),
+      state: stateV2,
+    };
+
+    const parsed = parseSaveJson(JSON.stringify(saveV2));
+
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.value.state.schemaVersion).toBe(3);
+      expect(parsed.value.state.research.map((entry) => entry.empireId)).toEqual(
+        current.empires,
+      );
+    }
   });
 
   it('rejects malformed JSON without throwing', () => {
