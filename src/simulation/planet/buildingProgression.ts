@@ -124,8 +124,14 @@ export function completeBuilding(
   queueItemId: string,
 ): PlanetState {
   const definition = getBuildingDefinition(buildingId);
+  const queueItem = planet.buildQueue.find((item) => item.id === queueItemId);
 
-  if (definition === undefined) {
+  if (
+    definition === undefined ||
+    queueItem === undefined ||
+    queueItem.buildingId !== buildingId ||
+    queueItem.targetLevel !== targetLevel
+  ) {
     return planet;
   }
 
