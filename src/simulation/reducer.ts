@@ -1,3 +1,4 @@
+import { accrueAllPlanetEconomies } from './economy/planetEconomy';
 import { enqueueEvent, partitionDueEvents } from './eventQueue';
 import type {
   CommandLogEntry,
@@ -93,6 +94,7 @@ function advanceTime(
         ...state.clock,
         elapsedSeconds: targetTime,
       },
+      planets: accrueAllPlanetEconomies(state.planets, command.seconds),
       pendingEvents: pending,
       commandLog: appendCommand(state, command),
       eventLog: [...state.eventLog, ...executedEvents],
