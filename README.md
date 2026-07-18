@@ -6,7 +6,7 @@
 
 ## Текущий статус
 
-Проект прошёл технический каркас и первый планетарно-экономический прототип:
+Проект прошёл технический каркас и трёхзонный планетарно-экономический прототип:
 
 - Phaser 4 запускает seeded-галактику;
 - HTML/CSS отвечает за управленческий интерфейс;
@@ -14,19 +14,14 @@
 - добавлены persistence core и IndexedDB repository;
 - работает модель галактики с домашними системами;
 - поставлены общая визуальная оболочка и P1-ассеты «Эгиды»;
-- реализованы ресурсы, энергия и очередь строительства;
-- доступен рабочий экран планеты;
+- реализованы ресурсы, энергия, население, стабильность и очередь строительства;
+- планета использует три домена: Resource, Industry и Military;
+- Research, Shipyard, Defense и Fleet имеют отдельные маршруты;
 - проведён структурированный аудит Nemexia и официальной справки;
 - GitHub Actions проверяет lint, typecheck, tests и production build;
 - merge в `main` публикует GitHub Pages.
 
-Старый четырёхзонный планетарный прототип признан промежуточным. Следующий delivery batch мигрирует игру на три домена:
-
-```text
-resource
-industry
-military
-```
+Канонический план фиксирует **100 PR до Release 1.0**. После документационного PR #22 остаётся 78 implementation PR — от autosave и исследований до трёх фракций, автономных ботов, коалиций, эндгейма, Beta и релиза.
 
 ## Технологии
 
@@ -86,7 +81,8 @@ npm run preview
 - [Technical Architecture](docs/03-technical-architecture.md)
 - [Bot AI](docs/04-bot-ai.md)
 - [Simulation and Data](docs/05-simulation-and-data.md)
-- [Canonical Execution Roadmap](docs/16-execution-roadmap.md)
+- [Canonical PR #1–#100 Execution Roadmap](docs/16-execution-roadmap.md)
+- [Machine-readable Roadmap Index](docs/roadmap-pr-index.json)
 - [Full System Backlog](docs/06-roadmap.md)
 - [Development Rules](docs/07-development-rules.md)
 - [Originality and Assets](docs/08-originality-and-assets.md)
