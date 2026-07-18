@@ -1,0 +1,210 @@
+.commander-emblem {
+  display: block;
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgb(232 174 75 / 16%));
+}
+
+.faction-panel {
+  overflow: hidden;
+}
+
+.faction-showcase {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.faction-card {
+  --faction-accent: var(--cyan-400);
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 10px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--faction-accent) 24%, transparent);
+  border-radius: 7px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--faction-accent) 10%, transparent), transparent 48%),
+    rgb(3 11 18 / 72%);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 140ms ease,
+    background 140ms ease,
+    transform 140ms ease;
+}
+
+.faction-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  content: "";
+  background: var(--faction-accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--faction-accent) 60%, transparent);
+}
+
+.faction-card:hover,
+.faction-card:focus-visible {
+  border-color: color-mix(in srgb, var(--faction-accent) 58%, transparent);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--faction-accent) 18%, transparent), transparent 60%),
+    rgb(7 18 28 / 92%);
+  transform: translateX(2px);
+  outline: none;
+}
+
+.faction-card img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.faction-card__copy {
+  min-width: 0;
+}
+
+.faction-card__copy strong,
+.faction-card__copy small {
+  display: block;
+  min-width: 0;
+}
+
+.faction-card__copy strong {
+  overflow: hidden;
+  color: var(--ice-100);
+  font-size: 0.74rem;
+  font-weight: 680;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.faction-card__copy small {
+  margin-top: 3px;
+  overflow: hidden;
+  color: #718b9c;
+  font-size: 0.58rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.faction-card__action {
+  color: var(--faction-accent);
+  font-size: 1rem;
+  opacity: 0.72;
+}
+
+.faction-card--aegis {
+  --faction-accent: #e7a847;
+}
+
+.faction-card--synod {
+  --faction-accent: #53dcff;
+}
+
+.faction-card--veyra {
+  --faction-accent: #a8e85e;
+}
+
+.asset-dialog {
+  width: min(1500px, calc(100vw - 42px));
+  max-height: calc(100vh - 42px);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgb(71 199 241 / 30%);
+  border-radius: 12px;
+  background: #030810;
+  color: var(--ice-100);
+  box-shadow: 0 30px 100px rgb(0 0 0 / 72%);
+}
+
+.asset-dialog::backdrop {
+  background: rgb(0 3 8 / 82%);
+  backdrop-filter: blur(12px);
+}
+
+.asset-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 72px;
+  padding: 12px 16px 12px 20px;
+  border-bottom: 1px solid rgb(71 199 241 / 16%);
+  background: linear-gradient(90deg, rgb(12 31 48 / 97%), rgb(5 12 22 / 97%));
+}
+
+.asset-dialog__header h2 {
+  margin: 5px 0 0;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.dialog-close {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid rgb(71 199 241 / 22%);
+  border-radius: 7px;
+  background: rgb(15 40 57 / 58%);
+  color: #a9ccdc;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.dialog-close:hover,
+.dialog-close:focus-visible {
+  border-color: rgb(71 199 241 / 50%);
+  color: #eaf7ff;
+  outline: none;
+}
+
+.asset-dialog > img {
+  display: block;
+  width: 100%;
+  max-height: calc(100vh - 116px);
+  object-fit: contain;
+  background: #02050a;
+}
+
+@media (max-width: 1120px) {
+  .faction-panel {
+    grid-column: 1 / -1;
+  }
+
+  .faction-showcase {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .faction-card {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .faction-card__action {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .faction-showcase {
+    grid-template-columns: 1fr;
+  }
+
+  .asset-dialog {
+    width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+  }
+
+  .asset-dialog > img {
+    max-height: calc(100vh - 90px);
+  }
+}
