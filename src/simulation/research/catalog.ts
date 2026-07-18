@@ -1,0 +1,101 @@
+import type { ResearchDefinition } from './types';
+
+export const AEGIS_RESEARCH_CATALOG: readonly ResearchDefinition[] = [
+  {
+    id: 'technology.aegis.construction',
+    name: 'Инженерные системы',
+    factionId: 'aegis',
+    category: 'infrastructure',
+    description: 'Стандартизирует узлы строительства и сокращает время возведения инфраструктуры.',
+    maxLevel: 10,
+    baseCost: { metal: 520, crystal: 380, gas: 120 },
+    baseSeconds: 240,
+    requiredLaboratoryLevel: 1,
+    requirements: [],
+    effects: [{ type: 'CONSTRUCTION_SPEED', percentPerLevel: 5 }],
+    assetId: 'technology.aegis.construction',
+  },
+  {
+    id: 'technology.aegis.energy',
+    name: 'Энергосети',
+    factionId: 'aegis',
+    category: 'energy',
+    description: 'Повышает выход реакторов и устойчивость распределения энергии.',
+    maxLevel: 10,
+    baseCost: { metal: 420, crystal: 520, gas: 160 },
+    baseSeconds: 300,
+    requiredLaboratoryLevel: 1,
+    requirements: [{ technologyId: 'technology.aegis.construction', level: 1 }],
+    effects: [{ type: 'ENERGY_OUTPUT', percentPerLevel: 6 }],
+    assetId: 'technology.aegis.energy',
+  },
+  {
+    id: 'technology.aegis.sensors',
+    name: 'Сенсорные матрицы',
+    factionId: 'aegis',
+    category: 'intelligence',
+    description: 'Улучшает точность разведки и качество обнаружения дальних объектов.',
+    maxLevel: 10,
+    baseCost: { metal: 360, crystal: 640, gas: 220 },
+    baseSeconds: 360,
+    requiredLaboratoryLevel: 2,
+    requirements: [{ technologyId: 'technology.aegis.energy', level: 1 }],
+    effects: [{ type: 'SENSOR_STRENGTH', pointsPerLevel: 1 }],
+    assetId: 'technology.aegis.sensors',
+  },
+  {
+    id: 'technology.aegis.propulsion',
+    name: 'Импульсные двигатели',
+    factionId: 'aegis',
+    category: 'navigation',
+    description: 'Повышает маршевую скорость кораблей и эффективность дальних перелётов.',
+    maxLevel: 10,
+    baseCost: { metal: 680, crystal: 460, gas: 420 },
+    baseSeconds: 480,
+    requiredLaboratoryLevel: 2,
+    requirements: [{ technologyId: 'technology.aegis.sensors', level: 1 }],
+    effects: [{ type: 'FLEET_SPEED', percentPerLevel: 5 }],
+    assetId: 'technology.aegis.propulsion',
+  },
+  {
+    id: 'technology.aegis.armor',
+    name: 'Композитная броня',
+    factionId: 'aegis',
+    category: 'defense',
+    description: 'Усиливает корпуса кораблей и защитные конструкции планеты.',
+    maxLevel: 10,
+    baseCost: { metal: 760, crystal: 420, gas: 260 },
+    baseSeconds: 540,
+    requiredLaboratoryLevel: 3,
+    requirements: [{ technologyId: 'technology.aegis.construction', level: 2 }],
+    effects: [{ type: 'ARMOR_STRENGTH', percentPerLevel: 5 }],
+    assetId: 'technology.aegis.armor',
+  },
+  {
+    id: 'technology.aegis.weapons',
+    name: 'Системы наведения',
+    factionId: 'aegis',
+    category: 'weapons',
+    description: 'Синхронизирует огневые контуры и повышает эффективность вооружения.',
+    maxLevel: 10,
+    baseCost: { metal: 620, crystal: 620, gas: 360 },
+    baseSeconds: 600,
+    requiredLaboratoryLevel: 3,
+    requirements: [
+      { technologyId: 'technology.aegis.sensors', level: 2 },
+      { technologyId: 'technology.aegis.energy', level: 2 },
+    ],
+    effects: [{ type: 'WEAPON_STRENGTH', percentPerLevel: 5 }],
+    assetId: 'technology.aegis.weapons',
+  },
+] as const;
+
+const RESEARCH_BY_ID = new Map(
+  AEGIS_RESEARCH_CATALOG.map((definition) => [definition.id, definition]),
+);
+
+export function getResearchDefinition(
+  technologyId: string,
+): ResearchDefinition | undefined {
+  return RESEARCH_BY_ID.get(technologyId);
+}
