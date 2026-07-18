@@ -74,10 +74,10 @@ function readResearchLevels(value: unknown): Readonly<Record<string, number>> | 
 
   const levels: Record<string, number> = {};
   for (const [technologyId, level] of Object.entries(value)) {
-    if (!Number.isInteger(level) || (level as number) < 0) {
+    if (typeof level !== 'number' || !Number.isInteger(level) || level < 0) {
       return undefined;
     }
-    levels[technologyId] = level as number;
+    levels[technologyId] = level;
   }
   return levels;
 }
