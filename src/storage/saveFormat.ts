@@ -20,6 +20,10 @@ function isNonNegativeInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0;
 }
 
+function isCountRecord(value: unknown): boolean {
+  return isRecord(value) && Object.values(value).every(isNonNegativeInteger);
+}
+
 function isGalaxy(value: unknown): boolean {
   return (
     isRecord(value) &&
@@ -34,7 +38,7 @@ function isGalaxy(value: unknown): boolean {
 function isStateShell(value: unknown): value is Record<string, unknown> {
   if (
     !isRecord(value) ||
-    (value.schemaVersion !== 1 && value.schemaVersion !== 2 && value.schemaVersion !== 3) ||
+    ![1, 2, 3, 4].includes(value.schemaVersion as number) ||
     typeof value.seed !== 'number' ||
     !Number.isInteger(value.seed) ||
     !isRecord(value.clock)
@@ -55,13 +59,41 @@ function isStateShell(value: unknown): value is Record<string, unknown> {
   );
 }
 
+function isResourceCost(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isNonNegativeInteger(value.metal) &&
+    isNonNegativeInteger(value.crystal) &&
+    isNonNegativeInteger(value.gas)
+  );
+}
+
+function isProductionQueueItem(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.unitId === 'string' &&
+    (value.kind === 'ship' || value.kind === 'defense') &&
+    isNonNegativeInteger(value.quantity) &&
+    value.quantity > 0 &&
+    isNonNegativeInteger(value.startedAt) &&
+    isNonNegativeInteger(value.completesAt) &&
+    value.completesAt >= value.startedAt &&
+    isResourceCost(value.cost) &&
+    isNonNegativeInteger(value.populationReserved) &&
+    isNonNegativeInteger(value.hangarReserved)
+  );
+}
+
 function isCurrentPlanet(value: unknown): boolean {
   if (
     !isRecord(value) ||
     !isRecord(value.zones) ||
     !Array.isArray(value.buildings) ||
     !Array.isArray(value.buildQueue) ||
-    !isRecord(value.economy)
+    !isRecord(value.economy) ||
+    !isRecord(value.inventory) ||
+    !isRecord(value.productionQueues)
   ) {
     return false;
   }
@@ -73,7 +105,7 @@ function isCurrentPlanet(value: unknown): boolean {
     return false;
   }
 
-  return PLANET_ZONE_IDS.every((zoneId) => {
+  const validZones = PLANET_ZONE_IDS.every((zoneId) => {
     const zone = zones[zoneId];
     return (
       isRecord(zone) &&
@@ -83,14 +115,15 @@ function isCurrentPlanet(value: unknown): boolean {
       zone.usedFields <= zone.fieldLimit
     );
   });
-}
 
-function isResourceCost(value: unknown): boolean {
   return (
-    isRecord(value) &&
-    isNonNegativeInteger(value.metal) &&
-    isNonNegativeInteger(value.crystal) &&
-    isNonNegativeInteger(value.gas)
+    validZones &&
+    isCountRecord(value.inventory.ships) &&
+    isCountRecord(value.inventory.defenses) &&
+    Array.isArray(value.productionQueues.shipyard) &&
+    value.productionQueues.shipyard.every(isProductionQueueItem) &&
+    Array.isArray(value.productionQueues.defense) &&
+    value.productionQueues.defense.every(isProductionQueueItem)
   );
 }
 
@@ -127,7 +160,7 @@ function isResearchState(value: unknown): boolean {
 function isGameState(value: unknown): value is GameState {
   return (
     isStateShell(value) &&
-    value.schemaVersion === 3 &&
+    value.schemaVersion === 4 &&
     Array.isArray(value.empires) &&
     Array.isArray(value.planets) &&
     value.planets.every(isCurrentPlanet) &&

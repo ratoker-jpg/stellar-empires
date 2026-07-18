@@ -23,7 +23,7 @@ describe('save format', () => {
     const legacyState = {
       ...withoutResearch,
       schemaVersion: 1,
-      planets: current.planets.map((planet) => ({
+      planets: current.planets.map(({ inventory: _inventory, productionQueues: _queues, ...planet }) => ({
         ...planet,
         zones: {
           industrial: { id: 'industrial', fieldLimit: 12, usedFields: 6 },
@@ -57,37 +57,43 @@ describe('save format', () => {
     );
 
     expect(parsed.value.formatVersion).toBe(2);
-    expect(parsed.value.state.schemaVersion).toBe(3);
+    expect(parsed.value.state.schemaVersion).toBe(4);
     expect(Object.keys(playerAfter?.zones ?? {}).sort()).toEqual(
       ['industry', 'military', 'resource'].sort(),
     );
     expect(playerAfter?.economy).toEqual(playerBefore?.economy);
     expect(playerAfter?.buildings).toEqual(playerBefore?.buildings);
     expect(playerAfter?.buildQueue).toEqual(playerBefore?.buildQueue);
+    expect(playerAfter?.inventory).toEqual({ ships: {}, defenses: {} });
+    expect(playerAfter?.productionQueues).toEqual({ shipyard: [], defense: [] });
     expect(parsed.value.state.research).toHaveLength(current.empires.length);
-    expect(parsed.value.state.research.every((entry) => entry.queue.length === 0)).toBe(true);
   });
 
-  it('migrates schema v2 by adding empty research progress', () => {
-    const current = createInitialGameState('schema-v2');
-    const { research: _research, ...withoutResearch } = current;
-    const stateV2 = { ...withoutResearch, schemaVersion: 2 };
-    const saveV2 = {
+  it('migrates schema v3 by adding empty unit inventories and queues', () => {
+    const current = createInitialGameState('schema-v3');
+    const stateV3 = {
+      ...current,
+      schemaVersion: 3,
+      planets: current.planets.map(({ inventory: _inventory, productionQueues: _queues, ...planet }) => planet),
+    };
+    const saveV3 = {
       formatVersion: 2,
-      slotId: 'v2-slot',
+      slotId: 'v3-slot',
       savedAt: '2026-07-18T12:00:00.000Z',
-      checksum: createStateChecksum(stateV2),
-      state: stateV2,
+      checksum: createStateChecksum(stateV3),
+      state: stateV3,
     };
 
-    const parsed = parseSaveJson(JSON.stringify(saveV2));
+    const parsed = parseSaveJson(JSON.stringify(saveV3));
 
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(3);
-      expect(parsed.value.state.research.map((entry) => entry.empireId)).toEqual(
-        current.empires,
-      );
+      expect(parsed.value.state.schemaVersion).toBe(4);
+      expect(parsed.value.state.planets.every(
+        (planet) =>
+          Object.keys(planet.inventory.ships).length === 0 &&
+          planet.productionQueues.shipyard.length === 0,
+      )).toBe(true);
     }
   });
 

@@ -8,6 +8,10 @@ import { createPlanetZones } from '../simulation/planet/zones';
 import { createInitialResearchStates } from '../simulation/research/researchState';
 import type { EmpireResearchState } from '../simulation/research/types';
 import type { GameState } from '../simulation/types';
+import type {
+  PlanetProductionQueues,
+  PlanetUnitInventory,
+} from '../simulation/units/types';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -48,14 +52,58 @@ function normalizeEconomy(
   return refreshPlanetEconomy(value as unknown as PlanetEconomyState, buildings);
 }
 
+function readCountRecord(value: unknown): Readonly<Record<string, number>> | undefined {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+
+  const counts: Record<string, number> = {};
+  for (const [id, count] of Object.entries(value)) {
+    if (typeof count !== 'number' || !Number.isInteger(count) || count < 0) {
+      return undefined;
+    }
+    counts[id] = count;
+  }
+  return counts;
+}
+
+function normalizeInventory(value: unknown): PlanetUnitInventory | undefined {
+  if (value === undefined) {
+    return { ships: {}, defenses: {} };
+  }
+  if (!isRecord(value)) {
+    return undefined;
+  }
+  const ships = readCountRecord(value.ships);
+  const defenses = readCountRecord(value.defenses);
+  return ships === undefined || defenses === undefined
+    ? undefined
+    : { ships, defenses };
+}
+
+function normalizeProductionQueues(value: unknown): PlanetProductionQueues | undefined {
+  if (value === undefined) {
+    return { shipyard: [], defense: [] };
+  }
+  if (!isRecord(value) || !Array.isArray(value.shipyard) || !Array.isArray(value.defense)) {
+    return undefined;
+  }
+  return {
+    shipyard: value.shipyard as PlanetProductionQueues['shipyard'],
+    defense: value.defense as PlanetProductionQueues['defense'],
+  };
+}
+
 function migratePlanet(value: unknown): Record<string, unknown> | undefined {
   if (!isRecord(value)) {
     return undefined;
   }
 
   const buildings = readBuildings(value.buildings);
+  const inventory = normalizeInventory(value.inventory);
+  const productionQueues = normalizeProductionQueues(value.productionQueues);
 
-  if (buildings === undefined) {
+  if (buildings === undefined || inventory === undefined || productionQueues === undefined) {
     return undefined;
   }
 
@@ -64,6 +112,8 @@ function migratePlanet(value: unknown): Record<string, unknown> | undefined {
     buildings,
     zones: createPlanetZones(buildings),
     economy: normalizeEconomy(value.economy, buildings),
+    inventory,
+    productionQueues,
   };
 }
 
@@ -124,7 +174,7 @@ function readResearchStates(
 export function migrateGameState(value: unknown): GameState | undefined {
   if (
     !isRecord(value) ||
-    (value.schemaVersion !== 1 && value.schemaVersion !== 2 && value.schemaVersion !== 3)
+    ![1, 2, 3, 4].includes(value.schemaVersion as number)
   ) {
     return undefined;
   }
@@ -156,7 +206,7 @@ export function migrateGameState(value: unknown): GameState | undefined {
 
   return {
     ...value,
-    schemaVersion: 3,
+    schemaVersion: 4,
     planets,
     research,
   } as unknown as GameState;
