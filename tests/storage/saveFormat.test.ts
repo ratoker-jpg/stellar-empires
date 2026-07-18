@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { createStateChecksum } from '../../src/simulation/checksum';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import {
   createSaveEnvelope,
@@ -14,6 +15,54 @@ describe('save format', () => {
     const parsed = parseSaveJson(serializeSave(save));
 
     expect(parsed).toEqual({ ok: true, value: save });
+  });
+
+  it('migrates a legacy four-zone save without losing progress', () => {
+    const current = createInitialGameState('legacy-save');
+    const legacyState = {
+      ...current,
+      schemaVersion: 1,
+      planets: current.planets.map((planet) => ({
+        ...planet,
+        zones: {
+          industrial: { id: 'industrial', fieldLimit: 12, usedFields: 6 },
+          military: { id: 'military', fieldLimit: 8, usedFields: 0 },
+          science: { id: 'science', fieldLimit: 8, usedFields: 0 },
+          orbital: { id: 'orbital', fieldLimit: 4, usedFields: 0 },
+        },
+      })),
+    };
+    const legacySave = {
+      formatVersion: 1,
+      slotId: 'legacy-slot',
+      savedAt: '2026-07-18T12:00:00.000Z',
+      checksum: createStateChecksum(legacyState),
+      state: legacyState,
+    };
+
+    const parsed = parseSaveJson(JSON.stringify(legacySave));
+
+    expect(parsed.ok).toBe(true);
+
+    if (!parsed.ok) {
+      return;
+    }
+
+    const playerBefore = legacyState.planets.find(
+      (planet) => planet.ownerEmpireId === 'player',
+    );
+    const playerAfter = parsed.value.state.planets.find(
+      (planet) => planet.ownerEmpireId === 'player',
+    );
+
+    expect(parsed.value.formatVersion).toBe(2);
+    expect(parsed.value.state.schemaVersion).toBe(2);
+    expect(Object.keys(playerAfter?.zones ?? {}).sort()).toEqual(
+      ['industry', 'military', 'resource'].sort(),
+    );
+    expect(playerAfter?.economy).toEqual(playerBefore?.economy);
+    expect(playerAfter?.buildings).toEqual(playerBefore?.buildings);
+    expect(playerAfter?.buildQueue).toEqual(playerBefore?.buildQueue);
   });
 
   it('rejects malformed JSON without throwing', () => {

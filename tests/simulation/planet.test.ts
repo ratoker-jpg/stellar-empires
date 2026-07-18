@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { AEGIS_BUILDING_CATALOG } from '../../src/simulation/planet/buildingCatalog';
 
-const ZONE_IDS = ['industrial', 'military', 'science', 'orbital'] as const;
+const ZONE_IDS = ['resource', 'industry', 'military'] as const;
 
 describe('planet domain', () => {
   it('creates a colony state for every owned galaxy planet', () => {
@@ -17,7 +17,7 @@ describe('planet domain', () => {
     );
   });
 
-  it('gives every colony exactly four independent zones', () => {
+  it('gives every colony exactly three independent zones', () => {
     const state = createInitialGameState('planet-zones');
 
     for (const planet of state.planets) {
@@ -32,7 +32,7 @@ describe('planet domain', () => {
     }
   });
 
-  it('starts Aegis colonies with the basic industrial chain', () => {
+  it('starts Aegis colonies with separate resource and industry chains', () => {
     const state = createInitialGameState('aegis-start');
     const playerPlanet = state.planets.find((planet) => planet.ownerEmpireId === 'player');
 
@@ -47,7 +47,9 @@ describe('planet domain', () => {
         'building.aegis.power-plant',
       ]),
     );
-    expect(playerPlanet?.zones.industrial.usedFields).toBe(6);
+    expect(playerPlanet?.zones.resource.usedFields).toBe(4);
+    expect(playerPlanet?.zones.industry.usedFields).toBe(2);
+    expect(playerPlanet?.zones.military.usedFields).toBe(0);
   });
 
   it('keeps every building definition inside exactly one valid zone', () => {

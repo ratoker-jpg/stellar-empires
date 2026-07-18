@@ -1,5 +1,7 @@
 import { createStateChecksum } from '../simulation/checksum';
+import { PLANET_ZONE_IDS } from '../simulation/planet/zones';
 import type { GameState } from '../simulation/types';
+import { migrateGameState } from './migrateGameState';
 import {
   SAVE_FORMAT_VERSION,
   type SaveEnvelope,
@@ -29,26 +31,66 @@ function isGalaxy(value: unknown): boolean {
   );
 }
 
-function isGameState(value: unknown): value is GameState {
-  if (!isRecord(value) || value.schemaVersion !== 1 || typeof value.seed !== 'number') {
+function isStateShell(value: unknown): value is Record<string, unknown> {
+  if (
+    !isRecord(value) ||
+    (value.schemaVersion !== 1 && value.schemaVersion !== 2) ||
+    typeof value.seed !== 'number' ||
+    !Number.isInteger(value.seed) ||
+    !isRecord(value.clock)
+  ) {
     return false;
   }
-
-  if (!Number.isInteger(value.seed) || !isRecord(value.clock)) {
-    return false;
-  }
-
-  const clock = value.clock;
 
   return (
-    typeof clock.startedAt === 'string' &&
-    isNonNegativeInteger(clock.elapsedSeconds) &&
+    typeof value.clock.startedAt === 'string' &&
+    isNonNegativeInteger(value.clock.elapsedSeconds) &&
     isStringArray(value.empires) &&
     isGalaxy(value.galaxy) &&
+    Array.isArray(value.planets) &&
     isNonNegativeInteger(value.nextEventSequence) &&
     Array.isArray(value.pendingEvents) &&
     Array.isArray(value.commandLog) &&
     Array.isArray(value.eventLog)
+  );
+}
+
+function isCurrentPlanet(value: unknown): boolean {
+  if (
+    !isRecord(value) ||
+    !isRecord(value.zones) ||
+    !Array.isArray(value.buildings) ||
+    !Array.isArray(value.buildQueue) ||
+    !isRecord(value.economy)
+  ) {
+    return false;
+  }
+
+  const zones = value.zones;
+  const zoneKeys = Object.keys(zones).sort();
+
+  if (zoneKeys.join('|') !== [...PLANET_ZONE_IDS].sort().join('|')) {
+    return false;
+  }
+
+  return PLANET_ZONE_IDS.every((zoneId) => {
+    const zone = zones[zoneId];
+    return (
+      isRecord(zone) &&
+      zone.id === zoneId &&
+      isNonNegativeInteger(zone.fieldLimit) &&
+      isNonNegativeInteger(zone.usedFields) &&
+      zone.usedFields <= zone.fieldLimit
+    );
+  });
+}
+
+function isGameState(value: unknown): value is GameState {
+  return (
+    isStateShell(value) &&
+    value.schemaVersion === 2 &&
+    Array.isArray(value.planets) &&
+    value.planets.every(isCurrentPlanet)
   );
 }
 
@@ -96,7 +138,7 @@ export function parseSaveJson(json: string): SaveParseResult {
     };
   }
 
-  if (parsed.formatVersion !== SAVE_FORMAT_VERSION) {
+  if (parsed.formatVersion !== 1 && parsed.formatVersion !== SAVE_FORMAT_VERSION) {
     return {
       ok: false,
       code: 'UNSUPPORTED_SAVE_VERSION',
@@ -110,7 +152,7 @@ export function parseSaveJson(json: string): SaveParseResult {
     parsed.slotId.trim().length === 0 ||
     typeof parsed.savedAt !== 'string' ||
     typeof parsed.checksum !== 'string' ||
-    !isGameState(parsed.state)
+    !isStateShell(parsed.state)
   ) {
     return {
       ok: false,
@@ -119,27 +161,37 @@ export function parseSaveJson(json: string): SaveParseResult {
     };
   }
 
-  const save: SaveEnvelope = {
-    formatVersion: SAVE_FORMAT_VERSION,
-    slotId: parsed.slotId,
-    savedAt: parsed.savedAt,
-    checksum: parsed.checksum,
-    state: parsed.state,
-  };
+  const actualChecksum = createStateChecksum(parsed.state);
 
-  const actualChecksum = createStateChecksum(save.state);
-
-  if (actualChecksum !== save.checksum) {
+  if (actualChecksum !== parsed.checksum) {
     return {
       ok: false,
       code: 'CHECKSUM_MISMATCH',
       message: 'Save data checksum does not match its state.',
       details: {
-        expected: save.checksum,
+        expected: parsed.checksum,
         actual: actualChecksum,
       },
     };
   }
+
+  const state = migrateGameState(parsed.state);
+
+  if (!isGameState(state)) {
+    return {
+      ok: false,
+      code: 'SAVE_MIGRATION_FAILED',
+      message: 'Save data could not be migrated to the current schema.',
+    };
+  }
+
+  const save: SaveEnvelope = {
+    formatVersion: SAVE_FORMAT_VERSION,
+    slotId: parsed.slotId,
+    savedAt: parsed.savedAt,
+    checksum: createStateChecksum(state),
+    state,
+  };
 
   return { ok: true, value: save };
 }

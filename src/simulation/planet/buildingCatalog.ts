@@ -25,7 +25,7 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     id: 'building.aegis.command',
     name: 'Центр командования',
     factionId: 'aegis',
-    zoneId: 'industrial',
+    zoneId: 'industry',
     fieldCost: 2,
     maxLevel: 10,
     assetId: 'building.aegis.command',
@@ -41,7 +41,7 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     id: 'building.aegis.metal-extractor',
     name: 'Металлодобывающий комплекс',
     factionId: 'aegis',
-    zoneId: 'industrial',
+    zoneId: 'resource',
     fieldCost: 1,
     maxLevel: 20,
     assetId: 'building.aegis.metal-extractor',
@@ -55,9 +55,9 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
   },
   {
     id: 'building.aegis.crystal-refinery',
-    name: 'Кристаллический завод',
+    name: 'Минеральный обогатитель',
     factionId: 'aegis',
-    zoneId: 'industrial',
+    zoneId: 'resource',
     fieldCost: 1,
     maxLevel: 20,
     assetId: 'building.aegis.crystal-refinery',
@@ -73,7 +73,7 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     id: 'building.aegis.gas-extractor',
     name: 'Газовый экстрактор',
     factionId: 'aegis',
-    zoneId: 'industrial',
+    zoneId: 'resource',
     fieldCost: 1,
     maxLevel: 20,
     assetId: 'building.aegis.gas-extractor',
@@ -89,7 +89,7 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     id: 'building.aegis.power-plant',
     name: 'Энергетический реактор',
     factionId: 'aegis',
-    zoneId: 'industrial',
+    zoneId: 'resource',
     fieldCost: 1,
     maxLevel: 20,
     assetId: 'building.aegis.power-plant',
@@ -104,7 +104,7 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     id: 'building.aegis.research-lab',
     name: 'Исследовательский центр',
     factionId: 'aegis',
-    zoneId: 'science',
+    zoneId: 'industry',
     fieldCost: 2,
     maxLevel: 15,
     assetId: 'building.aegis.research-lab',
@@ -119,7 +119,7 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     id: 'building.aegis.shipyard',
     name: 'Орбитальная верфь',
     factionId: 'aegis',
-    zoneId: 'military',
+    zoneId: 'industry',
     fieldCost: 3,
     maxLevel: 15,
     assetId: 'building.aegis.shipyard',
@@ -134,7 +134,7 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
     id: 'building.aegis.sensor-array',
     name: 'Сенсорный комплекс',
     factionId: 'aegis',
-    zoneId: 'science',
+    zoneId: 'military',
     fieldCost: 1,
     maxLevel: 15,
     assetId: 'building.aegis.sensor-array',
@@ -147,7 +147,9 @@ export const AEGIS_BUILDING_CATALOG: readonly BuildingDefinition[] = [
   },
 ] as const;
 
-const BUILDINGS_BY_ID = new Map(AEGIS_BUILDING_CATALOG.map((definition) => [definition.id, definition]));
+const BUILDINGS_BY_ID = new Map(
+  AEGIS_BUILDING_CATALOG.map((definition) => [definition.id, definition]),
+);
 
 export function getBuildingDefinition(buildingId: string): BuildingDefinition | undefined {
   return BUILDINGS_BY_ID.get(buildingId);
