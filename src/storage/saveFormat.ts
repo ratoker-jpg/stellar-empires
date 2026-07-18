@@ -128,6 +128,7 @@ function isGameState(value: unknown): value is GameState {
   return (
     isStateShell(value) &&
     value.schemaVersion === 3 &&
+    Array.isArray(value.empires) &&
     Array.isArray(value.planets) &&
     value.planets.every(isCurrentPlanet) &&
     Array.isArray(value.research) &&
