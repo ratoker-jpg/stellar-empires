@@ -1,3 +1,5 @@
+import type { ResourceCost } from './economy/types';
+import type { FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
 import type { PlanetState } from './planet/types';
 import type { EmpireResearchState } from './research/types';
@@ -83,6 +85,18 @@ export type GameCommand =
       readonly empireId: string;
       readonly planetId: string;
       readonly queueItemId: string;
+    }
+  | {
+      readonly type: 'CREATE_FLEET';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly ships: Readonly<Record<string, number>>;
+      readonly cargo: ResourceCost;
+    }
+  | {
+      readonly type: 'DISBAND_FLEET';
+      readonly empireId: string;
+      readonly fleetId: string;
     };
 
 export interface CommandLogEntry {
@@ -96,13 +110,14 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 4;
+  readonly schemaVersion: 5;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
   readonly galaxy: GalaxyModel;
   readonly planets: readonly PlanetState[];
   readonly research: readonly EmpireResearchState[];
+  readonly fleets: readonly FleetState[];
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];
