@@ -66,14 +66,15 @@ function isCurrentPlanet(value: unknown): boolean {
     return false;
   }
 
-  const zoneKeys = Object.keys(value.zones).sort();
+  const zones = value.zones;
+  const zoneKeys = Object.keys(zones).sort();
 
   if (zoneKeys.join('|') !== [...PLANET_ZONE_IDS].sort().join('|')) {
     return false;
   }
 
   return PLANET_ZONE_IDS.every((zoneId) => {
-    const zone = value.zones[zoneId];
+    const zone = zones[zoneId];
     return (
       isRecord(zone) &&
       zone.id === zoneId &&
