@@ -1,4 +1,8 @@
 import type { PlanetEconomyState, ResourceCost } from '../economy/types';
+import type {
+  PlanetProductionQueues,
+  PlanetUnitInventory,
+} from '../units/types';
 
 export type PlanetZoneId = 'resource' | 'industry' | 'military';
 
@@ -36,4 +40,6 @@ export interface PlanetState {
   readonly buildings: readonly PlanetBuildingState[];
   readonly buildQueue: readonly PlanetBuildQueueItem[];
   readonly economy: PlanetEconomyState;
+  readonly inventory: PlanetUnitInventory;
+  readonly productionQueues: PlanetProductionQueues;
 }
