@@ -1,4 +1,4 @@
-import type { PlanetEconomyState } from '../economy/types';
+import type { PlanetEconomyState, ResourceCost } from '../economy/types';
 
 export type PlanetZoneId = 'industrial' | 'military' | 'science' | 'orbital';
 
@@ -15,6 +15,15 @@ export interface PlanetBuildingState {
   readonly level: number;
 }
 
+export interface PlanetBuildQueueItem {
+  readonly id: string;
+  readonly buildingId: string;
+  readonly targetLevel: number;
+  readonly startedAt: number;
+  readonly completesAt: number;
+  readonly cost: ResourceCost;
+}
+
 export interface PlanetState {
   readonly id: string;
   readonly galaxyPlanetId: string;
@@ -25,5 +34,6 @@ export interface PlanetState {
   readonly factionId: FactionId;
   readonly zones: Readonly<Record<PlanetZoneId, PlanetZoneState>>;
   readonly buildings: readonly PlanetBuildingState[];
+  readonly buildQueue: readonly PlanetBuildQueueItem[];
   readonly economy: PlanetEconomyState;
 }
