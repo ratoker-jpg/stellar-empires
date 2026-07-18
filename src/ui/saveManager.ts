@@ -2,8 +2,8 @@ import type { GameState } from '../simulation/types';
 import { AUTOSAVE_SLOT_ID } from '../storage/AutoSaveController';
 import {
   AUTOSAVE_SNAPSHOT_SLOT_ID,
+  type SaveManager,
   type SaveSlotSummary,
-  SaveManager,
 } from '../storage/SaveManager';
 
 export interface SaveManagerUiOptions {
