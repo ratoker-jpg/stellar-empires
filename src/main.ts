@@ -15,7 +15,10 @@ import {
 import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
-import { mountPlanetScreen } from './ui/planetScreen';
+import {
+  applyPlanetScreenCommand,
+  mountPlanetScreen,
+} from './ui/planetScreen';
 import { mountResearchScreen } from './ui/researchScreen';
 import { mountSaveManager } from './ui/saveManager';
 import { renderAssetShowcases } from './ui/showcase';
@@ -95,7 +98,10 @@ async function bootstrap(): Promise<void> {
     runtimeState = state;
     autosave?.request(state);
   });
-  mountResearchScreen({ getState: () => runtimeState });
+  mountResearchScreen({
+    getState: () => runtimeState,
+    execute: applyPlanetScreenCommand,
+  });
 
   if (saveManager !== undefined) {
     mountSaveManager({
