@@ -2,17 +2,16 @@ import { refreshPlanetEconomy } from '../economy/planetEconomy';
 import type { PlanetEconomyState, ResourceCost, ResourceId } from '../economy/types';
 import type { BuildingDefinition, BuildingRequirement } from './buildingCatalog';
 import { getBuildingDefinition } from './buildingCatalog';
+import { getResourceProductionBonusPercent } from './specialization';
 import type { PlanetBuildingState, PlanetState } from './types';
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
 
 function scaleInteger(base: number, level: number, percent: number): number {
   let value = base;
-
   for (let currentLevel = 1; currentLevel < level; currentLevel += 1) {
     value = Math.ceil((value * percent) / 100);
   }
-
   return value;
 }
 
@@ -46,12 +45,15 @@ export function findMissingRequirements(
   requirements: readonly BuildingRequirement[],
 ): readonly BuildingRequirement[] {
   return requirements.filter(
-    (requirement) => getBuildingLevel(planet.buildings, requirement.buildingId) < requirement.level,
+    (requirement) =>
+      getBuildingLevel(planet.buildings, requirement.buildingId) < requirement.level,
   );
 }
 
 export function canAfford(economy: PlanetEconomyState, cost: ResourceCost): boolean {
-  return RESOURCE_IDS.every((resourceId) => economy.resources[resourceId].amount >= cost[resourceId]);
+  return RESOURCE_IDS.every(
+    (resourceId) => economy.resources[resourceId].amount >= cost[resourceId],
+  );
 }
 
 export function spendResources(
@@ -61,7 +63,6 @@ export function spendResources(
   if (!canAfford(economy, cost)) {
     throw new Error('Cannot spend resources that are not available.');
   }
-
   return {
     ...economy,
     resources: {
@@ -88,7 +89,6 @@ export function refundResources(
 ): PlanetEconomyState {
   const refund = (resourceId: ResourceId): number =>
     Math.floor((cost[resourceId] * refundPermille) / 1_000);
-
   return {
     ...economy,
     resources: {
@@ -125,7 +125,6 @@ export function completeBuilding(
 ): PlanetState {
   const definition = getBuildingDefinition(buildingId);
   const queueItem = planet.buildQueue.find((item) => item.id === queueItemId);
-
   if (
     definition === undefined ||
     queueItem === undefined ||
@@ -136,7 +135,6 @@ export function completeBuilding(
   }
 
   const currentLevel = getBuildingLevel(planet.buildings, buildingId);
-
   if (currentLevel >= targetLevel) {
     return {
       ...planet,
@@ -144,12 +142,16 @@ export function completeBuilding(
     };
   }
 
-  const existing = planet.buildings.find((building) => building.buildingId === buildingId);
+  const existing = planet.buildings.find(
+    (building) => building.buildingId === buildingId,
+  );
   const buildings: readonly PlanetBuildingState[] =
     existing === undefined
       ? [...planet.buildings, { buildingId, level: targetLevel }]
       : planet.buildings.map((building) =>
-          building.buildingId === buildingId ? { ...building, level: targetLevel } : building,
+          building.buildingId === buildingId
+            ? { ...building, level: targetLevel }
+            : building,
         );
   const zones: PlanetState['zones'] =
     currentLevel === 0
@@ -157,11 +159,17 @@ export function completeBuilding(
           ...planet.zones,
           [definition.zoneId]: {
             ...planet.zones[definition.zoneId],
-            usedFields: planet.zones[definition.zoneId].usedFields + definition.fieldCost,
+            usedFields:
+              planet.zones[definition.zoneId].usedFields + definition.fieldCost,
           },
         }
       : planet.zones;
-  const economy = refreshPlanetEconomy(planet.economy, buildings);
+  const economy = refreshPlanetEconomy(
+    planet.economy,
+    buildings,
+    0,
+    getResourceProductionBonusPercent(planet.specialization),
+  );
 
   return {
     ...planet,
