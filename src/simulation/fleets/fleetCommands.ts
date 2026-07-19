@@ -157,7 +157,8 @@ export function disbandFleet(
     return { ok: false, code: 'FLEET_NOT_STATIONED', message: 'Only a stationed fleet can be disbanded.' };
   }
 
-  const planet = state.planets.find((candidate) => candidate.id === fleet.location.planetId);
+  const fleetPlanetId = fleet.location.planetId;
+  const planet = state.planets.find((candidate) => candidate.id === fleetPlanetId);
   if (planet === undefined || planet.ownerEmpireId !== command.empireId) {
     return { ok: false, code: 'FLEET_PLANET_NOT_AVAILABLE', message: 'Fleet planet is unavailable.' };
   }
