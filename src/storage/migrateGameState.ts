@@ -139,7 +139,8 @@ function readFleets(value: unknown): readonly FleetState[] | undefined {
           item.mission.kind === 'transport' ||
           item.mission.kind === 'scout' ||
           item.mission.kind === 'attack' ||
-          item.mission.kind === 'recycle') &&
+          item.mission.kind === 'recycle' ||
+          item.mission.kind === 'colonize') &&
         typeof item.mission.targetPlanetId === 'string'
           ? {
               kind: item.mission.kind,
