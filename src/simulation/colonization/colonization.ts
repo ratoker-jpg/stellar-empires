@@ -67,6 +67,7 @@ export function createColonyPlanet(
     name: `${location.system.name} ${location.planet.position}`,
     ownerEmpireId: empireId,
     factionId: 'aegis',
+    specialization: 'balanced',
     zones: createPlanetZones(buildings),
     buildings,
     buildQueue: [],
@@ -86,9 +87,7 @@ export function updateGalaxyPlanetOwner(
     systems: galaxy.systems.map((system) => ({
       ...system,
       planets: system.planets.map((planet) =>
-        planet.id === galaxyPlanetId
-          ? { ...planet, ownerEmpireId }
-          : planet,
+        planet.id === galaxyPlanetId ? { ...planet, ownerEmpireId } : planet,
       ),
     })),
   };
@@ -100,7 +99,6 @@ function unloadCargo(
 ): { readonly colony: PlanetState; readonly cargo: ResourceCost } {
   const resources = { ...colony.economy.resources };
   const remaining = { ...cargo };
-
   for (const resourceId of ['metal', 'crystal', 'gas'] as const) {
     const stock = resources[resourceId];
     const accepted = Math.min(
@@ -110,12 +108,8 @@ function unloadCargo(
     resources[resourceId] = { ...stock, amount: stock.amount + accepted };
     remaining[resourceId] -= accepted;
   }
-
   return {
-    colony: {
-      ...colony,
-      economy: { ...colony.economy, resources },
-    },
+    colony: { ...colony, economy: { ...colony.economy, resources } },
     cargo: remaining,
   };
 }
@@ -136,11 +130,8 @@ export function resolveColonization(
     location === undefined ||
     !isColonizableGalaxyPlanet(location.planet) ||
     state.planets.some((planet) => planet.galaxyPlanetId === galaxyPlanetId) ||
-    getEmpireColonyCount(state, fleet.empireId) >=
-      getColonyLimit(state, fleet.empireId)
-  ) {
-    return undefined;
-  }
+    getEmpireColonyCount(state, fleet.empireId) >= getColonyLimit(state, fleet.empireId)
+  ) return undefined;
 
   const colonyShipCount = fleet.ships['ship.aegis.colony'] ?? 0;
   if (colonyShipCount <= 0 || getColonizationLevel(state, fleet.empireId) <= 0) {
@@ -165,7 +156,6 @@ export function resolveColonization(
           mission: null,
         }
       : undefined;
-
   const fleets = survivingFleet === undefined
     ? state.fleets.filter((candidate) => candidate.id !== fleet.id)
     : state.fleets.map((candidate) =>
@@ -177,11 +167,7 @@ export function resolveColonization(
     fleet: survivingFleet,
     state: {
       ...state,
-      galaxy: updateGalaxyPlanetOwner(
-        state.galaxy,
-        galaxyPlanetId,
-        fleet.empireId,
-      ),
+      galaxy: updateGalaxyPlanetOwner(state.galaxy, galaxyPlanetId, fleet.empireId),
       planets: [...state.planets, unloaded.colony],
       fleets,
     },
