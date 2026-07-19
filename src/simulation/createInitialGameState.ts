@@ -11,7 +11,7 @@ export function createInitialGameState(seedSource: string): GameState {
   const empires = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'] as const;
 
   return {
-    schemaVersion: 8,
+    schemaVersion: 9,
     seed,
     clock: {
       startedAt: '2026-07-18T00:00:00.000Z',
@@ -23,6 +23,7 @@ export function createInitialGameState(seedSource: string): GameState {
     research: createInitialResearchStates(empires),
     fleets: [],
     intelligence: createInitialIntelligenceStates(empires),
+    debrisFields: [],
     nextEventSequence: 0,
     pendingEvents: [],
     commandLog: [],
