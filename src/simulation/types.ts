@@ -1,3 +1,4 @@
+import type { BattleReport } from './combat/types';
 import type { ResourceCost } from './economy/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
@@ -45,6 +46,10 @@ export type GameEventPayload =
       readonly type: 'FLEET_RETURN';
       readonly fleetId: string;
       readonly originPlanetId: string;
+    }
+  | {
+      readonly type: 'BATTLE_REPORT';
+      readonly report: BattleReport;
     };
 
 export interface ScheduledGameEvent {
