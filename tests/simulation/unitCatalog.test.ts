@@ -21,9 +21,10 @@ describe('unit catalog and inventory', () => {
 
   it('initializes empty inventories, fleets, intelligence, debris and queues', () => {
     const state = createInitialGameState('unit-inventory');
-    expect(state.schemaVersion).toBe(10);
+    expect(state.schemaVersion).toBe(11);
     expect(state.fleets).toEqual([]);
     expect(state.debrisFields).toEqual([]);
+    expect(state.logisticsRoutes).toEqual([]);
     expect(state.intelligence).toHaveLength(state.empires.length);
     expect(state.intelligence.every((entry) => entry.observations.length === 0)).toBe(true);
     expect(
