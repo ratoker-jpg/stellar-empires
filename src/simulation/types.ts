@@ -1,9 +1,10 @@
 import type { DebrisField } from './combat/debris';
 import type { BattleReport } from './combat/types';
-import type { ResourceCost } from './economy/types';
+import type { ResourceCost, ResourceId } from './economy/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
 import type { EmpireIntelligenceState } from './intelligence/types';
+import type { LogisticsRoute, LogisticsRouteStatus } from './logistics/types';
 import type {
   PlanetDevelopmentTemplateId,
   PlanetSpecializationId,
@@ -96,6 +97,32 @@ export type GameCommand =
       readonly developmentTemplateId: PlanetDevelopmentTemplateId;
     }
   | {
+      readonly type: 'CREATE_LOGISTICS_ROUTE';
+      readonly empireId: string;
+      readonly originPlanetId: string;
+      readonly targetPlanetId: string;
+      readonly resourceId: ResourceId;
+      readonly amountPerTrip: number;
+      readonly originReserve: number;
+      readonly intervalSeconds: number;
+      readonly priority: 1 | 2 | 3;
+    }
+  | {
+      readonly type: 'UPDATE_LOGISTICS_ROUTE';
+      readonly empireId: string;
+      readonly routeId: string;
+      readonly amountPerTrip?: number;
+      readonly originReserve?: number;
+      readonly intervalSeconds?: number;
+      readonly priority?: 1 | 2 | 3;
+      readonly status?: LogisticsRouteStatus;
+    }
+  | {
+      readonly type: 'DELETE_LOGISTICS_ROUTE';
+      readonly empireId: string;
+      readonly routeId: string;
+    }
+  | {
       readonly type: 'QUEUE_RESEARCH';
       readonly empireId: string;
       readonly planetId: string;
@@ -155,7 +182,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 10;
+  readonly schemaVersion: 11;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
@@ -165,6 +192,7 @@ export interface GameState {
   readonly fleets: readonly FleetState[];
   readonly intelligence: readonly EmpireIntelligenceState[];
   readonly debrisFields: readonly DebrisField[];
+  readonly logisticsRoutes: readonly LogisticsRoute[];
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];
