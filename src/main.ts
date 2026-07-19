@@ -1,5 +1,6 @@
 import './styles/main.css';
 import './styles/factions.css';
+import './styles/factionTheme.css';
 import './styles/aegisAssets.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
@@ -20,6 +21,7 @@ import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
 import { mountEmpireOverview } from './ui/empireOverview';
+import { applyFactionShellIdentity } from './ui/factionShellIdentity';
 import {
   applyPlanetScreenCommand,
   getPlanetScreenActivePlanetId,
@@ -95,7 +97,7 @@ async function bootstrap(): Promise<void> {
   const playerFaction =
     initialState.planets.find((planet) => planet.ownerEmpireId === 'player')?.factionId ?? 'aegis';
   bindFactionRuntimeAssets(playerFaction);
-  document.documentElement.dataset.faction = playerFaction;
+  applyFactionShellIdentity(playerFaction);
 
   version.textContent = `v${__APP_VERSION__}`;
   systemCount.textContent = String(initialState.galaxy.systems.length);
