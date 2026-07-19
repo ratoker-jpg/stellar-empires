@@ -6,6 +6,7 @@ import './styles/aegisAssets.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
 import './styles/planetDevelopment.css';
+import './styles/logistics.css';
 import './styles/saveManager.css';
 import './styles/research.css';
 import './styles/production.css';
@@ -24,6 +25,7 @@ import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
 import { mountEmpireOverview } from './ui/empireOverview';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
+import { mountLogisticsRoutesPanel } from './ui/logisticsRoutesPanel';
 import { selectNewGameFaction } from './ui/newGameFactionPicker';
 import { mountPlanetDevelopmentControls } from './ui/planetDevelopmentControls';
 import {
@@ -139,6 +141,7 @@ async function bootstrap(): Promise<void> {
     execute: applyPlanetScreenCommand,
   };
   mountPlanetDevelopmentControls(commandBridge);
+  mountLogisticsRoutesPanel(commandBridge);
   mountEmpireOverview({
     getState: () => runtimeState,
     getActivePlanetId: getPlanetScreenActivePlanetId,
