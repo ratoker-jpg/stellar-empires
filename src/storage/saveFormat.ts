@@ -32,7 +32,7 @@ function isResourceCost(value: unknown): boolean {
 function isStateShell(value: unknown): value is Record<string, unknown> {
   return (
     isRecord(value) &&
-    [1, 2, 3, 4, 5, 6, 7].includes(value.schemaVersion as number) &&
+    [1, 2, 3, 4, 5, 6, 7, 8].includes(value.schemaVersion as number) &&
     typeof value.seed === 'number' &&
     Number.isInteger(value.seed) &&
     isRecord(value.clock) &&
@@ -131,7 +131,9 @@ function isFleet(value: unknown): boolean {
     isRecord(value) &&
     (value.mission === null ||
       (isRecord(value.mission) &&
-        (value.mission.kind === 'deploy' || value.mission.kind === 'transport') &&
+        (value.mission.kind === 'deploy' ||
+          value.mission.kind === 'transport' ||
+          value.mission.kind === 'scout') &&
         typeof value.mission.targetPlanetId === 'string'));
   return (
     validMission &&
@@ -149,16 +151,64 @@ function isFleet(value: unknown): boolean {
   );
 }
 
+function isObservation(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.observerEmpireId === 'string' &&
+    typeof value.targetPlanetId === 'string' &&
+    isNonNegativeInteger(value.observedAt) &&
+    isNonNegativeInteger(value.expiresAt) &&
+    value.expiresAt > value.observedAt &&
+    typeof value.detected === 'boolean' &&
+    isRecord(value.snapshot) &&
+    typeof value.snapshot.planetId === 'string' &&
+    typeof value.snapshot.name === 'string' &&
+    typeof value.snapshot.ownerEmpireId === 'string' &&
+    (value.snapshot.level === 1 ||
+      value.snapshot.level === 2 ||
+      value.snapshot.level === 3)
+  );
+}
+
+function isIntelligenceAlert(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.empireId === 'string' &&
+    (value.sourceEmpireId === null || typeof value.sourceEmpireId === 'string') &&
+    typeof value.targetPlanetId === 'string' &&
+    isNonNegativeInteger(value.detectedAt) &&
+    (value.confidence === 'low' ||
+      value.confidence === 'medium' ||
+      value.confidence === 'high')
+  );
+}
+
+function isIntelligenceState(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.empireId === 'string' &&
+    Array.isArray(value.observations) &&
+    value.observations.every(isObservation) &&
+    Array.isArray(value.alerts) &&
+    value.alerts.every(isIntelligenceAlert)
+  );
+}
+
 function isGameState(value: unknown): value is GameState {
   return (
     isStateShell(value) &&
-    value.schemaVersion === 7 &&
+    value.schemaVersion === 8 &&
     Array.isArray(value.planets) &&
     value.planets.every(isPlanet) &&
     Array.isArray(value.research) &&
     value.research.every(isResearchState) &&
     Array.isArray(value.fleets) &&
-    value.fleets.every(isFleet)
+    value.fleets.every(isFleet) &&
+    Array.isArray(value.intelligence) &&
+    value.intelligence.every(isIntelligenceState) &&
+    value.intelligence.length === value.empires.length
   );
 }
 
