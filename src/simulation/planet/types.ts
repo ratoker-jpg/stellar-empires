@@ -8,6 +8,13 @@ export type PlanetZoneId = 'resource' | 'industry' | 'military';
 
 export type FactionId = 'aegis' | 'synod' | 'veyra';
 
+export type ColonySpecializationId =
+  | 'balanced'
+  | 'mining'
+  | 'science'
+  | 'shipyard'
+  | 'fortress';
+
 export interface PlanetZoneState {
   readonly id: PlanetZoneId;
   readonly fieldLimit: number;
@@ -36,6 +43,7 @@ export interface PlanetState {
   readonly name: string;
   readonly ownerEmpireId: string;
   readonly factionId: FactionId;
+  readonly specialization: ColonySpecializationId;
   readonly zones: Readonly<Record<PlanetZoneId, PlanetZoneState>>;
   readonly buildings: readonly PlanetBuildingState[];
   readonly buildQueue: readonly PlanetBuildQueueItem[];
