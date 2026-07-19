@@ -1,5 +1,5 @@
-import { RUNTIME_ASSETS } from './runtimeAssets';
 import type { FactionArtKey } from './artTokens';
+import { getFactionRuntimeAssets } from './factionRuntimeAssets';
 
 export interface FactionShowcaseDefinition {
   readonly id: FactionArtKey;
@@ -7,36 +7,41 @@ export interface FactionShowcaseDefinition {
   readonly doctrine: string;
   readonly emblemUrl: string;
   readonly backgroundUrl: string;
-  readonly controlSetUrl: string;
+  readonly heroUrl: string;
+  readonly previewUrl: string;
   readonly accent: string;
 }
 
-export const FACTION_SHOWCASES: readonly FactionShowcaseDefinition[] = [
-  {
-    id: 'aegis',
+const FACTION_COPY: Readonly<
+  Record<FactionArtKey, Pick<FactionShowcaseDefinition, 'name' | 'doctrine'>>
+> = {
+  aegis: {
     name: 'Директорат «Эгида»',
     doctrine: 'Индустрия, логистика и тяжёлая оборона',
-    emblemUrl: RUNTIME_ASSETS.factionAegisEmblem,
-    backgroundUrl: RUNTIME_ASSETS.factionAegisBackground,
-    controlSetUrl: RUNTIME_ASSETS.factionAegisControlSet,
-    accent: '#E7A847',
   },
-  {
-    id: 'synod',
+  synod: {
     name: 'Машинный Синод',
     doctrine: 'Энергетическая сеть, модули и перегрузка',
-    emblemUrl: RUNTIME_ASSETS.factionSynodEmblem,
-    backgroundUrl: RUNTIME_ASSETS.factionSynodBackground,
-    controlSetUrl: RUNTIME_ASSETS.factionSynodControlSet,
-    accent: '#53DCFF',
   },
-  {
-    id: 'veyra',
+  veyra: {
     name: 'Рой Вейра',
     doctrine: 'Выращивание, регенерация и адаптация',
-    emblemUrl: RUNTIME_ASSETS.factionVeyraEmblem,
-    backgroundUrl: RUNTIME_ASSETS.factionVeyraBackground,
-    controlSetUrl: RUNTIME_ASSETS.factionVeyraControlSet,
-    accent: '#A8E85E',
   },
-] as const;
+};
+
+const FACTION_ORDER: readonly FactionArtKey[] = ['aegis', 'synod', 'veyra'];
+
+export const FACTION_SHOWCASES: readonly FactionShowcaseDefinition[] = FACTION_ORDER.map(
+  (id): FactionShowcaseDefinition => {
+    const runtime = getFactionRuntimeAssets(id);
+    return {
+      id,
+      ...FACTION_COPY[id],
+      emblemUrl: runtime.emblemUrl,
+      backgroundUrl: runtime.backgroundUrl,
+      heroUrl: runtime.heroUrl,
+      previewUrl: runtime.backgroundUrl,
+      accent: runtime.accent,
+    };
+  },
+);
