@@ -95,13 +95,13 @@ export const PLANET_DEVELOPMENT_TEMPLATES: Readonly<
   'resource-hub': {
     id: 'resource-hub',
     name: 'Ресурсный узел',
-    description: 'Приоритет добычи, складов и устойчивой энергосети.',
+    description: 'Приоритет добычи и устойчивой энергосети.',
     recommendedBuildingIds: [
       'building.aegis.metal-extractor',
       'building.aegis.crystal-refinery',
       'building.aegis.gas-extractor',
       'building.aegis.power-plant',
-      'building.aegis.storage',
+      'building.aegis.command',
     ],
   },
   'industrial-hub': {
@@ -113,7 +113,7 @@ export const PLANET_DEVELOPMENT_TEMPLATES: Readonly<
       'building.aegis.power-plant',
       'building.aegis.research-lab',
       'building.aegis.shipyard',
-      'building.aegis.storage',
+      'building.aegis.sensor-array',
     ],
   },
   fortress: {
@@ -125,7 +125,7 @@ export const PLANET_DEVELOPMENT_TEMPLATES: Readonly<
       'building.aegis.power-plant',
       'building.aegis.sensor-array',
       'building.aegis.shipyard',
-      'building.aegis.storage',
+      'building.aegis.research-lab',
     ],
   },
 };
