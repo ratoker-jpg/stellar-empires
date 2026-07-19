@@ -1,4 +1,8 @@
 import { getBuildingDefinition } from '../planet/buildingCatalog';
+import {
+  getPlanetSpecializationEffects,
+  type PlanetSpecializationId,
+} from '../planet/specialization';
 import type { PlanetBuildingState, PlanetState } from '../planet/types';
 import type {
   EnergyBalance,
@@ -33,6 +37,7 @@ function ratioPermille(capacity: number, demand: number): number {
 function calculateSummary(
   buildings: readonly PlanetBuildingState[],
   energyOutputPercent = 0,
+  specializationId: PlanetSpecializationId = 'balanced',
 ): EconomySummary {
   const production: Record<ResourceId, number> = { metal: 0, crystal: 0, gas: 0 };
   const capacity: Record<ResourceId, number> = {
@@ -75,10 +80,17 @@ function calculateSummary(
   const energyEfficiency = ratioPermille(energyProduced, energyConsumed);
   const stabilityEfficiency = ratioPermille(stabilityCapacity, stabilityDemand);
   const productionEfficiency = Math.min(energyEfficiency, stabilityEfficiency);
+  const specialization = getPlanetSpecializationEffects(specializationId);
 
   for (const resourceId of RESOURCE_IDS) {
-    production[resourceId] = Math.floor(
+    const efficientProduction = Math.floor(
       (production[resourceId] * productionEfficiency) / 1_000,
+    );
+    production[resourceId] = Math.max(
+      0,
+      Math.floor(
+        (efficientProduction * (100 + specialization.resourceProductionPercent)) / 100,
+      ),
     );
   }
 
@@ -120,8 +132,9 @@ function createStock(
 export function createPlanetEconomy(
   buildings: readonly PlanetBuildingState[],
   energyOutputPercent = 0,
+  specializationId: PlanetSpecializationId = 'balanced',
 ): PlanetEconomyState {
-  const summary = calculateSummary(buildings, energyOutputPercent);
+  const summary = calculateSummary(buildings, energyOutputPercent, specializationId);
 
   return {
     resources: {
@@ -139,8 +152,9 @@ export function refreshPlanetEconomy(
   economy: PlanetEconomyState,
   buildings: readonly PlanetBuildingState[],
   energyOutputPercent = 0,
+  specializationId: PlanetSpecializationId = 'balanced',
 ): PlanetEconomyState {
-  const summary = calculateSummary(buildings, energyOutputPercent);
+  const summary = calculateSummary(buildings, energyOutputPercent, specializationId);
 
   return {
     resources: {
@@ -197,6 +211,7 @@ export function accruePlanetEconomy(
     planet.economy,
     planet.buildings,
     energyOutputPercent,
+    planet.specializationId,
   );
 
   return {

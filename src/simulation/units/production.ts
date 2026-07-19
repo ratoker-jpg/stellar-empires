@@ -1,5 +1,9 @@
 import type { ResourceCost } from '../economy/types';
 import { getBuildingLevel } from '../planet/buildingProgression';
+import {
+  applySpecializationPercent,
+  getPlanetSpecializationEffects,
+} from '../planet/specialization';
 import type { PlanetState } from '../planet/types';
 import type { UnitDefinition } from './types';
 
@@ -24,7 +28,13 @@ export function calculateUnitBatchSeconds(
       ? 'building.aegis.shipyard'
       : 'building.aegis.sensor-array';
   const level = Math.max(1, getBuildingLevel(planet.buildings, buildingId));
-  return Math.max(1, Math.ceil((definition.baseSeconds * quantity) / level));
+  const baseSeconds = Math.max(1, Math.ceil((definition.baseSeconds * quantity) / level));
+  const effects = getPlanetSpecializationEffects(planet.specializationId);
+  const speedPercent =
+    definition.kind === 'ship'
+      ? effects.shipProductionSpeedPercent
+      : effects.defenseProductionSpeedPercent;
+  return applySpecializationPercent(baseSeconds, speedPercent);
 }
 
 export function addCompletedUnits(

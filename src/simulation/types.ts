@@ -4,6 +4,10 @@ import type { ResourceCost } from './economy/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
 import type { EmpireIntelligenceState } from './intelligence/types';
+import type {
+  PlanetDevelopmentTemplateId,
+  PlanetSpecializationId,
+} from './planet/specialization';
 import type { PlanetState } from './planet/types';
 import type { EmpireResearchState } from './research/types';
 import type { UnitKind } from './units/types';
@@ -80,6 +84,18 @@ export type GameCommand =
       readonly queueItemId: string;
     }
   | {
+      readonly type: 'SET_PLANET_SPECIALIZATION';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly specializationId: PlanetSpecializationId;
+    }
+  | {
+      readonly type: 'SET_PLANET_DEVELOPMENT_TEMPLATE';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly developmentTemplateId: PlanetDevelopmentTemplateId;
+    }
+  | {
       readonly type: 'QUEUE_RESEARCH';
       readonly empireId: string;
       readonly planetId: string;
@@ -139,7 +155,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 9;
+  readonly schemaVersion: 10;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];

@@ -72,10 +72,12 @@ export function createColonyPlanet(
     name: `${location.system.name} ${location.planet.position}`,
     ownerEmpireId: empireId,
     factionId,
+    specializationId: 'balanced',
+    developmentTemplateId: 'balanced',
     zones: createPlanetZones(buildings),
     buildings,
     buildQueue: [],
-    economy: createPlanetEconomy(buildings),
+    economy: createPlanetEconomy(buildings, 0, 'balanced'),
     inventory: { ships: {}, defenses: {} },
     productionQueues: { shipyard: [], defense: [] },
   };

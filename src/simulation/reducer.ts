@@ -17,6 +17,14 @@ import {
   refundResources,
   spendResources,
 } from './planet/buildingProgression';
+import {
+  applySpecializationPercent,
+  getPlanetSpecializationEffects,
+} from './planet/specialization';
+import {
+  setPlanetDevelopmentTemplate,
+  setPlanetSpecialization,
+} from './planet/specializationCommands';
 import type { PlanetState } from './planet/types';
 import { AEGIS_RESEARCH_CATALOG } from './research/catalog';
 import {
@@ -186,9 +194,14 @@ function queueBuilding(
   const sequence = state.nextEventSequence;
   const queueItemId = `build-${sequence}`;
   const effects = getResearchEffectsForEmpire(state, command.empireId);
-  const duration = applySpeedPercent(
+  const researchDuration = applySpeedPercent(
     calculateBuildSeconds(definition, targetLevel),
     effects?.constructionSpeedPercent ?? 0,
+  );
+  const specialization = getPlanetSpecializationEffects(planet.specializationId);
+  const duration = applySpecializationPercent(
+    researchDuration,
+    specialization.constructionSpeedPercent,
   );
   const completesAt = state.clock.elapsedSeconds + duration;
   const queueItem = {
@@ -369,6 +382,10 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
       return queueBuilding(state, command);
     case 'CANCEL_BUILDING':
       return cancelBuilding(state, command);
+    case 'SET_PLANET_SPECIALIZATION':
+      return setPlanetSpecialization(state, command);
+    case 'SET_PLANET_DEVELOPMENT_TEMPLATE':
+      return setPlanetDevelopmentTemplate(state, command);
     case 'QUEUE_RESEARCH':
       return queueResearch(state, command);
     case 'CANCEL_RESEARCH':

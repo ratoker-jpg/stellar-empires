@@ -161,7 +161,12 @@ export function completeBuilding(
           },
         }
       : planet.zones;
-  const economy = refreshPlanetEconomy(planet.economy, buildings);
+  const economy = refreshPlanetEconomy(
+    planet.economy,
+    buildings,
+    0,
+    planet.specializationId,
+  );
 
   return {
     ...planet,
