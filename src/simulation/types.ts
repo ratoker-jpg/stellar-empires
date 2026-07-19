@@ -5,6 +5,7 @@ import type { FleetMissionKind, FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
 import type { EmpireIntelligenceState } from './intelligence/types';
 import type { LogisticsRoute, LogisticsRouteStatus } from './logistics/types';
+import type { MarketState } from './market/types';
 import type {
   PlanetDevelopmentTemplateId,
   PlanetSpecializationId,
@@ -123,6 +124,14 @@ export type GameCommand =
       readonly routeId: string;
     }
   | {
+      readonly type: 'MARKET_SWAP';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly giveResourceId: ResourceId;
+      readonly receiveResourceId: ResourceId;
+      readonly giveAmount: number;
+    }
+  | {
       readonly type: 'QUEUE_RESEARCH';
       readonly empireId: string;
       readonly planetId: string;
@@ -182,7 +191,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 11;
+  readonly schemaVersion: 12;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
@@ -193,6 +202,7 @@ export interface GameState {
   readonly intelligence: readonly EmpireIntelligenceState[];
   readonly debrisFields: readonly DebrisField[];
   readonly logisticsRoutes: readonly LogisticsRoute[];
+  readonly market: MarketState;
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];

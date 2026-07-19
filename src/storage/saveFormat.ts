@@ -28,17 +28,13 @@ function isResourceCost(value: unknown): boolean {
   return isRecord(value) && isNonNegativeInteger(value.metal) && isNonNegativeInteger(value.crystal) && isNonNegativeInteger(value.gas);
 }
 function isStateShell(value: unknown): value is Record<string, unknown> {
-  return (
-    isRecord(value) &&
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].includes(value.schemaVersion as number) &&
-    typeof value.seed === 'number' && Number.isInteger(value.seed) &&
-    isRecord(value.clock) && typeof value.clock.startedAt === 'string' &&
-    isNonNegativeInteger(value.clock.elapsedSeconds) &&
+  return isRecord(value) && [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(value.schemaVersion as number) &&
+    typeof value.seed === 'number' && Number.isInteger(value.seed) && isRecord(value.clock) &&
+    typeof value.clock.startedAt === 'string' && isNonNegativeInteger(value.clock.elapsedSeconds) &&
     Array.isArray(value.empires) && value.empires.every((item) => typeof item === 'string') &&
-    isRecord(value.galaxy) && Array.isArray(value.galaxy.systems) &&
-    Array.isArray(value.planets) && isNonNegativeInteger(value.nextEventSequence) &&
-    Array.isArray(value.pendingEvents) && Array.isArray(value.commandLog) && Array.isArray(value.eventLog)
-  );
+    isRecord(value.galaxy) && Array.isArray(value.galaxy.systems) && Array.isArray(value.planets) &&
+    isNonNegativeInteger(value.nextEventSequence) && Array.isArray(value.pendingEvents) &&
+    Array.isArray(value.commandLog) && Array.isArray(value.eventLog);
 }
 function isProductionQueueItem(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.unitId === 'string' &&
@@ -57,8 +53,7 @@ function isPlanet(value: unknown): boolean {
       return isRecord(zone) && zone.id === zoneId && isNonNegativeInteger(zone.fieldLimit) &&
         isNonNegativeInteger(zone.usedFields) && zone.usedFields <= zone.fieldLimit;
     });
-  return validZones && isRecord(value.inventory.ships) &&
-    Object.values(value.inventory.ships).every(isNonNegativeInteger) &&
+  return validZones && isRecord(value.inventory.ships) && Object.values(value.inventory.ships).every(isNonNegativeInteger) &&
     isRecord(value.inventory.defenses) && Object.values(value.inventory.defenses).every(isNonNegativeInteger) &&
     Array.isArray(value.productionQueues.shipyard) && value.productionQueues.shipyard.every(isProductionQueueItem) &&
     Array.isArray(value.productionQueues.defense) && value.productionQueues.defense.every(isProductionQueueItem);
@@ -77,9 +72,8 @@ function isFleetLocation(value: unknown): boolean {
 function isFleet(value: unknown): boolean {
   const validMission = value !== null && isRecord(value) && (value.mission === null ||
     (isRecord(value.mission) &&
-      (value.mission.kind === 'deploy' || value.mission.kind === 'transport' ||
-        value.mission.kind === 'scout' || value.mission.kind === 'attack' ||
-        value.mission.kind === 'recycle' || value.mission.kind === 'colonize') &&
+      (value.mission.kind === 'deploy' || value.mission.kind === 'transport' || value.mission.kind === 'scout' ||
+        value.mission.kind === 'attack' || value.mission.kind === 'recycle' || value.mission.kind === 'colonize') &&
       typeof value.mission.targetPlanetId === 'string'));
   return validMission && typeof value.id === 'string' && typeof value.empireId === 'string' &&
     typeof value.originPlanetId === 'string' && ['stationed', 'outbound', 'holding', 'returning'].includes(value.status as string) &&
@@ -96,9 +90,8 @@ function isObservation(value: unknown): boolean {
 }
 function isIntelligenceAlert(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.empireId === 'string' &&
-    (value.sourceEmpireId === null || typeof value.sourceEmpireId === 'string') &&
-    typeof value.targetPlanetId === 'string' && isNonNegativeInteger(value.detectedAt) &&
-    (value.confidence === 'low' || value.confidence === 'medium' || value.confidence === 'high');
+    (value.sourceEmpireId === null || typeof value.sourceEmpireId === 'string') && typeof value.targetPlanetId === 'string' &&
+    isNonNegativeInteger(value.detectedAt) && (value.confidence === 'low' || value.confidence === 'medium' || value.confidence === 'high');
 }
 function isIntelligenceState(value: unknown): boolean {
   return isRecord(value) && typeof value.empireId === 'string' && Array.isArray(value.observations) &&
@@ -123,14 +116,27 @@ function isLogisticsRoute(value: unknown): boolean {
     (value.status === 'active' || value.status === 'paused') && isNonNegativeInteger(value.nextDepartureAt) &&
     isNonNegativeInteger(value.consecutiveMisses) && isLogisticsResult(value.lastResult);
 }
+function isMarketTrade(value: unknown): boolean {
+  return isRecord(value) && typeof value.id === 'string' && typeof value.empireId === 'string' &&
+    typeof value.planetId === 'string' && isResourceId(value.giveResourceId) && isResourceId(value.receiveResourceId) &&
+    value.giveResourceId !== value.receiveResourceId && isPositiveInteger(value.giveAmount) &&
+    isPositiveInteger(value.receiveAmount) && isNonNegativeInteger(value.feeAmount) &&
+    isNonNegativeInteger(value.priceImpactPermille) && isNonNegativeInteger(value.executedAt);
+}
+function isMarket(value: unknown): boolean {
+  return isRecord(value) && isRecord(value.reserves) && isPositiveInteger(value.reserves.metal) &&
+    isPositiveInteger(value.reserves.crystal) && isPositiveInteger(value.reserves.gas) &&
+    isNonNegativeInteger(value.feePermille) && isNonNegativeInteger(value.maxPriceImpactPermille) &&
+    isNonNegativeInteger(value.nextTradeSequence) && Array.isArray(value.trades) && value.trades.every(isMarketTrade);
+}
 function isGameState(value: unknown): value is GameState {
-  return isStateShell(value) && value.schemaVersion === 11 && Array.isArray(value.empires) &&
+  return isStateShell(value) && value.schemaVersion === 12 && Array.isArray(value.empires) &&
     Array.isArray(value.planets) && value.planets.every(isPlanet) && Array.isArray(value.research) &&
     value.research.every(isResearchState) && Array.isArray(value.fleets) && value.fleets.every(isFleet) &&
     Array.isArray(value.intelligence) && value.intelligence.every(isIntelligenceState) &&
     value.intelligence.length === value.empires.length && Array.isArray(value.debrisFields) &&
     value.debrisFields.every(isDebrisField) && Array.isArray(value.logisticsRoutes) &&
-    value.logisticsRoutes.every(isLogisticsRoute);
+    value.logisticsRoutes.every(isLogisticsRoute) && isMarket(value.market);
 }
 
 export function createSaveEnvelope(slotId: string, state: GameState, savedAt: string): SaveEnvelope {

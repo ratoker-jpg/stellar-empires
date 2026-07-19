@@ -13,6 +13,7 @@ import {
   processLogisticsDeparturesAt,
   updateLogisticsRoute,
 } from './logistics/routes';
+import { executeMarketSwap } from './market/market';
 import { getBuildingDefinition } from './planet/buildingCatalog';
 import {
   calculateBuildingCost,
@@ -59,10 +60,7 @@ import {
 } from './units/productionCommands';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [
-    ...state.commandLog,
-    { index: state.commandLog.length, command },
-  ];
+  return [...state.commandLog, { index: state.commandLog.length, command }];
 }
 
 function isNonNegativeInteger(value: number): boolean {
@@ -286,31 +284,21 @@ function cancelBuilding(
 }
 
 function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
-  if (
-    event.payload.type === 'FLEET_ARRIVE' ||
-    event.payload.type === 'FLEET_RETURN'
-  ) {
+  if (event.payload.type === 'FLEET_ARRIVE' || event.payload.type === 'FLEET_RETURN') {
     return applyFlightEvent(state, event);
   }
-
   if (event.payload.type === 'RESEARCH_COMPLETE') {
     return { ...state, research: completeResearch(state.research, event.payload) };
   }
-
   if (event.payload.type === 'UNIT_PRODUCTION_COMPLETE') {
     const payload = event.payload;
     const planet = state.planets.find((candidate) => candidate.id === payload.planetId);
     if (planet === undefined) return state;
     return {
       ...state,
-      planets: replacePlanet(
-        state.planets,
-        planet.id,
-        completeUnitProduction(planet, payload),
-      ),
+      planets: replacePlanet(state.planets, planet.id, completeUnitProduction(planet, payload)),
     };
   }
-
   if (event.payload.type !== 'BUILDING_COMPLETE') return state;
   const payload = event.payload;
   const planet = state.planets.find((candidate) => candidate.id === payload.planetId);
@@ -320,12 +308,7 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
     planets: replacePlanet(
       state.planets,
       planet.id,
-      completeBuilding(
-        planet,
-        payload.buildingId,
-        payload.targetLevel,
-        payload.queueItemId,
-      ),
+      completeBuilding(planet, payload.buildingId, payload.targetLevel, payload.queueItemId),
     ),
   };
 }
@@ -333,11 +316,7 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
 function accrueStateEconomies(state: GameState, seconds: number): GameState {
   return {
     ...state,
-    planets: accrueAllPlanetEconomies(
-      state.planets,
-      seconds,
-      getEnergyOutputByEmpire(state),
-    ),
+    planets: accrueAllPlanetEconomies(state.planets, seconds, getEnergyOutputByEmpire(state)),
   };
 }
 
@@ -356,32 +335,22 @@ function advanceTime(
 
   while (true) {
     const nextEvent = working.pendingEvents[0];
-    const nextEventAt =
-      nextEvent !== undefined && nextEvent.executeAt <= targetTime
-        ? nextEvent.executeAt
-        : undefined;
+    const nextEventAt = nextEvent !== undefined && nextEvent.executeAt <= targetTime
+      ? nextEvent.executeAt
+      : undefined;
     const nextRouteAt = getNextLogisticsDepartureAt(working, targetTime);
-    const nextAt =
-      nextEventAt === undefined
-        ? nextRouteAt
-        : nextRouteAt === undefined
-          ? nextEventAt
-          : Math.min(nextEventAt, nextRouteAt);
+    const nextAt = nextEventAt === undefined
+      ? nextRouteAt
+      : nextRouteAt === undefined
+        ? nextEventAt
+        : Math.min(nextEventAt, nextRouteAt);
     if (nextAt === undefined) break;
 
     working = accrueStateEconomies(working, nextAt - cursor);
-    working = {
-      ...working,
-      clock: { ...working.clock, elapsedSeconds: nextAt },
-    };
-    if (nextRouteAt === nextAt) {
-      working = processLogisticsDeparturesAt(working, nextAt);
-    }
+    working = { ...working, clock: { ...working.clock, elapsedSeconds: nextAt } };
+    if (nextRouteAt === nextAt) working = processLogisticsDeparturesAt(working, nextAt);
     if (nextEventAt === nextAt && nextEvent !== undefined) {
-      working = {
-        ...working,
-        pendingEvents: working.pendingEvents.slice(1),
-      };
+      working = { ...working, pendingEvents: working.pendingEvents.slice(1) };
       working = applyEvent(working, nextEvent);
       executedEvents.push({ event: nextEvent, executedAt: nextAt });
     }
@@ -418,6 +387,8 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
       return updateLogisticsRoute(state, command);
     case 'DELETE_LOGISTICS_ROUTE':
       return deleteLogisticsRoute(state, command);
+    case 'MARKET_SWAP':
+      return executeMarketSwap(state, command);
     case 'QUEUE_RESEARCH':
       return queueResearch(state, command);
     case 'CANCEL_RESEARCH':
