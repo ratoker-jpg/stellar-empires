@@ -99,7 +99,7 @@ export function plunderPlanet(
   let freeCapacity = Math.max(0, fleet.cargoCapacity - getCargoAmount(fleet.cargo));
   const cargo = { ...fleet.cargo };
   const resources = { ...planet.economy.resources };
-  const plundered: ResourceCost = { metal: 0, crystal: 0, gas: 0 };
+  const plundered = { metal: 0, crystal: 0, gas: 0 };
 
   for (const resourceId of ['metal', 'crystal', 'gas'] as const) {
     if (freeCapacity <= 0) break;
