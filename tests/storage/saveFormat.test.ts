@@ -8,7 +8,7 @@ import {
 } from '../../src/storage/saveFormat';
 
 describe('save format', () => {
-  it('round-trips a valid schema-v11 save', () => {
+  it('round-trips a valid schema-v12 save', () => {
     const state = createInitialGameState('save-round-trip');
     const save = createSaveEnvelope('slot-1', state, '2026-07-18T12:00:00.000Z');
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
@@ -19,6 +19,7 @@ describe('save format', () => {
     const {
       debrisFields: _debrisFields,
       logisticsRoutes: _logisticsRoutes,
+      market: _market,
       ...withoutNewCollections
     } = current;
     const legacyState = {
@@ -38,9 +39,15 @@ describe('save format', () => {
     const parsed = parseSaveJson(JSON.stringify(legacySave));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(11);
+      expect(parsed.value.state.schemaVersion).toBe(12);
       expect(parsed.value.state.debrisFields).toEqual([]);
       expect(parsed.value.state.logisticsRoutes).toEqual([]);
+      expect(parsed.value.state.market.reserves).toEqual({
+        metal: 50_000,
+        crystal: 50_000,
+        gas: 50_000,
+      });
+      expect(parsed.value.state.market.trades).toEqual([]);
       expect(parsed.value.state.planets[0]?.specializationId).toBe('balanced');
       expect(parsed.value.state.planets[0]?.developmentTemplateId).toBe('balanced');
     }
