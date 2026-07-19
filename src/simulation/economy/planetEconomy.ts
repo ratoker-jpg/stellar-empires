@@ -1,4 +1,5 @@
 import { getBuildingDefinition } from '../planet/buildingCatalog';
+import { getResourceProductionBonusPercent } from '../planet/specialization';
 import type { PlanetBuildingState, PlanetState } from '../planet/types';
 import type {
   EnergyBalance,
@@ -33,6 +34,7 @@ function ratioPermille(capacity: number, demand: number): number {
 function calculateSummary(
   buildings: readonly PlanetBuildingState[],
   energyOutputPercent = 0,
+  resourceProductionPercent = 0,
 ): EconomySummary {
   const production: Record<ResourceId, number> = { metal: 0, crystal: 0, gas: 0 };
   const capacity: Record<ResourceId, number> = {
@@ -49,20 +51,15 @@ function calculateSummary(
 
   for (const building of buildings) {
     const definition = getBuildingDefinition(building.buildingId);
-
-    if (definition === undefined || definition.economy === undefined) {
-      continue;
-    }
+    if (definition === undefined || definition.economy === undefined) continue;
 
     const level = Math.max(0, building.level);
     const contribution = definition.economy;
-
     for (const resourceId of RESOURCE_IDS) {
       production[resourceId] +=
         (contribution.resourceProductionPerHour?.[resourceId] ?? 0) * level;
       capacity[resourceId] += (contribution.storageCapacity?.[resourceId] ?? 0) * level;
     }
-
     energyProduced += (contribution.energyProduction ?? 0) * level;
     energyConsumed += (contribution.energyConsumption ?? 0) * level;
     populationCapacity += (contribution.populationCapacity ?? 0) * level;
@@ -71,14 +68,19 @@ function calculateSummary(
     stabilityDemand += (contribution.stabilityDemand ?? 0) * level;
   }
 
-  energyProduced = Math.floor((energyProduced * (100 + Math.max(0, energyOutputPercent))) / 100);
+  energyProduced = Math.floor(
+    (energyProduced * (100 + Math.max(0, energyOutputPercent))) / 100,
+  );
   const energyEfficiency = ratioPermille(energyProduced, energyConsumed);
   const stabilityEfficiency = ratioPermille(stabilityCapacity, stabilityDemand);
   const productionEfficiency = Math.min(energyEfficiency, stabilityEfficiency);
 
   for (const resourceId of RESOURCE_IDS) {
-    production[resourceId] = Math.floor(
+    const efficientProduction = Math.floor(
       (production[resourceId] * productionEfficiency) / 1_000,
+    );
+    production[resourceId] = Math.floor(
+      (efficientProduction * (100 + Math.max(0, resourceProductionPercent))) / 100,
     );
   }
 
@@ -108,7 +110,6 @@ function createStock(
   previous?: ResourceStock,
 ): ResourceStock {
   const capacity = summary.capacity[resourceId];
-
   return {
     amount: Math.min(previous?.amount ?? STARTING_AMOUNTS[resourceId], capacity),
     capacity,
@@ -120,9 +121,13 @@ function createStock(
 export function createPlanetEconomy(
   buildings: readonly PlanetBuildingState[],
   energyOutputPercent = 0,
+  resourceProductionPercent = 0,
 ): PlanetEconomyState {
-  const summary = calculateSummary(buildings, energyOutputPercent);
-
+  const summary = calculateSummary(
+    buildings,
+    energyOutputPercent,
+    resourceProductionPercent,
+  );
   return {
     resources: {
       metal: createStock('metal', summary),
@@ -139,9 +144,13 @@ export function refreshPlanetEconomy(
   economy: PlanetEconomyState,
   buildings: readonly PlanetBuildingState[],
   energyOutputPercent = 0,
+  resourceProductionPercent = 0,
 ): PlanetEconomyState {
-  const summary = calculateSummary(buildings, energyOutputPercent);
-
+  const summary = calculateSummary(
+    buildings,
+    energyOutputPercent,
+    resourceProductionPercent,
+  );
   return {
     resources: {
       metal: createStock('metal', summary, economy.resources.metal),
@@ -158,12 +167,10 @@ function accrueStock(stock: ResourceStock, seconds: number): ResourceStock {
   if (seconds === 0 || stock.productionPerHour === 0 || stock.amount >= stock.capacity) {
     return stock;
   }
-
   const total = stock.productionPerHour * seconds + stock.productionRemainder;
   const produced = Math.floor(total / 3_600);
   const unclampedAmount = stock.amount + produced;
   const amount = Math.min(stock.capacity, unclampedAmount);
-
   return {
     ...stock,
     amount,
@@ -172,16 +179,12 @@ function accrueStock(stock: ResourceStock, seconds: number): ResourceStock {
 }
 
 export function getSecondsUntilResourceFull(stock: ResourceStock): number | null {
-  if (stock.amount >= stock.capacity) {
-    return 0;
-  }
-
-  if (stock.productionPerHour <= 0) {
-    return null;
-  }
-
+  if (stock.amount >= stock.capacity) return 0;
+  if (stock.productionPerHour <= 0) return null;
   const missing = stock.capacity - stock.amount;
-  return Math.ceil((missing * 3_600 - stock.productionRemainder) / stock.productionPerHour);
+  return Math.ceil(
+    (missing * 3_600 - stock.productionRemainder) / stock.productionPerHour,
+  );
 }
 
 export function accruePlanetEconomy(
@@ -192,13 +195,12 @@ export function accruePlanetEconomy(
   if (!Number.isInteger(seconds) || seconds < 0) {
     throw new Error('Economy accrual seconds must be a non-negative integer.');
   }
-
   const economy = refreshPlanetEconomy(
     planet.economy,
     planet.buildings,
     energyOutputPercent,
+    getResourceProductionBonusPercent(planet.specialization),
   );
-
   return {
     ...planet,
     economy: {
