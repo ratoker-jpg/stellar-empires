@@ -17,6 +17,7 @@ import {
   refundResources,
   spendResources,
 } from './planet/buildingProgression';
+import { setPlanetSpecialization } from './planet/specializationCommands';
 import type { PlanetState } from './planet/types';
 import { AEGIS_RESEARCH_CATALOG } from './research/catalog';
 import {
@@ -95,7 +96,6 @@ function scheduleEvent(
       message: 'Completion events can only be created by their domain queues.',
     };
   }
-
   if (!isNonNegativeInteger(command.executeAt)) {
     return {
       ok: false,
@@ -104,7 +104,6 @@ function scheduleEvent(
       details: { executeAt: command.executeAt },
     };
   }
-
   if (command.executeAt < state.clock.elapsedSeconds) {
     return {
       ok: false,
@@ -112,14 +111,12 @@ function scheduleEvent(
       message: 'An event cannot be scheduled before the current world time.',
     };
   }
-
   const event: ScheduledGameEvent = {
     id: `event-${state.nextEventSequence}`,
     executeAt: command.executeAt,
     sequence: state.nextEventSequence,
     payload: command.payload,
   };
-
   return {
     ok: true,
     value: {
@@ -145,7 +142,6 @@ function queueBuilding(
   if (planet.buildQueue.length > 0) {
     return { ok: false, code: 'BUILD_QUEUE_BUSY', message: 'The construction queue is occupied.' };
   }
-
   const definition = getBuildingDefinition(command.buildingId);
   if (definition === undefined) {
     return { ok: false, code: 'BUILDING_NOT_FOUND', message: 'The building is not registered.' };
@@ -153,13 +149,11 @@ function queueBuilding(
   if (definition.factionId !== planet.factionId) {
     return { ok: false, code: 'WRONG_FACTION_BUILDING', message: 'The building belongs to another faction.' };
   }
-
   const currentLevel = getBuildingLevel(planet.buildings, definition.id);
   const targetLevel = currentLevel + 1;
   if (targetLevel > definition.maxLevel) {
     return { ok: false, code: 'BUILDING_MAX_LEVEL', message: 'The building is at maximum level.' };
   }
-
   const missingRequirements = findMissingRequirements(planet, definition.requirements);
   if (missingRequirements.length > 0) {
     return {
@@ -169,7 +163,6 @@ function queueBuilding(
       details: { missingRequirements },
     };
   }
-
   if (currentLevel === 0) {
     const zone = planet.zones[definition.zoneId];
     const freeFields = zone.fieldLimit - zone.usedFields;
@@ -177,12 +170,10 @@ function queueBuilding(
       return { ok: false, code: 'ZONE_FIELDS_FULL', message: 'The target zone has no free fields.' };
     }
   }
-
   const cost = calculateBuildingCost(definition, targetLevel);
   if (!canAfford(planet.economy, cost)) {
     return { ok: false, code: 'INSUFFICIENT_RESOURCES', message: 'The planet does not have enough resources.' };
   }
-
   const sequence = state.nextEventSequence;
   const queueItemId = `build-${sequence}`;
   const effects = getResearchEffectsForEmpire(state, command.empireId);
@@ -216,7 +207,6 @@ function queueBuilding(
     buildQueue: [queueItem],
     economy: spendResources(planet.economy, cost),
   };
-
   return {
     ok: true,
     value: {
@@ -241,13 +231,11 @@ function cancelBuilding(
   if (queueItem === undefined) {
     return { ok: false, code: 'BUILD_QUEUE_ITEM_NOT_FOUND', message: 'The construction order does not exist.' };
   }
-
   const updatedPlanet: PlanetState = {
     ...planet,
     buildQueue: planet.buildQueue.filter((item) => item.id !== queueItem.id),
     economy: refundResources(planet.economy, queueItem.cost, 750),
   };
-
   return {
     ok: true,
     value: {
@@ -272,11 +260,9 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
   ) {
     return applyFlightEvent(state, event);
   }
-
   if (event.payload.type === 'RESEARCH_COMPLETE') {
     return { ...state, research: completeResearch(state.research, event.payload) };
   }
-
   if (event.payload.type === 'UNIT_PRODUCTION_COMPLETE') {
     const payload = event.payload;
     const planet = state.planets.find((candidate) => candidate.id === payload.planetId);
@@ -290,7 +276,6 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
       ),
     };
   }
-
   if (event.payload.type !== 'BUILDING_COMPLETE') return state;
   const payload = event.payload;
   const planet = state.planets.find((candidate) => candidate.id === payload.planetId);
@@ -328,16 +313,13 @@ function advanceTime(
   if (!isNonNegativeInteger(command.seconds)) {
     return { ok: false, code: 'INVALID_TIME_DELTA', message: 'Time delta must be a non-negative integer.' };
   }
-
   const targetTime = state.clock.elapsedSeconds + command.seconds;
   const executedEvents: ExecutedGameEvent[] = [];
   let working = state;
   let cursor = state.clock.elapsedSeconds;
-
   while (true) {
     const nextEvent = working.pendingEvents[0];
     if (nextEvent === undefined || nextEvent.executeAt > targetTime) break;
-
     working = accrueStateEconomies(working, nextEvent.executeAt - cursor);
     working = {
       ...working,
@@ -348,7 +330,6 @@ function advanceTime(
     cursor = nextEvent.executeAt;
     executedEvents.push({ event: nextEvent, executedAt: nextEvent.executeAt });
   }
-
   working = accrueStateEconomies(working, targetTime - cursor);
   return {
     ok: true,
@@ -365,6 +346,8 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
   switch (command.type) {
     case 'SCHEDULE_EVENT':
       return scheduleEvent(state, command);
+    case 'SET_PLANET_SPECIALIZATION':
+      return setPlanetSpecialization(state, command);
     case 'QUEUE_BUILDING':
       return queueBuilding(state, command);
     case 'CANCEL_BUILDING':
