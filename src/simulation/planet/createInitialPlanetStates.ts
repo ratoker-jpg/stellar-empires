@@ -49,10 +49,12 @@ export function createInitialPlanetStates(
         name: `${system.name} ${planet.position}`,
         ownerEmpireId: planet.ownerEmpireId,
         factionId,
+        specializationId: 'balanced',
+        developmentTemplateId: 'balanced',
         zones: createPlanetZones(buildings),
         buildings,
         buildQueue: [],
-        economy: createPlanetEconomy(buildings),
+        economy: createPlanetEconomy(buildings, 0, 'balanced'),
         inventory: { ships: {}, defenses: {} },
         productionQueues: { shipyard: [], defense: [] },
       });
