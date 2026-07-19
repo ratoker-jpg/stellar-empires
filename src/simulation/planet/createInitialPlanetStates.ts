@@ -27,16 +27,11 @@ function factionForEmpire(empireId: string): FactionId {
 
 export function createInitialPlanetStates(galaxy: GalaxyModel): readonly PlanetState[] {
   const planets: PlanetState[] = [];
-
   for (const system of galaxy.systems) {
     for (const planet of system.planets) {
-      if (planet.ownerEmpireId === null) {
-        continue;
-      }
-
+      if (planet.ownerEmpireId === null) continue;
       const factionId = factionForEmpire(planet.ownerEmpireId);
       const buildings = factionId === 'aegis' ? STARTING_AEGIS_BUILDINGS : [];
-
       planets.push({
         id: `colony-${planet.id}`,
         galaxyPlanetId: planet.id,
@@ -45,6 +40,7 @@ export function createInitialPlanetStates(galaxy: GalaxyModel): readonly PlanetS
         name: `${system.name} ${planet.position}`,
         ownerEmpireId: planet.ownerEmpireId,
         factionId,
+        specialization: 'balanced',
         zones: createPlanetZones(buildings),
         buildings,
         buildQueue: [],
@@ -54,6 +50,5 @@ export function createInitialPlanetStates(galaxy: GalaxyModel): readonly PlanetS
       });
     }
   }
-
   return planets;
 }
