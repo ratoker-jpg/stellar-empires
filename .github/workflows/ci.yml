@@ -35,25 +35,7 @@ jobs:
         run: npm run lint
 
       - name: Typecheck
-        id: typecheck
-        continue-on-error: true
-        run: |
-          set +e
-          npm run typecheck > typecheck.txt 2>&1
-          status=$?
-          cat typecheck.txt
-          exit $status
-
-      - name: Upload typecheck diagnostics
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: pr36-typecheck-diagnostics-exact
-          path: typecheck.txt
-
-      - name: Fail on typecheck errors
-        if: steps.typecheck.outcome == 'failure'
-        run: exit 1
+        run: npm run typecheck
 
       - name: Test
         run: npm run test
