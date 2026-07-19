@@ -135,7 +135,8 @@ function isFleet(value: unknown): boolean {
           value.mission.kind === 'transport' ||
           value.mission.kind === 'scout' ||
           value.mission.kind === 'attack' ||
-          value.mission.kind === 'recycle') &&
+          value.mission.kind === 'recycle' ||
+          value.mission.kind === 'colonize') &&
         typeof value.mission.targetPlanetId === 'string'));
   return (
     validMission &&
