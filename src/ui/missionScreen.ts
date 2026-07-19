@@ -3,16 +3,23 @@ import {
   getEmpireColonyCount,
   isColonizableGalaxyPlanet,
 } from '../simulation/colonization/colonization';
-import type { FleetMissionKind } from '../simulation/fleets/types';
+import type { ResourceCost } from '../simulation/economy/types';
+import type { FleetMissionKind, FleetState } from '../simulation/fleets/types';
 import {
   getCurrentObservations,
   getEmpireIntelligence,
 } from '../simulation/intelligence/intelligenceState';
 import type { GameCommand, GameState } from '../simulation/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
+import {
+  createFleetComposerViewModel,
+  createFleetRoutePreview,
+} from './fleetComposerViewModel';
+import { formatGameDuration } from './planetViewModel';
 
 export interface MissionScreenOptions {
   readonly getState: () => GameState;
+  readonly getActivePlanetId: () => string;
   readonly execute: (command: GameCommand, successMessage: string) => boolean;
 }
 
@@ -70,6 +77,49 @@ function getColonizationTargets(state: GameState) {
   );
 }
 
+function getRegularTargets(
+  state: GameState,
+  fleet: FleetState,
+  mission: FleetMissionKind,
+) {
+  if (fleet.location.type !== 'planet') return [];
+  const originId = fleet.location.planetId;
+  if (mission === 'recycle') {
+    const debrisPlanetIds = new Set(
+      state.debrisFields
+        .filter((field) => field.metal > 0 || field.crystal > 0)
+        .map((field) => field.planetId),
+    );
+    return state.planets.filter(
+      (planet) => planet.id !== originId && debrisPlanetIds.has(planet.id),
+    );
+  }
+  if (mission === 'transport' || mission === 'deploy') {
+    return state.planets.filter(
+      (planet) =>
+        planet.id !== originId && planet.ownerEmpireId === fleet.empireId,
+    );
+  }
+  return state.planets.filter((planet) => planet.id !== originId);
+}
+
+function missionLabel(mission: FleetMissionKind): string {
+  switch (mission) {
+    case 'deploy':
+      return 'Размещение';
+    case 'scout':
+      return 'Разведка';
+    case 'attack':
+      return 'Атака';
+    case 'recycle':
+      return 'Переработка';
+    case 'colonize':
+      return 'Колонизация';
+    default:
+      return 'Транспорт';
+  }
+}
+
 export function mountMissionScreen(options: MissionScreenOptions): void {
   const dialog = document.createElement('dialog');
   dialog.id = 'mission-screen-dialog';
@@ -95,7 +145,9 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
 
   const render = (): void => {
     const state = options.getState();
-    const planets = state.planets.filter((planet) => planet.ownerEmpireId === 'player');
+    const planets = state.planets.filter(
+      (planet) => planet.ownerEmpireId === 'player',
+    );
     const colonizationTargets = getColonizationTargets(state);
     content.replaceChildren();
 
@@ -109,55 +161,122 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
     for (const planet of planets) {
       const option = document.createElement('option');
       option.value = planet.id;
-      option.textContent = planet.name;
+      option.textContent = `${planet.name} · ${planet.systemId}:${planet.position}`;
       originSelect.append(option);
+    }
+    if (planets.some((planet) => planet.id === options.getActivePlanetId())) {
+      originSelect.value = options.getActivePlanetId();
     }
     const shipFields = document.createElement('div');
     shipFields.className = 'mission-fields';
-    const origin = planets[0];
-    const shipInputs: Array<{ readonly id: string; readonly field: HTMLLabelElement }> = [];
-    for (const [unitId, count] of Object.entries(origin?.inventory.ships ?? {})) {
-      if (count <= 0) continue;
-      const field = numberInput(getUnitDefinition(unitId)?.name ?? unitId, count);
-      shipInputs.push({ id: unitId, field });
-      shipFields.append(field);
-    }
-    const cargoMetal = numberInput('Груз: металл');
-    const cargoCrystal = numberInput('Груз: кристалл');
-    const cargoGas = numberInput('Груз: газ');
-    shipFields.append(cargoMetal, cargoCrystal, cargoGas);
+    const cargoFields = document.createElement('div');
+    cargoFields.className = 'mission-fields';
+    const composerStatus = document.createElement('p');
+    composerStatus.className = 'mission-composer-status';
     const createButton = document.createElement('button');
     createButton.type = 'button';
     createButton.textContent = 'Создать флот';
-    createButton.disabled = shipInputs.length === 0;
-    createButton.addEventListener('click', () => {
-      const ships = Object.fromEntries(
+
+    let shipInputs: Array<{
+      readonly unitId: string;
+      readonly field: HTMLLabelElement;
+    }> = [];
+    let cargoMetal = numberInput('Груз: металл');
+    let cargoCrystal = numberInput('Груз: кристалл');
+    let cargoGas = numberInput('Груз: газ');
+
+    const readComposition = (): Readonly<Record<string, number>> =>
+      Object.fromEntries(
         shipInputs
-          .map(({ id, field }) => [id, readNumber(field)] as const)
+          .map(({ unitId, field }) => [unitId, readNumber(field)] as const)
           .filter(([, quantity]) => quantity > 0),
       );
+    const readCargo = (): ResourceCost => ({
+      metal: readNumber(cargoMetal),
+      crystal: readNumber(cargoCrystal),
+      gas: readNumber(cargoGas),
+    });
+
+    const refreshComposer = (): void => {
+      const model = createFleetComposerViewModel(
+        state,
+        'player',
+        originSelect.value,
+        readComposition(),
+        readCargo(),
+      );
+      if (model === undefined) {
+        composerStatus.textContent = 'Выбранная колония недоступна.';
+        createButton.disabled = true;
+        return;
+      }
+      composerStatus.textContent = `Кораблей ${model.shipCount} · скорость ${model.speed} · груз ${model.cargoAmount}/${model.cargoCapacity}${model.errors.length > 0 ? ` · ${model.errors.join(' · ')}` : ''}`;
+      createButton.disabled = !model.canCreate;
+    };
+
+    const renderOriginInventory = (): void => {
+      const origin = state.planets.find(
+        (planet) =>
+          planet.id === originSelect.value &&
+          planet.ownerEmpireId === 'player',
+      );
+      shipFields.replaceChildren();
+      cargoFields.replaceChildren();
+      shipInputs = [];
+      for (const [unitId, count] of Object.entries(origin?.inventory.ships ?? {})) {
+        if (count <= 0) continue;
+        const field = numberInput(
+          `${getUnitDefinition(unitId)?.name ?? unitId} · доступно ${count}`,
+          count,
+        );
+        shipInputs.push({ unitId, field });
+        field.querySelector('input')?.addEventListener('input', refreshComposer);
+        shipFields.append(field);
+      }
+      cargoMetal = numberInput('Груз: металл');
+      cargoCrystal = numberInput('Груз: кристалл');
+      cargoGas = numberInput('Груз: газ');
+      for (const field of [cargoMetal, cargoCrystal, cargoGas]) {
+        field.querySelector('input')?.addEventListener('input', refreshComposer);
+        cargoFields.append(field);
+      }
+      refreshComposer();
+    };
+
+    originSelect.addEventListener('change', renderOriginInventory);
+    createButton.addEventListener('click', () => {
+      const model = createFleetComposerViewModel(
+        options.getState(),
+        'player',
+        originSelect.value,
+        readComposition(),
+        readCargo(),
+      );
+      if (model === undefined || !model.canCreate) {
+        refreshComposer();
+        return;
+      }
       if (
         options.execute(
           {
             type: 'CREATE_FLEET',
             empireId: 'player',
-            planetId: originSelect.value,
-            ships,
-            cargo: {
-              metal: readNumber(cargoMetal),
-              crystal: readNumber(cargoCrystal),
-              gas: readNumber(cargoGas),
-            },
+            planetId: model.originPlanetId,
+            ships: model.selectedShips,
+            cargo: model.cargo,
           },
-          'Флот сформирован',
+          `Флот сформирован · ${model.originName}`,
         )
       ) render();
     });
+    renderOriginInventory();
     createSection.append(
       createTitle,
       colonySummary,
       originSelect,
       shipFields,
+      cargoFields,
+      composerStatus,
       createButton,
     );
     content.append(createSection);
@@ -168,41 +287,74 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
     listTitle.textContent = `Флоты · ${state.fleets.filter((fleet) => fleet.empireId === 'player').length}`;
     list.append(listTitle);
 
-    for (const fleet of state.fleets.filter((candidate) => candidate.empireId === 'player')) {
+    for (const fleet of state.fleets.filter(
+      (candidate) => candidate.empireId === 'player',
+    )) {
       const card = document.createElement('article');
       const info = document.createElement('div');
       const composition = Object.entries(fleet.ships)
-        .map(([unitId, quantity]) => `${getUnitDefinition(unitId)?.name ?? unitId} × ${quantity}`)
+        .map(
+          ([unitId, quantity]) =>
+            `${getUnitDefinition(unitId)?.name ?? unitId} × ${quantity}`,
+        )
         .join(' · ');
       const name = document.createElement('strong');
       name.textContent = fleet.id;
       const meta = document.createElement('p');
-      meta.textContent = `${fleet.status} · скорость ${fleet.speed} · ${composition}`;
+      meta.textContent = `${fleet.status} · скорость ${fleet.speed} · груз ${fleet.cargo.metal + fleet.cargo.crystal + fleet.cargo.gas}/${fleet.cargoCapacity} · ${composition}`;
       info.append(name, meta);
       const actions = document.createElement('div');
       actions.className = 'mission-actions';
 
       if (fleet.status === 'stationed' && fleet.location.type === 'planet') {
-        const fleetPlanetId = fleet.location.planetId;
-        const regularTargets = state.planets.filter(
-          (planet) => planet.id !== fleetPlanetId,
-        );
         const target = document.createElement('select');
         const mission = document.createElement('select');
-        mission.innerHTML = '<option value="transport">Транспорт</option><option value="deploy">Размещение</option><option value="scout">Разведка</option><option value="attack">Атака</option><option value="recycle">Переработка</option>';
-        if ((fleet.ships['ship.aegis.colony'] ?? 0) > 0) {
-          const colonizeOption = document.createElement('option');
-          colonizeOption.value = 'colonize';
-          colonizeOption.textContent = 'Колонизация';
-          mission.append(colonizeOption);
+        for (const missionKind of [
+          'transport',
+          'deploy',
+          'scout',
+          'attack',
+          'recycle',
+        ] as const) {
+          const option = document.createElement('option');
+          option.value = missionKind;
+          option.textContent = missionLabel(missionKind);
+          mission.append(option);
         }
+        if ((fleet.ships['ship.aegis.colony'] ?? 0) > 0) {
+          const option = document.createElement('option');
+          option.value = 'colonize';
+          option.textContent = missionLabel('colonize');
+          mission.append(option);
+        }
+        const preview = document.createElement('p');
+        preview.className = 'mission-route-preview';
         const send = document.createElement('button');
         send.type = 'button';
         send.textContent = 'Отправить';
 
+        const refreshPreview = (): void => {
+          const missionKind = readMissionKind(mission.value);
+          const route = createFleetRoutePreview(
+            state,
+            fleet,
+            missionKind,
+            target.value,
+          );
+          if (route === undefined) {
+            preview.textContent = 'Маршрут недоступен.';
+            send.disabled = true;
+            return;
+          }
+          preview.textContent = `Дистанция ${route.distance} · ${formatGameDuration(route.durationSeconds)} · резерв газа ${route.reservedFuel}/${route.originGas}`;
+          preview.classList.toggle('is-blocked', !route.hasEnoughFuel);
+          send.disabled = !route.hasEnoughFuel;
+        };
+
         const renderTargets = (): void => {
           target.replaceChildren();
-          if (mission.value === 'colonize') {
+          const missionKind = readMissionKind(mission.value);
+          if (missionKind === 'colonize') {
             for (const candidate of colonizationTargets) {
               const option = document.createElement('option');
               option.value = candidate.planet.id;
@@ -210,7 +362,7 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
               target.append(option);
             }
           } else {
-            for (const planet of regularTargets) {
+            for (const planet of getRegularTargets(state, fleet, missionKind)) {
               const debris = state.debrisFields.find(
                 (field) => field.planetId === planet.id,
               );
@@ -220,11 +372,18 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
               target.append(option);
             }
           }
-          send.disabled = target.options.length === 0;
+          if (target.options.length === 0) {
+            preview.textContent = 'Нет доступных целей для выбранной миссии.';
+            send.disabled = true;
+          } else {
+            refreshPreview();
+          }
         };
 
         mission.addEventListener('change', renderTargets);
+        target.addEventListener('change', refreshPreview);
         send.addEventListener('click', () => {
+          const missionKind = readMissionKind(mission.value);
           if (
             options.execute(
               {
@@ -232,24 +391,16 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
                 empireId: 'player',
                 fleetId: fleet.id,
                 targetPlanetId: target.value,
-                mission: readMissionKind(mission.value),
+                mission: missionKind,
               },
-              mission.value === 'colonize'
+              missionKind === 'colonize'
                 ? 'Колонизационная экспедиция отправлена'
-                : 'Флот отправлен',
+                : `Флот отправлен · ${missionLabel(missionKind)}`,
             )
           ) render();
         });
-
-        if (
-          regularTargets.length === 0 &&
-          colonizationTargets.length > 0 &&
-          (fleet.ships['ship.aegis.colony'] ?? 0) > 0
-        ) {
-          mission.value = 'colonize';
-        }
         renderTargets();
-        actions.append(target, mission, send);
+        actions.append(mission, target, preview, send);
 
         const disband = document.createElement('button');
         disband.type = 'button';
@@ -348,7 +499,9 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
     debrisTitle.textContent = 'Поля обломков';
     debrisSection.append(debrisTitle);
     for (const field of state.debrisFields) {
-      const planet = state.planets.find((candidate) => candidate.id === field.planetId);
+      const planet = state.planets.find(
+        (candidate) => candidate.id === field.planetId,
+      );
       const card = document.createElement('article');
       const summary = document.createElement('strong');
       summary.textContent = planet?.name ?? field.planetId;
