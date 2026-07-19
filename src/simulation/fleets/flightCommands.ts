@@ -113,11 +113,13 @@ export function sendFleet(
   if (fleet.status !== 'stationed' || fleet.location.type !== 'planet') {
     return { ok: false, code: 'FLEET_NOT_STATIONED', message: 'Fleet is not ready to depart.' };
   }
-  if (fleet.location.planetId === command.targetPlanetId) {
+
+  const originPlanetId = fleet.location.planetId;
+  if (originPlanetId === command.targetPlanetId) {
     return { ok: false, code: 'FLEET_TARGET_IS_ORIGIN', message: 'Fleet target must differ from its origin.' };
   }
 
-  const origin = state.planets.find((planet) => planet.id === fleet.location.planetId);
+  const origin = state.planets.find((planet) => planet.id === originPlanetId);
   const target = state.planets.find((planet) => planet.id === command.targetPlanetId);
   if (origin === undefined || target === undefined) {
     return { ok: false, code: 'FLIGHT_PLANET_NOT_FOUND', message: 'Flight origin or target not found.' };
