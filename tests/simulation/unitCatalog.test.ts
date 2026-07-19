@@ -19,9 +19,10 @@ describe('unit catalog and inventory', () => {
     expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'defense')).toHaveLength(3);
   });
 
-  it('initializes empty inventories and serializable production queues', () => {
+  it('initializes empty inventories, fleets and production queues', () => {
     const state = createInitialGameState('unit-inventory');
-    expect(state.schemaVersion).toBe(4);
+    expect(state.schemaVersion).toBe(7);
+    expect(state.fleets).toEqual([]);
     expect(
       state.planets.every(
         (planet) =>
@@ -37,10 +38,7 @@ describe('unit catalog and inventory', () => {
     const state = createInitialGameState('hangar-capacity');
     const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player');
     expect(planet).toBeDefined();
-    if (planet === undefined) {
-      return;
-    }
-
+    if (planet === undefined) return;
     const upgraded = {
       ...planet,
       buildings: [
@@ -52,7 +50,6 @@ describe('unit catalog and inventory', () => {
         ships: { 'ship.aegis.scout': 3, 'ship.aegis.cargo': 2 },
       },
     };
-
     expect(getHangarCapacity(upgraded)).toBe(50);
     expect(getHangarUsed(upgraded)).toBe(7);
   });
