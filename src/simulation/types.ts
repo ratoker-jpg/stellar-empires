@@ -1,3 +1,4 @@
+import type { DebrisField } from './combat/debris';
 import type { BattleReport } from './combat/types';
 import type { ResourceCost } from './economy/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
@@ -138,7 +139,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 8;
+  readonly schemaVersion: 9;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
@@ -147,6 +148,7 @@ export interface GameState {
   readonly research: readonly EmpireResearchState[];
   readonly fleets: readonly FleetState[];
   readonly intelligence: readonly EmpireIntelligenceState[];
+  readonly debrisFields: readonly DebrisField[];
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];
