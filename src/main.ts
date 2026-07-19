@@ -84,7 +84,7 @@ async function bootstrap(): Promise<void> {
   const repository = new IndexedDbSaveRepository();
   let initialState = createInitialGameState('stellar-empires-m1');
   let runtimeState: GameState = initialState;
-  let startupStatus = `Новая партия · seed ${initialState.seed}`;
+  let startupStatus: string;
   let autosave: AutoSaveController | undefined;
   let saveManager: SaveManager | undefined;
 
