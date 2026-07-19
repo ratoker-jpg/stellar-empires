@@ -9,6 +9,7 @@ function createTwoColonyState(seed: string): GameState {
   if (origin === undefined) throw new Error('Player planet missing.');
   const zeroProduction = (planet: typeof origin) => ({
     ...planet,
+    buildings: [],
     economy: {
       ...planet.economy,
       resources: {
