@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Фон Директората Эгида">
-  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#112939"/><stop offset=".45" stop-color="#07131d"/><stop offset="1" stop-color="#02050a"/></linearGradient><pattern id="g" width="88" height="88" patternUnits="userSpaceOnUse"><path d="M88 0H0V88" fill="none" stroke="#3dd4d0" stroke-opacity=".055"/></pattern></defs>
-  <rect width="1600" height="900" fill="url(#b)"/><rect width="1600" height="900" fill="url(#g)"/>
-  <path d="M0 720 520 360l360 210 720-410v740H0Z" fill="#183449" opacity=".3"/>
-  <path d="M0 780 430 500l390 180 780-430" fill="none" stroke="#e7a847" stroke-width="5" stroke-opacity=".18"/>
-  <g fill="none" stroke="#3dd4d0" stroke-opacity=".13"><path d="M60 100h1480M60 800h1480"/><path d="M60 100v700M1540 100v700"/></g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Директорат Эгида"><image href="background.webp" width="1600" height="900" preserveAspectRatio="xMidYMid slice"/></svg>
