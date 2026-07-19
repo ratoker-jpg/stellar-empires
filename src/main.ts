@@ -1,5 +1,6 @@
 import './styles/main.css';
 import './styles/factions.css';
+import './styles/factionTheme.css';
 import './styles/aegisAssets.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
