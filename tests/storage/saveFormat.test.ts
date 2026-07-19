@@ -8,19 +8,23 @@ import {
 } from '../../src/storage/saveFormat';
 
 describe('save format', () => {
-  it('round-trips a valid schema-v10 save', () => {
+  it('round-trips a valid schema-v11 save', () => {
     const state = createInitialGameState('save-round-trip');
     const save = createSaveEnvelope('slot-1', state, '2026-07-18T12:00:00.000Z');
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
-  it('migrates a schema-v8 save with empty debris and default development metadata', () => {
+  it('migrates a schema-v8 save with empty newer collections and default development metadata', () => {
     const current = createInitialGameState('legacy-save');
-    const { debrisFields: _debrisFields, ...withoutDebris } = current;
+    const {
+      debrisFields: _debrisFields,
+      logisticsRoutes: _logisticsRoutes,
+      ...withoutNewCollections
+    } = current;
     const legacyState = {
-      ...withoutDebris,
+      ...withoutNewCollections,
       schemaVersion: 8,
-      planets: withoutDebris.planets.map(
+      planets: withoutNewCollections.planets.map(
         ({ specializationId: _specializationId, developmentTemplateId: _templateId, ...planet }) => planet,
       ),
     };
@@ -34,8 +38,9 @@ describe('save format', () => {
     const parsed = parseSaveJson(JSON.stringify(legacySave));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(10);
+      expect(parsed.value.state.schemaVersion).toBe(11);
       expect(parsed.value.state.debrisFields).toEqual([]);
+      expect(parsed.value.state.logisticsRoutes).toEqual([]);
       expect(parsed.value.state.planets[0]?.specializationId).toBe('balanced');
       expect(parsed.value.state.planets[0]?.developmentTemplateId).toBe('balanced');
     }

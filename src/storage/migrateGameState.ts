@@ -3,10 +3,11 @@ import {
   createPlanetEconomy,
   refreshPlanetEconomy,
 } from '../simulation/economy/planetEconomy';
-import type { PlanetEconomyState } from '../simulation/economy/types';
+import type { PlanetEconomyState, ResourceId } from '../simulation/economy/types';
 import type { FleetState } from '../simulation/fleets/types';
 import { createInitialIntelligenceStates } from '../simulation/intelligence/intelligenceState';
 import type { EmpireIntelligenceState } from '../simulation/intelligence/types';
+import type { LogisticsRoute } from '../simulation/logistics/types';
 import {
   isPlanetDevelopmentTemplateId,
   isPlanetSpecializationId,
@@ -24,6 +25,10 @@ import type {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isResourceId(value: unknown): value is ResourceId {
+  return value === 'metal' || value === 'crystal' || value === 'gas';
 }
 
 function readBuildings(value: unknown): readonly PlanetBuildingState[] | undefined {
@@ -230,8 +235,49 @@ function readDebrisFields(value: unknown): readonly DebrisField[] | undefined {
   return fields;
 }
 
+function readLogisticsRoutes(value: unknown): readonly LogisticsRoute[] | undefined {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) return undefined;
+  const routes: LogisticsRoute[] = [];
+  for (const item of value) {
+    if (
+      !isRecord(item) ||
+      typeof item.id !== 'string' ||
+      typeof item.empireId !== 'string' ||
+      typeof item.originPlanetId !== 'string' ||
+      typeof item.targetPlanetId !== 'string' ||
+      !isResourceId(item.resourceId) ||
+      typeof item.amountPerTrip !== 'number' ||
+      !Number.isInteger(item.amountPerTrip) ||
+      item.amountPerTrip <= 0 ||
+      typeof item.originReserve !== 'number' ||
+      !Number.isInteger(item.originReserve) ||
+      item.originReserve < 0 ||
+      typeof item.intervalSeconds !== 'number' ||
+      !Number.isInteger(item.intervalSeconds) ||
+      item.intervalSeconds <= 0 ||
+      (item.priority !== 1 && item.priority !== 2 && item.priority !== 3) ||
+      (item.status !== 'active' && item.status !== 'paused') ||
+      typeof item.nextDepartureAt !== 'number' ||
+      !Number.isInteger(item.nextDepartureAt) ||
+      item.nextDepartureAt < 0
+    ) return undefined;
+    routes.push({
+      ...(item as unknown as LogisticsRoute),
+      consecutiveMisses:
+        typeof item.consecutiveMisses === 'number' && Number.isInteger(item.consecutiveMisses)
+          ? Math.max(0, item.consecutiveMisses)
+          : 0,
+      lastResult: isRecord(item.lastResult)
+        ? item.lastResult as unknown as LogisticsRoute['lastResult']
+        : null,
+    });
+  }
+  return routes;
+}
+
 export function migrateGameState(value: unknown): GameState | undefined {
-  if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(value.schemaVersion as number)) {
+  if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].includes(value.schemaVersion as number)) {
     return undefined;
   }
   if (!Array.isArray(value.planets) || !Array.isArray(value.empires)) return undefined;
@@ -251,22 +297,25 @@ export function migrateGameState(value: unknown): GameState | undefined {
   const fleets = readFleets(value.fleets);
   const intelligence = readIntelligenceStates(value.intelligence, empireIds);
   const debrisFields = readDebrisFields(value.debrisFields);
+  const logisticsRoutes = readLogisticsRoutes(value.logisticsRoutes);
   if (
     research === undefined ||
     fleets === undefined ||
     intelligence === undefined ||
-    debrisFields === undefined
+    debrisFields === undefined ||
+    logisticsRoutes === undefined
   ) {
     return undefined;
   }
 
   return {
     ...value,
-    schemaVersion: 10,
+    schemaVersion: 11,
     planets,
     research,
     fleets,
     intelligence,
     debrisFields,
+    logisticsRoutes,
   } as unknown as GameState;
 }

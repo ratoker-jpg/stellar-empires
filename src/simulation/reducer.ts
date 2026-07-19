@@ -6,6 +6,13 @@ import {
   recallFleet,
   sendFleet,
 } from './fleets/flightCommands';
+import {
+  createLogisticsRoute,
+  deleteLogisticsRoute,
+  getNextLogisticsDepartureAt,
+  processLogisticsDeparturesAt,
+  updateLogisticsRoute,
+} from './logistics/routes';
 import { getBuildingDefinition } from './planet/buildingCatalog';
 import {
   calculateBuildingCost,
@@ -349,17 +356,36 @@ function advanceTime(
 
   while (true) {
     const nextEvent = working.pendingEvents[0];
-    if (nextEvent === undefined || nextEvent.executeAt > targetTime) break;
+    const nextEventAt =
+      nextEvent !== undefined && nextEvent.executeAt <= targetTime
+        ? nextEvent.executeAt
+        : undefined;
+    const nextRouteAt = getNextLogisticsDepartureAt(working, targetTime);
+    const nextAt =
+      nextEventAt === undefined
+        ? nextRouteAt
+        : nextRouteAt === undefined
+          ? nextEventAt
+          : Math.min(nextEventAt, nextRouteAt);
+    if (nextAt === undefined) break;
 
-    working = accrueStateEconomies(working, nextEvent.executeAt - cursor);
+    working = accrueStateEconomies(working, nextAt - cursor);
     working = {
       ...working,
-      clock: { ...working.clock, elapsedSeconds: nextEvent.executeAt },
-      pendingEvents: working.pendingEvents.slice(1),
+      clock: { ...working.clock, elapsedSeconds: nextAt },
     };
-    working = applyEvent(working, nextEvent);
-    cursor = nextEvent.executeAt;
-    executedEvents.push({ event: nextEvent, executedAt: nextEvent.executeAt });
+    if (nextRouteAt === nextAt) {
+      working = processLogisticsDeparturesAt(working, nextAt);
+    }
+    if (nextEventAt === nextAt && nextEvent !== undefined) {
+      working = {
+        ...working,
+        pendingEvents: working.pendingEvents.slice(1),
+      };
+      working = applyEvent(working, nextEvent);
+      executedEvents.push({ event: nextEvent, executedAt: nextAt });
+    }
+    cursor = nextAt;
   }
 
   working = accrueStateEconomies(working, targetTime - cursor);
@@ -386,6 +412,12 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
       return setPlanetSpecialization(state, command);
     case 'SET_PLANET_DEVELOPMENT_TEMPLATE':
       return setPlanetDevelopmentTemplate(state, command);
+    case 'CREATE_LOGISTICS_ROUTE':
+      return createLogisticsRoute(state, command);
+    case 'UPDATE_LOGISTICS_ROUTE':
+      return updateLogisticsRoute(state, command);
+    case 'DELETE_LOGISTICS_ROUTE':
+      return deleteLogisticsRoute(state, command);
     case 'QUEUE_RESEARCH':
       return queueResearch(state, command);
     case 'CANCEL_RESEARCH':
