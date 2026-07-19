@@ -4,7 +4,9 @@ import {
   refundResources,
   spendResources,
 } from '../planet/buildingProgression';
+import { getUnitProductionSpeedBonusPercent } from '../planet/specialization';
 import type { PlanetState } from '../planet/types';
+import { applySpeedPercent } from '../research/progression';
 import { getEmpireResearch } from '../research/researchState';
 import type {
   CommandLogEntry,
@@ -56,7 +58,6 @@ export function queueUnitBatch(
       message: 'Unit batch quantity must be an integer from 1 to 100.',
     };
   }
-
   const planet = state.planets.find((candidate) => candidate.id === command.planetId);
   if (planet === undefined) {
     return { ok: false, code: 'PLANET_NOT_FOUND', message: 'Production planet not found.' };
@@ -64,7 +65,6 @@ export function queueUnitBatch(
   if (planet.ownerEmpireId !== command.empireId) {
     return { ok: false, code: 'NOT_PLANET_OWNER', message: 'Empire does not own the production planet.' };
   }
-
   const definition = getUnitDefinition(command.unitId);
   if (definition === undefined) {
     return { ok: false, code: 'UNIT_NOT_FOUND', message: 'Unit is not registered.' };
@@ -72,12 +72,10 @@ export function queueUnitBatch(
   if (definition.factionId !== planet.factionId) {
     return { ok: false, code: 'WRONG_FACTION_UNIT', message: 'Unit belongs to another faction.' };
   }
-
   const research = getEmpireResearch(state.research, command.empireId);
   if (research === undefined) {
     return { ok: false, code: 'RESEARCH_STATE_NOT_FOUND', message: 'Empire research state not found.' };
   }
-
   const missingRequirements = findMissingUnitRequirements(definition, planet, research);
   if (missingRequirements.length > 0) {
     return {
@@ -87,7 +85,6 @@ export function queueUnitBatch(
       details: { missingRequirements },
     };
   }
-
   const queueKey = queueKeyForKind(definition.kind);
   if (planet.productionQueues[queueKey].length > 0) {
     return {
@@ -96,7 +93,6 @@ export function queueUnitBatch(
       message: 'The selected production queue is already occupied.',
     };
   }
-
   const populationReserved = definition.populationCost * command.quantity;
   const populationAvailable =
     planet.economy.population.capacity -
@@ -111,7 +107,6 @@ export function queueUnitBatch(
       details: { populationRequired: populationReserved, populationAvailable },
     };
   }
-
   const hangarReserved = definition.hangarCost * command.quantity;
   if (definition.kind === 'ship') {
     const hangarAvailable =
@@ -125,7 +120,6 @@ export function queueUnitBatch(
       };
     }
   }
-
   const cost = calculateUnitBatchCost(definition, command.quantity);
   if (!canAfford(planet.economy, cost)) {
     return {
@@ -138,7 +132,10 @@ export function queueUnitBatch(
 
   const sequence = state.nextEventSequence;
   const queueItemId = `production-${sequence}`;
-  const duration = calculateUnitBatchSeconds(definition, command.quantity, planet);
+  const duration = applySpeedPercent(
+    calculateUnitBatchSeconds(definition, command.quantity, planet),
+    getUnitProductionSpeedBonusPercent(planet.specialization, definition.kind),
+  );
   const completesAt = state.clock.elapsedSeconds + duration;
   const queueItem = {
     id: queueItemId,
@@ -172,7 +169,6 @@ export function queueUnitBatch(
       [queueKey]: [queueItem],
     },
   };
-
   return {
     ok: true,
     value: {
@@ -193,14 +189,12 @@ export function cancelUnitBatch(
   if (planet === undefined || planet.ownerEmpireId !== command.empireId) {
     return { ok: false, code: 'PRODUCTION_PLANET_NOT_FOUND', message: 'Production planet not found.' };
   }
-
   const item = [...planet.productionQueues.shipyard, ...planet.productionQueues.defense].find(
     (candidate) => candidate.id === command.queueItemId,
   );
   if (item === undefined) {
     return { ok: false, code: 'PRODUCTION_ITEM_NOT_FOUND', message: 'Production order not found.' };
   }
-
   const queueKey = queueKeyForKind(item.kind);
   const updatedPlanet: PlanetState = {
     ...planet,
@@ -212,7 +206,6 @@ export function cancelUnitBatch(
       ),
     },
   };
-
   return {
     ok: true,
     value: {
@@ -235,10 +228,7 @@ export function completeUnitProduction(
   payload: Extract<GameEventPayload, { readonly type: 'UNIT_PRODUCTION_COMPLETE' }>,
 ): PlanetState {
   const definition = getUnitDefinition(payload.unitId);
-  if (definition === undefined || definition.kind !== payload.kind) {
-    return planet;
-  }
-
+  if (definition === undefined || definition.kind !== payload.kind) return planet;
   const queueKey = queueKeyForKind(payload.kind);
   const item = planet.productionQueues[queueKey].find(
     (candidate) => candidate.id === payload.queueItemId,
@@ -247,10 +237,7 @@ export function completeUnitProduction(
     item === undefined ||
     item.unitId !== payload.unitId ||
     item.quantity !== payload.quantity
-  ) {
-    return planet;
-  }
-
+  ) return planet;
   const completed = addCompletedUnits(planet, definition, payload.quantity);
   return {
     ...completed,
