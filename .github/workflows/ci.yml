@@ -38,7 +38,20 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        run: npm run test
+        id: test
+        continue-on-error: true
+        run: npm run test > test.log 2>&1
+
+      - name: Upload test diagnostics
+        if: steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-diagnostics
+          path: test.log
+
+      - name: Fail on test errors
+        if: steps.test.outcome == 'failure'
+        run: exit 1
 
       - name: Build
         run: npm run build
