@@ -7,6 +7,11 @@ import type { PlanetEconomyState } from '../simulation/economy/types';
 import type { FleetState } from '../simulation/fleets/types';
 import { createInitialIntelligenceStates } from '../simulation/intelligence/intelligenceState';
 import type { EmpireIntelligenceState } from '../simulation/intelligence/types';
+import {
+  isPlanetDevelopmentTemplateId,
+  isPlanetSpecializationId,
+  type PlanetSpecializationId,
+} from '../simulation/planet/specialization';
 import type { PlanetBuildingState } from '../simulation/planet/types';
 import { createPlanetZones } from '../simulation/planet/zones';
 import { createInitialResearchStates } from '../simulation/research/researchState';
@@ -40,11 +45,17 @@ function readBuildings(value: unknown): readonly PlanetBuildingState[] | undefin
 function normalizeEconomy(
   value: unknown,
   buildings: readonly PlanetBuildingState[],
+  specializationId: PlanetSpecializationId,
 ): PlanetEconomyState {
   if (!isRecord(value) || !isRecord(value.resources)) {
-    return createPlanetEconomy(buildings);
+    return createPlanetEconomy(buildings, 0, specializationId);
   }
-  return refreshPlanetEconomy(value as unknown as PlanetEconomyState, buildings);
+  return refreshPlanetEconomy(
+    value as unknown as PlanetEconomyState,
+    buildings,
+    0,
+    specializationId,
+  );
 }
 
 function readCountRecord(value: unknown): Readonly<Record<string, number>> | undefined {
@@ -84,11 +95,19 @@ function migratePlanet(value: unknown): Record<string, unknown> | undefined {
   if (buildings === undefined || inventory === undefined || productionQueues === undefined) {
     return undefined;
   }
+  const specializationId = isPlanetSpecializationId(value.specializationId)
+    ? value.specializationId
+    : 'balanced';
+  const developmentTemplateId = isPlanetDevelopmentTemplateId(value.developmentTemplateId)
+    ? value.developmentTemplateId
+    : 'balanced';
   return {
     ...value,
+    specializationId,
+    developmentTemplateId,
     buildings,
     zones: createPlanetZones(buildings),
-    economy: normalizeEconomy(value.economy, buildings),
+    economy: normalizeEconomy(value.economy, buildings, specializationId),
     inventory,
     productionQueues,
   };
@@ -212,7 +231,7 @@ function readDebrisFields(value: unknown): readonly DebrisField[] | undefined {
 }
 
 export function migrateGameState(value: unknown): GameState | undefined {
-  if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8, 9].includes(value.schemaVersion as number)) {
+  if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(value.schemaVersion as number)) {
     return undefined;
   }
   if (!Array.isArray(value.planets) || !Array.isArray(value.empires)) return undefined;
@@ -243,7 +262,7 @@ export function migrateGameState(value: unknown): GameState | undefined {
 
   return {
     ...value,
-    schemaVersion: 9,
+    schemaVersion: 10,
     planets,
     research,
     fleets,
