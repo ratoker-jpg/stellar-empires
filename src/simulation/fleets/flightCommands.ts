@@ -1,3 +1,4 @@
+import { collectDebris } from '../combat/debris';
 import { resolveAttackMission } from '../combat/resolveAttackMission';
 import type { BattleReport } from '../combat/types';
 import { enqueueEvent } from '../eventQueue';
@@ -183,6 +184,30 @@ export function sendFleet(
       message: 'An attack mission requires at least one armed ship.',
     };
   }
+  if (
+    command.mission === 'recycle' &&
+    (fleet.ships['ship.aegis.recycler'] ?? 0) <= 0
+  ) {
+    return {
+      ok: false,
+      code: 'RECYCLER_SHIP_REQUIRED',
+      message: 'A recycling mission requires an Aegis recycler.',
+    };
+  }
+  if (
+    command.mission === 'recycle' &&
+    !state.debrisFields.some(
+      (field) =>
+        field.planetId === target.id &&
+        (field.metal > 0 || field.crystal > 0),
+    )
+  ) {
+    return {
+      ok: false,
+      code: 'DEBRIS_FIELD_NOT_FOUND',
+      message: 'The target planet has no debris field.',
+    };
+  }
 
   const estimate = estimateFlight(
     state.galaxy,
@@ -275,7 +300,15 @@ export function recallFleet(
     ),
     commandLog: appendCommand(state, command),
   };
-  return { ok: true, value: scheduleReturn(withoutArrival, fleet, fleet.location.toPlanetId, elapsed) };
+  return {
+    ok: true,
+    value: scheduleReturn(
+      withoutArrival,
+      fleet,
+      fleet.location.toPlanetId,
+      elapsed,
+    ),
+  };
 }
 
 export function applyFlightEvent(state: GameState, event: ScheduledGameEvent): GameState {
@@ -329,6 +362,20 @@ export function applyFlightEvent(state: GameState, event: ScheduledGameEvent): G
     return battle.attackerFleet === undefined
       ? withReport
       : scheduleReturn(withReport, battle.attackerFleet, target.id, duration);
+  }
+
+  if (fleet.mission.kind === 'recycle') {
+    const recycled = collectDebris(
+      state.debrisFields,
+      target.id,
+      fleet,
+    );
+    const withCollection: GameState = {
+      ...state,
+      debrisFields: recycled.fields,
+      fleets: replaceFleet(state.fleets, recycled.fleet),
+    };
+    return scheduleReturn(withCollection, recycled.fleet, target.id, duration);
   }
 
   if (target.ownerEmpireId !== fleet.empireId) {
