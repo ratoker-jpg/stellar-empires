@@ -1,6 +1,7 @@
 import './styles/main.css';
 import './styles/factions.css';
 import './styles/factionTheme.css';
+import './styles/newGame.css';
 import './styles/aegisAssets.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
@@ -22,6 +23,7 @@ import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
 import { mountEmpireOverview } from './ui/empireOverview';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
+import { selectNewGameFaction } from './ui/newGameFactionPicker';
 import {
   applyPlanetScreenCommand,
   getPlanetScreenActivePlanetId,
@@ -64,13 +66,25 @@ function writeAutoSaveStatus(status: AutoSaveStatus): void {
   }
 }
 
+async function createFreshGame(statusPrefix = 'Новая партия'): Promise<{
+  readonly state: GameState;
+  readonly status: string;
+}> {
+  const faction = await selectNewGameFaction();
+  const state = createInitialGameState('stellar-empires-m1', faction);
+  return {
+    state,
+    status: `${statusPrefix} · ${faction.toUpperCase()} · seed ${state.seed}`,
+  };
+}
+
 async function bootstrap(): Promise<void> {
   const version = requireElement<HTMLElement>('#build-version');
   const systemCount = requireElement<HTMLElement>('#system-count');
   const repository = new IndexedDbSaveRepository();
   let initialState = createInitialGameState('stellar-empires-m1');
   let runtimeState: GameState = initialState;
-  let startupStatus = `Новая партия · seed ${initialState.seed}`;
+  let startupStatus: string;
   let autosave: AutoSaveController | undefined;
   let saveManager: SaveManager | undefined;
 
@@ -83,15 +97,25 @@ async function bootstrap(): Promise<void> {
         restored.source === 'snapshot'
           ? `Партия восстановлена из резерва · seed ${initialState.seed}`
           : `Партия восстановлена · seed ${initialState.seed}`;
-    } else if (restored.status === 'invalid') {
-      startupStatus = 'Сохранения повреждены · новая партия';
-      console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
+    } else {
+      if (restored.status === 'invalid') {
+        console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
+      }
+      const fresh = await createFreshGame(
+        restored.status === 'invalid' ? 'Сохранения повреждены · новая партия' : 'Новая партия',
+      );
+      initialState = fresh.state;
+      runtimeState = fresh.state;
+      startupStatus = fresh.status;
     }
     saveManager = new SaveManager(repository);
     autosave = new AutoSaveController(repository, { onStatus: writeAutoSaveStatus });
   } catch (error: unknown) {
-    startupStatus = `Локальное хранилище недоступно · seed ${initialState.seed}`;
     console.error('[stellar-empires] persistence unavailable', error);
+    const fresh = await createFreshGame('Локальное хранилище недоступно · новая партия');
+    initialState = fresh.state;
+    runtimeState = fresh.state;
+    startupStatus = fresh.status;
   }
 
   const playerFaction =
