@@ -20,6 +20,7 @@ import { formatGameDuration } from './planetViewModel';
 
 export interface ProductionScreenOptions {
   readonly getState: () => GameState;
+  readonly getActivePlanetId: () => string;
   readonly execute: (command: GameCommand, successMessage: string) => boolean;
 }
 
@@ -29,9 +30,7 @@ function setUnitArtwork(element: HTMLElement, definition: UnitDefinition): void 
   const asset = AEGIS_VERTICAL_SLICE_ASSETS.find(
     (candidate) => candidate.id === definition.assetId,
   );
-  if (asset === undefined) {
-    return;
-  }
+  if (asset === undefined) return;
   const columns = 3;
   const rows = definition.kind === 'ship' ? 2 : 1;
   const column = asset.frame.x / asset.frame.width;
@@ -58,9 +57,7 @@ function canAfford(
 function createProductionDialog(kind: UnitKind): HTMLDialogElement {
   const id = `${kind}-production-dialog`;
   const existing = document.querySelector<HTMLDialogElement>(`#${id}`);
-  if (existing !== null) {
-    return existing;
-  }
+  if (existing !== null) return existing;
 
   const dialog = document.createElement('dialog');
   dialog.id = id;
@@ -82,7 +79,6 @@ function createProductionDialog(kind: UnitKind): HTMLDialogElement {
   header.append(text, close);
   const summary = document.createElement('p');
   summary.className = 'production-summary';
-  summary.textContent = 'Ресурсы и вместимость резервируются сразу. Отмена возвращает 75% стоимости.';
   const queue = document.createElement('section');
   queue.className = 'production-queue';
   queue.dataset.kind = kind;
@@ -102,20 +98,28 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
 
   const render = (kind: UnitKind): void => {
     const state = options.getState();
-    const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player');
+    const planet = state.planets.find(
+      (candidate) => candidate.id === options.getActivePlanetId(),
+    );
     const research = getEmpireResearch(state.research, 'player');
     const dialog = dialogs[kind];
+    const summary = dialog.querySelector<HTMLElement>('.production-summary');
     const queueContainer = dialog.querySelector<HTMLElement>('.production-queue');
     const grid = dialog.querySelector<HTMLElement>('.production-grid');
-    if (planet === undefined || research === undefined || queueContainer === null || grid === null) {
-      return;
-    }
+    if (
+      planet === undefined ||
+      research === undefined ||
+      summary === null ||
+      queueContainer === null ||
+      grid === null
+    ) return;
 
+    summary.textContent = `${planet.name} · ресурсы и вместимость резервируются сразу. Отмена возвращает 75% стоимости.`;
     const queueKey = kind === 'ship' ? 'shipyard' : 'defense';
     const active = planet.productionQueues[queueKey][0];
     queueContainer.replaceChildren();
     if (active === undefined) {
-      queueContainer.textContent = `${kind === 'ship' ? 'Верфь' : 'Оборонная линия'} свободна.`;
+      queueContainer.textContent = `${kind === 'ship' ? 'Верфь' : 'Оборонная линия'} ${planet.name} свободна.`;
     } else {
       const duration = Math.max(1, active.completesAt - active.startedAt);
       const elapsed = Math.max(
@@ -144,9 +148,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
             },
             'Производство отменено',
           )
-        ) {
-          render(kind);
-        }
+        ) render(kind);
       });
       queueContainer.append(label, progress, cancel);
     }
@@ -163,7 +165,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
       const body = document.createElement('div');
       const meta = document.createElement('div');
       meta.className = 'production-meta';
-      meta.textContent = `${definition.role} · в наличии ${getUnitCount(planet, definition.id, kind)}`;
+      meta.textContent = `${definition.role} · в наличии ${getUnitCount(planet, definition.id, kind)} · ${planet.name}`;
       const title = document.createElement('h3');
       title.textContent = definition.name;
       const description = document.createElement('p');
@@ -224,9 +226,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
             },
             `Производство запущено · ${definition.name} × ${amount}`,
           )
-        ) {
-          render(kind);
-        }
+        ) render(kind);
       });
       refreshAvailability();
       body.append(meta, title, description, quantity, status, action);
@@ -244,9 +244,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
     'click',
     (event) => {
       const target = event.target;
-      if (!(target instanceof Element)) {
-        return;
-      }
+      if (!(target instanceof Element)) return;
       const gateway = target.closest<HTMLButtonElement>('.zone-gateway');
       const label = gateway?.querySelector('strong')?.textContent;
       const kind =
@@ -255,9 +253,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
           : label === 'Планетарная оборона'
             ? 'defense'
             : undefined;
-      if (kind === undefined) {
-        return;
-      }
+      if (kind === undefined) return;
       event.preventDefault();
       event.stopImmediatePropagation();
       open(kind);
