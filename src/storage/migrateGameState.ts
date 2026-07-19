@@ -1,3 +1,4 @@
+import type { DebrisField } from '../simulation/combat/debris';
 import {
   createPlanetEconomy,
   refreshPlanetEconomy,
@@ -137,7 +138,8 @@ function readFleets(value: unknown): readonly FleetState[] | undefined {
         (item.mission.kind === 'deploy' ||
           item.mission.kind === 'transport' ||
           item.mission.kind === 'scout' ||
-          item.mission.kind === 'attack') &&
+          item.mission.kind === 'attack' ||
+          item.mission.kind === 'recycle') &&
         typeof item.mission.targetPlanetId === 'string'
           ? {
               kind: item.mission.kind,
@@ -178,8 +180,38 @@ function readIntelligenceStates(
   );
 }
 
+function readDebrisFields(value: unknown): readonly DebrisField[] | undefined {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) return undefined;
+  const fields: DebrisField[] = [];
+  for (const item of value) {
+    if (
+      !isRecord(item) ||
+      typeof item.id !== 'string' ||
+      typeof item.planetId !== 'string' ||
+      typeof item.metal !== 'number' ||
+      !Number.isInteger(item.metal) ||
+      item.metal < 0 ||
+      typeof item.crystal !== 'number' ||
+      !Number.isInteger(item.crystal) ||
+      item.crystal < 0 ||
+      typeof item.createdAt !== 'number' ||
+      !Number.isInteger(item.createdAt) ||
+      item.createdAt < 0
+    ) return undefined;
+    fields.push({
+      id: item.id,
+      planetId: item.planetId,
+      metal: item.metal,
+      crystal: item.crystal,
+      createdAt: item.createdAt,
+    });
+  }
+  return fields;
+}
+
 export function migrateGameState(value: unknown): GameState | undefined {
-  if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8].includes(value.schemaVersion as number)) {
+  if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8, 9].includes(value.schemaVersion as number)) {
     return undefined;
   }
   if (!Array.isArray(value.planets) || !Array.isArray(value.empires)) return undefined;
@@ -198,16 +230,23 @@ export function migrateGameState(value: unknown): GameState | undefined {
   const research = readResearchStates(value.research, empireIds);
   const fleets = readFleets(value.fleets);
   const intelligence = readIntelligenceStates(value.intelligence, empireIds);
-  if (research === undefined || fleets === undefined || intelligence === undefined) {
+  const debrisFields = readDebrisFields(value.debrisFields);
+  if (
+    research === undefined ||
+    fleets === undefined ||
+    intelligence === undefined ||
+    debrisFields === undefined
+  ) {
     return undefined;
   }
 
   return {
     ...value,
-    schemaVersion: 8,
+    schemaVersion: 9,
     planets,
     research,
     fleets,
     intelligence,
+    debrisFields,
   } as unknown as GameState;
 }
