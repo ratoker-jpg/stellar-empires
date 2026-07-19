@@ -127,7 +127,8 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
       actions.className = 'mission-actions';
 
       if (fleet.status === 'stationed' && fleet.location.type === 'planet') {
-        const targets = planets.filter((planet) => planet.id !== fleet.location.planetId);
+        const fleetPlanetId = fleet.location.planetId;
+        const targets = planets.filter((planet) => planet.id !== fleetPlanetId);
         if (targets.length > 0) {
           const target = document.createElement('select');
           for (const planet of targets) {
