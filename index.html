@@ -17,7 +17,7 @@
           <img class="brand-logo" src="./assets/brand/logo-primary.svg" alt="Stellar Empires" />
         </div>
 
-        <div class="resource-strip" aria-label="Ресурсы империи">
+        <div class="resource-strip" aria-label="Ресурсы активной колонии">
           <div class="resource-chip">
             <img src="./assets/icons/resource-metal.svg" alt="" />
             <span><small>Металл</small><strong id="resource-metal-value">—</strong></span>
@@ -55,6 +55,9 @@
           <button id="nav-galaxy" class="rail-button is-active" type="button" aria-label="Галактика">
             <span>✦</span><small>Галактика</small>
           </button>
+          <button id="nav-empire" class="rail-button" type="button" aria-label="Империя">
+            <span>▦</span><small>Империя</small>
+          </button>
           <button id="nav-planet" class="rail-button" type="button" aria-label="Планета">
             <span>◉</span><small>Планета</small>
           </button>
@@ -88,13 +91,19 @@
           <section id="planet-view" class="planet-view" aria-label="Управление планетой" hidden>
             <header class="planet-header">
               <div>
-                <p class="panel-label">Домашняя колония</p>
+                <p id="planet-role-label" class="panel-label">Домашняя колония</p>
                 <h1 id="planet-name">—</h1>
                 <p>Директорат «Эгида» · трёхзонная планетарная модель</p>
               </div>
-              <div class="planet-clock">
-                <small>Время мира</small>
-                <strong id="world-time">00:00:00</strong>
+              <div class="planet-header-controls">
+                <label class="planet-selector-label">
+                  <span>Активная колония</span>
+                  <select id="planet-selector" aria-label="Выбрать активную колонию"></select>
+                </label>
+                <div class="planet-clock">
+                  <small>Время мира</small>
+                  <strong id="world-time">00:00:00</strong>
+                </div>
               </div>
             </header>
 
@@ -171,11 +180,11 @@
             <div class="panel-heading">
               <div>
                 <p class="panel-label">Текущий этап</p>
-                <h2>Трёхзонная миграция</h2>
+                <h2>Многопланетная империя</h2>
               </div>
-              <span class="status-pill">M5 v2</span>
+              <span class="status-pill">M16</span>
             </div>
-            <p>Ресурсный, промышленный и военный домены теперь являются канонической моделью планеты.</p>
+            <p>Колонии управляются независимо, а обзор империи объединяет ресурсы, очереди и флоты.</p>
           </section>
 
           <section class="panel-block faction-panel">
@@ -214,9 +223,9 @@
               <span class="signal-bars" aria-label="Связь стабильна"><i></i><i></i><i></i></span>
             </div>
             <ol class="activity-list">
-              <li><time>00:00</time><span>Save schema v2 активна</span></li>
-              <li><time>00:00</time><span>Старые зоны мигрируются автоматически</span></li>
-              <li><time>00:00</time><span>Три домена планеты подключены</span></li>
+              <li><time>00:00</time><span>Схема сохранения v9 активна</span></li>
+              <li><time>00:00</time><span>Колонизационные миссии подключены</span></li>
+              <li><time>00:00</time><span>Обзор империи готов</span></li>
             </ol>
           </section>
         </aside>
