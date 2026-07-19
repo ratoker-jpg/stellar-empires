@@ -86,16 +86,17 @@ export function quoteMarketSwap(
         ? 'PRICE_IMPACT_LIMIT'
         : undefined;
 
-  return {
+  const baseQuote = {
     giveResourceId,
     receiveResourceId,
     giveAmount,
     receiveAmount,
     feeAmount,
     priceImpactPermille,
-    accepted: rejectionCode === undefined,
-    rejectionCode,
-  };
+  } as const;
+  return rejectionCode === undefined
+    ? { ...baseQuote, accepted: true }
+    : { ...baseQuote, accepted: false, rejectionCode };
 }
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
