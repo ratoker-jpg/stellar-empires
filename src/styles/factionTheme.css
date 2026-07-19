@@ -1,0 +1,64 @@
+:root {
+  --faction-primary: #4ea7ff;
+  --faction-soft: rgb(78 167 255 / 18%);
+  --faction-strong: rgb(78 167 255 / 48%);
+}
+
+html[data-faction="aegis"] {
+  --faction-primary: #4ea7ff;
+  --faction-soft: rgb(78 167 255 / 18%);
+  --faction-strong: rgb(78 167 255 / 48%);
+  --cyan-400: #4ea7ff;
+  --cyan-200: #a9d9ff;
+}
+
+html[data-faction="synod"] {
+  --faction-primary: #55e985;
+  --faction-soft: rgb(85 233 133 / 18%);
+  --faction-strong: rgb(85 233 133 / 48%);
+  --cyan-400: #55e985;
+  --cyan-200: #b8ffd0;
+  --amber-400: #83f4a7;
+}
+
+html[data-faction="veyra"] {
+  --faction-primary: #ff5a64;
+  --faction-soft: rgb(255 90 100 / 18%);
+  --faction-strong: rgb(255 90 100 / 48%);
+  --cyan-400: #ff5a64;
+  --cyan-200: #ffc0c4;
+  --amber-400: #ff9c72;
+}
+
+html[data-faction] .topbar,
+html[data-faction] .planet-header,
+html[data-faction] .building-catalog-panel,
+html[data-faction] .operation-card,
+html[data-faction] .panel-block {
+  border-color: color-mix(in srgb, var(--faction-primary) 24%, transparent);
+}
+
+html[data-faction] .topbar::after,
+html[data-faction] .online-dot,
+html[data-faction] .status-pill,
+html[data-faction] .queue-progress > i,
+html[data-faction] .production-progress > i {
+  background-color: var(--faction-primary);
+}
+
+html[data-faction] .commander-emblem {
+  filter: drop-shadow(0 0 14px var(--faction-soft));
+}
+
+html[data-faction] .rail-button.is-active,
+html[data-faction] .building-action:not(:disabled),
+html[data-faction] .production-action:not(:disabled) {
+  border-color: var(--faction-strong);
+  box-shadow: inset 0 0 20px var(--faction-soft);
+}
+
+html[data-faction] .panel-label,
+html[data-faction] .planet-clock strong,
+html[data-faction] .faction-card__action {
+  color: var(--faction-primary);
+}
