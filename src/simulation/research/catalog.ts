@@ -88,6 +88,23 @@ export const AEGIS_RESEARCH_CATALOG: readonly ResearchDefinition[] = [
     effects: [{ type: 'WEAPON_STRENGTH', percentPerLevel: 5 }],
     assetId: 'technology.aegis.weapons',
   },
+  {
+    id: 'technology.aegis.colonization',
+    name: 'Колонизационные протоколы',
+    factionId: 'aegis',
+    category: 'infrastructure',
+    description: 'Расширяет лимит колоний и позволяет развернуть командное ядро на свободной планете.',
+    maxLevel: 5,
+    baseCost: { metal: 2_400, crystal: 2_100, gas: 1_400 },
+    baseSeconds: 1_200,
+    requiredLaboratoryLevel: 3,
+    requirements: [
+      { technologyId: 'technology.aegis.construction', level: 2 },
+      { technologyId: 'technology.aegis.propulsion', level: 2 },
+    ],
+    effects: [],
+    assetId: 'technology.aegis.construction',
+  },
 ] as const;
 
 const RESEARCH_BY_ID = new Map(
