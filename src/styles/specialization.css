@@ -1,0 +1,96 @@
+.colony-specialization-open {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(226, 189, 91, 0.38);
+  border-radius: 8px;
+  color: #f4e2a6;
+  background: rgba(54, 41, 14, 0.76);
+  cursor: pointer;
+}
+
+.colony-specialization-dialog {
+  width: min(900px, calc(100vw - 30px));
+  max-height: calc(100vh - 30px);
+  padding: 0;
+  border: 1px solid rgba(226, 189, 91, 0.38);
+  border-radius: 12px;
+  color: #edf9ff;
+  background: linear-gradient(145deg, rgba(18, 17, 12, 0.99), rgba(3, 8, 13, 0.99));
+}
+
+.colony-specialization-dialog::backdrop {
+  background: rgba(0, 4, 10, 0.84);
+  backdrop-filter: blur(5px);
+}
+
+.colony-specialization-dialog > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid rgba(226, 189, 91, 0.16);
+}
+
+.colony-specialization-summary {
+  margin: 0;
+  padding: 16px 22px 0;
+  color: #aeb9bc;
+}
+
+.colony-specialization-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-height: 620px;
+  overflow: auto;
+  padding: 18px 22px 24px;
+}
+
+.colony-specialization-card {
+  display: grid;
+  gap: 10px;
+  padding: 15px;
+  border: 1px solid rgba(226, 189, 91, 0.16);
+  border-radius: 9px;
+  background: rgba(21, 23, 22, 0.78);
+}
+
+.colony-specialization-card.is-active {
+  border-color: rgba(226, 189, 91, 0.72);
+  box-shadow: inset 0 0 24px rgba(226, 189, 91, 0.08);
+}
+
+.colony-specialization-card h3,
+.colony-specialization-card p {
+  margin: 0;
+}
+
+.colony-specialization-card p {
+  color: #9eaeb3;
+  font-size: 0.84rem;
+}
+
+.colony-specialization-card strong {
+  color: #f0cf72;
+  font-size: 0.8rem;
+}
+
+.colony-specialization-card button {
+  min-height: 38px;
+  border: 1px solid rgba(226, 189, 91, 0.3);
+  border-radius: 6px;
+  color: #f5e9bd;
+  background: rgba(60, 46, 17, 0.82);
+  cursor: pointer;
+}
+
+.colony-specialization-card button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+@media (max-width: 720px) {
+  .colony-specialization-grid {
+    grid-template-columns: 1fr;
+  }
+}
