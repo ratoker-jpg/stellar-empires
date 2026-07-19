@@ -19,6 +19,17 @@ function prepareState(seed: string): GameState {
             ...planet.inventory,
             ships: { 'ship.aegis.scout': 2, 'ship.aegis.cargo': 2 },
           },
+          economy: {
+            ...planet.economy,
+            resources: {
+              ...planet.economy.resources,
+              gas: {
+                ...planet.economy.resources.gas,
+                amount: 100_000,
+                capacity: 100_000,
+              },
+            },
+          },
         };
       }
       return planet.id === target.id
