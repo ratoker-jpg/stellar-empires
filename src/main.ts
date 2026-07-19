@@ -8,6 +8,7 @@ import './styles/research.css';
 import './styles/production.css';
 import './styles/missions.css';
 import './styles/empire.css';
+import { bindFactionRuntimeAssets } from './assets/bindFactionRuntimeAssets';
 import { createGame } from './game/createGame';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
@@ -90,6 +91,11 @@ async function bootstrap(): Promise<void> {
     startupStatus = `Локальное хранилище недоступно · seed ${initialState.seed}`;
     console.error('[stellar-empires] persistence unavailable', error);
   }
+
+  const playerFaction =
+    initialState.planets.find((planet) => planet.ownerEmpireId === 'player')?.factionId ?? 'aegis';
+  bindFactionRuntimeAssets(playerFaction);
+  document.documentElement.dataset.faction = playerFaction;
 
   version.textContent = `v${__APP_VERSION__}`;
   systemCount.textContent = String(initialState.galaxy.systems.length);
