@@ -33,6 +33,10 @@ function formatIntelTime(seconds: number): string {
   return `${hours}ч ${minutes}м`;
 }
 
+function totalUnits(units: Readonly<Record<string, number>>): number {
+  return Object.values(units).reduce((total, count) => total + count, 0);
+}
+
 export function mountMissionScreen(options: MissionScreenOptions): void {
   const dialog = document.createElement('dialog');
   dialog.id = 'mission-screen-dialog';
@@ -148,7 +152,7 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
             target.append(option);
           }
           const mission = document.createElement('select');
-          mission.innerHTML = '<option value="transport">Транспорт</option><option value="deploy">Размещение</option><option value="scout">Разведка</option>';
+          mission.innerHTML = '<option value="transport">Транспорт</option><option value="deploy">Размещение</option><option value="scout">Разведка</option><option value="attack">Атака</option>';
           const send = document.createElement('button');
           send.type = 'button';
           send.textContent = 'Отправить';
@@ -158,7 +162,9 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
                 ? 'deploy'
                 : mission.value === 'scout'
                   ? 'scout'
-                  : 'transport';
+                  : mission.value === 'attack'
+                    ? 'attack'
+                    : 'transport';
             if (
               options.execute(
                 {
@@ -216,9 +222,8 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
       ? []
       : getCurrentObservations(intelligence, state.clock.elapsedSeconds)) {
       const report = document.createElement('article');
-      const targetName = observation.snapshot.name;
       const summary = document.createElement('strong');
-      summary.textContent = `${targetName} · уровень ${observation.snapshot.level}`;
+      summary.textContent = `${observation.snapshot.name} · уровень ${observation.snapshot.level}`;
       const details = document.createElement('p');
       const remaining = observation.expiresAt - state.clock.elapsedSeconds;
       details.textContent = `${observation.snapshot.ownerEmpireId} · данные актуальны ещё ${formatIntelTime(remaining)} · ${observation.detected ? 'разведка обнаружена' : 'скрытно'}`;
@@ -231,6 +236,38 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
       intelSection.append(empty);
     }
     content.append(intelSection);
+
+    const battleSection = document.createElement('section');
+    battleSection.className = 'mission-battles';
+    const battleTitle = document.createElement('h3');
+    battleTitle.textContent = 'Боевые отчёты';
+    battleSection.append(battleTitle);
+    const reports = state.eventLog
+      .filter(
+        (entry) =>
+          entry.event.payload.type === 'BATTLE_REPORT' &&
+          (entry.event.payload.report.attackerEmpireId === 'player' ||
+            entry.event.payload.report.defenderEmpireId === 'player'),
+      )
+      .slice(-10)
+      .reverse();
+    for (const entry of reports) {
+      if (entry.event.payload.type !== 'BATTLE_REPORT') continue;
+      const report = entry.event.payload.report;
+      const card = document.createElement('article');
+      const summary = document.createElement('strong');
+      summary.textContent = `${report.targetPlanetId} · ${report.winner}`;
+      const details = document.createElement('p');
+      details.textContent = `${report.rounds.length} раундов · атакующие ${totalUnits(report.attackerInitial)} → ${totalUnits(report.attackerRemaining)} · защитники ${totalUnits(report.defenderInitial)} → ${totalUnits(report.defenderRemaining)}`;
+      card.append(summary, details);
+      battleSection.append(card);
+    }
+    if (battleSection.childElementCount === 1) {
+      const empty = document.createElement('p');
+      empty.textContent = 'Боевых отчётов пока нет.';
+      battleSection.append(empty);
+    }
+    content.append(battleSection);
   };
 
   const open = (): void => {
