@@ -1,5 +1,5 @@
 import { accrueAllPlanetEconomies } from './economy/planetEconomy';
-import { enqueueEvent, partitionDueEvents } from './eventQueue';
+import { enqueueEvent } from './eventQueue';
 import { createFleet, disbandFleet } from './fleets/fleetCommands';
 import {
   applyFlightEvent,
@@ -330,19 +330,23 @@ function advanceTime(
   }
 
   const targetTime = state.clock.elapsedSeconds + command.seconds;
-  const { due, pending } = partitionDueEvents(state.pendingEvents, targetTime);
   const executedEvents: ExecutedGameEvent[] = [];
   let working = state;
   let cursor = state.clock.elapsedSeconds;
 
-  for (const event of due) {
-    working = accrueStateEconomies(working, event.executeAt - cursor);
-    working = applyEvent(
-      { ...working, clock: { ...working.clock, elapsedSeconds: event.executeAt } },
-      event,
-    );
-    cursor = event.executeAt;
-    executedEvents.push({ event, executedAt: event.executeAt });
+  while (true) {
+    const nextEvent = working.pendingEvents[0];
+    if (nextEvent === undefined || nextEvent.executeAt > targetTime) break;
+
+    working = accrueStateEconomies(working, nextEvent.executeAt - cursor);
+    working = {
+      ...working,
+      clock: { ...working.clock, elapsedSeconds: nextEvent.executeAt },
+      pendingEvents: working.pendingEvents.slice(1),
+    };
+    working = applyEvent(working, nextEvent);
+    cursor = nextEvent.executeAt;
+    executedEvents.push({ event: nextEvent, executedAt: nextEvent.executeAt });
   }
 
   working = accrueStateEconomies(working, targetTime - cursor);
@@ -351,7 +355,6 @@ function advanceTime(
     value: {
       ...working,
       clock: { ...working.clock, elapsedSeconds: targetTime },
-      pendingEvents: pending,
       commandLog: appendCommand(state, command),
       eventLog: [...state.eventLog, ...executedEvents],
     },
