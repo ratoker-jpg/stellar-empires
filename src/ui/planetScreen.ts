@@ -21,17 +21,16 @@ const ZONE_LABELS: Readonly<Record<PlanetZoneId, string>> = {
 };
 
 let currentState: GameState | undefined;
+let activePlanetId: string | undefined;
 let activeZone: PlanetZoneId = 'resource';
 let statusWriter: (message: string) => void = () => undefined;
 let stateObserver: (state: GameState) => void = () => undefined;
 
 function requireElement<T extends HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector);
-
   if (element === null) {
     throw new Error(`Required element not found: ${selector}`);
   }
-
   return element;
 }
 
@@ -39,19 +38,23 @@ function requireState(): GameState {
   if (currentState === undefined) {
     throw new Error('Planet screen is not mounted.');
   }
-
   return currentState;
 }
 
-function getPlayerPlanet(): PlanetState {
-  const planet = requireState().planets.find(
+function getPlayerPlanets(): readonly PlanetState[] {
+  return requireState().planets.filter(
     (candidate) => candidate.ownerEmpireId === 'player',
   );
+}
 
+function getPlayerPlanet(): PlanetState {
+  const planets = getPlayerPlanets();
+  const planet =
+    planets.find((candidate) => candidate.id === activePlanetId) ?? planets[0];
   if (planet === undefined) {
     throw new Error('Player planet is missing from the current game state.');
   }
-
+  activePlanetId = planet.id;
   return planet;
 }
 
@@ -63,18 +66,15 @@ function formatWorldTime(seconds: number): string {
   const time = [hours, minutes, remainingSeconds]
     .map((value) => String(value).padStart(2, '0'))
     .join(':');
-
   return days === 0 ? time : `${days}д ${time}`;
 }
 
 function applyCommand(command: GameCommand, successMessage: string): boolean {
   const result = executeCommand(requireState(), command);
-
   if (!result.ok) {
     statusWriter(`Отклонено · ${result.code}`);
     return false;
   }
-
   currentState = result.value;
   stateObserver(currentState);
   statusWriter(successMessage);
@@ -84,10 +84,7 @@ function applyCommand(command: GameCommand, successMessage: string): boolean {
 
 function ensureWorkspaceDialog(): HTMLDialogElement {
   const existing = document.querySelector<HTMLDialogElement>('#workspace-dialog');
-
-  if (existing !== null) {
-    return existing;
-  }
+  if (existing !== null) return existing;
 
   const dialog = document.createElement('dialog');
   dialog.id = 'workspace-dialog';
@@ -127,7 +124,6 @@ function openWorkspace(title: string, description: string, unlocked: boolean): v
 function createCostElement(card: BuildingCardViewModel): HTMLElement {
   const cost = document.createElement('div');
   cost.className = 'building-cost';
-
   for (const [label, value] of [
     ['M', card.cost.metal],
     ['C', card.cost.crystal],
@@ -137,7 +133,6 @@ function createCostElement(card: BuildingCardViewModel): HTMLElement {
     item.textContent = `${label} ${NUMBER_FORMAT.format(value)}`;
     cost.append(item);
   }
-
   return cost;
 }
 
@@ -198,7 +193,6 @@ function createBuildingCard(card: BuildingCardViewModel, planetId: string): HTML
 function renderBuildingCatalog(planet: PlanetState): void {
   const grid = requireElement<HTMLElement>('#planet-building-grid');
   grid.replaceChildren();
-
   for (const card of createBuildingCardViewModels(planet).filter(
     (candidate) => candidate.zoneId === activeZone,
   )) {
@@ -226,7 +220,6 @@ function createGatewayButton(
 
 function renderZoneContext(planet: PlanetState): void {
   let panel = document.querySelector<HTMLElement>('#zone-context-panel');
-
   if (panel === null) {
     panel = document.createElement('section');
     panel.id = 'zone-context-panel';
@@ -332,12 +325,28 @@ function setResourceValue(resourceId: 'metal' | 'crystal' | 'gas', planet: Plane
     `+${NUMBER_FORMAT.format(stock.productionPerHour)}/ч`;
 }
 
+function renderPlanetSelector(planet: PlanetState): void {
+  const selector = requireElement<HTMLSelectElement>('#planet-selector');
+  const planets = getPlayerPlanets();
+  selector.replaceChildren();
+  for (const candidate of planets) {
+    const option = document.createElement('option');
+    option.value = candidate.id;
+    option.textContent = `${candidate.name} · ${candidate.systemId}:${candidate.position}`;
+    selector.append(option);
+  }
+  selector.value = planet.id;
+  requireElement<HTMLElement>('#planet-role-label').textContent =
+    planets[0]?.id === planet.id ? 'Домашняя колония' : 'Колониальный мир';
+}
+
 function renderPlanetDashboard(): void {
   const state = requireState();
   const planet = getPlayerPlanet();
+  renderPlanetSelector(planet);
   requireElement<HTMLElement>('#planet-name').textContent = planet.name;
   requireElement<HTMLElement>('#world-time').textContent = formatWorldTime(state.clock.elapsedSeconds);
-  requireElement<HTMLElement>('#planet-count').textContent = String(state.planets.length);
+  requireElement<HTMLElement>('#planet-count').textContent = String(getPlayerPlanets().length);
   setResourceValue('metal', planet);
   setResourceValue('crystal', planet);
   setResourceValue('gas', planet);
@@ -375,10 +384,18 @@ function bindPlanetControls(): void {
     setActiveView('planet');
     renderPlanetDashboard();
   });
+  requireElement<HTMLSelectElement>('#planet-selector').addEventListener(
+    'change',
+    (event) => {
+      const selector = event.currentTarget;
+      if (selector instanceof HTMLSelectElement) {
+        selectPlanetScreenPlanet(selector.value, false);
+      }
+    },
+  );
 
   for (const zoneId of ZONE_IDS) {
     const zoneElement = requireElement<HTMLElement>(`#zone-${zoneId}-fields`).parentElement;
-
     if (zoneElement !== null) {
       zoneElement.tabIndex = 0;
       zoneElement.setAttribute('role', 'button');
@@ -439,6 +456,26 @@ export function applyPlanetScreenCommand(
   return applyCommand(command, successMessage);
 }
 
+export function getPlanetScreenActivePlanetId(): string {
+  return getPlayerPlanet().id;
+}
+
+export function selectPlanetScreenPlanet(
+  planetId: string,
+  openPlanetView = true,
+): boolean {
+  const planet = getPlayerPlanets().find((candidate) => candidate.id === planetId);
+  if (planet === undefined) {
+    statusWriter('Колония недоступна');
+    return false;
+  }
+  activePlanetId = planet.id;
+  if (openPlanetView) setActiveView('planet');
+  renderPlanetDashboard();
+  statusWriter(`Активная колония · ${planet.name}`);
+  return true;
+}
+
 export function mountPlanetScreen(
   initialState: GameState,
   writeStatus: (message: string) => void,
@@ -447,6 +484,7 @@ export function mountPlanetScreen(
   currentState = initialState;
   statusWriter = writeStatus;
   stateObserver = onStateChange;
+  activePlanetId = getPlayerPlanets()[0]?.id;
   bindPlanetControls();
   renderPlanetDashboard();
 }

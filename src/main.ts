@@ -7,6 +7,7 @@ import './styles/saveManager.css';
 import './styles/research.css';
 import './styles/production.css';
 import './styles/missions.css';
+import './styles/empire.css';
 import { createGame } from './game/createGame';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
@@ -17,9 +18,12 @@ import {
 import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
+import { mountEmpireOverview } from './ui/empireOverview';
 import {
   applyPlanetScreenCommand,
+  getPlanetScreenActivePlanetId,
   mountPlanetScreen,
+  selectPlanetScreenPlanet,
 } from './ui/planetScreen';
 import { mountMissionScreen } from './ui/missionScreen';
 import { mountProductionScreens } from './ui/productionScreen';
@@ -97,8 +101,16 @@ async function bootstrap(): Promise<void> {
   });
   const commandBridge = {
     getState: () => runtimeState,
+    getActivePlanetId: getPlanetScreenActivePlanetId,
     execute: applyPlanetScreenCommand,
   };
+  mountEmpireOverview({
+    getState: () => runtimeState,
+    getActivePlanetId: getPlanetScreenActivePlanetId,
+    selectPlanet: (planetId) => {
+      selectPlanetScreenPlanet(planetId);
+    },
+  });
   mountResearchScreen(commandBridge);
   mountProductionScreens(commandBridge);
   mountMissionScreen(commandBridge);

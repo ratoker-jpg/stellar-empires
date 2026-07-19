@@ -14,6 +14,7 @@ import { formatGameDuration } from './planetViewModel';
 
 export interface ResearchScreenOptions {
   readonly getState: () => GameState;
+  readonly getActivePlanetId: () => string;
   readonly execute: (command: GameCommand, successMessage: string) => boolean;
 }
 
@@ -43,9 +44,7 @@ function canAffordResearch(
 
 function setTechnologyArtwork(element: HTMLElement, assetId: string): void {
   const asset = AEGIS_VERTICAL_SLICE_ASSETS.find((candidate) => candidate.id === assetId);
-  if (asset === undefined) {
-    return;
-  }
+  if (asset === undefined) return;
 
   const column = asset.frame.x / asset.frame.width;
   const row = asset.frame.y / asset.frame.height;
@@ -56,9 +55,7 @@ function setTechnologyArtwork(element: HTMLElement, assetId: string): void {
 
 function createDialog(): HTMLDialogElement {
   const existing = document.querySelector<HTMLDialogElement>('#research-screen-dialog');
-  if (existing !== null) {
-    return existing;
-  }
+  if (existing !== null) return existing;
 
   const dialog = document.createElement('dialog');
   dialog.id = 'research-screen-dialog';
@@ -80,7 +77,6 @@ function createDialog(): HTMLDialogElement {
   header.append(text, close);
   const summary = document.createElement('p');
   summary.className = 'research-screen-summary';
-  summary.textContent = 'Одна глобальная очередь исследований. Ресурсы резервируются сразу, отмена возвращает 75% стоимости.';
   const queue = document.createElement('section');
   queue.id = 'research-screen-queue';
   queue.className = 'research-screen-queue';
@@ -96,20 +92,24 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
   const dialog = createDialog();
   const grid = dialog.querySelector<HTMLElement>('#research-screen-grid');
   const queue = dialog.querySelector<HTMLElement>('#research-screen-queue');
-  if (grid === null || queue === null) {
+  const summary = dialog.querySelector<HTMLElement>('.research-screen-summary');
+  if (grid === null || queue === null || summary === null) {
     throw new Error('Research screen containers are missing.');
   }
 
   const render = (): void => {
     const state = options.getState();
     const research = getEmpireResearch(state.research, 'player');
-    const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player');
+    const planet = state.planets.find(
+      (candidate) => candidate.id === options.getActivePlanetId(),
+    );
     if (research === undefined || planet === undefined) {
       grid.textContent = 'Исследовательские данные недоступны.';
       queue.replaceChildren();
       return;
     }
 
+    summary.textContent = `${planet.name} финансирует глобальную очередь исследований. Ресурсы резервируются сразу, отмена возвращает 75% стоимости.`;
     queue.replaceChildren();
     const active = research.queue[0];
     if (active === undefined) {
@@ -123,7 +123,7 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
       );
       const remaining = Math.max(0, active.completesAt - state.clock.elapsedSeconds);
       const label = document.createElement('strong');
-      label.textContent = `${definition?.name ?? active.technologyId} · ур. ${active.targetLevel}`;
+      label.textContent = `${definition?.name ?? active.technologyId} · ур. ${active.targetLevel} · ${state.planets.find((candidate) => candidate.id === active.planetId)?.name ?? active.planetId}`;
       const progress = document.createElement('div');
       progress.className = 'research-queue-progress';
       const bar = document.createElement('i');
@@ -142,9 +142,7 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
             },
             'Исследование отменено',
           )
-        ) {
-          render();
-        }
+        ) render();
       });
       queue.append(label, progress, cancel);
     }
@@ -186,10 +184,10 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
         : missing.length > 0
           ? `Не выполнено: ${missing.map((item) => `${item.id} ${item.currentLevel}/${item.requiredLevel}`).join(' · ')}`
           : !affordable
-            ? 'Недостаточно ресурсов'
+            ? `Недостаточно ресурсов на ${planet.name}`
             : !queueFree
-              ? 'Очередь занята'
-              : 'Готово к запуску';
+              ? 'Глобальная очередь занята'
+              : `Готово к запуску на ${planet.name}`;
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'research-action';
@@ -206,9 +204,7 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
             },
             `Исследование запущено · ${definition.name}`,
           )
-        ) {
-          render();
-        }
+        ) render();
       });
       body.append(meta, title, description, costLine, requirements, button);
       card.append(art, body);
@@ -236,13 +232,9 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
     'click',
     (event) => {
       const target = event.target;
-      if (!(target instanceof Element)) {
-        return;
-      }
+      if (!(target instanceof Element)) return;
       const gateway = target.closest<HTMLButtonElement>('.zone-gateway');
-      if (gateway?.querySelector('strong')?.textContent !== 'Исследования') {
-        return;
-      }
+      if (gateway?.querySelector('strong')?.textContent !== 'Исследования') return;
       event.preventDefault();
       event.stopImmediatePropagation();
       open();
