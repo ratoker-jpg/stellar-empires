@@ -7,6 +7,7 @@ import './styles/planet.css';
 import './styles/planetWorkspace.css';
 import './styles/planetDevelopment.css';
 import './styles/logistics.css';
+import './styles/market.css';
 import './styles/saveManager.css';
 import './styles/research.css';
 import './styles/production.css';
@@ -26,6 +27,7 @@ import { SaveManager } from './storage/SaveManager';
 import { mountEmpireOverview } from './ui/empireOverview';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
 import { mountLogisticsRoutesPanel } from './ui/logisticsRoutesPanel';
+import { mountMarketPanel } from './ui/marketPanel';
 import { selectNewGameFaction } from './ui/newGameFactionPicker';
 import { mountPlanetDevelopmentControls } from './ui/planetDevelopmentControls';
 import {
@@ -45,43 +47,29 @@ function requireElement<T extends HTMLElement>(selector: string): T {
   if (element === null) throw new Error(`Required element not found: ${selector}`);
   return element;
 }
-
 function setStatus(message: string): void {
   requireElement<HTMLElement>('#app-status').textContent = message;
 }
-
 function writeAutoSaveStatus(status: AutoSaveStatus): void {
   switch (status.phase) {
-    case 'pending':
-      setStatus('Изменения ожидают сохранения');
-      break;
-    case 'saving':
-      setStatus('Сохранение…');
-      break;
-    case 'saved':
-      setStatus('Сохранено локально');
-      break;
+    case 'pending': setStatus('Изменения ожидают сохранения'); break;
+    case 'saving': setStatus('Сохранение…'); break;
+    case 'saved': setStatus('Сохранено локально'); break;
     case 'error':
       setStatus('Ошибка локального сохранения');
       console.error('[stellar-empires] autosave failed', status.error);
       break;
-    case 'idle':
-      break;
+    case 'idle': break;
   }
 }
-
 async function createFreshGame(statusPrefix = 'Новая партия'): Promise<{
   readonly state: GameState;
   readonly status: string;
 }> {
   const faction = await selectNewGameFaction();
   const state = createInitialGameState('stellar-empires-m1', faction);
-  return {
-    state,
-    status: `${statusPrefix} · ${faction.toUpperCase()} · seed ${state.seed}`,
-  };
+  return { state, status: `${statusPrefix} · ${faction.toUpperCase()} · seed ${state.seed}` };
 }
-
 async function bootstrap(): Promise<void> {
   const version = requireElement<HTMLElement>('#build-version');
   const systemCount = requireElement<HTMLElement>('#system-count');
@@ -97,14 +85,11 @@ async function bootstrap(): Promise<void> {
     if (restored.status === 'loaded') {
       initialState = restored.state;
       runtimeState = restored.state;
-      startupStatus =
-        restored.source === 'snapshot'
-          ? `Партия восстановлена из резерва · seed ${initialState.seed}`
-          : `Партия восстановлена · seed ${initialState.seed}`;
+      startupStatus = restored.source === 'snapshot'
+        ? `Партия восстановлена из резерва · seed ${initialState.seed}`
+        : `Партия восстановлена · seed ${initialState.seed}`;
     } else {
-      if (restored.status === 'invalid') {
-        console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
-      }
+      if (restored.status === 'invalid') console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
       const fresh = await createFreshGame(
         restored.status === 'invalid' ? 'Сохранения повреждены · новая партия' : 'Новая партия',
       );
@@ -122,11 +107,9 @@ async function bootstrap(): Promise<void> {
     startupStatus = fresh.status;
   }
 
-  const playerFaction =
-    initialState.planets.find((planet) => planet.ownerEmpireId === 'player')?.factionId ?? 'aegis';
+  const playerFaction = initialState.planets.find((planet) => planet.ownerEmpireId === 'player')?.factionId ?? 'aegis';
   bindFactionRuntimeAssets(playerFaction);
   applyFactionShellIdentity(playerFaction);
-
   version.textContent = `v${__APP_VERSION__}`;
   systemCount.textContent = String(initialState.galaxy.systems.length);
   createGame('phaser-game', initialState);
@@ -142,37 +125,27 @@ async function bootstrap(): Promise<void> {
   };
   mountPlanetDevelopmentControls(commandBridge);
   mountLogisticsRoutesPanel(commandBridge);
+  mountMarketPanel(commandBridge);
   mountEmpireOverview({
     getState: () => runtimeState,
     getActivePlanetId: getPlanetScreenActivePlanetId,
-    selectPlanet: (planetId) => {
-      selectPlanetScreenPlanet(planetId);
-    },
+    selectPlanet: (planetId) => { selectPlanetScreenPlanet(planetId); },
   });
   mountResearchScreen(commandBridge);
   mountProductionScreens(commandBridge);
   mountMissionScreen(commandBridge);
 
   if (saveManager !== undefined) {
-    mountSaveManager({
-      manager: saveManager,
-      getState: () => runtimeState,
-      writeStatus: setStatus,
-    });
+    mountSaveManager({ manager: saveManager, getState: () => runtimeState, writeStatus: setStatus });
   }
-
-  const flushAutosave = (): void => {
-    void autosave?.flush();
-  };
+  const flushAutosave = (): void => { void autosave?.flush(); };
   window.addEventListener('pagehide', flushAutosave);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flushAutosave();
   });
-
   setStatus(startupStatus);
   document.documentElement.dataset.appReady = 'true';
 }
-
 void bootstrap().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : 'Unknown startup error';
   const status = document.querySelector<HTMLElement>('#app-status');
