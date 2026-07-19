@@ -27,6 +27,8 @@ function createFactionCard(
   button.type = 'button';
   button.className = `faction-card faction-card--${faction.id}`;
   button.setAttribute('aria-label', `Открыть визуальный набор: ${faction.name}`);
+  button.style.setProperty('--faction-accent', faction.accent);
+  button.style.setProperty('--faction-card-background', `url("${faction.backgroundUrl}")`);
 
   const emblem = document.createElement('img');
   emblem.src = faction.emblemUrl;
@@ -62,9 +64,10 @@ function renderFactionShowcase(): void {
 
   for (const faction of FACTION_SHOWCASES) {
     const openPreview = (): void => {
-      previewImage.src = faction.controlSetUrl;
-      previewImage.alt = `Контрольный визуальный набор: ${faction.name}`;
-      previewTitle.textContent = faction.name;
+      previewImage.src = faction.previewUrl;
+      previewImage.alt = `Фракционный фон: ${faction.name}`;
+      previewTitle.textContent = `${faction.name} · ${faction.doctrine}`;
+      dialog.style.setProperty('--faction-accent', faction.accent);
       dialog.showModal();
     };
 
