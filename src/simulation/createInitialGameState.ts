@@ -1,5 +1,6 @@
 import { generateGalaxy } from './galaxy/generateGalaxy';
 import { createInitialIntelligenceStates } from './intelligence/intelligenceState';
+import { createInitialMarketState } from './market/market';
 import { createInitialPlanetStates } from './planet/createInitialPlanetStates';
 import type { FactionId } from './planet/types';
 import { createInitialResearchStates } from './research/researchState';
@@ -15,7 +16,7 @@ export function createInitialGameState(
   const empires = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'] as const;
 
   return {
-    schemaVersion: 11,
+    schemaVersion: 12,
     seed,
     clock: {
       startedAt: '2026-07-18T00:00:00.000Z',
@@ -29,6 +30,7 @@ export function createInitialGameState(
     intelligence: createInitialIntelligenceStates(empires),
     debrisFields: [],
     logisticsRoutes: [],
+    market: createInitialMarketState(),
     nextEventSequence: 0,
     pendingEvents: [],
     commandLog: [],
