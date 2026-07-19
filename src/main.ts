@@ -5,6 +5,7 @@ import './styles/newGame.css';
 import './styles/aegisAssets.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
+import './styles/planetDevelopment.css';
 import './styles/saveManager.css';
 import './styles/research.css';
 import './styles/production.css';
@@ -24,6 +25,7 @@ import { SaveManager } from './storage/SaveManager';
 import { mountEmpireOverview } from './ui/empireOverview';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
 import { selectNewGameFaction } from './ui/newGameFactionPicker';
+import { mountPlanetDevelopmentControls } from './ui/planetDevelopmentControls';
 import {
   applyPlanetScreenCommand,
   getPlanetScreenActivePlanetId,
@@ -136,6 +138,7 @@ async function bootstrap(): Promise<void> {
     getActivePlanetId: getPlanetScreenActivePlanetId,
     execute: applyPlanetScreenCommand,
   };
+  mountPlanetDevelopmentControls(commandBridge);
   mountEmpireOverview({
     getState: () => runtimeState,
     getActivePlanetId: getPlanetScreenActivePlanetId,
