@@ -8,6 +8,7 @@ import './styles/research.css';
 import './styles/production.css';
 import './styles/missions.css';
 import './styles/empire.css';
+import './styles/specialization.css';
 import { createGame } from './game/createGame';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
@@ -18,6 +19,7 @@ import {
 import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
+import { mountColonySpecializationPanel } from './ui/colonySpecializationPanel';
 import { mountEmpireOverview } from './ui/empireOverview';
 import {
   applyPlanetScreenCommand,
@@ -111,6 +113,7 @@ async function bootstrap(): Promise<void> {
       selectPlanetScreenPlanet(planetId);
     },
   });
+  mountColonySpecializationPanel(commandBridge);
   mountResearchScreen(commandBridge);
   mountProductionScreens(commandBridge);
   mountMissionScreen(commandBridge);
