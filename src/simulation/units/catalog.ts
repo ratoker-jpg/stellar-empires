@@ -83,7 +83,7 @@ export const AEGIS_UNIT_CATALOG: readonly UnitDefinition[] = [
     buildingRequirements: [{ buildingId: 'building.aegis.shipyard', level: 3 }],
     researchRequirements: [
       { technologyId: 'technology.aegis.propulsion', level: 2 },
-      { technologyId: 'technology.aegis.construction', level: 2 },
+      { technologyId: 'technology.aegis.colonization', level: 1 },
     ],
     stats: { speed: 6, cargo: 500, attack: 0, armor: 180, shield: 70 },
   },
