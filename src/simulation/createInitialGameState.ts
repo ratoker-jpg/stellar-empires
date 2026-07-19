@@ -1,11 +1,15 @@
 import { generateGalaxy } from './galaxy/generateGalaxy';
 import { createInitialIntelligenceStates } from './intelligence/intelligenceState';
 import { createInitialPlanetStates } from './planet/createInitialPlanetStates';
+import type { FactionId } from './planet/types';
 import { createInitialResearchStates } from './research/researchState';
 import { normalizeSeed } from './seed';
 import type { GameState } from './types';
 
-export function createInitialGameState(seedSource: string): GameState {
+export function createInitialGameState(
+  seedSource: string,
+  playerFaction: FactionId = 'aegis',
+): GameState {
   const seed = normalizeSeed(seedSource);
   const galaxy = generateGalaxy(seed);
   const empires = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'] as const;
@@ -19,7 +23,7 @@ export function createInitialGameState(seedSource: string): GameState {
     },
     empires,
     galaxy,
-    planets: createInitialPlanetStates(galaxy),
+    planets: createInitialPlanetStates(galaxy, playerFaction),
     research: createInitialResearchStates(empires),
     fleets: [],
     intelligence: createInitialIntelligenceStates(empires),
