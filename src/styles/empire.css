@@ -1,0 +1,159 @@
+.planet-header-controls {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.planet-selector-label {
+  display: grid;
+  min-width: 240px;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid rgba(96, 205, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(5, 18, 31, 0.74);
+}
+
+.planet-selector-label span {
+  color: #91a9b9;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.planet-selector-label select {
+  min-height: 34px;
+  border: 1px solid rgba(96, 205, 255, 0.3);
+  border-radius: 5px;
+  color: #edf9ff;
+  background: rgba(8, 29, 46, 0.94);
+}
+
+.empire-overview-dialog {
+  width: min(1120px, calc(100vw - 30px));
+  max-height: calc(100vh - 30px);
+  padding: 0;
+  border: 1px solid rgba(96, 205, 255, 0.36);
+  border-radius: 12px;
+  color: #edf9ff;
+  background: linear-gradient(145deg, rgba(6, 18, 30, 0.99), rgba(2, 7, 14, 0.99));
+}
+
+.empire-overview-dialog::backdrop {
+  background: rgba(0, 4, 10, 0.84);
+  backdrop-filter: blur(5px);
+}
+
+.empire-overview-dialog > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid rgba(96, 205, 255, 0.16);
+}
+
+.empire-overview-content {
+  display: grid;
+  gap: 16px;
+  max-height: 730px;
+  overflow: auto;
+  padding: 18px 22px 24px;
+}
+
+.empire-overview-summary {
+  padding: 16px;
+  border: 1px solid rgba(96, 205, 255, 0.18);
+  border-radius: 9px;
+  background: rgba(7, 24, 39, 0.76);
+}
+
+.empire-overview-summary h3,
+.empire-overview-summary p {
+  margin: 0 0 8px;
+}
+
+.empire-resource-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.empire-resource-grid > div {
+  display: grid;
+  gap: 4px;
+  padding: 11px;
+  border: 1px solid rgba(96, 205, 255, 0.13);
+  border-radius: 7px;
+  background: rgba(3, 12, 22, 0.72);
+}
+
+.empire-resource-grid span,
+.empire-resource-grid em {
+  color: #93aab8;
+  font-size: 0.75rem;
+  font-style: normal;
+}
+
+.empire-colony-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.empire-colony-card {
+  display: grid;
+  gap: 9px;
+  padding: 15px;
+  border: 1px solid rgba(96, 205, 255, 0.16);
+  border-radius: 9px;
+  background: rgba(6, 18, 30, 0.78);
+}
+
+.empire-colony-card.is-active {
+  border-color: rgba(91, 220, 255, 0.65);
+  box-shadow: inset 0 0 24px rgba(34, 151, 202, 0.1);
+}
+
+.empire-colony-card > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.empire-colony-card h3,
+.empire-colony-card p {
+  margin: 0;
+}
+
+.empire-colony-card span,
+.empire-colony-card p {
+  color: #9db0bd;
+  font-size: 0.8rem;
+}
+
+.empire-colony-card button {
+  min-height: 36px;
+  border: 1px solid rgba(96, 205, 255, 0.28);
+  border-radius: 6px;
+  color: #eaf8ff;
+  background: rgba(8, 29, 46, 0.9);
+  cursor: pointer;
+}
+
+.empire-colony-card button:disabled {
+  color: #77cced;
+  cursor: default;
+  opacity: 0.8;
+}
+
+@media (max-width: 850px) {
+  .planet-header-controls {
+    flex-direction: column;
+  }
+
+  .empire-resource-grid,
+  .empire-colony-grid {
+    grid-template-columns: 1fr;
+  }
+}
