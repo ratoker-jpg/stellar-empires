@@ -1,5 +1,6 @@
 import { accrueAllPlanetEconomies } from './economy/planetEconomy';
 import { enqueueEvent } from './eventQueue';
+import { canUseMechanicalDefinition } from './factions/sharedMechanicalCatalog';
 import { createFleet, disbandFleet } from './fleets/fleetCommands';
 import {
   applyFlightEvent,
@@ -163,7 +164,7 @@ function queueBuilding(
   if (definition === undefined) {
     return { ok: false, code: 'BUILDING_NOT_FOUND', message: 'The building is not registered.' };
   }
-  if (definition.factionId !== planet.factionId) {
+  if (!canUseMechanicalDefinition(definition.factionId, planet.factionId)) {
     return { ok: false, code: 'WRONG_FACTION_BUILDING', message: 'The building belongs to another faction.' };
   }
 

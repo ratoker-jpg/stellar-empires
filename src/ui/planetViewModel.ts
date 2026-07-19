@@ -3,6 +3,7 @@ import {
   type AegisVerticalSliceAsset,
 } from '../assets/aegisVerticalSliceAssets';
 import type { ResourceCost } from '../simulation/economy/types';
+import { canUseMechanicalDefinition } from '../simulation/factions/sharedMechanicalCatalog';
 import {
   AEGIS_BUILDING_CATALOG,
   getBuildingDefinition,
@@ -86,8 +87,8 @@ function getBlockReason(
 export function createBuildingCardViewModels(
   planet: PlanetState,
 ): readonly BuildingCardViewModel[] {
-  return AEGIS_BUILDING_CATALOG.filter(
-    (definition) => definition.factionId === planet.factionId,
+  return AEGIS_BUILDING_CATALOG.filter((definition) =>
+    canUseMechanicalDefinition(definition.factionId, planet.factionId),
   ).map((definition) => {
     const level = getBuildingLevel(planet.buildings, definition.id);
     const targetLevel = level + 1;
