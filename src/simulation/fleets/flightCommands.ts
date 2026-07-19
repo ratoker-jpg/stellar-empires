@@ -1,6 +1,14 @@
 import { collectDebris } from '../combat/debris';
 import { resolveAttackMission } from '../combat/resolveAttackMission';
 import type { BattleReport } from '../combat/types';
+import {
+  findGalaxyPlanet,
+  getColonizationLevel,
+  getColonyLimit,
+  getEmpireColonyCount,
+  isColonizableGalaxyPlanet,
+  resolveColonization,
+} from '../colonization/colonization';
 import { enqueueEvent } from '../eventQueue';
 import { resolveScoutArrival } from '../intelligence/resolveScout';
 import type { PlanetState } from '../planet/types';
@@ -15,7 +23,11 @@ import type {
   ScheduledGameEvent,
 } from '../types';
 import { getUnitDefinition } from '../units/catalog';
-import { estimateFlight } from './flightCalculations';
+import {
+  estimateFlight,
+  estimateFlightToGalaxyPlanet,
+  type FlightEstimate,
+} from './flightCalculations';
 import type { FleetState } from './types';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
@@ -119,6 +131,66 @@ function unloadTransport(
   };
 }
 
+function validateColonizationTarget(
+  state: GameState,
+  fleet: FleetState,
+  targetPlanetId: string,
+): CommandResult<FlightEstimate> {
+  const target = findGalaxyPlanet(state.galaxy, targetPlanetId);
+  if (target === undefined) {
+    return {
+      ok: false,
+      code: 'COLONIZATION_TARGET_NOT_FOUND',
+      message: 'The colonization target does not exist in the galaxy.',
+    };
+  }
+  if (
+    !isColonizableGalaxyPlanet(target.planet) ||
+    state.planets.some((planet) => planet.galaxyPlanetId === targetPlanetId)
+  ) {
+    return {
+      ok: false,
+      code: 'COLONIZATION_TARGET_UNAVAILABLE',
+      message: 'The selected galaxy planet is not available for colonization.',
+    };
+  }
+  if (getColonizationLevel(state, fleet.empireId) <= 0) {
+    return {
+      ok: false,
+      code: 'COLONIZATION_TECH_REQUIRED',
+      message: 'Colonization Protocols level 1 is required.',
+    };
+  }
+  if (
+    getEmpireColonyCount(state, fleet.empireId) >=
+    getColonyLimit(state, fleet.empireId)
+  ) {
+    return {
+      ok: false,
+      code: 'COLONY_LIMIT_REACHED',
+      message: 'The empire colony limit has been reached.',
+    };
+  }
+  if ((fleet.ships['ship.aegis.colony'] ?? 0) <= 0) {
+    return {
+      ok: false,
+      code: 'COLONY_SHIP_REQUIRED',
+      message: 'A colonization mission requires an Aegis colony ship.',
+    };
+  }
+
+  return {
+    ok: true,
+    value: estimateFlightToGalaxyPlanet(
+      state.galaxy,
+      state.planets,
+      fleet,
+      targetPlanetId,
+      getFleetSpeedBonus(state, fleet.empireId),
+    ),
+  };
+}
+
 export function sendFleet(
   state: GameState,
   command: Extract<GameCommand, { readonly type: 'SEND_FLEET' }>,
@@ -135,94 +207,113 @@ export function sendFleet(
   }
 
   const originPlanetId = fleet.location.planetId;
-  if (originPlanetId === command.targetPlanetId) {
-    return { ok: false, code: 'FLEET_TARGET_IS_ORIGIN', message: 'Fleet target must differ from its origin.' };
-  }
-
   const origin = state.planets.find((planet) => planet.id === originPlanetId);
-  const target = state.planets.find((planet) => planet.id === command.targetPlanetId);
-  if (origin === undefined || target === undefined) {
-    return { ok: false, code: 'FLIGHT_PLANET_NOT_FOUND', message: 'Flight origin or target not found.' };
+  if (origin === undefined) {
+    return { ok: false, code: 'FLIGHT_ORIGIN_NOT_FOUND', message: 'Flight origin not found.' };
   }
   if (origin.ownerEmpireId !== command.empireId) {
     return { ok: false, code: 'FLIGHT_ORIGIN_NOT_OWNED', message: 'Fleet must depart from an owned planet.' };
   }
-  if (
-    (command.mission === 'transport' || command.mission === 'deploy') &&
-    target.ownerEmpireId !== command.empireId
-  ) {
-    return {
-      ok: false,
-      code: 'MISSION_TARGET_NOT_OWNED',
-      message: 'Transport and deploy missions require an owned target planet.',
-    };
-  }
-  if (command.mission === 'attack' && target.ownerEmpireId === command.empireId) {
-    return {
-      ok: false,
-      code: 'ATTACK_TARGET_OWNED',
-      message: 'An empire cannot attack its own planet.',
-    };
-  }
-  if (command.mission === 'scout' && (fleet.ships['ship.aegis.scout'] ?? 0) <= 0) {
-    return {
-      ok: false,
-      code: 'SCOUT_SHIP_REQUIRED',
-      message: 'A scouting mission requires an Aegis scout ship.',
-    };
-  }
-  if (
-    command.mission === 'attack' &&
-    !Object.entries(fleet.ships).some(
-      ([unitId, count]) =>
-        count > 0 && (getUnitDefinition(unitId)?.stats.attack ?? 0) > 0,
-    )
-  ) {
-    return {
-      ok: false,
-      code: 'ATTACK_SHIP_REQUIRED',
-      message: 'An attack mission requires at least one armed ship.',
-    };
-  }
-  if (
-    command.mission === 'recycle' &&
-    (fleet.ships['ship.aegis.recycler'] ?? 0) <= 0
-  ) {
-    return {
-      ok: false,
-      code: 'RECYCLER_SHIP_REQUIRED',
-      message: 'A recycling mission requires an Aegis recycler.',
-    };
-  }
-  if (
-    command.mission === 'recycle' &&
-    !state.debrisFields.some(
-      (field) =>
-        field.planetId === target.id &&
-        (field.metal > 0 || field.crystal > 0),
-    )
-  ) {
-    return {
-      ok: false,
-      code: 'DEBRIS_FIELD_NOT_FOUND',
-      message: 'The target planet has no debris field.',
-    };
+
+  let estimate: FlightEstimate;
+  if (command.mission === 'colonize') {
+    const validation = validateColonizationTarget(
+      state,
+      fleet,
+      command.targetPlanetId,
+    );
+    if (!validation.ok) return validation;
+    estimate = validation.value;
+  } else {
+    if (originPlanetId === command.targetPlanetId) {
+      return { ok: false, code: 'FLEET_TARGET_IS_ORIGIN', message: 'Fleet target must differ from its origin.' };
+    }
+
+    const target = state.planets.find((planet) => planet.id === command.targetPlanetId);
+    if (target === undefined) {
+      return { ok: false, code: 'FLIGHT_PLANET_NOT_FOUND', message: 'Flight target not found.' };
+    }
+    if (
+      (command.mission === 'transport' || command.mission === 'deploy') &&
+      target.ownerEmpireId !== command.empireId
+    ) {
+      return {
+        ok: false,
+        code: 'MISSION_TARGET_NOT_OWNED',
+        message: 'Transport and deploy missions require an owned target planet.',
+      };
+    }
+    if (command.mission === 'attack' && target.ownerEmpireId === command.empireId) {
+      return {
+        ok: false,
+        code: 'ATTACK_TARGET_OWNED',
+        message: 'An empire cannot attack its own planet.',
+      };
+    }
+    if (command.mission === 'scout' && (fleet.ships['ship.aegis.scout'] ?? 0) <= 0) {
+      return {
+        ok: false,
+        code: 'SCOUT_SHIP_REQUIRED',
+        message: 'A scouting mission requires an Aegis scout ship.',
+      };
+    }
+    if (
+      command.mission === 'attack' &&
+      !Object.entries(fleet.ships).some(
+        ([unitId, count]) =>
+          count > 0 && (getUnitDefinition(unitId)?.stats.attack ?? 0) > 0,
+      )
+    ) {
+      return {
+        ok: false,
+        code: 'ATTACK_SHIP_REQUIRED',
+        message: 'An attack mission requires at least one armed ship.',
+      };
+    }
+    if (
+      command.mission === 'recycle' &&
+      (fleet.ships['ship.aegis.recycler'] ?? 0) <= 0
+    ) {
+      return {
+        ok: false,
+        code: 'RECYCLER_SHIP_REQUIRED',
+        message: 'A recycling mission requires an Aegis recycler.',
+      };
+    }
+    if (
+      command.mission === 'recycle' &&
+      !state.debrisFields.some(
+        (field) =>
+          field.planetId === target.id &&
+          (field.metal > 0 || field.crystal > 0),
+      )
+    ) {
+      return {
+        ok: false,
+        code: 'DEBRIS_FIELD_NOT_FOUND',
+        message: 'The target planet has no debris field.',
+      };
+    }
+
+    estimate = estimateFlight(
+      state.galaxy,
+      state.planets,
+      fleet,
+      target.id,
+      getFleetSpeedBonus(state, command.empireId),
+    );
   }
 
-  const estimate = estimateFlight(
-    state.galaxy,
-    state.planets,
-    fleet,
-    target.id,
-    getFleetSpeedBonus(state, command.empireId),
-  );
-  const roundTripFuel = estimate.fuelCost * 2;
-  if (origin.economy.resources.gas.amount < roundTripFuel) {
+  const fuelRequired =
+    command.mission === 'colonize'
+      ? estimate.fuelCost
+      : estimate.fuelCost * 2;
+  if (origin.economy.resources.gas.amount < fuelRequired) {
     return {
       ok: false,
       code: 'INSUFFICIENT_FLIGHT_FUEL',
-      message: 'Origin planet does not have enough gas for the round trip.',
-      details: { required: roundTripFuel, available: origin.economy.resources.gas.amount },
+      message: 'Origin planet does not have enough gas for the mission.',
+      details: { required: fuelRequired, available: origin.economy.resources.gas.amount },
     };
   }
 
@@ -232,16 +323,20 @@ export function sendFleet(
     id: `event-${sequence}`,
     executeAt: arrivesAt,
     sequence,
-    payload: { type: 'FLEET_ARRIVE', fleetId: fleet.id, targetPlanetId: target.id },
+    payload: {
+      type: 'FLEET_ARRIVE',
+      fleetId: fleet.id,
+      targetPlanetId: command.targetPlanetId,
+    },
   };
   const updatedFleet: FleetState = {
     ...fleet,
     status: 'outbound',
-    mission: { kind: command.mission, targetPlanetId: target.id },
+    mission: { kind: command.mission, targetPlanetId: command.targetPlanetId },
     location: {
       type: 'transit',
       fromPlanetId: origin.id,
-      toPlanetId: target.id,
+      toPlanetId: command.targetPlanetId,
       departedAt: state.clock.elapsedSeconds,
       arrivesAt,
     },
@@ -254,7 +349,7 @@ export function sendFleet(
         ...origin.economy.resources,
         gas: {
           ...origin.economy.resources.gas,
-          amount: origin.economy.resources.gas.amount - roundTripFuel,
+          amount: origin.economy.resources.gas.amount - fuelRequired,
         },
       },
     },
@@ -342,8 +437,20 @@ export function applyFlightEvent(state: GameState, event: ScheduledGameEvent): G
     return state;
   }
 
-  const target = state.planets.find((planet) => planet.id === payload.targetPlanetId);
   const duration = Math.max(1, fleet.location.arrivesAt - fleet.location.departedAt);
+
+  if (fleet.mission.kind === 'colonize') {
+    const colonization = resolveColonization(
+      state,
+      fleet,
+      payload.targetPlanetId,
+    );
+    return colonization === undefined
+      ? scheduleReturn(state, fleet, payload.targetPlanetId, duration)
+      : colonization.state;
+  }
+
+  const target = state.planets.find((planet) => planet.id === payload.targetPlanetId);
   if (target === undefined) {
     return scheduleReturn(state, fleet, payload.targetPlanetId, duration);
   }

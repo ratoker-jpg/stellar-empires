@@ -6,7 +6,8 @@ export type FleetMissionKind =
   | 'transport'
   | 'scout'
   | 'attack'
-  | 'recycle';
+  | 'recycle'
+  | 'colonize';
 
 export interface FleetMission {
   readonly kind: FleetMissionKind;

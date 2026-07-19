@@ -1,4 +1,4 @@
-import type { GalaxyModel } from '../galaxy/types';
+import type { GalaxyModel, PlanetModel, StarSystemModel } from '../galaxy/types';
 import type { PlanetState } from '../planet/types';
 import { calculateFleetComposition } from './fleetCalculations';
 import type { FleetState } from './types';
@@ -9,12 +9,38 @@ export interface FlightEstimate {
   readonly fuelCost: number;
 }
 
-function requireSystem(galaxy: GalaxyModel, systemId: string) {
+function requireSystem(galaxy: GalaxyModel, systemId: string): StarSystemModel {
   const system = galaxy.systems.find((candidate) => candidate.id === systemId);
   if (system === undefined) {
     throw new Error(`Galaxy system not found: ${systemId}`);
   }
   return system;
+}
+
+function findGalaxyPlanet(
+  galaxy: GalaxyModel,
+  galaxyPlanetId: string,
+): { readonly system: StarSystemModel; readonly planet: PlanetModel } | undefined {
+  for (const system of galaxy.systems) {
+    const planet = system.planets.find((candidate) => candidate.id === galaxyPlanetId);
+    if (planet !== undefined) return { system, planet };
+  }
+  return undefined;
+}
+
+export function calculateTargetDistance(
+  galaxy: GalaxyModel,
+  origin: PlanetState,
+  targetSystemId: string,
+  targetPosition: number,
+): number {
+  const originSystem = requireSystem(galaxy, origin.systemId);
+  const targetSystem = requireSystem(galaxy, targetSystemId);
+  const dx = targetSystem.x - originSystem.x;
+  const dy = targetSystem.y - originSystem.y;
+  const systemDistance = Math.ceil(Math.sqrt(dx * dx + dy * dy) * 100);
+  const orbitDistance = Math.abs(targetPosition - origin.position) * 12;
+  return Math.max(1, systemDistance + orbitDistance);
 }
 
 export function calculatePlanetDistance(
@@ -23,14 +49,12 @@ export function calculatePlanetDistance(
   target: PlanetState,
 ): number {
   if (origin.id === target.id) return 0;
-
-  const originSystem = requireSystem(galaxy, origin.systemId);
-  const targetSystem = requireSystem(galaxy, target.systemId);
-  const dx = targetSystem.x - originSystem.x;
-  const dy = targetSystem.y - originSystem.y;
-  const systemDistance = Math.ceil(Math.sqrt(dx * dx + dy * dy) * 100);
-  const orbitDistance = Math.abs(target.position - origin.position) * 12;
-  return Math.max(1, systemDistance + orbitDistance);
+  return calculateTargetDistance(
+    galaxy,
+    origin,
+    target.systemId,
+    target.position,
+  );
 }
 
 export function calculateFlightDuration(
@@ -63,23 +87,11 @@ export function calculateFlightFuel(
   );
 }
 
-export function estimateFlight(
-  galaxy: GalaxyModel,
-  planets: readonly PlanetState[],
+function createEstimate(
+  distance: number,
   fleet: FleetState,
-  targetPlanetId: string,
-  speedBonusPercent = 0,
+  speedBonusPercent: number,
 ): FlightEstimate {
-  if (fleet.location.type !== 'planet') {
-    throw new Error('Only a stationed fleet can estimate a new flight.');
-  }
-  const originPlanetId = fleet.location.planetId;
-  const origin = planets.find((planet) => planet.id === originPlanetId);
-  const target = planets.find((planet) => planet.id === targetPlanetId);
-  if (origin === undefined || target === undefined) {
-    throw new Error('Flight origin or target planet not found.');
-  }
-  const distance = calculatePlanetDistance(galaxy, origin, target);
   return {
     distance,
     durationSeconds: calculateFlightDuration(
@@ -89,4 +101,55 @@ export function estimateFlight(
     ),
     fuelCost: calculateFlightFuel(distance, fleet),
   };
+}
+
+export function estimateFlight(
+  galaxy: GalaxyModel,
+  planets: readonly PlanetState[],
+  fleet: FleetState,
+  targetPlanetId: string,
+  speedBonusPercent = 0,
+): FlightEstimate {
+  const location = fleet.location;
+  if (location.type !== 'planet') {
+    throw new Error('Only a stationed fleet can estimate a new flight.');
+  }
+  const origin = planets.find((planet) => planet.id === location.planetId);
+  const target = planets.find((planet) => planet.id === targetPlanetId);
+  if (origin === undefined || target === undefined) {
+    throw new Error('Flight origin or target planet not found.');
+  }
+  return createEstimate(
+    calculatePlanetDistance(galaxy, origin, target),
+    fleet,
+    speedBonusPercent,
+  );
+}
+
+export function estimateFlightToGalaxyPlanet(
+  galaxy: GalaxyModel,
+  planets: readonly PlanetState[],
+  fleet: FleetState,
+  galaxyPlanetId: string,
+  speedBonusPercent = 0,
+): FlightEstimate {
+  const location = fleet.location;
+  if (location.type !== 'planet') {
+    throw new Error('Only a stationed fleet can estimate a new flight.');
+  }
+  const origin = planets.find((planet) => planet.id === location.planetId);
+  const target = findGalaxyPlanet(galaxy, galaxyPlanetId);
+  if (origin === undefined || target === undefined) {
+    throw new Error('Flight origin or galaxy target not found.');
+  }
+  return createEstimate(
+    calculateTargetDistance(
+      galaxy,
+      origin,
+      target.system.id,
+      target.planet.position,
+    ),
+    fleet,
+    speedBonusPercent,
+  );
 }

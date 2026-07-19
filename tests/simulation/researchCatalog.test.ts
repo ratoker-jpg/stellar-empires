@@ -6,7 +6,12 @@ import type { ResearchDefinition } from '../../src/simulation/research/types';
 describe('research catalog', () => {
   it('has a valid acyclic Aegis dependency graph', () => {
     expect(validateResearchCatalog(AEGIS_RESEARCH_CATALOG)).toEqual([]);
-    expect(AEGIS_RESEARCH_CATALOG).toHaveLength(6);
+    expect(AEGIS_RESEARCH_CATALOG).toHaveLength(7);
+    expect(
+      AEGIS_RESEARCH_CATALOG.find(
+        (technology) => technology.id === 'technology.aegis.colonization',
+      ),
+    ).toMatchObject({ maxLevel: 5, requiredLaboratoryLevel: 3 });
   });
 
   it('reports duplicate, unknown and cyclic dependencies', () => {
