@@ -8,16 +8,16 @@ import {
 } from '../../src/storage/saveFormat';
 
 describe('save format', () => {
-  it('round-trips a valid schema-v8 save', () => {
+  it('round-trips a valid schema-v9 save', () => {
     const state = createInitialGameState('save-round-trip');
     const save = createSaveEnvelope('slot-1', state, '2026-07-18T12:00:00.000Z');
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
-  it('migrates a schema-v7 save with empty intelligence records', () => {
+  it('migrates a schema-v8 save with empty debris fields', () => {
     const current = createInitialGameState('legacy-save');
-    const { intelligence: _intelligence, ...withoutIntelligence } = current;
-    const legacyState = { ...withoutIntelligence, schemaVersion: 7 };
+    const { debrisFields: _debrisFields, ...withoutDebris } = current;
+    const legacyState = { ...withoutDebris, schemaVersion: 8 };
     const legacySave = {
       formatVersion: 2,
       slotId: 'legacy-slot',
@@ -28,14 +28,41 @@ describe('save format', () => {
     const parsed = parseSaveJson(JSON.stringify(legacySave));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(8);
-      expect(parsed.value.state.intelligence).toHaveLength(current.empires.length);
-      expect(
-        parsed.value.state.intelligence.every(
-          (entry) => entry.observations.length === 0 && entry.alerts.length === 0,
-        ),
-      ).toBe(true);
+      expect(parsed.value.state.schemaVersion).toBe(9);
+      expect(parsed.value.state.debrisFields).toEqual([]);
     }
+  });
+
+  it('round-trips active debris and recycling missions', () => {
+    const current = createInitialGameState('debris-save');
+    const state = {
+      ...current,
+      debrisFields: [
+        {
+          id: 'debris-p1',
+          planetId: current.planets[0]!.id,
+          metal: 500,
+          crystal: 250,
+          createdAt: 100,
+        },
+      ],
+      fleets: [
+        {
+          id: 'recycler-1',
+          empireId: 'player',
+          originPlanetId: current.planets[0]!.id,
+          location: { type: 'planet' as const, planetId: current.planets[0]!.id },
+          status: 'stationed' as const,
+          ships: { 'ship.aegis.recycler': 1 },
+          cargo: { metal: 0, crystal: 0, gas: 0 },
+          speed: 8,
+          cargoCapacity: 800,
+          mission: { kind: 'recycle' as const, targetPlanetId: current.planets[0]!.id },
+        },
+      ],
+    };
+    const save = createSaveEnvelope('debris', state, '2026-07-18T12:00:00.000Z');
+    expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
   it('adds a null mission to older fleet saves', () => {
