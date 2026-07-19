@@ -65,6 +65,51 @@ describe('save format', () => {
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
+  it('round-trips an active colonization expedition', () => {
+    const current = createInitialGameState('colonization-save');
+    const target = current.galaxy.systems
+      .flatMap((system) => system.planets)
+      .find((planet) => planet.ownerEmpireId === null && planet.biome !== 'gas');
+    expect(target).toBeDefined();
+    if (target === undefined) return;
+
+    const origin = current.planets.find(
+      (planet) => planet.ownerEmpireId === 'player',
+    );
+    expect(origin).toBeDefined();
+    if (origin === undefined) return;
+
+    const state = {
+      ...current,
+      fleets: [
+        {
+          id: 'colonizer-1',
+          empireId: 'player',
+          originPlanetId: origin.id,
+          location: {
+            type: 'transit' as const,
+            fromPlanetId: origin.id,
+            toPlanetId: target.id,
+            departedAt: 10,
+            arrivesAt: 100,
+          },
+          status: 'outbound' as const,
+          ships: { 'ship.aegis.colony': 1 },
+          cargo: { metal: 200, crystal: 100, gas: 50 },
+          speed: 6,
+          cargoCapacity: 500,
+          mission: { kind: 'colonize' as const, targetPlanetId: target.id },
+        },
+      ],
+    };
+    const save = createSaveEnvelope(
+      'colonization',
+      state,
+      '2026-07-18T12:00:00.000Z',
+    );
+    expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
+  });
+
   it('adds a null mission to older fleet saves', () => {
     const current = createInitialGameState('fleet-migration');
     const olderFleet = {
