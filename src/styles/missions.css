@@ -32,7 +32,8 @@
 
 .mission-create,
 .mission-fleet-list article,
-.mission-intelligence {
+.mission-intelligence,
+.mission-battles {
   padding: 14px;
   border: 1px solid rgba(96, 205, 255, 0.16);
   border-radius: 9px;
@@ -82,7 +83,8 @@
 }
 
 .mission-fleet-list p,
-.mission-intelligence p {
+.mission-intelligence p,
+.mission-battles p {
   margin: 5px 0 0;
   color: #9db0bd;
   font-size: 0.8rem;
@@ -95,16 +97,23 @@
   gap: 7px;
 }
 
-.mission-intelligence {
+.mission-intelligence,
+.mission-battles {
   grid-column: 1 / -1;
   display: grid;
   gap: 8px;
 }
 
-.mission-intelligence article {
+.mission-intelligence article,
+.mission-battles article {
   padding: 10px 12px;
   border-left: 3px solid rgba(89, 210, 255, 0.58);
   background: rgba(13, 40, 58, 0.62);
+}
+
+.mission-battles article {
+  border-left-color: rgba(255, 122, 92, 0.66);
+  background: rgba(63, 24, 25, 0.48);
 }
 
 @media (max-width: 800px) {

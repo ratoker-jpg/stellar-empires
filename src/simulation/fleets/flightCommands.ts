@@ -1,3 +1,5 @@
+import { resolveAttackMission } from '../combat/resolveAttackMission';
+import type { BattleReport } from '../combat/types';
 import { enqueueEvent } from '../eventQueue';
 import { resolveScoutArrival } from '../intelligence/resolveScout';
 import type { PlanetState } from '../planet/types';
@@ -11,6 +13,7 @@ import type {
   GameState,
   ScheduledGameEvent,
 } from '../types';
+import { getUnitDefinition } from '../units/catalog';
 import { estimateFlight } from './flightCalculations';
 import type { FleetState } from './types';
 
@@ -37,6 +40,21 @@ function getFleetSpeedBonus(state: GameState, empireId: string): number {
   return research === undefined
     ? 0
     : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG).fleetSpeedPercent;
+}
+
+function enqueueBattleReport(state: GameState, report: BattleReport): GameState {
+  const sequence = state.nextEventSequence;
+  const event: ScheduledGameEvent = {
+    id: `event-${sequence}`,
+    executeAt: state.clock.elapsedSeconds,
+    sequence,
+    payload: { type: 'BATTLE_REPORT', report },
+  };
+  return {
+    ...state,
+    nextEventSequence: sequence + 1,
+    pendingEvents: enqueueEvent(state.pendingEvents, event),
+  };
 }
 
 function scheduleReturn(
@@ -128,11 +146,21 @@ export function sendFleet(
   if (origin.ownerEmpireId !== command.empireId) {
     return { ok: false, code: 'FLIGHT_ORIGIN_NOT_OWNED', message: 'Fleet must depart from an owned planet.' };
   }
-  if (command.mission !== 'scout' && target.ownerEmpireId !== command.empireId) {
+  if (
+    (command.mission === 'transport' || command.mission === 'deploy') &&
+    target.ownerEmpireId !== command.empireId
+  ) {
     return {
       ok: false,
       code: 'MISSION_TARGET_NOT_OWNED',
       message: 'Transport and deploy missions require an owned target planet.',
+    };
+  }
+  if (command.mission === 'attack' && target.ownerEmpireId === command.empireId) {
+    return {
+      ok: false,
+      code: 'ATTACK_TARGET_OWNED',
+      message: 'An empire cannot attack its own planet.',
     };
   }
   if (command.mission === 'scout' && (fleet.ships['ship.aegis.scout'] ?? 0) <= 0) {
@@ -140,6 +168,19 @@ export function sendFleet(
       ok: false,
       code: 'SCOUT_SHIP_REQUIRED',
       message: 'A scouting mission requires an Aegis scout ship.',
+    };
+  }
+  if (
+    command.mission === 'attack' &&
+    !Object.entries(fleet.ships).some(
+      ([unitId, count]) =>
+        count > 0 && (getUnitDefinition(unitId)?.stats.attack ?? 0) > 0,
+    )
+  ) {
+    return {
+      ok: false,
+      code: 'ATTACK_SHIP_REQUIRED',
+      message: 'An attack mission requires at least one armed ship.',
     };
   }
 
@@ -277,6 +318,17 @@ export function applyFlightEvent(state: GameState, event: ScheduledGameEvent): G
   if (fleet.mission.kind === 'scout') {
     const observed = resolveScoutArrival(state, fleet, target, event.sequence);
     return scheduleReturn(observed, fleet, target.id, duration);
+  }
+
+  if (fleet.mission.kind === 'attack') {
+    if (target.ownerEmpireId === fleet.empireId) {
+      return scheduleReturn(state, fleet, target.id, duration);
+    }
+    const battle = resolveAttackMission(state, fleet, target, event.sequence);
+    const withReport = enqueueBattleReport(battle.state, battle.report);
+    return battle.attackerFleet === undefined
+      ? withReport
+      : scheduleReturn(withReport, battle.attackerFleet, target.id, duration);
   }
 
   if (target.ownerEmpireId !== fleet.empireId) {

@@ -1,7 +1,7 @@
 import type { ResourceCost } from '../economy/types';
 
 export type FleetStatus = 'stationed' | 'outbound' | 'holding' | 'returning';
-export type FleetMissionKind = 'deploy' | 'transport' | 'scout';
+export type FleetMissionKind = 'deploy' | 'transport' | 'scout' | 'attack';
 
 export interface FleetMission {
   readonly kind: FleetMissionKind;
