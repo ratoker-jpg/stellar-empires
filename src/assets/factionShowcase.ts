@@ -19,7 +19,7 @@ export const FACTION_SHOWCASES: readonly FactionShowcaseDefinition[] = [
     emblemUrl: RUNTIME_ASSETS.factionAegisEmblem,
     backgroundUrl: RUNTIME_ASSETS.factionAegisBackground,
     controlSetUrl: RUNTIME_ASSETS.factionAegisControlSet,
-    accent: '#3E84B6',
+    accent: '#E7A847',
   },
   {
     id: 'synod',
@@ -28,7 +28,7 @@ export const FACTION_SHOWCASES: readonly FactionShowcaseDefinition[] = [
     emblemUrl: RUNTIME_ASSETS.factionSynodEmblem,
     backgroundUrl: RUNTIME_ASSETS.factionSynodBackground,
     controlSetUrl: RUNTIME_ASSETS.factionSynodControlSet,
-    accent: '#35B979',
+    accent: '#53DCFF',
   },
   {
     id: 'veyra',
@@ -37,6 +37,6 @@ export const FACTION_SHOWCASES: readonly FactionShowcaseDefinition[] = [
     emblemUrl: RUNTIME_ASSETS.factionVeyraEmblem,
     backgroundUrl: RUNTIME_ASSETS.factionVeyraBackground,
     controlSetUrl: RUNTIME_ASSETS.factionVeyraControlSet,
-    accent: '#EF5A56',
+    accent: '#A8E85E',
   },
 ] as const;
