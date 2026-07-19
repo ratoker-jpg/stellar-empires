@@ -6,6 +6,7 @@ import './styles/planetWorkspace.css';
 import './styles/saveManager.css';
 import './styles/research.css';
 import './styles/production.css';
+import './styles/missions.css';
 import { createGame } from './game/createGame';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
@@ -20,6 +21,7 @@ import {
   applyPlanetScreenCommand,
   mountPlanetScreen,
 } from './ui/planetScreen';
+import { mountMissionScreen } from './ui/missionScreen';
 import { mountProductionScreens } from './ui/productionScreen';
 import { mountResearchScreen } from './ui/researchScreen';
 import { mountSaveManager } from './ui/saveManager';
@@ -27,11 +29,7 @@ import { renderAssetShowcases } from './ui/showcase';
 
 function requireElement<T extends HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector);
-
-  if (element === null) {
-    throw new Error(`Required element not found: ${selector}`);
-  }
-
+  if (element === null) throw new Error(`Required element not found: ${selector}`);
   return element;
 }
 
@@ -71,7 +69,6 @@ async function bootstrap(): Promise<void> {
 
   try {
     const restored = await loadAutosave(repository);
-
     if (restored.status === 'loaded') {
       initialState = restored.state;
       runtimeState = restored.state;
@@ -83,7 +80,6 @@ async function bootstrap(): Promise<void> {
       startupStatus = 'Сохранения повреждены · новая партия';
       console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
     }
-
     saveManager = new SaveManager(repository);
     autosave = new AutoSaveController(repository, { onStatus: writeAutoSaveStatus });
   } catch (error: unknown) {
@@ -93,21 +89,19 @@ async function bootstrap(): Promise<void> {
 
   version.textContent = `v${__APP_VERSION__}`;
   systemCount.textContent = String(initialState.galaxy.systems.length);
-
   createGame('phaser-game', initialState);
   renderAssetShowcases();
   mountPlanetScreen(initialState, setStatus, (state) => {
     runtimeState = state;
     autosave?.request(state);
   });
-  mountResearchScreen({
+  const commandBridge = {
     getState: () => runtimeState,
     execute: applyPlanetScreenCommand,
-  });
-  mountProductionScreens({
-    getState: () => runtimeState,
-    execute: applyPlanetScreenCommand,
-  });
+  };
+  mountResearchScreen(commandBridge);
+  mountProductionScreens(commandBridge);
+  mountMissionScreen(commandBridge);
 
   if (saveManager !== undefined) {
     mountSaveManager({
@@ -122,9 +116,7 @@ async function bootstrap(): Promise<void> {
   };
   window.addEventListener('pagehide', flushAutosave);
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      flushAutosave();
-    }
+    if (document.visibilityState === 'hidden') flushAutosave();
   });
 
   setStatus(startupStatus);
@@ -134,10 +126,6 @@ async function bootstrap(): Promise<void> {
 void bootstrap().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : 'Unknown startup error';
   const status = document.querySelector<HTMLElement>('#app-status');
-
-  if (status !== null) {
-    status.textContent = `Ошибка запуска: ${message}`;
-  }
-
+  if (status !== null) status.textContent = `Ошибка запуска: ${message}`;
   console.error('[stellar-empires] startup failed', error);
 });
