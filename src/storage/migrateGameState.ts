@@ -7,7 +7,14 @@ import type { PlanetEconomyState } from '../simulation/economy/types';
 import type { FleetState } from '../simulation/fleets/types';
 import { createInitialIntelligenceStates } from '../simulation/intelligence/intelligenceState';
 import type { EmpireIntelligenceState } from '../simulation/intelligence/types';
-import type { PlanetBuildingState } from '../simulation/planet/types';
+import {
+  getResourceProductionBonusPercent,
+  isColonySpecializationId,
+} from '../simulation/planet/specialization';
+import type {
+  ColonySpecializationId,
+  PlanetBuildingState,
+} from '../simulation/planet/types';
 import { createPlanetZones } from '../simulation/planet/zones';
 import { createInitialResearchStates } from '../simulation/research/researchState';
 import type { EmpireResearchState } from '../simulation/research/types';
@@ -40,11 +47,18 @@ function readBuildings(value: unknown): readonly PlanetBuildingState[] | undefin
 function normalizeEconomy(
   value: unknown,
   buildings: readonly PlanetBuildingState[],
+  specialization: ColonySpecializationId,
 ): PlanetEconomyState {
+  const productionBonus = getResourceProductionBonusPercent(specialization);
   if (!isRecord(value) || !isRecord(value.resources)) {
-    return createPlanetEconomy(buildings);
+    return createPlanetEconomy(buildings, 0, productionBonus);
   }
-  return refreshPlanetEconomy(value as unknown as PlanetEconomyState, buildings);
+  return refreshPlanetEconomy(
+    value as unknown as PlanetEconomyState,
+    buildings,
+    0,
+    productionBonus,
+  );
 }
 
 function readCountRecord(value: unknown): Readonly<Record<string, number>> | undefined {
@@ -84,11 +98,16 @@ function migratePlanet(value: unknown): Record<string, unknown> | undefined {
   if (buildings === undefined || inventory === undefined || productionQueues === undefined) {
     return undefined;
   }
+  const specialization: ColonySpecializationId =
+    isColonySpecializationId(value.specialization)
+      ? value.specialization
+      : 'balanced';
   return {
     ...value,
+    specialization,
     buildings,
     zones: createPlanetZones(buildings),
-    economy: normalizeEconomy(value.economy, buildings),
+    economy: normalizeEconomy(value.economy, buildings, specialization),
     inventory,
     productionQueues,
   };
@@ -102,9 +121,7 @@ function readResearchStates(
   if (!Array.isArray(value)) return undefined;
   const states: EmpireResearchState[] = [];
   for (const item of value) {
-    if (!isRecord(item) || typeof item.empireId !== 'string' || !isRecord(item.levels) || !Array.isArray(item.queue)) {
-      return undefined;
-    }
+    if (!isRecord(item) || typeof item.empireId !== 'string' || !isRecord(item.levels) || !Array.isArray(item.queue)) return undefined;
     const levels: Record<string, number> = {};
     for (const [id, level] of Object.entries(item.levels)) {
       if (typeof level !== 'number' || !Number.isInteger(level) || level < 0) return undefined;
@@ -142,10 +159,7 @@ function readFleets(value: unknown): readonly FleetState[] | undefined {
           item.mission.kind === 'recycle' ||
           item.mission.kind === 'colonize') &&
         typeof item.mission.targetPlanetId === 'string'
-          ? {
-              kind: item.mission.kind,
-              targetPlanetId: item.mission.targetPlanetId,
-            }
+          ? { kind: item.mission.kind, targetPlanetId: item.mission.targetPlanetId }
           : null,
     });
   }
@@ -212,9 +226,10 @@ function readDebrisFields(value: unknown): readonly DebrisField[] | undefined {
 }
 
 export function migrateGameState(value: unknown): GameState | undefined {
-  if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8, 9].includes(value.schemaVersion as number)) {
-    return undefined;
-  }
+  if (
+    !isRecord(value) ||
+    ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(value.schemaVersion as number)
+  ) return undefined;
   if (!Array.isArray(value.planets) || !Array.isArray(value.empires)) return undefined;
   const empireIds = value.empires.filter(
     (empireId): empireId is string => typeof empireId === 'string',
@@ -227,7 +242,6 @@ export function migrateGameState(value: unknown): GameState | undefined {
     if (migrated === undefined) return undefined;
     planets.push(migrated);
   }
-
   const research = readResearchStates(value.research, empireIds);
   const fleets = readFleets(value.fleets);
   const intelligence = readIntelligenceStates(value.intelligence, empireIds);
@@ -237,13 +251,11 @@ export function migrateGameState(value: unknown): GameState | undefined {
     fleets === undefined ||
     intelligence === undefined ||
     debrisFields === undefined
-  ) {
-    return undefined;
-  }
+  ) return undefined;
 
   return {
     ...value,
-    schemaVersion: 9,
+    schemaVersion: 10,
     planets,
     research,
     fleets,
