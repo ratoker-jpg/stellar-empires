@@ -74,11 +74,12 @@ function isPlanet(value: unknown): boolean {
     !isRecord(value.productionQueues)
   ) return false;
 
+  const zones = value.zones;
   const validZones =
-    Object.keys(value.zones).sort().join('|') ===
+    Object.keys(zones).sort().join('|') ===
       [...PLANET_ZONE_IDS].sort().join('|') &&
     PLANET_ZONE_IDS.every((zoneId) => {
-      const zone = value.zones[zoneId];
+      const zone = zones[zoneId];
       return (
         isRecord(zone) &&
         zone.id === zoneId &&
