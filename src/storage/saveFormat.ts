@@ -1,4 +1,5 @@
 import { createStateChecksum } from '../simulation/checksum';
+import { isColonySpecializationId } from '../simulation/planet/specialization';
 import { PLANET_ZONE_IDS } from '../simulation/planet/zones';
 import type { GameState } from '../simulation/types';
 import { migrateGameState } from './migrateGameState';
@@ -32,7 +33,7 @@ function isResourceCost(value: unknown): boolean {
 function isStateShell(value: unknown): value is Record<string, unknown> {
   return (
     isRecord(value) &&
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].includes(value.schemaVersion as number) &&
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(value.schemaVersion as number) &&
     typeof value.seed === 'number' &&
     Number.isInteger(value.seed) &&
     isRecord(value.clock) &&
@@ -66,6 +67,7 @@ function isProductionQueueItem(value: unknown): boolean {
 function isPlanet(value: unknown): boolean {
   if (
     !isRecord(value) ||
+    !isColonySpecializationId(value.specialization) ||
     !isRecord(value.zones) ||
     !Array.isArray(value.buildings) ||
     !Array.isArray(value.buildQueue) ||
@@ -76,8 +78,7 @@ function isPlanet(value: unknown): boolean {
 
   const zones = value.zones;
   const validZones =
-    Object.keys(zones).sort().join('|') ===
-      [...PLANET_ZONE_IDS].sort().join('|') &&
+    Object.keys(zones).sort().join('|') === [...PLANET_ZONE_IDS].sort().join('|') &&
     PLANET_ZONE_IDS.every((zoneId) => {
       const zone = zones[zoneId];
       return (
@@ -88,7 +89,6 @@ function isPlanet(value: unknown): boolean {
         zone.usedFields <= zone.fieldLimit
       );
     });
-
   return (
     validZones &&
     isRecord(value.inventory.ships) &&
@@ -168,9 +168,7 @@ function isObservation(value: unknown): boolean {
     typeof value.snapshot.planetId === 'string' &&
     typeof value.snapshot.name === 'string' &&
     typeof value.snapshot.ownerEmpireId === 'string' &&
-    (value.snapshot.level === 1 ||
-      value.snapshot.level === 2 ||
-      value.snapshot.level === 3)
+    (value.snapshot.level === 1 || value.snapshot.level === 2 || value.snapshot.level === 3)
   );
 }
 
@@ -182,9 +180,7 @@ function isIntelligenceAlert(value: unknown): boolean {
     (value.sourceEmpireId === null || typeof value.sourceEmpireId === 'string') &&
     typeof value.targetPlanetId === 'string' &&
     isNonNegativeInteger(value.detectedAt) &&
-    (value.confidence === 'low' ||
-      value.confidence === 'medium' ||
-      value.confidence === 'high')
+    (value.confidence === 'low' || value.confidence === 'medium' || value.confidence === 'high')
   );
 }
 
@@ -214,7 +210,7 @@ function isDebrisField(value: unknown): boolean {
 function isGameState(value: unknown): value is GameState {
   return (
     isStateShell(value) &&
-    value.schemaVersion === 9 &&
+    value.schemaVersion === 10 &&
     Array.isArray(value.empires) &&
     Array.isArray(value.planets) &&
     value.planets.every(isPlanet) &&
@@ -235,9 +231,7 @@ export function createSaveEnvelope(
   state: GameState,
   savedAt: string,
 ): SaveEnvelope {
-  if (slotId.trim().length === 0) {
-    throw new Error('Save slot id must not be empty.');
-  }
+  if (slotId.trim().length === 0) throw new Error('Save slot id must not be empty.');
   return {
     formatVersion: SAVE_FORMAT_VERSION,
     slotId,
@@ -263,7 +257,6 @@ export function parseSaveJson(json: string): SaveParseResult {
       details: error instanceof Error ? error.message : error,
     };
   }
-
   if (
     !isRecord(parsed) ||
     (parsed.formatVersion !== 1 && parsed.formatVersion !== SAVE_FORMAT_VERSION) ||
@@ -279,7 +272,6 @@ export function parseSaveJson(json: string): SaveParseResult {
       message: 'Save data is missing required fields or contains invalid values.',
     };
   }
-
   const actualChecksum = createStateChecksum(parsed.state);
   if (actualChecksum !== parsed.checksum) {
     return {
@@ -288,7 +280,6 @@ export function parseSaveJson(json: string): SaveParseResult {
       message: 'Save data checksum does not match its state.',
     };
   }
-
   const state = migrateGameState(parsed.state);
   if (!isGameState(state)) {
     return {
@@ -297,7 +288,6 @@ export function parseSaveJson(json: string): SaveParseResult {
       message: 'Save data could not be migrated to the current schema.',
     };
   }
-
   return {
     ok: true,
     value: {
