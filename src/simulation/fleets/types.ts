@@ -1,6 +1,12 @@
 import type { ResourceCost } from '../economy/types';
 
 export type FleetStatus = 'stationed' | 'outbound' | 'holding' | 'returning';
+export type FleetMissionKind = 'deploy' | 'transport';
+
+export interface FleetMission {
+  readonly kind: FleetMissionKind;
+  readonly targetPlanetId: string;
+}
 
 export interface FleetPlanetLocation {
   readonly type: 'planet';
@@ -27,4 +33,5 @@ export interface FleetState {
   readonly cargo: ResourceCost;
   readonly speed: number;
   readonly cargoCapacity: number;
+  readonly mission: FleetMission | null;
 }

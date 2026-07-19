@@ -1,0 +1,105 @@
+.mission-screen-dialog {
+  width: min(1080px, calc(100vw - 30px));
+  max-height: calc(100vh - 30px);
+  padding: 0;
+  border: 1px solid rgba(96, 205, 255, 0.34);
+  border-radius: 12px;
+  color: #edf9ff;
+  background: linear-gradient(145deg, rgba(6, 18, 30, 0.99), rgba(2, 7, 14, 0.99));
+}
+
+.mission-screen-dialog::backdrop {
+  background: rgba(0, 4, 10, 0.82);
+  backdrop-filter: blur(5px);
+}
+
+.mission-screen-dialog > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 12px;
+  border-bottom: 1px solid rgba(96, 205, 255, 0.15);
+}
+
+.mission-screen-content {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.8fr) minmax(380px, 1.2fr);
+  gap: 14px;
+  max-height: 700px;
+  overflow: auto;
+  padding: 18px 22px 22px;
+}
+
+.mission-create,
+.mission-fleet-list article {
+  padding: 14px;
+  border: 1px solid rgba(96, 205, 255, 0.16);
+  border-radius: 9px;
+  background: rgba(6, 18, 30, 0.78);
+}
+
+.mission-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.mission-fields label {
+  display: grid;
+  gap: 4px;
+  color: #9db0bd;
+  font-size: 0.75rem;
+}
+
+.mission-screen-dialog input,
+.mission-screen-dialog select,
+.mission-screen-dialog button {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid rgba(96, 205, 255, 0.28);
+  border-radius: 6px;
+  color: #eaf8ff;
+  background: rgba(8, 29, 46, 0.9);
+}
+
+.mission-screen-dialog button:not(:disabled) {
+  cursor: pointer;
+}
+
+.mission-fleet-list {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.mission-fleet-list article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.mission-fleet-list p {
+  margin: 5px 0 0;
+  color: #9db0bd;
+  font-size: 0.8rem;
+}
+
+.mission-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+@media (max-width: 800px) {
+  .mission-screen-content,
+  .mission-fleet-list article {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-actions {
+    justify-content: flex-start;
+  }
+}
