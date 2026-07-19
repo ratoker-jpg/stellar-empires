@@ -1,0 +1,69 @@
+.market-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.market-panel h2 {
+  margin: 0;
+}
+
+.market-reserves,
+.market-history {
+  display: grid;
+  gap: 4px;
+  color: #819aaa;
+  font-size: 0.65rem;
+}
+
+.market-reserves {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.market-reserves span {
+  padding: 5px;
+  border: 1px solid rgb(71 199 241 / 12%);
+  border-radius: 5px;
+  text-align: center;
+}
+
+.market-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.market-form select,
+.market-form input,
+.market-form button {
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--faction-accent, var(--cyan-400)) 24%, transparent);
+  border-radius: 6px;
+  background: rgb(3 12 20 / 88%);
+  color: var(--ice-100);
+}
+
+.market-quote,
+.market-form button {
+  grid-column: 1 / -1;
+}
+
+.market-quote {
+  min-height: 34px;
+  padding: 7px;
+  border-radius: 6px;
+  background: rgb(2 8 14 / 64%);
+  color: var(--ice-300);
+  font-size: 0.65rem;
+  line-height: 1.4;
+}
+
+.market-form button {
+  cursor: pointer;
+}
+
+.market-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
