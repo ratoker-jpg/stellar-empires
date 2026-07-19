@@ -61,8 +61,14 @@ describe('transport and deploy missions', () => {
     const initial = createFleet(prepareState('transport'));
     const [origin, target] = playerPlanets(initial);
     const fleet = initial.fleets[0]!;
-    const targetMetal = target!.economy.resources.metal.amount;
     const estimate = estimateFlight(initial.galaxy, initial.planets, fleet, target!.id);
+    const baseline = executeGameCommand(initial, {
+      type: 'ADVANCE_TIME',
+      seconds: estimate.durationSeconds,
+    });
+    expect(baseline.ok).toBe(true);
+    if (!baseline.ok) return;
+    const baselineTarget = baseline.value.planets.find((planet) => planet.id === target!.id)!;
 
     const sent = executeGameCommand(initial, {
       type: 'SEND_FLEET',
@@ -83,7 +89,12 @@ describe('transport and deploy missions', () => {
     expect(arrived.value.fleets[0]?.status).toBe('returning');
     expect(
       arrived.value.planets.find((planet) => planet.id === target!.id)?.economy.resources.metal.amount,
-    ).toBe(targetMetal + 200);
+    ).toBe(
+      Math.min(
+        baselineTarget.economy.resources.metal.capacity,
+        baselineTarget.economy.resources.metal.amount + 200,
+      ),
+    );
 
     const returnEvent = arrived.value.pendingEvents.find(
       (event) => event.payload.type === 'FLEET_RETURN',
