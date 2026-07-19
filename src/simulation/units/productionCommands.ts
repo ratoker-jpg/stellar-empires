@@ -1,4 +1,5 @@
 import { enqueueEvent } from '../eventQueue';
+import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
 import {
   canAfford,
   refundResources,
@@ -69,7 +70,7 @@ export function queueUnitBatch(
   if (definition === undefined) {
     return { ok: false, code: 'UNIT_NOT_FOUND', message: 'Unit is not registered.' };
   }
-  if (definition.factionId !== planet.factionId) {
+  if (!canUseMechanicalDefinition(definition.factionId, planet.factionId)) {
     return { ok: false, code: 'WRONG_FACTION_UNIT', message: 'Unit belongs to another faction.' };
   }
 
