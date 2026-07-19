@@ -6,7 +6,11 @@ import type {
   PlanetModel,
   StarSystemModel,
 } from '../galaxy/types';
-import type { PlanetBuildingState, PlanetState } from '../planet/types';
+import type {
+  FactionId,
+  PlanetBuildingState,
+  PlanetState,
+} from '../planet/types';
 import { createPlanetZones } from '../planet/zones';
 import { getEmpireResearch, getResearchLevel } from '../research/researchState';
 import type { GameState } from '../types';
@@ -57,6 +61,7 @@ export function getEmpireColonyCount(state: GameState, empireId: string): number
 export function createColonyPlanet(
   location: GalaxyPlanetLocation,
   empireId: string,
+  factionId: FactionId = 'aegis',
 ): PlanetState {
   const buildings = STARTER_BUILDINGS;
   return {
@@ -66,7 +71,7 @@ export function createColonyPlanet(
     position: location.planet.position,
     name: `${location.system.name} ${location.planet.position}`,
     ownerEmpireId: empireId,
-    factionId: 'aegis',
+    factionId,
     zones: createPlanetZones(buildings),
     buildings,
     buildQueue: [],
@@ -147,7 +152,10 @@ export function resolveColonization(
     return undefined;
   }
 
-  const baseColony = createColonyPlanet(location, fleet.empireId);
+  const factionId =
+    state.planets.find((planet) => planet.ownerEmpireId === fleet.empireId)?.factionId ??
+    'aegis';
+  const baseColony = createColonyPlanet(location, fleet.empireId, factionId);
   const unloaded = unloadCargo(baseColony, fleet.cargo);
   const ships = { ...fleet.ships };
   if (colonyShipCount === 1) delete ships['ship.aegis.colony'];
