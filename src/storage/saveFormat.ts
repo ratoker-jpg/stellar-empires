@@ -133,7 +133,8 @@ function isFleet(value: unknown): boolean {
       (isRecord(value.mission) &&
         (value.mission.kind === 'deploy' ||
           value.mission.kind === 'transport' ||
-          value.mission.kind === 'scout') &&
+          value.mission.kind === 'scout' ||
+          value.mission.kind === 'attack') &&
         typeof value.mission.targetPlanetId === 'string'));
   return (
     validMission &&
