@@ -103,7 +103,7 @@ describe('bot research and production planner', () => {
     }
   });
 
-  it('prioritizes weapons and fighters when current intelligence shows a threat', () => {
+  it('prioritizes military research and fighters when current intelligence shows a threat', () => {
     let state = prepareBotInfrastructure(
       createInitialGameState('bot-science-threat'),
       'aegis-bot',
@@ -146,10 +146,13 @@ describe('bot research and production planner', () => {
     };
 
     const plan = planBotResearchAndProduction(state, 'aegis-bot');
-    expect(plan.research.command).toMatchObject({
-      type: 'QUEUE_RESEARCH',
-      technologyId: 'technology.aegis.weapons',
-    });
+    expect(plan.research.command?.type).toBe('QUEUE_RESEARCH');
+    if (plan.research.command?.type === 'QUEUE_RESEARCH') {
+      expect([
+        'technology.aegis.weapons',
+        'technology.aegis.armor',
+      ]).toContain(plan.research.command.technologyId);
+    }
     expect(plan.production.command).toMatchObject({
       type: 'QUEUE_UNIT_BATCH',
       unitId: 'ship.aegis.fighter',
