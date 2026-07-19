@@ -108,7 +108,7 @@ describe('bot research and production planner', () => {
       createInitialGameState('bot-science-threat'),
       'aegis-bot',
       {
-        'technology.aegis.construction': 1,
+        'technology.aegis.construction': 2,
         'technology.aegis.sensors': 1,
         'technology.aegis.weapons': 1,
       },
