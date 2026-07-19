@@ -146,13 +146,14 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
         if (targets.length > 0) {
           const target = document.createElement('select');
           for (const planet of targets) {
+            const debris = state.debrisFields.find((field) => field.planetId === planet.id);
             const option = document.createElement('option');
             option.value = planet.id;
-            option.textContent = `${planet.name} · ${planet.ownerEmpireId}`;
+            option.textContent = `${planet.name} · ${planet.ownerEmpireId}${debris === undefined ? '' : ` · обломки ${debris.metal + debris.crystal}`}`;
             target.append(option);
           }
           const mission = document.createElement('select');
-          mission.innerHTML = '<option value="transport">Транспорт</option><option value="deploy">Размещение</option><option value="scout">Разведка</option><option value="attack">Атака</option>';
+          mission.innerHTML = '<option value="transport">Транспорт</option><option value="deploy">Размещение</option><option value="scout">Разведка</option><option value="attack">Атака</option><option value="recycle">Переработка</option>';
           const send = document.createElement('button');
           send.type = 'button';
           send.textContent = 'Отправить';
@@ -164,7 +165,9 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
                   ? 'scout'
                   : mission.value === 'attack'
                     ? 'attack'
-                    : 'transport';
+                    : mission.value === 'recycle'
+                      ? 'recycle'
+                      : 'transport';
             if (
               options.execute(
                 {
@@ -254,11 +257,13 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
     for (const entry of reports) {
       if (entry.event.payload.type !== 'BATTLE_REPORT') continue;
       const report = entry.event.payload.report;
+      const debris = report.debrisCreated ?? { metal: 0, crystal: 0 };
+      const loot = report.plunderedCargo ?? { metal: 0, crystal: 0, gas: 0 };
       const card = document.createElement('article');
       const summary = document.createElement('strong');
       summary.textContent = `${report.targetPlanetId} · ${report.winner}`;
       const details = document.createElement('p');
-      details.textContent = `${report.rounds.length} раундов · атакующие ${totalUnits(report.attackerInitial)} → ${totalUnits(report.attackerRemaining)} · защитники ${totalUnits(report.defenderInitial)} → ${totalUnits(report.defenderRemaining)}`;
+      details.textContent = `${report.rounds.length} раундов · атакующие ${totalUnits(report.attackerInitial)} → ${totalUnits(report.attackerRemaining)} · защитники ${totalUnits(report.defenderInitial)} → ${totalUnits(report.defenderRemaining)} · обломки M${debris.metal}/C${debris.crystal} · добыча M${loot.metal}/C${loot.crystal}/G${loot.gas}`;
       card.append(summary, details);
       battleSection.append(card);
     }
@@ -268,6 +273,28 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
       battleSection.append(empty);
     }
     content.append(battleSection);
+
+    const debrisSection = document.createElement('section');
+    debrisSection.className = 'mission-debris';
+    const debrisTitle = document.createElement('h3');
+    debrisTitle.textContent = 'Поля обломков';
+    debrisSection.append(debrisTitle);
+    for (const field of state.debrisFields) {
+      const planet = state.planets.find((candidate) => candidate.id === field.planetId);
+      const card = document.createElement('article');
+      const summary = document.createElement('strong');
+      summary.textContent = planet?.name ?? field.planetId;
+      const details = document.createElement('p');
+      details.textContent = `Металл ${field.metal} · кристалл ${field.crystal}`;
+      card.append(summary, details);
+      debrisSection.append(card);
+    }
+    if (debrisSection.childElementCount === 1) {
+      const empty = document.createElement('p');
+      empty.textContent = 'Доступных полей обломков нет.';
+      debrisSection.append(empty);
+    }
+    content.append(debrisSection);
   };
 
   const open = (): void => {

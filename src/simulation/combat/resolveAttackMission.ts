@@ -1,3 +1,4 @@
+import type { ResourceCost } from '../economy/types';
 import type { FleetState } from '../fleets/types';
 import type { PlanetState } from '../planet/types';
 import { AEGIS_RESEARCH_CATALOG } from '../research/catalog';
@@ -5,6 +6,12 @@ import { calculateResearchEffects } from '../research/progression';
 import { getEmpireResearch } from '../research/researchState';
 import type { GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
+import {
+  addDebrisField,
+  calculateDebrisFromLosses,
+  plunderPlanet,
+  type DebrisAmount,
+} from './debris';
 import { resolveBattle } from './resolveBattle';
 import type { BattleReport } from './types';
 
@@ -79,6 +86,18 @@ function redistributeDefenderShips(
   return result;
 }
 
+function addDestroyedCargoDebris(
+  debris: DebrisAmount,
+  fleet: FleetState,
+  attackerSurvived: boolean,
+): DebrisAmount {
+  if (attackerSurvived) return debris;
+  return {
+    metal: debris.metal + Math.floor(fleet.cargo.metal * 0.5),
+    crystal: debris.crystal + Math.floor(fleet.cargo.crystal * 0.5),
+  };
+}
+
 export interface AttackMissionResolution {
   readonly state: GameState;
   readonly report: BattleReport;
@@ -119,7 +138,7 @@ export function resolveAttackMission(
     },
   );
   const defenderRemaining = splitDefenderRemaining(resolution.defenderRemaining);
-  const updatedTarget: PlanetState = {
+  let updatedTarget: PlanetState = {
     ...target,
     inventory: {
       ...target.inventory,
@@ -133,14 +152,41 @@ export function resolveAttackMission(
     defenderRemaining.ships,
   );
   const attackerSurvived = Object.keys(resolution.attackerRemaining).length > 0;
-  const updatedAttacker = attackerSurvived
+  let updatedAttacker = attackerSurvived
     ? { ...attackerFleet, ships: resolution.attackerRemaining }
     : undefined;
+  let plunderedCargo: ResourceCost = { metal: 0, crystal: 0, gas: 0 };
+
+  if (resolution.winner === 'attacker' && updatedAttacker !== undefined) {
+    const plunder = plunderPlanet(updatedTarget, updatedAttacker);
+    updatedTarget = plunder.planet;
+    updatedAttacker = plunder.fleet;
+    plunderedCargo = plunder.plundered;
+  }
+
   fleets = updatedAttacker === undefined
     ? fleets.filter((fleet) => fleet.id !== attackerFleet.id)
     : fleets.map((fleet) =>
         fleet.id === attackerFleet.id ? updatedAttacker : fleet,
       );
+
+  const baseDebris = calculateDebrisFromLosses(
+    attackerFleet.ships,
+    resolution.attackerRemaining,
+    defenderUnits,
+    resolution.defenderRemaining,
+  );
+  const debrisCreated = addDestroyedCargoDebris(
+    baseDebris,
+    attackerFleet,
+    attackerSurvived,
+  );
+  const debrisFields = addDebrisField(
+    state.debrisFields,
+    target.id,
+    debrisCreated,
+    state.clock.elapsedSeconds,
+  );
 
   const report: BattleReport = {
     id: `battle-${eventSequence}-${attackerFleet.id}`,
@@ -155,6 +201,8 @@ export function resolveAttackMission(
     defenderInitial: defenderUnits,
     attackerRemaining: resolution.attackerRemaining,
     defenderRemaining: resolution.defenderRemaining,
+    debrisCreated,
+    plunderedCargo,
   };
 
   return {
@@ -164,6 +212,7 @@ export function resolveAttackMission(
         planet.id === target.id ? updatedTarget : planet,
       ),
       fleets,
+      debrisFields,
     },
     report,
     attackerFleet: updatedAttacker,

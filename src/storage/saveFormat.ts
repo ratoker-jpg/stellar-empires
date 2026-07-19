@@ -32,7 +32,7 @@ function isResourceCost(value: unknown): boolean {
 function isStateShell(value: unknown): value is Record<string, unknown> {
   return (
     isRecord(value) &&
-    [1, 2, 3, 4, 5, 6, 7, 8].includes(value.schemaVersion as number) &&
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].includes(value.schemaVersion as number) &&
     typeof value.seed === 'number' &&
     Number.isInteger(value.seed) &&
     isRecord(value.clock) &&
@@ -134,7 +134,8 @@ function isFleet(value: unknown): boolean {
         (value.mission.kind === 'deploy' ||
           value.mission.kind === 'transport' ||
           value.mission.kind === 'scout' ||
-          value.mission.kind === 'attack') &&
+          value.mission.kind === 'attack' ||
+          value.mission.kind === 'recycle') &&
         typeof value.mission.targetPlanetId === 'string'));
   return (
     validMission &&
@@ -197,10 +198,22 @@ function isIntelligenceState(value: unknown): boolean {
   );
 }
 
+function isDebrisField(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.planetId === 'string' &&
+    isNonNegativeInteger(value.metal) &&
+    isNonNegativeInteger(value.crystal) &&
+    isNonNegativeInteger(value.createdAt) &&
+    (value.metal > 0 || value.crystal > 0)
+  );
+}
+
 function isGameState(value: unknown): value is GameState {
   return (
     isStateShell(value) &&
-    value.schemaVersion === 8 &&
+    value.schemaVersion === 9 &&
     Array.isArray(value.empires) &&
     Array.isArray(value.planets) &&
     value.planets.every(isPlanet) &&
@@ -210,7 +223,9 @@ function isGameState(value: unknown): value is GameState {
     value.fleets.every(isFleet) &&
     Array.isArray(value.intelligence) &&
     value.intelligence.every(isIntelligenceState) &&
-    value.intelligence.length === value.empires.length
+    value.intelligence.length === value.empires.length &&
+    Array.isArray(value.debrisFields) &&
+    value.debrisFields.every(isDebrisField)
   );
 }
 

@@ -1,3 +1,6 @@
+import type { ResourceCost } from '../economy/types';
+import type { DebrisAmount } from './debris';
+
 export type BattleWinner = 'attacker' | 'defender' | 'draw';
 
 export interface BattleSideInput {
@@ -28,6 +31,8 @@ export interface BattleReport {
   readonly defenderInitial: Readonly<Record<string, number>>;
   readonly attackerRemaining: Readonly<Record<string, number>>;
   readonly defenderRemaining: Readonly<Record<string, number>>;
+  readonly debrisCreated?: DebrisAmount;
+  readonly plunderedCargo?: ResourceCost;
 }
 
 export interface BattleResolution {
