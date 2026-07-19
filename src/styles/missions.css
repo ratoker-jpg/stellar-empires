@@ -70,6 +70,18 @@
   cursor: pointer;
 }
 
+.mission-composer-status,
+.mission-route-preview {
+  flex-basis: 100%;
+  margin: 5px 0;
+  color: #80cfe9;
+  font-size: 0.78rem;
+}
+
+.mission-route-preview.is-blocked {
+  color: #ff9e87;
+}
+
 .mission-fleet-list {
   display: grid;
   align-content: start;
@@ -78,7 +90,7 @@
 
 .mission-fleet-list article {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, auto);
   gap: 12px;
   align-items: center;
 }
@@ -97,6 +109,11 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 7px;
+}
+
+.mission-actions select {
+  min-width: 130px;
+  max-width: 230px;
 }
 
 .mission-intelligence,
