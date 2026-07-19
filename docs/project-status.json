@@ -6,20 +6,36 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 39,
-  "lastMergeSha": "0eb2d87864c4d01e11d8be0dea85811d1936fa3b",
-  "nextPr": 40,
+  "lastMergedPr": 45,
+  "lastMergeSha": "91ae8ddfec4c5b788f6d4a81b989e6af1157dc2e",
+  "nextPr": 46,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
-  "governanceUpdateNote": "On 2026-07-20 the repository status was reconciled with actual GitHub history through merged PR #39. PR #35 was closed without merge and PR #29 remains a stale superseded PR.",
-  "currentMilestone": "Multi-colony vertical slice and faction runtime art",
+  "governanceUpdateNote": "On 2026-07-20 the six-PR faction integration batch #40-#45 was completed. The stale superseded PR #29 was closed without merge. Actual GitHub history remains authoritative where legacy roadmap numbering differs.",
+  "currentMilestone": "Playable three-faction visual baseline and new-game faction selection",
   "currentBatch": {
-    "standard": [31, 32, 33, 34, 36, 37],
-    "completed": [31, 32, 33, 34, 36, 37, 38, 39],
-    "optionalExtensions": [38, 39],
-    "extensionsStarted": true,
-    "extensionReason": "The fleet, colonization, multi-colony and logistics systems were stable, and the generated faction art could be integrated without changing simulation contracts."
+    "standard": [40, 41, 42, 43, 44, 45],
+    "completed": [40, 41, 42, 43, 44, 45],
+    "optionalExtensions": [],
+    "extensionsStarted": false,
+    "extensionReason": "The standard six-PR batch fully delivered the coherent faction-selection step; no unrelated extension was added merely to reach eight PRs."
+  },
+  "nextBatch": {
+    "standard": [46, 47, 48, 49, 50, 51],
+    "plannedCapabilities": [
+      "planet specializations and development templates",
+      "persistent interplanetary logistics routes",
+      "single-player trade center and dynamic market",
+      "honest bot perception and memory",
+      "bot economic and building planner",
+      "bot research and production planner"
+    ],
+    "optionalExtensions": [52, 53],
+    "optionalCapabilities": [
+      "bot fleet and mission planner",
+      "bot threat, target and recovery planner"
+    ]
   },
   "deliveredCapabilities": [
     "Phaser 4 and TypeScript application scaffold",
@@ -34,19 +50,22 @@
     "deterministic combat, battle reports, debris, plunder and recycling",
     "colonization technology and playable multi-colony empire management",
     "origin-aware fleet logistics planner with cargo, route and fuel validation",
-    "generated Aegis runtime buildings, ships and defense atlases",
-    "generated hero, emblem and background art for Aegis, Synod and Veyra",
-    "runtime-compatible Synod and Veyra atlases staged for faction switching",
-    "procedural SVG fallback retained for technologies and effects",
+    "generated buildings, ships and defense runtime atlases for Aegis, Synod and Veyra",
+    "generated hero, emblem and background art for all three factions",
+    "data-driven faction runtime asset registry with explicit technology and effect fallbacks",
+    "runtime atlas selection from the player planet factionId",
+    "generated faction showcase and faction-aware command-shell theming",
+    "new-game selection of Aegis, Synod or Veyra",
+    "selected faction persisted through saves and inherited by new colonies",
     "canonical PR roadmap through Release 1.0",
     "persistent six-PR delivery and AI handoff protocol"
   ],
   "knownLimitations": [
-    "new-game faction selection and faction-specific simulation catalogs are not implemented",
-    "the current playable production catalog still uses Aegis definitions",
-    "Synod and Veyra buildings, ships and defenses are staged but not selected by player faction yet",
+    "all three playable factions currently share the Aegis mechanical building, research and unit definitions",
+    "full faction-specific mechanics and balance remain scheduled for later faction-content phases",
     "technology, effect and incomplete UI-state artwork still uses procedural CSS or SVG fallback",
-    "autonomous bots, dynamic market and later roadmap systems are not implemented",
+    "regular logistics routes, planet specializations and the dynamic market are not implemented",
+    "autonomous bot planners are not implemented",
     "public Pages deployment should be checked after material UI batches"
   ],
   "requiredStartupReading": [
