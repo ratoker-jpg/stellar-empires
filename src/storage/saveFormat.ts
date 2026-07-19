@@ -1,4 +1,8 @@
 import { createStateChecksum } from '../simulation/checksum';
+import {
+  isPlanetDevelopmentTemplateId,
+  isPlanetSpecializationId,
+} from '../simulation/planet/specialization';
 import { PLANET_ZONE_IDS } from '../simulation/planet/zones';
 import type { GameState } from '../simulation/types';
 import { migrateGameState } from './migrateGameState';
@@ -32,7 +36,7 @@ function isResourceCost(value: unknown): boolean {
 function isStateShell(value: unknown): value is Record<string, unknown> {
   return (
     isRecord(value) &&
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].includes(value.schemaVersion as number) &&
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(value.schemaVersion as number) &&
     typeof value.seed === 'number' &&
     Number.isInteger(value.seed) &&
     isRecord(value.clock) &&
@@ -66,6 +70,8 @@ function isProductionQueueItem(value: unknown): boolean {
 function isPlanet(value: unknown): boolean {
   if (
     !isRecord(value) ||
+    !isPlanetSpecializationId(value.specializationId) ||
+    !isPlanetDevelopmentTemplateId(value.developmentTemplateId) ||
     !isRecord(value.zones) ||
     !Array.isArray(value.buildings) ||
     !Array.isArray(value.buildQueue) ||
@@ -214,7 +220,7 @@ function isDebrisField(value: unknown): boolean {
 function isGameState(value: unknown): value is GameState {
   return (
     isStateShell(value) &&
-    value.schemaVersion === 9 &&
+    value.schemaVersion === 10 &&
     Array.isArray(value.empires) &&
     Array.isArray(value.planets) &&
     value.planets.every(isPlanet) &&
