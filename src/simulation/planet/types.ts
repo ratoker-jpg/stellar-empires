@@ -1,11 +1,14 @@
 import type { PlanetEconomyState, ResourceCost } from '../economy/types';
 import type {
+  PlanetDevelopmentTemplateId,
+  PlanetSpecializationId,
+} from './specialization';
+import type {
   PlanetProductionQueues,
   PlanetUnitInventory,
 } from '../units/types';
 
 export type PlanetZoneId = 'resource' | 'industry' | 'military';
-
 export type FactionId = 'aegis' | 'synod' | 'veyra';
 
 export interface PlanetZoneState {
@@ -36,6 +39,8 @@ export interface PlanetState {
   readonly name: string;
   readonly ownerEmpireId: string;
   readonly factionId: FactionId;
+  readonly specializationId: PlanetSpecializationId;
+  readonly developmentTemplateId: PlanetDevelopmentTemplateId;
   readonly zones: Readonly<Record<PlanetZoneId, PlanetZoneState>>;
   readonly buildings: readonly PlanetBuildingState[];
   readonly buildQueue: readonly PlanetBuildQueueItem[];
