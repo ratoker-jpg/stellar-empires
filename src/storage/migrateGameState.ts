@@ -4,6 +4,8 @@ import {
 } from '../simulation/economy/planetEconomy';
 import type { PlanetEconomyState } from '../simulation/economy/types';
 import type { FleetState } from '../simulation/fleets/types';
+import { createInitialIntelligenceStates } from '../simulation/intelligence/intelligenceState';
+import type { EmpireIntelligenceState } from '../simulation/intelligence/types';
 import type { PlanetBuildingState } from '../simulation/planet/types';
 import { createPlanetZones } from '../simulation/planet/zones';
 import { createInitialResearchStates } from '../simulation/research/researchState';
@@ -132,7 +134,9 @@ function readFleets(value: unknown): readonly FleetState[] | undefined {
       ...(item as unknown as FleetState),
       mission:
         isRecord(item.mission) &&
-        (item.mission.kind === 'deploy' || item.mission.kind === 'transport') &&
+        (item.mission.kind === 'deploy' ||
+          item.mission.kind === 'transport' ||
+          item.mission.kind === 'scout') &&
         typeof item.mission.targetPlanetId === 'string'
           ? {
               kind: item.mission.kind,
@@ -144,8 +148,37 @@ function readFleets(value: unknown): readonly FleetState[] | undefined {
   return fleets;
 }
 
+function readIntelligenceStates(
+  value: unknown,
+  empireIds: readonly string[],
+): readonly EmpireIntelligenceState[] | undefined {
+  if (value === undefined) return createInitialIntelligenceStates(empireIds);
+  if (!Array.isArray(value)) return undefined;
+  const states: EmpireIntelligenceState[] = [];
+  for (const item of value) {
+    if (
+      !isRecord(item) ||
+      typeof item.empireId !== 'string' ||
+      !Array.isArray(item.observations) ||
+      !Array.isArray(item.alerts)
+    ) return undefined;
+    states.push({
+      empireId: item.empireId,
+      observations: item.observations as EmpireIntelligenceState['observations'],
+      alerts: item.alerts as EmpireIntelligenceState['alerts'],
+    });
+  }
+  return empireIds.map(
+    (empireId) => states.find((state) => state.empireId === empireId) ?? {
+      empireId,
+      observations: [],
+      alerts: [],
+    },
+  );
+}
+
 export function migrateGameState(value: unknown): GameState | undefined {
-  if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7].includes(value.schemaVersion as number)) {
+  if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8].includes(value.schemaVersion as number)) {
     return undefined;
   }
   if (!Array.isArray(value.planets) || !Array.isArray(value.empires)) return undefined;
@@ -163,13 +196,17 @@ export function migrateGameState(value: unknown): GameState | undefined {
 
   const research = readResearchStates(value.research, empireIds);
   const fleets = readFleets(value.fleets);
-  if (research === undefined || fleets === undefined) return undefined;
+  const intelligence = readIntelligenceStates(value.intelligence, empireIds);
+  if (research === undefined || fleets === undefined || intelligence === undefined) {
+    return undefined;
+  }
 
   return {
     ...value,
-    schemaVersion: 7,
+    schemaVersion: 8,
     planets,
     research,
     fleets,
+    intelligence,
   } as unknown as GameState;
 }
