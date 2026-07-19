@@ -47,10 +47,8 @@ export function getEmpireColonyCount(state: GameState, empireId: string): number
 export function createColonyPlanet(
   location: GalaxyPlanetLocation,
   empireId: string,
-  fleet: FleetState,
 ): PlanetState {
   const buildings = STARTER_BUILDINGS;
-  const origin = fleet.originPlanetId;
   return {
     id: `colony-${location.planet.id}`,
     galaxyPlanetId: location.planet.id,
@@ -132,7 +130,7 @@ export function resolveColonization(
   const colonyShipCount = fleet.ships['ship.aegis.colony'] ?? 0;
   if (colonyShipCount <= 0) return undefined;
 
-  const baseColony = createColonyPlanet(location, fleet.empireId, fleet);
+  const baseColony = createColonyPlanet(location, fleet.empireId);
   const unloaded = unloadCargo(baseColony, fleet.cargo);
   const ships = { ...fleet.ships };
   if (colonyShipCount === 1) delete ships['ship.aegis.colony'];
