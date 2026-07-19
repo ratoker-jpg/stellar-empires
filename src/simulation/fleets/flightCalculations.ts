@@ -110,10 +110,11 @@ export function estimateFlight(
   targetPlanetId: string,
   speedBonusPercent = 0,
 ): FlightEstimate {
-  if (fleet.location.type !== 'planet') {
+  const location = fleet.location;
+  if (location.type !== 'planet') {
     throw new Error('Only a stationed fleet can estimate a new flight.');
   }
-  const origin = planets.find((planet) => planet.id === fleet.location.planetId);
+  const origin = planets.find((planet) => planet.id === location.planetId);
   const target = planets.find((planet) => planet.id === targetPlanetId);
   if (origin === undefined || target === undefined) {
     throw new Error('Flight origin or target planet not found.');
@@ -132,10 +133,11 @@ export function estimateFlightToGalaxyPlanet(
   galaxyPlanetId: string,
   speedBonusPercent = 0,
 ): FlightEstimate {
-  if (fleet.location.type !== 'planet') {
+  const location = fleet.location;
+  if (location.type !== 'planet') {
     throw new Error('Only a stationed fleet can estimate a new flight.');
   }
-  const origin = planets.find((planet) => planet.id === fleet.location.planetId);
+  const origin = planets.find((planet) => planet.id === location.planetId);
   const target = findGalaxyPlanet(galaxy, galaxyPlanetId);
   if (origin === undefined || target === undefined) {
     throw new Error('Flight origin or galaxy target not found.');
