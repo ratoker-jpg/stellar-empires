@@ -18,25 +18,28 @@
 
 .faction-card {
   --faction-accent: var(--cyan-400);
+  --faction-card-background: none;
   position: relative;
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-height: 64px;
+  min-height: 72px;
   padding: 8px 10px;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--faction-accent) 24%, transparent);
+  border: 1px solid color-mix(in srgb, var(--faction-accent) 30%, transparent);
   border-radius: 7px;
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--faction-accent) 10%, transparent), transparent 48%),
-    rgb(3 11 18 / 72%);
+    linear-gradient(90deg, rgb(2 8 14 / 96%) 0%, rgb(2 8 14 / 78%) 58%, rgb(2 8 14 / 34%) 100%),
+    linear-gradient(90deg, color-mix(in srgb, var(--faction-accent) 12%, transparent), transparent 55%),
+    var(--faction-card-background) center right / cover no-repeat,
+    rgb(3 11 18 / 92%);
   text-align: left;
   cursor: pointer;
   transition:
     border-color 140ms ease,
-    background 140ms ease,
+    filter 140ms ease,
     transform 140ms ease;
 }
 
@@ -51,21 +54,24 @@
 
 .faction-card:hover,
 .faction-card:focus-visible {
-  border-color: color-mix(in srgb, var(--faction-accent) 58%, transparent);
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--faction-accent) 18%, transparent), transparent 60%),
-    rgb(7 18 28 / 92%);
+  border-color: color-mix(in srgb, var(--faction-accent) 64%, transparent);
+  filter: brightness(1.12);
   transform: translateX(2px);
   outline: none;
 }
 
 .faction-card img {
+  position: relative;
+  z-index: 1;
   width: 46px;
   height: 46px;
   object-fit: contain;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--faction-accent) 30%, transparent));
 }
 
 .faction-card__copy {
+  position: relative;
+  z-index: 1;
   min-width: 0;
 }
 
@@ -81,35 +87,39 @@
   font-size: 0.74rem;
   font-weight: 680;
   text-overflow: ellipsis;
+  text-shadow: 0 2px 8px #000;
   white-space: nowrap;
 }
 
 .faction-card__copy small {
   margin-top: 3px;
   overflow: hidden;
-  color: #718b9c;
+  color: #91a9b8;
   font-size: 0.58rem;
   line-height: 1.35;
   text-overflow: ellipsis;
+  text-shadow: 0 2px 7px #000;
   white-space: nowrap;
 }
 
 .faction-card__action {
+  position: relative;
+  z-index: 1;
   color: var(--faction-accent);
   font-size: 1rem;
-  opacity: 0.72;
+  opacity: 0.84;
 }
 
 .faction-card--aegis {
-  --faction-accent: #e7a847;
+  --faction-accent: #4ea7ff;
 }
 
 .faction-card--synod {
-  --faction-accent: #53dcff;
+  --faction-accent: #55e985;
 }
 
 .faction-card--veyra {
-  --faction-accent: #a8e85e;
+  --faction-accent: #ff5a64;
 }
 
 .asset-dialog {
@@ -117,7 +127,7 @@
   max-height: calc(100vh - 42px);
   padding: 0;
   overflow: hidden;
-  border: 1px solid rgb(71 199 241 / 30%);
+  border: 1px solid color-mix(in srgb, var(--faction-accent, var(--cyan-400)) 42%, transparent);
   border-radius: 12px;
   background: #030810;
   color: var(--ice-100);
@@ -136,7 +146,7 @@
   gap: 18px;
   min-height: 72px;
   padding: 12px 16px 12px 20px;
-  border-bottom: 1px solid rgb(71 199 241 / 16%);
+  border-bottom: 1px solid color-mix(in srgb, var(--faction-accent, var(--cyan-400)) 24%, transparent);
   background: linear-gradient(90deg, rgb(12 31 48 / 97%), rgb(5 12 22 / 97%));
 }
 
@@ -163,7 +173,7 @@
 
 .dialog-close:hover,
 .dialog-close:focus-visible {
-  border-color: rgb(71 199 241 / 50%);
+  border-color: color-mix(in srgb, var(--faction-accent, var(--cyan-400)) 54%, transparent);
   color: #eaf7ff;
   outline: none;
 }
