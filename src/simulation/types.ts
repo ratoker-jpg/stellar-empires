@@ -4,7 +4,7 @@ import type { ResourceCost } from './economy/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
 import type { EmpireIntelligenceState } from './intelligence/types';
-import type { PlanetState } from './planet/types';
+import type { ColonySpecializationId, PlanetState } from './planet/types';
 import type { EmpireResearchState } from './research/types';
 import type { UnitKind } from './units/types';
 
@@ -38,20 +38,9 @@ export type GameEventPayload =
       readonly kind: UnitKind;
       readonly quantity: number;
     }
-  | {
-      readonly type: 'FLEET_ARRIVE';
-      readonly fleetId: string;
-      readonly targetPlanetId: string;
-    }
-  | {
-      readonly type: 'FLEET_RETURN';
-      readonly fleetId: string;
-      readonly originPlanetId: string;
-    }
-  | {
-      readonly type: 'BATTLE_REPORT';
-      readonly report: BattleReport;
-    };
+  | { readonly type: 'FLEET_ARRIVE'; readonly fleetId: string; readonly targetPlanetId: string }
+  | { readonly type: 'FLEET_RETURN'; readonly fleetId: string; readonly originPlanetId: string }
+  | { readonly type: 'BATTLE_REPORT'; readonly report: BattleReport };
 
 export interface ScheduledGameEvent {
   readonly id: string;
@@ -62,71 +51,23 @@ export interface ScheduledGameEvent {
 
 export type GameCommand =
   | { readonly type: 'ADVANCE_TIME'; readonly seconds: number }
+  | { readonly type: 'SCHEDULE_EVENT'; readonly executeAt: number; readonly payload: GameEventPayload }
   | {
-      readonly type: 'SCHEDULE_EVENT';
-      readonly executeAt: number;
-      readonly payload: GameEventPayload;
-    }
-  | {
-      readonly type: 'QUEUE_BUILDING';
+      readonly type: 'SET_PLANET_SPECIALIZATION';
       readonly empireId: string;
       readonly planetId: string;
-      readonly buildingId: string;
+      readonly specialization: ColonySpecializationId;
     }
-  | {
-      readonly type: 'CANCEL_BUILDING';
-      readonly empireId: string;
-      readonly planetId: string;
-      readonly queueItemId: string;
-    }
-  | {
-      readonly type: 'QUEUE_RESEARCH';
-      readonly empireId: string;
-      readonly planetId: string;
-      readonly technologyId: string;
-    }
-  | {
-      readonly type: 'CANCEL_RESEARCH';
-      readonly empireId: string;
-      readonly queueItemId: string;
-    }
-  | {
-      readonly type: 'QUEUE_UNIT_BATCH';
-      readonly empireId: string;
-      readonly planetId: string;
-      readonly unitId: string;
-      readonly quantity: number;
-    }
-  | {
-      readonly type: 'CANCEL_UNIT_BATCH';
-      readonly empireId: string;
-      readonly planetId: string;
-      readonly queueItemId: string;
-    }
-  | {
-      readonly type: 'CREATE_FLEET';
-      readonly empireId: string;
-      readonly planetId: string;
-      readonly ships: Readonly<Record<string, number>>;
-      readonly cargo: ResourceCost;
-    }
-  | {
-      readonly type: 'DISBAND_FLEET';
-      readonly empireId: string;
-      readonly fleetId: string;
-    }
-  | {
-      readonly type: 'SEND_FLEET';
-      readonly empireId: string;
-      readonly fleetId: string;
-      readonly targetPlanetId: string;
-      readonly mission: FleetMissionKind;
-    }
-  | {
-      readonly type: 'RECALL_FLEET';
-      readonly empireId: string;
-      readonly fleetId: string;
-    };
+  | { readonly type: 'QUEUE_BUILDING'; readonly empireId: string; readonly planetId: string; readonly buildingId: string }
+  | { readonly type: 'CANCEL_BUILDING'; readonly empireId: string; readonly planetId: string; readonly queueItemId: string }
+  | { readonly type: 'QUEUE_RESEARCH'; readonly empireId: string; readonly planetId: string; readonly technologyId: string }
+  | { readonly type: 'CANCEL_RESEARCH'; readonly empireId: string; readonly queueItemId: string }
+  | { readonly type: 'QUEUE_UNIT_BATCH'; readonly empireId: string; readonly planetId: string; readonly unitId: string; readonly quantity: number }
+  | { readonly type: 'CANCEL_UNIT_BATCH'; readonly empireId: string; readonly planetId: string; readonly queueItemId: string }
+  | { readonly type: 'CREATE_FLEET'; readonly empireId: string; readonly planetId: string; readonly ships: Readonly<Record<string, number>>; readonly cargo: ResourceCost }
+  | { readonly type: 'DISBAND_FLEET'; readonly empireId: string; readonly fleetId: string }
+  | { readonly type: 'SEND_FLEET'; readonly empireId: string; readonly fleetId: string; readonly targetPlanetId: string; readonly mission: FleetMissionKind }
+  | { readonly type: 'RECALL_FLEET'; readonly empireId: string; readonly fleetId: string };
 
 export interface CommandLogEntry {
   readonly index: number;
@@ -139,7 +80,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 9;
+  readonly schemaVersion: 10;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
@@ -157,9 +98,4 @@ export interface GameState {
 
 export type CommandResult<T> =
   | { readonly ok: true; readonly value: T }
-  | {
-      readonly ok: false;
-      readonly code: string;
-      readonly message: string;
-      readonly details?: unknown;
-    };
+  | { readonly ok: false; readonly code: string; readonly message: string; readonly details?: unknown };
