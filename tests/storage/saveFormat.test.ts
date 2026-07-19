@@ -8,16 +8,16 @@ import {
 } from '../../src/storage/saveFormat';
 
 describe('save format', () => {
-  it('round-trips a valid schema-v7 save', () => {
+  it('round-trips a valid schema-v8 save', () => {
     const state = createInitialGameState('save-round-trip');
     const save = createSaveEnvelope('slot-1', state, '2026-07-18T12:00:00.000Z');
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
-  it('migrates a schema-v4 save with empty fleets', () => {
+  it('migrates a schema-v7 save with empty intelligence records', () => {
     const current = createInitialGameState('legacy-save');
-    const { fleets: _fleets, ...withoutFleets } = current;
-    const legacyState = { ...withoutFleets, schemaVersion: 4 };
+    const { intelligence: _intelligence, ...withoutIntelligence } = current;
+    const legacyState = { ...withoutIntelligence, schemaVersion: 7 };
     const legacySave = {
       formatVersion: 2,
       slotId: 'legacy-slot',
@@ -28,8 +28,13 @@ describe('save format', () => {
     const parsed = parseSaveJson(JSON.stringify(legacySave));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(7);
-      expect(parsed.value.state.fleets).toEqual([]);
+      expect(parsed.value.state.schemaVersion).toBe(8);
+      expect(parsed.value.state.intelligence).toHaveLength(current.empires.length);
+      expect(
+        parsed.value.state.intelligence.every(
+          (entry) => entry.observations.length === 0 && entry.alerts.length === 0,
+        ),
+      ).toBe(true);
     }
   });
 

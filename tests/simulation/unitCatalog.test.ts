@@ -19,10 +19,12 @@ describe('unit catalog and inventory', () => {
     expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'defense')).toHaveLength(3);
   });
 
-  it('initializes empty inventories, fleets and production queues', () => {
+  it('initializes empty inventories, fleets, intelligence and production queues', () => {
     const state = createInitialGameState('unit-inventory');
-    expect(state.schemaVersion).toBe(7);
+    expect(state.schemaVersion).toBe(8);
     expect(state.fleets).toEqual([]);
+    expect(state.intelligence).toHaveLength(state.empires.length);
+    expect(state.intelligence.every((entry) => entry.observations.length === 0)).toBe(true);
     expect(
       state.planets.every(
         (planet) =>

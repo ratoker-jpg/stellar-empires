@@ -1,6 +1,7 @@
 import type { ResourceCost } from './economy/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
+import type { EmpireIntelligenceState } from './intelligence/types';
 import type { PlanetState } from './planet/types';
 import type { EmpireResearchState } from './research/types';
 import type { UnitKind } from './units/types';
@@ -132,7 +133,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 7;
+  readonly schemaVersion: 8;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
@@ -140,6 +141,7 @@ export interface GameState {
   readonly planets: readonly PlanetState[];
   readonly research: readonly EmpireResearchState[];
   readonly fleets: readonly FleetState[];
+  readonly intelligence: readonly EmpireIntelligenceState[];
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];

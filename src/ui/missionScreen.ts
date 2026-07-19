@@ -1,3 +1,7 @@
+import {
+  getCurrentObservations,
+  getEmpireIntelligence,
+} from '../simulation/intelligence/intelligenceState';
 import type { GameCommand, GameState } from '../simulation/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
 
@@ -21,6 +25,12 @@ function numberInput(label: string, max = Number.MAX_SAFE_INTEGER): HTMLLabelEle
 function readNumber(label: HTMLLabelElement): number {
   const input = label.querySelector('input');
   return Math.max(0, Math.floor(Number(input?.value) || 0));
+}
+
+function formatIntelTime(seconds: number): string {
+  const hours = Math.floor(seconds / 3_600);
+  const minutes = Math.floor((seconds % 3_600) / 60);
+  return `${hours}ч ${minutes}м`;
 }
 
 export function mountMissionScreen(options: MissionScreenOptions): void {
@@ -128,21 +138,27 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
 
       if (fleet.status === 'stationed' && fleet.location.type === 'planet') {
         const fleetPlanetId = fleet.location.planetId;
-        const targets = planets.filter((planet) => planet.id !== fleetPlanetId);
+        const targets = state.planets.filter((planet) => planet.id !== fleetPlanetId);
         if (targets.length > 0) {
           const target = document.createElement('select');
           for (const planet of targets) {
             const option = document.createElement('option');
             option.value = planet.id;
-            option.textContent = planet.name;
+            option.textContent = `${planet.name} · ${planet.ownerEmpireId}`;
             target.append(option);
           }
           const mission = document.createElement('select');
-          mission.innerHTML = '<option value="transport">Транспорт</option><option value="deploy">Размещение</option>';
+          mission.innerHTML = '<option value="transport">Транспорт</option><option value="deploy">Размещение</option><option value="scout">Разведка</option>';
           const send = document.createElement('button');
           send.type = 'button';
           send.textContent = 'Отправить';
           send.addEventListener('click', () => {
+            const missionKind =
+              mission.value === 'deploy'
+                ? 'deploy'
+                : mission.value === 'scout'
+                  ? 'scout'
+                  : 'transport';
             if (
               options.execute(
                 {
@@ -150,7 +166,7 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
                   empireId: 'player',
                   fleetId: fleet.id,
                   targetPlanetId: target.value,
-                  mission: mission.value === 'deploy' ? 'deploy' : 'transport',
+                  mission: missionKind,
                 },
                 'Флот отправлен',
               )
@@ -189,6 +205,32 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
       list.append(card);
     }
     content.append(list);
+
+    const intelligence = getEmpireIntelligence(state.intelligence, 'player');
+    const intelSection = document.createElement('section');
+    intelSection.className = 'mission-intelligence';
+    const intelTitle = document.createElement('h3');
+    intelTitle.textContent = 'Разведданные';
+    intelSection.append(intelTitle);
+    for (const observation of intelligence === undefined
+      ? []
+      : getCurrentObservations(intelligence, state.clock.elapsedSeconds)) {
+      const report = document.createElement('article');
+      const targetName = observation.snapshot.name;
+      const summary = document.createElement('strong');
+      summary.textContent = `${targetName} · уровень ${observation.snapshot.level}`;
+      const details = document.createElement('p');
+      const remaining = observation.expiresAt - state.clock.elapsedSeconds;
+      details.textContent = `${observation.snapshot.ownerEmpireId} · данные актуальны ещё ${formatIntelTime(remaining)} · ${observation.detected ? 'разведка обнаружена' : 'скрытно'}`;
+      report.append(summary, details);
+      intelSection.append(report);
+    }
+    if (intelSection.childElementCount === 1) {
+      const empty = document.createElement('p');
+      empty.textContent = 'Актуальных разведывательных отчётов нет.';
+      intelSection.append(empty);
+    }
+    content.append(intelSection);
   };
 
   const open = (): void => {

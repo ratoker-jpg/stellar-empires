@@ -1,4 +1,5 @@
 import { enqueueEvent } from '../eventQueue';
+import { resolveScoutArrival } from '../intelligence/resolveScout';
 import type { PlanetState } from '../planet/types';
 import { AEGIS_RESEARCH_CATALOG } from '../research/catalog';
 import { calculateResearchEffects } from '../research/progression';
@@ -124,11 +125,21 @@ export function sendFleet(
   if (origin === undefined || target === undefined) {
     return { ok: false, code: 'FLIGHT_PLANET_NOT_FOUND', message: 'Flight origin or target not found.' };
   }
-  if (origin.ownerEmpireId !== command.empireId || target.ownerEmpireId !== command.empireId) {
+  if (origin.ownerEmpireId !== command.empireId) {
+    return { ok: false, code: 'FLIGHT_ORIGIN_NOT_OWNED', message: 'Fleet must depart from an owned planet.' };
+  }
+  if (command.mission !== 'scout' && target.ownerEmpireId !== command.empireId) {
     return {
       ok: false,
       code: 'MISSION_TARGET_NOT_OWNED',
       message: 'Transport and deploy missions require an owned target planet.',
+    };
+  }
+  if (command.mission === 'scout' && (fleet.ships['ship.aegis.scout'] ?? 0) <= 0) {
+    return {
+      ok: false,
+      code: 'SCOUT_SHIP_REQUIRED',
+      message: 'A scouting mission requires an Aegis scout ship.',
     };
   }
 
@@ -259,7 +270,16 @@ export function applyFlightEvent(state: GameState, event: ScheduledGameEvent): G
 
   const target = state.planets.find((planet) => planet.id === payload.targetPlanetId);
   const duration = Math.max(1, fleet.location.arrivesAt - fleet.location.departedAt);
-  if (target === undefined || target.ownerEmpireId !== fleet.empireId) {
+  if (target === undefined) {
+    return scheduleReturn(state, fleet, payload.targetPlanetId, duration);
+  }
+
+  if (fleet.mission.kind === 'scout') {
+    const observed = resolveScoutArrival(state, fleet, target, event.sequence);
+    return scheduleReturn(observed, fleet, target.id, duration);
+  }
+
+  if (target.ownerEmpireId !== fleet.empireId) {
     return scheduleReturn(state, fleet, payload.targetPlanetId, duration);
   }
 
