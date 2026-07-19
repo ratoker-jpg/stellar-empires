@@ -12,51 +12,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isStringArray(value: unknown): value is readonly string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === 'string');
-}
-
 function isNonNegativeInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0;
 }
 
-function isCountRecord(value: unknown): boolean {
-  return isRecord(value) && Object.values(value).every(isNonNegativeInteger);
-}
-
-function isGalaxy(value: unknown): boolean {
-  return (
-    isRecord(value) &&
-    typeof value.width === 'number' &&
-    value.width > 0 &&
-    typeof value.height === 'number' &&
-    value.height > 0 &&
-    Array.isArray(value.systems)
-  );
-}
-
-function isStateShell(value: unknown): value is Record<string, unknown> {
-  if (
-    !isRecord(value) ||
-    ![1, 2, 3, 4].includes(value.schemaVersion as number) ||
-    typeof value.seed !== 'number' ||
-    !Number.isInteger(value.seed) ||
-    !isRecord(value.clock)
-  ) {
-    return false;
-  }
-
-  return (
-    typeof value.clock.startedAt === 'string' &&
-    isNonNegativeInteger(value.clock.elapsedSeconds) &&
-    isStringArray(value.empires) &&
-    isGalaxy(value.galaxy) &&
-    Array.isArray(value.planets) &&
-    isNonNegativeInteger(value.nextEventSequence) &&
-    Array.isArray(value.pendingEvents) &&
-    Array.isArray(value.commandLog) &&
-    Array.isArray(value.eventLog)
-  );
+function isPositiveInteger(value: unknown): value is number {
+  return isNonNegativeInteger(value) && value > 0;
 }
 
 function isResourceCost(value: unknown): boolean {
@@ -68,24 +29,41 @@ function isResourceCost(value: unknown): boolean {
   );
 }
 
+function isStateShell(value: unknown): value is Record<string, unknown> {
+  return (
+    isRecord(value) &&
+    [1, 2, 3, 4, 5, 6, 7].includes(value.schemaVersion as number) &&
+    typeof value.seed === 'number' &&
+    Number.isInteger(value.seed) &&
+    isRecord(value.clock) &&
+    typeof value.clock.startedAt === 'string' &&
+    isNonNegativeInteger(value.clock.elapsedSeconds) &&
+    Array.isArray(value.empires) &&
+    value.empires.every((item) => typeof item === 'string') &&
+    isRecord(value.galaxy) &&
+    Array.isArray(value.galaxy.systems) &&
+    Array.isArray(value.planets) &&
+    isNonNegativeInteger(value.nextEventSequence) &&
+    Array.isArray(value.pendingEvents) &&
+    Array.isArray(value.commandLog) &&
+    Array.isArray(value.eventLog)
+  );
+}
+
 function isProductionQueueItem(value: unknown): boolean {
   return (
     isRecord(value) &&
     typeof value.id === 'string' &&
     typeof value.unitId === 'string' &&
     (value.kind === 'ship' || value.kind === 'defense') &&
-    isNonNegativeInteger(value.quantity) &&
-    value.quantity > 0 &&
+    isPositiveInteger(value.quantity) &&
     isNonNegativeInteger(value.startedAt) &&
     isNonNegativeInteger(value.completesAt) &&
-    value.completesAt >= value.startedAt &&
-    isResourceCost(value.cost) &&
-    isNonNegativeInteger(value.populationReserved) &&
-    isNonNegativeInteger(value.hangarReserved)
+    isResourceCost(value.cost)
   );
 }
 
-function isCurrentPlanet(value: unknown): boolean {
+function isPlanet(value: unknown): boolean {
   if (
     !isRecord(value) ||
     !isRecord(value.zones) ||
@@ -94,32 +72,28 @@ function isCurrentPlanet(value: unknown): boolean {
     !isRecord(value.economy) ||
     !isRecord(value.inventory) ||
     !isRecord(value.productionQueues)
-  ) {
-    return false;
-  }
+  ) return false;
 
-  const zones = value.zones;
-  const zoneKeys = Object.keys(zones).sort();
-
-  if (zoneKeys.join('|') !== [...PLANET_ZONE_IDS].sort().join('|')) {
-    return false;
-  }
-
-  const validZones = PLANET_ZONE_IDS.every((zoneId) => {
-    const zone = zones[zoneId];
-    return (
-      isRecord(zone) &&
-      zone.id === zoneId &&
-      isNonNegativeInteger(zone.fieldLimit) &&
-      isNonNegativeInteger(zone.usedFields) &&
-      zone.usedFields <= zone.fieldLimit
-    );
-  });
+  const validZones =
+    Object.keys(value.zones).sort().join('|') ===
+      [...PLANET_ZONE_IDS].sort().join('|') &&
+    PLANET_ZONE_IDS.every((zoneId) => {
+      const zone = value.zones[zoneId];
+      return (
+        isRecord(zone) &&
+        zone.id === zoneId &&
+        isNonNegativeInteger(zone.fieldLimit) &&
+        isNonNegativeInteger(zone.usedFields) &&
+        zone.usedFields <= zone.fieldLimit
+      );
+    });
 
   return (
     validZones &&
-    isCountRecord(value.inventory.ships) &&
-    isCountRecord(value.inventory.defenses) &&
+    isRecord(value.inventory.ships) &&
+    Object.values(value.inventory.ships).every(isNonNegativeInteger) &&
+    isRecord(value.inventory.defenses) &&
+    Object.values(value.inventory.defenses).every(isNonNegativeInteger) &&
     Array.isArray(value.productionQueues.shipyard) &&
     value.productionQueues.shipyard.every(isProductionQueueItem) &&
     Array.isArray(value.productionQueues.defense) &&
@@ -127,46 +101,63 @@ function isCurrentPlanet(value: unknown): boolean {
   );
 }
 
-function isResearchQueueItem(value: unknown): boolean {
+function isResearchState(value: unknown): boolean {
   return (
     isRecord(value) &&
-    typeof value.id === 'string' &&
-    typeof value.technologyId === 'string' &&
-    isNonNegativeInteger(value.targetLevel) &&
-    isNonNegativeInteger(value.startedAt) &&
-    isNonNegativeInteger(value.completesAt) &&
-    value.completesAt >= value.startedAt &&
-    typeof value.planetId === 'string' &&
-    isResourceCost(value.cost)
+    typeof value.empireId === 'string' &&
+    isRecord(value.levels) &&
+    Object.values(value.levels).every(isNonNegativeInteger) &&
+    Array.isArray(value.queue)
   );
 }
 
-function isResearchState(value: unknown): boolean {
-  if (
-    !isRecord(value) ||
-    typeof value.empireId !== 'string' ||
-    !isRecord(value.levels) ||
-    !Array.isArray(value.queue)
-  ) {
-    return false;
-  }
-
+function isFleetLocation(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  if (value.type === 'planet') return typeof value.planetId === 'string';
   return (
-    Object.values(value.levels).every(isNonNegativeInteger) &&
-    value.queue.every(isResearchQueueItem)
+    value.type === 'transit' &&
+    typeof value.fromPlanetId === 'string' &&
+    typeof value.toPlanetId === 'string' &&
+    isNonNegativeInteger(value.departedAt) &&
+    isNonNegativeInteger(value.arrivesAt) &&
+    value.arrivesAt >= value.departedAt
+  );
+}
+
+function isFleet(value: unknown): boolean {
+  const validMission =
+    value !== null &&
+    isRecord(value) &&
+    (value.mission === null ||
+      (isRecord(value.mission) &&
+        (value.mission.kind === 'deploy' || value.mission.kind === 'transport') &&
+        typeof value.mission.targetPlanetId === 'string'));
+  return (
+    validMission &&
+    typeof value.id === 'string' &&
+    typeof value.empireId === 'string' &&
+    typeof value.originPlanetId === 'string' &&
+    ['stationed', 'outbound', 'holding', 'returning'].includes(value.status as string) &&
+    isFleetLocation(value.location) &&
+    isRecord(value.ships) &&
+    Object.keys(value.ships).length > 0 &&
+    Object.values(value.ships).every(isPositiveInteger) &&
+    isResourceCost(value.cargo) &&
+    isPositiveInteger(value.speed) &&
+    isNonNegativeInteger(value.cargoCapacity)
   );
 }
 
 function isGameState(value: unknown): value is GameState {
   return (
     isStateShell(value) &&
-    value.schemaVersion === 4 &&
-    Array.isArray(value.empires) &&
+    value.schemaVersion === 7 &&
     Array.isArray(value.planets) &&
-    value.planets.every(isCurrentPlanet) &&
+    value.planets.every(isPlanet) &&
     Array.isArray(value.research) &&
     value.research.every(isResearchState) &&
-    value.research.length === value.empires.length
+    Array.isArray(value.fleets) &&
+    value.fleets.every(isFleet)
   );
 }
 
@@ -178,7 +169,6 @@ export function createSaveEnvelope(
   if (slotId.trim().length === 0) {
     throw new Error('Save slot id must not be empty.');
   }
-
   return {
     formatVersion: SAVE_FORMAT_VERSION,
     slotId,
@@ -194,7 +184,6 @@ export function serializeSave(save: SaveEnvelope): string {
 
 export function parseSaveJson(json: string): SaveParseResult {
   let parsed: unknown;
-
   try {
     parsed = JSON.parse(json) as unknown;
   } catch (error: unknown) {
@@ -206,24 +195,9 @@ export function parseSaveJson(json: string): SaveParseResult {
     };
   }
 
-  if (!isRecord(parsed)) {
-    return {
-      ok: false,
-      code: 'INVALID_SAVE_SHAPE',
-      message: 'Save data must be an object.',
-    };
-  }
-
-  if (parsed.formatVersion !== 1 && parsed.formatVersion !== SAVE_FORMAT_VERSION) {
-    return {
-      ok: false,
-      code: 'UNSUPPORTED_SAVE_VERSION',
-      message: 'Save format version is not supported.',
-      details: { formatVersion: parsed.formatVersion },
-    };
-  }
-
   if (
+    !isRecord(parsed) ||
+    (parsed.formatVersion !== 1 && parsed.formatVersion !== SAVE_FORMAT_VERSION) ||
     typeof parsed.slotId !== 'string' ||
     parsed.slotId.trim().length === 0 ||
     typeof parsed.savedAt !== 'string' ||
@@ -238,21 +212,15 @@ export function parseSaveJson(json: string): SaveParseResult {
   }
 
   const actualChecksum = createStateChecksum(parsed.state);
-
   if (actualChecksum !== parsed.checksum) {
     return {
       ok: false,
       code: 'CHECKSUM_MISMATCH',
       message: 'Save data checksum does not match its state.',
-      details: {
-        expected: parsed.checksum,
-        actual: actualChecksum,
-      },
     };
   }
 
   const state = migrateGameState(parsed.state);
-
   if (!isGameState(state)) {
     return {
       ok: false,
@@ -261,13 +229,14 @@ export function parseSaveJson(json: string): SaveParseResult {
     };
   }
 
-  const save: SaveEnvelope = {
-    formatVersion: SAVE_FORMAT_VERSION,
-    slotId: parsed.slotId,
-    savedAt: parsed.savedAt,
-    checksum: createStateChecksum(state),
-    state,
+  return {
+    ok: true,
+    value: {
+      formatVersion: SAVE_FORMAT_VERSION,
+      slotId: parsed.slotId,
+      savedAt: parsed.savedAt,
+      checksum: createStateChecksum(state),
+      state,
+    },
   };
-
-  return { ok: true, value: save };
 }
