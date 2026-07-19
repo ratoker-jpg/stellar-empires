@@ -87,7 +87,10 @@ export function createFleetComposerViewModel(
     });
 
   for (const unitId of Object.keys(requestedShips)) {
-    if (!(unitId in origin.inventory.ships) && normalizeCount(requestedShips[unitId] ?? 0) > 0) {
+    if (
+      !(unitId in origin.inventory.ships) &&
+      normalizeCount(requestedShips[unitId] ?? 0) > 0
+    ) {
       errors.push(`SHIP_NOT_AT_ORIGIN:${unitId}`);
     }
   }
@@ -137,11 +140,12 @@ export function createFleetRoutePreview(
   mission: FleetMissionKind,
   targetPlanetId: string,
 ): FleetRoutePreview | undefined {
-  if (fleet.status !== 'stationed' || fleet.location.type !== 'planet') {
+  const location = fleet.location;
+  if (fleet.status !== 'stationed' || location.type !== 'planet') {
     return undefined;
   }
   const origin = state.planets.find(
-    (planet) => planet.id === fleet.location.planetId,
+    (planet) => planet.id === location.planetId,
   );
   if (origin === undefined) return undefined;
 
