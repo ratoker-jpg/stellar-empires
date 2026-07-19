@@ -136,7 +136,8 @@ function readFleets(value: unknown): readonly FleetState[] | undefined {
         isRecord(item.mission) &&
         (item.mission.kind === 'deploy' ||
           item.mission.kind === 'transport' ||
-          item.mission.kind === 'scout') &&
+          item.mission.kind === 'scout' ||
+          item.mission.kind === 'attack') &&
         typeof item.mission.targetPlanetId === 'string'
           ? {
               kind: item.mission.kind,
