@@ -1,3 +1,4 @@
+import type { PlanetDefenseState } from '../defense/types';
 import type { PlanetEconomyState, ResourceCost } from '../economy/types';
 import type {
   PlanetDevelopmentTemplateId,
@@ -47,4 +48,5 @@ export interface PlanetState {
   readonly economy: PlanetEconomyState;
   readonly inventory: PlanetUnitInventory;
   readonly productionQueues: PlanetProductionQueues;
+  readonly defense: PlanetDefenseState;
 }
