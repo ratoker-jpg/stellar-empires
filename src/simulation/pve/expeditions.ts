@@ -12,6 +12,10 @@ import type {
   GameState,
   ScheduledGameEvent,
 } from '../types';
+import {
+  calculatePveRewardMultiplier,
+  scalePveReward,
+} from './pveBalance';
 
 export type ExpeditionOutcome = 'salvage' | 'research-cache' | 'hazard' | 'empty';
 
@@ -31,6 +35,7 @@ export interface ExpeditionReport {
   };
   readonly losses: Readonly<Record<string, number>>;
   readonly narrative: string;
+  readonly rewardMultiplierPermille?: number;
 }
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
@@ -80,6 +85,15 @@ function createOutcome(
   const outcomeIndex = roll % 4;
   const scale = 1 + (Math.floor(roll / 4) % 5);
   const firstShip = Object.keys(fleet.ships).sort()[0];
+  const rewardMultiplierPermille = calculatePveRewardMultiplier(
+    state,
+    fleet.empireId,
+    'expedition',
+    targetGalaxyPlanetId,
+    startedAt,
+  );
+  const reward = (base: { readonly metal: number; readonly crystal: number; readonly gas: number }) =>
+    scalePveReward(base, rewardMultiplierPermille);
 
   if (outcomeIndex === 0) {
     return {
@@ -91,9 +105,10 @@ function createOutcome(
       startedAt,
       resolvesAt,
       outcome: 'salvage',
-      reward: { metal: 240 * scale, crystal: 120 * scale, gas: 40 * scale },
+      reward: reward({ metal: 240 * scale, crystal: 120 * scale, gas: 40 * scale }),
       losses: {},
       narrative: 'Экспедиция обнаружила дрейфующий промышленный конвой и извлекла уцелевший груз.',
+      rewardMultiplierPermille,
     };
   }
   if (outcomeIndex === 1) {
@@ -106,9 +121,10 @@ function createOutcome(
       startedAt,
       resolvesAt,
       outcome: 'research-cache',
-      reward: { metal: 40 * scale, crystal: 220 * scale, gas: 120 * scale },
+      reward: reward({ metal: 40 * scale, crystal: 220 * scale, gas: 120 * scale }),
       losses: {},
       narrative: 'В заброшенном научном модуле найдены редкие материалы и энергоячейки.',
+      rewardMultiplierPermille,
     };
   }
   if (outcomeIndex === 2 && firstShip !== undefined) {
@@ -121,9 +137,10 @@ function createOutcome(
       startedAt,
       resolvesAt,
       outcome: 'hazard',
-      reward: { metal: 60 * scale, crystal: 30 * scale, gas: 0 },
+      reward: reward({ metal: 60 * scale, crystal: 30 * scale, gas: 0 }),
       losses: { [firstShip]: 1 },
       narrative: 'Аномальный фронт повредил корабль, но экипаж вернул часть найденных материалов.',
+      rewardMultiplierPermille,
     };
   }
   return {
@@ -138,6 +155,7 @@ function createOutcome(
     reward: { metal: 0, crystal: 0, gas: 0 },
     losses: {},
     narrative: 'Сектор оказался пуст. Экспедиция вернулась без значимых находок.',
+    rewardMultiplierPermille,
   };
 }
 
