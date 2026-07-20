@@ -19,6 +19,10 @@ import type {
   GameState,
   ScheduledGameEvent,
 } from '../types';
+import {
+  getWorldEventHazardModifier,
+  getWorldEventYieldPermille,
+} from './worldEvents';
 
 export type SpaceObjectKind = 'asteroid' | 'gas-cloud' | 'anomaly';
 
@@ -194,7 +198,9 @@ function createMissionReport(
     object.controlExpiresAt > state.clock.elapsedSeconds;
   const controlledBySelf = controlActive && object.controllerEmpireId === fleet.empireId;
   const controlledByOther = controlActive && object.controllerEmpireId !== fleet.empireId;
-  const yieldPermille = controlledBySelf ? 1_250 : controlledByOther ? 750 : 1_000;
+  const controlYieldPermille = controlledBySelf ? 1_250 : controlledByOther ? 750 : 1_000;
+  const eventYieldPermille = getWorldEventYieldPermille(state, object.id);
+  const yieldPermille = Math.floor((controlYieldPermille * eventYieldPermille) / 1_000);
   const baseExtraction =
     object.kind === 'asteroid'
       ? 420 + (roll % 381)
@@ -205,8 +211,12 @@ function createMissionReport(
     object.remainingYield,
     Math.max(1, Math.floor((baseExtraction * yieldPermille) / 1_000)),
   );
-  const hazardModifier = controlledBySelf ? -100 : controlledByOther ? 150 : 0;
-  const effectiveHazard = Math.max(0, Math.min(950, object.hazardPermille + hazardModifier));
+  const controlHazardModifier = controlledBySelf ? -100 : controlledByOther ? 150 : 0;
+  const worldHazardModifier = getWorldEventHazardModifier(state, object.systemId);
+  const effectiveHazard = Math.max(
+    0,
+    Math.min(950, object.hazardPermille + controlHazardModifier + worldHazardModifier),
+  );
   const requiredShipId = getRequiredSpaceObjectShipId(object.kind);
   const losses = Math.floor(roll / 19) % 1_000 < effectiveHazard
     ? { [requiredShipId]: 1 }
