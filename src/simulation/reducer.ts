@@ -1,3 +1,8 @@
+import {
+  cancelDefenseRepair,
+  completeDefenseRepair,
+  queueDefenseRepair,
+} from './defense/planetaryDefense';
 import { accrueAllPlanetEconomies } from './economy/planetEconomy';
 import { enqueueEvent } from './eventQueue';
 import { canUseMechanicalDefinition } from './factions/sharedMechanicalCatalog';
@@ -113,6 +118,7 @@ function scheduleEvent(
     command.payload.type === 'BUILDING_COMPLETE' ||
     command.payload.type === 'RESEARCH_COMPLETE' ||
     command.payload.type === 'UNIT_PRODUCTION_COMPLETE' ||
+    command.payload.type === 'DEFENSE_REPAIR_COMPLETE' ||
     command.payload.type === 'FLEET_ARRIVE' ||
     command.payload.type === 'FLEET_RETURN' ||
     command.payload.type === 'EXPEDITION_RESOLVE' ||
@@ -317,6 +323,15 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
   if (event.payload.type === 'RESEARCH_COMPLETE') {
     return { ...state, research: completeResearch(state.research, event.payload) };
   }
+  if (event.payload.type === 'DEFENSE_REPAIR_COMPLETE') {
+    const payload = event.payload;
+    const planet = state.planets.find((candidate) => candidate.id === payload.planetId);
+    if (planet === undefined) return state;
+    return {
+      ...state,
+      planets: replacePlanet(state.planets, planet.id, completeDefenseRepair(planet, payload)),
+    };
+  }
   if (event.payload.type === 'UNIT_PRODUCTION_COMPLETE') {
     const payload = event.payload;
     const planet = state.planets.find((candidate) => candidate.id === payload.planetId);
@@ -429,6 +444,10 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
       return queueUnitBatch(state, command);
     case 'CANCEL_UNIT_BATCH':
       return cancelUnitBatch(state, command);
+    case 'QUEUE_DEFENSE_REPAIR':
+      return queueDefenseRepair(state, command);
+    case 'CANCEL_DEFENSE_REPAIR':
+      return cancelDefenseRepair(state, command);
     case 'CREATE_FLEET':
       return createFleet(state, command);
     case 'DISBAND_FLEET':
