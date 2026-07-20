@@ -3,11 +3,11 @@ import type {
   BotSchedulerResponse,
   RunBotSchedulerRequest,
 } from '../simulation/bots/workerProtocol';
-import type { GameState } from '../simulation/types';
+import type { GameCommand, GameState } from '../simulation/types';
 
 export interface BotAutomationControllerOptions {
   readonly getState: () => GameState;
-  readonly applyState: (state: GameState, acceptedCommands: number) => void;
+  readonly applyCommands: (commands: readonly GameCommand[]) => void;
   readonly onError?: (message: string) => void;
 }
 
@@ -16,6 +16,7 @@ export class BotAutomationController {
   private cursor: BotSchedulerCursor;
   private requestSequence = 0;
   private pending = false;
+  private applying = false;
   private rerunRequested = false;
   private disposed = false;
 
@@ -35,7 +36,7 @@ export class BotAutomationController {
 
   request(): void {
     if (this.disposed) return;
-    if (this.pending) {
+    if (this.pending || this.applying) {
       this.rerunRequested = true;
       return;
     }
@@ -74,13 +75,22 @@ export class BotAutomationController {
     }
 
     this.cursor = response.cursor;
-    const accepted = response.audit.filter((entry) => entry.accepted).length;
-    if (accepted > 0) this.options.applyState(response.state, accepted);
+    const commands = response.audit
+      .filter((entry) => entry.accepted)
+      .map((entry) => entry.command);
+    if (commands.length > 0) {
+      this.applying = true;
+      try {
+        this.options.applyCommands(commands);
+      } finally {
+        this.applying = false;
+      }
+    }
     this.runAgainWhenRequested();
   }
 
   private runAgainWhenRequested(): void {
-    if (!this.rerunRequested) return;
+    if (!this.rerunRequested || this.pending || this.applying) return;
     this.rerunRequested = false;
     this.request();
   }
