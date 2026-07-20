@@ -1,0 +1,136 @@
+.space-objects-dialog {
+  width: min(1120px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--faction-accent, #59a9ff) 42%, #26354b);
+  border-radius: 18px;
+  color: #e9f3ff;
+  background: linear-gradient(160deg, rgba(8, 15, 27, 0.98), rgba(3, 8, 15, 0.98));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.58);
+}
+
+.space-objects-dialog::backdrop {
+  background: rgba(0, 3, 8, 0.82);
+  backdrop-filter: blur(7px);
+}
+
+.space-objects-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(128, 174, 223, 0.18);
+  background: rgba(5, 11, 20, 0.96);
+}
+
+.space-objects-header h2,
+.space-objects-dialog h3 {
+  margin: 0;
+}
+
+.space-objects-launch,
+.space-objects-active,
+.space-objects-reports {
+  display: grid;
+  gap: 12px;
+  margin: 18px 22px;
+  padding: 18px;
+  border: 1px solid rgba(117, 158, 203, 0.18);
+  border-radius: 14px;
+  background: rgba(11, 21, 35, 0.72);
+}
+
+.space-objects-launch {
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(260px, 2fr) auto;
+  align-items: end;
+}
+
+.space-objects-launch h3 {
+  grid-column: 1 / -1;
+}
+
+.space-objects-launch select,
+.space-objects-launch button,
+.space-objects-active button {
+  min-height: 40px;
+  border: 1px solid rgba(117, 166, 218, 0.28);
+  border-radius: 9px;
+  color: #e7f2ff;
+  background: rgba(12, 28, 47, 0.92);
+}
+
+.space-objects-launch button,
+.space-objects-active button {
+  padding: 0 15px;
+  cursor: pointer;
+}
+
+.space-objects-launch button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.space-object-preview {
+  margin: 0;
+  color: #a9bfd7;
+}
+
+.space-object-preview.is-blocked {
+  color: #ff9f91;
+}
+
+.space-objects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 18px 22px;
+}
+
+.space-object-card,
+.space-objects-active article,
+.space-objects-reports article {
+  display: grid;
+  gap: 7px;
+  padding: 14px;
+  border: 1px solid rgba(116, 159, 206, 0.18);
+  border-radius: 12px;
+  background: rgba(10, 20, 33, 0.82);
+}
+
+.space-object-card.is-asteroid {
+  border-left: 3px solid #c9a46a;
+}
+
+.space-object-card.is-gas-cloud {
+  border-left: 3px solid #63aee8;
+}
+
+.space-object-card.is-anomaly {
+  border-left: 3px solid #bb7cff;
+}
+
+.space-object-card p,
+.space-objects-active p,
+.space-objects-reports p,
+.space-object-card small,
+.space-objects-reports small {
+  margin: 0;
+}
+
+.space-object-card small,
+.space-objects-reports small {
+  color: #91abc5;
+}
+
+@media (max-width: 820px) {
+  .space-objects-launch {
+    grid-template-columns: 1fr;
+  }
+
+  .space-objects-launch h3 {
+    grid-column: auto;
+  }
+}

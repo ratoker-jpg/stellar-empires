@@ -39,6 +39,10 @@ import {
   applyExpeditionEvent,
   startExpedition,
 } from './pve/expeditions';
+import {
+  applySpaceObjectMissionEvent,
+  startSpaceObjectMission,
+} from './pve/spaceObjects';
 import { AEGIS_RESEARCH_CATALOG } from './research/catalog';
 import {
   applySpeedPercent,
@@ -106,7 +110,8 @@ function scheduleEvent(
     command.payload.type === 'UNIT_PRODUCTION_COMPLETE' ||
     command.payload.type === 'FLEET_ARRIVE' ||
     command.payload.type === 'FLEET_RETURN' ||
-    command.payload.type === 'EXPEDITION_RESOLVE'
+    command.payload.type === 'EXPEDITION_RESOLVE' ||
+    command.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE'
   ) {
     return {
       ok: false,
@@ -290,6 +295,9 @@ function cancelBuilding(
 }
 
 function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
+  if (event.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
+    return applySpaceObjectMissionEvent(state, event);
+  }
   if (event.payload.type === 'EXPEDITION_RESOLVE') {
     return applyExpeditionEvent(state, event);
   }
@@ -414,6 +422,8 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
       return sendFleetWithExpeditionGuard(state, command);
     case 'START_EXPEDITION':
       return startExpedition(state, command);
+    case 'START_SPACE_OBJECT_MISSION':
+      return startSpaceObjectMission(state, command);
     case 'RECALL_FLEET':
       return recallFleetWithExpeditionSupport(state, command);
     case 'ADVANCE_TIME':

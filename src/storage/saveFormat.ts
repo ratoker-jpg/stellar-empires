@@ -74,7 +74,7 @@ function isFleet(value: unknown): boolean {
     (isRecord(value.mission) &&
       (value.mission.kind === 'deploy' || value.mission.kind === 'transport' || value.mission.kind === 'scout' ||
         value.mission.kind === 'attack' || value.mission.kind === 'recycle' || value.mission.kind === 'colonize' ||
-        value.mission.kind === 'expedition') &&
+        value.mission.kind === 'expedition' || value.mission.kind === 'space-object') &&
       typeof value.mission.targetPlanetId === 'string'));
   return validMission && typeof value.id === 'string' && typeof value.empireId === 'string' &&
     typeof value.originPlanetId === 'string' && ['stationed', 'outbound', 'holding', 'returning'].includes(value.status as string) &&
@@ -130,6 +130,20 @@ function isMarket(value: unknown): boolean {
     isNonNegativeInteger(value.feePermille) && isNonNegativeInteger(value.maxPriceImpactPermille) &&
     isNonNegativeInteger(value.nextTradeSequence) && Array.isArray(value.trades) && value.trades.every(isMarketTrade);
 }
+function isSpaceObject(value: unknown): boolean {
+  return isRecord(value) && typeof value.id === 'string' && typeof value.systemId === 'string' &&
+    isPositiveInteger(value.position) &&
+    (value.kind === 'asteroid' || value.kind === 'gas-cloud' || value.kind === 'anomaly') &&
+    isPositiveInteger(value.initialYield) && isNonNegativeInteger(value.remainingYield) &&
+    value.remainingYield <= value.initialYield && isNonNegativeInteger(value.hazardPermille) &&
+    value.hazardPermille <= 1_000 &&
+    (value.controllerEmpireId === null || typeof value.controllerEmpireId === 'string') &&
+    (value.controlExpiresAt === null || isNonNegativeInteger(value.controlExpiresAt)) &&
+    isNonNegativeInteger(value.cooldownUntil);
+}
+function isStrategicResourceState(value: unknown): boolean {
+  return isRecord(value) && typeof value.empireId === 'string' && isNonNegativeInteger(value.exoticMatter);
+}
 function isGameState(value: unknown): value is GameState {
   return isStateShell(value) && value.schemaVersion === 12 && Array.isArray(value.empires) &&
     Array.isArray(value.planets) && value.planets.every(isPlanet) && Array.isArray(value.research) &&
@@ -137,7 +151,10 @@ function isGameState(value: unknown): value is GameState {
     Array.isArray(value.intelligence) && value.intelligence.every(isIntelligenceState) &&
     value.intelligence.length === value.empires.length && Array.isArray(value.debrisFields) &&
     value.debrisFields.every(isDebrisField) && Array.isArray(value.logisticsRoutes) &&
-    value.logisticsRoutes.every(isLogisticsRoute) && isMarket(value.market);
+    value.logisticsRoutes.every(isLogisticsRoute) && isMarket(value.market) &&
+    Array.isArray(value.spaceObjects) && value.spaceObjects.every(isSpaceObject) &&
+    Array.isArray(value.strategicResources) && value.strategicResources.every(isStrategicResourceState) &&
+    value.strategicResources.length === value.empires.length;
 }
 
 export function createSaveEnvelope(slotId: string, state: GameState, savedAt: string): SaveEnvelope {
