@@ -20,6 +20,7 @@ import './styles/research.css';
 import './styles/production.css';
 import './styles/missions.css';
 import './styles/empire.css';
+import './styles/globalHud.css';
 import { bindFactionRuntimeAssets } from './assets/bindFactionRuntimeAssets';
 import { createGame } from './game/createGame';
 import { BotAutomationController } from './runtime/BotAutomationController';
