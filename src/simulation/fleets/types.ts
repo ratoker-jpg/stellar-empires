@@ -8,7 +8,8 @@ export type FleetMissionKind =
   | 'attack'
   | 'recycle'
   | 'colonize'
-  | 'expedition';
+  | 'expedition'
+  | 'space-object';
 
 export interface FleetMission {
   readonly kind: FleetMissionKind;
