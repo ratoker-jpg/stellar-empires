@@ -6,30 +6,19 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 56,
-  "lastMergeSha": "db35dbf228c2af66f6957957c466ae0b73b38245",
-  "nextPr": 57,
+  "lastMergedPr": 57,
+  "lastMergeSha": "c0ab3d812caf85a3095dff67d4db797e8e35a1ef",
+  "nextPr": 58,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
-  "governanceUpdateNote": "Actual GitHub history is authoritative. The completed actual PR #46-#51 batch delivered roadmap capabilities originally numbered #37-#43 because accepted faction integration PRs shifted GitHub numbering.",
-  "currentMilestone": "Honest autonomous bot core and living-galaxy foundation",
+  "governanceUpdateNote": "Actual GitHub history is authoritative. Accepted faction integration and continuation batches shifted implementation capabilities relative to the canonical roadmap numbering.",
+  "currentMilestone": "Living galaxy PvE and military depth",
   "currentBatch": {
-    "standard": [52, 53, 54, 55, 56, 57],
-    "completed": [52, 53, 54, 55, 56],
-    "optionalExtensions": [],
-    "extensionsStarted": false,
-    "plannedCapabilities": [
-      "bot fleet and mission planner",
-      "bot threat, target and recovery planner",
-      "autonomous scheduler, personalities and difficulty",
-      "galaxy v2 search, filters and information fog",
-      "neutral forces and pirate bases",
-      "expeditions and deterministic space events"
-    ]
-  },
-  "nextBatch": {
     "standard": [58, 59, 60, 61, 62, 63],
+    "completed": [],
+    "optionalExtensions": [64, 65],
+    "extensionsStarted": false,
     "plannedCapabilities": [
       "asteroids, gas objects and anomalies",
       "special missions and world event framework",
@@ -37,11 +26,22 @@
       "full planetary defense loop",
       "combat engine v2 weapon and protection types",
       "ship upgrades"
+    ]
+  },
+  "nextBatch": {
+    "standard": [64, 65, 66, 67, 68, 69],
+    "plannedCapabilities": [
+      "class skills, formations and target priorities",
+      "admiral experience and ability branches",
+      "commander ships and headless battle simulator",
+      "relations, reputation and diplomatic positions",
+      "diplomatic actions and treaties",
+      "coalition creation, roles and levels"
     ],
-    "optionalExtensions": [64, 65],
+    "optionalExtensions": [70, 71],
     "optionalCapabilities": [
-      "class skills, formations and priorities",
-      "admiral experience and ability branches"
+      "coalition contributions and shared projects",
+      "team planet and shared infrastructure"
     ]
   },
   "deliveredCapabilities": [
@@ -52,10 +52,11 @@
     "seeded galaxy model",
     "fog-aware Galaxy v2 intelligence search and filters",
     "deterministic neutral pirate bases on ordinary planet and combat contracts",
+    "deterministic expeditions with scheduled outcomes, recall and reports",
     "schema-v12 saves with multi-colony, intelligence, debris, logistics and market state",
     "resource economy with energy, population, stability and storage",
     "deterministic building, research, ship and defense queues",
-    "serialized fleets with transport, deployment, scout, attack, recycle and colonize missions",
+    "serialized fleets with transport, deployment, scout, attack, recycle, colonize and expedition missions",
     "deterministic combat, battle reports, debris, plunder and recycling",
     "colonization technology and playable multi-colony empire management",
     "planet specializations and non-automatic development templates",
@@ -81,7 +82,7 @@
     "technology, effect and incomplete UI-state artwork still uses procedural CSS or SVG fallback",
     "bot scheduler cursor is runtime-only and restarts its decision window after reload",
     "existing schema-v12 saves are not retroactively seeded with pirate bases",
-    "expeditions and deterministic world events are not implemented",
+    "autonomous bots do not yet launch expeditions or space-object operations",
     "public Pages deployment should be checked after material UI batches"
   ],
   "requiredStartupReading": [
