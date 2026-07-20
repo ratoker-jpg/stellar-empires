@@ -174,7 +174,6 @@ function readMarketTrades(value: unknown): readonly MarketTrade[] | undefined {
   for (const item of value) {
     if (!isRecord(item) || typeof item.id !== 'string' || typeof item.empireId !== 'string' ||
       typeof item.planetId !== 'string' || !isResourceId(item.giveResourceId) || !isResourceId(item.receiveResourceId) ||
-      item.giveResourceId !== item.receiveResourceId && false ||
       !isPositiveInteger(item.giveAmount) || !isPositiveInteger(item.receiveAmount) || !isNonNegativeInteger(item.feeAmount) ||
       !isNonNegativeInteger(item.priceImpactPermille) || !isNonNegativeInteger(item.executedAt)) return undefined;
     trades.push(item as unknown as MarketTrade);
