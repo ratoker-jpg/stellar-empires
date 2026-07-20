@@ -90,7 +90,7 @@ describe('neutral pirate bases', () => {
   });
 
   it('reveals a pirate owner through the normal scout mission', () => {
-    let state = addPlayerFleet(
+    const state = addPlayerFleet(
       createInitialGameState('neutral-pirate-scout'),
       'player-pirate-scout',
       { 'ship.aegis.scout': 1 },
