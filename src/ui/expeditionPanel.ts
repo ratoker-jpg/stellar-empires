@@ -131,10 +131,12 @@ export function mountExpeditionPanel(options: ExpeditionPanelOptions): void {
 
       const refresh = (): void => {
         const fleet = state.fleets.find((candidate) => candidate.id === fleetSelect.value);
+        const originPlanetId =
+          fleet?.location.type === 'planet' ? fleet.location.planetId : undefined;
         const origin =
-          fleet?.location.type === 'planet'
-            ? state.planets.find((planet) => planet.id === fleet.location.planetId)
-            : undefined;
+          originPlanetId === undefined
+            ? undefined
+            : state.planets.find((planet) => planet.id === originPlanetId);
         if (fleet === undefined || origin === undefined || targetSelect.value.length === 0) {
           preview.textContent = 'Маршрут недоступен.';
           start.disabled = true;
