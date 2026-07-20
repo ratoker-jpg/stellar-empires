@@ -12,38 +12,6 @@ export const PVE_REPEAT_PENALTY_PERMILLE = 250;
 export const PVE_MAX_THREAT_MULTIPLIER_PERMILLE = 2_000;
 export const PVE_THREAT_STEP_PERMILLE = 100;
 
-function isMatchingCompletion(
-  state: GameState,
-  empireId: string,
-  activity: PveActivityKind,
-  targetId: string,
-  executedAt: number,
-  since: number,
-): boolean {
-  if (executedAt < since) return false;
-  const entry = state.eventLog.find((candidate) => candidate.executedAt === executedAt);
-  if (entry === undefined) return false;
-  const payload = entry.event.payload;
-  if (activity === 'pirate-raid' && payload.type === 'BATTLE_REPORT') {
-    return (
-      payload.report.attackerEmpireId === empireId &&
-      payload.report.defenderEmpireId === PIRATE_EMPIRE_ID &&
-      payload.report.targetPlanetId === targetId &&
-      payload.report.winner === 'attacker'
-    );
-  }
-  if (activity === 'expedition' && payload.type === 'EXPEDITION_RESOLVE') {
-    return (
-      payload.report.empireId === empireId &&
-      payload.report.targetGalaxyPlanetId === targetId
-    );
-  }
-  if (activity === 'space-object' && payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
-    return payload.report.empireId === empireId && payload.report.objectId === targetId;
-  }
-  return false;
-}
-
 export function countRecentPveCompletions(
   state: GameState,
   empireId: string,
