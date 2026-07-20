@@ -15,6 +15,7 @@ import './styles/missions.css';
 import './styles/empire.css';
 import { bindFactionRuntimeAssets } from './assets/bindFactionRuntimeAssets';
 import { createGame } from './game/createGame';
+import { BotAutomationController } from './runtime/BotAutomationController';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
 import {
@@ -79,6 +80,7 @@ async function bootstrap(): Promise<void> {
   let startupStatus: string;
   let autosave: AutoSaveController | undefined;
   let saveManager: SaveManager | undefined;
+  let botAutomation: BotAutomationController | undefined;
 
   try {
     const restored = await loadAutosave(repository);
@@ -117,6 +119,23 @@ async function bootstrap(): Promise<void> {
   mountPlanetScreen(initialState, setStatus, (state) => {
     runtimeState = state;
     autosave?.request(state);
+    botAutomation?.request();
+  });
+  botAutomation = new BotAutomationController({
+    getState: () => runtimeState,
+    applyCommands: (commands) => {
+      let accepted = 0;
+      for (const command of commands) {
+        if (applyPlanetScreenCommand(command, 'Автономное решение бота выполнено')) {
+          accepted += 1;
+        }
+      }
+      if (accepted > 0) setStatus(`Боты выполнили действий · ${accepted}`);
+    },
+    onError: (message) => {
+      console.error('[stellar-empires] bot scheduler failed', message);
+      setStatus('Ошибка автономного планировщика');
+    },
   });
   const commandBridge = {
     getState: () => runtimeState,
@@ -140,9 +159,11 @@ async function bootstrap(): Promise<void> {
   }
   const flushAutosave = (): void => { void autosave?.flush(); };
   window.addEventListener('pagehide', flushAutosave);
+  window.addEventListener('beforeunload', () => botAutomation?.dispose(), { once: true });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flushAutosave();
   });
+  botAutomation.request();
   setStatus(startupStatus);
   document.documentElement.dataset.appReady = 'true';
 }
