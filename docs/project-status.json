@@ -6,9 +6,9 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 54,
-  "lastMergeSha": "71fd86492581f2da8bf72c6194a2b38e3bb9b258",
-  "nextPr": 55,
+  "lastMergedPr": 55,
+  "lastMergeSha": "8f3af97dfc6d3885f94fb33f0c16a702850fbaa5",
+  "nextPr": 56,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
@@ -16,7 +16,7 @@
   "currentMilestone": "Honest autonomous bot core and living-galaxy foundation",
   "currentBatch": {
     "standard": [52, 53, 54, 55, 56, 57],
-    "completed": [52, 53, 54],
+    "completed": [52, 53, 54, 55],
     "optionalExtensions": [],
     "extensionsStarted": false,
     "plannedCapabilities": [
@@ -50,6 +50,7 @@
     "deterministic simulation commands, events, clock, replay and checksum",
     "IndexedDB persistence core, autosave, manual slots, import/export and recovery",
     "seeded galaxy model",
+    "fog-aware Galaxy v2 intelligence search and filters",
     "schema-v12 saves with multi-colony, intelligence, debris, logistics and market state",
     "resource economy with energy, population, stability and storage",
     "deterministic building, research, ship and defense queues",
@@ -78,7 +79,7 @@
     "full faction-specific mechanics and balance remain scheduled for later faction-content phases",
     "technology, effect and incomplete UI-state artwork still uses procedural CSS or SVG fallback",
     "bot scheduler cursor is runtime-only and restarts its decision window after reload",
-    "neutral PvE targets, expeditions and world events are not implemented",
+    "expeditions and deterministic world events are not implemented",
     "public Pages deployment should be checked after material UI batches"
   ],
   "requiredStartupReading": [
