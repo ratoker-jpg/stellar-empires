@@ -6,9 +6,9 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 55,
-  "lastMergeSha": "8f3af97dfc6d3885f94fb33f0c16a702850fbaa5",
-  "nextPr": 56,
+  "lastMergedPr": 56,
+  "lastMergeSha": "db35dbf228c2af66f6957957c466ae0b73b38245",
+  "nextPr": 57,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
@@ -16,7 +16,7 @@
   "currentMilestone": "Honest autonomous bot core and living-galaxy foundation",
   "currentBatch": {
     "standard": [52, 53, 54, 55, 56, 57],
-    "completed": [52, 53, 54, 55],
+    "completed": [52, 53, 54, 55, 56],
     "optionalExtensions": [],
     "extensionsStarted": false,
     "plannedCapabilities": [
@@ -51,6 +51,7 @@
     "IndexedDB persistence core, autosave, manual slots, import/export and recovery",
     "seeded galaxy model",
     "fog-aware Galaxy v2 intelligence search and filters",
+    "deterministic neutral pirate bases on ordinary planet and combat contracts",
     "schema-v12 saves with multi-colony, intelligence, debris, logistics and market state",
     "resource economy with energy, population, stability and storage",
     "deterministic building, research, ship and defense queues",
@@ -79,6 +80,7 @@
     "full faction-specific mechanics and balance remain scheduled for later faction-content phases",
     "technology, effect and incomplete UI-state artwork still uses procedural CSS or SVG fallback",
     "bot scheduler cursor is runtime-only and restarts its decision window after reload",
+    "existing schema-v12 saves are not retroactively seeded with pirate bases",
     "expeditions and deterministic world events are not implemented",
     "public Pages deployment should be checked after material UI batches"
   ],
