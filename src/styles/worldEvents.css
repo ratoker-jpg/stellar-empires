@@ -1,0 +1,106 @@
+.world-events-dialog {
+  width: min(980px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--faction-accent, #59a9ff) 38%, #30445f);
+  border-radius: 18px;
+  color: #edf5ff;
+  background: linear-gradient(155deg, rgba(7, 14, 26, 0.99), rgba(3, 7, 14, 0.99));
+  box-shadow: 0 24px 84px rgba(0, 0, 0, 0.6);
+}
+
+.world-events-dialog::backdrop {
+  background: rgba(0, 3, 8, 0.84);
+  backdrop-filter: blur(7px);
+}
+
+.world-events-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(125, 171, 221, 0.18);
+  background: rgba(5, 10, 19, 0.96);
+}
+
+.world-events-header h2,
+.world-events-dialog h3 {
+  margin: 0;
+}
+
+.world-events-status,
+.world-events-active,
+.world-events-cooldowns,
+.world-events-history {
+  display: grid;
+  gap: 12px;
+  margin: 18px 22px;
+  padding: 18px;
+  border: 1px solid rgba(118, 158, 204, 0.18);
+  border-radius: 14px;
+  background: rgba(10, 20, 34, 0.74);
+}
+
+.world-events-status p,
+.world-event-card p,
+.world-events-history p,
+.world-event-card small,
+.world-events-history small {
+  margin: 0;
+}
+
+.world-events-active {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.world-events-active h3,
+.world-events-cooldowns h3,
+.world-events-history h3 {
+  grid-column: 1 / -1;
+}
+
+.world-event-card,
+.world-events-history article {
+  display: grid;
+  gap: 7px;
+  padding: 14px;
+  border: 1px solid rgba(119, 164, 210, 0.18);
+  border-radius: 12px;
+  background: rgba(8, 18, 31, 0.86);
+}
+
+.world-event-card.is-solar-storm {
+  border-left: 3px solid #ffb55c;
+}
+
+.world-event-card.is-mineral-bloom {
+  border-left: 3px solid #70d99a;
+}
+
+.world-event-card.is-pirate-hunt {
+  border-left: 3px solid #ff746f;
+}
+
+.world-event-card.is-anomaly-aftershock {
+  border-left: 3px solid #bc80ff;
+}
+
+.world-event-card small,
+.world-events-history small {
+  color: #92abc5;
+}
+
+.world-events-cooldowns > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(118, 158, 204, 0.12);
+}
+
+.world-events-cooldowns > div:last-child {
+  border-bottom: 0;
+}
