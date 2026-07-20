@@ -1,3 +1,7 @@
+import {
+  addDamagedDefenses,
+  calculateRecoveredDefenses,
+} from '../defense/planetaryDefense';
 import type { ResourceCost } from '../economy/types';
 import type { FleetState } from '../fleets/types';
 import type { PlanetState } from '../planet/types';
@@ -57,6 +61,31 @@ function splitDefenderRemaining(
     if (definition?.kind === 'defense') defenses[unitId] = count;
   }
   return { ships, defenses };
+}
+
+function clampActiveDefenses(
+  initial: Readonly<Record<string, number>>,
+  remaining: Readonly<Record<string, number>>,
+): Readonly<Record<string, number>> {
+  return Object.fromEntries(
+    Object.entries(initial)
+      .map(([unitId, initialCount]) => [
+        unitId,
+        Math.min(initialCount, remaining[unitId] ?? 0),
+      ] as const)
+      .filter(([, count]) => count > 0),
+  );
+}
+
+function addRecoveredToRemaining(
+  remaining: Readonly<Record<string, number>>,
+  recovered: Readonly<Record<string, number>>,
+): Readonly<Record<string, number>> {
+  const result = { ...remaining };
+  for (const [unitId, quantity] of Object.entries(recovered)) {
+    result[unitId] = (result[unitId] ?? 0) + quantity;
+  }
+  return result;
 }
 
 function redistributeDefenderShips(
@@ -161,12 +190,22 @@ export function resolveAttackMission(
     },
   );
   const defenderRemaining = splitDefenderRemaining(resolution.defenderRemaining);
+  const activeDefenses = clampActiveDefenses(
+    target.inventory.defenses,
+    defenderRemaining.defenses,
+  );
+  const defensesRecovered = calculateRecoveredDefenses(
+    target.inventory.defenses,
+    activeDefenses,
+    seed,
+  );
   let updatedTarget: PlanetState = {
     ...target,
     inventory: {
       ...target.inventory,
-      defenses: defenderRemaining.defenses,
+      defenses: activeDefenses,
     },
+    defense: addDamagedDefenses(target.defense, defensesRecovered),
   };
   let fleets = redistributeDefenderShips(
     state.fleets,
@@ -205,11 +244,15 @@ export function resolveAttackMission(
         fleet.id === attackerFleet.id ? updatedAttacker : fleet,
       );
 
+  const debrisDefenderRemaining = addRecoveredToRemaining(
+    resolution.defenderRemaining,
+    defensesRecovered,
+  );
   const baseDebris = calculateDebrisFromLosses(
     attackerFleet.ships,
     resolution.attackerRemaining,
     effectiveDefenderUnits,
-    resolution.defenderRemaining,
+    debrisDefenderRemaining,
   );
   const debrisCreated = addDestroyedCargoDebris(
     baseDebris,
@@ -236,6 +279,7 @@ export function resolveAttackMission(
     defenderInitial: effectiveDefenderUnits,
     attackerRemaining: resolution.attackerRemaining,
     defenderRemaining: resolution.defenderRemaining,
+    defensesRecovered,
     debrisCreated,
     plunderedCargo,
     mode: isPve ? 'pve' : 'pvp',
