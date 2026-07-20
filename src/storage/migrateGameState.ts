@@ -24,6 +24,13 @@ import {
   type EmpireStrategicResources,
   type SpaceObjectState,
 } from '../simulation/pve/spaceObjects';
+import {
+  createInitialWorldEventState,
+  reconcileWorldEventSchedule,
+  type WorldEventHistoryEntry,
+  type WorldEventInstance,
+  type WorldEventState,
+} from '../simulation/pve/worldEvents';
 import { createInitialResearchStates } from '../simulation/research/researchState';
 import type { EmpireResearchState } from '../simulation/research/types';
 import type { GameState } from '../simulation/types';
@@ -242,10 +249,48 @@ function readStrategicResources(
     (empireId) => entries.find((entry) => entry.empireId === empireId) ?? { empireId, exoticMatter: 0 },
   );
 }
+function isWorldEventDefinitionId(value: unknown): boolean {
+  return value === 'solar-storm' || value === 'mineral-bloom' || value === 'pirate-hunt' || value === 'anomaly-aftershock';
+}
+function isWorldEventTargetType(value: unknown): boolean {
+  return value === 'system' || value === 'space-object' || value === 'planet';
+}
+function readWorldEventInstance(value: unknown): WorldEventInstance | undefined {
+  if (!isRecord(value) || typeof value.id !== 'string' || !isWorldEventDefinitionId(value.definitionId) ||
+    !isWorldEventTargetType(value.targetType) || typeof value.targetId !== 'string' ||
+    !isNonNegativeInteger(value.startedAt) || !isNonNegativeInteger(value.endsAt) ||
+    value.endsAt < value.startedAt || !isNonNegativeInteger(value.chainDepth)) return undefined;
+  return value as unknown as WorldEventInstance;
+}
+function readWorldEvents(value: unknown, elapsedSeconds: number): WorldEventState | undefined {
+  if (value === undefined) return createInitialWorldEventState(elapsedSeconds);
+  if (!isRecord(value) || !Array.isArray(value.active) || !Array.isArray(value.history) ||
+    !isRecord(value.cooldowns) || !isNonNegativeInteger(value.nextEvaluationAt)) return undefined;
+  const active: WorldEventInstance[] = [];
+  for (const item of value.active) {
+    const instance = readWorldEventInstance(item);
+    if (instance === undefined) return undefined;
+    active.push(instance);
+  }
+  const history: WorldEventHistoryEntry[] = [];
+  for (const item of value.history) {
+    const instance = readWorldEventInstance(item);
+    if (instance === undefined || !isRecord(item) || !isNonNegativeInteger(item.completedAt) ||
+      (item.completion !== 'completed' && item.completion !== 'recovered')) return undefined;
+    history.push({ ...instance, completedAt: item.completedAt, completion: item.completion });
+  }
+  const cooldowns: Record<string, number> = {};
+  for (const [definitionId, cooldownUntil] of Object.entries(value.cooldowns)) {
+    if (!isWorldEventDefinitionId(definitionId) || !isNonNegativeInteger(cooldownUntil)) return undefined;
+    cooldowns[definitionId] = cooldownUntil;
+  }
+  return { active, history, cooldowns, nextEvaluationAt: value.nextEvaluationAt };
+}
 
 export function migrateGameState(value: unknown): GameState | undefined {
   if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(value.schemaVersion as number)) return undefined;
   if (!Array.isArray(value.planets) || !Array.isArray(value.empires) || !isRecord(value.galaxy) ||
+    !isRecord(value.clock) || !isNonNegativeInteger(value.clock.elapsedSeconds) ||
     typeof value.seed !== 'number' || !Number.isInteger(value.seed)) return undefined;
   const empireIds = value.empires.filter((empireId): empireId is string => typeof empireId === 'string');
   if (empireIds.length !== value.empires.length) return undefined;
@@ -264,10 +309,11 @@ export function migrateGameState(value: unknown): GameState | undefined {
   const market = readMarket(value.market);
   const spaceObjects = readSpaceObjects(value.spaceObjects, galaxy, value.seed);
   const strategicResources = readStrategicResources(value.strategicResources, empireIds);
+  const worldEvents = readWorldEvents(value.worldEvents, value.clock.elapsedSeconds);
   if (research === undefined || fleets === undefined || intelligence === undefined || debrisFields === undefined ||
     logisticsRoutes === undefined || market === undefined || spaceObjects === undefined ||
-    strategicResources === undefined) return undefined;
-  return {
+    strategicResources === undefined || worldEvents === undefined) return undefined;
+  const migrated = {
     ...value,
     schemaVersion: 12,
     planets,
@@ -279,5 +325,7 @@ export function migrateGameState(value: unknown): GameState | undefined {
     market,
     spaceObjects,
     strategicResources,
+    worldEvents,
   } as unknown as GameState;
+  return reconcileWorldEventSchedule(migrated);
 }
