@@ -32,6 +32,39 @@
   color: #9eb3c1;
 }
 
+.defense-overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 22px 12px;
+}
+
+.defense-overview > div {
+  display: grid;
+  gap: 4px;
+  min-height: 76px;
+  padding: 11px 12px;
+  border: 1px solid rgba(96, 205, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(7, 21, 34, 0.7);
+}
+
+.defense-overview span {
+  color: #6bcfff;
+  font-size: 0.7rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.defense-overview strong {
+  font-size: 1.16rem;
+}
+
+.defense-overview small {
+  color: #8298a7;
+  line-height: 1.3;
+}
+
 .production-queue {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) minmax(190px, 2fr) auto;
@@ -44,6 +77,11 @@
   border-radius: 8px;
   color: #94acbb;
   background: rgba(7, 21, 34, 0.75);
+}
+
+.defense-repair-queue {
+  border-color: rgba(225, 185, 91, 0.26);
+  background: rgba(36, 28, 12, 0.42);
 }
 
 .production-queue button,
@@ -140,6 +178,44 @@
   font-size: 0.75rem;
 }
 
+.defense-repair-controls {
+  display: grid;
+  grid-template-columns: auto minmax(72px, 92px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(225, 185, 91, 0.18);
+}
+
+.defense-repair-controls > strong {
+  color: #e3bd6a;
+  font-size: 0.76rem;
+}
+
+.defense-repair-controls .production-status {
+  min-width: 0;
+}
+
+.defense-repair-controls .production-action {
+  border-color: rgba(225, 185, 91, 0.35);
+  background: rgba(60, 45, 14, 0.74);
+}
+
+@media (max-width: 860px) {
+  .defense-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .defense-repair-controls {
+    grid-template-columns: 1fr auto;
+  }
+
+  .defense-repair-controls .production-status {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 760px) {
   .production-grid,
   .production-queue {
@@ -148,5 +224,19 @@
 
   .production-card {
     grid-template-columns: 96px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .defense-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .production-card {
+    grid-template-columns: 1fr;
+  }
+
+  .production-art {
+    min-height: 130px;
   }
 }
