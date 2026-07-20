@@ -6,35 +6,42 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 45,
-  "lastMergeSha": "91ae8ddfec4c5b788f6d4a81b989e6af1157dc2e",
-  "nextPr": 46,
+  "lastMergedPr": 51,
+  "lastMergeSha": "62a3ea423a275c402fef1396777030015f586851",
+  "nextPr": 52,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
-  "governanceUpdateNote": "On 2026-07-20 the six-PR faction integration batch #40-#45 was completed. The stale superseded PR #29 was closed without merge. Actual GitHub history remains authoritative where legacy roadmap numbering differs.",
-  "currentMilestone": "Playable three-faction visual baseline and new-game faction selection",
+  "governanceUpdateNote": "Actual GitHub history is authoritative. The completed actual PR #46-#51 batch delivered roadmap capabilities originally numbered #37-#43 because accepted faction integration PRs shifted GitHub numbering.",
+  "currentMilestone": "Honest autonomous bot core and living-galaxy foundation",
   "currentBatch": {
-    "standard": [40, 41, 42, 43, 44, 45],
-    "completed": [40, 41, 42, 43, 44, 45],
+    "standard": [52, 53, 54, 55, 56, 57],
+    "completed": [],
     "optionalExtensions": [],
     "extensionsStarted": false,
-    "extensionReason": "The standard six-PR batch fully delivered the coherent faction-selection step; no unrelated extension was added merely to reach eight PRs."
+    "plannedCapabilities": [
+      "bot fleet and mission planner",
+      "bot threat, target and recovery planner",
+      "autonomous scheduler, personalities and difficulty",
+      "galaxy v2 search, filters and information fog",
+      "neutral forces and pirate bases",
+      "expeditions and deterministic space events"
+    ]
   },
   "nextBatch": {
-    "standard": [46, 47, 48, 49, 50, 51],
+    "standard": [58, 59, 60, 61, 62, 63],
     "plannedCapabilities": [
-      "planet specializations and development templates",
-      "persistent interplanetary logistics routes",
-      "single-player trade center and dynamic market",
-      "honest bot perception and memory",
-      "bot economic and building planner",
-      "bot research and production planner"
+      "asteroids, gas objects and anomalies",
+      "special missions and world event framework",
+      "PvE balance, rewards and unified reports",
+      "full planetary defense loop",
+      "combat engine v2 weapon and protection types",
+      "ship upgrades"
     ],
-    "optionalExtensions": [52, 53],
+    "optionalExtensions": [64, 65],
     "optionalCapabilities": [
-      "bot fleet and mission planner",
-      "bot threat, target and recovery planner"
+      "class skills, formations and priorities",
+      "admiral experience and ability branches"
     ]
   },
   "deliveredCapabilities": [
@@ -43,18 +50,21 @@
     "deterministic simulation commands, events, clock, replay and checksum",
     "IndexedDB persistence core, autosave, manual slots, import/export and recovery",
     "seeded galaxy model",
-    "schema-v9 saves with multi-colony, intelligence and debris state",
+    "schema-v12 saves with multi-colony, intelligence, debris, logistics and market state",
     "resource economy with energy, population, stability and storage",
     "deterministic building, research, ship and defense queues",
     "serialized fleets with transport, deployment, scout, attack, recycle and colonize missions",
     "deterministic combat, battle reports, debris, plunder and recycling",
     "colonization technology and playable multi-colony empire management",
-    "origin-aware fleet logistics planner with cargo, route and fuel validation",
+    "planet specializations and non-automatic development templates",
+    "persistent interplanetary logistics routes",
+    "dynamic deterministic resource market",
+    "honest bot perception and stale intelligence memory",
+    "bot economic and building planner",
+    "bot research and production planner",
     "generated buildings, ships and defense runtime atlases for Aegis, Synod and Veyra",
     "generated hero, emblem and background art for all three factions",
     "data-driven faction runtime asset registry with explicit technology and effect fallbacks",
-    "runtime atlas selection from the player planet factionId",
-    "generated faction showcase and faction-aware command-shell theming",
     "new-game selection of Aegis, Synod or Veyra",
     "selected faction persisted through saves and inherited by new colonies",
     "canonical PR roadmap through Release 1.0",
@@ -64,8 +74,8 @@
     "all three playable factions currently share the Aegis mechanical building, research and unit definitions",
     "full faction-specific mechanics and balance remain scheduled for later faction-content phases",
     "technology, effect and incomplete UI-state artwork still uses procedural CSS or SVG fallback",
-    "regular logistics routes, planet specializations and the dynamic market are not implemented",
-    "autonomous bot planners are not implemented",
+    "bot planners currently return commands but are not yet executed by an autonomous scheduler",
+    "neutral PvE targets, expeditions and world events are not implemented",
     "public Pages deployment should be checked after material UI batches"
   ],
   "requiredStartupReading": [
