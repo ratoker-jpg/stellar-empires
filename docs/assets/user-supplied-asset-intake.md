@@ -1,6 +1,6 @@
 # User-supplied asset intake
 
-**Status:** provenance and inventory validated; binary Git publication pending  
+**Status:** provenance, dimensions, byte sizes and SHA-256 validated; binary Git publication pending  
 **Date:** 2026-07-21
 
 ## Packs
@@ -14,6 +14,28 @@ Two original/generated packs supplied specifically for Stellar Empires were insp
 | **Total** | **162** | **161,379,761** | — |
 
 Largest individual file: 3,494,229 bytes. All locally generated SHA-256 values matched the inspected files.
+
+## Registered inventory
+
+- `user-supplied-asset-inventory.json` registers pack totals and normalized target directories.
+- `user-supplied-asset-inventory/*.tsv` records every source path, byte size, SHA-256 and image dimensions.
+- `tools/import_user_asset_packs.py` extracts only registered files and refuses unexpected, missing, oversized or hash-mismatched members.
+
+Validated local import command:
+
+```powershell
+py tools\import_user_asset_packs.py --clean `
+  --starter "D:\Downloads\stellar_empires_starter_asset_pack-fixed(1).zip" `
+  --faction "D:\Downloads\stellar_empires_faction_assets_delivery_v1(1).zip"
+```
+
+Expected result:
+
+```text
+PASS starter: 54 files, 51659961 bytes
+PASS faction-delivery-v1: 108 files, 109719800 bytes
+PASS total: 162 files, 161379761 bytes
+```
 
 ## Provenance
 
@@ -46,4 +68,4 @@ Never import:
 
 ## Publication blocker
 
-The connected GitHub write API accepts UTF-8 content and explicit blob bytes, but does not accept a mounted local binary path. This documentation PR records the validated intake honestly; binary publication must be performed by a local Git client/Codex session with the supplied archives.
+The connected GitHub write API accepts UTF-8 content and explicit blob bytes, but does not accept a mounted local binary path. This PR therefore commits the full verified inventory and deterministic importer, while binary publication must be completed by a local Git client/Codex session using the supplied archives. This limitation is explicit in `project-status.json`; the assets are not misreported as committed or runtime-connected.
