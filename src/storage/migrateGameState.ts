@@ -120,7 +120,8 @@ function readFleets(value: unknown): readonly FleetState[] | undefined {
       ...(item as unknown as FleetState),
       mission: isRecord(item.mission) &&
         (item.mission.kind === 'deploy' || item.mission.kind === 'transport' || item.mission.kind === 'scout' ||
-          item.mission.kind === 'attack' || item.mission.kind === 'recycle' || item.mission.kind === 'colonize') &&
+          item.mission.kind === 'attack' || item.mission.kind === 'recycle' || item.mission.kind === 'colonize' ||
+          item.mission.kind === 'expedition') &&
         typeof item.mission.targetPlanetId === 'string'
         ? { kind: item.mission.kind, targetPlanetId: item.mission.targetPlanetId }
         : null,

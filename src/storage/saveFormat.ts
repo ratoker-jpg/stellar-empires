@@ -73,7 +73,8 @@ function isFleet(value: unknown): boolean {
   const validMission = value !== null && isRecord(value) && (value.mission === null ||
     (isRecord(value.mission) &&
       (value.mission.kind === 'deploy' || value.mission.kind === 'transport' || value.mission.kind === 'scout' ||
-        value.mission.kind === 'attack' || value.mission.kind === 'recycle' || value.mission.kind === 'colonize') &&
+        value.mission.kind === 'attack' || value.mission.kind === 'recycle' || value.mission.kind === 'colonize' ||
+        value.mission.kind === 'expedition') &&
       typeof value.mission.targetPlanetId === 'string'));
   return validMission && typeof value.id === 'string' && typeof value.empireId === 'string' &&
     typeof value.originPlanetId === 'string' && ['stationed', 'outbound', 'holding', 'returning'].includes(value.status as string) &&

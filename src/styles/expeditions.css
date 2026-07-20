@@ -1,0 +1,104 @@
+.expedition-dialog {
+  width: min(900px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  border: 1px solid color-mix(in srgb, var(--faction-primary, #66d8ff) 45%, #182636);
+  border-radius: 18px;
+  padding: 0;
+  background: rgba(4, 9, 16, 0.97);
+  color: #e9f7ff;
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.72);
+}
+
+.expedition-dialog::backdrop {
+  background: rgba(0, 3, 8, 0.78);
+  backdrop-filter: blur(8px);
+}
+
+.expedition-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid rgba(137, 193, 224, 0.16);
+}
+
+.expedition-header h2 {
+  margin: 4px 0 0;
+  font-size: 24px;
+}
+
+.expedition-launch,
+.expedition-active,
+.expedition-reports {
+  display: grid;
+  gap: 10px;
+  margin: 0 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(136, 193, 223, 0.12);
+}
+
+.expedition-reports {
+  max-height: 34vh;
+  overflow: auto;
+  padding-bottom: 24px;
+  border-bottom: 0;
+}
+
+.expedition-dialog h3 {
+  margin: 0 0 2px;
+  font-size: 15px;
+  color: #cfeeff;
+}
+
+.expedition-dialog select,
+.expedition-dialog button {
+  border: 1px solid rgba(126, 183, 215, 0.24);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(11, 20, 31, 0.92);
+  color: #e8f6ff;
+}
+
+.expedition-dialog button:not(.dialog-close):hover:not(:disabled) {
+  border-color: var(--faction-primary, #6ed8ff);
+}
+
+.expedition-dialog button:disabled {
+  opacity: 0.46;
+  cursor: not-allowed;
+}
+
+.expedition-preview {
+  margin: 0;
+  color: #99b8ca;
+  font-size: 12px;
+}
+
+.expedition-preview.is-blocked {
+  color: #f2a67d;
+}
+
+.expedition-active article,
+.expedition-reports article {
+  display: grid;
+  gap: 6px;
+  border: 1px solid rgba(126, 183, 215, 0.16);
+  border-radius: 11px;
+  padding: 12px;
+  background: rgba(11, 21, 32, 0.7);
+}
+
+.expedition-active article {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.expedition-active article p,
+.expedition-reports article p,
+.expedition-reports article small,
+.expedition-dialog section > p {
+  margin: 0;
+  color: #91aebe;
+  font-size: 11px;
+}

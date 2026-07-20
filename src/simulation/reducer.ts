@@ -2,11 +2,7 @@ import { accrueAllPlanetEconomies } from './economy/planetEconomy';
 import { enqueueEvent } from './eventQueue';
 import { canUseMechanicalDefinition } from './factions/sharedMechanicalCatalog';
 import { createFleet, disbandFleet } from './fleets/fleetCommands';
-import {
-  applyFlightEvent,
-  recallFleet,
-  sendFleet,
-} from './fleets/flightCommands';
+import { applyFlightEvent } from './fleets/flightCommands';
 import {
   createLogisticsRoute,
   deleteLogisticsRoute,
@@ -35,6 +31,14 @@ import {
   setPlanetSpecialization,
 } from './planet/specializationCommands';
 import type { PlanetState } from './planet/types';
+import {
+  recallFleetWithExpeditionSupport,
+  sendFleetWithExpeditionGuard,
+} from './pve/expeditionFleetCommands';
+import {
+  applyExpeditionEvent,
+  startExpedition,
+} from './pve/expeditions';
 import { AEGIS_RESEARCH_CATALOG } from './research/catalog';
 import {
   applySpeedPercent,
@@ -101,7 +105,8 @@ function scheduleEvent(
     command.payload.type === 'RESEARCH_COMPLETE' ||
     command.payload.type === 'UNIT_PRODUCTION_COMPLETE' ||
     command.payload.type === 'FLEET_ARRIVE' ||
-    command.payload.type === 'FLEET_RETURN'
+    command.payload.type === 'FLEET_RETURN' ||
+    command.payload.type === 'EXPEDITION_RESOLVE'
   ) {
     return {
       ok: false,
@@ -285,6 +290,9 @@ function cancelBuilding(
 }
 
 function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
+  if (event.payload.type === 'EXPEDITION_RESOLVE') {
+    return applyExpeditionEvent(state, event);
+  }
   if (event.payload.type === 'FLEET_ARRIVE' || event.payload.type === 'FLEET_RETURN') {
     return applyFlightEvent(state, event);
   }
@@ -403,9 +411,11 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
     case 'DISBAND_FLEET':
       return disbandFleet(state, command);
     case 'SEND_FLEET':
-      return sendFleet(state, command);
+      return sendFleetWithExpeditionGuard(state, command);
+    case 'START_EXPEDITION':
+      return startExpedition(state, command);
     case 'RECALL_FLEET':
-      return recallFleet(state, command);
+      return recallFleetWithExpeditionSupport(state, command);
     case 'ADVANCE_TIME':
       return advanceTime(state, command);
   }

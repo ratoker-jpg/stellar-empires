@@ -11,6 +11,7 @@ import type {
   PlanetSpecializationId,
 } from './planet/specialization';
 import type { PlanetState } from './planet/types';
+import type { ExpeditionReport } from './pve/expeditions';
 import type { EmpireResearchState } from './research/types';
 import type { UnitKind } from './units/types';
 
@@ -57,6 +58,10 @@ export type GameEventPayload =
   | {
       readonly type: 'BATTLE_REPORT';
       readonly report: BattleReport;
+    }
+  | {
+      readonly type: 'EXPEDITION_RESOLVE';
+      readonly report: ExpeditionReport;
     };
 
 export interface ScheduledGameEvent {
@@ -173,6 +178,12 @@ export type GameCommand =
       readonly fleetId: string;
       readonly targetPlanetId: string;
       readonly mission: FleetMissionKind;
+    }
+  | {
+      readonly type: 'START_EXPEDITION';
+      readonly empireId: string;
+      readonly fleetId: string;
+      readonly targetGalaxyPlanetId: string;
     }
   | {
       readonly type: 'RECALL_FLEET';
