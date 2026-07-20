@@ -5,6 +5,7 @@ import {
 } from '../simulation/economy/planetEconomy';
 import type { PlanetEconomyState, ResourceId } from '../simulation/economy/types';
 import type { FleetState } from '../simulation/fleets/types';
+import type { GalaxyModel } from '../simulation/galaxy/types';
 import { createInitialIntelligenceStates } from '../simulation/intelligence/intelligenceState';
 import type { EmpireIntelligenceState } from '../simulation/intelligence/types';
 import type { LogisticsRoute } from '../simulation/logistics/types';
@@ -17,6 +18,12 @@ import {
 } from '../simulation/planet/specialization';
 import type { PlanetBuildingState } from '../simulation/planet/types';
 import { createPlanetZones } from '../simulation/planet/zones';
+import {
+  createInitialSpaceObjects,
+  createInitialStrategicResources,
+  type EmpireStrategicResources,
+  type SpaceObjectState,
+} from '../simulation/pve/spaceObjects';
 import { createInitialResearchStates } from '../simulation/research/researchState';
 import type { EmpireResearchState } from '../simulation/research/types';
 import type { GameState } from '../simulation/types';
@@ -121,7 +128,7 @@ function readFleets(value: unknown): readonly FleetState[] | undefined {
       mission: isRecord(item.mission) &&
         (item.mission.kind === 'deploy' || item.mission.kind === 'transport' || item.mission.kind === 'scout' ||
           item.mission.kind === 'attack' || item.mission.kind === 'recycle' || item.mission.kind === 'colonize' ||
-          item.mission.kind === 'expedition') &&
+          item.mission.kind === 'expedition' || item.mission.kind === 'space-object') &&
         typeof item.mission.targetPlanetId === 'string'
         ? { kind: item.mission.kind, targetPlanetId: item.mission.targetPlanetId }
         : null,
@@ -196,10 +203,50 @@ function readMarket(value: unknown): MarketState | undefined {
     trades,
   };
 }
+function readSpaceObjects(
+  value: unknown,
+  galaxy: GalaxyModel,
+  seed: number,
+): readonly SpaceObjectState[] | undefined {
+  if (value === undefined) return createInitialSpaceObjects(galaxy, seed);
+  if (!Array.isArray(value)) return undefined;
+  const objects: SpaceObjectState[] = [];
+  for (const item of value) {
+    if (!isRecord(item) || typeof item.id !== 'string' || typeof item.systemId !== 'string' ||
+      !isPositiveInteger(item.position) ||
+      (item.kind !== 'asteroid' && item.kind !== 'gas-cloud' && item.kind !== 'anomaly') ||
+      !isPositiveInteger(item.initialYield) || !isNonNegativeInteger(item.remainingYield) ||
+      item.remainingYield > item.initialYield || !isNonNegativeInteger(item.hazardPermille) ||
+      item.hazardPermille > 1_000 ||
+      (item.controllerEmpireId !== null && typeof item.controllerEmpireId !== 'string') ||
+      (item.controlExpiresAt !== null && !isNonNegativeInteger(item.controlExpiresAt)) ||
+      !isNonNegativeInteger(item.cooldownUntil)) return undefined;
+    objects.push(item as unknown as SpaceObjectState);
+  }
+  return objects;
+}
+function readStrategicResources(
+  value: unknown,
+  empireIds: readonly string[],
+): readonly EmpireStrategicResources[] | undefined {
+  if (value === undefined) return createInitialStrategicResources(empireIds);
+  if (!Array.isArray(value)) return undefined;
+  const entries: EmpireStrategicResources[] = [];
+  for (const item of value) {
+    if (!isRecord(item) || typeof item.empireId !== 'string' || !isNonNegativeInteger(item.exoticMatter)) {
+      return undefined;
+    }
+    entries.push({ empireId: item.empireId, exoticMatter: item.exoticMatter });
+  }
+  return empireIds.map(
+    (empireId) => entries.find((entry) => entry.empireId === empireId) ?? { empireId, exoticMatter: 0 },
+  );
+}
 
 export function migrateGameState(value: unknown): GameState | undefined {
   if (!isRecord(value) || ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(value.schemaVersion as number)) return undefined;
-  if (!Array.isArray(value.planets) || !Array.isArray(value.empires)) return undefined;
+  if (!Array.isArray(value.planets) || !Array.isArray(value.empires) || !isRecord(value.galaxy) ||
+    typeof value.seed !== 'number' || !Number.isInteger(value.seed)) return undefined;
   const empireIds = value.empires.filter((empireId): empireId is string => typeof empireId === 'string');
   if (empireIds.length !== value.empires.length) return undefined;
   const planets: Record<string, unknown>[] = [];
@@ -208,13 +255,18 @@ export function migrateGameState(value: unknown): GameState | undefined {
     if (migrated === undefined) return undefined;
     planets.push(migrated);
   }
+  const galaxy = value.galaxy as unknown as GalaxyModel;
   const research = readResearchStates(value.research, empireIds);
   const fleets = readFleets(value.fleets);
   const intelligence = readIntelligenceStates(value.intelligence, empireIds);
   const debrisFields = readDebrisFields(value.debrisFields);
   const logisticsRoutes = readLogisticsRoutes(value.logisticsRoutes);
   const market = readMarket(value.market);
-  if (research === undefined || fleets === undefined || intelligence === undefined || debrisFields === undefined || logisticsRoutes === undefined || market === undefined) return undefined;
+  const spaceObjects = readSpaceObjects(value.spaceObjects, galaxy, value.seed);
+  const strategicResources = readStrategicResources(value.strategicResources, empireIds);
+  if (research === undefined || fleets === undefined || intelligence === undefined || debrisFields === undefined ||
+    logisticsRoutes === undefined || market === undefined || spaceObjects === undefined ||
+    strategicResources === undefined) return undefined;
   return {
     ...value,
     schemaVersion: 12,
@@ -225,5 +277,7 @@ export function migrateGameState(value: unknown): GameState | undefined {
     debrisFields,
     logisticsRoutes,
     market,
+    spaceObjects,
+    strategicResources,
   } as unknown as GameState;
 }
