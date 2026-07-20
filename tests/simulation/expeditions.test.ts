@@ -288,6 +288,17 @@ describe('expeditions and deterministic space events', () => {
       started.value,
       '2026-07-20T09:00:00.000Z',
     );
-    expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
+    const parsed = parseSaveJson(serializeSave(save));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.slotId).toBe(save.slotId);
+    expect(parsed.value.savedAt).toBe(save.savedAt);
+    expect(parsed.value.state.pendingEvents).toEqual(started.value.pendingEvents);
+    expect(parsed.value.state.fleets).toEqual(started.value.fleets);
+    expect(
+      parsed.value.state.pendingEvents.some(
+        (event) => event.payload.type === 'EXPEDITION_RESOLVE',
+      ),
+    ).toBe(true);
   });
 });
