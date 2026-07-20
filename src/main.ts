@@ -7,6 +7,7 @@ import './styles/galaxyIntel.css';
 import './styles/expeditions.css';
 import './styles/spaceObjects.css';
 import './styles/worldEvents.css';
+import './styles/missionReports.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
 import './styles/planetDevelopment.css';
@@ -35,6 +36,7 @@ import { applyFactionShellIdentity } from './ui/factionShellIdentity';
 import { mountGalaxyIntelPanel } from './ui/galaxyIntelPanel';
 import { mountLogisticsRoutesPanel } from './ui/logisticsRoutesPanel';
 import { mountMarketPanel } from './ui/marketPanel';
+import { mountMissionReportsPanel } from './ui/missionReportsPanel';
 import { selectNewGameFaction } from './ui/newGameFactionPicker';
 import { mountPlanetDevelopmentControls } from './ui/planetDevelopmentControls';
 import {
@@ -155,6 +157,7 @@ async function bootstrap(): Promise<void> {
   mountExpeditionPanel(commandBridge);
   mountSpaceObjectsPanel(commandBridge);
   mountWorldEventsPanel({ getState: () => runtimeState });
+  mountMissionReportsPanel({ getState: () => runtimeState });
   mountPlanetDevelopmentControls(commandBridge);
   mountLogisticsRoutesPanel(commandBridge);
   mountMarketPanel(commandBridge);
