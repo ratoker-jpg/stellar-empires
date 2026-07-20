@@ -9,6 +9,12 @@ export default defineConfig(({ mode }) => ({
     outDir: 'dist',
     sourcemap: true,
     chunkSizeWarningLimit: 1600,
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        'ui-sandbox': 'ui-sandbox.html',
+      },
+    },
   },
   server: {
     host: '0.0.0.0',
