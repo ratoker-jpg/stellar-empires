@@ -43,6 +43,7 @@ export interface WorldEventState {
 }
 
 export const WORLD_EVENT_EVALUATION_INTERVAL_SECONDS = 1_800;
+export const MAX_WORLD_EVENT_CHAIN_DEPTH = 3;
 
 export const WORLD_EVENT_CATALOG: Readonly<Record<WorldEventDefinitionId, WorldEventDefinition>> = {
   'solar-storm': {
@@ -94,11 +95,6 @@ function hashText(value: string): number {
     hash = Math.imul(hash, 16_777_619);
   }
   return hash >>> 0;
-}
-
-function minimum(values: readonly (number | undefined)[]): number | undefined {
-  const defined = values.filter((value): value is number => value !== undefined);
-  return defined.length === 0 ? undefined : Math.min(...defined);
 }
 
 export function createInitialWorldEventState(
@@ -157,7 +153,13 @@ export function startWorldEventAt(
   at: number,
 ): GameState {
   const definition = WORLD_EVENT_CATALOG[definitionId];
-  if (definition.targetType !== targetType) return state;
+  if (
+    definition.targetType !== targetType ||
+    chainDepth > MAX_WORLD_EVENT_CHAIN_DEPTH ||
+    !targetCandidates(state, definition).includes(targetId)
+  ) {
+    return state;
+  }
   if (
     state.worldEvents.active.some(
       (event) => event.definitionId === definitionId && event.targetId === targetId,
@@ -253,7 +255,7 @@ function completeWorldEvent(
       },
     },
   };
-  if (definition.chainTo !== null && instance.chainDepth < 3) {
+  if (definition.chainTo !== null && instance.chainDepth < MAX_WORLD_EVENT_CHAIN_DEPTH) {
     const chain = WORLD_EVENT_CATALOG[definition.chainTo];
     const sequence = working.nextEventSequence;
     const chainEvent: ScheduledGameEvent = {
@@ -281,19 +283,21 @@ export function applyWorldEventEvent(
   state: GameState,
   event: ScheduledGameEvent,
 ): GameState {
-  if (event.payload.type === 'WORLD_EVENT_START') {
+  const payload = event.payload;
+  if (payload.type === 'WORLD_EVENT_START') {
     return startWorldEventAt(
       state,
-      event.payload.definitionId,
-      event.payload.targetType,
-      event.payload.targetId,
-      event.payload.chainDepth,
+      payload.definitionId,
+      payload.targetType,
+      payload.targetId,
+      payload.chainDepth,
       state.clock.elapsedSeconds,
     );
   }
-  if (event.payload.type !== 'WORLD_EVENT_END') return state;
+  if (payload.type !== 'WORLD_EVENT_END') return state;
+  const instanceId = payload.instanceId;
   const instance = state.worldEvents.active.find(
-    (candidate) => candidate.id === event.payload.instanceId,
+    (candidate) => candidate.id === instanceId,
   );
   return instance === undefined
     ? state
@@ -330,14 +334,18 @@ export function reconcileWorldEventSchedule(state: GameState): GameState {
   const active = state.worldEvents.active.filter(
     (event) => event.endsAt > state.clock.elapsedSeconds,
   );
-  let pendingEvents = [...state.pendingEvents];
+  const activeIds = new Set(active.map((event) => event.id));
+  let pendingEvents = state.pendingEvents.filter(
+    (pending) =>
+      pending.payload.type !== 'WORLD_EVENT_END' ||
+      activeIds.has(pending.payload.instanceId),
+  );
   let nextEventSequence = state.nextEventSequence;
   for (const event of active) {
-    const hasEnd = pendingEvents.some(
-      (pending) =>
-        pending.payload.type === 'WORLD_EVENT_END' &&
-        pending.payload.instanceId === event.id,
-    );
+    const hasEnd = pendingEvents.some((pending) => {
+      const payload = pending.payload;
+      return payload.type === 'WORLD_EVENT_END' && payload.instanceId === event.id;
+    });
     if (hasEnd) continue;
     pendingEvents = [
       ...pendingEvents,
@@ -361,6 +369,16 @@ export function reconcileWorldEventSchedule(state: GameState): GameState {
       completion: 'recovered' as const,
     })),
   ];
+  const cooldowns: Partial<Record<WorldEventDefinitionId, number>> = {
+    ...state.worldEvents.cooldowns,
+  };
+  for (const event of expired) {
+    const cooldownUntil = event.endsAt + WORLD_EVENT_CATALOG[event.definitionId].cooldownSeconds;
+    cooldowns[event.definitionId] = Math.max(
+      cooldowns[event.definitionId] ?? 0,
+      cooldownUntil,
+    );
+  }
   return {
     ...state,
     nextEventSequence,
@@ -369,12 +387,11 @@ export function reconcileWorldEventSchedule(state: GameState): GameState {
       ...state.worldEvents,
       active,
       history,
-      nextEvaluationAt: minimum([
+      cooldowns,
+      nextEvaluationAt:
         state.worldEvents.nextEvaluationAt > state.clock.elapsedSeconds
           ? state.worldEvents.nextEvaluationAt
-          : undefined,
-        state.clock.elapsedSeconds + WORLD_EVENT_EVALUATION_INTERVAL_SECONDS,
-      ]) ?? state.clock.elapsedSeconds + WORLD_EVENT_EVALUATION_INTERVAL_SECONDS,
+          : state.clock.elapsedSeconds + WORLD_EVENT_EVALUATION_INTERVAL_SECONDS,
     },
   };
 }
