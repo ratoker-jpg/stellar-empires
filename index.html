@@ -148,15 +148,18 @@
 
           <section id="planet-view" class="planet-view" aria-label="Управление планетой" hidden>
             <header class="planet-header">
-              <div>
+              <div class="planet-header__identity">
                 <p id="planet-role-label" class="panel-label">Домашняя колония</p>
-                <h1 id="planet-name">—</h1>
-                <p>Трёхзонная планетарная модель</p>
+                <div class="planet-title-row">
+                  <h1 id="planet-name">—</h1>
+                  <span id="planet-coordinates" class="planet-coordinate-chip">—</span>
+                </div>
+                <p id="planet-specialization-label">Трёхзонная планетарная модель</p>
               </div>
               <div class="planet-header-controls">
                 <label class="planet-selector-label">
                   <span>Активная колония</span>
-                  <select id="planet-selector" aria-label="Выбрать активную колонию"></select>
+                  <select id="planet-selector" class="se-select" aria-label="Выбрать активную колонию"></select>
                 </label>
                 <div class="planet-clock">
                   <small>Время мира</small>
@@ -165,46 +168,54 @@
               </div>
             </header>
 
-            <div class="planet-zone-strip" aria-label="Зоны планеты">
-              <div><span>Ресурсная</span><strong id="zone-resource-fields">—</strong></div>
-              <div><span>Промышленная</span><strong id="zone-industry-fields">—</strong></div>
-              <div><span>Военная</span><strong id="zone-military-fields">—</strong></div>
+            <div id="planet-mode-tabs" class="planet-mode-tabs" role="tablist" aria-label="Режим планетарного экрана">
+              <button class="planet-mode-tab" type="button" role="tab" data-planet-mode="overview" aria-selected="true">
+                <span>Обзор</span><strong id="zone-overview-status">Колония</strong>
+              </button>
+              <button class="planet-mode-tab" type="button" role="tab" data-planet-mode="resource" aria-selected="false">
+                <span>Ресурсная</span><strong id="zone-resource-fields">—</strong>
+              </button>
+              <button class="planet-mode-tab" type="button" role="tab" data-planet-mode="industry" aria-selected="false">
+                <span>Промышленная</span><strong id="zone-industry-fields">—</strong>
+              </button>
+              <button class="planet-mode-tab" type="button" role="tab" data-planet-mode="military" aria-selected="false">
+                <span>Военная</span><strong id="zone-military-fields">—</strong>
+              </button>
             </div>
 
-            <div class="planet-content">
-              <section class="building-catalog-panel">
-                <div class="planet-section-heading">
-                  <div>
-                    <p class="panel-label">Инфраструктура</p>
-                    <h2>Здания фракции</h2>
-                  </div>
-                  <span>Выберите строительство или улучшение</span>
-                </div>
-                <div id="planet-building-grid" class="planet-building-grid"></div>
-              </section>
+            <section class="planet-queue-bar" aria-label="Очередь строительства">
+              <div class="planet-queue-heading">
+                <p class="panel-label">Верхняя очередь</p>
+                <strong>Строительство колонии</strong>
+              </div>
+              <div id="planet-build-queue" class="planet-build-queue"></div>
+              <div class="planet-time-controls" aria-label="Управление временем">
+                <button type="button" data-advance-seconds="60">+1 мин</button>
+                <button type="button" data-advance-seconds="600">+10 мин</button>
+                <button type="button" data-advance-seconds="3600">+1 час</button>
+                <button id="advance-next-event" class="se-button se-button--secondary" type="button">До события</button>
+              </div>
+            </section>
 
-              <aside class="planet-operations">
-                <section class="operation-card">
-                  <div class="planet-section-heading">
+            <div class="planet-workspace">
+              <aside id="planet-context-panel" class="planet-context-panel" aria-label="Контекст планеты"></aside>
+
+              <main id="planet-stage" class="planet-stage">
+                <section id="planet-overview-stage" class="planet-overview-stage" aria-label="Обзор колонии"></section>
+                <section id="planet-zone-stage" class="planet-zone-stage" aria-label="Зона планеты" hidden>
+                  <header class="planet-zone-stage__header">
                     <div>
-                      <p class="panel-label">Очередь</p>
-                      <h2>Строительство</h2>
+                      <p id="planet-zone-kicker" class="panel-label">Инфраструктурный сектор</p>
+                      <h2 id="planet-zone-title">—</h2>
                     </div>
-                  </div>
-                  <div id="planet-build-queue" class="planet-build-queue"></div>
+                    <p id="planet-zone-description">—</p>
+                  </header>
+                  <div id="planet-building-grid" class="planet-building-grid" role="list"></div>
                 </section>
+              </main>
 
-                <section class="operation-card">
-                  <p class="panel-label">Управление временем</p>
-                  <div class="time-controls">
-                    <button type="button" data-advance-seconds="60">+1 мин</button>
-                    <button type="button" data-advance-seconds="600">+10 мин</button>
-                    <button type="button" data-advance-seconds="3600">+1 час</button>
-                    <button id="advance-next-event" type="button">До события</button>
-                  </div>
-                  <p class="operation-hint">Время ускоряется только внутри детерминированной симуляции.</p>
-                </section>
-
+              <aside class="planet-details-panel planet-operations" aria-label="Детали и действия">
+                <section id="planet-details-card" class="operation-card planet-details-card"></section>
                 <section class="operation-card economy-report">
                   <p class="panel-label">Экономический отчёт</p>
                   <dl>
