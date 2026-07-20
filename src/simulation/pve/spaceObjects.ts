@@ -19,6 +19,7 @@ import type {
   GameState,
   ScheduledGameEvent,
 } from '../types';
+import { calculatePveRewardMultiplier } from './pveBalance';
 import {
   getWorldEventHazardModifier,
   getWorldEventYieldPermille,
@@ -57,6 +58,7 @@ export interface SpaceObjectMissionReport {
   readonly losses: Readonly<Record<string, number>>;
   readonly controllerUntil: number;
   readonly narrative: string;
+  readonly rewardMultiplierPermille?: number;
 }
 
 const SPACE_OBJECT_KINDS: readonly SpaceObjectKind[] = ['asteroid', 'gas-cloud', 'anomaly'];
@@ -200,7 +202,18 @@ function createMissionReport(
   const controlledByOther = controlActive && object.controllerEmpireId !== fleet.empireId;
   const controlYieldPermille = controlledBySelf ? 1_250 : controlledByOther ? 750 : 1_000;
   const eventYieldPermille = getWorldEventYieldPermille(state, object.id);
-  const yieldPermille = Math.floor((controlYieldPermille * eventYieldPermille) / 1_000);
+  const rewardMultiplierPermille = calculatePveRewardMultiplier(
+    state,
+    fleet.empireId,
+    'space-object',
+    object.id,
+  );
+  const contextualYieldPermille = Math.floor(
+    (controlYieldPermille * eventYieldPermille) / 1_000,
+  );
+  const yieldPermille = Math.floor(
+    (contextualYieldPermille * rewardMultiplierPermille) / 1_000,
+  );
   const baseExtraction =
     object.kind === 'asteroid'
       ? 420 + (roll % 381)
@@ -251,6 +264,7 @@ function createMissionReport(
     losses,
     controllerUntil: resolvesAt + 3_600,
     narrative,
+    rewardMultiplierPermille,
   };
 }
 
