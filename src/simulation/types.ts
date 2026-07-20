@@ -56,6 +56,13 @@ export type GameEventPayload =
       readonly quantity: number;
     }
   | {
+      readonly type: 'DEFENSE_REPAIR_COMPLETE';
+      readonly planetId: string;
+      readonly queueItemId: string;
+      readonly unitId: string;
+      readonly quantity: number;
+    }
+  | {
       readonly type: 'FLEET_ARRIVE';
       readonly fleetId: string;
       readonly targetPlanetId: string;
@@ -181,6 +188,19 @@ export type GameCommand =
     }
   | {
       readonly type: 'CANCEL_UNIT_BATCH';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly queueItemId: string;
+    }
+  | {
+      readonly type: 'QUEUE_DEFENSE_REPAIR';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly unitId: string;
+      readonly quantity: number;
+    }
+  | {
+      readonly type: 'CANCEL_DEFENSE_REPAIR';
       readonly empireId: string;
       readonly planetId: string;
       readonly queueItemId: string;

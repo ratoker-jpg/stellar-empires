@@ -1,3 +1,4 @@
+import { createInitialPlanetDefenseState } from '../defense/types';
 import { createPlanetEconomy } from '../economy/planetEconomy';
 import type { FleetState } from '../fleets/types';
 import type { GalaxyModel, PlanetModel, StarSystemModel } from '../galaxy/types';
@@ -83,6 +84,7 @@ function createPiratePlanet(candidate: Candidate, tier: number): PlanetState {
     },
     inventory: { ships: {}, defenses: pirateDefenses(tier) },
     productionQueues: { shipyard: [], defense: [] },
+    defense: createInitialPlanetDefenseState(),
   };
 }
 

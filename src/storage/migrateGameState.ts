@@ -1,5 +1,9 @@
 import type { DebrisField } from '../simulation/combat/debris';
 import {
+  createInitialPlanetDefenseState,
+  type PlanetDefenseState,
+} from '../simulation/defense/types';
+import {
   createPlanetEconomy,
   refreshPlanetEconomy,
 } from '../simulation/economy/planetEconomy';
@@ -90,12 +94,23 @@ function normalizeProductionQueues(value: unknown): PlanetProductionQueues | und
     defense: value.defense as PlanetProductionQueues['defense'],
   };
 }
+function normalizeDefense(value: unknown): PlanetDefenseState | undefined {
+  if (value === undefined) return createInitialPlanetDefenseState();
+  if (!isRecord(value) || !Array.isArray(value.repairQueue)) return undefined;
+  const damaged = readCountRecord(value.damaged);
+  if (damaged === undefined) return undefined;
+  return {
+    damaged,
+    repairQueue: value.repairQueue as PlanetDefenseState['repairQueue'],
+  };
+}
 function migratePlanet(value: unknown): Record<string, unknown> | undefined {
   if (!isRecord(value)) return undefined;
   const buildings = readBuildings(value.buildings);
   const inventory = normalizeInventory(value.inventory);
   const productionQueues = normalizeProductionQueues(value.productionQueues);
-  if (buildings === undefined || inventory === undefined || productionQueues === undefined) return undefined;
+  const defense = normalizeDefense(value.defense);
+  if (buildings === undefined || inventory === undefined || productionQueues === undefined || defense === undefined) return undefined;
   const specializationId = isPlanetSpecializationId(value.specializationId) ? value.specializationId : 'balanced';
   const developmentTemplateId = isPlanetDevelopmentTemplateId(value.developmentTemplateId) ? value.developmentTemplateId : 'balanced';
   return {
@@ -107,6 +122,7 @@ function migratePlanet(value: unknown): Record<string, unknown> | undefined {
     economy: normalizeEconomy(value.economy, buildings, specializationId),
     inventory,
     productionQueues,
+    defense,
   };
 }
 function readResearchStates(value: unknown, empireIds: readonly string[]): readonly EmpireResearchState[] | undefined {

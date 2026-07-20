@@ -73,6 +73,17 @@ function unitLosses(
   );
 }
 
+function addUnits(
+  left: Readonly<Record<string, number>>,
+  right: Readonly<Record<string, number>>,
+): Readonly<Record<string, number>> {
+  const result = { ...left };
+  for (const [unitId, count] of Object.entries(right)) {
+    result[unitId] = (result[unitId] ?? 0) + count;
+  }
+  return result;
+}
+
 function totalUnits(units: Readonly<Record<string, number>>): number {
   return Object.values(units).reduce((total, count) => total + count, 0);
 }
@@ -108,13 +119,15 @@ function createEventReports(state: GameState): UnifiedMissionReport[] {
           ? 'pve'
           : 'pvp'
       );
+      const defensesRecovered = report.defensesRecovered ?? {};
+      const recoveredCount = totalUnits(defensesRecovered);
       reports.push({
         id: report.id,
         resolvedAt: entry.executedAt,
         kind: 'battle',
         mode,
         title: mode === 'pve' ? 'Бой с нейтральными силами' : 'Бой империй',
-        summary: `${report.attackerEmpireId} → ${report.defenderEmpireId} · ${report.winner}`,
+        summary: `${report.attackerEmpireId} → ${report.defenderEmpireId} · ${report.winner}${recoveredCount > 0 ? ` · восстановлено установок ${recoveredCount}` : ''}`,
         targetId: report.targetPlanetId,
         primaryEmpireId: report.attackerEmpireId,
         secondaryEmpireId: report.defenderEmpireId,
@@ -126,7 +139,10 @@ function createEventReports(state: GameState): UnifiedMissionReport[] {
           exoticMatter: 0,
         },
         primaryLosses: unitLosses(report.attackerInitial, report.attackerRemaining),
-        secondaryLosses: unitLosses(report.defenderInitial, report.defenderRemaining),
+        secondaryLosses: unitLosses(
+          report.defenderInitial,
+          addUnits(report.defenderRemaining, defensesRecovered),
+        ),
         threatMultiplierPermille: report.threatMultiplierPermille ?? 1_000,
         rewardMultiplierPermille: report.rewardMultiplierPermille ?? 1_000,
       });
@@ -285,8 +301,8 @@ export function compareEmpirePvePvp(
       pvpWins: related.filter(
         (report) =>
           report.mode === 'pvp' &&
-          report.primaryEmpireId === empireId &&
-          report.outcome === 'success',
+          ((report.primaryEmpireId === empireId && report.outcome === 'success') ||
+            (report.secondaryEmpireId === empireId && report.outcome === 'failure')),
       ).length,
       reward,
       losses,

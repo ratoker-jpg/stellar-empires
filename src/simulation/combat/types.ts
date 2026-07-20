@@ -32,6 +32,7 @@ export interface BattleReport {
   readonly defenderInitial: Readonly<Record<string, number>>;
   readonly attackerRemaining: Readonly<Record<string, number>>;
   readonly defenderRemaining: Readonly<Record<string, number>>;
+  readonly defensesRecovered?: Readonly<Record<string, number>>;
   readonly debrisCreated?: DebrisAmount;
   readonly plunderedCargo?: ResourceCost;
   readonly mode?: BattleMode;
