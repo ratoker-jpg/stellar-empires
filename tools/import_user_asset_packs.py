@@ -6,12 +6,14 @@ Usage:
     --starter "D:\\Downloads\\stellar_empires_starter_asset_pack-fixed(1).zip" \
     --faction "D:\\Downloads\\stellar_empires_faction_assets_delivery_v1(1).zip"
 
-The script extracts only paths listed in docs/assets/user-supplied-asset-inventory.json,
-verifies byte size and SHA-256, and refuses unexpected or unsafe paths.
+The script extracts only paths listed in the TSV inventories referenced by
+``docs/assets/user-supplied-asset-inventory.json``, verifies byte size and
+SHA-256, and refuses unexpected or unsafe paths.
 """
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import shutil
@@ -37,10 +39,30 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def load_pack_files(pack: dict[str, object]) -> list[dict[str, object]]:
+    entries: list[dict[str, object]] = []
+    manifest_files = pack.get("manifestFiles")
+    if not isinstance(manifest_files, list) or not manifest_files:
+        raise RuntimeError(f"Pack {pack.get('id')} has no manifestFiles")
+
+    for manifest_file in manifest_files:
+        manifest_path = REPO_ROOT / str(manifest_file)
+        with manifest_path.open(encoding="utf-8", newline="") as handle:
+            for row in csv.DictReader(handle, delimiter="\t"):
+                entries.append(
+                    {
+                        "path": row["path"],
+                        "bytes": int(row["bytes"]),
+                        "sha256": row["sha256"],
+                    }
+                )
+    return entries
+
+
 def extract_pack(pack: dict[str, object], archive_path: Path) -> tuple[int, int]:
     pack_id = str(pack["id"])
     target_directory = Path(str(pack["targetDirectory"]))
-    expected = list(pack["files"])
+    expected = load_pack_files(pack)
     if not archive_path.is_file():
         raise FileNotFoundError(f"Archive not found: {archive_path}")
 
@@ -93,6 +115,14 @@ def extract_pack(pack: dict[str, object], archive_path: Path) -> tuple[int, int]
     if missing:
         raise RuntimeError(f"Missing {len(missing)} expected files in {pack_id}: {missing[:5]}")
 
+    expected_count = int(pack["fileCount"])
+    expected_pack_bytes = int(pack["uncompressedBytes"])
+    if written != expected_count or written_bytes != expected_pack_bytes:
+        raise RuntimeError(
+            f"Pack total mismatch for {pack_id}: expected {expected_count}/{expected_pack_bytes}, "
+            f"got {written}/{written_bytes}"
+        )
+
     return written, written_bytes
 
 
@@ -103,7 +133,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--clean",
         action="store_true",
-        help="Delete assets/source/starter and assets/source/faction-delivery-v1 before import",
+        help="Delete registered source-pack directories before import",
     )
     return parser.parse_args()
 
@@ -127,6 +157,8 @@ def main() -> int:
     total_files = 0
     total_bytes = 0
     for pack_id, archive_path in archive_by_pack.items():
+        if pack_id not in packs:
+            raise RuntimeError(f"Pack {pack_id} is absent from {MANIFEST_PATH}")
         count, byte_count = extract_pack(packs[pack_id], archive_path)
         total_files += count
         total_bytes += byte_count
