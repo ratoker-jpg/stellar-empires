@@ -2,117 +2,71 @@
 
 Одиночная браузерная космическая стратегия с автономными бот-империями.
 
-Игрок развивает планеты, исследует технологии, строит флоты, колонизирует галактику и конкурирует с ботами, которые действуют по тем же игровым правилам.
-
 ## Текущий статус
 
-Проект прошёл технический каркас и трёхзонный планетарно-экономический прототип:
+Baseline после merged PR #65:
 
-- Phaser 4 запускает seeded-галактику;
-- HTML/CSS отвечает за управленческий интерфейс;
-- детерминированный симулятор обрабатывает команды, события и время;
-- добавлены persistence core и IndexedDB repository;
-- работает модель галактики с домашними системами;
-- поставлены общая визуальная оболочка и P1-ассеты «Эгиды»;
-- реализованы ресурсы, энергия, население, стабильность и очередь строительства;
-- планета использует три домена: Resource, Industry и Military;
-- Research, Shipyard, Defense и Fleet имеют отдельные маршруты;
-- проведён структурированный аудит Nemexia и официальной справки;
-- GitHub Actions проверяет lint, typecheck, tests и production build;
-- merge в `main` публикует GitHub Pages.
+- Phaser 4.2.1 + TypeScript 6 + Vite 8;
+- детерминированная schema-v12 simulation core;
+- IndexedDB autosave, слоты, import/export и recovery;
+- seeded galaxy, fog-aware intelligence и несколько колоний;
+- три планетарные зоны, экономика, здания, исследования и производство;
+- флоты, transport/deploy/scout/attack/recycle/colonize/expedition/space-object;
+- combat v2, plunder, debris, unified reports и defense repair;
+- logistics routes, deterministic market, pirates, world events and PvE;
+- honest autonomous bot planners in a Web Worker;
+- три faction identities, runtime atlases and faction selection;
+- Design System v1, structured HUD and rebuilt planet workspace.
 
-Канонический план фиксирует **100 roadmap PR до Release 1.0**. Следующий implementation PR — #23.
+Три фракции пока используют общий Aegis mechanical catalog. Новые пользовательские source packs зарегистрированы отдельно и должны интегрироваться screen-by-screen.
 
-Стандартный автономный delivery batch содержит **6 последовательных PR**. AI-исполнитель может без дополнительного согласования расширить связный стабильный пакет до **7–8 PR**.
+## Current roadmap
 
-## Технологии
+Канонический порядок: [`docs/16-execution-roadmap.md`](docs/16-execution-roadmap.md).
 
-- Phaser 4.2.1;
-- TypeScript 6.0.3;
-- Vite 8.1.5;
-- Vitest 4.1.10;
-- ESLint 10;
-- GitHub Actions;
-- GitHub Pages.
+Активный mechanics-informed visual/content batch:
 
-Версии закреплены точно, без автоматического обновления major/minor-зависимостей.
+1. #66 knowledge/audit/source asset intake;
+2. #67 fleets and galaxy;
+3. #68 research/production/defense;
+4. #69 operations and reports;
+5. #70 command/ranking/faction polish;
+6. #71 responsive/accessibility/performance QA.
 
-## Локальный запуск
+## Technology
 
-Требуется Node.js 22.12 или новее.
+- Phaser 4.2.1
+- TypeScript 6.0.3
+- Vite 8.1.5
+- Vitest 4.1.10
+- ESLint 10
+- GitHub Actions and GitHub Pages
+
+Node.js 22.12+:
 
 ```bash
 npm install
 npm run dev
-```
-
-Проверка проекта:
-
-```bash
 npm run check
 ```
 
-Production-сборка:
+## Continue in a new AI session
 
-```bash
-npm run build
-npm run preview
-```
+1. [`AGENTS.md`](AGENTS.md)
+2. [`docs/17-continuation-guide.md`](docs/17-continuation-guide.md)
+3. [`docs/project-status.json`](docs/project-status.json)
+4. [`docs/16-execution-roadmap.md`](docs/16-execution-roadmap.md)
+5. [`docs/18-project-gap-analysis.md`](docs/18-project-gap-analysis.md)
+6. latest merged GitHub PRs.
 
-## Архитектурное направление
+## Research and assets
 
-- статический деплой через GitHub Pages;
-- автономная симуляция в браузере;
-- Web Worker для тяжёлых расчётов и ботов;
-- IndexedDB для сохранений;
-- детерминированные события и бои;
-- три асимметричные фракции;
-- три планетарных домена: Resource, Industry и Military;
-- Research, Shipyard и Defense — отдельные рабочие экраны, связанные с доменами;
-- оригинальные названия, код, баланс и ассеты;
-- разработка последовательными delivery batches по шесть PR с безопасным расширением до восьми.
+- [Nemexia mechanics reference](docs/research/nemexia-mechanics-reference.md)
+- [Project gap analysis](docs/18-project-gap-analysis.md)
+- [User-supplied asset intake](docs/assets/user-supplied-asset-intake.md)
 
-## Продолжение работы новым AI-чатом
+Research is not a license or a production specification. Captured third-party HTML/screens/assets are excluded.
 
-Новый AI-сеанс обязан начать с:
+## License
 
-1. [`AGENTS.md`](AGENTS.md);
-2. [`docs/17-continuation-guide.md`](docs/17-continuation-guide.md);
-3. [`docs/project-status.json`](docs/project-status.json);
-4. [`docs/16-execution-roadmap.md`](docs/16-execution-roadmap.md);
-5. [`docs/roadmap-pr-index.json`](docs/roadmap-pr-index.json);
-6. проверки последних смерженных PR и фактического `main`.
-
-Так продолжение проекта не зависит от памяти предыдущего чата.
-
-## Документация
-
-Начать с [`docs/README.md`](docs/README.md).
-
-Основные документы:
-
-- [Product Vision](docs/01-product-vision.md)
-- [Game Design](docs/02-game-design.md)
-- [Technical Architecture](docs/03-technical-architecture.md)
-- [Bot AI](docs/04-bot-ai.md)
-- [Simulation and Data](docs/05-simulation-and-data.md)
-- [Canonical PR #1–#100 Execution Roadmap](docs/16-execution-roadmap.md)
-- [AI Continuation Guide](docs/17-continuation-guide.md)
-- [Current Project Status](docs/project-status.json)
-- [Machine-readable Roadmap Index](docs/roadmap-pr-index.json)
-- [Delivery Batches](docs/14-delivery-batches.md)
-- [Full System Backlog](docs/06-roadmap.md)
-- [Development Rules](docs/07-development-rules.md)
-- [Originality and Assets](docs/08-originality-and-assets.md)
-- [Open Decisions](docs/09-open-decisions.md)
-- [Faction Framework](docs/10-faction-framework.md)
-- [Art Direction](docs/11-art-direction.md)
-- [Asset Catalog](docs/12-asset-catalog.md)
-
-## Первый вертикальный срез
-
-> новая партия → выбор фракции → одна планета → три зоны → добыча → энергия → здание → исследование → верфь → разведчик → разведка бот-планеты → транспорт → боевой корабль → атака → отчёт → обломки → возврат → autosave.
-
-## Лицензия
-
-Лицензия проекта пока не выбрана. До её появления код и материалы не распространяются как открытый проект.
+The project license is not selected yet.
