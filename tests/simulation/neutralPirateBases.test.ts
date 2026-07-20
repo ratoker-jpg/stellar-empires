@@ -33,7 +33,8 @@ function addPlayerFleet(
                 ...planet.economy.resources,
                 gas: {
                   ...planet.economy.resources.gas,
-                  amount: planet.economy.resources.gas.capacity,
+                  amount: 1_000_000,
+                  capacity: 1_000_000,
                 },
               },
             },
