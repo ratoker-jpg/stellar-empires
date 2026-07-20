@@ -57,7 +57,7 @@ function createPiratePlanet(candidate: Candidate, tier: number): PlanetState {
     ownerEmpireId: PIRATE_EMPIRE_ID,
     factionId: 'aegis',
     specializationId: 'military',
-    developmentTemplateId: 'military',
+    developmentTemplateId: 'fortress',
     zones: createPlanetZones(buildings),
     buildings,
     buildQueue: [],
