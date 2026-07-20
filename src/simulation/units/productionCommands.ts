@@ -1,3 +1,7 @@
+import {
+  getDefenseGridCapacity,
+  getDefenseGridUsed,
+} from '../defense/planetaryDefense';
 import { enqueueEvent } from '../eventQueue';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
 import {
@@ -123,6 +127,22 @@ export function queueUnitBatch(
         code: 'INSUFFICIENT_HANGAR',
         message: 'Shipyard hangar capacity is insufficient for the unit batch.',
         details: { hangarRequired: hangarReserved, hangarAvailable },
+      };
+    }
+  }
+
+  if (definition.kind === 'defense') {
+    const defenseGridRequired = definition.defenseGridCost * command.quantity;
+    const defenseGridAvailable = Math.max(
+      0,
+      getDefenseGridCapacity(planet) - getDefenseGridUsed(planet),
+    );
+    if (defenseGridRequired > defenseGridAvailable) {
+      return {
+        ok: false,
+        code: 'INSUFFICIENT_DEFENSE_GRID',
+        message: 'Planetary defense grid capacity is insufficient for the installation batch.',
+        details: { defenseGridRequired, defenseGridAvailable },
       };
     }
   }
