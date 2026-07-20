@@ -1,3 +1,4 @@
+import { createInitialPlanetDefenseState } from '../defense/types';
 import { createPlanetEconomy } from '../economy/planetEconomy';
 import type { GalaxyModel } from '../galaxy/types';
 import type { FactionId, PlanetBuildingState, PlanetState } from './types';
@@ -57,6 +58,7 @@ export function createInitialPlanetStates(
         economy: createPlanetEconomy(buildings, 0, 'balanced'),
         inventory: { ships: {}, defenses: {} },
         productionQueues: { shipyard: [], defense: [] },
+        defense: createInitialPlanetDefenseState(),
       });
     }
   }
