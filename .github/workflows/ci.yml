@@ -32,20 +32,7 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Lint
-        id: lint
-        continue-on-error: true
-        run: npm run lint > eslint.log 2>&1
-
-      - name: Upload lint diagnostics
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: eslint-log
-          path: eslint.log
-
-      - name: Fail when lint fails
-        if: steps.lint.outcome == 'failure'
-        run: exit 1
+        run: npm run lint
 
       - name: Typecheck
         run: npm run typecheck
