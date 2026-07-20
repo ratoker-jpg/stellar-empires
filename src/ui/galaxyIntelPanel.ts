@@ -4,6 +4,8 @@ import {
   summarizeGalaxyIntelligence,
   type GalaxyIntelPlanet,
   type GalaxyIntelQuery,
+  type GalaxyIntelVisibility,
+  type GalaxyOwnerFilter,
 } from '../simulation/galaxy/intelligenceView';
 import type { PlanetBiome } from '../simulation/galaxy/types';
 import type { GameState } from '../simulation/types';
@@ -73,8 +75,9 @@ function createDialog(): HTMLDialogElement {
 }
 
 function resourceLine(planet: GalaxyIntelPlanet): string {
-  if (planet.resources === null) return 'Экономика скрыта';
-  return `M ${planet.resources.metal} · C ${planet.resources.crystal} · G ${planet.resources.gas}`;
+  const resources = planet.resources;
+  if (resources === null || resources === undefined) return 'Экономика скрыта';
+  return `M ${resources.metal} · C ${resources.crystal} · G ${resources.gas}`;
 }
 
 function createPlanetCard(planet: GalaxyIntelPlanet): HTMLElement {
@@ -158,9 +161,9 @@ export function mountGalaxyIntelPanel(options: GalaxyIntelPanelOptions): void {
     const all = createGalaxyIntelligenceView(state, options.empireId ?? 'player');
     const query: GalaxyIntelQuery = {
       search: search.value,
-      owner: owner.select.value as GalaxyIntelQuery['owner'],
-      visibility: visibility.select.value as GalaxyIntelQuery['visibility'],
-      biome: biome.select.value as GalaxyIntelQuery['biome'],
+      owner: owner.select.value as GalaxyOwnerFilter,
+      visibility: visibility.select.value as GalaxyIntelVisibility | 'all',
+      biome: biome.select.value as PlanetBiome | 'all',
       minimumSize: Number(size.value) || 0,
     };
     const filtered = filterGalaxyIntelligence(all, query);
