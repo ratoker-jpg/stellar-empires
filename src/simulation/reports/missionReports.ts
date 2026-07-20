@@ -1,13 +1,43 @@
+import type {
+  ProtectionType,
+  TargetSize,
+  WeaponType,
+} from '../combat/combatProfiles';
+import type { BattleRoundReport } from '../combat/types';
 import type { ResourceCost } from '../economy/types';
-import type { GameState } from '../types';
 import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
+import type { GameState } from '../types';
 
 export type MissionReportKind = 'battle' | 'expedition' | 'space-object' | 'world-event';
 export type MissionReportMode = 'pve' | 'pvp' | 'system';
 export type MissionReportOutcome = 'success' | 'failure' | 'draw' | 'completed' | 'recovered';
+export type MissionCombatSide = 'attacker' | 'defender';
 
 export interface MissionReportReward extends ResourceCost {
   readonly exoticMatter: number;
+}
+
+export interface MissionCombatWeaponContribution {
+  readonly weaponType: WeaponType;
+  readonly baseDamage: number;
+  readonly modifierPermille: number;
+}
+
+export interface MissionCombatBreakdownLine {
+  readonly round: number;
+  readonly side: MissionCombatSide;
+  readonly targetUnitId: string;
+  readonly targetCount: number;
+  readonly protectionType: ProtectionType;
+  readonly targetSize: TargetSize;
+  readonly allocatedBaseDamage: number;
+  readonly weightedModifierPermille: number;
+  readonly variancePermille: number;
+  readonly effectiveDamage: number;
+  readonly carriedDamage: number;
+  readonly durability: number;
+  readonly losses: number;
+  readonly weaponContributions: readonly MissionCombatWeaponContribution[];
 }
 
 export interface UnifiedMissionReport {
@@ -26,6 +56,7 @@ export interface UnifiedMissionReport {
   readonly secondaryLosses: Readonly<Record<string, number>>;
   readonly threatMultiplierPermille: number;
   readonly rewardMultiplierPermille: number;
+  readonly combatBreakdown?: readonly MissionCombatBreakdownLine[];
 }
 
 export interface MissionReportQuery {
@@ -108,6 +139,50 @@ function battleOutcome(
   return 'draw';
 }
 
+function createCombatBreakdown(
+  rounds: readonly BattleRoundReport[],
+): readonly MissionCombatBreakdownLine[] {
+  return rounds.flatMap((round) => {
+    const attacker = (round.attackerTargetBreakdown ?? []).map(
+      (target): MissionCombatBreakdownLine => ({
+        round: round.round,
+        side: 'attacker',
+        targetUnitId: target.targetUnitId,
+        targetCount: target.targetCount,
+        protectionType: target.protectionType,
+        targetSize: target.targetSize,
+        allocatedBaseDamage: target.allocatedBaseDamage,
+        weightedModifierPermille: target.weightedModifierPermille,
+        variancePermille: target.variancePermille,
+        effectiveDamage: target.effectiveDamage,
+        carriedDamage: target.carriedDamage,
+        durability: target.durability,
+        losses: target.losses,
+        weaponContributions: target.weaponContributions,
+      }),
+    );
+    const defender = (round.defenderTargetBreakdown ?? []).map(
+      (target): MissionCombatBreakdownLine => ({
+        round: round.round,
+        side: 'defender',
+        targetUnitId: target.targetUnitId,
+        targetCount: target.targetCount,
+        protectionType: target.protectionType,
+        targetSize: target.targetSize,
+        allocatedBaseDamage: target.allocatedBaseDamage,
+        weightedModifierPermille: target.weightedModifierPermille,
+        variancePermille: target.variancePermille,
+        effectiveDamage: target.effectiveDamage,
+        carriedDamage: target.carriedDamage,
+        durability: target.durability,
+        losses: target.losses,
+        weaponContributions: target.weaponContributions,
+      }),
+    );
+    return [...attacker, ...defender];
+  });
+}
+
 function createEventReports(state: GameState): UnifiedMissionReport[] {
   const reports: UnifiedMissionReport[] = [];
   for (const entry of state.eventLog) {
@@ -145,6 +220,7 @@ function createEventReports(state: GameState): UnifiedMissionReport[] {
         ),
         threatMultiplierPermille: report.threatMultiplierPermille ?? 1_000,
         rewardMultiplierPermille: report.rewardMultiplierPermille ?? 1_000,
+        combatBreakdown: createCombatBreakdown(report.rounds),
       });
       continue;
     }
