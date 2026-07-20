@@ -1,0 +1,93 @@
+:root {
+  --se-font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --se-font-display: "Arial Narrow", "Roboto Condensed", var(--se-font-ui);
+
+  --se-bg-void: #02050a;
+  --se-bg-deep: #050b13;
+  --se-bg-hud: #081725;
+  --se-bg-panel: #0b1c2b;
+  --se-bg-card: #10283a;
+  --se-bg-raised: #17374c;
+
+  --se-text-primary: #edf8ff;
+  --se-text-secondary: #a8c0cf;
+  --se-text-muted: #6f899a;
+  --se-text-inverse: #091018;
+
+  --se-accent: #55d8ff;
+  --se-accent-soft: rgb(85 216 255 / 16%);
+  --se-accent-strong: #b9f2ff;
+  --se-gold: #ffc928;
+  --se-gold-strong: #ffe681;
+  --se-gold-dark: #a87500;
+  --se-success: #65d49b;
+  --se-warning: #ffb45c;
+  --se-danger: #ff6f68;
+  --se-disabled: #56616a;
+
+  --se-border-subtle: rgb(117 183 219 / 16%);
+  --se-border-default: rgb(117 202 239 / 28%);
+  --se-border-strong: rgb(130 225 255 / 48%);
+  --se-shadow-panel: 0 22px 70px rgb(0 0 0 / 42%);
+  --se-shadow-control: 0 8px 24px rgb(0 0 0 / 32%);
+  --se-glow-accent: 0 0 24px rgb(85 216 255 / 18%);
+  --se-glow-gold: 0 0 24px rgb(255 201 40 / 22%);
+
+  --se-radius-xs: 4px;
+  --se-radius-sm: 7px;
+  --se-radius-md: 11px;
+  --se-radius-lg: 16px;
+
+  --se-space-1: 4px;
+  --se-space-2: 8px;
+  --se-space-3: 12px;
+  --se-space-4: 16px;
+  --se-space-5: 20px;
+  --se-space-6: 24px;
+  --se-space-8: 32px;
+
+  --se-control-sm: 32px;
+  --se-control-md: 40px;
+  --se-control-lg: 48px;
+  --se-nav-height: 76px;
+  --se-queue-height: 76px;
+  --se-context-width: 292px;
+  --se-content-max: 1600px;
+
+  --se-transition-fast: 120ms ease;
+  --se-transition-normal: 180ms ease;
+}
+
+:root[data-faction="aegis"] {
+  --se-accent: #55d8ff;
+  --se-accent-soft: rgb(85 216 255 / 16%);
+  --se-accent-strong: #c5f5ff;
+  --se-bg-hud: #071625;
+  --se-bg-panel: #0a1b2a;
+  --se-bg-card: #102b40;
+}
+
+:root[data-faction="synod"] {
+  --se-accent: #53e89b;
+  --se-accent-soft: rgb(83 232 155 / 15%);
+  --se-accent-strong: #c9ffe3;
+  --se-bg-hud: #071713;
+  --se-bg-panel: #0a211b;
+  --se-bg-card: #113229;
+}
+
+:root[data-faction="veyra"] {
+  --se-accent: #ff5b62;
+  --se-accent-soft: rgb(255 91 98 / 15%);
+  --se-accent-strong: #ffd1d4;
+  --se-bg-hud: #19080d;
+  --se-bg-panel: #250b13;
+  --se-bg-card: #37111d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --se-transition-fast: 0ms;
+    --se-transition-normal: 0ms;
+  }
+}
