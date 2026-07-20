@@ -5,15 +5,21 @@ import { AEGIS_BUILDING_CATALOG } from '../../src/simulation/planet/buildingCata
 const ZONE_IDS = ['resource', 'industry', 'military'] as const;
 
 describe('planet domain', () => {
-  it('creates a colony state for every owned galaxy planet', () => {
+  it('creates a managed colony state for every owned galaxy planet', () => {
     const state = createInitialGameState('planet-domain');
     const ownedPlanets = state.galaxy.systems.flatMap((system) =>
       system.planets.filter((planet) => planet.ownerEmpireId !== null),
     );
+    const managedColonies = state.planets.filter((planet) =>
+      state.empires.includes(planet.ownerEmpireId),
+    );
 
-    expect(state.planets).toHaveLength(ownedPlanets.length);
-    expect(new Set(state.planets.map((planet) => planet.galaxyPlanetId)).size).toBe(
+    expect(managedColonies).toHaveLength(ownedPlanets.length);
+    expect(new Set(managedColonies.map((planet) => planet.galaxyPlanetId)).size).toBe(
       ownedPlanets.length,
+    );
+    expect(new Set(state.planets.map((planet) => planet.galaxyPlanetId)).size).toBe(
+      state.planets.length,
     );
   });
 

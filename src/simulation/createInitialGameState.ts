@@ -3,6 +3,7 @@ import { createInitialIntelligenceStates } from './intelligence/intelligenceStat
 import { createInitialMarketState } from './market/market';
 import { createInitialPlanetStates } from './planet/createInitialPlanetStates';
 import type { FactionId } from './planet/types';
+import { createInitialNeutralForces } from './pve/neutralForces';
 import { createInitialResearchStates } from './research/researchState';
 import { normalizeSeed } from './seed';
 import type { GameState } from './types';
@@ -14,6 +15,8 @@ export function createInitialGameState(
   const seed = normalizeSeed(seedSource);
   const galaxy = generateGalaxy(seed);
   const empires = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'] as const;
+  const colonies = createInitialPlanetStates(galaxy, playerFaction);
+  const neutralForces = createInitialNeutralForces(galaxy, seed);
 
   return {
     schemaVersion: 12,
@@ -24,9 +27,9 @@ export function createInitialGameState(
     },
     empires,
     galaxy,
-    planets: createInitialPlanetStates(galaxy, playerFaction),
+    planets: [...colonies, ...neutralForces.planets],
     research: createInitialResearchStates(empires),
-    fleets: [],
+    fleets: neutralForces.fleets,
     intelligence: createInitialIntelligenceStates(empires),
     debrisFields: [],
     logisticsRoutes: [],

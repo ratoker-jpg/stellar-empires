@@ -19,8 +19,11 @@ describe('unit catalog and inventory', () => {
     expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'defense')).toHaveLength(3);
   });
 
-  it('initializes empty inventories, fleets, intelligence, debris, logistics and market', () => {
+  it('initializes empty managed inventories, fleets, intelligence, debris, logistics and market', () => {
     const state = createInitialGameState('unit-inventory');
+    const managedPlanets = state.planets.filter((planet) =>
+      state.empires.includes(planet.ownerEmpireId),
+    );
     expect(state.schemaVersion).toBe(12);
     expect(state.fleets).toEqual([]);
     expect(state.debrisFields).toEqual([]);
@@ -34,7 +37,7 @@ describe('unit catalog and inventory', () => {
     expect(state.intelligence).toHaveLength(state.empires.length);
     expect(state.intelligence.every((entry) => entry.observations.length === 0)).toBe(true);
     expect(
-      state.planets.every(
+      managedPlanets.every(
         (planet) =>
           Object.keys(planet.inventory.ships).length === 0 &&
           Object.keys(planet.inventory.defenses).length === 0 &&
