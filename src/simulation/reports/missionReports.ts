@@ -285,8 +285,8 @@ export function compareEmpirePvePvp(
       pvpWins: related.filter(
         (report) =>
           report.mode === 'pvp' &&
-          report.primaryEmpireId === empireId &&
-          report.outcome === 'success',
+          ((report.primaryEmpireId === empireId && report.outcome === 'success') ||
+            (report.secondaryEmpireId === empireId && report.outcome === 'failure')),
       ).length,
       reward,
       losses,
