@@ -3,6 +3,7 @@ import {
   createUnifiedMissionReports,
   filterMissionReports,
   summarizeMissionReports,
+  type MissionCombatBreakdownLine,
   type MissionReportKind,
   type MissionReportMode,
   type MissionReportReward,
@@ -27,6 +28,27 @@ const MODE_LABELS: Readonly<Record<MissionReportMode, string>> = {
   pvp: 'PvP',
   system: 'Системное',
 };
+
+const WEAPON_LABELS = {
+  kinetic: 'Кинетика',
+  plasma: 'Плазма',
+  missile: 'Ракеты',
+  disruptor: 'Дезинтегратор',
+} as const;
+
+const PROTECTION_LABELS = {
+  'light-armor': 'Лёгкая броня',
+  'heavy-armor': 'Тяжёлая броня',
+  'shield-grid': 'Щитовая сеть',
+  fortified: 'Укрепление',
+} as const;
+
+const SIZE_LABELS = {
+  small: 'Малая',
+  medium: 'Средняя',
+  large: 'Крупная',
+  installation: 'Установка',
+} as const;
 
 function createNavigationButton(): HTMLButtonElement {
   const existing = document.querySelector<HTMLButtonElement>('#nav-reports');
@@ -100,6 +122,64 @@ function lossesText(losses: Readonly<Record<string, number>>): string {
     : entries.map(([unitId, count]) => `${unitId} × ${count}`).join(' · ');
 }
 
+function weaponText(line: MissionCombatBreakdownLine): string {
+  return line.weaponContributions
+    .filter((entry) => entry.baseDamage > 0)
+    .map(
+      (entry) =>
+        `${WEAPON_LABELS[entry.weaponType]} ${entry.baseDamage} × ${(entry.modifierPermille / 10).toFixed(0)}%`,
+    )
+    .join(' + ');
+}
+
+function createCombatDetails(
+  breakdown: readonly MissionCombatBreakdownLine[],
+): HTMLDetailsElement {
+  const details = document.createElement('details');
+  details.className = 'mission-combat-details';
+  const summary = document.createElement('summary');
+  summary.textContent = `Расчёт combat v2 · строк ${breakdown.length}`;
+  const scroller = document.createElement('div');
+  scroller.className = 'mission-combat-table-wrap';
+  const table = document.createElement('table');
+  table.innerHTML = `
+    <thead><tr>
+      <th>Раунд</th><th>Сторона</th><th>Цель</th><th>Профиль</th><th>Оружие</th>
+      <th>База</th><th>Контр</th><th>Разброс</th><th>Урон</th><th>Накоплено</th><th>Прочность</th><th>Потери</th>
+    </tr></thead>
+  `;
+  const body = document.createElement('tbody');
+  for (const line of breakdown) {
+    const row = document.createElement('tr');
+    const values = [
+      String(line.round),
+      line.side === 'attacker' ? 'Атака' : 'Защита',
+      `${line.targetUnitId} × ${line.targetCount}`,
+      `${PROTECTION_LABELS[line.protectionType]} · ${SIZE_LABELS[line.targetSize]}`,
+      weaponText(line),
+      String(line.allocatedBaseDamage),
+      `${(line.weightedModifierPermille / 10).toFixed(0)}%`,
+      `${(line.variancePermille / 10).toFixed(0)}%`,
+      String(line.effectiveDamage),
+      String(line.carriedDamage),
+      String(line.durability),
+      String(line.losses),
+    ];
+    for (const value of values) {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.append(cell);
+    }
+    body.append(row);
+  }
+  table.append(body);
+  scroller.append(table);
+  const note = document.createElement('small');
+  note.textContent = 'Формула: базовый урон × контр-модификатор × детерминированный разброс. Неполный урон переносится в следующий раунд.';
+  details.append(summary, scroller, note);
+  return details;
+}
+
 function createReportCard(report: UnifiedMissionReport): HTMLElement {
   const card = document.createElement('article');
   card.className = `mission-report-card is-${report.kind} is-${report.mode}`;
@@ -127,6 +207,9 @@ function createReportCard(report: UnifiedMissionReport): HTMLElement {
   const balance = document.createElement('small');
   balance.textContent = `Время ${formatGameDuration(report.resolvedAt)} · угроза ${report.threatMultiplierPermille / 10}% · награда ${report.rewardMultiplierPermille / 10}%`;
   card.append(header, summary, target, rewards, losses, balance);
+  if ((report.combatBreakdown?.length ?? 0) > 0) {
+    card.append(createCombatDetails(report.combatBreakdown ?? []));
+  }
   return card;
 }
 

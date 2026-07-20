@@ -1,4 +1,9 @@
 import type { ResourceCost } from '../economy/types';
+import type {
+  ProtectionType,
+  TargetSize,
+  WeaponType,
+} from './combatProfiles';
 import type { DebrisAmount } from './debris';
 
 export type BattleWinner = 'attacker' | 'defender' | 'draw';
@@ -11,12 +16,35 @@ export interface BattleSideInput {
   readonly armorBonusPercent: number;
 }
 
+export interface BattleWeaponContributionReport {
+  readonly weaponType: WeaponType;
+  readonly baseDamage: number;
+  readonly modifierPermille: number;
+}
+
+export interface BattleTargetDamageReport {
+  readonly targetUnitId: string;
+  readonly targetCount: number;
+  readonly protectionType: ProtectionType;
+  readonly targetSize: TargetSize;
+  readonly allocatedBaseDamage: number;
+  readonly weightedModifierPermille: number;
+  readonly variancePermille: number;
+  readonly effectiveDamage: number;
+  readonly carriedDamage: number;
+  readonly durability: number;
+  readonly losses: number;
+  readonly weaponContributions: readonly BattleWeaponContributionReport[];
+}
+
 export interface BattleRoundReport {
   readonly round: number;
   readonly attackerDamage: number;
   readonly defenderDamage: number;
   readonly attackerLosses: Readonly<Record<string, number>>;
   readonly defenderLosses: Readonly<Record<string, number>>;
+  readonly attackerTargetBreakdown: readonly BattleTargetDamageReport[];
+  readonly defenderTargetBreakdown: readonly BattleTargetDamageReport[];
 }
 
 export interface BattleReport {

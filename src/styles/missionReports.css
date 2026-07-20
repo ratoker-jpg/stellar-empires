@@ -129,6 +129,71 @@
   border-left: 3px solid #b984ff;
 }
 
+.mission-combat-details {
+  margin-top: 7px;
+  border: 1px solid rgba(101, 188, 236, 0.2);
+  border-radius: 10px;
+  background: rgba(4, 14, 25, 0.72);
+}
+
+.mission-combat-details > summary {
+  padding: 10px 12px;
+  color: #72d0ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mission-combat-details[open] > summary {
+  border-bottom: 1px solid rgba(101, 188, 236, 0.16);
+}
+
+.mission-combat-table-wrap {
+  max-height: 320px;
+  overflow: auto;
+}
+
+.mission-combat-details table {
+  width: 100%;
+  min-width: 1160px;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+}
+
+.mission-combat-details th,
+.mission-combat-details td {
+  padding: 7px 8px;
+  border-right: 1px solid rgba(101, 188, 236, 0.09);
+  border-bottom: 1px solid rgba(101, 188, 236, 0.09);
+  text-align: left;
+  vertical-align: top;
+}
+
+.mission-combat-details th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: #a9dfff;
+  background: rgba(8, 24, 39, 0.98);
+}
+
+.mission-combat-details td:nth-child(7) {
+  color: #e6c469;
+  font-weight: 700;
+}
+
+.mission-combat-details td:nth-child(12) {
+  color: #ff9188;
+  font-weight: 700;
+}
+
+.mission-combat-details > small {
+  display: block;
+  padding: 9px 12px;
+  line-height: 1.4;
+}
+
 @media (max-width: 860px) {
   .mission-reports-controls {
     grid-template-columns: 1fr 1fr;
