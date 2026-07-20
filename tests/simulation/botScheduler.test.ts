@@ -41,7 +41,7 @@ describe('autonomous bot scheduler', () => {
     expect(second.audit.every((entry) => entry.decidedAt === 600)).toBe(true);
   });
 
-  it('enforces difficulty command limits and personality order', () => {
+  it('enforces difficulty limits and honest personality fallback', () => {
     const state = createInitialGameState('bot-scheduler-profile');
     const easyIndustrial: BotProfile = {
       id: 'test.easy-industrial',
@@ -57,7 +57,10 @@ describe('autonomous bot scheduler', () => {
       [easyIndustrial],
     );
     expect(industrial.audit).toHaveLength(1);
-    expect(industrial.audit[0]?.source).toBe('economy');
+    expect(industrial.audit[0]).toMatchObject({
+      personality: 'industrial',
+      source: 'economy',
+    });
 
     const aggressive: BotProfile = {
       ...easyIndustrial,
@@ -70,7 +73,10 @@ describe('autonomous bot scheduler', () => {
       [aggressive],
     );
     expect(attackFirst.audit).toHaveLength(1);
-    expect(attackFirst.audit[0]?.source).toBe('threat');
+    expect(attackFirst.audit[0]).toMatchObject({
+      personality: 'aggressive',
+      source: 'economy',
+    });
   });
 
   it('uses a serializable worker request and response', () => {
