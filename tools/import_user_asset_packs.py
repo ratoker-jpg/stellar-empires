@@ -37,11 +37,14 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def extract_pack(pack_id: str, archive_path: Path, expected: list[dict[str, object]]) -> tuple[int, int]:
+def extract_pack(pack: dict[str, object], archive_path: Path) -> tuple[int, int]:
+    pack_id = str(pack["id"])
+    target_directory = Path(str(pack["targetDirectory"]))
+    expected = list(pack["files"])
     if not archive_path.is_file():
         raise FileNotFoundError(f"Archive not found: {archive_path}")
 
-    expected_by_source = {str(entry["sourcePath"]): entry for entry in expected}
+    expected_by_source = {str(entry["path"]): entry for entry in expected}
     found_sources: set[str] = set()
     written = 0
     written_bytes = 0
@@ -74,7 +77,7 @@ def extract_pack(pack_id: str, archive_path: Path, expected: list[dict[str, obje
                     f"SHA-256 mismatch for {source_path}: expected {expected_sha}, got {actual_sha}"
                 )
 
-            target_relative = Path(str(entry["targetPath"]))
+            target_relative = target_directory / Path(source_path)
             target = (REPO_ROOT / target_relative).resolve()
             source_root = (REPO_ROOT / "assets" / "source").resolve()
             if source_root not in target.parents:
@@ -108,13 +111,11 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
-    files = manifest["files"]
+    packs = {str(pack["id"]): pack for pack in manifest["packs"]}
 
     if args.clean:
-        for directory in (
-            REPO_ROOT / "assets" / "source" / "starter",
-            REPO_ROOT / "assets" / "source" / "faction-delivery-v1",
-        ):
+        for pack in packs.values():
+            directory = REPO_ROOT / str(pack["targetDirectory"])
             if directory.exists():
                 shutil.rmtree(directory)
 
@@ -126,14 +127,13 @@ def main() -> int:
     total_files = 0
     total_bytes = 0
     for pack_id, archive_path in archive_by_pack.items():
-        expected = [entry for entry in files if entry["pack"] == pack_id]
-        count, byte_count = extract_pack(pack_id, archive_path, expected)
+        count, byte_count = extract_pack(packs[pack_id], archive_path)
         total_files += count
         total_bytes += byte_count
         print(f"PASS {pack_id}: {count} files, {byte_count} bytes")
 
-    expected_total_files = len(files)
-    expected_total_bytes = sum(int(entry["bytes"]) for entry in files)
+    expected_total_files = sum(int(pack["fileCount"]) for pack in packs.values())
+    expected_total_bytes = sum(int(pack["uncompressedBytes"]) for pack in packs.values())
     if total_files != expected_total_files or total_bytes != expected_total_bytes:
         raise RuntimeError(
             f"Total mismatch: expected {expected_total_files}/{expected_total_bytes}, "
