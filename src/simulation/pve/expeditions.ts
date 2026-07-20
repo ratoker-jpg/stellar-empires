@@ -162,7 +162,8 @@ export function startExpedition(
       message: 'An expedition requires at least one scout ship.',
     };
   }
-  const origin = state.planets.find((planet) => planet.id === fleet.location.planetId);
+  const originPlanetId = fleet.location.planetId;
+  const origin = state.planets.find((planet) => planet.id === originPlanetId);
   if (origin === undefined || origin.ownerEmpireId !== command.empireId) {
     return { ok: false, code: 'EXPEDITION_ORIGIN_UNAVAILABLE', message: 'Expedition origin is unavailable.' };
   }
