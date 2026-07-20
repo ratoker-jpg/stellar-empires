@@ -1,3 +1,4 @@
+import { createInitialPlanetDefenseState } from '../defense/types';
 import { createPlanetEconomy } from '../economy/planetEconomy';
 import type { ResourceCost } from '../economy/types';
 import type { FleetState } from '../fleets/types';
@@ -80,6 +81,7 @@ export function createColonyPlanet(
     economy: createPlanetEconomy(buildings, 0, 'balanced'),
     inventory: { ships: {}, defenses: {} },
     productionQueues: { shipyard: [], defense: [] },
+    defense: createInitialPlanetDefenseState(),
   };
 }
 
