@@ -15,6 +15,10 @@
       <header class="topbar">
         <div class="brand-lockup">
           <img class="brand-logo" src="./assets/brand/logo-primary.svg" alt="Stellar Empires" />
+          <div class="brand-subtitle">
+            <span class="online-dot" aria-hidden="true"></span>
+            <span>Автономное командование</span>
+          </div>
         </div>
 
         <div class="resource-strip" aria-label="Ресурсы активной колонии">
@@ -41,7 +45,9 @@
         </div>
 
         <div class="topbar-status">
-          <span class="online-dot" aria-hidden="true"></span>
+          <div class="hud-emblem-socket" aria-hidden="true">
+            <img class="commander-emblem" src="./assets/factions/aegis/emblem.svg" alt="" />
+          </div>
           <div>
             <small>Сеть командования</small>
             <strong id="app-status">Инициализация…</strong>
@@ -50,31 +56,83 @@
         </div>
       </header>
 
+      <nav class="side-rail" aria-label="Основная навигация">
+        <button id="nav-planet" class="rail-button" type="button" aria-label="Планета">
+          <span class="rail-button__icon">◉</span><small>Планета</small>
+        </button>
+        <button class="rail-button" type="button" aria-label="Флот" disabled>
+          <span class="rail-button__icon">◆</span><small>Флоты</small>
+        </button>
+        <button id="nav-galaxy" class="rail-button is-active" type="button" aria-label="Галактика">
+          <span class="rail-button__icon">✦</span><small>Галактика</small>
+        </button>
+        <button class="rail-button" type="button" aria-label="Исследования" disabled>
+          <span class="rail-button__icon">⌬</span><small>Наука</small>
+        </button>
+        <button id="nav-empire" class="rail-button" type="button" aria-label="Командование">
+          <span class="rail-button__icon">▦</span><small>Командование</small>
+        </button>
+        <button id="nav-rating" class="rail-button" type="button" aria-label="Рейтинг" disabled>
+          <span class="rail-button__icon">△</span><small>Рейтинг</small>
+        </button>
+        <div class="rail-spacer"></div>
+        <button class="rail-button rail-button--utility" type="button" aria-label="Отчёты" disabled>
+          <span class="rail-button__icon">▤</span><small>Отчёты</small>
+        </button>
+        <button class="rail-button rail-button--utility" type="button" aria-label="Настройки" disabled>
+          <span class="rail-button__icon">⚙</span><small>Система</small>
+        </button>
+      </nav>
+
       <main class="game-layout">
-        <nav class="side-rail" aria-label="Основная навигация">
-          <button id="nav-galaxy" class="rail-button is-active" type="button" aria-label="Галактика">
-            <span>✦</span><small>Галактика</small>
-          </button>
-          <button id="nav-empire" class="rail-button" type="button" aria-label="Империя">
-            <span>▦</span><small>Империя</small>
-          </button>
-          <button id="nav-planet" class="rail-button" type="button" aria-label="Планета">
-            <span>◉</span><small>Планета</small>
-          </button>
-          <button class="rail-button" type="button" aria-label="Исследования" disabled>
-            <span>⌬</span><small>Наука</small>
-          </button>
-          <button class="rail-button" type="button" aria-label="Флот" disabled>
-            <span>◆</span><small>Флот</small>
-          </button>
-          <button class="rail-button" type="button" aria-label="Отчёты" disabled>
-            <span>▤</span><small>Отчёты</small>
-          </button>
-          <div class="rail-spacer"></div>
-          <button class="rail-button" type="button" aria-label="Настройки" disabled>
-            <span>⚙</span><small>Система</small>
-          </button>
-        </nav>
+        <aside class="command-panel" aria-label="Контекстная панель">
+          <section class="panel-block panel-block--hero">
+            <p class="panel-label">Командный профиль</p>
+            <div class="commander-row">
+              <img
+                class="commander-emblem context-emblem"
+                src="./assets/factions/aegis/emblem.svg"
+                alt="Эмблема Директората Эгида"
+              />
+              <div>
+                <h2>Директорат «Эгида»</h2>
+                <p>Промышленная доктрина</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel-block context-objective">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-label">Текущий контур</p>
+                <h2>Многопланетная империя</h2>
+              </div>
+              <span class="status-pill">SOLO</span>
+            </div>
+            <p>Выберите раздел в верхней панели. Контекстные действия и состояние выбранного объекта отображаются здесь.</p>
+          </section>
+
+          <section class="panel-block metric-grid context-metrics">
+            <div><span>Системы</span><strong id="system-count">—</strong></div>
+            <div><span>Колонии</span><strong id="planet-count">—</strong></div>
+            <div><span>Режим</span><strong>Solo</strong></div>
+            <div><span>Симуляция</span><strong>Active</strong></div>
+          </section>
+
+          <section class="panel-block context-help">
+            <p class="panel-label">Структура управления</p>
+            <ol>
+              <li>Выберите раздел в верхнем HUD.</li>
+              <li>Настройте объект в контекстной панели.</li>
+              <li>Подтвердите основное действие золотой кнопкой.</li>
+            </ol>
+          </section>
+
+          <div class="runtime-showcase" hidden>
+            <div id="faction-showcase"></div>
+            <div id="aegis-asset-deck"></div>
+          </div>
+        </aside>
 
         <div class="view-stack">
           <section id="galaxy-view" class="game-stage" aria-label="Карта галактики">
@@ -93,7 +151,7 @@
               <div>
                 <p id="planet-role-label" class="panel-label">Домашняя колония</p>
                 <h1 id="planet-name">—</h1>
-                <p>Директорат «Эгида» · трёхзонная планетарная модель</p>
+                <p>Трёхзонная планетарная модель</p>
               </div>
               <div class="planet-header-controls">
                 <label class="planet-selector-label">
@@ -118,7 +176,7 @@
                 <div class="planet-section-heading">
                   <div>
                     <p class="panel-label">Инфраструктура</p>
-                    <h2>Здания «Эгиды»</h2>
+                    <h2>Здания фракции</h2>
                   </div>
                   <span>Выберите строительство или улучшение</span>
                 </div>
@@ -159,76 +217,6 @@
             </div>
           </section>
         </div>
-
-        <aside class="command-panel" aria-label="Панель управления">
-          <section class="panel-block panel-block--hero">
-            <p class="panel-label">Командный профиль</p>
-            <div class="commander-row">
-              <img
-                class="commander-emblem"
-                src="./assets/factions/aegis/emblem.svg"
-                alt="Эмблема Директората Эгида"
-              />
-              <div>
-                <h2>Директорат «Эгида»</h2>
-                <p>Стартовая империя · промышленная доктрина</p>
-              </div>
-            </div>
-          </section>
-
-          <section class="panel-block">
-            <div class="panel-heading">
-              <div>
-                <p class="panel-label">Текущий этап</p>
-                <h2>Многопланетная империя</h2>
-              </div>
-              <span class="status-pill">M16</span>
-            </div>
-            <p>Колонии управляются независимо, а обзор империи объединяет ресурсы, очереди и флоты.</p>
-          </section>
-
-          <section class="panel-block faction-panel">
-            <div class="panel-heading">
-              <div>
-                <p class="panel-label">Фракционные прототипы</p>
-                <h2>Три визуальных языка</h2>
-              </div>
-              <span class="status-pill">P0</span>
-            </div>
-            <div id="faction-showcase" class="faction-showcase"></div>
-          </section>
-
-          <section class="panel-block aegis-deck-panel">
-            <div class="panel-heading">
-              <div>
-                <p class="panel-label">Вертикальный набор</p>
-                <h2>Арсенал «Эгиды»</h2>
-              </div>
-              <span class="status-pill status-pill--amber">26 ассетов</span>
-            </div>
-            <p>Здания, корабли, оборона, технологии и эффекты первого игрового цикла.</p>
-            <div id="aegis-asset-deck" class="aegis-asset-deck"></div>
-          </section>
-
-          <section class="panel-block metric-grid">
-            <div><span>Системы</span><strong id="system-count">—</strong></div>
-            <div><span>Колонии</span><strong id="planet-count">—</strong></div>
-            <div><span>Режим</span><strong>Solo</strong></div>
-            <div><span>Состояние</span><strong>Stable</strong></div>
-          </section>
-
-          <section class="panel-block activity-block">
-            <div class="panel-heading">
-              <p class="panel-label">Оперативная лента</p>
-              <span class="signal-bars" aria-label="Связь стабильна"><i></i><i></i><i></i></span>
-            </div>
-            <ol class="activity-list">
-              <li><time>00:00</time><span>Схема сохранения v9 активна</span></li>
-              <li><time>00:00</time><span>Колонизационные миссии подключены</span></li>
-              <li><time>00:00</time><span>Обзор империи готов</span></li>
-            </ol>
-          </section>
-        </aside>
       </main>
     </div>
 
