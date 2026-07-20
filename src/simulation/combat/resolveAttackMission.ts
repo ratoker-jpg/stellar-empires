@@ -1,6 +1,13 @@
 import type { ResourceCost } from '../economy/types';
 import type { FleetState } from '../fleets/types';
 import type { PlanetState } from '../planet/types';
+import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
+import {
+  applyPvePlunderMultiplier,
+  calculatePirateThreatMultiplier,
+  calculatePveRewardMultiplier,
+  scalePveUnits,
+} from '../pve/pveBalance';
 import { AEGIS_RESEARCH_CATALOG } from '../research/catalog';
 import { calculateResearchEffects } from '../research/progression';
 import { getEmpireResearch } from '../research/researchState';
@@ -123,6 +130,22 @@ export function resolveAttackMission(
     }
   }
 
+  const isPve = target.ownerEmpireId === PIRATE_EMPIRE_ID;
+  const threatMultiplierPermille = isPve
+    ? calculatePirateThreatMultiplier(state, attackerFleet.empireId)
+    : 1_000;
+  const rewardMultiplierPermille = isPve
+    ? calculatePveRewardMultiplier(
+        state,
+        attackerFleet.empireId,
+        'pirate-raid',
+        target.id,
+      )
+    : 1_000;
+  const effectiveDefenderUnits = isPve
+    ? scalePveUnits(defenderUnits, threatMultiplierPermille)
+    : defenderUnits;
+
   const seed = (state.seed ^ eventSequence ^ attackerFleet.id.length) >>> 0;
   const resolution = resolveBattle(
     seed,
@@ -133,7 +156,7 @@ export function resolveAttackMission(
     },
     {
       empireId: target.ownerEmpireId,
-      units: defenderUnits,
+      units: effectiveDefenderUnits,
       ...getCombatEffects(state, target.ownerEmpireId),
     },
   );
@@ -159,9 +182,21 @@ export function resolveAttackMission(
 
   if (resolution.winner === 'attacker' && updatedAttacker !== undefined) {
     const plunder = plunderPlanet(updatedTarget, updatedAttacker);
-    updatedTarget = plunder.planet;
-    updatedAttacker = plunder.fleet;
-    plunderedCargo = plunder.plundered;
+    if (isPve) {
+      const adjusted = applyPvePlunderMultiplier(
+        plunder.planet,
+        plunder.fleet,
+        plunder.plundered,
+        rewardMultiplierPermille,
+      );
+      updatedTarget = adjusted.planet;
+      updatedAttacker = adjusted.fleet;
+      plunderedCargo = adjusted.plundered;
+    } else {
+      updatedTarget = plunder.planet;
+      updatedAttacker = plunder.fleet;
+      plunderedCargo = plunder.plundered;
+    }
   }
 
   fleets = updatedAttacker === undefined
@@ -173,7 +208,7 @@ export function resolveAttackMission(
   const baseDebris = calculateDebrisFromLosses(
     attackerFleet.ships,
     resolution.attackerRemaining,
-    defenderUnits,
+    effectiveDefenderUnits,
     resolution.defenderRemaining,
   );
   const debrisCreated = addDestroyedCargoDebris(
@@ -198,11 +233,14 @@ export function resolveAttackMission(
     winner: resolution.winner,
     rounds: resolution.rounds,
     attackerInitial: { ...attackerFleet.ships },
-    defenderInitial: defenderUnits,
+    defenderInitial: effectiveDefenderUnits,
     attackerRemaining: resolution.attackerRemaining,
     defenderRemaining: resolution.defenderRemaining,
     debrisCreated,
     plunderedCargo,
+    mode: isPve ? 'pve' : 'pvp',
+    threatMultiplierPermille,
+    rewardMultiplierPermille,
   };
 
   return {

@@ -2,6 +2,7 @@ import type { ResourceCost } from '../economy/types';
 import type { DebrisAmount } from './debris';
 
 export type BattleWinner = 'attacker' | 'defender' | 'draw';
+export type BattleMode = 'pve' | 'pvp';
 
 export interface BattleSideInput {
   readonly empireId: string;
@@ -33,6 +34,9 @@ export interface BattleReport {
   readonly defenderRemaining: Readonly<Record<string, number>>;
   readonly debrisCreated?: DebrisAmount;
   readonly plunderedCargo?: ResourceCost;
+  readonly mode?: BattleMode;
+  readonly threatMultiplierPermille?: number;
+  readonly rewardMultiplierPermille?: number;
 }
 
 export interface BattleResolution {
