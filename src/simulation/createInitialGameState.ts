@@ -8,6 +8,7 @@ import {
   createInitialSpaceObjects,
   createInitialStrategicResources,
 } from './pve/spaceObjects';
+import { createInitialWorldEventState } from './pve/worldEvents';
 import { createInitialResearchStates } from './research/researchState';
 import { normalizeSeed } from './seed';
 import type { GameState } from './types';
@@ -40,6 +41,7 @@ export function createInitialGameState(
     market: createInitialMarketState(),
     spaceObjects: createInitialSpaceObjects(galaxy, seed),
     strategicResources: createInitialStrategicResources(empires),
+    worldEvents: createInitialWorldEventState(),
     nextEventSequence: 0,
     pendingEvents: [],
     commandLog: [],

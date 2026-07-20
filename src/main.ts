@@ -6,6 +6,7 @@ import './styles/aegisAssets.css';
 import './styles/galaxyIntel.css';
 import './styles/expeditions.css';
 import './styles/spaceObjects.css';
+import './styles/worldEvents.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
 import './styles/planetDevelopment.css';
@@ -48,6 +49,7 @@ import { mountResearchScreen } from './ui/researchScreen';
 import { mountSaveManager } from './ui/saveManager';
 import { renderAssetShowcases } from './ui/showcase';
 import { mountSpaceObjectsPanel } from './ui/spaceObjectsPanel';
+import { mountWorldEventsPanel } from './ui/worldEventsPanel';
 
 function requireElement<T extends HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector);
@@ -152,6 +154,7 @@ async function bootstrap(): Promise<void> {
   mountGalaxyIntelPanel({ getState: () => runtimeState });
   mountExpeditionPanel(commandBridge);
   mountSpaceObjectsPanel(commandBridge);
+  mountWorldEventsPanel({ getState: () => runtimeState });
   mountPlanetDevelopmentControls(commandBridge);
   mountLogisticsRoutesPanel(commandBridge);
   mountMarketPanel(commandBridge);
