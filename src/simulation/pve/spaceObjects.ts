@@ -55,6 +55,7 @@ export interface SpaceObjectMissionReport {
   readonly narrative: string;
 }
 
+const SPACE_OBJECT_KINDS: readonly SpaceObjectKind[] = ['asteroid', 'gas-cloud', 'anomaly'];
 const REQUIRED_SHIP_BY_KIND: Readonly<Record<SpaceObjectKind, string>> = {
   asteroid: 'ship.aegis.recycler',
   'gas-cloud': 'ship.aegis.cargo',
@@ -112,7 +113,7 @@ export function createInitialSpaceObjects(
 ): readonly SpaceObjectState[] {
   return galaxy.systems.map((system, index): SpaceObjectState => {
     const roll = hashText(`${seed}:${system.id}:space-object`);
-    const kind = (['asteroid', 'gas-cloud', 'anomaly'] as const)[index % 3];
+    const kind = SPACE_OBJECT_KINDS[index % SPACE_OBJECT_KINDS.length] ?? 'asteroid';
     const maxPlanetPosition = system.planets.reduce(
       (maximum, planet) => Math.max(maximum, planet.position),
       0,
@@ -152,7 +153,8 @@ export function estimateSpaceObjectMission(
   if (fleet.status !== 'stationed' || fleet.location.type !== 'planet') {
     throw new Error('Only a stationed fleet can estimate a space object mission.');
   }
-  const origin = state.planets.find((planet) => planet.id === fleet.location.planetId);
+  const originPlanetId = fleet.location.planetId;
+  const origin = state.planets.find((planet) => planet.id === originPlanetId);
   if (origin === undefined) throw new Error('Space object mission origin not found.');
   const distance = calculateTargetDistance(
     state.galaxy,
