@@ -1,0 +1,132 @@
+.galaxy-intel-dialog {
+  width: min(1120px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  border: 1px solid color-mix(in srgb, var(--faction-primary, #5ed7ff) 44%, #182536);
+  border-radius: 18px;
+  padding: 0;
+  background: rgba(4, 9, 16, 0.97);
+  color: #e8f6ff;
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.72);
+}
+
+.galaxy-intel-dialog::backdrop {
+  background: rgba(0, 3, 8, 0.78);
+  backdrop-filter: blur(8px);
+}
+
+.galaxy-intel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid rgba(136, 194, 226, 0.16);
+}
+
+.galaxy-intel-header h2 {
+  margin: 4px 0 0;
+  font-size: 24px;
+}
+
+.galaxy-intel-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(120px, 1fr));
+  gap: 12px;
+  padding: 16px 24px;
+}
+
+.galaxy-intel-control {
+  display: grid;
+  gap: 6px;
+  color: #91a9b9;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.galaxy-intel-control input,
+.galaxy-intel-control select {
+  min-width: 0;
+  border: 1px solid rgba(126, 184, 216, 0.24);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(11, 20, 31, 0.9);
+  color: #e8f6ff;
+}
+
+.galaxy-intel-summary {
+  margin: 0 24px 14px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: rgba(65, 112, 139, 0.12);
+  color: #a9c5d5;
+  font-size: 12px;
+}
+
+.galaxy-intel-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 12px;
+  max-height: 62vh;
+  overflow: auto;
+  padding: 0 24px 24px;
+}
+
+.galaxy-intel-card {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(123, 173, 201, 0.18);
+  border-left-width: 3px;
+  border-radius: 12px;
+  padding: 14px;
+  background: linear-gradient(145deg, rgba(14, 26, 39, 0.94), rgba(6, 12, 20, 0.94));
+}
+
+.galaxy-intel-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.galaxy-intel-card h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.galaxy-intel-card header span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 4px 7px;
+  background: rgba(111, 153, 177, 0.14);
+  color: #abc4d3;
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.galaxy-intel-card p,
+.galaxy-intel-card small,
+.galaxy-intel-card strong {
+  margin: 0;
+}
+
+.galaxy-intel-card p,
+.galaxy-intel-card small {
+  color: #8fa9b9;
+  font-size: 11px;
+}
+
+.galaxy-intel-card.is-owned { border-left-color: #66e8bd; }
+.galaxy-intel-card.is-current { border-left-color: #6ecfff; }
+.galaxy-intel-card.is-stale { border-left-color: #f0b45a; }
+.galaxy-intel-card.is-contact { border-left-color: #d879ff; }
+.galaxy-intel-card.is-unclaimed { border-left-color: #566a79; }
+
+@media (max-width: 860px) {
+  .galaxy-intel-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .galaxy-intel-search {
+    grid-column: 1 / -1;
+  }
+}

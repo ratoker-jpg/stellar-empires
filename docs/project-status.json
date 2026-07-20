@@ -6,9 +6,9 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 53,
-  "lastMergeSha": "f33c56b082da474b4f98a926e2d69c6f1a3472e3",
-  "nextPr": 54,
+  "lastMergedPr": 54,
+  "lastMergeSha": "71fd86492581f2da8bf72c6194a2b38e3bb9b258",
+  "nextPr": 55,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
@@ -16,7 +16,7 @@
   "currentMilestone": "Honest autonomous bot core and living-galaxy foundation",
   "currentBatch": {
     "standard": [52, 53, 54, 55, 56, 57],
-    "completed": [52, 53],
+    "completed": [52, 53, 54],
     "optionalExtensions": [],
     "extensionsStarted": false,
     "plannedCapabilities": [
@@ -64,6 +64,7 @@
     "bot research and production planner",
     "bot fleet and mission planner",
     "bot threat, target and recovery planner",
+    "autonomous game-time bot scheduler with personalities, difficulty and Web Worker planning",
     "generated buildings, ships and defense runtime atlases for Aegis, Synod and Veyra",
     "generated hero, emblem and background art for all three factions",
     "data-driven faction runtime asset registry with explicit technology and effect fallbacks",
@@ -76,7 +77,7 @@
     "all three playable factions currently share the Aegis mechanical building, research and unit definitions",
     "full faction-specific mechanics and balance remain scheduled for later faction-content phases",
     "technology, effect and incomplete UI-state artwork still uses procedural CSS or SVG fallback",
-    "bot planners currently return commands but are not yet executed by an autonomous scheduler",
+    "bot scheduler cursor is runtime-only and restarts its decision window after reload",
     "neutral PvE targets, expeditions and world events are not implemented",
     "public Pages deployment should be checked after material UI batches"
   ],
