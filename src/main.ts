@@ -4,6 +4,7 @@ import './styles/factionTheme.css';
 import './styles/newGame.css';
 import './styles/aegisAssets.css';
 import './styles/galaxyIntel.css';
+import './styles/expeditions.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
 import './styles/planetDevelopment.css';
@@ -27,6 +28,7 @@ import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
 import { mountEmpireOverview } from './ui/empireOverview';
+import { mountExpeditionPanel } from './ui/expeditionPanel';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
 import { mountGalaxyIntelPanel } from './ui/galaxyIntelPanel';
 import { mountLogisticsRoutesPanel } from './ui/logisticsRoutesPanel';
@@ -146,6 +148,7 @@ async function bootstrap(): Promise<void> {
     execute: applyPlanetScreenCommand,
   };
   mountGalaxyIntelPanel({ getState: () => runtimeState });
+  mountExpeditionPanel(commandBridge);
   mountPlanetDevelopmentControls(commandBridge);
   mountLogisticsRoutesPanel(commandBridge);
   mountMarketPanel(commandBridge);
