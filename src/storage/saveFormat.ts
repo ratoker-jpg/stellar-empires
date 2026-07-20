@@ -144,6 +144,30 @@ function isSpaceObject(value: unknown): boolean {
 function isStrategicResourceState(value: unknown): boolean {
   return isRecord(value) && typeof value.empireId === 'string' && isNonNegativeInteger(value.exoticMatter);
 }
+function isWorldEventDefinitionId(value: unknown): boolean {
+  return value === 'solar-storm' || value === 'mineral-bloom' || value === 'pirate-hunt' || value === 'anomaly-aftershock';
+}
+function isWorldEventTargetType(value: unknown): boolean {
+  return value === 'system' || value === 'space-object' || value === 'planet';
+}
+function isWorldEventInstance(value: unknown): boolean {
+  return isRecord(value) && typeof value.id === 'string' && isWorldEventDefinitionId(value.definitionId) &&
+    isWorldEventTargetType(value.targetType) && typeof value.targetId === 'string' &&
+    isNonNegativeInteger(value.startedAt) && isNonNegativeInteger(value.endsAt) &&
+    value.endsAt >= value.startedAt && isNonNegativeInteger(value.chainDepth);
+}
+function isWorldEventHistoryEntry(value: unknown): boolean {
+  return isWorldEventInstance(value) && isRecord(value) && isNonNegativeInteger(value.completedAt) &&
+    (value.completion === 'completed' || value.completion === 'recovered');
+}
+function isWorldEventState(value: unknown): boolean {
+  return isRecord(value) && Array.isArray(value.active) && value.active.every(isWorldEventInstance) &&
+    Array.isArray(value.history) && value.history.every(isWorldEventHistoryEntry) &&
+    isRecord(value.cooldowns) && Object.entries(value.cooldowns).every(
+      ([definitionId, cooldownUntil]) =>
+        isWorldEventDefinitionId(definitionId) && isNonNegativeInteger(cooldownUntil),
+    ) && isNonNegativeInteger(value.nextEvaluationAt);
+}
 function isGameState(value: unknown): value is GameState {
   return isStateShell(value) && value.schemaVersion === 12 && Array.isArray(value.empires) &&
     Array.isArray(value.planets) && value.planets.every(isPlanet) && Array.isArray(value.research) &&
@@ -154,7 +178,7 @@ function isGameState(value: unknown): value is GameState {
     value.logisticsRoutes.every(isLogisticsRoute) && isMarket(value.market) &&
     Array.isArray(value.spaceObjects) && value.spaceObjects.every(isSpaceObject) &&
     Array.isArray(value.strategicResources) && value.strategicResources.every(isStrategicResourceState) &&
-    value.strategicResources.length === value.empires.length;
+    value.strategicResources.length === value.empires.length && isWorldEventState(value.worldEvents);
 }
 
 export function createSaveEnvelope(slotId: string, state: GameState, savedAt: string): SaveEnvelope {
