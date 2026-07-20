@@ -17,6 +17,11 @@ import type {
   SpaceObjectMissionReport,
   SpaceObjectState,
 } from './pve/spaceObjects';
+import type {
+  WorldEventDefinitionId,
+  WorldEventState,
+  WorldEventTargetType,
+} from './pve/worldEvents';
 import type { EmpireResearchState } from './research/types';
 import type { UnitKind } from './units/types';
 
@@ -71,6 +76,17 @@ export type GameEventPayload =
   | {
       readonly type: 'SPACE_OBJECT_MISSION_RESOLVE';
       readonly report: SpaceObjectMissionReport;
+    }
+  | {
+      readonly type: 'WORLD_EVENT_END';
+      readonly instanceId: string;
+    }
+  | {
+      readonly type: 'WORLD_EVENT_START';
+      readonly definitionId: WorldEventDefinitionId;
+      readonly targetType: WorldEventTargetType;
+      readonly targetId: string;
+      readonly chainDepth: number;
     };
 
 export interface ScheduledGameEvent {
@@ -231,6 +247,7 @@ export interface GameState {
   readonly market: MarketState;
   readonly spaceObjects: readonly SpaceObjectState[];
   readonly strategicResources: readonly EmpireStrategicResources[];
+  readonly worldEvents: WorldEventState;
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];
