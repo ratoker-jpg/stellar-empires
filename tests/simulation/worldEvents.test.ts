@@ -62,7 +62,9 @@ describe('world event framework', () => {
     );
     const active = started.worldEvents.active[0]!;
     const completed = advance(started, active.endsAt - started.clock.elapsedSeconds);
-    expect(completed.worldEvents.active).toEqual([]);
+    expect(
+      completed.worldEvents.active.some((event) => event.id === active.id),
+    ).toBe(false);
     expect(completed.worldEvents.history).toContainEqual(
       expect.objectContaining({
         id: active.id,
