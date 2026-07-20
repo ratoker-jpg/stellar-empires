@@ -4,6 +4,10 @@ import { createInitialMarketState } from './market/market';
 import { createInitialPlanetStates } from './planet/createInitialPlanetStates';
 import type { FactionId } from './planet/types';
 import { createInitialNeutralForces } from './pve/neutralForces';
+import {
+  createInitialSpaceObjects,
+  createInitialStrategicResources,
+} from './pve/spaceObjects';
 import { createInitialResearchStates } from './research/researchState';
 import { normalizeSeed } from './seed';
 import type { GameState } from './types';
@@ -34,6 +38,8 @@ export function createInitialGameState(
     debrisFields: [],
     logisticsRoutes: [],
     market: createInitialMarketState(),
+    spaceObjects: createInitialSpaceObjects(galaxy, seed),
+    strategicResources: createInitialStrategicResources(empires),
     nextEventSequence: 0,
     pendingEvents: [],
     commandLog: [],
