@@ -43,6 +43,7 @@ export interface UnitDefinition {
   readonly baseSeconds: number;
   readonly populationCost: number;
   readonly hangarCost: number;
+  readonly defenseGridCost: number;
   readonly buildingRequirements: readonly UnitBuildingRequirement[];
   readonly researchRequirements: readonly UnitResearchRequirement[];
   readonly stats: UnitStats;
