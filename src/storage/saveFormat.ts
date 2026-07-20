@@ -41,11 +41,17 @@ function isProductionQueueItem(value: unknown): boolean {
     (value.kind === 'ship' || value.kind === 'defense') && isPositiveInteger(value.quantity) &&
     isNonNegativeInteger(value.startedAt) && isNonNegativeInteger(value.completesAt) && isResourceCost(value.cost);
 }
+function isDefenseRepairQueueItem(value: unknown): boolean {
+  return isRecord(value) && typeof value.id === 'string' && typeof value.unitId === 'string' &&
+    isPositiveInteger(value.quantity) && isNonNegativeInteger(value.startedAt) &&
+    isNonNegativeInteger(value.completesAt) && value.completesAt >= value.startedAt &&
+    isResourceCost(value.cost);
+}
 function isPlanet(value: unknown): boolean {
   if (!isRecord(value) || !isPlanetSpecializationId(value.specializationId) ||
     !isPlanetDevelopmentTemplateId(value.developmentTemplateId) || !isRecord(value.zones) ||
     !Array.isArray(value.buildings) || !Array.isArray(value.buildQueue) || !isRecord(value.economy) ||
-    !isRecord(value.inventory) || !isRecord(value.productionQueues)) return false;
+    !isRecord(value.inventory) || !isRecord(value.productionQueues) || !isRecord(value.defense)) return false;
   const zones = value.zones;
   const validZones = Object.keys(zones).sort().join('|') === [...PLANET_ZONE_IDS].sort().join('|') &&
     PLANET_ZONE_IDS.every((zoneId) => {
@@ -56,7 +62,9 @@ function isPlanet(value: unknown): boolean {
   return validZones && isRecord(value.inventory.ships) && Object.values(value.inventory.ships).every(isNonNegativeInteger) &&
     isRecord(value.inventory.defenses) && Object.values(value.inventory.defenses).every(isNonNegativeInteger) &&
     Array.isArray(value.productionQueues.shipyard) && value.productionQueues.shipyard.every(isProductionQueueItem) &&
-    Array.isArray(value.productionQueues.defense) && value.productionQueues.defense.every(isProductionQueueItem);
+    Array.isArray(value.productionQueues.defense) && value.productionQueues.defense.every(isProductionQueueItem) &&
+    isRecord(value.defense.damaged) && Object.values(value.defense.damaged).every(isNonNegativeInteger) &&
+    Array.isArray(value.defense.repairQueue) && value.defense.repairQueue.every(isDefenseRepairQueueItem);
 }
 function isResearchState(value: unknown): boolean {
   return isRecord(value) && typeof value.empireId === 'string' && isRecord(value.levels) &&
