@@ -75,12 +75,12 @@ async function bootstrap(): Promise<void> {
   const version = requireElement<HTMLElement>('#build-version');
   const systemCount = requireElement<HTMLElement>('#system-count');
   const repository = new IndexedDbSaveRepository();
+  const botAutomationRef: { current?: BotAutomationController } = {};
   let initialState = createInitialGameState('stellar-empires-m1');
   let runtimeState: GameState = initialState;
   let startupStatus: string;
   let autosave: AutoSaveController | undefined;
   let saveManager: SaveManager | undefined;
-  let botAutomation: BotAutomationController | undefined;
 
   try {
     const restored = await loadAutosave(repository);
@@ -119,9 +119,9 @@ async function bootstrap(): Promise<void> {
   mountPlanetScreen(initialState, setStatus, (state) => {
     runtimeState = state;
     autosave?.request(state);
-    botAutomation?.request();
+    botAutomationRef.current?.request();
   });
-  botAutomation = new BotAutomationController({
+  const botAutomation = new BotAutomationController({
     getState: () => runtimeState,
     applyCommands: (commands) => {
       let accepted = 0;
@@ -137,6 +137,7 @@ async function bootstrap(): Promise<void> {
       setStatus('Ошибка автономного планировщика');
     },
   });
+  botAutomationRef.current = botAutomation;
   const commandBridge = {
     getState: () => runtimeState,
     getActivePlanetId: getPlanetScreenActivePlanetId,
@@ -159,7 +160,7 @@ async function bootstrap(): Promise<void> {
   }
   const flushAutosave = (): void => { void autosave?.flush(); };
   window.addEventListener('pagehide', flushAutosave);
-  window.addEventListener('beforeunload', () => botAutomation?.dispose(), { once: true });
+  window.addEventListener('beforeunload', () => botAutomation.dispose(), { once: true });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flushAutosave();
   });
