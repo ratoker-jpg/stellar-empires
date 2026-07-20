@@ -42,13 +42,23 @@ export interface BotPerception {
   readonly perceivedAt: number;
   readonly ownPlanets: readonly BotOwnPlanetPerception[];
   readonly foreignPlanets: readonly BotForeignPlanetPerception[];
+  readonly publicColonyIds: readonly string[];
+  readonly ownDebrisFields: readonly {
+    readonly planetId: string;
+    readonly metal: number;
+    readonly crystal: number;
+  }[];
   readonly alerts: readonly IntelligenceAlert[];
   readonly researchLevels: Readonly<Record<string, number>>;
   readonly marketReserves: GameState['market']['reserves'];
   readonly ownFleets: readonly {
     readonly id: string;
     readonly status: GameState['fleets'][number]['status'];
+    readonly location: GameState['fleets'][number]['location'];
     readonly ships: Readonly<Record<string, number>>;
+    readonly cargo: GameState['fleets'][number]['cargo'];
+    readonly speed: number;
+    readonly cargoCapacity: number;
     readonly mission: GameState['fleets'][number]['mission'];
   }[];
 }
@@ -93,6 +103,11 @@ export function createBotPerception(
       latestByPlanet.set(observation.targetPlanetId, observation);
     }
   }
+  const ownPlanetIds = new Set(
+    state.planets
+      .filter((planet) => planet.ownerEmpireId === empireId)
+      .map((planet) => planet.id),
+  );
 
   return {
     empireId,
@@ -109,6 +124,15 @@ export function createBotPerception(
       freshness:
         observation.expiresAt > state.clock.elapsedSeconds ? 'current' : 'stale',
     })),
+    publicColonyIds: state.planets.map((planet) => planet.id).sort(),
+    ownDebrisFields: state.debrisFields
+      .filter((field) => ownPlanetIds.has(field.planetId))
+      .map((field) => ({
+        planetId: field.planetId,
+        metal: field.metal,
+        crystal: field.crystal,
+      }))
+      .sort((left, right) => left.planetId.localeCompare(right.planetId)),
     alerts: [...(intelligence?.alerts ?? [])].map((alert) => ({ ...alert })),
     researchLevels: { ...(research?.levels ?? {}) },
     marketReserves: { ...state.market.reserves },
@@ -117,7 +141,11 @@ export function createBotPerception(
       .map((fleet) => ({
         id: fleet.id,
         status: fleet.status,
+        location: { ...fleet.location },
         ships: { ...fleet.ships },
+        cargo: { ...fleet.cargo },
+        speed: fleet.speed,
+        cargoCapacity: fleet.cargoCapacity,
         mission: fleet.mission === null ? null : { ...fleet.mission },
       })),
   };
