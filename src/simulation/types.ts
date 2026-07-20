@@ -12,6 +12,11 @@ import type {
 } from './planet/specialization';
 import type { PlanetState } from './planet/types';
 import type { ExpeditionReport } from './pve/expeditions';
+import type {
+  EmpireStrategicResources,
+  SpaceObjectMissionReport,
+  SpaceObjectState,
+} from './pve/spaceObjects';
 import type { EmpireResearchState } from './research/types';
 import type { UnitKind } from './units/types';
 
@@ -62,6 +67,10 @@ export type GameEventPayload =
   | {
       readonly type: 'EXPEDITION_RESOLVE';
       readonly report: ExpeditionReport;
+    }
+  | {
+      readonly type: 'SPACE_OBJECT_MISSION_RESOLVE';
+      readonly report: SpaceObjectMissionReport;
     };
 
 export interface ScheduledGameEvent {
@@ -186,6 +195,12 @@ export type GameCommand =
       readonly targetGalaxyPlanetId: string;
     }
   | {
+      readonly type: 'START_SPACE_OBJECT_MISSION';
+      readonly empireId: string;
+      readonly fleetId: string;
+      readonly objectId: string;
+    }
+  | {
       readonly type: 'RECALL_FLEET';
       readonly empireId: string;
       readonly fleetId: string;
@@ -214,6 +229,8 @@ export interface GameState {
   readonly debrisFields: readonly DebrisField[];
   readonly logisticsRoutes: readonly LogisticsRoute[];
   readonly market: MarketState;
+  readonly spaceObjects: readonly SpaceObjectState[];
+  readonly strategicResources: readonly EmpireStrategicResources[];
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];
