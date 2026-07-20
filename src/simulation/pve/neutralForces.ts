@@ -1,8 +1,8 @@
 import { createPlanetEconomy } from '../economy/planetEconomy';
-import type { GalaxyModel, PlanetModel, StarSystemModel } from '../galaxy/types';
-import { createPlanetZones } from '../planet/zones';
-import type { PlanetBuildingState, PlanetState } from '../planet/types';
 import type { FleetState } from '../fleets/types';
+import type { GalaxyModel, PlanetModel, StarSystemModel } from '../galaxy/types';
+import type { PlanetBuildingState, PlanetState } from '../planet/types';
+import { createPlanetZones } from '../planet/zones';
 
 export const PIRATE_EMPIRE_ID = 'pirate-neutral';
 export const DEFAULT_PIRATE_BASE_COUNT = 3;
@@ -42,15 +42,6 @@ function pirateDefenses(tier: number): Readonly<Record<string, number>> {
   if (tier >= 2) defenses['defense.aegis.missile-battery'] = tier - 1;
   if (tier >= 3) defenses['defense.aegis.shield-generator'] = 1;
   return defenses;
-}
-
-function pirateShips(tier: number): Readonly<Record<string, number>> {
-  const ships: Record<string, number> = {
-    'ship.aegis.fighter': tier * 2,
-    'ship.aegis.scout': 1,
-  };
-  if (tier >= 2) ships['ship.aegis.frigate'] = tier - 1;
-  return ships;
 }
 
 function createPiratePlanet(candidate: Candidate, tier: number): PlanetState {
@@ -95,21 +86,6 @@ function createPiratePlanet(candidate: Candidate, tier: number): PlanetState {
   };
 }
 
-function createPirateFleet(planet: PlanetState, tier: number): FleetState {
-  return {
-    id: `pirate-patrol-${planet.galaxyPlanetId}`,
-    empireId: PIRATE_EMPIRE_ID,
-    originPlanetId: planet.id,
-    location: { type: 'planet', planetId: planet.id },
-    status: 'stationed',
-    ships: pirateShips(tier),
-    cargo: { metal: 0, crystal: 0, gas: 0 },
-    speed: tier >= 2 ? 9 : 13,
-    cargoCapacity: tier * 120,
-    mission: null,
-  };
-}
-
 export function createInitialNeutralForces(
   galaxy: GalaxyModel,
   seed: number,
@@ -132,14 +108,11 @@ export function createInitialNeutralForces(
   );
 
   const planets: PlanetState[] = [];
-  const fleets: FleetState[] = [];
   for (const [index, candidate] of candidates.slice(0, Math.max(0, count)).entries()) {
     const tier = 1 + ((candidate.score + index) % 3);
-    const planet = createPiratePlanet(candidate, tier);
-    planets.push(planet);
-    fleets.push(createPirateFleet(planet, tier));
+    planets.push(createPiratePlanet(candidate, tier));
   }
-  return { planets, fleets };
+  return { planets, fleets: [] };
 }
 
 export function isPiratePlanet(planet: PlanetState): boolean {
