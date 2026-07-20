@@ -6,42 +6,44 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 2,
   "releaseTarget": "1.0",
-  "lastMergedPr": 61,
-  "lastMergeSha": "049e7beb1bbfa0e86d5e5e4ea33a6f9018cd75a8",
-  "nextPr": 62,
+  "lastMergedPr": 62,
+  "lastMergeSha": "8cac46898ebcf777208d3452be284863a6774536",
+  "nextPr": 63,
   "standardBatchSize": 6,
   "maximumAutonomousBatchSize": 8,
   "minimumNormalBatchSize": 6,
-  "governanceUpdateNote": "Actual GitHub history is authoritative. Accepted faction integration and continuation batches shifted implementation capabilities relative to the canonical roadmap numbering.",
-  "currentMilestone": "Living galaxy PvE and military depth",
+  "governanceUpdateNote": "Actual GitHub history is authoritative. New gameplay mechanics are frozen while the visual redesign batch #63-#70 replaces the prototype shell with an original structured sci-fi client.",
+  "currentMilestone": "Full visual redesign and structured sci-fi client shell",
   "currentBatch": {
-    "standard": [58, 59, 60, 61, 62, 63],
-    "completed": [58, 59, 60, 61],
-    "optionalExtensions": [64, 65],
-    "extensionsStarted": false,
+    "standard": [63, 64, 65, 66, 67, 68],
+    "optionalExtensions": [69, 70],
+    "completed": [],
+    "extensionsStarted": true,
     "plannedCapabilities": [
-      "asteroids, gas objects and anomalies",
-      "special missions and world event framework",
-      "PvE balance, rewards and unified reports",
-      "full planetary defense loop",
-      "combat engine v2 weapon and protection types",
-      "ship upgrades"
+      "visual audit, design tokens, UI primitives and sandbox",
+      "global HUD and primary navigation",
+      "planet overview and resource, industry and military zones",
+      "fleet mission flow and galaxy presentation",
+      "research, production and planetary defense presentation",
+      "market, logistics, PvE and report presentation",
+      "command profile, local ranking and faction polish",
+      "responsive, accessibility, performance and visual QA"
     ]
   },
   "nextBatch": {
-    "standard": [64, 65, 66, 67, 68, 69],
+    "standard": [71, 72, 73, 74, 75, 76],
     "plannedCapabilities": [
+      "resume ship upgrade domain",
       "class skills, formations and target priorities",
       "admiral experience and ability branches",
       "commander ships and headless battle simulator",
       "relations, reputation and diplomatic positions",
-      "diplomatic actions and treaties",
-      "coalition creation, roles and levels"
+      "diplomatic actions and treaties"
     ],
-    "optionalExtensions": [70, 71],
+    "optionalExtensions": [77, 78],
     "optionalCapabilities": [
-      "coalition contributions and shared projects",
-      "team planet and shared infrastructure"
+      "coalition creation, roles and levels",
+      "coalition contributions and shared projects"
     ]
   },
   "deliveredCapabilities": [
@@ -63,6 +65,8 @@
     "planetary defense grid limits covering active, damaged and queued installations",
     "deterministic post-battle defense recovery without duplicate debris rewards",
     "persistent defense repair queues with cancellation, migration and player controls",
+    "combat engine v2 with weapon, protection and target-size counters",
+    "target-level deterministic combat breakdown with carried damage",
     "schema-v12 saves with multi-colony, intelligence, debris, logistics, market, space objects, world events and defense repair state",
     "resource economy with energy, population, stability and storage",
     "deterministic building, research, ship and defense queues",
@@ -90,6 +94,7 @@
     "all three playable factions currently share the Aegis mechanical building, research and unit definitions",
     "full faction-specific mechanics and balance remain scheduled for later faction-content phases",
     "technology, effect and incomplete UI-state artwork still uses procedural CSS or SVG fallback",
+    "current production UI is still the pre-redesign prototype until PR #64-#70 migrate screens",
     "bot scheduler cursor is runtime-only and restarts its decision window after reload",
     "existing schema-v12 saves are not retroactively seeded with pirate bases",
     "autonomous bots do not yet launch expeditions or space-object operations",
@@ -97,12 +102,15 @@
     "exotic matter is stored but does not yet have spending mechanics",
     "world events currently use four base scenarios without player-choice branches",
     "PvE balance currently uses transparent linear multipliers rather than long-term seasons",
+    "ship upgrade branch agent/pr63-ship-upgrades is intentionally not merged during visual redesign",
     "public Pages deployment should be checked after material UI batches"
   ],
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
+    "docs/ui/visual-audit.md",
+    "docs/ui/design-system-v1.md",
     "docs/16-execution-roadmap.md",
     "docs/roadmap-pr-index.json",
     "latest merged GitHub pull requests"
