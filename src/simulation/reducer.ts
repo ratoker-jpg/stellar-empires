@@ -43,6 +43,11 @@ import {
   applySpaceObjectMissionEvent,
   startSpaceObjectMission,
 } from './pve/spaceObjects';
+import {
+  applyWorldEventEvent,
+  getNextWorldEventEvaluationAt,
+  processWorldEventEvaluationAt,
+} from './pve/worldEvents';
 import { AEGIS_RESEARCH_CATALOG } from './research/catalog';
 import {
   applySpeedPercent,
@@ -111,7 +116,9 @@ function scheduleEvent(
     command.payload.type === 'FLEET_ARRIVE' ||
     command.payload.type === 'FLEET_RETURN' ||
     command.payload.type === 'EXPEDITION_RESOLVE' ||
-    command.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE'
+    command.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE' ||
+    command.payload.type === 'WORLD_EVENT_END' ||
+    command.payload.type === 'WORLD_EVENT_START'
   ) {
     return {
       ok: false,
@@ -295,6 +302,9 @@ function cancelBuilding(
 }
 
 function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
+  if (event.payload.type === 'WORLD_EVENT_END' || event.payload.type === 'WORLD_EVENT_START') {
+    return applyWorldEventEvent(state, event);
+  }
   if (event.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
     return applySpaceObjectMissionEvent(state, event);
   }
@@ -337,6 +347,11 @@ function accrueStateEconomies(state: GameState, seconds: number): GameState {
   };
 }
 
+function earliestTime(values: readonly (number | undefined)[]): number | undefined {
+  const defined = values.filter((value): value is number => value !== undefined);
+  return defined.length === 0 ? undefined : Math.min(...defined);
+}
+
 function advanceTime(
   state: GameState,
   command: Extract<GameCommand, { readonly type: 'ADVANCE_TIME' }>,
@@ -356,11 +371,8 @@ function advanceTime(
       ? nextEvent.executeAt
       : undefined;
     const nextRouteAt = getNextLogisticsDepartureAt(working, targetTime);
-    const nextAt = nextEventAt === undefined
-      ? nextRouteAt
-      : nextRouteAt === undefined
-        ? nextEventAt
-        : Math.min(nextEventAt, nextRouteAt);
+    const nextWorldEventAt = getNextWorldEventEvaluationAt(working, targetTime);
+    const nextAt = earliestTime([nextEventAt, nextRouteAt, nextWorldEventAt]);
     if (nextAt === undefined) break;
 
     working = accrueStateEconomies(working, nextAt - cursor);
@@ -370,6 +382,9 @@ function advanceTime(
       working = { ...working, pendingEvents: working.pendingEvents.slice(1) };
       working = applyEvent(working, nextEvent);
       executedEvents.push({ event: nextEvent, executedAt: nextAt });
+    }
+    if (nextWorldEventAt === nextAt) {
+      working = processWorldEventEvaluationAt(working, nextAt);
     }
     cursor = nextAt;
   }
