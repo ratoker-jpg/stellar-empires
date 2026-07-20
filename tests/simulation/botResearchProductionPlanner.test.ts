@@ -27,7 +27,7 @@ function prepareBotInfrastructure(
                   building.buildingId !== 'building.aegis.sensor-array',
               ),
               { buildingId: 'building.aegis.command', level: 3 },
-              { buildingId: 'building.aegis.research-lab', level: 2 },
+              { buildingId: 'building.aegis.research-lab', level: 3 },
               { buildingId: 'building.aegis.shipyard', level: 2 },
               { buildingId: 'building.aegis.sensor-array', level: 1 },
             ],
@@ -109,7 +109,8 @@ describe('bot research and production planner', () => {
       'aegis-bot',
       {
         'technology.aegis.construction': 2,
-        'technology.aegis.sensors': 1,
+        'technology.aegis.energy': 2,
+        'technology.aegis.sensors': 2,
         'technology.aegis.weapons': 1,
       },
     );
