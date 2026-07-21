@@ -6,20 +6,20 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 67,
-  "lastMergeSha": "dddcfadcc63ccf4d6973aa0281b03c54b8f66f26",
-  "activePr": 68,
-  "nextPrAfterActive": 69,
+  "lastMergedPr": 68,
+  "lastMergeSha": "274887472d5a220bf715ee185da0d0e0b1bdb96b",
+  "activePr": 69,
+  "nextPrAfterActive": 70,
   "currentMilestone": "Mechanics-informed visual/content integration",
   "currentBatch": {
-    "standard": [66, 67, 68, 69, 70, 71],
+    "standard": [69, 70, 71, 72, 73, 74],
     "plannedCapabilities": [
-      "knowledge reference, project audit, roadmap synchronization and source asset intake",
-      "remaining generated faction source asset intake",
       "research, production and planetary defense presentation",
       "market, logistics, PvE, world events and report presentation",
       "command profile, local ranking and faction polish",
-      "responsive, accessibility, performance and visual QA"
+      "responsive, keyboard/accessibility, performance and visual QA",
+      "ship upgrades reimplementation",
+      "formations, target priorities and original class skills"
     ]
   },
   "deliveredDomains": [
@@ -31,7 +31,7 @@
     "planetary defense damage and repair lifecycle",
     "honest autonomous bots with planners and Worker scheduler",
     "three faction identities, runtime registry and new-game selection",
-    "design system, global HUD and rebuilt planet workspace"
+    "design system, global HUD, rebuilt planet workspace and production galaxy/fleet presentation"
   ],
   "knownLimitations": [
     "all factions still share Aegis mechanical catalogs",
@@ -52,9 +52,9 @@
     },
     "runtimeAssets": {
       "status": "partially-connected",
-      "connected": "existing compact WebP atlases and SVG fallbacks",
+      "connected": "galaxy, stars, planets, objects, pirates, fleet ships and current building/production/defense presentation",
       "runtimeConnected": false,
-      "remainingIntegration": "register source-derived runtime URLs, atlases and tests in a separate PR"
+      "remainingIntegration": "alternative faction identity art and optional raster UI skins remain deferred"
     },
     "document": "docs/assets/user-supplied-asset-intake.md"
   },

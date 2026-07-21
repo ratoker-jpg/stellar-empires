@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-21  
-**Baseline:** merged PR #65  
+**Baseline:** merged PR #68  
 **Release target:** 1.0
 
 ## 1. Release boundary
@@ -35,9 +35,9 @@ Excluded:
 - Players and bots use the same commands and constraints.
 - Every incompatible state change gets a schema migration and fixtures.
 - Research is inspiration; adopted systems require original names, values and presentation.
-- Source assets are not runtime assets until optimized, registered and tested.
+- Source assets are not runtime assets until registered and tested.
 
-## 3. Delivered baseline through PR #65
+## 3. Delivered baseline through PR #68
 
 ### Foundation and vertical slice
 
@@ -59,49 +59,47 @@ Excluded:
 - planetary defense damage/repair lifecycle;
 - combat v2 counters.
 
-### Factions and visual redesign
+### Factions, assets and visual redesign
 
 - three faction identities, selection and persistence;
+- 172 verified source assets across three packs;
 - generated runtime atlases/hero/emblem/background registry;
-- design system and UI sandbox;
-- structured global HUD/navigation;
-- rebuilt planet overview and zone presentation.
+- production galaxy, planet, object, pirate and fleet art;
+- design system, structured HUD and rebuilt planet workspace.
 
-## 4. Active visual/content batch
+## 4. Active six-PR batch
 
 | PR | Scope | Gate |
 |---:|---|---|
-| **#66** | Mechanics reference, full project gap audit, roadmap v3 and source asset intake | honest docs; provenance recorded; no runtime regression |
-| **#67** | Fleet mission flow and production galaxy presentation | all missions visible; targets understandable; galaxy/pirate/ship art integrated |
-| **#68** | Remaining generated faction source asset intake | archive provenance/inventory complete; no runtime regression |
-| **#69** | Market, logistics, PvE, world events and reports presentation | coherent operations workspace with preserved commands |
-| **#70** | Command profile, local ranking and faction polish | profile/ranking read models and faction identity |
-| **#71** | Responsive, keyboard/accessibility, performance and visual QA | 1366×768/1920×1080, keyboard path and budgets |
+| **#69** | Research, production and planetary defense presentation | committed building/terrain/ship/defense art; existing commands preserved |
+| **#70** | Market, logistics, PvE, world events and reports presentation | coherent operations workspace with preserved commands |
+| **#71** | Command profile, local ranking and faction polish | profile/ranking read models and faction identity |
+| **#72** | Responsive, keyboard/accessibility, performance and visual QA | 1366×768/1920×1080, keyboard path and budgets |
+| **#73** | Reimplement ship upgrades on fresh main | deterministic commands, schema migration and tests |
+| **#74** | Formations, target priorities and original class skills | deterministic combat integration and bot-safe defaults |
 
 ## 5. Military and faction architecture
 
 | PR | Scope |
 |---:|---|
-| **#72** | Reimplement ship upgrades on fresh main with migration/tests |
-| **#73** | Formations, target priorities and original class skills |
-| **#74** | Command doctrine progression and flagship framework |
-| **#75** | Faction mechanical catalog architecture and ID migration policy |
-| **#76** | Full Aegis economy/buildings/research/unit roster |
-| **#77** | Full Synod economy/buildings/research/unit roster |
-| **#78** | Full Veyra economy/buildings/research/unit roster |
+| **#75** | Command doctrine progression and flagship framework |
+| **#76** | Faction mechanical catalog architecture and ID migration policy |
+| **#77** | Full Aegis economy/buildings/research/unit roster |
+| **#78** | Full Synod economy/buildings/research/unit roster |
+| **#79** | Full Veyra economy/buildings/research/unit roster |
 
-Gate after #78: three factions are mechanically distinct, bot-usable and save-compatible.
+Gate after #79: three factions are mechanically distinct, bot-usable and save-compatible.
 
 ## 6. Diplomacy, coalition and endgame
 
 | PR | Scope |
 |---:|---|
-| **#79** | Relations, reputation and diplomatic positions |
-| **#80** | Treaties, wars, coalition creation, roles and AI decisions |
-| **#81** | Coalition contributions, shared projects and coalition world |
-| **#82** | Strategic stars, support/assault operations and group battles |
-| **#83** | Rare meta-resource, anti-snowball and intermediate anchor arrays |
-| **#84** | Final transit nexus, victory/defeat and post-round state |
+| **#80** | Relations, reputation and diplomatic positions |
+| **#81** | Treaties, wars, coalition creation, roles and AI decisions |
+| **#82** | Coalition contributions, shared projects and coalition world |
+| **#83** | Strategic stars, support/assault operations and group battles |
+| **#84** | Rare meta-resource, anti-snowball and intermediate anchor arrays |
+| **#85** | Final transit nexus, victory/defeat and post-round state |
 
 Original terminology is mandatory. The external crystal/obelisk/gate chain is only a structural reference.
 
@@ -109,22 +107,22 @@ Original terminology is mandatory. The external crystal/obelisk/gate chain is on
 
 | PR | Scope |
 |---:|---|
-| **#85** | Achievements, local rankings and round statistics |
-| **#86** | Tutorial, contextual help and encyclopedia |
-| **#87** | Bot expedition/object/repair/diplomacy/endgame planning |
-| **#88** | Audio system, faction sound language and music |
-| **#89** | Notifications, reports, explanations and bookmarks |
-| **#90** | Save schema consolidation and offline resimulation |
-| **#91** | Balance harness and headless simulation batches |
-| **#92** | Economy/progression/battle/endgame balance pass |
-| **#93** | Aegis production content/art/effects/audio polish |
-| **#94** | Synod production content/art/effects/audio polish |
-| **#95** | Veyra production content/art/effects/audio polish |
-| **#96** | Accessibility and localization readiness |
-| **#97** | Performance/memory/startup budget and low-end fallback |
-| **#98** | Regression, migrations, replay and browser matrix |
-| **#99** | Release candidate, docs, credits/provenance and Pages QA |
-| **#100** | Release 1.0 stabilization and tagged public build |
+| **#86** | Achievements, local rankings and round statistics |
+| **#87** | Tutorial, contextual help and encyclopedia |
+| **#88** | Bot expedition/object/repair/diplomacy/endgame planning |
+| **#89** | Audio system, faction sound language and music |
+| **#90** | Notifications, reports, explanations and bookmarks |
+| **#91** | Save schema consolidation and offline resimulation |
+| **#92** | Balance harness and headless simulation batches |
+| **#93** | Economy/progression/battle/endgame balance pass |
+| **#94** | Aegis production content/art/effects/audio polish |
+| **#95** | Synod production content/art/effects/audio polish |
+| **#96** | Veyra production content/art/effects/audio polish |
+| **#97** | Accessibility and localization readiness |
+| **#98** | Performance/memory/startup budget and low-end fallback |
+| **#99** | Regression, migrations, replay and browser matrix |
+| **#100** | Release candidate, docs, credits/provenance and Pages QA |
+| **#101** | Release 1.0 stabilization and tagged public build |
 
 ## 8. Cross-cutting acceptance gates
 
