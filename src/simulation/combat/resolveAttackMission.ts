@@ -174,6 +174,10 @@ export function resolveAttackMission(
   );
   for (const fleet of defenderFleets) mergeUnits(defenderUnits, fleet.ships);
   const defenderDoctrine = defenderFleets[0];
+  const attackerFormation = attackerFleet.formation ?? 'line';
+  const attackerTargetPriority = attackerFleet.targetPriority ?? 'balanced';
+  const defenderFormation = defenderDoctrine?.formation ?? 'line';
+  const defenderTargetPriority = defenderDoctrine?.targetPriority ?? 'balanced';
 
   const isPve = target.ownerEmpireId === PIRATE_EMPIRE_ID;
   const threatMultiplierPermille = isPve
@@ -197,15 +201,15 @@ export function resolveAttackMission(
     {
       empireId: attackerFleet.empireId,
       units: attackerFleet.ships,
-      formation: attackerFleet.formation,
-      targetPriority: attackerFleet.targetPriority,
+      formation: attackerFormation,
+      targetPriority: attackerTargetPriority,
       ...getCombatEffects(state, attackerFleet.empireId, attackerFleet.ships),
     },
     {
       empireId: target.ownerEmpireId,
       units: effectiveDefenderUnits,
-      formation: defenderDoctrine?.formation ?? 'line',
-      targetPriority: defenderDoctrine?.targetPriority ?? 'balanced',
+      formation: defenderFormation,
+      targetPriority: defenderTargetPriority,
       ...getCombatEffects(state, target.ownerEmpireId, effectiveDefenderUnits),
     },
   );
@@ -305,10 +309,10 @@ export function resolveAttackMission(
     mode: isPve ? 'pve' : 'pvp',
     threatMultiplierPermille,
     rewardMultiplierPermille,
-    attackerFormation: attackerFleet.formation,
-    attackerTargetPriority: attackerFleet.targetPriority,
-    defenderFormation: defenderDoctrine?.formation ?? 'line',
-    defenderTargetPriority: defenderDoctrine?.targetPriority ?? 'balanced',
+    attackerFormation,
+    attackerTargetPriority,
+    defenderFormation,
+    defenderTargetPriority,
   };
 
   return {
