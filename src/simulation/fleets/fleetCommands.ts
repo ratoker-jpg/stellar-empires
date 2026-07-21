@@ -129,6 +129,8 @@ export function createFleet(
     cargo: { ...command.cargo },
     speed: composition.speed,
     cargoCapacity,
+    formation: 'line',
+    targetPriority: 'balanced',
     mission: null,
   };
   const updatedPlanet: PlanetState = {

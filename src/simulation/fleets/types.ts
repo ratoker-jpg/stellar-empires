@@ -1,3 +1,4 @@
+import type { FleetFormation, FleetTargetPriority } from '../combat/fleetDoctrine';
 import type { ResourceCost } from '../economy/types';
 
 export type FleetStatus = 'stationed' | 'outbound' | 'holding' | 'returning';
@@ -41,5 +42,7 @@ export interface FleetState {
   readonly cargo: ResourceCost;
   readonly speed: number;
   readonly cargoCapacity: number;
+  readonly formation: FleetFormation;
+  readonly targetPriority: FleetTargetPriority;
   readonly mission: FleetMission | null;
 }
