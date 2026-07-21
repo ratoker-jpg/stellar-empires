@@ -1,0 +1,182 @@
+.command-ranking-dialog {
+  width: min(1120px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  padding: 0;
+  overflow: auto;
+  border: 1px solid rgba(94, 205, 249, 0.38);
+  border-radius: 14px;
+  color: #eefaff;
+  background: linear-gradient(150deg, rgba(5, 18, 30, 0.99), rgba(1, 6, 12, 0.99));
+  box-shadow: 0 34px 100px rgba(0, 0, 0, 0.8);
+}
+
+.command-ranking-dialog::backdrop {
+  background: rgba(0, 4, 9, 0.84);
+  backdrop-filter: blur(6px);
+}
+
+.command-ranking-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 22px 26px;
+  border-bottom: 1px solid rgba(94, 205, 249, 0.16);
+}
+
+.command-ranking-header h2,
+.command-ranking-header p,
+.command-profile h3,
+.command-profile p,
+.command-ranking-list h3,
+.command-ranking-list p {
+  margin: 0;
+}
+
+.command-profile {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr);
+  min-height: 330px;
+  overflow: hidden;
+  margin: 18px 22px;
+  border: 1px solid rgba(94, 205, 249, 0.2);
+  border-radius: 12px;
+  background-image: linear-gradient(90deg, rgba(2, 8, 15, 0.25), rgba(2, 8, 15, 0.96) 48%), var(--command-profile-bg);
+  background-size: cover;
+  background-position: center;
+}
+
+.command-profile-hero {
+  width: 100%;
+  height: 100%;
+  min-height: 330px;
+  object-fit: contain;
+  object-position: bottom center;
+}
+
+.command-profile-body {
+  display: grid;
+  align-content: center;
+  gap: 22px;
+  padding: 28px;
+}
+
+.command-profile-identity {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 15px;
+}
+
+.command-profile-identity img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.command-profile-identity h3 {
+  margin-top: 4px;
+  font-size: clamp(1.35rem, 3vw, 2.2rem);
+}
+
+.command-profile-identity div > p:last-child {
+  margin-top: 6px;
+  color: #93aaba;
+}
+
+.command-profile-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.command-profile-stats div {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid rgba(94, 205, 249, 0.14);
+  border-radius: 8px;
+  background: rgba(3, 15, 25, 0.72);
+}
+
+.command-profile-stats span {
+  color: #7892a3;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.command-ranking-list {
+  padding: 4px 22px 24px;
+}
+
+.command-ranking-list > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.command-ranking-list > header p {
+  color: #7892a3;
+  font-size: 0.78rem;
+}
+
+.command-ranking-entry {
+  display: grid;
+  grid-template-columns: 52px 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 66px;
+  padding: 9px 14px;
+  border: 1px solid rgba(94, 205, 249, 0.12);
+  background: rgba(4, 16, 27, 0.68);
+}
+
+.command-ranking-entry + .command-ranking-entry {
+  border-top: 0;
+}
+
+.command-ranking-entry.is-player {
+  border-color: rgba(225, 184, 85, 0.46);
+  background: rgba(55, 42, 12, 0.4);
+}
+
+.command-ranking-entry img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.command-ranking-entry > div {
+  display: grid;
+  gap: 3px;
+}
+
+.command-ranking-entry small {
+  color: #7f98a9;
+}
+
+.command-ranking-place {
+  color: #67d2fa;
+  font-size: 1.15rem;
+}
+
+.command-ranking-entry b {
+  color: #e7c36c;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 760px) {
+  .command-profile {
+    grid-template-columns: 1fr;
+  }
+
+  .command-profile-hero {
+    min-height: 220px;
+    max-height: 260px;
+  }
+
+  .command-profile-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
