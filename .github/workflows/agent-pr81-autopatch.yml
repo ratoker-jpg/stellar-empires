@@ -1,9 +1,9 @@
 name: Agent PR81 native Veyra autopatch
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/pr81-native-veyra
+      - main
 
 permissions:
   contents: write
