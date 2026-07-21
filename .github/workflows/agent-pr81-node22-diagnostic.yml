@@ -1,0 +1,31 @@
+name: Agent PR81 Node22 diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node 22.12
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Capture lint
+        run: npm run lint 2>&1 | tee pr81-lint.log
+      - name: Upload lint diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr81-node22-lint
+          path: pr81-lint.log
+          retention-days: 1
