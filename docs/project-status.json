@@ -6,13 +6,14 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 68,
-  "lastMergeSha": "274887472d5a220bf715ee185da0d0e0b1bdb96b",
-  "activePr": 69,
-  "nextPrAfterActive": 70,
+  "lastMergedPr": 69,
+  "lastMergeSha": "6874092c21549db04ebd44752a7dc46f847f5b0a",
+  "activePr": 70,
+  "nextPrAfterActive": 71,
   "currentMilestone": "Mechanics-informed visual/content integration",
   "currentBatch": {
     "standard": [69, 70, 71, 72, 73, 74],
+    "completed": [69],
     "plannedCapabilities": [
       "research, production and planetary defense presentation",
       "market, logistics, PvE, world events and report presentation",
@@ -31,7 +32,7 @@
     "planetary defense damage and repair lifecycle",
     "honest autonomous bots with planners and Worker scheduler",
     "three faction identities, runtime registry and new-game selection",
-    "design system, global HUD, rebuilt planet workspace and production galaxy/fleet presentation"
+    "design system, global HUD, production galaxy/fleet and development presentation"
   ],
   "knownLimitations": [
     "all factions still share Aegis mechanical catalogs",

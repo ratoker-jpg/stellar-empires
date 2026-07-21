@@ -42,6 +42,7 @@ import { mountLogisticsRoutesPanel } from './ui/logisticsRoutesPanel';
 import { mountMarketPanel } from './ui/marketPanel';
 import { mountMissionReportsPanel } from './ui/missionReportsPanel';
 import { selectNewGameFaction } from './ui/newGameFactionPicker';
+import { mountOperationsWorkspace } from './ui/operationsWorkspace';
 import { mountPlanetDevelopmentControls } from './ui/planetDevelopmentControls';
 import {
   applyPlanetScreenCommand,
@@ -166,6 +167,7 @@ async function bootstrap(): Promise<void> {
   mountPlanetDevelopmentControls(commandBridge);
   mountLogisticsRoutesPanel(commandBridge);
   mountMarketPanel(commandBridge);
+  mountOperationsWorkspace({ getState: () => runtimeState });
   mountEmpireOverview({
     getState: () => runtimeState,
     getActivePlanetId: getPlanetScreenActivePlanetId,
