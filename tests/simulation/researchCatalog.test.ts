@@ -6,7 +6,7 @@ import type { ResearchDefinition } from '../../src/simulation/research/types';
 describe('research catalog', () => {
   it('has a valid acyclic Aegis dependency graph', () => {
     expect(validateResearchCatalog(AEGIS_RESEARCH_CATALOG)).toEqual([]);
-    expect(AEGIS_RESEARCH_CATALOG).toHaveLength(7);
+    expect(AEGIS_RESEARCH_CATALOG).toHaveLength(10);
     expect(
       AEGIS_RESEARCH_CATALOG.find(
         (technology) => technology.id === 'technology.aegis.colonization',

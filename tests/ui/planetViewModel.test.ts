@@ -18,12 +18,12 @@ function getPlayerPlanet(state: GameState) {
 }
 
 describe('planet view model', () => {
-  it('creates one building card for every Aegis vertical slice building', () => {
+  it('creates one building card for every Aegis catalog building', () => {
     const planet = getPlayerPlanet(createInitialGameState('planet-ui-cards'));
     const cards = createBuildingCardViewModels(planet);
 
-    expect(cards).toHaveLength(8);
-    expect(new Set(cards.map((card) => card.id)).size).toBe(8);
+    expect(cards).toHaveLength(12);
+    expect(new Set(cards.map((card) => card.id)).size).toBe(12);
     expect(cards.every((card) => card.asset.category === 'building')).toBe(true);
   });
 
