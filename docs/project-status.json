@@ -6,11 +6,11 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 76,
-  "lastMergeSha": "5dbb2d1d26f47b9d4346c5ee9e67cdfba3801033",
-  "activePr": 77,
-  "nextPrAfterActive": 78,
-  "currentMilestone": "Command progression, faction asymmetry and diplomacy",
+  "lastMergedPr": 77,
+  "lastMergeSha": "2ef1dff9d90ccb5a8c1abe0f59cb89d6247124d7",
+  "activePr": 78,
+  "nextPrAfterActive": 79,
+  "currentMilestone": "Faction completion and playable-slice stabilization",
   "currentBatch": {
     "standard": [
       75,
@@ -22,15 +22,16 @@
     ],
     "completed": [
       75,
-      76
+      76,
+      77
     ],
     "plannedCapabilities": [
       "command doctrine progression and flagship framework",
       "faction mechanical catalog architecture and ID migration policy",
       "full Aegis economy, buildings, research and unit roster",
+      "full-project audit and stabilization recommendations",
       "full Synod economy, buildings, research and unit roster",
-      "full Veyra economy, buildings, research and unit roster",
-      "relations, reputation and diplomatic positions"
+      "full Veyra economy, buildings, research and unit roster"
     ]
   },
   "deliveredDomains": [
@@ -46,14 +47,17 @@
     "per-hull weapon, armor and cargo upgrades with deterministic queue and combat effects",
     "fleet formations, target priorities and original class skills",
     "command doctrine progression, battle experience and flagship fleet appointments",
-    "explicit faction catalog manifest, stable mechanical IDs and dependency validation"
+    "explicit faction catalog manifest, stable mechanical IDs and dependency validation",
+    "full native Aegis mechanical catalog"
   ],
   "knownLimitations": [
-    "Aegis native full catalog is active in PR #77",
-    "Synod and Veyra still use explicit Aegis legacy-alias catalogs until PR #78 and #79",
-    "diplomacy, coalitions, strategic stars and endgame are missing",
+    "Synod and Veyra still use explicit Aegis legacy-alias catalogs until PR #79 and #80",
+    "bot decision timing is runtime-only and does not catch up every skipped decision interval",
+    "command and event logs can grow without an explicit long-session budget",
+    "a complete victory and defeat loop is not yet playable",
+    "diplomacy, coalitions, strategic stars and final endgame are missing",
     "bots do not yet plan expanded faction content, command doctrine or diplomacy",
-    "strategic exotic matter has no spending loop",
+    "strategic exotic matter has no complete spending loop",
     "captured Nemexia HTML/screens/assets are excluded"
   ],
   "sourceAssetIntake": {
@@ -82,7 +86,7 @@
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/16-execution-roadmap.md",
-    "docs/18-project-gap-analysis.md",
+    "docs/20-full-project-audit.md",
     "docs/19-faction-catalog-id-policy.md",
     "docs/assets/user-supplied-asset-intake.md",
     "latest merged GitHub pull requests"
