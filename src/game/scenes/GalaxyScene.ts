@@ -284,11 +284,12 @@ export class GalaxyScene extends Phaser.Scene {
   private showSystemTooltip(system: StarSystemModel, x: number, y: number): void {
     const owner = getOwner(system) ?? 'нет установленного контроля';
     const activeFleets = this.#state.fleets.filter((fleet) => {
-      if (fleet.location.type === 'planet') {
-        const planet = this.#state.planets.find((candidate) => candidate.id === fleet.location.planetId);
+      const location = fleet.location;
+      if (location.type === 'planet') {
+        const planet = this.#state.planets.find((candidate) => candidate.id === location.planetId);
         return planet?.systemId === system.id;
       }
-      return this.findSystemForPlanet(fleet.location.toPlanetId)?.id === system.id;
+      return this.findSystemForPlanet(location.toPlanetId)?.id === system.id;
     }).length;
     const objects = this.#state.spaceObjects.filter((object) => object.systemId === system.id).length;
     this.#tooltip
