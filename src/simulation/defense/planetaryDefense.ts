@@ -1,5 +1,6 @@
 import { enqueueEvent } from '../eventQueue';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
+import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
 import {
   canAfford,
   getBuildingLevel,
@@ -145,7 +146,10 @@ export function queueDefenseRepair(
     return { ok: false, code: 'DEFENSE_REPAIR_QUEUE_BUSY', message: 'Defense repair queue is occupied.' };
   }
   const definition = getDefenseDefinition(command.unitId);
-  if (definition === undefined || definition.factionId !== planet.factionId) {
+  if (
+    definition === undefined ||
+    !canUseMechanicalDefinition(definition.factionId, planet.factionId)
+  ) {
     return { ok: false, code: 'DEFENSE_UNIT_NOT_FOUND', message: 'Defense installation is not registered for this faction.' };
   }
   const damagedAvailable = planet.defense.damaged[definition.id] ?? 0;
