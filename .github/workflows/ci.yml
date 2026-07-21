@@ -34,27 +34,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Capture typecheck
-        shell: bash
-        run: |
-          set +e
-          npm run typecheck > typecheck.log 2>&1
-          echo $? > typecheck-exit-code.txt
-          exit 0
-
-      - name: Upload typecheck diagnostic
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: typecheck-diagnostic
-          path: |
-            typecheck.log
-            typecheck-exit-code.txt
-          if-no-files-found: error
-
-      - name: Enforce typecheck result
-        shell: bash
-        run: exit "$(cat typecheck-exit-code.txt)"
+      - name: Typecheck
+        run: npm run typecheck
 
       - name: Test
         run: npm run test
