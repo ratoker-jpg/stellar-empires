@@ -20,6 +20,7 @@ const OWNER_COLORS: Readonly<Record<string, number>> = {
   'aegis-bot': 0xe7a847,
   'synod-bot': 0x8a6dff,
   'veyra-bot': 0xa8e85e,
+  'pirate-neutral': 0xff6f61,
 };
 
 function getOwner(system: StarSystemModel): string | undefined {
@@ -175,10 +176,18 @@ export class GalaxyScene extends Phaser.Scene {
         const orbitRadius = index % 2 === 0 ? 36 : 48;
         const angle = (Math.PI * 2 * planet.position) / Math.max(8, system.planets.length + 1);
         const size = clamp(10 + planet.size * 0.45, 11, 17);
+        const colony = this.#state.planets.find(
+          (candidate) => candidate.galaxyPlanetId === planet.id,
+        );
+        const isPirateBase = colony?.ownerEmpireId === 'pirate-neutral';
         const planetAsset = getPlanetRuntimeAsset(planet.biome);
         const image = this.add
-          .image(x + Math.cos(angle) * orbitRadius, y + Math.sin(angle) * orbitRadius, planetAsset.key)
-          .setDisplaySize(size, size)
+          .image(
+            x + Math.cos(angle) * orbitRadius,
+            y + Math.sin(angle) * orbitRadius,
+            isPirateBase ? SPACE_OBJECT_RUNTIME_ASSETS.pirateOutpost.key : planetAsset.key,
+          )
+          .setDisplaySize(isPirateBase ? 22 : size, isPirateBase ? 22 : size)
           .setAlpha(planet.ownerEmpireId === null ? 0.68 : 0.96);
         layer.add(image);
       });
