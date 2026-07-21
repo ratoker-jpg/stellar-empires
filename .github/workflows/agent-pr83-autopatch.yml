@@ -22,11 +22,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.12.0'
-      - name: Apply history retention patch
+      - name: Verify and apply history retention patch
         shell: bash
         run: |
           set -o pipefail
-          base64 --decode tools/pr83.patch.gz.b64 | gzip --decompress > /tmp/pr83.patch
+          cat tools/pr83-payload/*.b64 > /tmp/pr83.patch.gz.b64
+          echo "3977b741d450f9c1e77a24b4a04e6a71264024351852e909685935700e425d1a  /tmp/pr83.patch.gz.b64" | sha256sum --check
+          base64 --decode /tmp/pr83.patch.gz.b64 | gzip --decompress > /tmp/pr83.patch
           git apply --check -p1 /tmp/pr83.patch 2>&1 | tee pr83-apply.log
           git apply -p1 /tmp/pr83.patch 2>&1 | tee -a pr83-apply.log
       - name: Install dependencies
@@ -47,7 +49,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 1
       - name: Remove temporary files
-        run: rm -f tools/pr83.patch.gz.b64 .github/workflows/agent-pr83-autopatch.yml .github/workflows/agent-pr83-source-export.yml package-lock.json pr83-apply.log pr83-validation.log /tmp/pr83.patch
+        run: rm -rf tools/pr83-payload tools/pr83.patch.gz.b64 .github/workflows/agent-pr83-autopatch.yml .github/workflows/agent-pr83-source-export.yml package-lock.json pr83-apply.log pr83-validation.log /tmp/pr83.patch /tmp/pr83.patch.gz.b64
       - name: Commit implementation
         run: |
           git config user.name "github-actions[bot]"
