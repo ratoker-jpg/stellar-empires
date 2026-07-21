@@ -37,27 +37,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Capture test output
-        shell: bash
-        run: |
-          set +e
-          npm run test > test.log 2>&1
-          echo $? > test-exit-code.txt
-          exit 0
-
-      - name: Upload test diagnostic
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-diagnostic
-          path: |
-            test.log
-            test-exit-code.txt
-          if-no-files-found: error
-
-      - name: Enforce test result
-        shell: bash
-        run: exit "$(cat test-exit-code.txt)"
+      - name: Test
+        run: npm run test
 
       - name: Build
         run: npm run build
