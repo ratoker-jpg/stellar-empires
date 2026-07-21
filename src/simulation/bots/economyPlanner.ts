@@ -1,8 +1,10 @@
-import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
 import {
-  AEGIS_BUILDING_CATALOG,
-  type BuildingDefinition,
-} from '../planet/buildingCatalog';
+  getBuildingCatalogForFaction,
+  getFactionIdForEmpire,
+} from '../factions/factionMechanicalCatalogRegistry';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
+import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
+import type { BuildingDefinition } from '../planet/buildingCatalog';
 import {
   calculateBuildingCost,
   canAfford,
@@ -70,24 +72,20 @@ function canQueueBuilding(
   );
 }
 
-function findDefinition(buildingId: string): BuildingDefinition {
-  const definition = AEGIS_BUILDING_CATALOG.find((candidate) => candidate.id === buildingId);
-  if (definition === undefined) {
-    throw new Error(`Bot planner building is not registered: ${buildingId}`);
-  }
-  return definition;
-}
-
 function createBuildingPlan(
   empireId: string,
   planet: PlanetState,
   reasonCode: BotEconomyReasonCode,
   explanation: string,
   candidateIds: readonly string[],
+  catalog: readonly BuildingDefinition[],
 ): BotEconomyPlan | undefined {
+  const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
   const definition = candidateIds
-    .map(findDefinition)
-    .find((candidate) => canQueueBuilding(planet, candidate));
+    .map((buildingId) => definitions.get(buildingId))
+    .find((candidate): candidate is BuildingDefinition =>
+      candidate !== undefined && canQueueBuilding(planet, candidate),
+    );
   return definition === undefined
     ? undefined
     : {
@@ -132,6 +130,9 @@ export function planBotEconomy(
     };
   }
 
+  const factionId = getFactionIdForEmpire(state, empireId);
+  const roles = getFactionMechanicalRoles(factionId).buildings;
+  const catalog = getBuildingCatalogForFaction(factionId);
   const resourceRatios = {
     metal: stockRatio(
       planet.economy.resources.metal.amount,
@@ -180,16 +181,17 @@ export function planBotEconomy(
       planet,
       'energy-deficit',
       'Энергетический резерв недостаточен: приоритет реактору.',
-      ['building.aegis.power-plant'],
+      [roles.power],
+      catalog,
     );
     if (plan !== undefined) return plan;
   }
 
   if (lowestResource !== undefined && lowestResource[1] < 0.35) {
     const resourceBuilding = {
-      metal: 'building.aegis.metal-extractor',
-      crystal: 'building.aegis.crystal-refinery',
-      gas: 'building.aegis.gas-extractor',
+      metal: roles.metal,
+      crystal: roles.crystal,
+      gas: roles.gas,
     }[lowestResource[0]];
     const plan = createBuildingPlan(
       empireId,
@@ -197,17 +199,19 @@ export function planBotEconomy(
       'resource-deficit',
       `Самый слабый резерв — ${lowestResource[0]}: усиливается добыча.`,
       [resourceBuilding],
+      catalog,
     );
     if (plan !== undefined) return plan;
   }
 
-  if (getBuildingLevel(planet.buildings, 'building.aegis.command') < 2) {
+  if (getBuildingLevel(planet.buildings, roles.command) < 2) {
     const plan = createBuildingPlan(
       empireId,
       planet,
       'unlock-industry',
-      'Центр командования повышается до уровня доступа к лаборатории и верфи.',
-      ['building.aegis.command'],
+      'Командная инфраструктура повышается до уровня доступа к лаборатории и верфи.',
+      [roles.command],
+      catalog,
     );
     if (plan !== undefined) return plan;
   }
@@ -217,7 +221,8 @@ export function planBotEconomy(
     planet,
     'expand-industry',
     'Расширяется научно-производственный контур.',
-    ['building.aegis.research-lab', 'building.aegis.shipyard'],
+    [roles.laboratory, roles.shipyard],
+    catalog,
   );
   if (industryPlan !== undefined) return industryPlan;
 
@@ -226,7 +231,8 @@ export function planBotEconomy(
     planet,
     'expand-sensors',
     'Свободные ресурсы направляются в сенсорную инфраструктуру.',
-    ['building.aegis.sensor-array'],
+    [roles.sensorGrid],
+    catalog,
   );
   if (sensorPlan !== undefined) return sensorPlan;
 
@@ -235,18 +241,13 @@ export function planBotEconomy(
     planet,
     'balanced-upgrade',
     'Основная инфраструктура готова: повышается самое слабое базовое здание.',
-    [
-      'building.aegis.power-plant',
-      'building.aegis.metal-extractor',
-      'building.aegis.crystal-refinery',
-      'building.aegis.gas-extractor',
-      'building.aegis.command',
-    ].sort(
+    [roles.power, roles.metal, roles.crystal, roles.gas, roles.command].sort(
       (left, right) =>
         getBuildingLevel(planet.buildings, left) -
           getBuildingLevel(planet.buildings, right) ||
         left.localeCompare(right),
     ),
+    catalog,
   );
   if (balancedPlan !== undefined) return balancedPlan;
 
