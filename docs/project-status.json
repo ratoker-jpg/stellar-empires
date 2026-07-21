@@ -6,10 +6,10 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 82,
-  "lastMergeSha": "c7c1c1724bc8e5e472d12da017e1b2c3cc694390",
+  "lastMergedPr": 83,
+  "lastMergeSha": "f71e641ed201423e2b2e9fd39b58dda692580458",
   "activePr": null,
-  "nextPrAfterActive": 83,
+  "nextPrAfterActive": 84,
   "currentMilestone": "Playable-slice stabilization before metagame expansion",
   "currentBatch": {
     "standard": [
@@ -22,7 +22,8 @@
     ],
     "completed": [
       81,
-      82
+      82,
+      83
     ],
     "plannedCapabilities": [
       "full native Veyra economy, buildings, research and unit roster",
@@ -56,11 +57,12 @@
     "deterministic Synod and Veyra legacy-alias save migrations",
     "native Aegis, Synod and Veyra runtime mechanical presentation",
     "serialized canonical bot cadence with bounded deterministic catch-up",
-    "atomic Worker-to-runtime bot state handoff and save/load timing parity"
+    "atomic Worker-to-runtime bot state handoff and save/load timing parity",
+    "deterministic retained-window budgets for command, event, market, world-event and intelligence histories",
+    "monotonic command indexing and oversized-save compaction without dropping pending gameplay state",
+    "full-state-checksum stale Worker response protection after command-log saturation"
   ],
   "knownLimitations": [
-    "command and event logs can grow without an explicit long-session budget",
-    "world-event, market and report histories do not yet have a unified compaction policy",
     "a complete victory and defeat loop is not yet playable",
     "there is no headless full-match balance harness",
     "there is no browser end-to-end persistence smoke suite",
@@ -100,6 +102,7 @@
     "docs/21-native-synod-catalog.md",
     "docs/22-native-veyra-catalog.md",
     "docs/23-bot-simulation-time-contract.md",
+    "docs/24-long-session-history-retention.md",
     "docs/handoffs/2026-07-21-post-audit-handoff.md",
     "docs/assets/user-supplied-asset-intake.md",
     "latest merged GitHub pull requests"
