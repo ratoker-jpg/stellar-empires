@@ -1,6 +1,7 @@
 import type { PlanetBiome, StarClass } from '../simulation/galaxy/types';
 import type { FactionId } from '../simulation/planet/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
+import { getUnitDefinition } from '../simulation/units/catalog';
 
 export interface RuntimeImageAsset {
   readonly key: string;

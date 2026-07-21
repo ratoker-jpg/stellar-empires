@@ -14,6 +14,7 @@ import type { FactionId } from '../simulation/planet/types';
 import type { GameCommand, GameState } from '../simulation/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
 import { hasShipRole } from '../simulation/units/shipCapabilities';
+import { hasShipRole } from '../simulation/units/shipCapabilities';
 import {
   createFleetComposerViewModel,
   createFleetRoutePreview,
