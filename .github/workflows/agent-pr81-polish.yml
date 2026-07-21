@@ -27,9 +27,16 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Validate
-        run: npm run check
+        run: npm run check 2>&1 | tee pr81-polish-validation.log
+      - name: Upload validation diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr81-polish-validation
+          path: pr81-polish-validation.log
+          retention-days: 1
       - name: Remove temporary files
-        run: rm tools/agent_pr81_polish.py .github/workflows/agent-pr81-polish.yml package-lock.json
+        run: rm tools/agent_pr81_polish.py .github/workflows/agent-pr81-polish.yml package-lock.json pr81-polish-validation.log
       - name: Commit polish
         run: |
           git config user.name "github-actions[bot]"
