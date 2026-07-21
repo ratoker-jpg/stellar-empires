@@ -6,14 +6,14 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 69,
-  "lastMergeSha": "6874092c21549db04ebd44752a7dc46f847f5b0a",
-  "activePr": 70,
-  "nextPrAfterActive": 71,
+  "lastMergedPr": 70,
+  "lastMergeSha": "970dde0b3684350510478cd1d37bacd82c85fb44",
+  "activePr": 71,
+  "nextPrAfterActive": 72,
   "currentMilestone": "Mechanics-informed visual/content integration",
   "currentBatch": {
     "standard": [69, 70, 71, 72, 73, 74],
-    "completed": [69],
+    "completed": [69, 70],
     "plannedCapabilities": [
       "research, production and planetary defense presentation",
       "market, logistics, PvE, world events and report presentation",
@@ -32,7 +32,7 @@
     "planetary defense damage and repair lifecycle",
     "honest autonomous bots with planners and Worker scheduler",
     "three faction identities, runtime registry and new-game selection",
-    "design system, global HUD, production galaxy/fleet and development presentation"
+    "design system, global HUD, production galaxy/fleet, development and operations presentation"
   ],
   "knownLimitations": [
     "all factions still share Aegis mechanical catalogs",
@@ -53,9 +53,9 @@
     },
     "runtimeAssets": {
       "status": "partially-connected",
-      "connected": "galaxy, stars, planets, objects, pirates, fleet ships and current building/production/defense presentation",
+      "connected": "galaxy, stars, planets, objects, pirates, fleet ships, development presentation and command profile identity",
       "runtimeConnected": false,
-      "remainingIntegration": "alternative faction identity art and optional raster UI skins remain deferred"
+      "remainingIntegration": "optional raster UI skins remain deferred"
     },
     "document": "docs/assets/user-supplied-asset-intake.md"
   },
