@@ -6,37 +6,31 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 80,
-  "lastMergeSha": "4b41ee342ddb1fa2681fd7fd192d466f740f295c",
+  "lastMergedPr": 82,
+  "lastMergeSha": "c7c1c1724bc8e5e472d12da017e1b2c3cc694390",
   "activePr": null,
-  "nextPrAfterActive": 81,
-  "currentMilestone": "Faction completion and playable-slice stabilization",
+  "nextPrAfterActive": 83,
+  "currentMilestone": "Playable-slice stabilization before metagame expansion",
   "currentBatch": {
     "standard": [
-      75,
-      76,
-      77,
-      78,
-      79,
-      80,
-      81
+      81,
+      82,
+      83,
+      84,
+      85,
+      86
     ],
     "completed": [
-      75,
-      76,
-      77,
-      78,
-      79,
-      80
+      81,
+      82
     ],
     "plannedCapabilities": [
-      "command doctrine progression and flagship framework",
-      "faction mechanical catalog architecture and ID migration policy",
-      "full Aegis economy, buildings, research and unit roster",
-      "full-project audit and stabilization recommendations",
-      "post-audit continuation handoff and exact native-faction acceptance boundary",
-      "full native Synod economy, buildings, research and unit roster",
-      "full native Veyra economy, buildings, research and unit roster"
+      "full native Veyra economy, buildings, research and unit roster",
+      "canonical serialized bot timing and bounded deterministic catch-up",
+      "long-session state and log budgets with deterministic compaction",
+      "temporary complete victory and defeat loop",
+      "headless balance and full-match simulation harness",
+      "browser end-to-end smoke and persistence baseline"
     ]
   },
   "deliveredDomains": [
@@ -55,17 +49,21 @@
     "explicit faction catalog manifest, stable mechanical IDs and dependency validation",
     "full native Aegis mechanical catalog",
     "complete cross-domain project audit and stabilization recommendations",
-    "post-audit continuation handoff with native Synod acceptance boundary",
+    "post-audit continuation handoff with native-faction acceptance boundaries",
     "full native Synod mechanical catalog with faction-aware shared runtime resolution",
+    "full native Veyra mechanical catalog with original adaptive faction identity",
     "role-based scout, recycle, colonize, expedition and strategic-object capabilities",
-    "deterministic Synod legacy-alias save migration and native Synod runtime presentation"
+    "deterministic Synod and Veyra legacy-alias save migrations",
+    "native Aegis, Synod and Veyra runtime mechanical presentation",
+    "serialized canonical bot cadence with bounded deterministic catch-up",
+    "atomic Worker-to-runtime bot state handoff and save/load timing parity"
   ],
   "knownLimitations": [
-    "Veyra still uses the explicit Aegis legacy-alias catalog until PR #81",
-    "Veyra does not yet have native building, research, ship, defense or migration coverage",
-    "bot decision timing is runtime-only and does not catch up every skipped decision interval",
     "command and event logs can grow without an explicit long-session budget",
+    "world-event, market and report histories do not yet have a unified compaction policy",
     "a complete victory and defeat loop is not yet playable",
+    "there is no headless full-match balance harness",
+    "there is no browser end-to-end persistence smoke suite",
     "diplomacy, coalitions, strategic stars and final endgame are missing",
     "bots do not yet plan command doctrine or diplomacy",
     "strategic exotic matter has no complete spending loop",
@@ -86,9 +84,9 @@
     },
     "runtimeAssets": {
       "status": "partially-connected",
-      "connected": "galaxy, fleet, development, command identity and native Synod mechanical presentation",
+      "connected": "galaxy, fleet, development, command identity and native Aegis, Synod and Veyra mechanical presentation",
       "runtimeConnected": false,
-      "remainingIntegration": "optional raster UI skins and a dedicated Synod technology atlas remain deferred"
+      "remainingIntegration": "optional raster UI skins and dedicated Synod and Veyra technology atlases remain deferred"
     },
     "document": "docs/assets/user-supplied-asset-intake.md"
   },
@@ -100,6 +98,8 @@
     "docs/20-full-project-audit.md",
     "docs/19-faction-catalog-id-policy.md",
     "docs/21-native-synod-catalog.md",
+    "docs/22-native-veyra-catalog.md",
+    "docs/23-bot-simulation-time-contract.md",
     "docs/handoffs/2026-07-21-post-audit-handoff.md",
     "docs/assets/user-supplied-asset-intake.md",
     "latest merged GitHub pull requests"
