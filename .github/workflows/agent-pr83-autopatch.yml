@@ -27,8 +27,8 @@ jobs:
         run: |
           set -o pipefail
           base64 --decode tools/pr83.patch.gz.b64 | gzip --decompress > /tmp/pr83.patch
-          git apply --check -p3 /tmp/pr83.patch 2>&1 | tee pr83-apply.log
-          git apply -p3 /tmp/pr83.patch 2>&1 | tee -a pr83-apply.log
+          git apply --check -p1 /tmp/pr83.patch 2>&1 | tee pr83-apply.log
+          git apply -p1 /tmp/pr83.patch 2>&1 | tee -a pr83-apply.log
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Validate full repository gate
@@ -47,7 +47,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 1
       - name: Remove temporary files
-        run: rm -f tools/pr83.patch.gz.b64 .github/workflows/agent-pr83-autopatch.yml package-lock.json pr83-apply.log pr83-validation.log /tmp/pr83.patch
+        run: rm -f tools/pr83.patch.gz.b64 .github/workflows/agent-pr83-autopatch.yml .github/workflows/agent-pr83-source-export.yml package-lock.json pr83-apply.log pr83-validation.log /tmp/pr83.patch
       - name: Commit implementation
         run: |
           git config user.name "github-actions[bot]"
