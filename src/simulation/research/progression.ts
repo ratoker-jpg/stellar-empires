@@ -1,4 +1,5 @@
 import type { ResourceCost } from '../economy/types';
+import { getResearchDefinition } from './catalog';
 import type { EmpireResearchState, ResearchDefinition } from './types';
 
 const COST_SCALE_PERMILLE = 1_600;
@@ -50,7 +51,13 @@ export function calculateResearchEffects(
   let armorStrengthPercent = 0;
   let weaponStrengthPercent = 0;
 
-  for (const definition of catalog) {
+  const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
+  for (const technologyId of Object.keys(research.levels)) {
+    const definition = getResearchDefinition(technologyId);
+    if (definition !== undefined) definitions.set(definition.id, definition);
+  }
+
+  for (const definition of definitions.values()) {
     const level = research.levels[definition.id] ?? 0;
     for (const effect of definition.effects) {
       switch (effect.type) {
