@@ -8,8 +8,7 @@ import {
 } from '../../assets/galaxyFleetRuntimeAssets';
 import type { FleetState } from '../../simulation/fleets/types';
 import type { StarSystemModel } from '../../simulation/galaxy/types';
-import type { FactionId, PlanetState } from '../../simulation/planet/types';
-import type { SpaceObjectState } from '../../simulation/pve/spaceObjects';
+import type { FactionId } from '../../simulation/planet/types';
 import type { GameState } from '../../simulation/types';
 import {
   dispatchGalaxySystemSelection,
