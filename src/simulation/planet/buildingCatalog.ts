@@ -1,5 +1,4 @@
 import { getRegisteredBuildingDefinition } from '../factions/factionMechanicalCatalogRegistry';
-import { AEGIS_BUILDING_CATALOG } from './aegisBuildingCatalog';
 import type { BuildingDefinition } from './buildingDefinitions';
 
 export { AEGIS_BUILDING_CATALOG } from './aegisBuildingCatalog';
