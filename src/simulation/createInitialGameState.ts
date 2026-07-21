@@ -25,7 +25,7 @@ export function createInitialGameState(
   const neutralForces = createInitialNeutralForces(galaxy, seed);
 
   return {
-    schemaVersion: 14,
+    schemaVersion: 13,
     seed,
     clock: {
       startedAt: '2026-07-18T00:00:00.000Z',
