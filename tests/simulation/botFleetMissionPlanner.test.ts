@@ -45,7 +45,7 @@ describe('bot fleet and mission planner', () => {
               ...candidate,
               inventory: {
                 ...candidate.inventory,
-                ships: { 'ship.aegis.scout': 1 },
+                ships: { 'ship.synod.whisper': 1 },
               },
             }
           : candidate,
@@ -59,7 +59,7 @@ describe('bot fleet and mission planner', () => {
         type: 'CREATE_FLEET',
         empireId,
         planetId: planet.id,
-        ships: { 'ship.aegis.scout': 1 },
+        ships: { 'ship.synod.whisper': 1 },
       },
     });
     if (plan.command !== null) {
@@ -81,10 +81,10 @@ describe('bot fleet and mission planner', () => {
           originPlanetId: origin.id,
           location: { type: 'planet' as const, planetId: origin.id },
           status: 'stationed' as const,
-          ships: { 'ship.aegis.scout': 1 },
+          ships: { 'ship.synod.whisper': 1 },
           cargo: ZERO_CARGO,
-          speed: 14,
-          cargoCapacity: 20,
+          speed: 16,
+          cargoCapacity: 18,
           mission: null,
         },
       ],
