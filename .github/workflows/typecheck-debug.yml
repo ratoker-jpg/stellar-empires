@@ -1,0 +1,46 @@
+name: Typecheck debug
+
+on:
+  push:
+    branches:
+      - agent/pr67-fleet-galaxy
+
+permissions:
+  contents: read
+
+jobs:
+  capture-typecheck:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          show-progress: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund --silent
+      - name: Capture typecheck output
+        id: typecheck
+        shell: bash
+        run: |
+          set +e
+          npm run typecheck > typecheck.log 2>&1
+          code=$?
+          echo "$code" > typecheck-exit-code.txt
+          exit 0
+      - uses: actions/upload-artifact@v6
+        with:
+          name: typecheck-debug
+          path: |
+            typecheck.log
+            typecheck-exit-code.txt
+          if-no-files-found: error
+      - name: Fail when typecheck failed
+        shell: bash
+        run: |
+          code=$(cat typecheck-exit-code.txt)
+          if [ "$code" -ne 0 ]; then
+            cat typecheck.log
+            exit "$code"
+          fi
