@@ -6,8 +6,8 @@ import {
 
 describe('Aegis vertical slice asset manifest', () => {
   it('contains the complete planned P1 set', () => {
-    expect(AEGIS_VERTICAL_SLICE_ASSETS).toHaveLength(26);
-    expect(AEGIS_ASSET_ATLASES.reduce((total, atlas) => total + atlas.count, 0)).toBe(26);
+    expect(AEGIS_VERTICAL_SLICE_ASSETS).toHaveLength(30);
+    expect(AEGIS_ASSET_ATLASES.reduce((total, atlas) => total + atlas.count, 0)).toBe(30);
   });
 
   it('uses unique ids and Aegis runtime paths', () => {
