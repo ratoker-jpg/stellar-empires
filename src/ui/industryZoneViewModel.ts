@@ -1,3 +1,4 @@
+import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getBuildingLevel } from '../simulation/planet/buildingProgression';
 import type { PlanetState } from '../simulation/planet/types';
 import {
@@ -37,6 +38,7 @@ function createGateway(
 }
 
 export function createIndustryZoneViewModel(planet: PlanetState): IndustryZoneViewModel {
+  const buildings = getFactionMechanicalRoles(planet.factionId).buildings;
   return {
     buildings: createBuildingCardViewModels(planet).filter(
       (building) => building.zoneId === 'industry',
@@ -46,13 +48,13 @@ export function createIndustryZoneViewModel(planet: PlanetState): IndustryZoneVi
         planet,
         'research',
         'Исследовательский комплекс',
-        'building.aegis.research-lab',
+        buildings.laboratory,
       ),
       createGateway(
         planet,
         'shipyard',
         'Орбитальная верфь',
-        'building.aegis.shipyard',
+        buildings.shipyard,
       ),
     ],
   };
