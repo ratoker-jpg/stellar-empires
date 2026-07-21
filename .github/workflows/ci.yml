@@ -34,30 +34,30 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Capture typecheck
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Capture tests
         shell: bash
         run: |
           set +e
-          npm run typecheck > typecheck.log 2>&1
-          echo $? > typecheck-exit-code.txt
+          npm run test > test.log 2>&1
+          echo $? > test-exit-code.txt
           exit 0
 
-      - name: Upload typecheck diagnostic
+      - name: Upload test diagnostic
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pr74-typecheck-diagnostic
+          name: pr74-test-diagnostic
           path: |
-            typecheck.log
-            typecheck-exit-code.txt
+            test.log
+            test-exit-code.txt
           if-no-files-found: error
 
-      - name: Enforce typecheck result
+      - name: Enforce test result
         shell: bash
-        run: exit "$(cat typecheck-exit-code.txt)"
-
-      - name: Test
-        run: npm run test
+        run: exit "$(cat test-exit-code.txt)"
 
       - name: Build
         run: npm run build
