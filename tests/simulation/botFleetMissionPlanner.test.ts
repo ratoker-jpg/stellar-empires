@@ -207,7 +207,7 @@ describe('bot fleet and mission planner', () => {
         research.empireId === empireId
           ? {
               ...research,
-              levels: { ...research.levels, 'technology.aegis.colonization': 1 },
+              levels: { ...research.levels, 'technology.veyra.brood-seeding': 1 },
             }
           : research,
       ),
@@ -218,7 +218,7 @@ describe('bot fleet and mission planner', () => {
           originPlanetId: origin.id,
           location: { type: 'planet' as const, planetId: origin.id },
           status: 'stationed' as const,
-          ships: { 'ship.aegis.colony': 1 },
+          ships: { 'ship.veyra.brood-ark': 1 },
           cargo: ZERO_CARGO,
           speed: 6,
           cargoCapacity: 500,
