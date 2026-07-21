@@ -79,9 +79,9 @@ const TARGET_PRIORITY_WEIGHTS: Readonly<
   Record<FleetTargetPriority, Readonly<Record<TargetSize, number>>>
 > = {
   balanced: { small: 1_000, medium: 1_000, large: 1_000, installation: 1_000 },
-  interceptors: { small: 1_700, medium: 900, large: 650, installation: 500 },
-  capitals: { small: 650, medium: 1_050, large: 1_700, installation: 1_000 },
-  installations: { small: 500, medium: 700, large: 1_150, installation: 1_900 },
+  interceptors: { small: 2_400, medium: 800, large: 350, installation: 250 },
+  capitals: { small: 400, medium: 900, large: 2_200, installation: 900 },
+  installations: { small: 300, medium: 500, large: 900, installation: 2_600 },
 };
 
 export function isFleetFormation(value: unknown): value is FleetFormation {
