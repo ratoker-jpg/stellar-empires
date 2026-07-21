@@ -27,8 +27,8 @@ GitHub history and current `main` override stale prose.
 ## Confirmed baseline
 
 ```text
-#65 — Rebuild planet overview and three zone screens
-merge SHA: 5d9566472411714d70365332514273a6477a0b68
+#66 — Commit verified source asset packs
+merge SHA: 55dfc931b19b4eb8ccca82d89fb41097f4fd4511
 ```
 
 Delivered:
@@ -45,6 +45,7 @@ Delivered:
 - autonomous honest bots in a Worker;
 - three faction identities and runtime visual atlases;
 - design system, global HUD and rebuilt planet workspace.
+- 162 SHA-256-validated supplied assets committed under `assets/source/` as source-only material.
 
 ## Critical limitations
 
@@ -58,12 +59,11 @@ Delivered:
 
 ## Current sequence
 
-1. #66 knowledge/audit/source asset intake;
-2. #67 fleets and galaxy presentation;
-3. #68 research/production/defense presentation;
-4. #69 operations/report presentation;
-5. #70 command/ranking/faction polish;
-6. #71 responsive/accessibility/performance/visual QA.
+1. #67 fleets and galaxy presentation;
+2. #68 research/production/defense presentation;
+3. #69 operations/report presentation;
+4. #70 command/ranking/faction polish;
+5. #71 responsive/accessibility/performance/visual QA.
 
 After #71, resume gameplay depth from fresh main. Do not directly merge stale `agent/pr63-ship-upgrades`.
 
