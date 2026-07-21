@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-21  
-**Baseline:** merged PR #78
+**Baseline:** merged PR #79
 
 ## Repository
 
@@ -30,11 +30,11 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 ## Confirmed baseline
 
 ```text
-#78 — Add complete project audit after PR 77
-merge SHA: 4b89ff6d4919c9cee08aa3f68a2d0c341c4d9ff6
+#79 — Add post-audit continuation handoff
+merge SHA: 00f2e09ee99a336de20ff548200b8cd575ca3938
 ```
 
-PR #78 changed documentation only. Runtime baseline remains the implementation delivered through PR #77.
+PR #78 and PR #79 changed documentation only. Runtime baseline remains the implementation delivered through PR #77.
 
 ### Delivered runtime through PR #77
 
@@ -54,13 +54,14 @@ PR #78 changed documentation only. Runtime baseline remains the implementation d
 - explicit faction catalog manifest, stable mechanical IDs and dependency validation;
 - full native Aegis mechanical catalog: 12 buildings, 10 technologies, 10 ships and 5 defenses.
 
-### Delivered documentation through PR #78
+### Delivered documentation through PR #79
 
 - canonical full-project audit in `docs/20-full-project-audit.md`;
 - stabilization risks and P0–P3 backlog;
 - 1.0 readiness criteria;
-- roadmap renumbered after the audit PR;
-- machine-readable project status synchronized with merged PR #78.
+- roadmap renumbered after documentation PRs;
+- post-audit handoff with an exact native Synod acceptance boundary;
+- machine-readable project status synchronized with merged PR #79.
 
 ## Current truth and limitations
 
@@ -78,10 +79,9 @@ PR #78 changed documentation only. Runtime baseline remains the implementation d
 
 ## Immediate sequence
 
-1. **#79 — documentation-only post-audit handoff**: refresh continuation state and record the interrupted Synod analysis.
-2. **#80 — full native Synod mechanical catalog**.
-3. **#81 — full native Veyra mechanical catalog**.
-4. After #81, run the stabilization gate from `docs/20-full-project-audit.md` before automatically starting diplomacy.
+1. **#80 — full native Synod mechanical catalog**.
+2. **#81 — full native Veyra mechanical catalog**.
+3. After #81, run the stabilization gate from `docs/20-full-project-audit.md` before automatically starting diplomacy.
 
 The next implementation chat must work only on PR #80. It must not combine Synod, Veyra, diplomacy or general refactoring in one PR.
 
