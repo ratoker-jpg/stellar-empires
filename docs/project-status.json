@@ -8,8 +8,8 @@
   "releaseTarget": "1.0",
   "lastMergedPr": 78,
   "lastMergeSha": "4b89ff6d4919c9cee08aa3f68a2d0c341c4d9ff6",
-  "activePr": null,
-  "nextPrAfterActive": 79,
+  "activePr": 79,
+  "nextPrAfterActive": 80,
   "currentMilestone": "Faction completion and playable-slice stabilization",
   "currentBatch": {
     "standard": [
@@ -18,7 +18,8 @@
       77,
       78,
       79,
-      80
+      80,
+      81
     ],
     "completed": [
       75,
@@ -31,8 +32,9 @@
       "faction mechanical catalog architecture and ID migration policy",
       "full Aegis economy, buildings, research and unit roster",
       "full-project audit and stabilization recommendations",
-      "full Synod economy, buildings, research and unit roster",
-      "full Veyra economy, buildings, research and unit roster"
+      "post-audit continuation handoff and exact native-faction acceptance boundary",
+      "full native Synod economy, buildings, research and unit roster",
+      "full native Veyra economy, buildings, research and unit roster"
     ]
   },
   "deliveredDomains": [
@@ -53,7 +55,9 @@
     "complete cross-domain project audit and stabilization recommendations"
   ],
   "knownLimitations": [
-    "Synod and Veyra still use explicit Aegis legacy-alias catalogs until PR #79 and #80",
+    "Synod and Veyra still use explicit Aegis legacy-alias catalogs until PR #80 and #81",
+    "no Synod runtime implementation is currently merged or open and old interrupted work must not be reused",
+    "direct Aegis assumptions remain across initial state, research, inventory, defense, missions, bots and UI",
     "bot decision timing is runtime-only and does not catch up every skipped decision interval",
     "command and event logs can grow without an explicit long-session budget",
     "a complete victory and defeat loop is not yet playable",
@@ -90,6 +94,7 @@
     "docs/16-execution-roadmap.md",
     "docs/20-full-project-audit.md",
     "docs/19-faction-catalog-id-policy.md",
+    "docs/handoffs/2026-07-21-post-audit-handoff.md",
     "docs/assets/user-supplied-asset-intake.md",
     "latest merged GitHub pull requests"
   ]
