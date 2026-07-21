@@ -1,6 +1,7 @@
 import type { ResourceCost } from '../simulation/economy/types';
 import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
 import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
+import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
 import {
   calculateFleetComposition,
   getCargoAmount,

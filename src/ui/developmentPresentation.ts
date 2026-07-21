@@ -8,6 +8,7 @@ import {
 } from '../assets/planetIndustryRuntimeAssets';
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
+import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getUnitsByKind } from '../simulation/units/catalog';
 import type { GameState } from '../simulation/types';
 import { createBuildingCardViewModels } from './planetViewModel';
