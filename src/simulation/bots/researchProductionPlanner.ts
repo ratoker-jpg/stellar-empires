@@ -1,9 +1,14 @@
-import { createBotPerception } from './perception';
-import { AEGIS_RESEARCH_CATALOG } from '../research/catalog';
+import {
+  getFactionIdForEmpire,
+  getResearchCatalogForFaction,
+  getUnitCatalogForFaction,
+} from '../factions/factionMechanicalCatalogRegistry';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { queueResearch } from '../research/researchCommands';
-import { AEGIS_UNIT_CATALOG } from '../units/catalog';
-import { queueUnitBatch } from '../units/productionCommands';
 import type { GameCommand, GameState } from '../types';
+import { getUnitDefinition } from '../units/catalog';
+import { queueUnitBatch } from '../units/productionCommands';
+import { createBotPerception } from './perception';
 
 export type BotResearchReasonCode =
   | 'research-queue-busy'
@@ -46,10 +51,13 @@ function chooseResearch(
   const planets = state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
     .sort((left, right) => left.id.localeCompare(right.id));
+  const factionId = getFactionIdForEmpire(state, empireId);
+  const roles = getFactionMechanicalRoles(factionId);
+  const catalog = getResearchCatalogForFaction(factionId);
   const laboratoryExists = planets.some((planet) =>
     planet.buildings.some(
       (building) =>
-        building.buildingId === 'building.aegis.research-lab' && building.level > 0,
+        building.buildingId === roles.buildings.laboratory && building.level > 0,
     ),
   );
   if (!laboratoryExists) {
@@ -62,28 +70,26 @@ function chooseResearch(
 
   const priority = threatened
     ? [
-        'technology.aegis.weapons',
-        'technology.aegis.armor',
-        'technology.aegis.sensors',
-        'technology.aegis.construction',
-        'technology.aegis.energy',
-        'technology.aegis.propulsion',
-        'technology.aegis.colonization',
+        roles.research.weapons,
+        roles.research.protection,
+        roles.research.sensors,
+        roles.research.construction,
+        roles.research.energy,
+        roles.research.propulsion,
+        roles.research.colonization,
       ]
     : [
-        'technology.aegis.construction',
-        'technology.aegis.energy',
-        'technology.aegis.sensors',
-        'technology.aegis.propulsion',
-        'technology.aegis.armor',
-        'technology.aegis.weapons',
-        'technology.aegis.colonization',
+        roles.research.construction,
+        roles.research.energy,
+        roles.research.sensors,
+        roles.research.propulsion,
+        roles.research.protection,
+        roles.research.weapons,
+        roles.research.colonization,
       ];
 
   for (const technologyId of priority) {
-    if (!AEGIS_RESEARCH_CATALOG.some((definition) => definition.id === technologyId)) {
-      continue;
-    }
+    if (!catalog.some((definition) => definition.id === technologyId)) continue;
     for (const planet of planets) {
       const command: Extract<GameCommand, { readonly type: 'QUEUE_RESEARCH' }> = {
         type: 'QUEUE_RESEARCH',
@@ -111,15 +117,17 @@ function chooseResearch(
 }
 
 function countUnit(state: GameState, empireId: string, unitId: string): number {
+  const definition = getUnitDefinition(unitId);
   return state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
-    .reduce((total, planet) => {
-      const definition = AEGIS_UNIT_CATALOG.find((candidate) => candidate.id === unitId);
-      if (definition?.kind === 'defense') {
-        return total + (planet.inventory.defenses[unitId] ?? 0);
-      }
-      return total + (planet.inventory.ships[unitId] ?? 0);
-    }, 0);
+    .reduce(
+      (total, planet) =>
+        total +
+        (definition?.kind === 'defense'
+          ? planet.inventory.defenses[unitId] ?? 0
+          : planet.inventory.ships[unitId] ?? 0),
+      0,
+    );
 }
 
 function chooseProduction(
@@ -130,9 +138,12 @@ function chooseProduction(
   const planets = state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
     .sort((left, right) => left.id.localeCompare(right.id));
+  const factionId = getFactionIdForEmpire(state, empireId);
+  const roles = getFactionMechanicalRoles(factionId);
+  const unitIds = new Set(getUnitCatalogForFaction(factionId).map((definition) => definition.id));
   const productionExists = planets.some((planet) =>
     planet.buildings.some(
-      (building) => building.buildingId === 'building.aegis.shipyard' && building.level > 0,
+      (building) => building.buildingId === roles.buildings.shipyard && building.level > 0,
     ),
   );
   if (!productionExists) {
@@ -158,27 +169,28 @@ function chooseProduction(
 
   const priority: readonly { readonly id: string; readonly quantity: number }[] = threatened
     ? [
-        { id: 'ship.aegis.fighter', quantity: 3 },
-        { id: 'defense.aegis.gun-battery', quantity: 2 },
-        { id: 'ship.aegis.frigate', quantity: 1 },
-        { id: 'defense.aegis.shield-grid', quantity: 1 },
-        { id: 'ship.aegis.scout', quantity: 1 },
+        { id: roles.ships.fighter, quantity: 3 },
+        { id: roles.defenses.light, quantity: 2 },
+        { id: roles.ships.frigate, quantity: 1 },
+        { id: roles.defenses.shield, quantity: 1 },
+        { id: roles.ships.scout, quantity: 1 },
       ]
     : [
-        ...(countUnit(state, empireId, 'ship.aegis.scout') === 0
-          ? [{ id: 'ship.aegis.scout', quantity: 1 }]
+        ...(countUnit(state, empireId, roles.ships.scout) === 0
+          ? [{ id: roles.ships.scout, quantity: 1 }]
           : []),
-        ...(countUnit(state, empireId, 'ship.aegis.cargo') === 0
-          ? [{ id: 'ship.aegis.cargo', quantity: 1 }]
+        ...(countUnit(state, empireId, roles.ships.transport) === 0
+          ? [{ id: roles.ships.transport, quantity: 1 }]
           : []),
-        ...(countUnit(state, empireId, 'ship.aegis.recycler') === 0
-          ? [{ id: 'ship.aegis.recycler', quantity: 1 }]
+        ...(countUnit(state, empireId, roles.ships.recycler) === 0
+          ? [{ id: roles.ships.recycler, quantity: 1 }]
           : []),
-        { id: 'ship.aegis.fighter', quantity: 2 },
-        { id: 'defense.aegis.gun-battery', quantity: 1 },
+        { id: roles.ships.fighter, quantity: 2 },
+        { id: roles.defenses.light, quantity: 1 },
       ];
 
   for (const candidate of priority) {
+    if (!unitIds.has(candidate.id)) continue;
     for (const planet of planets) {
       const command: Extract<GameCommand, { readonly type: 'QUEUE_UNIT_BATCH' }> = {
         type: 'QUEUE_UNIT_BATCH',
