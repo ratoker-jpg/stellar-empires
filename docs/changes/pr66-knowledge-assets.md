@@ -18,7 +18,7 @@
 
 ## Binary asset status
 
-The complete local inventory was validated: 162 files, 161,379,761 uncompressed bytes, maximum member 3,494,229 bytes, SHA-256 checks passed. The GitHub connector used for this PR cannot upload mounted binary files by local path, so binary pack publication is explicitly left pending instead of being misreported as committed.
+The complete inventory is validated and committed as source-only material: 162 files, 161,379,761 uncompressed bytes, maximum member 3,494,229 bytes, with SHA-256 checks passed. Runtime asset URLs, atlases, scenes, UI and gameplay remain unchanged.
 
 ## Validation
 

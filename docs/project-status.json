@@ -35,7 +35,6 @@
   ],
   "knownLimitations": [
     "all factions still share Aegis mechanical catalogs",
-    "source asset binary publication is pending local Git access",
     "ship upgrades must be reimplemented from fresh main",
     "formations, class skills, command doctrine, flagships, diplomacy, coalitions and endgame are missing",
     "bots do not launch expeditions or space-object operations and do not use diplomacy",
@@ -45,7 +44,10 @@
   "sourceAssetIntake": {
     "filesValidated": 162,
     "uncompressedBytes": 161379761,
-    "binaryPublication": "pending-local-git",
+    "binaryPublication": "committed-source-only",
+    "filesCommitted": 162,
+    "committedBytes": 161379761,
+    "runtimeConnected": false,
     "document": "docs/assets/user-supplied-asset-intake.md"
   },
   "requiredStartupReading": [

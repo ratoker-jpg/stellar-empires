@@ -1,6 +1,6 @@
 # User-supplied asset intake
 
-**Status:** provenance, dimensions, byte sizes and SHA-256 validated; binary Git publication pending  
+**Status:** provenance, dimensions, byte sizes and SHA-256 validated; verified source binaries committed; runtime connection deferred
 **Date:** 2026-07-21
 
 ## Packs
@@ -66,6 +66,6 @@ Never import:
 - account names, coordinates, tokens or session data;
 - recorder/scanner output.
 
-## Publication blocker
+## Publication status
 
-The connected GitHub write API accepts UTF-8 content and explicit blob bytes, but does not accept a mounted local binary path. This PR therefore commits the full verified inventory and deterministic importer, while binary publication must be completed by a local Git client/Codex session using the supplied archives. This limitation is explicit in `project-status.json`; the assets are not misreported as committed or runtime-connected.
+The verified source binaries are committed under `assets/source/starter/` and `assets/source/faction-delivery-v1/`: 162 files and 161,379,761 uncompressed bytes. They remain source-only material; no runtime URL, atlas, Phaser scene, UI or gameplay connection is introduced by this intake.
