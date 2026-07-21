@@ -1,16 +1,18 @@
-import {
-  AEGIS_BUILDING_CATALOG,
-  type BuildingDefinition,
-} from '../planet/buildingCatalog';
+import { AEGIS_BUILDING_CATALOG } from '../planet/aegisBuildingCatalog';
+import type { BuildingDefinition } from '../planet/buildingDefinitions';
 import type { FactionId } from '../planet/types';
-import {
-  AEGIS_RESEARCH_CATALOG,
-} from '../research/catalog';
+import { AEGIS_RESEARCH_CATALOG } from '../research/aegisResearchCatalog';
 import type { ResearchDefinition } from '../research/types';
-import { AEGIS_UNIT_CATALOG } from '../units/catalog';
-import type { UnitDefinition } from '../units/types';
+import type { GameState } from '../types';
+import { AEGIS_UNIT_CATALOG } from '../units/aegisUnitCatalog';
+import type { UnitDefinition, UnitKind } from '../units/types';
 import { getFactionCatalogManifest } from './factionCatalogManifest';
 import { parseMechanicalId } from './mechanicalIds';
+import {
+  SYNOD_BUILDING_CATALOG,
+  SYNOD_RESEARCH_CATALOG,
+  SYNOD_UNIT_CATALOG,
+} from './synodMechanicalCatalog';
 
 export interface FactionMechanicalCatalog {
   readonly factionId: FactionId;
@@ -20,16 +22,35 @@ export interface FactionMechanicalCatalog {
   readonly units: readonly UnitDefinition[];
 }
 
-const SOURCE_CATALOGS: Readonly<
-  Partial<Record<FactionId, Omit<FactionMechanicalCatalog, 'factionId'>>>
-> = {
+type MechanicalCatalogSource = Omit<FactionMechanicalCatalog, 'factionId'>;
+
+const SOURCE_CATALOGS: Readonly<Partial<Record<FactionId, MechanicalCatalogSource>>> = {
   aegis: {
     sourceFactionId: 'aegis',
     buildings: AEGIS_BUILDING_CATALOG,
     research: AEGIS_RESEARCH_CATALOG,
     units: AEGIS_UNIT_CATALOG,
   },
+  synod: {
+    sourceFactionId: 'synod',
+    buildings: SYNOD_BUILDING_CATALOG,
+    research: SYNOD_RESEARCH_CATALOG,
+    units: SYNOD_UNIT_CATALOG,
+  },
 };
+
+const REGISTERED_SOURCES = Object.values(SOURCE_CATALOGS).filter(
+  (source): source is MechanicalCatalogSource => source !== undefined,
+);
+const BUILDINGS_BY_ID = new Map(
+  REGISTERED_SOURCES.flatMap((source) => source.buildings).map((definition) => [definition.id, definition]),
+);
+const RESEARCH_BY_ID = new Map(
+  REGISTERED_SOURCES.flatMap((source) => source.research).map((definition) => [definition.id, definition]),
+);
+const UNITS_BY_ID = new Map(
+  REGISTERED_SOURCES.flatMap((source) => source.units).map((definition) => [definition.id, definition]),
+);
 
 export function getFactionMechanicalCatalog(
   factionId: FactionId,
@@ -64,6 +85,48 @@ export function getUnitCatalogForFaction(
   factionId: FactionId,
 ): readonly UnitDefinition[] {
   return getFactionMechanicalCatalog(factionId).units;
+}
+
+export function getFactionIdForEmpire(
+  state: Pick<GameState, 'planets'>,
+  empireId: string,
+): FactionId {
+  return state.planets.find((planet) => planet.ownerEmpireId === empireId)?.factionId ?? 'aegis';
+}
+
+export function getResearchCatalogForEmpire(
+  state: Pick<GameState, 'planets'>,
+  empireId: string,
+): readonly ResearchDefinition[] {
+  return getResearchCatalogForFaction(getFactionIdForEmpire(state, empireId));
+}
+
+export function getRegisteredBuildingDefinition(
+  buildingId: string,
+): BuildingDefinition | undefined {
+  return BUILDINGS_BY_ID.get(buildingId);
+}
+
+export function getRegisteredResearchDefinition(
+  technologyId: string,
+): ResearchDefinition | undefined {
+  return RESEARCH_BY_ID.get(technologyId);
+}
+
+export function getRegisteredUnitDefinition(
+  unitId: string,
+): UnitDefinition | undefined {
+  return UNITS_BY_ID.get(unitId);
+}
+
+export function getRegisteredUnitsByKind(
+  kind: UnitKind,
+  factionId?: FactionId,
+): readonly UnitDefinition[] {
+  const catalog = factionId === undefined
+    ? REGISTERED_SOURCES.flatMap((source) => source.units)
+    : getUnitCatalogForFaction(factionId);
+  return catalog.filter((definition) => definition.kind === kind);
 }
 
 function duplicateIds(ids: readonly string[]): readonly string[] {
