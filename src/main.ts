@@ -39,6 +39,7 @@ import { mountDevelopmentPresentation } from './ui/developmentPresentation';
 import { mountEmpireOverview } from './ui/empireOverview';
 import { mountExpeditionPanel } from './ui/expeditionPanel';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
+import { mountFleetDoctrineScreen } from './ui/fleetDoctrineScreen';
 import { mountGalaxyIntelPanel } from './ui/galaxyIntelPanel';
 import { mountLogisticsRoutesPanel } from './ui/logisticsRoutesPanel';
 import { mountMarketPanel } from './ui/marketPanel';
@@ -181,6 +182,7 @@ async function bootstrap(): Promise<void> {
   mountProductionScreens(commandBridge);
   mountMissionScreen(commandBridge);
   mountShipUpgradesScreen(commandBridge);
+  mountFleetDoctrineScreen(commandBridge);
   mountDevelopmentPresentation({
     getState: () => runtimeState,
     getActivePlanetId: getPlanetScreenActivePlanetId,

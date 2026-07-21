@@ -5,6 +5,7 @@ import type {
   WeaponType,
 } from './combatProfiles';
 import type { DebrisAmount } from './debris';
+import type { FleetFormation, FleetTargetPriority } from './fleetDoctrine';
 
 export type BattleWinner = 'attacker' | 'defender' | 'draw';
 export type BattleMode = 'pve' | 'pvp';
@@ -16,6 +17,8 @@ export interface BattleSideInput {
   readonly armorBonusPercent: number;
   readonly unitWeaponBonusPercent?: Readonly<Record<string, number>>;
   readonly unitArmorBonusPercent?: Readonly<Record<string, number>>;
+  readonly formation?: FleetFormation;
+  readonly targetPriority?: FleetTargetPriority;
 }
 
 export interface BattleWeaponContributionReport {
@@ -68,6 +71,10 @@ export interface BattleReport {
   readonly mode?: BattleMode;
   readonly threatMultiplierPermille?: number;
   readonly rewardMultiplierPermille?: number;
+  readonly attackerFormation?: FleetFormation;
+  readonly attackerTargetPriority?: FleetTargetPriority;
+  readonly defenderFormation?: FleetFormation;
+  readonly defenderTargetPriority?: FleetTargetPriority;
 }
 
 export interface BattleResolution {
