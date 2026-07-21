@@ -3,10 +3,10 @@
   "updatedAt": "2026-07-21",
   "releaseTarget": "1.0",
   "authoritativeBaseline": {
-    "lastMergedPr": 66,
-    "mergeSha": "55dfc931b19b4eb8ccca82d89fb41097f4fd4511"
+    "lastMergedPr": 67,
+    "mergeSha": "dddcfadcc63ccf4d6973aa0281b03c54b8f66f26"
   },
-  "activePr": 67,
+  "activePr": 68,
   "phases": [
     { "id": "delivered", "startPr": 1, "endPr": 65, "outcome": "Current playable deterministic vertical slice and visual foundation" },
     { "id": "visual", "startPr": 66, "endPr": 71, "outcome": "Mechanics-informed production client and integrated source art" },
@@ -16,8 +16,8 @@
   ],
   "planned": [
     { "number": 66, "title": "Mechanics reference, audit, roadmap v3 and source asset intake", "status": "merged", "mergeSha": "55dfc931b19b4eb8ccca82d89fb41097f4fd4511" },
-    { "number": 67, "title": "Fleet mission flow and galaxy presentation", "status": "active" },
-    { "number": 68, "title": "Research, production and planetary defense presentation" },
+    { "number": 67, "title": "Fleet mission flow and galaxy presentation", "status": "merged", "mergeSha": "dddcfadcc63ccf4d6973aa0281b03c54b8f66f26" },
+    { "number": 68, "title": "Import remaining generated faction source assets", "status": "active" },
     { "number": 69, "title": "Market, logistics, PvE, world events and reports presentation" },
     { "number": 70, "title": "Command profile, local ranking and faction polish" },
     { "number": 71, "title": "Responsive, accessibility, performance and visual QA" },

@@ -24,6 +24,19 @@
         "docs/assets/user-supplied-asset-inventory/faction-ships.tsv",
         "docs/assets/user-supplied-asset-inventory/faction-misc.tsv"
       ]
+    },
+    {
+      "id": "generated-factions-v1",
+      "archiveName": "stellar_empires_generated_assets.zip",
+      "archiveSha256": "7ca08964d12cd0c3a4a42c88b2ed111d10e81f8a29dbbc55c8e17523546fa75f",
+      "archivePrefix": "stellar_empires_generated_assets/batch_01_factions",
+      "matchByBasename": true,
+      "targetDirectory": "assets/source/generated-factions-v1",
+      "fileCount": 10,
+      "uncompressedBytes": 12466966,
+      "manifestFiles": [
+        "docs/assets/user-supplied-asset-inventory/generated-factions-v1.tsv"
+      ]
     }
   ]
 }

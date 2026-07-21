@@ -23,6 +23,7 @@ from pathlib import Path, PurePosixPath
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = REPO_ROOT / "docs" / "assets" / "user-supplied-asset-inventory.json"
+MAX_MEMBER_BYTES = 100 * 1024 * 1024
 
 
 def normalize_member(name: str) -> str:
@@ -67,11 +68,25 @@ def extract_pack(pack: dict[str, object], archive_path: Path) -> tuple[int, int]
         raise FileNotFoundError(f"Archive not found: {archive_path}")
 
     expected_by_source = {str(entry["path"]): entry for entry in expected}
+    if len(expected_by_source) != len(expected):
+        raise RuntimeError(f"Pack {pack_id} has duplicate inventory paths")
+    expected_by_basename: dict[str, dict[str, object]] = {}
+    if bool(pack.get("matchByBasename", False)):
+        for entry in expected:
+            basename = Path(str(entry["path"])).name
+            if basename in expected_by_basename:
+                raise RuntimeError(f"Pack {pack_id} has duplicate inventory basenames")
+            expected_by_basename[basename] = entry
     found_sources: set[str] = set()
     written = 0
     written_bytes = 0
+    archive_prefix = str(pack.get("archivePrefix", "")).strip("/")
 
     with zipfile.ZipFile(archive_path) as archive:
+        failed_member = archive.testzip()
+        if failed_member is not None:
+            raise RuntimeError(f"CRC failure in {pack_id}: {failed_member}")
+
         for info in archive.infolist():
             if info.is_dir():
                 continue
@@ -82,9 +97,28 @@ def extract_pack(pack: dict[str, object], archive_path: Path) -> tuple[int, int]
                     continue
                 raise
 
+            if info.file_size > MAX_MEMBER_BYTES:
+                raise RuntimeError(
+                    f"Oversized member in {pack_id}: {source_path} ({info.file_size} bytes)"
+                )
+
+            if archive_prefix:
+                required_prefix = f"{archive_prefix}/"
+                if not source_path.startswith(required_prefix):
+                    raise RuntimeError(
+                        f"Unexpected archive root in {pack_id}: {source_path} "
+                        f"(expected {required_prefix})"
+                    )
+                source_path = source_path.removeprefix(required_prefix)
+
             entry = expected_by_source.get(source_path)
+            if entry is None and expected_by_basename:
+                entry = expected_by_basename.get(Path(source_path).name)
             if entry is None:
                 raise RuntimeError(f"Unexpected file in {pack_id}: {source_path}")
+            inventory_path = str(entry["path"])
+            if inventory_path in found_sources:
+                raise RuntimeError(f"Duplicate archive member in {pack_id}: {source_path}")
 
             data = archive.read(info)
             actual_sha = sha256_bytes(data)
@@ -99,15 +133,20 @@ def extract_pack(pack: dict[str, object], archive_path: Path) -> tuple[int, int]
                     f"SHA-256 mismatch for {source_path}: expected {expected_sha}, got {actual_sha}"
                 )
 
-            target_relative = target_directory / Path(source_path)
+            target_relative = target_directory / Path(inventory_path)
             target = (REPO_ROOT / target_relative).resolve()
             source_root = (REPO_ROOT / "assets" / "source").resolve()
             if source_root not in target.parents:
                 raise RuntimeError(f"Target escapes assets/source: {target_relative}")
 
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(data)
-            found_sources.add(source_path)
+            if target.exists():
+                existing_data = target.read_bytes()
+                if existing_data != data and existing_data.replace(b"\r\n", b"\n") != data:
+                    target.write_bytes(data)
+            else:
+                target.write_bytes(data)
+            found_sources.add(inventory_path)
             written += 1
             written_bytes += len(data)
 
@@ -131,6 +170,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--starter", type=Path, required=True, help="Path to the starter pack ZIP")
     parser.add_argument("--faction", type=Path, required=True, help="Path to faction delivery v1 ZIP")
     parser.add_argument(
+        "--generated-factions",
+        type=Path,
+        help="Optional path to the remaining generated faction asset ZIP",
+    )
+    parser.add_argument(
         "--clean",
         action="store_true",
         help="Delete registered source-pack directories before import",
@@ -143,16 +187,21 @@ def main() -> int:
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     packs = {str(pack["id"]): pack for pack in manifest["packs"]}
 
-    if args.clean:
-        for pack in packs.values():
-            directory = REPO_ROOT / str(pack["targetDirectory"])
-            if directory.exists():
-                shutil.rmtree(directory)
-
     archive_by_pack = {
         "starter": args.starter,
         "faction-delivery-v1": args.faction,
     }
+    if args.generated_factions is not None:
+        archive_by_pack["generated-factions-v1"] = args.generated_factions
+
+    if args.clean:
+        for pack_id in archive_by_pack:
+            pack = packs.get(pack_id)
+            if pack is None:
+                raise RuntimeError(f"Pack {pack_id} is absent from {MANIFEST_PATH}")
+            directory = REPO_ROOT / str(pack["targetDirectory"])
+            if directory.exists():
+                shutil.rmtree(directory)
 
     total_files = 0
     total_bytes = 0
@@ -164,8 +213,8 @@ def main() -> int:
         total_bytes += byte_count
         print(f"PASS {pack_id}: {count} files, {byte_count} bytes")
 
-    expected_total_files = sum(int(pack["fileCount"]) for pack in packs.values())
-    expected_total_bytes = sum(int(pack["uncompressedBytes"]) for pack in packs.values())
+    expected_total_files = sum(int(packs[pack_id]["fileCount"]) for pack_id in archive_by_pack)
+    expected_total_bytes = sum(int(packs[pack_id]["uncompressedBytes"]) for pack_id in archive_by_pack)
     if total_files != expected_total_files or total_bytes != expected_total_bytes:
         raise RuntimeError(
             f"Total mismatch: expected {expected_total_files}/{expected_total_bytes}, "

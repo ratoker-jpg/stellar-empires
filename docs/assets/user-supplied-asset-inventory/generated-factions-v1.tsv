@@ -1,0 +1,11 @@
+path	bytes	sha256	width	height	format	role	duplicateOf
+factions/aegis_card_bg.png	1826428	3a1e73fa0fda4d529ae55935b11e2e34f1be9284dc856f7bbdfca3a84b1bf943	1600	900	PNG	faction-bg	""
+factions/aegis_emblem.png	183927	f93db6dd6952c6213c4c9138a0d6dedd926ddf1bf10f788076050846e2d4ccf6	512	512	PNG	faction-emblem	""
+factions/aegis_hero.png	1423863	e5934a100558ff3596ccf42e896618e6456c147b82ae8840d3fbf32d3d61815c	1024	1024	PNG	faction-hero	""
+factions/synod_card_bg.png	1787855	adb4b10f6331de3f51def99a81aa4171400904b2308ed1525af1f5c1374fd692	1600	900	PNG	faction-bg	""
+factions/synod_emblem.png	284232	d991f1c6411a3e3f57b6c3ef9d96e69735a42af74415b3048116e974015568c5	512	512	PNG	faction-emblem	""
+factions/synod_hero.png	1285647	194df9f3194977a6cac78f047f1b87243f51b015b0255f69ebf29f267b28b049	1024	1024	PNG	faction-hero	""
+factions/veyra_card_bg.png	2161018	6f7fb2b854b2831cf34fa0f96ecb1262aa3faef9580a4e1ea15dd4c914e45ccb	1600	900	PNG	faction-bg	""
+factions/veyra_emblem.png	349067	aff429808ba2f16e8dfa6b4dbeddfafcfe413c2e04ab40ee7abb5f6f84132a6d	512	512	PNG	faction-emblem	""
+factions/veyra_hero.png	1377097	81a4711cade5811aba9ac1420e813a3d24fbe7a33b889818007249a875d1e29a	1024	1024	PNG	faction-hero	""
+previews/faction_contact_sheet.png	1787832	2cf5676a42e959ca6b47b6277f95ac499e8b75450b85f4fca0eb548a9d890b8a	1920	1400	PNG	preview-only	""
