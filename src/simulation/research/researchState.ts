@@ -1,3 +1,4 @@
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
 import type { EmpireResearchState, ResearchDefinition } from './types';
@@ -35,15 +36,13 @@ export function findMissingResearchRequirements(
   planet: PlanetState,
 ): readonly MissingResearchRequirement[] {
   const missing: MissingResearchRequirement[] = [];
-  const laboratoryLevel = getBuildingLevel(
-    planet.buildings,
-    'building.aegis.research-lab',
-  );
+  const laboratoryId = getFactionMechanicalRoles(planet.factionId).buildings.laboratory;
+  const laboratoryLevel = getBuildingLevel(planet.buildings, laboratoryId);
 
   if (laboratoryLevel < definition.requiredLaboratoryLevel) {
     missing.push({
       type: 'laboratory',
-      id: 'building.aegis.research-lab',
+      id: laboratoryId,
       requiredLevel: definition.requiredLaboratoryLevel,
       currentLevel: laboratoryLevel,
     });
