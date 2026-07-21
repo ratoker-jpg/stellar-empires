@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           base64 --decode tools/pr83.patch.gz.b64 | gzip --decompress > /tmp/pr83.patch
-          git apply -p1 /tmp/pr83.patch
+          git apply -p3 /tmp/pr83.patch
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Validate full repository gate
