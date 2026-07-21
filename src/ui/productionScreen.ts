@@ -1,4 +1,4 @@
-import { AEGIS_VERTICAL_SLICE_ASSETS } from '../assets/aegisVerticalSliceAssets';
+import { getFactionMechanicalAsset } from '../assets/factionMechanicalAssets';
 import {
   calculateDefenseRepairCost,
   calculateDefenseRepairSeconds,
@@ -33,14 +33,12 @@ export interface ProductionScreenOptions {
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 
 function setUnitArtwork(element: HTMLElement, definition: UnitDefinition): void {
-  const asset = AEGIS_VERTICAL_SLICE_ASSETS.find(
-    (candidate) => candidate.id === definition.assetId,
-  );
+  const asset = getFactionMechanicalAsset(definition.assetId);
   if (asset === undefined) return;
-  const columns = 3;
-  const rows = definition.kind === 'ship' ? 2 : 1;
   const column = asset.frame.x / asset.frame.width;
   const row = asset.frame.y / asset.frame.height;
+  const columns = definition.kind === 'ship' ? 3 : 3;
+  const rows = definition.kind === 'ship' ? 2 : 1;
   element.style.backgroundImage = `url("${asset.atlasUrl}")`;
   element.style.backgroundSize = `${columns * 100}% ${rows * 100}%`;
   element.style.backgroundPosition = `${column === 0 ? 0 : (column / (columns - 1)) * 100}% ${row === 0 || rows === 1 ? 0 : 100}%`;
@@ -241,7 +239,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
     }
 
     grid.replaceChildren();
-    for (const definition of getUnitsByKind(kind)) {
+    for (const definition of getUnitsByKind(kind, planet.factionId)) {
       const card = document.createElement('article');
       card.className = 'production-card';
       const art = document.createElement('div');
@@ -296,12 +294,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
           (kind === 'ship'
             ? hangarRequired <= hangarAvailable
             : defenseGridRequired <= defenseGridAvailable);
-        action.disabled = !(
-          missing.length === 0 &&
-          queueFree &&
-          affordable &&
-          capacityOk
-        );
+        action.disabled = !(missing.length === 0 && queueFree && affordable && capacityOk);
         const time = calculateUnitBatchSeconds(definition, amount, planet);
         const capacityMessage = kind === 'defense'
           ? ` · сеть ${defenseGridRequired}/${defenseGridAvailable}`
@@ -356,11 +349,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
           const repairSeconds = calculateDefenseRepairSeconds(definition, repairAmount);
           const repairQueueFree = planet.defense.repairQueue.length === 0;
           const repairAffordable = canAfford(state, planet.id, repairCost);
-          repairAction.disabled = !(
-            damagedAvailable > 0 &&
-            repairQueueFree &&
-            repairAffordable
-          );
+          repairAction.disabled = !(damagedAvailable > 0 && repairQueueFree && repairAffordable);
           repairStatus.textContent = damagedAvailable <= 0
             ? 'Повреждённых установок нет.'
             : `${formatCost(repairCost)} · ${formatGameDuration(repairSeconds)}${!repairQueueFree ? ' · ремонтный контур занят' : !repairAffordable ? ' · недостаточно ресурсов' : ''}`;
