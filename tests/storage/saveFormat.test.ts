@@ -8,7 +8,7 @@ import {
 } from '../../src/storage/saveFormat';
 
 describe('save format', () => {
-  it('round-trips a valid schema-v12 save', () => {
+  it('round-trips a valid schema-v13 save', () => {
     const state = createInitialGameState('save-round-trip');
     const save = createSaveEnvelope('slot-1', state, '2026-07-18T12:00:00.000Z');
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
@@ -20,6 +20,7 @@ describe('save format', () => {
       debrisFields: _debrisFields,
       logisticsRoutes: _logisticsRoutes,
       market: _market,
+      shipUpgrades: _shipUpgrades,
       ...withoutNewCollections
     } = current;
     const legacyState = {
@@ -39,7 +40,7 @@ describe('save format', () => {
     const parsed = parseSaveJson(JSON.stringify(legacySave));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(12);
+      expect(parsed.value.state.schemaVersion).toBe(13);
       expect(parsed.value.state.debrisFields).toEqual([]);
       expect(parsed.value.state.logisticsRoutes).toEqual([]);
       expect(parsed.value.state.market.reserves).toEqual({
@@ -48,9 +49,42 @@ describe('save format', () => {
         gas: 50_000,
       });
       expect(parsed.value.state.market.trades).toEqual([]);
+      expect(parsed.value.state.shipUpgrades).toHaveLength(parsed.value.state.empires.length);
+      expect(parsed.value.state.shipUpgrades.every((entry) => entry.queue.length === 0)).toBe(true);
       expect(parsed.value.state.planets[0]?.specializationId).toBe('balanced');
       expect(parsed.value.state.planets[0]?.developmentTemplateId).toBe('balanced');
     }
+  });
+
+  it('round-trips an active ship-upgrade queue', () => {
+    const current = createInitialGameState('upgrade-save');
+    const state = {
+      ...current,
+      shipUpgrades: current.shipUpgrades.map((entry) =>
+        entry.empireId === 'player'
+          ? {
+              ...entry,
+              levels: {
+                'ship.aegis.fighter': { weapons: 2, armor: 1, cargo: 0 },
+              },
+              queue: [
+                {
+                  id: 'ship-upgrade-1',
+                  unitId: 'ship.aegis.fighter',
+                  track: 'weapons' as const,
+                  targetLevel: 3,
+                  planetId: current.planets[0]!.id,
+                  startedAt: 10,
+                  completesAt: 100,
+                  cost: { metal: 200, crystal: 100, gas: 20 },
+                },
+              ],
+            }
+          : entry,
+      ),
+    };
+    const save = createSaveEnvelope('upgrade', state, '2026-07-18T12:00:00.000Z');
+    expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
   it('round-trips active debris and recycling missions', () => {
@@ -143,7 +177,12 @@ describe('save format', () => {
       speed: 14,
       cargoCapacity: 20,
     };
-    const legacyState = { ...current, schemaVersion: 6, fleets: [olderFleet] };
+    const { shipUpgrades: _shipUpgrades, ...legacyBase } = current;
+    const legacyState = {
+      ...legacyBase,
+      schemaVersion: 6,
+      fleets: [olderFleet],
+    };
     const legacySave = {
       formatVersion: 2,
       slotId: 'fleet-v6',
@@ -155,6 +194,7 @@ describe('save format', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.state.fleets[0]?.mission).toBeNull();
+      expect(parsed.value.state.schemaVersion).toBe(13);
     }
   });
 

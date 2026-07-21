@@ -14,6 +14,8 @@ export interface BattleSideInput {
   readonly units: Readonly<Record<string, number>>;
   readonly weaponBonusPercent: number;
   readonly armorBonusPercent: number;
+  readonly unitWeaponBonusPercent?: Readonly<Record<string, number>>;
+  readonly unitArmorBonusPercent?: Readonly<Record<string, number>>;
 }
 
 export interface BattleWeaponContributionReport {

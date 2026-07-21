@@ -12,6 +12,7 @@ import { createInitialWorldEventState } from './pve/worldEvents';
 import { createInitialResearchStates } from './research/researchState';
 import { normalizeSeed } from './seed';
 import type { GameState } from './types';
+import { createInitialShipUpgradeStates } from './upgrades/shipUpgrades';
 
 export function createInitialGameState(
   seedSource: string,
@@ -24,7 +25,7 @@ export function createInitialGameState(
   const neutralForces = createInitialNeutralForces(galaxy, seed);
 
   return {
-    schemaVersion: 12,
+    schemaVersion: 13,
     seed,
     clock: {
       startedAt: '2026-07-18T00:00:00.000Z',
@@ -34,6 +35,7 @@ export function createInitialGameState(
     galaxy,
     planets: [...colonies, ...neutralForces.planets],
     research: createInitialResearchStates(empires),
+    shipUpgrades: createInitialShipUpgradeStates(empires),
     fleets: neutralForces.fleets,
     intelligence: createInitialIntelligenceStates(empires),
     debrisFields: [],

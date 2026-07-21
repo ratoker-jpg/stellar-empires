@@ -6,6 +6,7 @@ import type {
   GameCommand,
   GameState,
 } from '../types';
+import { applyCargoUpgrades } from '../upgrades/shipUpgrades';
 import {
   calculateFleetComposition,
   getCargoAmount,
@@ -97,11 +98,17 @@ export function createFleet(
   }
 
   const composition = calculateFleetComposition(command.ships);
-  if (getCargoAmount(command.cargo) > composition.cargoCapacity) {
+  const cargoCapacity = applyCargoUpgrades(
+    state.shipUpgrades,
+    command.empireId,
+    command.ships,
+    composition.cargoCapacity,
+  );
+  if (getCargoAmount(command.cargo) > cargoCapacity) {
     return {
       ok: false,
       code: 'FLEET_CARGO_OVER_CAPACITY',
-      message: 'Fleet cargo exceeds its capacity.',
+      message: 'Fleet cargo exceeds its upgraded capacity.',
     };
   }
 
@@ -121,7 +128,7 @@ export function createFleet(
     ships: { ...command.ships },
     cargo: { ...command.cargo },
     speed: composition.speed,
-    cargoCapacity: composition.cargoCapacity,
+    cargoCapacity,
     mission: null,
   };
   const updatedPlanet: PlanetState = {

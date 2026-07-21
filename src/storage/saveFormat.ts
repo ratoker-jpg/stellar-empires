@@ -5,7 +5,7 @@ import {
 } from '../simulation/planet/specialization';
 import { PLANET_ZONE_IDS } from '../simulation/planet/zones';
 import type { GameState } from '../simulation/types';
-import { migrateGameState } from './migrateGameState';
+import { migrateGameStateV13 } from './migrateGameStateV13';
 import {
   SAVE_FORMAT_VERSION,
   type SaveEnvelope,
@@ -25,10 +25,11 @@ function isResourceId(value: unknown): boolean {
   return value === 'metal' || value === 'crystal' || value === 'gas';
 }
 function isResourceCost(value: unknown): boolean {
-  return isRecord(value) && isNonNegativeInteger(value.metal) && isNonNegativeInteger(value.crystal) && isNonNegativeInteger(value.gas);
+  return isRecord(value) && isNonNegativeInteger(value.metal) &&
+    isNonNegativeInteger(value.crystal) && isNonNegativeInteger(value.gas);
 }
 function isStateShell(value: unknown): value is Record<string, unknown> {
-  return isRecord(value) && [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(value.schemaVersion as number) &&
+  return isRecord(value) && [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].includes(value.schemaVersion as number) &&
     typeof value.seed === 'number' && Number.isInteger(value.seed) && isRecord(value.clock) &&
     typeof value.clock.startedAt === 'string' && isNonNegativeInteger(value.clock.elapsedSeconds) &&
     Array.isArray(value.empires) && value.empires.every((item) => typeof item === 'string') &&
@@ -69,6 +70,25 @@ function isPlanet(value: unknown): boolean {
 function isResearchState(value: unknown): boolean {
   return isRecord(value) && typeof value.empireId === 'string' && isRecord(value.levels) &&
     Object.values(value.levels).every(isNonNegativeInteger) && Array.isArray(value.queue);
+}
+function isShipUpgradeTrack(value: unknown): boolean {
+  return value === 'weapons' || value === 'armor' || value === 'cargo';
+}
+function isShipUpgradeQueueItem(value: unknown): boolean {
+  return isRecord(value) && typeof value.id === 'string' && typeof value.unitId === 'string' &&
+    isShipUpgradeTrack(value.track) && isPositiveInteger(value.targetLevel) && value.targetLevel <= 10 &&
+    typeof value.planetId === 'string' && isNonNegativeInteger(value.startedAt) &&
+    isNonNegativeInteger(value.completesAt) && value.completesAt >= value.startedAt &&
+    isResourceCost(value.cost);
+}
+function isShipUpgradeState(value: unknown): boolean {
+  if (!isRecord(value) || typeof value.empireId !== 'string' || !isRecord(value.levels) ||
+    !Array.isArray(value.queue) || value.queue.length > 1 || !value.queue.every(isShipUpgradeQueueItem)) return false;
+  return Object.values(value.levels).every(
+    (levels) => isRecord(levels) && isNonNegativeInteger(levels.weapons) && levels.weapons <= 10 &&
+      isNonNegativeInteger(levels.armor) && levels.armor <= 10 &&
+      isNonNegativeInteger(levels.cargo) && levels.cargo <= 10,
+  );
 }
 function isFleetLocation(value: unknown): boolean {
   if (!isRecord(value)) return false;
@@ -177,9 +197,11 @@ function isWorldEventState(value: unknown): boolean {
     ) && isNonNegativeInteger(value.nextEvaluationAt);
 }
 function isGameState(value: unknown): value is GameState {
-  return isStateShell(value) && value.schemaVersion === 12 && Array.isArray(value.empires) &&
+  return isStateShell(value) && value.schemaVersion === 13 && Array.isArray(value.empires) &&
     Array.isArray(value.planets) && value.planets.every(isPlanet) && Array.isArray(value.research) &&
-    value.research.every(isResearchState) && Array.isArray(value.fleets) && value.fleets.every(isFleet) &&
+    value.research.every(isResearchState) && Array.isArray(value.shipUpgrades) &&
+    value.shipUpgrades.every(isShipUpgradeState) && value.shipUpgrades.length === value.empires.length &&
+    Array.isArray(value.fleets) && value.fleets.every(isFleet) &&
     Array.isArray(value.intelligence) && value.intelligence.every(isIntelligenceState) &&
     value.intelligence.length === value.empires.length && Array.isArray(value.debrisFields) &&
     value.debrisFields.every(isDebrisField) && Array.isArray(value.logisticsRoutes) &&
@@ -206,7 +228,7 @@ export function parseSaveJson(json: string): SaveParseResult {
   }
   const actualChecksum = createStateChecksum(parsed.state);
   if (actualChecksum !== parsed.checksum) return { ok: false, code: 'CHECKSUM_MISMATCH', message: 'Save data checksum does not match its state.' };
-  const state = migrateGameState(parsed.state);
+  const state = migrateGameStateV13(parsed.state);
   if (!isGameState(state)) return { ok: false, code: 'SAVE_MIGRATION_FAILED', message: 'Save data could not be migrated to the current schema.' };
   return { ok: true, value: { formatVersion: SAVE_FORMAT_VERSION, slotId: parsed.slotId, savedAt: parsed.savedAt, checksum: createStateChecksum(state), state } };
 }
