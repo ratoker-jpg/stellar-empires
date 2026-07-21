@@ -101,7 +101,7 @@ describe('bot research and production planner', () => {
 
       if (plan.research.command?.type === 'QUEUE_RESEARCH') {
         expect(plan.research.command.technologyId).toContain(
-          empireId === 'synod-bot' ? '.synod.' : '.aegis.',
+          empireId === 'synod-bot' ? '.synod.' : '.veyra.',
         );
         const researchResult = executeCommand(state, plan.research.command);
         expect(researchResult.ok).toBe(true);
@@ -109,7 +109,7 @@ describe('bot research and production planner', () => {
       }
       if (plan.production.command?.type === 'QUEUE_UNIT_BATCH') {
         expect(plan.production.command.unitId).toContain(
-          empireId === 'synod-bot' ? '.synod.' : '.aegis.',
+          empireId === 'synod-bot' ? '.synod.' : '.veyra.',
         );
         const productionResult = executeCommand(state, plan.production.command);
         expect(productionResult.ok).toBe(true);

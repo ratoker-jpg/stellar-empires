@@ -14,6 +14,7 @@ import type {
 import type { GameState } from '../simulation/types';
 import { migrateGameState } from './migrateGameState';
 import { migrateLegacySynodAliases } from './migrateLegacySynodAliases';
+import { migrateLegacyVeyraAliases } from './migrateLegacyVeyraAliases';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -150,10 +151,10 @@ export function migrateGameStateV13(value: unknown): GameState | undefined {
   const legacyInput = value.schemaVersion === 13 ? { ...value, schemaVersion: 12 } : value;
   const migrated = migrateGameState(legacyInput);
   if (migrated === undefined) return undefined;
-  return migrateLegacySynodAliases({
+  return migrateLegacyVeyraAliases(migrateLegacySynodAliases({
     ...migrated,
     schemaVersion: 13,
     shipUpgrades,
     commanders,
-  });
+  }));
 }

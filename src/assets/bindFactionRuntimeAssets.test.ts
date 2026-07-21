@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { AEGIS_VERTICAL_SLICE_ASSETS } from './aegisVerticalSliceAssets';
 import { bindFactionRuntimeAssets } from './bindFactionRuntimeAssets';
-import { SYNOD_MECHANICAL_ASSETS } from './factionMechanicalAssets';
+import { SYNOD_MECHANICAL_ASSETS, VEYRA_MECHANICAL_ASSETS } from './factionMechanicalAssets';
 
 afterEach(() => bindFactionRuntimeAssets('aegis'));
 
@@ -23,12 +22,20 @@ describe('bindFactionRuntimeAssets', () => {
       .toMatch(/synod\/p1\/buildings-atlas\.webp$/);
   });
 
-  it('keeps Veyra alias technology and effect assets on their explicit fallback', () => {
+  it('binds native Veyra mechanical entries to Veyra atlases', () => {
     bindFactionRuntimeAssets('veyra');
 
-    expect(AEGIS_VERTICAL_SLICE_ASSETS.find((asset) => asset.category === 'technology')?.atlasUrl)
-      .toMatch(/aegis\/p1\/technologies-atlas\.svg$/);
-    expect(AEGIS_VERTICAL_SLICE_ASSETS.find((asset) => asset.category === 'effect')?.atlasUrl)
-      .toMatch(/aegis\/p1\/effects-atlas\.svg$/);
+    expect(VEYRA_MECHANICAL_ASSETS.find((asset) => asset.category === 'building')?.atlasUrl)
+      .toMatch(/veyra\/p1\/buildings-atlas\.webp$/);
+    expect(VEYRA_MECHANICAL_ASSETS.find((asset) => asset.category === 'ship')?.atlasUrl)
+      .toMatch(/veyra\/p1\/ships-atlas\.webp$/);
+    expect(VEYRA_MECHANICAL_ASSETS.find((asset) => asset.category === 'defense')?.atlasUrl)
+      .toMatch(/veyra\/p1\/defenses-atlas\.webp$/);
+  });
+
+  it('keeps the documented Veyra technology fallback on Veyra artwork', () => {
+    bindFactionRuntimeAssets('veyra');
+    expect(VEYRA_MECHANICAL_ASSETS.find((asset) => asset.category === 'technology')?.atlasUrl)
+      .toMatch(/veyra\/p1\/buildings-atlas\.webp$/);
   });
 });

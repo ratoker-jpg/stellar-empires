@@ -186,7 +186,7 @@ describe('bot threat, target and recovery planner', () => {
     expect(plan.command).toMatchObject({
       type: 'QUEUE_UNIT_BATCH',
       empireId: 'veyra-bot',
-      unitId: 'ship.aegis.fighter',
+      unitId: 'ship.veyra.sting',
       quantity: 3,
     });
     if (plan.command !== null) {

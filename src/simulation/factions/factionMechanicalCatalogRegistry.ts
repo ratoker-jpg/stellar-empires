@@ -13,6 +13,11 @@ import {
   SYNOD_RESEARCH_CATALOG,
   SYNOD_UNIT_CATALOG,
 } from './synodMechanicalCatalog';
+import {
+  VEYRA_BUILDING_CATALOG,
+  VEYRA_RESEARCH_CATALOG,
+  VEYRA_UNIT_CATALOG,
+} from './veyraMechanicalCatalog';
 
 export interface FactionMechanicalCatalog {
   readonly factionId: FactionId;
@@ -36,6 +41,12 @@ const SOURCE_CATALOGS: Readonly<Partial<Record<FactionId, MechanicalCatalogSourc
     buildings: SYNOD_BUILDING_CATALOG,
     research: SYNOD_RESEARCH_CATALOG,
     units: SYNOD_UNIT_CATALOG,
+  },
+  veyra: {
+    sourceFactionId: 'veyra',
+    buildings: VEYRA_BUILDING_CATALOG,
+    research: VEYRA_RESEARCH_CATALOG,
+    units: VEYRA_UNIT_CATALOG,
   },
 };
 

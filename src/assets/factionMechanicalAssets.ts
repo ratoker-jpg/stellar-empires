@@ -136,9 +136,97 @@ export const SYNOD_MECHANICAL_ASSETS: readonly AegisVerticalSliceAsset[] = [
   ...SYNOD_TECHNOLOGIES,
 ];
 
+const VEYRA_BUILDINGS = atlasAssets(
+  [
+    seed('building.veyra.swarm-heart', 'Сердце роя', 'Управление колонией'),
+    seed('building.veyra.alloy-bloom', 'Сплавный цветок', 'Добыча металла'),
+    seed('building.veyra.crystal-grove', 'Кристальная роща', 'Добыча кристалла'),
+    seed('building.veyra.vapor-root', 'Газовый корень', 'Добыча газа'),
+    seed('building.veyra.solar-membrane', 'Солнечная мембрана', 'Производство энергии'),
+    seed('building.veyra.memory-pod', 'Капсула памяти', 'Исследования'),
+    seed('building.veyra.living-dock', 'Живая верфь', 'Производство кораблей'),
+    seed('building.veyra.pulse-canopy', 'Импульсный полог', 'Сенсоры и оборонная сеть'),
+    seed('building.veyra.spore-vault', 'Споровое хранилище', 'Хранение и логистика'),
+    seed('building.veyra.nest-cluster', 'Гнездовой кластер', 'Население и стабильность'),
+    seed('building.veyra.hunter-node', 'Узел охотника', 'Военная координация'),
+    seed('building.veyra.carapace-forge', 'Кузница панциря', 'Тяжёлая оборона'),
+  ],
+  'building',
+  RUNTIME_ASSETS.factionVeyraBuildingsAtlasWebp,
+  4,
+  8,
+  256,
+);
+
+const VEYRA_SHIPS = atlasAssets(
+  [
+    seed('ship.veyra.wisp', 'Разведчик «Огонёк»', 'Разведка'),
+    seed('ship.veyra.tendril', 'Транспорт «Усик»', 'Перевозка'),
+    seed('ship.veyra.sting', 'Истребитель «Жало»', 'Перехват'),
+    seed('ship.veyra.shellwing', 'Фрегат «Панцирокрыл»', 'Щитовой строй'),
+    seed('ship.veyra.brood-ark', 'Ковчег «Выводок»', 'Колонизация'),
+    seed('ship.veyra.devourer', 'Сборщик «Поглотитель»', 'Переработка'),
+    seed('ship.veyra.dart', 'Корвет «Стрекоза»', 'Сопровождение'),
+    seed('ship.veyra.manta', 'Крейсер «Манта»', 'Линейный бой'),
+    seed('ship.veyra.hive-carrier', 'Носитель «Улей»', 'Дальнее снабжение'),
+    seed('ship.veyra.leviathan', 'Дредноут «Левиафан»', 'Флагманский бой'),
+  ],
+  'ship',
+  RUNTIME_ASSETS.factionVeyraShipsAtlasWebp,
+  3,
+  6,
+  512,
+);
+
+const VEYRA_DEFENSES = atlasAssets(
+  [
+    seed('defense.veyra.thorn-spire', 'Шиповая башня', 'Точный огонь'),
+    seed('defense.veyra.spore-mortar', 'Споровый миномёт', 'Тяжёлый залп'),
+    seed('defense.veyra.living-veil', 'Живая завеса', 'Щитовая защита'),
+    seed('defense.veyra.snapper-node', 'Хватающий узел', 'Перехват'),
+    seed('defense.veyra.hive-bastion', 'Бастион улья', 'Тяжёлая защита'),
+  ],
+  'defense',
+  RUNTIME_ASSETS.factionVeyraDefensesAtlasWebp,
+  3,
+  3,
+  256,
+);
+
+// A dedicated Veyra technology atlas is not delivered yet. These entries use
+// deterministic frames from the native Veyra building atlas and are explicitly
+// treated as temporary runtime fallbacks instead of Aegis artwork.
+const VEYRA_TECHNOLOGIES = atlasAssets(
+  [
+    seed('technology.veyra.adaptive-growth', 'Адаптивный рост', 'Строительство'),
+    seed('technology.veyra.photosynthetic-grid', 'Фотосинтетическая сеть', 'Энергетика'),
+    seed('technology.veyra.echo-sense', 'Эхолокационное чувство', 'Сенсоры'),
+    seed('technology.veyra.living-thrust', 'Живой импульс', 'Навигация'),
+    seed('technology.veyra.carapace-weave', 'Переплетение панциря', 'Защита'),
+    seed('technology.veyra.predator-instinct', 'Инстинкт хищника', 'Вооружение'),
+    seed('technology.veyra.brood-seeding', 'Рассев выводка', 'Колонизация'),
+    seed('technology.veyra.mycelial-logistics', 'Мицелиальная логистика', 'Логистика'),
+    seed('technology.veyra.regenerative-shells', 'Регенеративная оболочка', 'Защита'),
+    seed('technology.veyra.swarm-mind', 'Разум роя', 'Координация'),
+  ],
+  'technology',
+  RUNTIME_ASSETS.factionVeyraBuildingsAtlasWebp,
+  4,
+  8,
+  256,
+);
+
+export const VEYRA_MECHANICAL_ASSETS: readonly AegisVerticalSliceAsset[] = [
+  ...VEYRA_BUILDINGS,
+  ...VEYRA_SHIPS,
+  ...VEYRA_DEFENSES,
+  ...VEYRA_TECHNOLOGIES,
+];
+
 export const FACTION_MECHANICAL_ASSETS: readonly AegisVerticalSliceAsset[] = [
   ...AEGIS_VERTICAL_SLICE_ASSETS,
   ...SYNOD_MECHANICAL_ASSETS,
+  ...VEYRA_MECHANICAL_ASSETS,
 ];
 
 const ASSET_BY_ID = new Map(
