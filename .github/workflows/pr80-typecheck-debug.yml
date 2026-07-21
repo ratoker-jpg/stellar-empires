@@ -1,4 +1,4 @@
-name: PR80 Typecheck Diagnostics
+name: PR80 Diagnostics
 
 on:
   pull_request:
@@ -11,25 +11,30 @@ permissions:
 jobs:
   diagnostics:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 22.12.0
       - run: npm install --no-audit --no-fund
-      - name: Capture typecheck
+      - name: Capture diagnostics
         shell: bash
         run: |
           set +e
           npm run typecheck > typecheck.log 2>&1
-          status=$?
-          echo "$status" > typecheck-status.txt
+          echo "$?" > typecheck-status.txt
+          npm test -- --run > test.log 2>&1
+          echo "$?" > test-status.txt
+          rg -n "AEGIS_|ship\.aegis\.(scout|recycler|colony)|building\.aegis\.|technology\.aegis\." src tests > hardcodes.log 2>&1
           exit 0
       - uses: actions/upload-artifact@v6
         with:
-          name: pr80-typecheck
+          name: pr80-diagnostics
           path: |
             typecheck.log
             typecheck-status.txt
+            test.log
+            test-status.txt
+            hardcodes.log
           if-no-files-found: error
