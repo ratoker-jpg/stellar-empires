@@ -1,0 +1,162 @@
+.skip-link {
+  position: fixed;
+  z-index: 10000;
+  top: 8px;
+  left: 8px;
+  padding: 10px 14px;
+  transform: translateY(-160%);
+  border: 2px solid var(--se-accent, #47c7f1);
+  border-radius: 6px;
+  background: #02070d;
+  color: #fff;
+  font-weight: 750;
+  transition: transform 120ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--se-accent, #47c7f1) 82%, white);
+  outline-offset: 3px;
+}
+
+html[data-viewport-mode='compact'] .app-shell {
+  min-width: 0;
+}
+
+html[data-viewport-mode='compact'] .topbar {
+  grid-template-columns: 190px minmax(500px, 1fr) 250px;
+}
+
+html[data-viewport-mode='compact'] .game-layout {
+  grid-template-columns: 244px minmax(0, 1fr);
+}
+
+html[data-viewport-mode='compact'] .context-help,
+html[data-viewport-mode='compact'] .brand-subtitle {
+  display: none;
+}
+
+html[data-viewport-mode='compact'] .resource-chip {
+  min-height: 56px;
+}
+
+html[data-viewport-mode='mobile'] .app-shell {
+  min-width: 0;
+  padding: 0;
+}
+
+html[data-viewport-mode='mobile'] .topbar {
+  grid-template-columns: 1fr;
+  gap: 8px;
+  border-radius: 0;
+}
+
+html[data-viewport-mode='mobile'] .brand-lockup {
+  display: none;
+}
+
+html[data-viewport-mode='mobile'] .resource-strip {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+html[data-viewport-mode='mobile'] .topbar-status {
+  min-height: 50px;
+  padding-left: 0;
+  border-left: 0;
+}
+
+html[data-viewport-mode='mobile'] .side-rail {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  min-height: 62px;
+  padding-top: 3px;
+}
+
+html[data-viewport-mode='mobile'] .rail-button {
+  flex-basis: 74px;
+  min-height: 58px;
+  padding: 5px;
+}
+
+html[data-viewport-mode='mobile'] .rail-button__icon,
+html[data-viewport-mode='mobile'] .rail-button > span:first-child {
+  width: 28px;
+  height: 28px;
+}
+
+html[data-viewport-mode='mobile'] .rail-button small {
+  font-size: 0.55rem;
+}
+
+html[data-viewport-mode='mobile'] .game-layout {
+  display: block;
+  min-height: 0;
+  border-radius: 0;
+}
+
+html[data-viewport-mode='mobile'] .command-panel {
+  display: none;
+}
+
+html[data-viewport-mode='mobile'] .view-stack,
+html[data-viewport-mode='mobile'] .game-stage {
+  min-height: calc(100vh - 220px);
+}
+
+html[data-viewport-mode='mobile'] .stage-footer {
+  right: 6px;
+  bottom: 6px;
+  left: 6px;
+  flex-wrap: wrap;
+  font-size: 0.5rem;
+}
+
+html[data-viewport-mode='mobile'] dialog {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  margin: 0;
+  border-radius: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --se-border-subtle: rgba(180, 229, 255, 0.48);
+    --se-border-default: rgba(180, 229, 255, 0.68);
+    --se-text-muted: #c4dbe7;
+    --se-text-secondary: #d4e7f1;
+  }
+
+  .panel-block,
+  .rail-button,
+  dialog {
+    border-width: 2px;
+  }
+}
