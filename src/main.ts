@@ -33,6 +33,7 @@ import {
 import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
+import { mountDevelopmentPresentation } from './ui/developmentPresentation';
 import { mountEmpireOverview } from './ui/empireOverview';
 import { mountExpeditionPanel } from './ui/expeditionPanel';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
@@ -173,6 +174,10 @@ async function bootstrap(): Promise<void> {
   mountResearchScreen(commandBridge);
   mountProductionScreens(commandBridge);
   mountMissionScreen(commandBridge);
+  mountDevelopmentPresentation({
+    getState: () => runtimeState,
+    getActivePlanetId: getPlanetScreenActivePlanetId,
+  });
 
   if (saveManager !== undefined) {
     mountSaveManager({ manager: saveManager, getState: () => runtimeState, writeStatus: setStatus });

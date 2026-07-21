@@ -1,0 +1,55 @@
+.planet-zone-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.planet-zone-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: linear-gradient(180deg, rgba(2, 8, 15, 0.35), rgba(2, 8, 15, 0.94)), var(--planet-zone-terrain);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.64;
+}
+
+.planet-zone-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 18%, rgba(91, 203, 246, 0.12), transparent 48%);
+  pointer-events: none;
+}
+
+.planet-building-node__art {
+  background-color: rgba(2, 9, 16, 0.62);
+  filter: saturate(1.08) contrast(1.04);
+}
+
+.research-screen-dialog > header,
+.production-dialog > header {
+  min-height: 118px;
+  background-image: linear-gradient(90deg, rgba(2, 8, 15, 0.98) 0%, rgba(2, 8, 15, 0.86) 56%, rgba(2, 8, 15, 0.3) 100%), var(--research-facility-art, var(--production-facility-art));
+  background-size: 100% 100%, 430px auto;
+  background-position: center, right center;
+  background-repeat: no-repeat;
+}
+
+.production-art,
+.research-card-art {
+  background-color: rgba(2, 9, 16, 0.7);
+}
+
+.production-card,
+.research-card {
+  backdrop-filter: blur(8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .planet-building-node__art {
+    filter: none;
+  }
+}
