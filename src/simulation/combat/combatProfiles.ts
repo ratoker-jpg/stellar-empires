@@ -93,6 +93,21 @@ export const UNIT_COMBAT_PROFILES: Readonly<Record<string, UnitCombatProfile>> =
   'defense.synod.harmonic-screen': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
   'defense.synod.predictive-intercept': { weaponType: 'plasma', protectionType: 'fortified', targetSize: 'installation' },
   'defense.synod.concord-bastion': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
+  'ship.veyra.wisp': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
+  'ship.veyra.tendril': { weaponType: 'kinetic', protectionType: 'light-armor', targetSize: 'medium' },
+  'ship.veyra.sting': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
+  'ship.veyra.shellwing': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'medium' },
+  'ship.veyra.brood-ark': { weaponType: 'kinetic', protectionType: 'light-armor', targetSize: 'large' },
+  'ship.veyra.devourer': { weaponType: 'kinetic', protectionType: 'light-armor', targetSize: 'medium' },
+  'ship.veyra.dart': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
+  'ship.veyra.manta': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'large' },
+  'ship.veyra.hive-carrier': { weaponType: 'missile', protectionType: 'light-armor', targetSize: 'large' },
+  'ship.veyra.leviathan': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'large' },
+  'defense.veyra.thorn-spire': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'installation' },
+  'defense.veyra.spore-mortar': { weaponType: 'missile', protectionType: 'light-armor', targetSize: 'installation' },
+  'defense.veyra.living-veil': { weaponType: 'plasma', protectionType: 'shield-grid', targetSize: 'installation' },
+  'defense.veyra.snapper-node': { weaponType: 'plasma', protectionType: 'fortified', targetSize: 'installation' },
+  'defense.veyra.hive-bastion': { weaponType: 'plasma', protectionType: 'fortified', targetSize: 'installation' },
 };
 
 const WEAPON_VS_PROTECTION: Readonly<Record<WeaponType, Readonly<Record<ProtectionType, number>>>> = {

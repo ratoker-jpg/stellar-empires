@@ -26,8 +26,8 @@ export const FACTION_CATALOG_MANIFEST: Readonly<
   },
   veyra: {
     factionId: 'veyra',
-    sourceFactionId: 'aegis',
-    mode: 'legacy-alias',
+    sourceFactionId: 'veyra',
+    mode: 'native',
     migrationPolicy: 'replace-legacy-aliases',
   },
 };
