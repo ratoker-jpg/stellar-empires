@@ -19,8 +19,13 @@ export function createGame(parent: string, state: GameState): Phaser.Game {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
-    scene: [BootScene, new GalaxyScene(state.galaxy)],
+    scene: [BootScene, new GalaxyScene(state)],
   };
 
   return new Phaser.Game(config);
+}
+
+export function updateGamePresentation(game: Phaser.Game, state: GameState): void {
+  const scene = game.scene.getScene('GalaxyScene');
+  if (scene instanceof GalaxyScene) scene.updateState(state);
 }

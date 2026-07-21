@@ -22,7 +22,7 @@ import './styles/missions.css';
 import './styles/empire.css';
 import './styles/globalHud.css';
 import { bindFactionRuntimeAssets } from './assets/bindFactionRuntimeAssets';
-import { createGame } from './game/createGame';
+import { createGame, updateGamePresentation } from './game/createGame';
 import { BotAutomationController } from './runtime/BotAutomationController';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
@@ -127,10 +127,11 @@ async function bootstrap(): Promise<void> {
   applyFactionShellIdentity(playerFaction);
   version.textContent = `v${__APP_VERSION__}`;
   systemCount.textContent = String(initialState.galaxy.systems.length);
-  createGame('phaser-game', initialState);
+  const game = createGame('phaser-game', initialState);
   renderAssetShowcases();
   mountPlanetScreen(initialState, setStatus, (state) => {
     runtimeState = state;
+    updateGamePresentation(game, state);
     autosave?.request(state);
     botAutomationRef.current?.request();
   });
