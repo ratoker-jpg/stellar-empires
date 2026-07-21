@@ -1,8 +1,6 @@
 import type { ResourceCost } from '../economy/types';
 import { enqueueEvent } from '../eventQueue';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
-import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
-import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
 import {
   canAfford,

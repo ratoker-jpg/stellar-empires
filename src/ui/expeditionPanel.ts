@@ -1,11 +1,7 @@
 import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
-import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
-import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
 import { estimateFlightToGalaxyPlanet } from '../simulation/fleets/flightCalculations';
 import type { FleetState } from '../simulation/fleets/types';
 import type { GameCommand, GameState } from '../simulation/types';
-import { getShipCountByRole, hasShipRole } from '../simulation/units/shipCapabilities';
-import { getShipCountByRole, hasShipRole } from '../simulation/units/shipCapabilities';
 import { getShipCountByRole, hasShipRole } from '../simulation/units/shipCapabilities';
 import { formatGameDuration } from './planetViewModel';
 

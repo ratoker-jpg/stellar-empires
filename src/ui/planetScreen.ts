@@ -1,7 +1,5 @@
 import type { AegisVerticalSliceAsset } from '../assets/aegisVerticalSliceAssets';
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
-import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
-import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getBuildingDefinition } from '../simulation/planet/buildingCatalog';
 import { getBuildingLevel } from '../simulation/planet/buildingProgression';
 import {
