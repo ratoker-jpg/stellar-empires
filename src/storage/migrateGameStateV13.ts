@@ -1,3 +1,9 @@
+import {
+  calculateCommandLevel,
+  createInitialCommandStates,
+  isCommandDoctrineId,
+} from '../simulation/command/commandDoctrine';
+import type { EmpireCommandState } from '../simulation/command/types';
 import { createInitialShipUpgradeStates } from '../simulation/upgrades/shipUpgrades';
 import type {
   EmpireShipUpgradeState,
@@ -96,12 +102,50 @@ function readShipUpgradeStates(
   );
 }
 
+function readCommandStates(
+  value: unknown,
+  empireIds: readonly string[],
+): readonly EmpireCommandState[] | undefined {
+  if (value === undefined) return createInitialCommandStates(empireIds);
+  if (!Array.isArray(value)) return undefined;
+  const states: EmpireCommandState[] = [];
+  for (const item of value) {
+    if (
+      !isRecord(item) ||
+      typeof item.empireId !== 'string' ||
+      !isCommandDoctrineId(item.doctrineId) ||
+      !isNonNegativeInteger(item.experience) ||
+      (item.flagshipFleetId !== null && typeof item.flagshipFleetId !== 'string')
+    ) {
+      return undefined;
+    }
+    states.push({
+      empireId: item.empireId,
+      doctrineId: item.doctrineId,
+      experience: item.experience,
+      level: calculateCommandLevel(item.experience),
+      flagshipFleetId: item.flagshipFleetId,
+    });
+  }
+  return empireIds.map(
+    (empireId) =>
+      states.find((state) => state.empireId === empireId) ?? {
+        empireId,
+        doctrineId: 'adaptive',
+        experience: 0,
+        level: 1,
+        flagshipFleetId: null,
+      },
+  );
+}
+
 export function migrateGameStateV13(value: unknown): GameState | undefined {
   if (!isRecord(value) || !Array.isArray(value.empires)) return undefined;
   const empireIds = value.empires.filter((empireId): empireId is string => typeof empireId === 'string');
   if (empireIds.length !== value.empires.length) return undefined;
   const shipUpgrades = readShipUpgradeStates(value.shipUpgrades, empireIds);
-  if (shipUpgrades === undefined) return undefined;
+  const commanders = readCommandStates(value.commanders, empireIds);
+  if (shipUpgrades === undefined || commanders === undefined) return undefined;
   const legacyInput = value.schemaVersion === 13 ? { ...value, schemaVersion: 12 } : value;
   const migrated = migrateGameState(legacyInput);
   if (migrated === undefined) return undefined;
@@ -109,5 +153,6 @@ export function migrateGameStateV13(value: unknown): GameState | undefined {
     ...migrated,
     schemaVersion: 13,
     shipUpgrades,
+    commanders,
   };
 }

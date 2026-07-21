@@ -1,6 +1,7 @@
 import type { DebrisField } from './combat/debris';
 import type { FleetFormation, FleetTargetPriority } from './combat/fleetDoctrine';
 import type { BattleReport } from './combat/types';
+import type { CommandDoctrineId, EmpireCommandState } from './command/types';
 import type { ResourceCost, ResourceId } from './economy/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
@@ -247,6 +248,16 @@ export type GameCommand =
       readonly targetPriority: FleetTargetPriority;
     }
   | {
+      readonly type: 'SET_COMMAND_DOCTRINE';
+      readonly empireId: string;
+      readonly doctrineId: CommandDoctrineId;
+    }
+  | {
+      readonly type: 'ASSIGN_FLAGSHIP';
+      readonly empireId: string;
+      readonly fleetId: string | null;
+    }
+  | {
       readonly type: 'SEND_FLEET';
       readonly empireId: string;
       readonly fleetId: string;
@@ -290,6 +301,7 @@ export interface GameState {
   readonly planets: readonly PlanetState[];
   readonly research: readonly EmpireResearchState[];
   readonly shipUpgrades: readonly EmpireShipUpgradeState[];
+  readonly commanders: readonly EmpireCommandState[];
   readonly fleets: readonly FleetState[];
   readonly intelligence: readonly EmpireIntelligenceState[];
   readonly debrisFields: readonly DebrisField[];

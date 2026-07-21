@@ -2,6 +2,10 @@ import {
   addDamagedDefenses,
   calculateRecoveredDefenses,
 } from '../defense/planetaryDefense';
+import {
+  awardBattleCommandExperience,
+  getCommandCombatEffects,
+} from '../command/commandDoctrine';
 import type { ResourceCost } from '../economy/types';
 import type { FleetState } from '../fleets/types';
 import type { PlanetState } from '../planet/types';
@@ -31,15 +35,17 @@ function getCombatEffects(
   state: GameState,
   empireId: string,
   units: Readonly<Record<string, number>>,
+  fleetId?: string,
 ) {
   const research = getEmpireResearch(state.research, empireId);
   const effects =
     research === undefined
       ? undefined
       : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG);
+  const command = getCommandCombatEffects(state.commanders, empireId, fleetId);
   return {
-    weaponBonusPercent: effects?.weaponStrengthPercent ?? 0,
-    armorBonusPercent: effects?.armorStrengthPercent ?? 0,
+    weaponBonusPercent: (effects?.weaponStrengthPercent ?? 0) + command.weaponBonusPercent,
+    armorBonusPercent: (effects?.armorStrengthPercent ?? 0) + command.armorBonusPercent,
     unitWeaponBonusPercent: getShipUpgradeBonusMap(
       state.shipUpgrades,
       empireId,
@@ -203,14 +209,14 @@ export function resolveAttackMission(
       units: attackerFleet.ships,
       formation: attackerFormation,
       targetPriority: attackerTargetPriority,
-      ...getCombatEffects(state, attackerFleet.empireId, attackerFleet.ships),
+      ...getCombatEffects(state, attackerFleet.empireId, attackerFleet.ships, attackerFleet.id),
     },
     {
       empireId: target.ownerEmpireId,
       units: effectiveDefenderUnits,
       formation: defenderFormation,
       targetPriority: defenderTargetPriority,
-      ...getCombatEffects(state, target.ownerEmpireId, effectiveDefenderUnits),
+      ...getCombatEffects(state, target.ownerEmpireId, effectiveDefenderUnits, defenderDoctrine?.id),
     },
   );
   const defenderRemaining = splitDefenderRemaining(resolution.defenderRemaining);
@@ -323,6 +329,7 @@ export function resolveAttackMission(
       ),
       fleets,
       debrisFields,
+      commanders: awardBattleCommandExperience(state.commanders, report),
     },
     report,
     attackerFleet: updatedAttacker,

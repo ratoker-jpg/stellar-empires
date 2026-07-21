@@ -6,21 +6,28 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 72,
-  "lastMergeSha": "cde213d5fb0d5e6470a11aa61d9c483c832350e2",
-  "activePr": 73,
-  "nextPrAfterActive": 74,
-  "currentMilestone": "Military depth and fleet doctrine",
+  "lastMergedPr": 74,
+  "lastMergeSha": "770b5d9ee5faf3f9a158e05dc471d768f2f6f4bc",
+  "activePr": 75,
+  "nextPrAfterActive": 76,
+  "currentMilestone": "Command progression, faction asymmetry and diplomacy",
   "currentBatch": {
-    "standard": [69, 70, 71, 72, 73, 74],
-    "completed": [69, 70, 71, 72],
+    "standard": [
+      75,
+      76,
+      77,
+      78,
+      79,
+      80
+    ],
+    "completed": [],
     "plannedCapabilities": [
-      "research, production and planetary defense presentation",
-      "market, logistics, PvE, world events and report presentation",
-      "command profile, local ranking and faction polish",
-      "responsive, keyboard/accessibility, performance and visual QA",
-      "ship upgrades reimplementation",
-      "formations, target priorities and original class skills"
+      "command doctrine progression and flagship framework",
+      "faction mechanical catalog architecture and ID migration policy",
+      "full Aegis economy, buildings, research and unit roster",
+      "full Synod economy, buildings, research and unit roster",
+      "full Veyra economy, buildings, research and unit roster",
+      "relations, reputation and diplomatic positions"
     ]
   },
   "deliveredDomains": [
@@ -33,12 +40,14 @@
     "honest autonomous bots with planners and Worker scheduler",
     "three faction identities, runtime registry and new-game selection",
     "production presentation, operations center, local ranking and accessibility runtime",
-    "per-hull weapon, armor and cargo upgrades with deterministic queue and combat effects"
+    "per-hull weapon, armor and cargo upgrades with deterministic queue and combat effects",
+    "fleet formations, target priorities and original class skills"
   ],
   "knownLimitations": [
     "all factions still share Aegis mechanical catalogs",
-    "formations, class skills, command doctrine, flagships, diplomacy, coalitions and endgame are missing",
-    "bots do not yet plan ship upgrades, expeditions or space-object operations and do not use diplomacy",
+    "command progression and flagship framework are active in PR #75",
+    "diplomacy, coalitions, strategic stars and endgame are missing",
+    "bots do not yet plan ship upgrades, expeditions, object operations, command doctrine or diplomacy",
     "strategic exotic matter has no spending loop",
     "captured Nemexia HTML/screens/assets are excluded"
   ],
@@ -49,7 +58,11 @@
       "binaryPublication": "committed-source-only",
       "filesCommitted": 172,
       "committedBytes": 173846727,
-      "packs": ["starter", "faction-delivery-v1", "generated-factions-v1"]
+      "packs": [
+        "starter",
+        "faction-delivery-v1",
+        "generated-factions-v1"
+      ]
     },
     "runtimeAssets": {
       "status": "partially-connected",

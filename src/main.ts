@@ -34,6 +34,7 @@ import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
 import { mountAccessibilityRuntime } from './ui/accessibilityRuntime';
+import { mountCommandDoctrineScreen } from './ui/commandDoctrineScreen';
 import { mountCommandRankingScreen } from './ui/commandRankingScreen';
 import { mountDevelopmentPresentation } from './ui/developmentPresentation';
 import { mountEmpireOverview } from './ui/empireOverview';
@@ -178,6 +179,7 @@ async function bootstrap(): Promise<void> {
     selectPlanet: (planetId) => { selectPlanetScreenPlanet(planetId); },
   });
   mountCommandRankingScreen({ getState: () => runtimeState });
+  mountCommandDoctrineScreen(commandBridge);
   mountResearchScreen(commandBridge);
   mountProductionScreens(commandBridge);
   mountMissionScreen(commandBridge);

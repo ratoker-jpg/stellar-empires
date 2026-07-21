@@ -1,4 +1,5 @@
 import { createStateChecksum } from '../simulation/checksum';
+import { COMMAND_MAX_LEVEL, isCommandDoctrineId } from '../simulation/command/commandDoctrine';
 import {
   isPlanetDevelopmentTemplateId,
   isPlanetSpecializationId,
@@ -89,6 +90,12 @@ function isShipUpgradeState(value: unknown): boolean {
       isNonNegativeInteger(levels.armor) && levels.armor <= 10 &&
       isNonNegativeInteger(levels.cargo) && levels.cargo <= 10,
   );
+}
+function isCommandState(value: unknown): boolean {
+  return isRecord(value) && typeof value.empireId === 'string' &&
+    isCommandDoctrineId(value.doctrineId) && isNonNegativeInteger(value.experience) &&
+    isPositiveInteger(value.level) && value.level <= COMMAND_MAX_LEVEL &&
+    (value.flagshipFleetId === null || typeof value.flagshipFleetId === 'string');
 }
 function isFleetLocation(value: unknown): boolean {
   if (!isRecord(value)) return false;
@@ -201,7 +208,8 @@ function isGameState(value: unknown): value is GameState {
     Array.isArray(value.planets) && value.planets.every(isPlanet) && Array.isArray(value.research) &&
     value.research.every(isResearchState) && Array.isArray(value.shipUpgrades) &&
     value.shipUpgrades.every(isShipUpgradeState) && value.shipUpgrades.length === value.empires.length &&
-    Array.isArray(value.fleets) && value.fleets.every(isFleet) &&
+    Array.isArray(value.commanders) && value.commanders.every(isCommandState) &&
+    value.commanders.length === value.empires.length && Array.isArray(value.fleets) && value.fleets.every(isFleet) &&
     Array.isArray(value.intelligence) && value.intelligence.every(isIntelligenceState) &&
     value.intelligence.length === value.empires.length && Array.isArray(value.debrisFields) &&
     value.debrisFields.every(isDebrisField) && Array.isArray(value.logisticsRoutes) &&

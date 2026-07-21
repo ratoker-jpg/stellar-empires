@@ -21,6 +21,7 @@ describe('save format', () => {
       logisticsRoutes: _logisticsRoutes,
       market: _market,
       shipUpgrades: _shipUpgrades,
+      commanders: _commanders,
       ...withoutNewCollections
     } = current;
     const legacyState = {
@@ -51,6 +52,7 @@ describe('save format', () => {
       expect(parsed.value.state.market.trades).toEqual([]);
       expect(parsed.value.state.shipUpgrades).toHaveLength(parsed.value.state.empires.length);
       expect(parsed.value.state.shipUpgrades.every((entry) => entry.queue.length === 0)).toBe(true);
+      expect(parsed.value.state.commanders).toHaveLength(parsed.value.state.empires.length);
       expect(parsed.value.state.planets[0]?.specializationId).toBe('balanced');
       expect(parsed.value.state.planets[0]?.developmentTemplateId).toBe('balanced');
     }
@@ -177,7 +179,7 @@ describe('save format', () => {
       speed: 14,
       cargoCapacity: 20,
     };
-    const { shipUpgrades: _shipUpgrades, ...legacyBase } = current;
+    const { shipUpgrades: _shipUpgrades, commanders: _commanders, ...legacyBase } = current;
     const legacyState = {
       ...legacyBase,
       schemaVersion: 6,
@@ -195,6 +197,24 @@ describe('save format', () => {
     if (parsed.ok) {
       expect(parsed.value.state.fleets[0]?.mission).toBeNull();
       expect(parsed.value.state.schemaVersion).toBe(13);
+    }
+  });
+
+  it('adds default command profiles to schema-v13 saves that predate command progression', () => {
+    const current = createInitialGameState('command-migration');
+    const { commanders: _commanders, ...legacyState } = current;
+    const legacySave = {
+      formatVersion: 2,
+      slotId: 'command-v13',
+      savedAt: '2026-07-18T12:00:00.000Z',
+      checksum: createStateChecksum(legacyState),
+      state: legacyState,
+    };
+    const parsed = parseSaveJson(JSON.stringify(legacySave));
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.value.state.commanders).toHaveLength(parsed.value.state.empires.length);
+      expect(parsed.value.state.commanders.every((entry) => entry.doctrineId === 'adaptive')).toBe(true);
     }
   });
 

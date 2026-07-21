@@ -1,3 +1,4 @@
+import { createInitialCommandStates } from './command/commandDoctrine';
 import { generateGalaxy } from './galaxy/generateGalaxy';
 import { createInitialIntelligenceStates } from './intelligence/intelligenceState';
 import { createInitialMarketState } from './market/market';
@@ -36,6 +37,7 @@ export function createInitialGameState(
     planets: [...colonies, ...neutralForces.planets],
     research: createInitialResearchStates(empires),
     shipUpgrades: createInitialShipUpgradeStates(empires),
+    commanders: createInitialCommandStates(empires),
     fleets: neutralForces.fleets,
     intelligence: createInitialIntelligenceStates(empires),
     debrisFields: [],
