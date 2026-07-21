@@ -6,10 +6,10 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 79,
-  "lastMergeSha": "00f2e09ee99a336de20ff548200b8cd575ca3938",
+  "lastMergedPr": 80,
+  "lastMergeSha": "4b41ee342ddb1fa2681fd7fd192d466f740f295c",
   "activePr": null,
-  "nextPrAfterActive": 80,
+  "nextPrAfterActive": 81,
   "currentMilestone": "Faction completion and playable-slice stabilization",
   "currentBatch": {
     "standard": [
@@ -26,7 +26,8 @@
       76,
       77,
       78,
-      79
+      79,
+      80
     ],
     "plannedCapabilities": [
       "command doctrine progression and flagship framework",
@@ -54,17 +55,19 @@
     "explicit faction catalog manifest, stable mechanical IDs and dependency validation",
     "full native Aegis mechanical catalog",
     "complete cross-domain project audit and stabilization recommendations",
-    "post-audit continuation handoff with native Synod acceptance boundary"
+    "post-audit continuation handoff with native Synod acceptance boundary",
+    "full native Synod mechanical catalog with faction-aware shared runtime resolution",
+    "role-based scout, recycle, colonize, expedition and strategic-object capabilities",
+    "deterministic Synod legacy-alias save migration and native Synod runtime presentation"
   ],
   "knownLimitations": [
-    "Synod and Veyra still use explicit Aegis legacy-alias catalogs until PR #80 and #81",
-    "no Synod runtime implementation is currently merged or open and old interrupted work must not be reused",
-    "direct Aegis assumptions remain across initial state, research, inventory, defense, missions, bots and UI",
+    "Veyra still uses the explicit Aegis legacy-alias catalog until PR #81",
+    "Veyra does not yet have native building, research, ship, defense or migration coverage",
     "bot decision timing is runtime-only and does not catch up every skipped decision interval",
     "command and event logs can grow without an explicit long-session budget",
     "a complete victory and defeat loop is not yet playable",
     "diplomacy, coalitions, strategic stars and final endgame are missing",
-    "bots do not yet plan expanded faction content, command doctrine or diplomacy",
+    "bots do not yet plan command doctrine or diplomacy",
     "strategic exotic matter has no complete spending loop",
     "captured Nemexia HTML/screens/assets are excluded"
   ],
@@ -83,9 +86,9 @@
     },
     "runtimeAssets": {
       "status": "partially-connected",
-      "connected": "galaxy, fleet, development and command identity presentation",
+      "connected": "galaxy, fleet, development, command identity and native Synod mechanical presentation",
       "runtimeConnected": false,
-      "remainingIntegration": "optional raster UI skins remain deferred"
+      "remainingIntegration": "optional raster UI skins and a dedicated Synod technology atlas remain deferred"
     },
     "document": "docs/assets/user-supplied-asset-intake.md"
   },
@@ -96,6 +99,7 @@
     "docs/16-execution-roadmap.md",
     "docs/20-full-project-audit.md",
     "docs/19-faction-catalog-id-policy.md",
+    "docs/21-native-synod-catalog.md",
     "docs/handoffs/2026-07-21-post-audit-handoff.md",
     "docs/assets/user-supplied-asset-intake.md",
     "latest merged GitHub pull requests"
