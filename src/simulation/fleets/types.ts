@@ -42,7 +42,7 @@ export interface FleetState {
   readonly cargo: ResourceCost;
   readonly speed: number;
   readonly cargoCapacity: number;
-  readonly formation: FleetFormation;
-  readonly targetPriority: FleetTargetPriority;
+  readonly formation?: FleetFormation;
+  readonly targetPriority?: FleetTargetPriority;
   readonly mission: FleetMission | null;
 }
