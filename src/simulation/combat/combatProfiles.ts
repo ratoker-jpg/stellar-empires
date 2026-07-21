@@ -57,6 +57,12 @@ export const UNIT_COMBAT_PROFILES: Readonly<Record<string, UnitCombatProfile>> =
     protectionType: 'heavy-armor',
     targetSize: 'medium',
   },
+  'ship.aegis.corvette': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
+  'ship.aegis.cruiser': { weaponType: 'missile', protectionType: 'heavy-armor', targetSize: 'large' },
+  'ship.aegis.carrier': { weaponType: 'kinetic', protectionType: 'shield-grid', targetSize: 'large' },
+  'ship.aegis.dreadnought': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'large' },
+  'defense.aegis.point-defense': { weaponType: 'kinetic', protectionType: 'fortified', targetSize: 'installation' },
+  'defense.aegis.fortress-array': { weaponType: 'missile', protectionType: 'fortified', targetSize: 'installation' },
   'defense.aegis.gun-battery': {
     weaponType: 'kinetic',
     protectionType: 'fortified',

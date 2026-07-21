@@ -7,7 +7,7 @@ import { getHangarCapacity, getHangarUsed } from '../../src/simulation/units/inv
 import { validateUnitCatalog } from '../../src/simulation/units/validateUnitCatalog';
 
 describe('unit catalog and inventory', () => {
-  it('validates the first Aegis ship and defense set', () => {
+  it('validates the complete Aegis ship and defense set', () => {
     expect(
       validateUnitCatalog(
         AEGIS_UNIT_CATALOG,
@@ -15,8 +15,10 @@ describe('unit catalog and inventory', () => {
         AEGIS_RESEARCH_CATALOG,
       ),
     ).toEqual([]);
-    expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'ship')).toHaveLength(6);
-    expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'defense')).toHaveLength(3);
+    expect(AEGIS_BUILDING_CATALOG).toHaveLength(12);
+    expect(AEGIS_RESEARCH_CATALOG).toHaveLength(10);
+    expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'ship')).toHaveLength(10);
+    expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'defense')).toHaveLength(5);
   });
 
   it('initializes empty managed inventories, fleets, intelligence, debris, logistics and market', () => {

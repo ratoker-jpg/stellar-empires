@@ -6,14 +6,24 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 75,
-  "lastMergeSha": "58564abaa432c3c09df167453605f0ce15a44579",
-  "activePr": 76,
-  "nextPrAfterActive": 77,
+  "lastMergedPr": 76,
+  "lastMergeSha": "5dbb2d1d26f47b9d4346c5ee9e67cdfba3801033",
+  "activePr": 77,
+  "nextPrAfterActive": 78,
   "currentMilestone": "Command progression, faction asymmetry and diplomacy",
   "currentBatch": {
-    "standard": [75, 76, 77, 78, 79, 80],
-    "completed": [75],
+    "standard": [
+      75,
+      76,
+      77,
+      78,
+      79,
+      80
+    ],
+    "completed": [
+      75,
+      76
+    ],
     "plannedCapabilities": [
       "command doctrine progression and flagship framework",
       "faction mechanical catalog architecture and ID migration policy",
@@ -35,13 +45,14 @@
     "production presentation, operations center, local ranking and accessibility runtime",
     "per-hull weapon, armor and cargo upgrades with deterministic queue and combat effects",
     "fleet formations, target priorities and original class skills",
-    "command doctrine progression, battle experience and flagship fleet appointments"
+    "command doctrine progression, battle experience and flagship fleet appointments",
+    "explicit faction catalog manifest, stable mechanical IDs and dependency validation"
   ],
   "knownLimitations": [
+    "Aegis native full catalog is active in PR #77",
     "Synod and Veyra still use explicit Aegis legacy-alias catalogs until PR #78 and #79",
-    "native faction catalog architecture is active in PR #76",
     "diplomacy, coalitions, strategic stars and endgame are missing",
-    "bots do not yet plan ship upgrades, expeditions, object operations, command doctrine or diplomacy",
+    "bots do not yet plan expanded faction content, command doctrine or diplomacy",
     "strategic exotic matter has no spending loop",
     "captured Nemexia HTML/screens/assets are excluded"
   ],
@@ -52,7 +63,11 @@
       "binaryPublication": "committed-source-only",
       "filesCommitted": 172,
       "committedBytes": 173846727,
-      "packs": ["starter", "faction-delivery-v1", "generated-factions-v1"]
+      "packs": [
+        "starter",
+        "faction-delivery-v1",
+        "generated-factions-v1"
+      ]
     },
     "runtimeAssets": {
       "status": "partially-connected",
