@@ -1,67 +1,45 @@
 # Документация Stellar Empires
 
-## Назначение
+GitHub history и текущий `main` являются источником истины.
 
-Этот каталог фиксирует продуктовые, игровые и технические решения проекта.
+## Обязательное чтение
 
-Главный принцип: сначала согласовываем правила мира и границы проекта, затем реализуем их небольшими проверяемыми слоями. Документы считаются рабочими и уточняются вместе с кодом.
+1. [`../AGENTS.md`](../AGENTS.md)
+2. [`17-continuation-guide.md`](17-continuation-guide.md)
+3. [`project-status.json`](project-status.json)
+4. [`16-execution-roadmap.md`](16-execution-roadmap.md)
+5. [`18-project-gap-analysis.md`](18-project-gap-analysis.md)
 
-## Состав
+## Основные документы
 
-1. [`01-product-vision.md`](01-product-vision.md) — цель проекта, границы и критерии успеха.
-2. [`02-game-design.md`](02-game-design.md) — игровой цикл и основные механики.
-3. [`03-technical-architecture.md`](03-technical-architecture.md) — клиентская архитектура Phaser 4 и GitHub Pages.
-4. [`04-bot-ai.md`](04-bot-ai.md) — устройство бот-империй и правила честной симуляции.
-5. [`05-simulation-and-data.md`](05-simulation-and-data.md) — модель времени, событий, сохранений и игровых данных.
-6. [`06-roadmap.md`](06-roadmap.md) — полный долгосрочный каталог систем и критериев готовности.
-7. [`07-development-rules.md`](07-development-rules.md) — правила веток, тестов, изменений и качества.
-8. [`08-originality-and-assets.md`](08-originality-and-assets.md) — ограничения по заимствованиям и правила работы с ассетами.
-9. [`09-open-decisions.md`](09-open-decisions.md) — вопросы, которые нужно решить до зависимых этапов.
-10. [`10-faction-framework.md`](10-faction-framework.md) — три асимметричные фракции, их механики и порядок реализации.
-11. [`11-art-direction.md`](11-art-direction.md) — современное визуальное направление в духе классических браузерных sci-fi стратегий.
-12. [`12-asset-catalog.md`](12-asset-catalog.md) — полный производственный каталог визуальных и звуковых ассетов.
-13. [`13-production-art-bible.md`](13-production-art-bible.md) — точные палитры, ракурсы, размеры, промт-шаблоны и критерии брака.
-14. [`14-delivery-batches.md`](14-delivery-batches.md) — стандартные автономные пакеты по шесть последовательных PR с безопасным расширением до восьми.
-15. [`15-p1-aegis-assets.md`](15-p1-aegis-assets.md) — поставленный набор из 26 сущностей вертикального среза «Эгиды».
-16. [`16-execution-roadmap.md`](16-execution-roadmap.md) — **канонический порядок исполнения PR #1–#100** до Release 1.0.
-17. [`17-continuation-guide.md`](17-continuation-guide.md) — обязательный handoff-протокол для нового AI-чата.
-18. [`project-status.json`](project-status.json) — машиночитаемый текущий статус, следующий PR и состав активного batch.
-19. [`roadmap-pr-index.json`](roadmap-pr-index.json) — машиночитаемый индекс всех roadmap PR.
-20. [`research/nemexia-browser-audit/`](research/nemexia-browser-audit/) — исследовательский аудит UI и официальной Help с разделением подтверждений и неизвестных.
+- [`01-product-vision.md`](01-product-vision.md)
+- [`02-game-design.md`](02-game-design.md)
+- [`03-technical-architecture.md`](03-technical-architecture.md)
+- [`04-bot-ai.md`](04-bot-ai.md)
+- [`05-simulation-and-data.md`](05-simulation-and-data.md)
+- [`06-roadmap.md`](06-roadmap.md)
+- [`07-development-rules.md`](07-development-rules.md)
+- [`08-originality-and-assets.md`](08-originality-and-assets.md)
+- [`10-faction-framework.md`](10-faction-framework.md)
+- [`11-art-direction.md`](11-art-direction.md)
+- [`12-asset-catalog.md`](12-asset-catalog.md)
+- [`13-production-art-bible.md`](13-production-art-bible.md)
+- [`14-delivery-batches.md`](14-delivery-batches.md)
+- [`16-execution-roadmap.md`](16-execution-roadmap.md) — roadmap v3 with actual PR numbering.
+- [`17-continuation-guide.md`](17-continuation-guide.md) — current handoff.
+- [`18-project-gap-analysis.md`](18-project-gap-analysis.md) — full-domain audit.
+- [`roadmap-pr-index.json`](roadmap-pr-index.json) — machine-readable roadmap.
 
-## Принятые решения
+## Research
 
-- релиз 1.0 включает три асимметричные фракции;
-- вертикальный срез сначала реализует одну фракцию, но архитектура сразу поддерживает все три;
-- планета использует три верхнеуровневых домена: `resource`, `industry`, `military`;
-- `science` и `orbital` больше не являются верхнеуровневыми зонами;
-- лаборатория относится к Industry, а Research остаётся отдельным экраном;
-- верфь относится к Industry, а Shipyard остаётся отдельным экраном;
-- оборона относится к Military, а Defense остаётся отдельным экраном;
-- орбитальные проекты и эндгейм реализуются глобальными системами, а не четвёртой зоной;
-- каждая фракция имеет уникальные механики, здания, технологии, корабли, оборону и поведение ботов;
-- визуальное направление близко к атмосфере классических браузерных космических стратегий, но использует собственные современные ассеты и интерфейс;
-- полный asset pipeline делится на этапы `P0–P5`;
-- P0 и визуальный набор P1 «Эгиды» уже поставлены в runtime;
-- стандартный автономный delivery batch содержит шесть последовательно проверенных и смерженных PR;
-- AI-исполнитель может самостоятельно расширить связный стабильный batch до семи или восьми PR;
-- новый AI-чат обязан восстановить контекст из `AGENTS.md`, continuation guide, status JSON, roadmap и фактической GitHub history;
-- исторические значения исследованной игры не становятся балансом Stellar Empires без собственного решения и тестирования.
+- [`research/nemexia-mechanics-reference.md`](research/nemexia-mechanics-reference.md) — official-help mechanics reference with coverage and contradiction notes.
+- [`research/nemexia-browser-audit/`](research/nemexia-browser-audit/) — earlier browser/help audit.
 
-## Статусы документов
+External mechanics are reference-only. Historical names, values and monetization do not become Stellar Empires requirements automatically.
 
-- **Draft** — решение ещё обсуждается.
-- **Accepted** — принято как основа разработки.
-- **Superseded** — заменено новым решением.
-- **Delivered** — описанный результат создан, зарегистрирован и проверяется в проекте.
+## Assets
 
-## Порядок работы
+- [`assets/user-supplied-asset-intake.md`](assets/user-supplied-asset-intake.md)
+- source library target: [`../assets/source/`](../assets/source/)
 
-1. Начать с корневого [`../AGENTS.md`](../AGENTS.md).
-2. Прочитать [`17-continuation-guide.md`](17-continuation-guide.md).
-3. Сверить [`project-status.json`](project-status.json) с реальным `main` и последними PR.
-4. Использовать [`16-execution-roadmap.md`](16-execution-roadmap.md) как источник порядка разработки.
-5. Использовать [`06-roadmap.md`](06-roadmap.md) как долгосрочный каталог систем, а не как точный порядок ближайших PR.
-6. Выполнять стандартный пакет из шести PR последовательно от обновлённого `main`.
-7. После шестого PR при стабильной архитектуре и CI оценить безопасное расширение до семи или восьми.
-8. После каждого PR и batch обновлять status/handoff, не оставляя `main` в сломанном состоянии.
+Source files are not runtime-connected until an integration PR creates optimized derivatives, registry entries and tests.

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-21",
+  "targetRoot": "assets/source",
+  "packs": [
+    {
+      "id": "starter",
+      "archiveName": "stellar_empires_starter_asset_pack-fixed(1).zip",
+      "targetDirectory": "assets/source/starter",
+      "fileCount": 54,
+      "uncompressedBytes": 51659961,
+      "manifestFiles": [
+        "docs/assets/user-supplied-asset-inventory/starter.tsv"
+      ]
+    },
+    {
+      "id": "faction-delivery-v1",
+      "archiveName": "stellar_empires_faction_assets_delivery_v1(1).zip",
+      "targetDirectory": "assets/source/faction-delivery-v1",
+      "fileCount": 108,
+      "uncompressedBytes": 109719800,
+      "manifestFiles": [
+        "docs/assets/user-supplied-asset-inventory/faction-buildings.tsv",
+        "docs/assets/user-supplied-asset-inventory/faction-ships.tsv",
+        "docs/assets/user-supplied-asset-inventory/faction-misc.tsv"
+      ]
+    }
+  ]
+}

@@ -1,11 +1,9 @@
 # AI Continuation Guide
 
-**Статус:** Accepted  
-**Последнее обновление:** 2026-07-20
+**Status:** Accepted  
+**Updated:** 2026-07-21
 
-## 1. Назначение
-
-Этот документ позволяет продолжить разработку **Stellar Empires** без приватной истории предыдущего чата.
+## Repository
 
 ```text
 Repository: ratoker-jpg/stellar-empires
@@ -13,164 +11,75 @@ Default branch: main
 Pages: https://ratoker-jpg.github.io/stellar-empires/
 ```
 
-GitHub и фактический `main` являются источником истины. Старые номера в roadmap могут расходиться с реальными PR после внеплановых, но принятых integration batches.
+GitHub history and current `main` override stale prose.
 
-## 2. Обязательный старт новой сессии
+## Required startup reading
 
-До изменения кода:
+1. `AGENTS.md`
+2. this document
+3. `docs/project-status.json`
+4. `docs/16-execution-roadmap.md`
+5. `docs/18-project-gap-analysis.md`
+6. mechanics reference when changing game rules
+7. asset intake when changing art/runtime assets
+8. latest merged PRs and actual `main`
 
-1. прочитать `AGENTS.md`;
-2. прочитать этот документ;
-3. прочитать `docs/project-status.json`;
-4. прочитать `docs/16-execution-roadmap.md`;
-5. прочитать `docs/roadmap-pr-index.json`;
-6. проверить фактический `main`;
-7. проверить последние PR после `lastMergedPr`;
-8. при расхождении опираться на GitHub и обновить status/handoff в ближайшем безопасном изменении.
-
-## 3. Текущее подтверждённое состояние
-
-Последний смерженный PR:
+## Confirmed baseline
 
 ```text
-#45 — Add new game faction selection
-merge SHA: 91ae8ddfec4c5b788f6d4a81b989e6af1157dc2e
+#65 — Rebuild planet overview and three zone screens
+merge SHA: 5d9566472411714d70365332514273a6477a0b68
 ```
 
-Текущий продукт:
+Delivered:
 
-- Phaser 4 + TypeScript + Vite;
-- детерминированная simulation core, команды, события, replay и checksum;
-- schema v9, IndexedDB, autosave, ручные слоты, import/export и recovery;
-- seeded galaxy;
-- трёхзонная модель планеты: `resource`, `industry`, `military`;
-- экономика, энергия, население, стабильность, склады и строительство;
-- исследования, верфь и планетарная оборона;
-- сериализуемые флоты и миссии transport, deploy, scout, attack, recycle, colonize;
-- первый детерминированный бой, отчёты, добыча и обломки;
-- многопланетная империя, выбор активной колонии и сводный обзор;
-- origin-aware fleet logistics planner;
-- оригинальные runtime-ассеты Aegis, Synod и Veyra;
-- новая партия предлагает выбрать Aegis, Synod или Veyra;
-- выбранная фракция сохраняется и наследуется новыми колониями;
-- здания, корабли, оборона, эмблемы, фоны и UI-тема переключаются по `factionId`.
+- deterministic schema-v12 simulation and event queue;
+- IndexedDB autosave, slots, import/export and recovery;
+- seeded galaxy and fog-aware intelligence;
+- economy, stability, storage and three zones;
+- building/research/unit/defense queues;
+- fleets with deploy/transport/scout/attack/recycle/colonize/expedition/space-object;
+- combat v2, reports, debris and defense repair;
+- multi-colony management, logistics and market;
+- pirates, expeditions, objects, events and strategic resource storage;
+- autonomous honest bots in a Worker;
+- three faction identities and runtime visual atlases;
+- design system, global HUD and rebuilt planet workspace.
 
-## 4. Важное ограничение фракций
+## Critical limitations
 
-Три фракции уже **визуально играбельны**, но пока используют общий механический vertical slice:
+- all factions still share Aegis mechanical definitions;
+- current building catalog has eight Aegis entries;
+- incomplete UI art uses fallback;
+- no ship upgrades on current main;
+- no formations/class skills, command doctrine/flagships, diplomacy/coalitions or endgame;
+- bots do not launch expeditions/object operations or diplomacy;
+- supplied source packs are not runtime-connected automatically.
 
-- building IDs остаются `building.aegis.*`;
-- technology IDs остаются `technology.aegis.*`;
-- unit IDs остаются `ship.aegis.*` и `defense.aegis.*`;
-- Synod и Veyra получают собственный визуальный язык, но ещё не собственную экономику, исследования и баланс;
-- технологии и эффекты используют procedural SVG fallback.
+## Current sequence
 
-Не переименовывать механические IDs только ради визуальной чистоты: это потребует отдельной data migration и faction-content архитектуры.
+1. #66 knowledge/audit/source asset intake;
+2. #67 fleets and galaxy presentation;
+3. #68 research/production/defense presentation;
+4. #69 operations/report presentation;
+5. #70 command/ranking/faction polish;
+6. #71 responsive/accessibility/performance/visual QA.
 
-## 5. Последний delivery batch
+After #71, resume gameplay depth from fresh main. Do not directly merge stale `agent/pr63-ship-upgrades`.
 
-Стандартный пакет из шести PR выполнен полностью:
+## Invariants
 
-1. **#40** — data-driven faction runtime asset registry;
-2. **#41** — выбор runtime-атласов по фракции игрока;
-3. **#42** — generated faction showcase;
-4. **#43** — faction-aware command shell и цветовая тема;
-5. **#44** — player faction в initial/colony state;
-6. **#45** — полноэкранный выбор фракции для новой партии.
+- no `Math.random()` or system clock in simulation decisions;
+- UI never owns canonical game state;
+- bots and player use the same commands;
+- bots cannot read hidden state;
+- events execute once;
+- resources cannot become negative;
+- fleets cannot exist in two locations;
+- incompatible state changes require migration/fixtures;
+- only original or clearly licensed assets enter runtime;
+- external mechanics research is reference-only.
 
-Каждый PR создавался от свежего `main`, проходил lint, typecheck, tests и production build, затем squash-мержился.
+## Workflow
 
-Расширение до 7–8 PR не использовалось: логический этап завершился на шести PR.
-
-## 6. Следующий стандартный пакет
-
-Рекомендуемый пакет **#46–#51** сначала закрывает пропущенные системы многопланетного vertical slice, затем начинает честного бота:
-
-1. **#46 — Специализации планет и шаблоны развития**  
-   Ресурсная, промышленная и военная специализации; бонусы, ограничения и шаблоны без автопилота.
-
-2. **#47 — Постоянные межпланетные логистические маршруты**  
-   Расписание, резервы, приоритеты снабжения, приостановка и предупреждения.
-
-3. **#48 — Торговый центр и динамический одиночный рынок**  
-   Заявки, комиссии, ликвидность, ограничения и защита от бесконечного арбитража.
-
-4. **#49 — Модель восприятия и память бота**  
-   Только разрешённые знания, наблюдения, устаревание, история и журнал причин.
-
-5. **#50 — Экономический и строительный планировщик бота**  
-   Резервы, дефициты, выбор строительства, специализация и восстановление.
-
-6. **#51 — Научный и производственный планировщик бота**  
-   Исследования, корабли и оборона на основе стратегии, угроз и unlock-графа.
-
-Допустимое расширение после зелёного #51:
-
-7. **#52 — Флотский и миссионный планировщик бота**;
-8. **#53 — Оценка угроз, целей и восстановление бота**.
-
-Расширять пакет только при стабильном `main` и отсутствии архитектурного долга в perception/planners.
-
-## 7. Delivery workflow
-
-Для каждого substantial PR:
-
-1. новая ветка от актуального `main`;
-2. одна проверяемая цель;
-3. тесты и нужная документация;
-4. PR с scope, validation, risks и intentional omissions;
-5. CI: `lint → typecheck → tests → production build`;
-6. самостоятельное исправление CI;
-7. diff review;
-8. squash-merge;
-9. следующая ветка только от нового `main`.
-
-Стандартный batch — 6 PR. Допустимо 7–8 только для прямых безопасных продолжений того же этапа.
-
-## 8. Неприкосновенные инварианты
-
-- simulation core не зависит от DOM и Phaser;
-- `Math.random()` не используется в simulation core;
-- игровое время не читается напрямую из системных часов внутри домена;
-- игрок и боты используют одинаковые команды и ограничения;
-- бот не читает скрытое состояние;
-- событие не выполняется дважды;
-- корабль не существует одновременно в двух местах;
-- ресурсы не становятся отрицательными;
-- несовместимое изменение save state получает новую schema version, migration и fixture-тест;
-- UI не является источником игрового состояния;
-- ассеты должны быть оригинальными или с ясными правами.
-
-## 9. Полномочия и границы
-
-Разрешено без дополнительного подтверждения:
-
-- создавать ветки, коммиты и PR;
-- исправлять CI;
-- переводить PR в ready;
-- squash-мержить зелёные PR;
-- выполнять стандартный batch из шести PR;
-- расширять до восьми по правилам;
-- обновлять status/handoff.
-
-Запрещено:
-
-- удалять репозиторий или `main`;
-- force-push в защищённые или общие ветки;
-- обходить проверки;
-- мержить известный сломанный или destructive код;
-- публиковать секреты или персональные данные;
-- добавлять ассеты с неясными правами;
-- менять видимость репозитория;
-- подключать платные сервисы без разрешения.
-
-## 10. Что сообщать владельцу после batch
-
-- смерженные PR и результат каждого;
-- что теперь доступно игроку;
-- какие проверки прошли;
-- известные ограничения;
-- следующий стандартный пакет;
-- использовалось ли расширение до 7–8 PR.
-
-Не обещать фоновую работу после ответа.
+Fresh branch → focused implementation → tests/docs → PR → CI → diff review → squash merge → next branch from new main.
