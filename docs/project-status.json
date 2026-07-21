@@ -6,21 +6,14 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 74,
-  "lastMergeSha": "770b5d9ee5faf3f9a158e05dc471d768f2f6f4bc",
-  "activePr": 75,
-  "nextPrAfterActive": 76,
+  "lastMergedPr": 75,
+  "lastMergeSha": "58564abaa432c3c09df167453605f0ce15a44579",
+  "activePr": 76,
+  "nextPrAfterActive": 77,
   "currentMilestone": "Command progression, faction asymmetry and diplomacy",
   "currentBatch": {
-    "standard": [
-      75,
-      76,
-      77,
-      78,
-      79,
-      80
-    ],
-    "completed": [],
+    "standard": [75, 76, 77, 78, 79, 80],
+    "completed": [75],
     "plannedCapabilities": [
       "command doctrine progression and flagship framework",
       "faction mechanical catalog architecture and ID migration policy",
@@ -41,11 +34,12 @@
     "three faction identities, runtime registry and new-game selection",
     "production presentation, operations center, local ranking and accessibility runtime",
     "per-hull weapon, armor and cargo upgrades with deterministic queue and combat effects",
-    "fleet formations, target priorities and original class skills"
+    "fleet formations, target priorities and original class skills",
+    "command doctrine progression, battle experience and flagship fleet appointments"
   ],
   "knownLimitations": [
-    "all factions still share Aegis mechanical catalogs",
-    "command progression and flagship framework are active in PR #75",
+    "Synod and Veyra still use explicit Aegis legacy-alias catalogs until PR #78 and #79",
+    "native faction catalog architecture is active in PR #76",
     "diplomacy, coalitions, strategic stars and endgame are missing",
     "bots do not yet plan ship upgrades, expeditions, object operations, command doctrine or diplomacy",
     "strategic exotic matter has no spending loop",
@@ -58,11 +52,7 @@
       "binaryPublication": "committed-source-only",
       "filesCommitted": 172,
       "committedBytes": 173846727,
-      "packs": [
-        "starter",
-        "faction-delivery-v1",
-        "generated-factions-v1"
-      ]
+      "packs": ["starter", "faction-delivery-v1", "generated-factions-v1"]
     },
     "runtimeAssets": {
       "status": "partially-connected",
@@ -78,6 +68,7 @@
     "docs/project-status.json",
     "docs/16-execution-roadmap.md",
     "docs/18-project-gap-analysis.md",
+    "docs/19-faction-catalog-id-policy.md",
     "docs/assets/user-supplied-asset-intake.md",
     "latest merged GitHub pull requests"
   ]
