@@ -1,8 +1,10 @@
+import { getUnitCatalogForFaction } from '../factions/factionMechanicalCatalogRegistry';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
 import type { EmpireResearchState } from '../research/types';
 import { getResearchLevel } from '../research/researchState';
-import { AEGIS_UNIT_CATALOG, getUnitDefinition } from './catalog';
+import { getUnitDefinition } from './catalog';
 import type { UnitDefinition, UnitKind } from './types';
 
 export function getUnitCount(
@@ -22,15 +24,12 @@ export function getUnitCount(
 }
 
 export function getHangarCapacity(planet: PlanetState): number {
-  const shipyardLevel = getBuildingLevel(
-    planet.buildings,
-    'building.aegis.shipyard',
-  );
-  return shipyardLevel * 25;
+  const shipyardId = getFactionMechanicalRoles(planet.factionId).buildings.shipyard;
+  return getBuildingLevel(planet.buildings, shipyardId) * 25;
 }
 
 export function getHangarUsed(planet: PlanetState): number {
-  return AEGIS_UNIT_CATALOG.reduce((used, definition) => {
+  return getUnitCatalogForFaction(planet.factionId).reduce((used, definition) => {
     if (definition.kind !== 'ship') {
       return used;
     }
@@ -39,7 +38,7 @@ export function getHangarUsed(planet: PlanetState): number {
 }
 
 export function getUnitPopulationUsed(planet: PlanetState): number {
-  return AEGIS_UNIT_CATALOG.reduce(
+  return getUnitCatalogForFaction(planet.factionId).reduce(
     (used, definition) =>
       used + getUnitCount(planet, definition.id, definition.kind) * definition.populationCost,
     0,

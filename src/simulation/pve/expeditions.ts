@@ -1,10 +1,8 @@
 import { enqueueEvent } from '../eventQueue';
+import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import { estimateFlightToGalaxyPlanet } from '../fleets/flightCalculations';
 import type { FleetState } from '../fleets/types';
 import type { PlanetState } from '../planet/types';
-import { AEGIS_RESEARCH_CATALOG } from '../research/catalog';
-import { calculateResearchEffects } from '../research/progression';
-import { getEmpireResearch } from '../research/researchState';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -12,6 +10,7 @@ import type {
   GameState,
   ScheduledGameEvent,
 } from '../types';
+import { hasShipRole } from '../units/shipCapabilities';
 import {
   calculatePveRewardMultiplier,
   scalePveReward,
@@ -52,10 +51,7 @@ function hashText(value: string): number {
 }
 
 function getFleetSpeedBonus(state: GameState, empireId: string): number {
-  const research = getEmpireResearch(state.research, empireId);
-  return research === undefined
-    ? 0
-    : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG).fleetSpeedPercent;
+  return getResearchEffectsForEmpire(state, empireId).fleetSpeedPercent;
 }
 
 function replaceFleet(
@@ -173,7 +169,7 @@ export function startExpedition(
   if (fleet.status !== 'stationed' || fleet.location.type !== 'planet') {
     return { ok: false, code: 'FLEET_NOT_STATIONED', message: 'Fleet is not ready for an expedition.' };
   }
-  if ((fleet.ships['ship.aegis.scout'] ?? 0) <= 0) {
+  if (!hasShipRole(fleet.ships, 'scout')) {
     return {
       ok: false,
       code: 'EXPEDITION_SCOUT_REQUIRED',

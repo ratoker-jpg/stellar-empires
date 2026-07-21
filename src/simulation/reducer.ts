@@ -6,6 +6,7 @@ import {
 } from './defense/planetaryDefense';
 import { accrueAllPlanetEconomies } from './economy/planetEconomy';
 import { enqueueEvent } from './eventQueue';
+import { getEnergyOutputByEmpire, getResearchEffectsForEmpire } from './factions/factionResearchEffects';
 import { canUseMechanicalDefinition } from './factions/sharedMechanicalCatalog';
 import { createFleet, disbandFleet } from './fleets/fleetCommands';
 import { setFleetCombatDoctrine } from './fleets/fleetDoctrineCommands';
@@ -52,14 +53,12 @@ import {
   getNextWorldEventEvaluationAt,
   processWorldEventEvaluationAt,
 } from './pve/worldEvents';
-import { AEGIS_RESEARCH_CATALOG } from './research/catalog';
-import { applySpeedPercent, calculateResearchEffects } from './research/progression';
+import { applySpeedPercent } from './research/progression';
 import {
   cancelResearch,
   completeResearch,
   queueResearch,
 } from './research/researchCommands';
-import { getEmpireResearch } from './research/researchState';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -93,22 +92,6 @@ function replacePlanet(
   replacement: PlanetState,
 ): readonly PlanetState[] {
   return planets.map((planet) => (planet.id === planetId ? replacement : planet));
-}
-
-function getResearchEffectsForEmpire(state: GameState, empireId: string) {
-  const research = getEmpireResearch(state.research, empireId);
-  return research === undefined
-    ? undefined
-    : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG);
-}
-
-function getEnergyOutputByEmpire(state: GameState): Readonly<Record<string, number>> {
-  return Object.fromEntries(
-    state.research.map((research) => [
-      research.empireId,
-      calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG).energyOutputPercent,
-    ]),
-  );
 }
 
 function scheduleEvent(

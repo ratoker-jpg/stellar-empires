@@ -1,3 +1,5 @@
+import { getUnitDefinition } from '../units/catalog';
+import type { ShipRole } from '../units/types';
 import { getUnitCombatProfile, type TargetSize } from './combatProfiles';
 
 export type FleetFormation = 'line' | 'screen' | 'wedge';
@@ -15,7 +17,7 @@ export interface ClassSkillDefinition {
   readonly id: string;
   readonly name: string;
   readonly description: string;
-  readonly unitId: string;
+  readonly role: ShipRole;
   readonly formation: FleetFormation;
   readonly weaponBonusPercent: number;
   readonly armorBonusPercent: number;
@@ -50,7 +52,7 @@ export const CLASS_SKILLS: readonly ClassSkillDefinition[] = [
     id: 'ghost-screen',
     name: 'Призрачный экран',
     description: 'Разведчики получают +18% защиты в защитном экране.',
-    unitId: 'ship.aegis.scout',
+    role: 'scout',
     formation: 'screen',
     weaponBonusPercent: 0,
     armorBonusPercent: 18,
@@ -59,7 +61,7 @@ export const CLASS_SKILLS: readonly ClassSkillDefinition[] = [
     id: 'spear-swarm',
     name: 'Рой копий',
     description: 'Истребители получают +15% атаки в ударном клине.',
-    unitId: 'ship.aegis.fighter',
+    role: 'fighter',
     formation: 'wedge',
     weaponBonusPercent: 15,
     armorBonusPercent: 0,
@@ -68,7 +70,7 @@ export const CLASS_SKILLS: readonly ClassSkillDefinition[] = [
     id: 'bulwark-link',
     name: 'Связка бастионов',
     description: 'Фрегаты получают +8% защиты в линейном строю.',
-    unitId: 'ship.aegis.frigate',
+    role: 'frigate',
     formation: 'line',
     weaponBonusPercent: 0,
     armorBonusPercent: 8,
@@ -113,10 +115,15 @@ export function getClassSkillBonusMaps(
 } {
   const weapon: Record<string, number> = {};
   const armor: Record<string, number> = {};
-  for (const skill of CLASS_SKILLS) {
-    if (skill.formation !== formation || (units[skill.unitId] ?? 0) <= 0) continue;
-    if (skill.weaponBonusPercent !== 0) weapon[skill.unitId] = skill.weaponBonusPercent;
-    if (skill.armorBonusPercent !== 0) armor[skill.unitId] = skill.armorBonusPercent;
+  for (const [unitId, quantity] of Object.entries(units)) {
+    if (quantity <= 0) continue;
+    const definition = getUnitDefinition(unitId);
+    if (definition?.kind !== 'ship') continue;
+    for (const skill of CLASS_SKILLS) {
+      if (skill.formation !== formation || definition.role !== skill.role) continue;
+      if (skill.weaponBonusPercent !== 0) weapon[unitId] = skill.weaponBonusPercent;
+      if (skill.armorBonusPercent !== 0) armor[unitId] = skill.armorBonusPercent;
+    }
   }
   return { weapon, armor };
 }

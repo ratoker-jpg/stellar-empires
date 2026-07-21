@@ -2,6 +2,7 @@ import { getBuildingDefinition } from '../simulation/planet/buildingCatalog';
 import {
   PLANET_DEVELOPMENT_TEMPLATES,
   PLANET_SPECIALIZATIONS,
+  getRecommendedBuildingIds,
   hasActivePlanetQueues,
   type PlanetDevelopmentTemplateId,
   type PlanetSpecializationId,
@@ -111,7 +112,10 @@ export function mountPlanetDevelopmentControls(
     templateHint.textContent = template.description;
     const recommendations = document.createElement('ul');
     recommendations.className = 'development-recommendations';
-    for (const buildingId of template.recommendedBuildingIds) {
+    for (const buildingId of getRecommendedBuildingIds(
+      planet.developmentTemplateId,
+      planet.factionId,
+    )) {
       const item = document.createElement('li');
       item.textContent = getBuildingDefinition(buildingId)?.name ?? buildingId;
       recommendations.append(item);

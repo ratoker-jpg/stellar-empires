@@ -1,9 +1,8 @@
+import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
 import { estimateFlightToGalaxyPlanet } from '../simulation/fleets/flightCalculations';
 import type { FleetState } from '../simulation/fleets/types';
-import { AEGIS_RESEARCH_CATALOG } from '../simulation/research/catalog';
-import { calculateResearchEffects } from '../simulation/research/progression';
-import { getEmpireResearch } from '../simulation/research/researchState';
 import type { GameCommand, GameState } from '../simulation/types';
+import { getShipCountByRole, hasShipRole } from '../simulation/units/shipCapabilities';
 import { formatGameDuration } from './planetViewModel';
 
 export interface ExpeditionPanelOptions {
@@ -51,10 +50,7 @@ function createDialog(): HTMLDialogElement {
 }
 
 function fleetSpeedBonus(state: GameState, empireId: string): number {
-  const research = getEmpireResearch(state.research, empireId);
-  return research === undefined
-    ? 0
-    : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG).fleetSpeedPercent;
+  return getResearchEffectsForEmpire(state, empireId).fleetSpeedPercent;
 }
 
 function availableTargets(state: GameState) {
@@ -73,7 +69,7 @@ function expeditionFleets(state: GameState): readonly FleetState[] {
         fleet.empireId === 'player' &&
         fleet.status === 'stationed' &&
         fleet.location.type === 'planet' &&
-        (fleet.ships['ship.aegis.scout'] ?? 0) > 0,
+        hasShipRole(fleet.ships, 'scout'),
     )
     .sort((left, right) => left.id.localeCompare(right.id));
 }
@@ -113,7 +109,7 @@ export function mountExpeditionPanel(options: ExpeditionPanelOptions): void {
       for (const fleet of fleets) {
         const option = document.createElement('option');
         option.value = fleet.id;
-        option.textContent = `${fleet.id} · скорость ${fleet.speed} · разведчиков ${fleet.ships['ship.aegis.scout'] ?? 0}`;
+        option.textContent = `${fleet.id} · скорость ${fleet.speed} · разведчиков ${getShipCountByRole(fleet.ships, 'scout')}`;
         fleetSelect.append(option);
       }
       const targetSelect = document.createElement('select');

@@ -7,6 +7,7 @@ import {
   getCommandCombatEffects,
 } from '../command/commandDoctrine';
 import type { ResourceCost } from '../economy/types';
+import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import type { FleetState } from '../fleets/types';
 import type { PlanetState } from '../planet/types';
 import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
@@ -16,9 +17,6 @@ import {
   calculatePveRewardMultiplier,
   scalePveUnits,
 } from '../pve/pveBalance';
-import { AEGIS_RESEARCH_CATALOG } from '../research/catalog';
-import { calculateResearchEffects } from '../research/progression';
-import { getEmpireResearch } from '../research/researchState';
 import type { GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
 import { getShipUpgradeBonusMap } from '../upgrades/shipUpgrades';
@@ -37,15 +35,11 @@ function getCombatEffects(
   units: Readonly<Record<string, number>>,
   fleetId?: string,
 ) {
-  const research = getEmpireResearch(state.research, empireId);
-  const effects =
-    research === undefined
-      ? undefined
-      : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG);
+  const effects = getResearchEffectsForEmpire(state, empireId);
   const command = getCommandCombatEffects(state.commanders, empireId, fleetId);
   return {
-    weaponBonusPercent: (effects?.weaponStrengthPercent ?? 0) + command.weaponBonusPercent,
-    armorBonusPercent: (effects?.armorStrengthPercent ?? 0) + command.armorBonusPercent,
+    weaponBonusPercent: effects.weaponStrengthPercent + command.weaponBonusPercent,
+    armorBonusPercent: effects.armorStrengthPercent + command.armorBonusPercent,
     unitWeaponBonusPercent: getShipUpgradeBonusMap(
       state.shipUpgrades,
       empireId,

@@ -1,11 +1,10 @@
 import {
-  AEGIS_VERTICAL_SLICE_ASSETS,
-  type AegisVerticalSliceAsset,
-} from '../assets/aegisVerticalSliceAssets';
+  getFactionMechanicalAsset,
+} from '../assets/factionMechanicalAssets';
+import type { AegisVerticalSliceAsset } from '../assets/aegisVerticalSliceAssets';
 import type { ResourceCost } from '../simulation/economy/types';
-import { canUseMechanicalDefinition } from '../simulation/factions/sharedMechanicalCatalog';
+import { getBuildingCatalogForFaction } from '../simulation/factions/factionMechanicalCatalogRegistry';
 import {
-  AEGIS_BUILDING_CATALOG,
   getBuildingDefinition,
   type BuildingDefinition,
 } from '../simulation/planet/buildingCatalog';
@@ -33,14 +32,10 @@ export interface BuildingCardViewModel {
 }
 
 function requireBuildingAsset(definition: BuildingDefinition): AegisVerticalSliceAsset {
-  const asset = AEGIS_VERTICAL_SLICE_ASSETS.find(
-    (candidate) => candidate.category === 'building' && candidate.id === definition.assetId,
-  );
-
+  const asset = getFactionMechanicalAsset(definition.assetId);
   if (asset === undefined) {
     throw new Error(`Building asset is not registered: ${definition.assetId}`);
   }
-
   return asset;
 }
 
@@ -53,13 +48,11 @@ function getBlockReason(
   if (planet.buildQueue.length > 0) {
     return 'Очередь строительства занята';
   }
-
   if (currentLevel >= definition.maxLevel) {
     return 'Достигнут максимальный уровень';
   }
 
   const missing = findMissingRequirements(planet, definition.requirements);
-
   if (missing.length > 0) {
     const requirement = missing[0];
     const requirementName =
@@ -71,7 +64,6 @@ function getBlockReason(
 
   if (currentLevel === 0) {
     const zone = planet.zones[definition.zoneId];
-
     if (zone.fieldLimit - zone.usedFields < definition.fieldCost) {
       return 'Нет свободных полей в зоне';
     }
@@ -80,16 +72,13 @@ function getBlockReason(
   if (!canAfford(planet.economy, cost)) {
     return 'Недостаточно ресурсов';
   }
-
   return null;
 }
 
 export function createBuildingCardViewModels(
   planet: PlanetState,
 ): readonly BuildingCardViewModel[] {
-  return AEGIS_BUILDING_CATALOG.filter((definition) =>
-    canUseMechanicalDefinition(definition.factionId, planet.factionId),
-  ).map((definition) => {
+  return getBuildingCatalogForFaction(planet.factionId).map((definition) => {
     const level = getBuildingLevel(planet.buildings, definition.id);
     const targetLevel = level + 1;
     const cost = calculateBuildingCost(definition, targetLevel);
@@ -119,10 +108,8 @@ export function formatGameDuration(seconds: number): string {
   if (hours > 0) {
     return `${hours}ч ${minutes}м`;
   }
-
   if (minutes > 0) {
     return `${minutes}м ${remainingSeconds}с`;
   }
-
   return `${remainingSeconds}с`;
 }

@@ -20,8 +20,8 @@ export const FACTION_CATALOG_MANIFEST: Readonly<
   },
   synod: {
     factionId: 'synod',
-    sourceFactionId: 'aegis',
-    mode: 'legacy-alias',
+    sourceFactionId: 'synod',
+    mode: 'native',
     migrationPolicy: 'replace-legacy-aliases',
   },
   veyra: {

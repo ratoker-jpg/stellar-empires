@@ -1,4 +1,5 @@
 import { enqueueEvent } from '../eventQueue';
+import { getResearchCatalogForFaction } from '../factions/factionMechanicalCatalogRegistry';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
 import {
   canAfford,
@@ -14,7 +15,7 @@ import type {
   GameState,
   ScheduledGameEvent,
 } from '../types';
-import { AEGIS_RESEARCH_CATALOG, getResearchDefinition } from './catalog';
+import { getResearchDefinition } from './catalog';
 import {
   applySpeedPercent,
   calculateResearchCost,
@@ -128,7 +129,10 @@ export function queueResearch(
 
   const sequence = state.nextEventSequence;
   const queueItemId = `research-${sequence}`;
-  const effects = calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG);
+  const effects = calculateResearchEffects(
+    research,
+    getResearchCatalogForFaction(planet.factionId),
+  );
   const baseSeconds = calculateResearchSeconds(definition, targetLevel);
   const duration = applySpeedPercent(
     baseSeconds,

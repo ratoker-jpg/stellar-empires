@@ -4,6 +4,8 @@ import {
   planBotResearchAndProduction,
 } from '../../src/simulation/bots/researchProductionPlanner';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import { getFactionIdForEmpire } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
+import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
 import type { GameState } from '../../src/simulation/types';
 
@@ -12,6 +14,8 @@ function prepareBotInfrastructure(
   empireId: string,
   levels: Readonly<Record<string, number>> = {},
 ): GameState {
+  const factionId = getFactionIdForEmpire(state, empireId);
+  const roles = getFactionMechanicalRoles(factionId);
   return {
     ...state,
     planets: state.planets.map((planet) =>
@@ -21,15 +25,15 @@ function prepareBotInfrastructure(
             buildings: [
               ...planet.buildings.filter(
                 (building) =>
-                  building.buildingId !== 'building.aegis.command' &&
-                  building.buildingId !== 'building.aegis.research-lab' &&
-                  building.buildingId !== 'building.aegis.shipyard' &&
-                  building.buildingId !== 'building.aegis.sensor-array',
+                  building.buildingId !== roles.buildings.command &&
+                  building.buildingId !== roles.buildings.laboratory &&
+                  building.buildingId !== roles.buildings.shipyard &&
+                  building.buildingId !== roles.buildings.sensorGrid,
               ),
-              { buildingId: 'building.aegis.command', level: 3 },
-              { buildingId: 'building.aegis.research-lab', level: 3 },
-              { buildingId: 'building.aegis.shipyard', level: 2 },
-              { buildingId: 'building.aegis.sensor-array', level: 1 },
+              { buildingId: roles.buildings.command, level: 3 },
+              { buildingId: roles.buildings.laboratory, level: 3 },
+              { buildingId: roles.buildings.shipyard, level: 2 },
+              { buildingId: roles.buildings.sensorGrid, level: 1 },
             ],
             economy: {
               ...planet.economy,
@@ -63,6 +67,14 @@ function prepareBotInfrastructure(
   };
 }
 
+function starterResearchLevels(state: GameState, empireId: string): Readonly<Record<string, number>> {
+  const roles = getFactionMechanicalRoles(getFactionIdForEmpire(state, empireId));
+  return {
+    [roles.research.construction]: 1,
+    [roles.research.sensors]: 1,
+  };
+}
+
 describe('bot research and production planner', () => {
   it('returns explicit infrastructure blockers before facilities exist', () => {
     const state = createInitialGameState('bot-science-blockers');
@@ -78,24 +90,27 @@ describe('bot research and production planner', () => {
     });
   });
 
-  it('queues shared research and unit production for Synod and Veyra', () => {
+  it('queues faction-valid research and unit production for Synod and Veyra', () => {
     let state = createInitialGameState('bot-science-shared');
 
     for (const empireId of ['synod-bot', 'veyra-bot'] as const) {
-      state = prepareBotInfrastructure(state, empireId, {
-        'technology.aegis.construction': 1,
-        'technology.aegis.sensors': 1,
-      });
+      state = prepareBotInfrastructure(state, empireId, starterResearchLevels(state, empireId));
       const plan = planBotResearchAndProduction(state, empireId);
       expect(plan.research.command?.type).toBe('QUEUE_RESEARCH');
       expect(plan.production.command?.type).toBe('QUEUE_UNIT_BATCH');
 
-      if (plan.research.command !== null) {
+      if (plan.research.command?.type === 'QUEUE_RESEARCH') {
+        expect(plan.research.command.technologyId).toContain(
+          empireId === 'synod-bot' ? '.synod.' : '.aegis.',
+        );
         const researchResult = executeCommand(state, plan.research.command);
         expect(researchResult.ok).toBe(true);
         if (researchResult.ok) state = researchResult.value;
       }
-      if (plan.production.command !== null) {
+      if (plan.production.command?.type === 'QUEUE_UNIT_BATCH') {
+        expect(plan.production.command.unitId).toContain(
+          empireId === 'synod-bot' ? '.synod.' : '.aegis.',
+        );
         const productionResult = executeCommand(state, plan.production.command);
         expect(productionResult.ok).toBe(true);
         if (productionResult.ok) state = productionResult.value;
@@ -164,10 +179,7 @@ describe('bot research and production planner', () => {
   it('is deterministic for every bot empire', () => {
     let state = createInitialGameState('bot-science-determinism');
     for (const empireId of ['aegis-bot', 'synod-bot', 'veyra-bot']) {
-      state = prepareBotInfrastructure(state, empireId, {
-        'technology.aegis.construction': 1,
-        'technology.aegis.sensors': 1,
-      });
+      state = prepareBotInfrastructure(state, empireId, starterResearchLevels(state, empireId));
     }
     expect(planAllBotResearchAndProduction(state)).toEqual(
       planAllBotResearchAndProduction(state),
@@ -175,13 +187,11 @@ describe('bot research and production planner', () => {
   });
 
   it('does not react to hidden player resource changes', () => {
+    const initial = createInitialGameState('bot-science-hidden');
     const state = prepareBotInfrastructure(
-      createInitialGameState('bot-science-hidden'),
+      initial,
       'synod-bot',
-      {
-        'technology.aegis.construction': 1,
-        'technology.aegis.sensors': 1,
-      },
+      starterResearchLevels(initial, 'synod-bot'),
     );
     const before = planBotResearchAndProduction(state, 'synod-bot');
     const changed = {

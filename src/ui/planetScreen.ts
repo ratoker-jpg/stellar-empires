@@ -1,4 +1,5 @@
 import type { AegisVerticalSliceAsset } from '../assets/aegisVerticalSliceAssets';
+import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getBuildingDefinition } from '../simulation/planet/buildingCatalog';
 import { getBuildingLevel } from '../simulation/planet/buildingProgression';
 import {
@@ -375,7 +376,10 @@ function renderIndustryContext(planet: PlanetState, panel: HTMLElement): void {
     );
   }
 
-  const commandLevel = getBuildingLevel(planet.buildings, 'building.aegis.command');
+  const commandLevel = getBuildingLevel(
+    planet.buildings,
+    getFactionMechanicalRoles(planet.factionId).buildings.command,
+  );
   const storageCapacity = Object.values(planet.economy.resources)
     .reduce((total, stock) => total + stock.capacity, 0);
   gateways.append(

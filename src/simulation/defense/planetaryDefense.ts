@@ -1,4 +1,6 @@
 import { enqueueEvent } from '../eventQueue';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
+import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
 import {
   canAfford,
   getBuildingLevel,
@@ -49,7 +51,8 @@ function getDefenseDefinition(unitId: string): UnitDefinition | undefined {
 }
 
 export function getDefenseGridCapacity(planet: PlanetState): number {
-  return getBuildingLevel(planet.buildings, 'building.aegis.sensor-array') *
+  const infrastructureId = getFactionMechanicalRoles(planet.factionId).buildings.sensorGrid;
+  return getBuildingLevel(planet.buildings, infrastructureId) *
     DEFENSE_GRID_CAPACITY_PER_SENSOR_LEVEL;
 }
 
@@ -143,8 +146,11 @@ export function queueDefenseRepair(
     return { ok: false, code: 'DEFENSE_REPAIR_QUEUE_BUSY', message: 'Defense repair queue is occupied.' };
   }
   const definition = getDefenseDefinition(command.unitId);
-  if (definition === undefined) {
-    return { ok: false, code: 'DEFENSE_UNIT_NOT_FOUND', message: 'Defense installation is not registered.' };
+  if (
+    definition === undefined ||
+    !canUseMechanicalDefinition(definition.factionId, planet.factionId)
+  ) {
+    return { ok: false, code: 'DEFENSE_UNIT_NOT_FOUND', message: 'Defense installation is not registered for this faction.' };
   }
   const damagedAvailable = planet.defense.damaged[definition.id] ?? 0;
   if (command.quantity > damagedAvailable) {

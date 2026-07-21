@@ -1,4 +1,5 @@
 import type { ResourceCost } from '../economy/types';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import {
   applySpecializationPercent,
@@ -23,10 +24,8 @@ export function calculateUnitBatchSeconds(
   quantity: number,
   planet: PlanetState,
 ): number {
-  const buildingId =
-    definition.kind === 'ship'
-      ? 'building.aegis.shipyard'
-      : 'building.aegis.sensor-array';
+  const roles = getFactionMechanicalRoles(planet.factionId).buildings;
+  const buildingId = definition.kind === 'ship' ? roles.shipyard : roles.sensorGrid;
   const level = Math.max(1, getBuildingLevel(planet.buildings, buildingId));
   const baseSeconds = Math.max(1, Math.ceil((definition.baseSeconds * quantity) / level));
   const effects = getPlanetSpecializationEffects(planet.specializationId);

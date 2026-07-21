@@ -1,5 +1,6 @@
 import type { PlanetBiome, StarClass } from '../simulation/galaxy/types';
 import type { FactionId } from '../simulation/planet/types';
+import { getUnitDefinition } from '../simulation/units/catalog';
 
 export interface RuntimeImageAsset {
   readonly key: string;
@@ -230,12 +231,14 @@ export function getPlanetArtUrl(biome: PlanetBiome): string {
 }
 
 export function getFleetShipPresentationRole(unitId: string): FleetShipPresentationRole {
-  if (unitId.endsWith('.scout')) return 'scout';
-  if (unitId.endsWith('.cargo')) return 'cargo';
-  if (unitId.endsWith('.frigate')) return 'frigate';
-  if (unitId.endsWith('.colony')) return 'colony';
-  if (unitId.endsWith('.recycler')) return 'recycler';
-  return 'fighter';
+  switch (getUnitDefinition(unitId)?.role) {
+    case 'scout': return 'scout';
+    case 'transport': return 'cargo';
+    case 'frigate': return 'frigate';
+    case 'colonizer': return 'colony';
+    case 'recycler': return 'recycler';
+    default: return 'fighter';
+  }
 }
 
 export function getFleetShipArtUrl(factionId: FactionId, unitId: string): string {

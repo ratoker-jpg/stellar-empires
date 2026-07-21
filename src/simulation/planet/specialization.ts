@@ -1,4 +1,8 @@
-import type { PlanetState } from './types';
+import {
+  getFactionMechanicalRoles,
+  type FactionMechanicalRoles,
+} from '../factions/factionMechanicalRoles';
+import type { FactionId, PlanetState } from './types';
 
 export type PlanetSpecializationId = 'balanced' | 'resource' | 'industry' | 'military';
 export type PlanetDevelopmentTemplateId =
@@ -6,6 +10,7 @@ export type PlanetDevelopmentTemplateId =
   | 'resource-hub'
   | 'industrial-hub'
   | 'fortress';
+export type PlanetBuildingRole = keyof FactionMechanicalRoles['buildings'];
 
 export interface PlanetSpecializationEffects {
   readonly resourceProductionPercent: number;
@@ -25,7 +30,7 @@ export interface PlanetDevelopmentTemplateDefinition {
   readonly id: PlanetDevelopmentTemplateId;
   readonly name: string;
   readonly description: string;
-  readonly recommendedBuildingIds: readonly string[];
+  readonly recommendedBuildingRoles: readonly PlanetBuildingRole[];
 }
 
 export const PLANET_SPECIALIZATIONS: Readonly<
@@ -84,51 +89,37 @@ export const PLANET_DEVELOPMENT_TEMPLATES: Readonly<
     id: 'balanced',
     name: 'Равномерное развитие',
     description: 'Поддерживает экономику, энергетику и доступ к базовым рабочим маршрутам.',
-    recommendedBuildingIds: [
-      'building.aegis.command',
-      'building.aegis.power-plant',
-      'building.aegis.metal-extractor',
-      'building.aegis.crystal-refinery',
-      'building.aegis.gas-extractor',
-    ],
+    recommendedBuildingRoles: ['command', 'power', 'metal', 'crystal', 'gas'],
   },
   'resource-hub': {
     id: 'resource-hub',
     name: 'Ресурсный узел',
     description: 'Приоритет добычи и устойчивой энергосети.',
-    recommendedBuildingIds: [
-      'building.aegis.metal-extractor',
-      'building.aegis.crystal-refinery',
-      'building.aegis.gas-extractor',
-      'building.aegis.power-plant',
-      'building.aegis.command',
-    ],
+    recommendedBuildingRoles: ['metal', 'crystal', 'gas', 'power', 'command'],
   },
   'industrial-hub': {
     id: 'industrial-hub',
     name: 'Промышленный узел',
     description: 'Приоритет лаборатории, верфи и инфраструктуры производства.',
-    recommendedBuildingIds: [
-      'building.aegis.command',
-      'building.aegis.power-plant',
-      'building.aegis.research-lab',
-      'building.aegis.shipyard',
-      'building.aegis.sensor-array',
-    ],
+    recommendedBuildingRoles: ['command', 'power', 'laboratory', 'shipyard', 'sensorGrid'],
   },
   fortress: {
     id: 'fortress',
     name: 'Крепость',
     description: 'Приоритет военной зоны, сенсоров, обороны и снабжения гарнизона.',
-    recommendedBuildingIds: [
-      'building.aegis.command',
-      'building.aegis.power-plant',
-      'building.aegis.sensor-array',
-      'building.aegis.shipyard',
-      'building.aegis.research-lab',
-    ],
+    recommendedBuildingRoles: ['command', 'power', 'sensorGrid', 'shipyard', 'laboratory'],
   },
 };
+
+export function getRecommendedBuildingIds(
+  templateId: PlanetDevelopmentTemplateId,
+  factionId: FactionId,
+): readonly string[] {
+  const roles = getFactionMechanicalRoles(factionId).buildings;
+  return PLANET_DEVELOPMENT_TEMPLATES[templateId].recommendedBuildingRoles.map(
+    (role) => roles[role],
+  );
+}
 
 export function getPlanetSpecializationEffects(
   specializationId: PlanetSpecializationId,

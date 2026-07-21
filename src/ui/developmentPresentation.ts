@@ -6,6 +6,7 @@ import {
   getDefensePresentationArtUrl,
   getZoneTerrainUrl,
 } from '../assets/planetIndustryRuntimeAssets';
+import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getUnitsByKind } from '../simulation/units/catalog';
 import type { GameState } from '../simulation/types';
 import { createBuildingCardViewModels } from './planetViewModel';
@@ -59,9 +60,10 @@ function applyResearchPresentation(state: GameState, planetId: string): void {
   const planet = state.planets.find((candidate) => candidate.id === planetId);
   const dialog = document.querySelector<HTMLDialogElement>('#research-screen-dialog');
   if (planet === undefined || dialog === null) return;
+  const roles = getFactionMechanicalRoles(planet.factionId).buildings;
   dialog.style.setProperty(
     '--research-facility-art',
-    `url("${getBuildingSheetUrl(planet.factionId, 'building.aegis.research-lab')}")`,
+    `url("${getBuildingSheetUrl(planet.factionId, roles.laboratory)}")`,
   );
 }
 
@@ -76,10 +78,12 @@ function applyProductionPresentation(state: GameState, planetId: string): void {
       '--production-facility-art',
       `url("${getBuildingSheetUrl(
         planet.factionId,
-        kind === 'ship' ? 'building.aegis.shipyard' : 'building.aegis.sensor-array',
+        kind === 'ship'
+          ? getFactionMechanicalRoles(planet.factionId).buildings.shipyard
+          : getFactionMechanicalRoles(planet.factionId).buildings.sensorGrid,
       )}")`,
     );
-    const definitions = getUnitsByKind(kind);
+    const definitions = getUnitsByKind(kind, planet.factionId);
     const byName = new Map(definitions.map((definition) => [definition.name, definition]));
     for (const card of dialog.querySelectorAll<HTMLElement>('.production-card')) {
       const name = card.querySelector<HTMLHeadingElement>('h3')?.textContent;

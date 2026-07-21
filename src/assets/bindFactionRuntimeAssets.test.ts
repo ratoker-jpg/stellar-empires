@@ -1,22 +1,29 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { AEGIS_VERTICAL_SLICE_ASSETS } from './aegisVerticalSliceAssets';
 import { bindFactionRuntimeAssets } from './bindFactionRuntimeAssets';
+import { SYNOD_MECHANICAL_ASSETS } from './factionMechanicalAssets';
 
 afterEach(() => bindFactionRuntimeAssets('aegis'));
 
 describe('bindFactionRuntimeAssets', () => {
-  it('redirects generated categories to the selected faction', () => {
+  it('binds native Synod mechanical entries to Synod atlases', () => {
     bindFactionRuntimeAssets('synod');
 
-    expect(AEGIS_VERTICAL_SLICE_ASSETS.find((asset) => asset.category === 'building')?.atlasUrl)
+    expect(SYNOD_MECHANICAL_ASSETS.find((asset) => asset.category === 'building')?.atlasUrl)
       .toMatch(/synod\/p1\/buildings-atlas\.webp$/);
-    expect(AEGIS_VERTICAL_SLICE_ASSETS.find((asset) => asset.category === 'ship')?.atlasUrl)
+    expect(SYNOD_MECHANICAL_ASSETS.find((asset) => asset.category === 'ship')?.atlasUrl)
       .toMatch(/synod\/p1\/ships-atlas\.webp$/);
-    expect(AEGIS_VERTICAL_SLICE_ASSETS.find((asset) => asset.category === 'defense')?.atlasUrl)
+    expect(SYNOD_MECHANICAL_ASSETS.find((asset) => asset.category === 'defense')?.atlasUrl)
       .toMatch(/synod\/p1\/defenses-atlas\.webp$/);
   });
 
-  it('keeps technology and effect assets on their explicit fallback', () => {
+  it('keeps the documented Synod technology fallback on Synod artwork', () => {
+    bindFactionRuntimeAssets('synod');
+    expect(SYNOD_MECHANICAL_ASSETS.find((asset) => asset.category === 'technology')?.atlasUrl)
+      .toMatch(/synod\/p1\/buildings-atlas\.webp$/);
+  });
+
+  it('keeps Veyra alias technology and effect assets on their explicit fallback', () => {
     bindFactionRuntimeAssets('veyra');
 
     expect(AEGIS_VERTICAL_SLICE_ASSETS.find((asset) => asset.category === 'technology')?.atlasUrl)

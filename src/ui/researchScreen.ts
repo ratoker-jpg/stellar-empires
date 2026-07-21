@@ -1,5 +1,6 @@
-import { AEGIS_VERTICAL_SLICE_ASSETS } from '../assets/aegisVerticalSliceAssets';
-import { AEGIS_RESEARCH_CATALOG, getResearchDefinition } from '../simulation/research/catalog';
+import { getFactionMechanicalAsset } from '../assets/factionMechanicalAssets';
+import { getResearchCatalogForFaction } from '../simulation/factions/factionMechanicalCatalogRegistry';
+import { getResearchDefinition } from '../simulation/research/catalog';
 import {
   calculateResearchCost,
   calculateResearchSeconds,
@@ -27,6 +28,11 @@ const CATEGORY_LABELS = {
   defense: 'Защита',
   weapons: 'Вооружение',
 } as const;
+const FACTION_NAMES = {
+  aegis: 'Эгида',
+  synod: 'Синод',
+  veyra: 'Вейра',
+} as const;
 
 function canAffordResearch(
   state: GameState,
@@ -43,14 +49,13 @@ function canAffordResearch(
 }
 
 function setTechnologyArtwork(element: HTMLElement, assetId: string): void {
-  const asset = AEGIS_VERTICAL_SLICE_ASSETS.find((candidate) => candidate.id === assetId);
+  const asset = getFactionMechanicalAsset(assetId);
   if (asset === undefined) return;
-
   const column = asset.frame.x / asset.frame.width;
   const row = asset.frame.y / asset.frame.height;
   element.style.backgroundImage = `url("${asset.atlasUrl}")`;
-  element.style.backgroundSize = '300% 200%';
-  element.style.backgroundPosition = `${column === 0 ? 0 : (column / 2) * 100}% ${row === 0 ? 0 : 100}%`;
+  element.style.backgroundSize = '400% 300%';
+  element.style.backgroundPosition = `${column === 0 ? 0 : (column / 3) * 100}% ${row === 0 ? 0 : (row / 2) * 100}%`;
 }
 
 function createDialog(): HTMLDialogElement {
@@ -66,7 +71,7 @@ function createDialog(): HTMLDialogElement {
   eyebrow.className = 'panel-label';
   eyebrow.textContent = 'Industry Zone · лаборатория';
   const title = document.createElement('h2');
-  title.textContent = 'Исследования «Эгиды»';
+  title.dataset.role = 'research-title';
   text.append(eyebrow, title);
   const close = document.createElement('button');
   close.type = 'button';
@@ -93,7 +98,8 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
   const grid = dialog.querySelector<HTMLElement>('#research-screen-grid');
   const queue = dialog.querySelector<HTMLElement>('#research-screen-queue');
   const summary = dialog.querySelector<HTMLElement>('.research-screen-summary');
-  if (grid === null || queue === null || summary === null) {
+  const title = dialog.querySelector<HTMLElement>('[data-role="research-title"]');
+  if (grid === null || queue === null || summary === null || title === null) {
     throw new Error('Research screen containers are missing.');
   }
 
@@ -109,6 +115,7 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
       return;
     }
 
+    title.textContent = `Исследования «${FACTION_NAMES[planet.factionId]}»`;
     summary.textContent = `${planet.name} финансирует глобальную очередь исследований. Ресурсы резервируются сразу, отмена возвращает 75% стоимости.`;
     queue.replaceChildren();
     const active = research.queue[0];
@@ -148,7 +155,7 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
     }
 
     grid.replaceChildren();
-    for (const definition of AEGIS_RESEARCH_CATALOG) {
+    for (const definition of getResearchCatalogForFaction(planet.factionId)) {
       const level = getResearchLevel(research, definition.id);
       const targetLevel = level + 1;
       const missing = findMissingResearchRequirements(definition, research, planet);
@@ -170,8 +177,8 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
       const meta = document.createElement('div');
       meta.className = 'research-card-meta';
       meta.textContent = `${CATEGORY_LABELS[definition.category]} · ур. ${level}/${definition.maxLevel}`;
-      const title = document.createElement('h3');
-      title.textContent = definition.name;
+      const cardTitle = document.createElement('h3');
+      cardTitle.textContent = definition.name;
       const description = document.createElement('p');
       description.textContent = definition.description;
       const costLine = document.createElement('p');
@@ -206,7 +213,7 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
           )
         ) render();
       });
-      body.append(meta, title, description, costLine, requirements, button);
+      body.append(meta, cardTitle, description, costLine, requirements, button);
       card.append(art, body);
       grid.append(card);
     }

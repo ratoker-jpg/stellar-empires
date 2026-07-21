@@ -78,6 +78,21 @@ export const UNIT_COMBAT_PROFILES: Readonly<Record<string, UnitCombatProfile>> =
     protectionType: 'shield-grid',
     targetSize: 'installation',
   },
+  'ship.synod.whisper': { weaponType: 'plasma', protectionType: 'shield-grid', targetSize: 'small' },
+  'ship.synod.thread-carrier': { weaponType: 'kinetic', protectionType: 'shield-grid', targetSize: 'medium' },
+  'ship.synod.lancet': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
+  'ship.synod.ward-frigate': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'medium' },
+  'ship.synod.seed-ark': { weaponType: 'kinetic', protectionType: 'shield-grid', targetSize: 'large' },
+  'ship.synod.salvage-mind': { weaponType: 'kinetic', protectionType: 'shield-grid', targetSize: 'medium' },
+  'ship.synod.phase-corvette': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
+  'ship.synod.chorus-cruiser': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'large' },
+  'ship.synod.relay-carrier': { weaponType: 'missile', protectionType: 'shield-grid', targetSize: 'large' },
+  'ship.synod.oracle-dreadnought': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'large' },
+  'defense.synod.lance-node': { weaponType: 'plasma', protectionType: 'shield-grid', targetSize: 'installation' },
+  'defense.synod.arc-silo': { weaponType: 'missile', protectionType: 'shield-grid', targetSize: 'installation' },
+  'defense.synod.harmonic-screen': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
+  'defense.synod.predictive-intercept': { weaponType: 'plasma', protectionType: 'fortified', targetSize: 'installation' },
+  'defense.synod.concord-bastion': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
 };
 
 const WEAPON_VS_PROTECTION: Readonly<Record<WeaponType, Readonly<Record<ProtectionType, number>>>> = {
