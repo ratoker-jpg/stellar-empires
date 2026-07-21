@@ -1,4 +1,5 @@
 import type { DebrisField } from './combat/debris';
+import type { FleetFormation, FleetTargetPriority } from './combat/fleetDoctrine';
 import type { BattleReport } from './combat/types';
 import type { ResourceCost, ResourceId } from './economy/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
@@ -239,6 +240,13 @@ export type GameCommand =
       readonly fleetId: string;
     }
   | {
+      readonly type: 'SET_FLEET_COMBAT_DOCTRINE';
+      readonly empireId: string;
+      readonly fleetId: string;
+      readonly formation: FleetFormation;
+      readonly targetPriority: FleetTargetPriority;
+    }
+  | {
       readonly type: 'SEND_FLEET';
       readonly empireId: string;
       readonly fleetId: string;
@@ -274,7 +282,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 13;
+  readonly schemaVersion: 14;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
