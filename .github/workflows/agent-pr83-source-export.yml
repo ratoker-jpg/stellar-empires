@@ -1,0 +1,26 @@
+name: Agent PR83 source export
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+      - name: Upload exact branch source
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr83-exact-source
+          path: |
+            .
+            !.git
+            !node_modules
+          include-hidden-files: true
+          retention-days: 1
