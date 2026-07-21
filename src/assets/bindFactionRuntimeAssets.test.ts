@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { AEGIS_VERTICAL_SLICE_ASSETS } from './aegisVerticalSliceAssets';
 import { bindFactionRuntimeAssets } from './bindFactionRuntimeAssets';
 import { SYNOD_MECHANICAL_ASSETS, VEYRA_MECHANICAL_ASSETS } from './factionMechanicalAssets';
 
