@@ -1,10 +1,10 @@
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
+import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
+import type { FleetState } from '../fleets/types';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
-import { AEGIS_RESEARCH_CATALOG } from '../research/catalog';
-import { calculateResearchEffects } from '../research/progression';
-import { getEmpireResearch } from '../research/researchState';
 import type { GameState } from '../types';
-import type { FleetState } from '../fleets/types';
+import { getShipCountByRole } from '../units/shipCapabilities';
 import { getEmpireIntelligence } from './intelligenceState';
 import type {
   EmpireIntelligenceState,
@@ -31,10 +31,7 @@ function replaceIntelligence(
 }
 
 function getSensorStrength(state: GameState, empireId: string): number {
-  const research = getEmpireResearch(state.research, empireId);
-  return research === undefined
-    ? 0
-    : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG).sensorStrength;
+  return getResearchEffectsForEmpire(state, empireId).sensorStrength;
 }
 
 function createSnapshot(
@@ -91,11 +88,12 @@ export function resolveScoutArrival(
   const observer = getEmpireIntelligence(state.intelligence, fleet.empireId);
   if (observer === undefined) return state;
 
-  const scoutCount = fleet.ships['ship.aegis.scout'] ?? 0;
+  const scoutCount = getShipCountByRole(fleet.ships, 'scout');
   const observerStrength = getSensorStrength(state, fleet.empireId) + scoutCount;
+  const targetSensorGrid = getFactionMechanicalRoles(target.factionId).buildings.sensorGrid;
   const counterStrength =
     getSensorStrength(state, target.ownerEmpireId) +
-    getBuildingLevel(target.buildings, 'building.aegis.sensor-array');
+    getBuildingLevel(target.buildings, targetSensorGrid);
   const level = Math.max(
     1,
     Math.min(3, 1 + Math.floor(observerStrength / 2)),
