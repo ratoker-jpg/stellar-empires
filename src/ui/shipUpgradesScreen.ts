@@ -14,7 +14,7 @@ import type { ShipUpgradeTrack } from '../simulation/upgrades/types';
 interface ShipUpgradeBridge {
   readonly getState: () => GameState;
   readonly getActivePlanetId: () => string;
-  readonly execute: (command: GameCommand, successMessage?: string) => boolean;
+  readonly execute: (command: GameCommand, successMessage: string) => boolean;
 }
 
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
