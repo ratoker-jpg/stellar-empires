@@ -1,9 +1,9 @@
 name: Agent source export
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/bootstrap-audit-batch
+      - main
 
 permissions:
   contents: read
