@@ -1,0 +1,36 @@
+name: PR80 Typecheck Diagnostics
+
+on:
+  push:
+    branches:
+      - agent/pr80-native-synod-catalog
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22.12.0
+          cache: npm
+      - run: npm install --no-audit --no-fund
+      - name: Capture typecheck
+        shell: bash
+        run: |
+          set +e
+          npm run typecheck > typecheck.log 2>&1
+          status=$?
+          echo "$status" > typecheck-status.txt
+          exit 0
+      - uses: actions/upload-artifact@v6
+        with:
+          name: pr80-typecheck
+          path: |
+            typecheck.log
+            typecheck-status.txt
+          if-no-files-found: error
