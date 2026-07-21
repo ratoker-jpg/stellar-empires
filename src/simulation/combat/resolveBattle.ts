@@ -41,15 +41,21 @@ function countUnits(units: Readonly<Record<string, number>>): number {
   return Object.values(units).reduce((total, count) => total + count, 0);
 }
 
-function unitDurability(unitId: string, armorBonusPercent: number): number {
+function unitDurability(
+  unitId: string,
+  armorBonusPercent: number,
+  unitArmorBonusPercent: Readonly<Record<string, number>>,
+): number {
   const definition = getUnitDefinition(unitId);
   const base = Math.max(1, (definition?.stats.armor ?? 1) + (definition?.stats.shield ?? 0));
-  return Math.max(1, Math.floor((base * (100 + Math.max(0, armorBonusPercent))) / 100));
+  const bonus = Math.max(0, armorBonusPercent + (unitArmorBonusPercent[unitId] ?? 0));
+  return Math.max(1, Math.floor((base * (100 + bonus)) / 100));
 }
 
 function collectWeaponContributions(
   units: Readonly<Record<string, number>>,
   weaponBonusPercent: number,
+  unitWeaponBonusPercent: Readonly<Record<string, number>>,
 ): readonly WeaponContribution[] {
   const byWeapon: Partial<Record<WeaponType, number>> = {};
   for (const [unitId, count] of Object.entries(units)) {
@@ -57,9 +63,8 @@ function collectWeaponContributions(
     const baseDamage = (definition?.stats.attack ?? 0) * count;
     if (baseDamage <= 0) continue;
     const profile = getUnitCombatProfile(unitId);
-    const modifiedDamage = Math.floor(
-      (baseDamage * (100 + Math.max(0, weaponBonusPercent))) / 100,
-    );
+    const bonus = Math.max(0, weaponBonusPercent + (unitWeaponBonusPercent[unitId] ?? 0));
+    const modifiedDamage = Math.floor((baseDamage * (100 + bonus)) / 100);
     byWeapon[profile.weaponType] = (byWeapon[profile.weaponType] ?? 0) + modifiedDamage;
   }
   return Object.entries(byWeapon)
@@ -133,7 +138,9 @@ function applyDamage(
   attackingUnits: Readonly<Record<string, number>>,
   targetUnits: Readonly<Record<string, number>>,
   targetArmorBonusPercent: number,
+  targetUnitArmorBonusPercent: Readonly<Record<string, number>>,
   weaponBonusPercent: number,
+  unitWeaponBonusPercent: Readonly<Record<string, number>>,
   damageCarry: Readonly<Record<string, number>>,
   seed: number,
 ): DamageApplication {
@@ -142,7 +149,11 @@ function applyDamage(
   const nextCarry: Record<string, number> = {};
   const breakdown: BattleTargetDamageReport[] = [];
   const targetIds = Object.keys(targetUnits).sort();
-  const contributions = collectWeaponContributions(attackingUnits, weaponBonusPercent);
+  const contributions = collectWeaponContributions(
+    attackingUnits,
+    weaponBonusPercent,
+    unitWeaponBonusPercent,
+  );
   const totalBaseDamage = contributions.reduce((sum, contribution) => sum + contribution.damage, 0);
   if (targetIds.length === 0 || totalBaseDamage <= 0) {
     for (const targetId of targetIds) {
@@ -161,7 +172,8 @@ function applyDamage(
 
   const targetEntries = targetIds.map((targetUnitId) => ({
     key: targetUnitId,
-    weight: unitDurability(targetUnitId, targetArmorBonusPercent) *
+    weight:
+      unitDurability(targetUnitId, targetArmorBonusPercent, targetUnitArmorBonusPercent) *
       (targetUnits[targetUnitId] ?? 0),
   }));
   const targetAllocations = allocateByWeight(totalBaseDamage, targetEntries);
@@ -185,7 +197,11 @@ function applyDamage(
         1_000_000,
     );
     const carriedDamage = damageCarry[targetUnitId] ?? 0;
-    const durability = unitDurability(targetUnitId, targetArmorBonusPercent);
+    const durability = unitDurability(
+      targetUnitId,
+      targetArmorBonusPercent,
+      targetUnitArmorBonusPercent,
+    );
     const availableDamage = carriedDamage + effectiveDamage;
     const casualties = Math.min(targetCount, Math.floor(availableDamage / durability));
     const surviving = targetCount - casualties;
@@ -255,7 +271,9 @@ export function resolveBattle(
       attackerUnits,
       defenderUnits,
       defender.armorBonusPercent,
+      defender.unitArmorBonusPercent ?? {},
       attacker.weaponBonusPercent,
+      attacker.unitWeaponBonusPercent ?? {},
       defenderDamageCarry,
       random,
     );
@@ -264,7 +282,9 @@ export function resolveBattle(
       defenderUnits,
       attackerUnits,
       attacker.armorBonusPercent,
+      attacker.unitArmorBonusPercent ?? {},
       defender.weaponBonusPercent,
+      defender.unitWeaponBonusPercent ?? {},
       attackerDamageCarry,
       nextRandom(random),
     );

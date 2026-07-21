@@ -24,6 +24,7 @@ import type {
 } from './pve/worldEvents';
 import type { EmpireResearchState } from './research/types';
 import type { UnitKind } from './units/types';
+import type { EmpireShipUpgradeState, ShipUpgradeTrack } from './upgrades/types';
 
 export interface GameClock {
   readonly startedAt: string;
@@ -61,6 +62,14 @@ export type GameEventPayload =
       readonly queueItemId: string;
       readonly unitId: string;
       readonly quantity: number;
+    }
+  | {
+      readonly type: 'SHIP_UPGRADE_COMPLETE';
+      readonly empireId: string;
+      readonly queueItemId: string;
+      readonly unitId: string;
+      readonly track: ShipUpgradeTrack;
+      readonly targetLevel: number;
     }
   | {
       readonly type: 'FLEET_ARRIVE';
@@ -206,6 +215,18 @@ export type GameCommand =
       readonly queueItemId: string;
     }
   | {
+      readonly type: 'QUEUE_SHIP_UPGRADE';
+      readonly empireId: string;
+      readonly planetId: string;
+      readonly unitId: string;
+      readonly track: ShipUpgradeTrack;
+    }
+  | {
+      readonly type: 'CANCEL_SHIP_UPGRADE';
+      readonly empireId: string;
+      readonly queueItemId: string;
+    }
+  | {
       readonly type: 'CREATE_FLEET';
       readonly empireId: string;
       readonly planetId: string;
@@ -253,13 +274,14 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 12;
+  readonly schemaVersion: 13;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
   readonly galaxy: GalaxyModel;
   readonly planets: readonly PlanetState[];
   readonly research: readonly EmpireResearchState[];
+  readonly shipUpgrades: readonly EmpireShipUpgradeState[];
   readonly fleets: readonly FleetState[];
   readonly intelligence: readonly EmpireIntelligenceState[];
   readonly debrisFields: readonly DebrisField[];

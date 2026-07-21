@@ -17,6 +17,7 @@ import { calculateResearchEffects } from '../research/progression';
 import { getEmpireResearch } from '../research/researchState';
 import type { GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
+import { getShipUpgradeBonusMap } from '../upgrades/shipUpgrades';
 import {
   addDebrisField,
   calculateDebrisFromLosses,
@@ -26,7 +27,11 @@ import {
 import { resolveBattle } from './resolveBattle';
 import type { BattleReport } from './types';
 
-function getCombatEffects(state: GameState, empireId: string) {
+function getCombatEffects(
+  state: GameState,
+  empireId: string,
+  units: Readonly<Record<string, number>>,
+) {
   const research = getEmpireResearch(state.research, empireId);
   const effects =
     research === undefined
@@ -35,6 +40,18 @@ function getCombatEffects(state: GameState, empireId: string) {
   return {
     weaponBonusPercent: effects?.weaponStrengthPercent ?? 0,
     armorBonusPercent: effects?.armorStrengthPercent ?? 0,
+    unitWeaponBonusPercent: getShipUpgradeBonusMap(
+      state.shipUpgrades,
+      empireId,
+      units,
+      'weapons',
+    ),
+    unitArmorBonusPercent: getShipUpgradeBonusMap(
+      state.shipUpgrades,
+      empireId,
+      units,
+      'armor',
+    ),
   };
 }
 
@@ -181,12 +198,12 @@ export function resolveAttackMission(
     {
       empireId: attackerFleet.empireId,
       units: attackerFleet.ships,
-      ...getCombatEffects(state, attackerFleet.empireId),
+      ...getCombatEffects(state, attackerFleet.empireId, attackerFleet.ships),
     },
     {
       empireId: target.ownerEmpireId,
       units: effectiveDefenderUnits,
-      ...getCombatEffects(state, target.ownerEmpireId),
+      ...getCombatEffects(state, target.ownerEmpireId, effectiveDefenderUnits),
     },
   );
   const defenderRemaining = splitDefenderRemaining(resolution.defenderRemaining);

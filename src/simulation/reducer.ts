@@ -40,10 +40,7 @@ import {
   recallFleetWithExpeditionSupport,
   sendFleetWithExpeditionGuard,
 } from './pve/expeditionFleetCommands';
-import {
-  applyExpeditionEvent,
-  startExpedition,
-} from './pve/expeditions';
+import { applyExpeditionEvent, startExpedition } from './pve/expeditions';
 import {
   applySpaceObjectMissionEvent,
   startSpaceObjectMission,
@@ -54,10 +51,7 @@ import {
   processWorldEventEvaluationAt,
 } from './pve/worldEvents';
 import { AEGIS_RESEARCH_CATALOG } from './research/catalog';
-import {
-  applySpeedPercent,
-  calculateResearchEffects,
-} from './research/progression';
+import { applySpeedPercent, calculateResearchEffects } from './research/progression';
 import {
   cancelResearch,
   completeResearch,
@@ -77,6 +71,11 @@ import {
   completeUnitProduction,
   queueUnitBatch,
 } from './units/productionCommands';
+import {
+  cancelShipUpgrade,
+  completeShipUpgrade,
+  queueShipUpgrade,
+} from './upgrades/shipUpgrades';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
   return [...state.commandLog, { index: state.commandLog.length, command }];
@@ -119,6 +118,7 @@ function scheduleEvent(
     command.payload.type === 'RESEARCH_COMPLETE' ||
     command.payload.type === 'UNIT_PRODUCTION_COMPLETE' ||
     command.payload.type === 'DEFENSE_REPAIR_COMPLETE' ||
+    command.payload.type === 'SHIP_UPGRADE_COMPLETE' ||
     command.payload.type === 'FLEET_ARRIVE' ||
     command.payload.type === 'FLEET_RETURN' ||
     command.payload.type === 'EXPEDITION_RESOLVE' ||
@@ -132,7 +132,6 @@ function scheduleEvent(
       message: 'Completion events can only be created by their domain queues.',
     };
   }
-
   if (!isNonNegativeInteger(command.executeAt)) {
     return {
       ok: false,
@@ -141,7 +140,6 @@ function scheduleEvent(
       details: { executeAt: command.executeAt },
     };
   }
-
   if (command.executeAt < state.clock.elapsedSeconds) {
     return {
       ok: false,
@@ -149,14 +147,12 @@ function scheduleEvent(
       message: 'An event cannot be scheduled before the current world time.',
     };
   }
-
   const event: ScheduledGameEvent = {
     id: `event-${state.nextEventSequence}`,
     executeAt: command.executeAt,
     sequence: state.nextEventSequence,
     payload: command.payload,
   };
-
   return {
     ok: true,
     value: {
@@ -182,7 +178,6 @@ function queueBuilding(
   if (planet.buildQueue.length > 0) {
     return { ok: false, code: 'BUILD_QUEUE_BUSY', message: 'The construction queue is occupied.' };
   }
-
   const definition = getBuildingDefinition(command.buildingId);
   if (definition === undefined) {
     return { ok: false, code: 'BUILDING_NOT_FOUND', message: 'The building is not registered.' };
@@ -190,13 +185,11 @@ function queueBuilding(
   if (!canUseMechanicalDefinition(definition.factionId, planet.factionId)) {
     return { ok: false, code: 'WRONG_FACTION_BUILDING', message: 'The building belongs to another faction.' };
   }
-
   const currentLevel = getBuildingLevel(planet.buildings, definition.id);
   const targetLevel = currentLevel + 1;
   if (targetLevel > definition.maxLevel) {
     return { ok: false, code: 'BUILDING_MAX_LEVEL', message: 'The building is at maximum level.' };
   }
-
   const missingRequirements = findMissingRequirements(planet, definition.requirements);
   if (missingRequirements.length > 0) {
     return {
@@ -206,7 +199,6 @@ function queueBuilding(
       details: { missingRequirements },
     };
   }
-
   if (currentLevel === 0) {
     const zone = planet.zones[definition.zoneId];
     const freeFields = zone.fieldLimit - zone.usedFields;
@@ -214,12 +206,10 @@ function queueBuilding(
       return { ok: false, code: 'ZONE_FIELDS_FULL', message: 'The target zone has no free fields.' };
     }
   }
-
   const cost = calculateBuildingCost(definition, targetLevel);
   if (!canAfford(planet.economy, cost)) {
     return { ok: false, code: 'INSUFFICIENT_RESOURCES', message: 'The planet does not have enough resources.' };
   }
-
   const sequence = state.nextEventSequence;
   const queueItemId = `build-${sequence}`;
   const effects = getResearchEffectsForEmpire(state, command.empireId);
@@ -258,7 +248,6 @@ function queueBuilding(
     buildQueue: [queueItem],
     economy: spendResources(planet.economy, cost),
   };
-
   return {
     ok: true,
     value: {
@@ -283,13 +272,11 @@ function cancelBuilding(
   if (queueItem === undefined) {
     return { ok: false, code: 'BUILD_QUEUE_ITEM_NOT_FOUND', message: 'The construction order does not exist.' };
   }
-
   const updatedPlanet: PlanetState = {
     ...planet,
     buildQueue: planet.buildQueue.filter((item) => item.id !== queueItem.id),
     economy: refundResources(planet.economy, queueItem.cost, 750),
   };
-
   return {
     ok: true,
     value: {
@@ -322,6 +309,9 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
   }
   if (event.payload.type === 'RESEARCH_COMPLETE') {
     return { ...state, research: completeResearch(state.research, event.payload) };
+  }
+  if (event.payload.type === 'SHIP_UPGRADE_COMPLETE') {
+    return { ...state, shipUpgrades: completeShipUpgrade(state.shipUpgrades, event.payload) };
   }
   if (event.payload.type === 'DEFENSE_REPAIR_COMPLETE') {
     const payload = event.payload;
@@ -374,12 +364,10 @@ function advanceTime(
   if (!isNonNegativeInteger(command.seconds)) {
     return { ok: false, code: 'INVALID_TIME_DELTA', message: 'Time delta must be a non-negative integer.' };
   }
-
   const targetTime = state.clock.elapsedSeconds + command.seconds;
   const executedEvents: ExecutedGameEvent[] = [];
   let working = state;
   let cursor = state.clock.elapsedSeconds;
-
   while (true) {
     const nextEvent = working.pendingEvents[0];
     const nextEventAt = nextEvent !== undefined && nextEvent.executeAt <= targetTime
@@ -389,7 +377,6 @@ function advanceTime(
     const nextWorldEventAt = getNextWorldEventEvaluationAt(working, targetTime);
     const nextAt = earliestTime([nextEventAt, nextRouteAt, nextWorldEventAt]);
     if (nextAt === undefined) break;
-
     working = accrueStateEconomies(working, nextAt - cursor);
     working = { ...working, clock: { ...working.clock, elapsedSeconds: nextAt } };
     if (nextRouteAt === nextAt) working = processLogisticsDeparturesAt(working, nextAt);
@@ -403,7 +390,6 @@ function advanceTime(
     }
     cursor = nextAt;
   }
-
   working = accrueStateEconomies(working, targetTime - cursor);
   return {
     ok: true,
@@ -418,49 +404,29 @@ function advanceTime(
 
 export function executeCommand(state: GameState, command: GameCommand): CommandResult<GameState> {
   switch (command.type) {
-    case 'SCHEDULE_EVENT':
-      return scheduleEvent(state, command);
-    case 'QUEUE_BUILDING':
-      return queueBuilding(state, command);
-    case 'CANCEL_BUILDING':
-      return cancelBuilding(state, command);
-    case 'SET_PLANET_SPECIALIZATION':
-      return setPlanetSpecialization(state, command);
-    case 'SET_PLANET_DEVELOPMENT_TEMPLATE':
-      return setPlanetDevelopmentTemplate(state, command);
-    case 'CREATE_LOGISTICS_ROUTE':
-      return createLogisticsRoute(state, command);
-    case 'UPDATE_LOGISTICS_ROUTE':
-      return updateLogisticsRoute(state, command);
-    case 'DELETE_LOGISTICS_ROUTE':
-      return deleteLogisticsRoute(state, command);
-    case 'MARKET_SWAP':
-      return executeMarketSwap(state, command);
-    case 'QUEUE_RESEARCH':
-      return queueResearch(state, command);
-    case 'CANCEL_RESEARCH':
-      return cancelResearch(state, command);
-    case 'QUEUE_UNIT_BATCH':
-      return queueUnitBatch(state, command);
-    case 'CANCEL_UNIT_BATCH':
-      return cancelUnitBatch(state, command);
-    case 'QUEUE_DEFENSE_REPAIR':
-      return queueDefenseRepair(state, command);
-    case 'CANCEL_DEFENSE_REPAIR':
-      return cancelDefenseRepair(state, command);
-    case 'CREATE_FLEET':
-      return createFleet(state, command);
-    case 'DISBAND_FLEET':
-      return disbandFleet(state, command);
-    case 'SEND_FLEET':
-      return sendFleetWithExpeditionGuard(state, command);
-    case 'START_EXPEDITION':
-      return startExpedition(state, command);
-    case 'START_SPACE_OBJECT_MISSION':
-      return startSpaceObjectMission(state, command);
-    case 'RECALL_FLEET':
-      return recallFleetWithExpeditionSupport(state, command);
-    case 'ADVANCE_TIME':
-      return advanceTime(state, command);
+    case 'SCHEDULE_EVENT': return scheduleEvent(state, command);
+    case 'QUEUE_BUILDING': return queueBuilding(state, command);
+    case 'CANCEL_BUILDING': return cancelBuilding(state, command);
+    case 'SET_PLANET_SPECIALIZATION': return setPlanetSpecialization(state, command);
+    case 'SET_PLANET_DEVELOPMENT_TEMPLATE': return setPlanetDevelopmentTemplate(state, command);
+    case 'CREATE_LOGISTICS_ROUTE': return createLogisticsRoute(state, command);
+    case 'UPDATE_LOGISTICS_ROUTE': return updateLogisticsRoute(state, command);
+    case 'DELETE_LOGISTICS_ROUTE': return deleteLogisticsRoute(state, command);
+    case 'MARKET_SWAP': return executeMarketSwap(state, command);
+    case 'QUEUE_RESEARCH': return queueResearch(state, command);
+    case 'CANCEL_RESEARCH': return cancelResearch(state, command);
+    case 'QUEUE_UNIT_BATCH': return queueUnitBatch(state, command);
+    case 'CANCEL_UNIT_BATCH': return cancelUnitBatch(state, command);
+    case 'QUEUE_DEFENSE_REPAIR': return queueDefenseRepair(state, command);
+    case 'CANCEL_DEFENSE_REPAIR': return cancelDefenseRepair(state, command);
+    case 'QUEUE_SHIP_UPGRADE': return queueShipUpgrade(state, command);
+    case 'CANCEL_SHIP_UPGRADE': return cancelShipUpgrade(state, command);
+    case 'CREATE_FLEET': return createFleet(state, command);
+    case 'DISBAND_FLEET': return disbandFleet(state, command);
+    case 'SEND_FLEET': return sendFleetWithExpeditionGuard(state, command);
+    case 'START_EXPEDITION': return startExpedition(state, command);
+    case 'START_SPACE_OBJECT_MISSION': return startSpaceObjectMission(state, command);
+    case 'RECALL_FLEET': return recallFleetWithExpeditionSupport(state, command);
+    case 'ADVANCE_TIME': return advanceTime(state, command);
   }
 }
