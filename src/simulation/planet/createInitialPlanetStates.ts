@@ -1,16 +1,9 @@
 import { createInitialPlanetDefenseState } from '../defense/types';
 import { createPlanetEconomy } from '../economy/planetEconomy';
+import { getStartingBuildingsForFaction } from '../factions/factionMechanicalRoles';
 import type { GalaxyModel } from '../galaxy/types';
-import type { FactionId, PlanetBuildingState, PlanetState } from './types';
+import type { FactionId, PlanetState } from './types';
 import { createPlanetZones } from './zones';
-
-const STARTING_SHARED_BUILDINGS: readonly PlanetBuildingState[] = [
-  { buildingId: 'building.aegis.command', level: 1 },
-  { buildingId: 'building.aegis.metal-extractor', level: 1 },
-  { buildingId: 'building.aegis.crystal-refinery', level: 1 },
-  { buildingId: 'building.aegis.gas-extractor', level: 1 },
-  { buildingId: 'building.aegis.power-plant', level: 1 },
-];
 
 function factionForEmpire(empireId: string, playerFaction: FactionId): FactionId {
   switch (empireId) {
@@ -40,7 +33,7 @@ export function createInitialPlanetStates(
       }
 
       const factionId = factionForEmpire(planet.ownerEmpireId, playerFaction);
-      const buildings = STARTING_SHARED_BUILDINGS;
+      const buildings = getStartingBuildingsForFaction(factionId);
 
       planets.push({
         id: `colony-${planet.id}`,
