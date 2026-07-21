@@ -1,5 +1,6 @@
 import type { ResourceCost } from '../economy/types';
 import { enqueueEvent } from '../eventQueue';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
 import {
   canAfford,
@@ -142,7 +143,10 @@ export function queueShipUpgrade(
     return { ok: false, code: 'WRONG_FACTION_SHIP_UPGRADE', message: 'The selected hull is unavailable to this faction.' };
   }
   if (
-    getBuildingLevel(planet.buildings, 'building.aegis.shipyard') <
+    getBuildingLevel(
+      planet.buildings,
+      getFactionMechanicalRoles(planet.factionId).buildings.shipyard,
+    ) <
     SHIP_UPGRADE_REQUIRED_SHIPYARD_LEVEL
   ) {
     return {

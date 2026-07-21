@@ -13,6 +13,7 @@ import {
 import type { FactionId } from '../simulation/planet/types';
 import type { GameCommand, GameState } from '../simulation/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
+import { hasShipRole } from '../simulation/units/shipCapabilities';
 import {
   createFleetComposerViewModel,
   createFleetRoutePreview,
@@ -438,7 +439,7 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
           option.textContent = missionLabel(missionKind);
           mission.append(option);
         }
-        if ((fleet.ships['ship.aegis.colony'] ?? 0) > 0) {
+        if (hasShipRole(fleet.ships, 'colonizer')) {
           const option = document.createElement('option');
           option.value = 'colonize';
           option.textContent = missionLabel('colonize');

@@ -1,4 +1,5 @@
 import type { ResourceCost } from '../simulation/economy/types';
+import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
 import {
   calculateFleetComposition,
   getCargoAmount,
@@ -9,9 +10,6 @@ import {
   estimateFlightToGalaxyPlanet,
 } from '../simulation/fleets/flightCalculations';
 import type { FleetMissionKind, FleetState } from '../simulation/fleets/types';
-import { AEGIS_RESEARCH_CATALOG } from '../simulation/research/catalog';
-import { calculateResearchEffects } from '../simulation/research/progression';
-import { getEmpireResearch } from '../simulation/research/researchState';
 import type { GameState } from '../simulation/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
 
@@ -128,10 +126,7 @@ export function createFleetComposerViewModel(
 }
 
 function getFleetSpeedBonus(state: GameState, empireId: string): number {
-  const research = getEmpireResearch(state.research, empireId);
-  return research === undefined
-    ? 0
-    : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG).fleetSpeedPercent;
+  return getResearchEffectsForEmpire(state, empireId).fleetSpeedPercent;
 }
 
 export function createFleetRoutePreview(
