@@ -2,6 +2,7 @@ import { collectDebris } from '../combat/debris';
 import { resolveAttackMission } from '../combat/resolveAttackMission';
 import type { BattleReport } from '../combat/types';
 import {
+  findFleetShipByRole,
   findGalaxyPlanet,
   getColonizationLevel,
   getColonyLimit,
@@ -10,9 +11,9 @@ import {
   resolveColonization,
 } from '../colonization/colonization';
 import { enqueueEvent } from '../eventQueue';
+import { getResearchCatalogForEmpire } from '../factions/factionMechanicalCatalogRegistry';
 import { resolveScoutArrival } from '../intelligence/resolveScout';
 import type { PlanetState } from '../planet/types';
-import { AEGIS_RESEARCH_CATALOG } from '../research/catalog';
 import { calculateResearchEffects } from '../research/progression';
 import { getEmpireResearch } from '../research/researchState';
 import type {
@@ -52,7 +53,10 @@ function getFleetSpeedBonus(state: GameState, empireId: string): number {
   const research = getEmpireResearch(state.research, empireId);
   return research === undefined
     ? 0
-    : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG).fleetSpeedPercent;
+    : calculateResearchEffects(
+        research,
+        getResearchCatalogForEmpire(state, empireId),
+      ).fleetSpeedPercent;
 }
 
 function enqueueBattleReport(state: GameState, report: BattleReport): GameState {
@@ -158,7 +162,7 @@ function validateColonizationTarget(
     return {
       ok: false,
       code: 'COLONIZATION_TECH_REQUIRED',
-      message: 'Colonization Protocols level 1 is required.',
+      message: 'A faction-native colonization technology at level 1 is required.',
     };
   }
   if (
@@ -171,11 +175,11 @@ function validateColonizationTarget(
       message: 'The empire colony limit has been reached.',
     };
   }
-  if ((fleet.ships['ship.aegis.colony'] ?? 0) <= 0) {
+  if (findFleetShipByRole(fleet.ships, 'colonizer') === undefined) {
     return {
       ok: false,
       code: 'COLONY_SHIP_REQUIRED',
-      message: 'A colonization mission requires an Aegis colony ship.',
+      message: 'A colonization mission requires a colonizer hull.',
     };
   }
 
@@ -250,11 +254,14 @@ export function sendFleet(
         message: 'An empire cannot attack its own planet.',
       };
     }
-    if (command.mission === 'scout' && (fleet.ships['ship.aegis.scout'] ?? 0) <= 0) {
+    if (
+      command.mission === 'scout' &&
+      findFleetShipByRole(fleet.ships, 'scout') === undefined
+    ) {
       return {
         ok: false,
         code: 'SCOUT_SHIP_REQUIRED',
-        message: 'A scouting mission requires an Aegis scout ship.',
+        message: 'A scouting mission requires a scout hull.',
       };
     }
     if (
@@ -272,12 +279,12 @@ export function sendFleet(
     }
     if (
       command.mission === 'recycle' &&
-      (fleet.ships['ship.aegis.recycler'] ?? 0) <= 0
+      findFleetShipByRole(fleet.ships, 'recycler') === undefined
     ) {
       return {
         ok: false,
         code: 'RECYCLER_SHIP_REQUIRED',
-        message: 'A recycling mission requires an Aegis recycler.',
+        message: 'A recycling mission requires a recycler hull.',
       };
     }
     if (
