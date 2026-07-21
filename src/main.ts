@@ -57,6 +57,7 @@ import { mountProductionScreens } from './ui/productionScreen';
 import { mountResearchScreen } from './ui/researchScreen';
 import { mountSaveManager } from './ui/saveManager';
 import { renderAssetShowcases } from './ui/showcase';
+import { mountShipUpgradesScreen } from './ui/shipUpgradesScreen';
 import { mountSpaceObjectsPanel } from './ui/spaceObjectsPanel';
 import { mountWorldEventsPanel } from './ui/worldEventsPanel';
 
@@ -179,6 +180,7 @@ async function bootstrap(): Promise<void> {
   mountResearchScreen(commandBridge);
   mountProductionScreens(commandBridge);
   mountMissionScreen(commandBridge);
+  mountShipUpgradesScreen(commandBridge);
   mountDevelopmentPresentation({
     getState: () => runtimeState,
     getActivePlanetId: getPlanetScreenActivePlanetId,
