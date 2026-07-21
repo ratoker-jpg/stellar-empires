@@ -1,8 +1,11 @@
+import { getFactionIdForEmpire } from '../factions/factionMechanicalCatalogRegistry';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { createFleet } from '../fleets/fleetCommands';
 import { sendFleet } from '../fleets/flightCommands';
 import type { FleetMissionKind } from '../fleets/types';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
+import type { ShipRole } from '../units/types';
 import { createBotPerception, type BotPerception } from './perception';
 
 export type BotFleetReasonCode =
@@ -34,8 +37,13 @@ function sumCargo(cargo: Readonly<Record<ResourceId, number>>): number {
   return RESOURCE_IDS.reduce((total, resourceId) => total + cargo[resourceId], 0);
 }
 
-function hasShip(fleet: PerceivedFleet, unitId: string): boolean {
-  return (fleet.ships[unitId] ?? 0) > 0;
+function hasRole(fleet: PerceivedFleet, role: ShipRole): boolean {
+  return Object.entries(fleet.ships).some(
+    ([unitId, quantity]) =>
+      quantity > 0 &&
+      getUnitDefinition(unitId)?.kind === 'ship' &&
+      getUnitDefinition(unitId)?.role === role,
+  );
 }
 
 function shipPower(ships: Readonly<Record<string, number>>): number {
@@ -111,12 +119,7 @@ function missionPlan(
               left.id.localeCompare(right.id),
           );
         for (const target of targets) {
-          const command = sendCommand(
-            perception.empireId,
-            fleet.id,
-            target.id,
-            'transport',
-          );
+          const command = sendCommand(perception.empireId, fleet.id, target.id, 'transport');
           if (validSend(state, command)) {
             return {
               empireId: perception.empireId,
@@ -129,7 +132,7 @@ function missionPlan(
       }
     }
 
-    if (hasShip(fleet, 'ship.aegis.recycler')) {
+    if (hasRole(fleet, 'recycler')) {
       const debris = [...perception.ownDebrisFields].sort(
         (left, right) =>
           right.metal + right.crystal - (left.metal + left.crystal) ||
@@ -137,12 +140,7 @@ function missionPlan(
       );
       for (const target of debris) {
         if (target.planetId === originPlanetId) continue;
-        const command = sendCommand(
-          perception.empireId,
-          fleet.id,
-          target.planetId,
-          'recycle',
-        );
+        const command = sendCommand(perception.empireId, fleet.id, target.planetId, 'recycle');
         if (validSend(state, command)) {
           return {
             empireId: perception.empireId,
@@ -154,18 +152,13 @@ function missionPlan(
       }
     }
 
-    if (hasShip(fleet, 'ship.aegis.colony')) {
+    if (hasRole(fleet, 'colonizer')) {
       const targets = state.galaxy.systems
         .flatMap((system) => system.planets)
         .filter((planet) => planet.biome !== 'gas')
         .sort((left, right) => left.id.localeCompare(right.id));
       for (const target of targets) {
-        const command = sendCommand(
-          perception.empireId,
-          fleet.id,
-          target.id,
-          'colonize',
-        );
+        const command = sendCommand(perception.empireId, fleet.id, target.id, 'colonize');
         if (validSend(state, command)) {
           return {
             empireId: perception.empireId,
@@ -177,7 +170,7 @@ function missionPlan(
       }
     }
 
-    if (hasShip(fleet, 'ship.aegis.scout')) {
+    if (hasRole(fleet, 'scout')) {
       const observed = [...perception.foreignPlanets]
         .sort(
           (left, right) =>
@@ -188,12 +181,7 @@ function missionPlan(
         .map((planet) => planet.planetId);
       const publicTargets = perception.publicColonyIds.filter((planetId) => !ownIds.has(planetId));
       for (const targetPlanetId of [...new Set([...observed, ...publicTargets])]) {
-        const command = sendCommand(
-          perception.empireId,
-          fleet.id,
-          targetPlanetId,
-          'scout',
-        );
+        const command = sendCommand(perception.empireId, fleet.id, targetPlanetId, 'scout');
         if (validSend(state, command)) {
           return {
             empireId: perception.empireId,
@@ -252,12 +240,7 @@ function missionPlan(
             left.defense - right.defense || left.planet.id.localeCompare(right.planet.id),
         );
       for (const target of reinforcements) {
-        const command = sendCommand(
-          perception.empireId,
-          fleet.id,
-          target.planet.id,
-          'deploy',
-        );
+        const command = sendCommand(perception.empireId, fleet.id, target.planet.id, 'deploy');
         if (validSend(state, command)) {
           return {
             empireId: perception.empireId,
@@ -282,29 +265,35 @@ interface FleetCandidate {
 function creationCandidates(
   perception: BotPerception,
   planet: BotPerception['ownPlanets'][number],
+  state: GameState,
 ): readonly FleetCandidate[] {
+  const factionId = getFactionIdForEmpire(state, perception.empireId);
+  const roles = getFactionMechanicalRoles(factionId);
   const candidates: FleetCandidate[] = [];
 
   if (
-    (perception.researchLevels['technology.aegis.colonization'] ?? 0) > 0 &&
-    (planet.ships['ship.aegis.colony'] ?? 0) > 0
+    (perception.researchLevels[roles.research.colonization] ?? 0) > 0 &&
+    (planet.ships[roles.ships.colonizer] ?? 0) > 0
   ) {
     candidates.push({
-      ships: { 'ship.aegis.colony': 1 },
+      ships: { [roles.ships.colonizer]: 1 },
       cargo: ZERO_CARGO,
       explanation: `На ${planet.name} подготовлен колонизационный флот.`,
     });
   }
 
-  if (perception.ownDebrisFields.length > 0 && (planet.ships['ship.aegis.recycler'] ?? 0) > 0) {
+  if (
+    perception.ownDebrisFields.length > 0 &&
+    (planet.ships[roles.ships.recycler] ?? 0) > 0
+  ) {
     candidates.push({
-      ships: { 'ship.aegis.recycler': 1 },
+      ships: { [roles.ships.recycler]: 1 },
       cargo: ZERO_CARGO,
       explanation: `На ${planet.name} сформирован флот переработки.`,
     });
   }
 
-  if (perception.ownPlanets.length > 1 && (planet.ships['ship.aegis.cargo'] ?? 0) > 0) {
+  if (perception.ownPlanets.length > 1 && (planet.ships[roles.ships.transport] ?? 0) > 0) {
     const resourceId = [...RESOURCE_IDS].sort(
       (left, right) => planet.resources[right] - planet.resources[left] || left.localeCompare(right),
     )[0];
@@ -312,7 +301,7 @@ function creationCandidates(
       const amount = Math.min(400, Math.max(0, planet.resources[resourceId] - 500));
       if (amount > 0) {
         candidates.push({
-          ships: { 'ship.aegis.cargo': 1 },
+          ships: { [roles.ships.transport]: 1 },
           cargo: { ...ZERO_CARGO, [resourceId]: amount },
           explanation: `На ${planet.name} сформирован транспорт с грузом ${resourceId}.`,
         });
@@ -320,19 +309,19 @@ function creationCandidates(
     }
   }
 
-  if ((planet.ships['ship.aegis.scout'] ?? 0) > 0) {
+  if ((planet.ships[roles.ships.scout] ?? 0) > 0) {
     candidates.push({
-      ships: { 'ship.aegis.scout': 1 },
+      ships: { [roles.ships.scout]: 1 },
       cargo: ZERO_CARGO,
       explanation: `На ${planet.name} сформирован разведывательный флот.`,
     });
   }
 
   const combat: Record<string, number> = {};
-  const fighters = Math.min(3, planet.ships['ship.aegis.fighter'] ?? 0);
-  const frigates = Math.min(1, planet.ships['ship.aegis.frigate'] ?? 0);
-  if (fighters > 0) combat['ship.aegis.fighter'] = fighters;
-  if (frigates > 0) combat['ship.aegis.frigate'] = frigates;
+  const fighters = Math.min(3, planet.ships[roles.ships.fighter] ?? 0);
+  const frigates = Math.min(1, planet.ships[roles.ships.frigate] ?? 0);
+  if (fighters > 0) combat[roles.ships.fighter] = fighters;
+  if (frigates > 0) combat[roles.ships.frigate] = frigates;
   if (Object.keys(combat).length > 0) {
     candidates.push({
       ships: combat,
@@ -361,7 +350,7 @@ function fleetCreationPlan(
 ): BotFleetMissionPlan | null {
   const planets = [...perception.ownPlanets].sort((left, right) => left.id.localeCompare(right.id));
   for (const planet of planets) {
-    for (const candidate of creationCandidates(perception, planet)) {
+    for (const candidate of creationCandidates(perception, planet, state)) {
       const command: Extract<GameCommand, { readonly type: 'CREATE_FLEET' }> = {
         type: 'CREATE_FLEET',
         empireId: perception.empireId,
