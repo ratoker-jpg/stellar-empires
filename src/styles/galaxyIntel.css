@@ -1,10 +1,10 @@
 .galaxy-intel-dialog {
-  width: min(1120px, calc(100vw - 32px));
+  width: min(1180px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
   border: 1px solid color-mix(in srgb, var(--faction-primary, #5ed7ff) 44%, #182536);
   border-radius: 18px;
   padding: 0;
-  background: rgba(4, 9, 16, 0.97);
+  background: rgba(4, 9, 16, 0.98);
   color: #e8f6ff;
   box-shadow: 0 24px 90px rgba(0, 0, 0, 0.72);
 }
@@ -16,16 +16,24 @@
 
 .galaxy-intel-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
   padding: 22px 24px 16px;
   border-bottom: 1px solid rgba(136, 194, 226, 0.16);
+  background: linear-gradient(105deg, rgba(38, 96, 128, 0.18), transparent 62%);
 }
 
 .galaxy-intel-header h2 {
-  margin: 4px 0 0;
+  margin: 4px 0 6px;
   font-size: 24px;
+}
+
+.galaxy-intel-header p:last-child {
+  max-width: 720px;
+  margin: 0;
+  color: #8fa9b9;
+  font-size: 12px;
 }
 
 .galaxy-intel-controls {
@@ -65,7 +73,7 @@
 
 .galaxy-intel-results {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
   gap: 12px;
   max-height: 62vh;
   overflow: auto;
@@ -74,12 +82,49 @@
 
 .galaxy-intel-card {
   display: grid;
-  gap: 8px;
+  grid-template-columns: 112px minmax(0, 1fr);
+  min-height: 188px;
+  overflow: hidden;
   border: 1px solid rgba(123, 173, 201, 0.18);
   border-left-width: 3px;
-  border-radius: 12px;
-  padding: 14px;
-  background: linear-gradient(145deg, rgba(14, 26, 39, 0.94), rgba(6, 12, 20, 0.94));
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(14, 26, 39, 0.96), rgba(6, 12, 20, 0.96));
+}
+
+.galaxy-intel-card__visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(77, 169, 214, 0.22), transparent 56%),
+    rgba(2, 8, 14, 0.72);
+}
+
+.galaxy-intel-card__visual img {
+  width: 104px;
+  height: 104px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.52));
+}
+
+.galaxy-intel-card__visual span {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 999px;
+  padding: 4px 7px;
+  background: rgba(2, 8, 14, 0.86);
+  color: #9fdcf4;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.galaxy-intel-card__body {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  padding: 13px;
 }
 
 .galaxy-intel-card header {
@@ -100,7 +145,7 @@
   padding: 4px 7px;
   background: rgba(111, 153, 177, 0.14);
   color: #abc4d3;
-  font-size: 9px;
+  font-size: 8px;
   text-transform: uppercase;
 }
 
@@ -113,7 +158,18 @@
 .galaxy-intel-card p,
 .galaxy-intel-card small {
   color: #8fa9b9;
-  font-size: 11px;
+  font-size: 10px;
+}
+
+.galaxy-intel-mission-button {
+  min-height: 34px;
+  margin-top: 3px;
+  border: 1px solid color-mix(in srgb, var(--faction-primary, #5ed7ff) 48%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--faction-primary, #5ed7ff) 14%, rgba(7, 20, 31, 0.9));
+  color: #eaf8ff;
+  cursor: pointer;
+  font-weight: 700;
 }
 
 .galaxy-intel-card.is-owned { border-left-color: #66e8bd; }
@@ -128,5 +184,12 @@
   }
   .galaxy-intel-search {
     grid-column: 1 / -1;
+  }
+  .galaxy-intel-card {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+  .galaxy-intel-card__visual img {
+    width: 84px;
+    height: 84px;
   }
 }

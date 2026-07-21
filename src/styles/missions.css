@@ -1,58 +1,126 @@
 .mission-screen-dialog {
-  width: min(1080px, calc(100vw - 30px));
-  max-height: calc(100vh - 30px);
+  width: min(1240px, calc(100vw - 28px));
+  max-height: calc(100vh - 28px);
   padding: 0;
-  border: 1px solid rgba(96, 205, 255, 0.34);
-  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--faction-primary, #60cdff) 42%, #183249);
+  border-radius: 16px;
   color: #edf9ff;
-  background: linear-gradient(145deg, rgba(6, 18, 30, 0.99), rgba(2, 7, 14, 0.99));
+  background: linear-gradient(145deg, rgba(6, 18, 30, 0.995), rgba(2, 7, 14, 0.995));
+  box-shadow: 0 28px 100px rgba(0, 0, 0, 0.76);
 }
 
 .mission-screen-dialog::backdrop {
-  background: rgba(0, 4, 10, 0.82);
-  backdrop-filter: blur(5px);
+  background: rgba(0, 4, 10, 0.84);
+  backdrop-filter: blur(7px);
 }
 
 .mission-screen-dialog > header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: 20px 22px 12px;
+  gap: 20px;
+  padding: 20px 22px 16px;
   border-bottom: 1px solid rgba(96, 205, 255, 0.15);
+  background: linear-gradient(105deg, rgba(39, 103, 137, 0.18), transparent 65%);
+}
+
+.mission-screen-dialog > header h2 {
+  margin: 3px 0 5px;
+}
+
+.mission-screen-dialog > header p:last-child {
+  margin: 0;
+  color: #8fa8b8;
+  font-size: 12px;
 }
 
 .mission-screen-content {
   display: grid;
-  grid-template-columns: minmax(300px, 0.8fr) minmax(380px, 1.2fr);
   gap: 14px;
-  max-height: 700px;
+  max-height: 78vh;
   overflow: auto;
-  padding: 18px 22px 22px;
+  padding: 16px 20px 22px;
+}
+
+.mission-overview {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.mission-overview > div {
+  display: grid;
+  gap: 3px;
+  min-height: 62px;
+  padding: 10px 12px;
+  border: 1px solid rgba(96, 205, 255, 0.15);
+  border-radius: 9px;
+  background: rgba(8, 26, 40, 0.74);
+}
+
+.mission-overview span {
+  color: #829baa;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.mission-overview strong {
+  font-size: 18px;
+}
+
+.mission-overview .mission-target-notice {
+  grid-column: 1 / -1;
+  min-height: auto;
+  border-color: rgba(232, 174, 75, 0.38);
+  background: rgba(73, 53, 17, 0.48);
+  color: #f5d78d;
+  font-size: 12px;
+}
+
+.mission-workspace {
+  display: grid;
+  grid-template-columns: minmax(330px, 0.78fr) minmax(520px, 1.22fr);
+  gap: 14px;
+  align-items: start;
 }
 
 .mission-create,
-.mission-fleet-list article,
+.mission-fleet-list,
 .mission-intelligence,
 .mission-battles,
 .mission-debris {
-  padding: 14px;
   border: 1px solid rgba(96, 205, 255, 0.16);
-  border-radius: 9px;
+  border-radius: 11px;
   background: rgba(6, 18, 30, 0.78);
 }
 
-.mission-fields {
+.mission-create,
+.mission-fleet-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin: 12px 0;
+  align-content: start;
+  gap: 12px;
+  padding: 14px;
 }
 
-.mission-fields label {
+.mission-section-heading h3,
+.mission-section-heading p {
+  margin: 0;
+}
+
+.mission-section-heading p {
+  margin-top: 4px;
+  color: #829baa;
+  font-size: 11px;
+}
+
+.mission-origin-field,
+.mission-cargo-grid label,
+.mission-ship-option label {
   display: grid;
-  gap: 4px;
+  gap: 5px;
   color: #9db0bd;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
 }
 
 .mission-screen-dialog input,
@@ -61,73 +129,193 @@
   min-height: 36px;
   padding: 0 10px;
   border: 1px solid rgba(96, 205, 255, 0.28);
-  border-radius: 6px;
+  border-radius: 7px;
   color: #eaf8ff;
-  background: rgba(8, 29, 46, 0.9);
+  background: rgba(8, 29, 46, 0.92);
 }
 
 .mission-screen-dialog button:not(:disabled) {
   cursor: pointer;
 }
 
+.mission-screen-dialog button:disabled {
+  opacity: 0.45;
+}
+
+.mission-ship-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mission-ship-option {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 9px;
+  min-height: 104px;
+  overflow: hidden;
+  border: 1px solid rgba(104, 181, 218, 0.16);
+  border-radius: 9px;
+  background: rgba(9, 28, 43, 0.8);
+}
+
+.mission-ship-option > img {
+  width: 78px;
+  height: 100%;
+  object-fit: contain;
+  background: radial-gradient(circle, rgba(69, 144, 180, 0.22), transparent 68%);
+}
+
+.mission-ship-option > div {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 8px 8px 8px 0;
+}
+
+.mission-ship-option strong,
+.mission-ship-option small {
+  display: block;
+}
+
+.mission-ship-option small {
+  color: #8199a9;
+  font-size: 9px;
+}
+
+.mission-ship-option input {
+  width: 100%;
+  min-height: 31px;
+}
+
+.mission-cargo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mission-create hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid rgba(96, 205, 255, 0.12);
+}
+
 .mission-composer-status,
 .mission-route-preview {
   flex-basis: 100%;
-  margin: 5px 0;
+  margin: 0;
   color: #80cfe9;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
 }
 
+.mission-composer-status.is-blocked,
 .mission-route-preview.is-blocked {
   color: #ff9e87;
 }
 
-.mission-fleet-list {
-  display: grid;
-  align-content: start;
-  gap: 10px;
+.mission-primary-action {
+  border-color: color-mix(in srgb, var(--faction-primary, #5ed7ff) 60%, transparent) !important;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--faction-primary, #5ed7ff) 34%, #10283a), #10283a) !important;
+  font-weight: 800;
 }
 
-.mission-fleet-list article {
+.mission-fleet-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, auto);
-  gap: 12px;
-  align-items: center;
+  grid-template-columns: 128px minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(96, 205, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(6, 18, 30, 0.84);
 }
 
-.mission-fleet-list p,
-.mission-intelligence p,
-.mission-battles p,
-.mission-debris p {
-  margin: 5px 0 0;
-  color: #9db0bd;
-  font-size: 0.8rem;
+.mission-fleet-card__visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 156px;
+  background: radial-gradient(circle at 50% 45%, rgba(69, 150, 190, 0.25), transparent 64%);
+}
+
+.mission-fleet-card__visual img {
+  width: 118px;
+  height: 118px;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.56));
+}
+
+.mission-fleet-card__visual span {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  border-radius: 999px;
+  padding: 4px 7px;
+  background: rgba(2, 8, 14, 0.88);
+  color: #b6d7e8;
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.mission-fleet-card__body {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 12px;
+}
+
+.mission-fleet-card__body > p,
+.mission-transit p {
+  margin: 0;
+  color: #91a8b7;
+  font-size: 0.73rem;
+}
+
+.mission-transit {
+  display: grid;
+  gap: 5px;
+}
+
+.mission-transit progress {
+  width: 100%;
+  height: 7px;
+  accent-color: var(--faction-primary, #5ed7ff);
 }
 
 .mission-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: minmax(120px, 0.8fr) minmax(160px, 1.2fr) auto;
   gap: 7px;
+  align-items: center;
 }
 
-.mission-actions select {
-  min-width: 130px;
-  max-width: 230px;
+.mission-actions .mission-route-preview {
+  grid-column: 1 / -1;
+}
+
+.mission-operational-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .mission-intelligence,
 .mission-battles,
 .mission-debris {
-  grid-column: 1 / -1;
   display: grid;
+  align-content: start;
   gap: 8px;
+  padding: 13px;
+}
+
+.mission-intelligence h3,
+.mission-battles h3,
+.mission-debris h3 {
+  margin: 0 0 2px;
 }
 
 .mission-intelligence article,
 .mission-battles article,
 .mission-debris article {
-  padding: 10px 12px;
+  padding: 9px 10px;
   border-left: 3px solid rgba(89, 210, 255, 0.58);
   background: rgba(13, 40, 58, 0.62);
 }
@@ -142,13 +330,44 @@
   background: rgba(61, 50, 19, 0.42);
 }
 
-@media (max-width: 800px) {
-  .mission-screen-content,
-  .mission-fleet-list article {
+.mission-intelligence p,
+.mission-battles p,
+.mission-debris p {
+  margin: 4px 0 0;
+  color: #9db0bd;
+  font-size: 0.72rem;
+}
+
+.mission-empty {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed rgba(118, 172, 201, 0.2);
+  border-radius: 8px;
+  color: #8199a9;
+  text-align: center;
+}
+
+@media (max-width: 980px) {
+  .mission-workspace,
+  .mission-operational-grid {
     grid-template-columns: 1fr;
   }
+  .mission-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 
+@media (max-width: 620px) {
+  .mission-ship-grid,
+  .mission-cargo-grid,
   .mission-actions {
-    justify-content: flex-start;
+    grid-template-columns: 1fr;
+  }
+  .mission-fleet-card {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+  .mission-fleet-card__visual img {
+    width: 88px;
+    height: 88px;
   }
 }
