@@ -6,9 +6,9 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 77,
-  "lastMergeSha": "2ef1dff9d90ccb5a8c1abe0f59cb89d6247124d7",
-  "activePr": 78,
+  "lastMergedPr": 78,
+  "lastMergeSha": "4b89ff6d4919c9cee08aa3f68a2d0c341c4d9ff6",
+  "activePr": null,
   "nextPrAfterActive": 79,
   "currentMilestone": "Faction completion and playable-slice stabilization",
   "currentBatch": {
@@ -23,7 +23,8 @@
     "completed": [
       75,
       76,
-      77
+      77,
+      78
     ],
     "plannedCapabilities": [
       "command doctrine progression and flagship framework",
@@ -48,7 +49,8 @@
     "fleet formations, target priorities and original class skills",
     "command doctrine progression, battle experience and flagship fleet appointments",
     "explicit faction catalog manifest, stable mechanical IDs and dependency validation",
-    "full native Aegis mechanical catalog"
+    "full native Aegis mechanical catalog",
+    "complete cross-domain project audit and stabilization recommendations"
   ],
   "knownLimitations": [
     "Synod and Veyra still use explicit Aegis legacy-alias catalogs until PR #79 and #80",
