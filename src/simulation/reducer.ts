@@ -1,3 +1,4 @@
+import { assignFlagship, setCommandDoctrine } from './command/commandDoctrine';
 import {
   cancelDefenseRepair,
   completeDefenseRepair,
@@ -425,6 +426,8 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
     case 'CREATE_FLEET': return createFleet(state, command);
     case 'DISBAND_FLEET': return disbandFleet(state, command);
     case 'SET_FLEET_COMBAT_DOCTRINE': return setFleetCombatDoctrine(state, command);
+    case 'SET_COMMAND_DOCTRINE': return setCommandDoctrine(state, command);
+    case 'ASSIGN_FLAGSHIP': return assignFlagship(state, command);
     case 'SEND_FLEET': return sendFleetWithExpeditionGuard(state, command);
     case 'START_EXPEDITION': return startExpedition(state, command);
     case 'START_SPACE_OBJECT_MISSION': return startSpaceObjectMission(state, command);
