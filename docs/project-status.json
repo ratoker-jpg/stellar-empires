@@ -6,16 +6,16 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 3,
   "releaseTarget": "1.0",
-  "lastMergedPr": 66,
-  "lastMergeSha": "55dfc931b19b4eb8ccca82d89fb41097f4fd4511",
-  "activePr": 67,
-  "nextPrAfterActive": 68,
+  "lastMergedPr": 67,
+  "lastMergeSha": "dddcfadcc63ccf4d6973aa0281b03c54b8f66f26",
+  "activePr": 68,
+  "nextPrAfterActive": 69,
   "currentMilestone": "Mechanics-informed visual/content integration",
   "currentBatch": {
     "standard": [66, 67, 68, 69, 70, 71],
     "plannedCapabilities": [
       "knowledge reference, project audit, roadmap synchronization and source asset intake",
-      "fleet mission flow and galaxy presentation",
+      "remaining generated faction source asset intake",
       "research, production and planetary defense presentation",
       "market, logistics, PvE, world events and report presentation",
       "command profile, local ranking and faction polish",
@@ -42,12 +42,20 @@
     "captured Nemexia HTML/screens/assets are excluded"
   ],
   "sourceAssetIntake": {
-    "filesValidated": 162,
-    "uncompressedBytes": 161379761,
-    "binaryPublication": "committed-source-only",
-    "filesCommitted": 162,
-    "committedBytes": 161379761,
-    "runtimeConnected": false,
+    "committedSourceLibrary": {
+      "filesValidated": 172,
+      "uncompressedBytes": 173846727,
+      "binaryPublication": "committed-source-only",
+      "filesCommitted": 172,
+      "committedBytes": 173846727,
+      "packs": ["starter", "faction-delivery-v1", "generated-factions-v1"]
+    },
+    "runtimeAssets": {
+      "status": "partially-connected",
+      "connected": "existing compact WebP atlases and SVG fallbacks",
+      "runtimeConnected": false,
+      "remainingIntegration": "register source-derived runtime URLs, atlases and tests in a separate PR"
+    },
     "document": "docs/assets/user-supplied-asset-intake.md"
   },
   "requiredStartupReading": [

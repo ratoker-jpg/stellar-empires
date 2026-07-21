@@ -27,8 +27,8 @@ GitHub history and current `main` override stale prose.
 ## Confirmed baseline
 
 ```text
-#66 — Commit verified source asset packs
-merge SHA: 55dfc931b19b4eb8ccca82d89fb41097f4fd4511
+#67 — Fleet mission flow and galaxy presentation
+merge SHA: dddcfadcc63ccf4d6973aa0281b03c54b8f66f26
 ```
 
 Delivered:
@@ -46,6 +46,7 @@ Delivered:
 - three faction identities and runtime visual atlases;
 - design system, global HUD and rebuilt planet workspace.
 - 162 SHA-256-validated supplied assets committed under `assets/source/` as source-only material.
+- the dedicated PR #67 scope contract for fleet and galaxy presentation.
 
 ## Critical limitations
 
@@ -59,11 +60,10 @@ Delivered:
 
 ## Current sequence
 
-1. #67 fleets and galaxy presentation;
-2. #68 research/production/defense presentation;
-3. #69 operations/report presentation;
-4. #70 command/ranking/faction polish;
-5. #71 responsive/accessibility/performance/visual QA.
+1. #68 remaining generated faction source asset intake;
+2. #69 operations/report presentation;
+3. #70 command/ranking/faction polish;
+4. #71 responsive/accessibility/performance/visual QA.
 
 After #71, resume gameplay depth from fresh main. Do not directly merge stale `agent/pr63-ship-upgrades`.
 

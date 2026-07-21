@@ -73,7 +73,7 @@ Excluded:
 |---:|---|---|
 | **#66** | Mechanics reference, full project gap audit, roadmap v3 and source asset intake | honest docs; provenance recorded; no runtime regression |
 | **#67** | Fleet mission flow and production galaxy presentation | all missions visible; targets understandable; galaxy/pirate/ship art integrated |
-| **#68** | Research, production and planetary defense presentation | queues/catalogs readable; building/defense derivatives registered |
+| **#68** | Remaining generated faction source asset intake | archive provenance/inventory complete; no runtime regression |
 | **#69** | Market, logistics, PvE, world events and reports presentation | coherent operations workspace with preserved commands |
 | **#70** | Command profile, local ranking and faction polish | profile/ranking read models and faction identity |
 | **#71** | Responsive, keyboard/accessibility, performance and visual QA | 1366×768/1920×1080, keyboard path and budgets |
