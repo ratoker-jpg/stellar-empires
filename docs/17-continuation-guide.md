@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-21  
-**Baseline:** merged PR #79
+**Baseline:** merged PR #80
 
 ## Repository
 
@@ -22,21 +22,22 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 4. `docs/16-execution-roadmap.md`
 5. `docs/20-full-project-audit.md`
 6. `docs/19-faction-catalog-id-policy.md`
-7. `docs/handoffs/2026-07-21-post-audit-handoff.md`
-8. mechanics reference when changing game rules
-9. asset intake when changing art/runtime assets
-10. latest merged PRs and actual `main`
+7. `docs/21-native-synod-catalog.md`
+8. `docs/handoffs/2026-07-21-post-audit-handoff.md`
+9. mechanics reference when changing game rules
+10. asset intake when changing art/runtime assets
+11. latest merged PRs and actual `main`
 
 ## Confirmed baseline
 
 ```text
-#79 — Add post-audit continuation handoff
-merge SHA: 00f2e09ee99a336de20ff548200b8cd575ca3938
+#80 — Add the native Synod mechanical catalog
+merge SHA: 4b41ee342ddb1fa2681fd7fd192d466f740f295c
 ```
 
-PR #78 and PR #79 changed documentation only. Runtime baseline remains the implementation delivered through PR #77.
+PR #80 changed runtime, tests and documentation. The next branch must start from current `main` after the post-merge status updates.
 
-### Delivered runtime through PR #77
+### Delivered runtime through PR #80
 
 - deterministic schema-v13 simulation, event queue, replay and checksum;
 - IndexedDB autosave, slots, import/export, recovery and migrations;
@@ -49,82 +50,76 @@ PR #78 and PR #79 changed documentation only. Runtime baseline remains the imple
 - autonomous honest bots running through the same command layer in a Worker;
 - three faction identities, runtime visual registries and new-game selection;
 - operations presentation, local ranking and accessibility runtime;
-- per-hull upgrades, formations, target priorities and class skills;
+- per-hull upgrades, formations, target priorities and role-based class skills;
 - command progression, battle experience and flagship appointments;
 - explicit faction catalog manifest, stable mechanical IDs and dependency validation;
-- full native Aegis mechanical catalog: 12 buildings, 10 technologies, 10 ships and 5 defenses.
+- full native Aegis mechanical catalog: 12 buildings, 10 technologies, 10 ships and 5 defenses;
+- full native Synod mechanical catalog: 12 buildings, 10 technologies, 10 ships and 5 defenses;
+- central registry-backed building, research and unit resolution;
+- faction-aware starting colonies, economy, research effects, laboratory, shipyard, hangar and defense-grid calculations;
+- role-based scout, recycle, colonize, expedition and strategic-object requirements;
+- faction-aware combat, ship upgrades, planet development recommendations, bots and UI;
+- deterministic migration of alias-era Synod states from Aegis IDs to native Synod IDs;
+- native Synod building, ship and defense runtime assets with a documented Synod-only technology fallback.
 
-### Delivered documentation through PR #79
+### Delivered documentation through PR #80
 
 - canonical full-project audit in `docs/20-full-project-audit.md`;
 - stabilization risks and P0–P3 backlog;
 - 1.0 readiness criteria;
-- roadmap renumbered after documentation PRs;
-- post-audit handoff with an exact native Synod acceptance boundary;
-- machine-readable project status synchronized with merged PR #79.
+- faction mechanical ID and migration policy;
+- post-audit continuation handoff;
+- native Synod catalog and migration contract in `docs/21-native-synod-catalog.md`;
+- machine-readable project status synchronized with merged PR #80.
 
 ## Current truth and limitations
 
 - Aegis is native and complete at the current prototype depth.
-- Synod and Veyra still resolve through explicit Aegis `legacy-alias` catalogs.
-- No Synod runtime implementation is currently merged or open as a PR.
-- Do not trust or revive partial code from an earlier interrupted Synod attempt; start from fresh `main`.
-- Direct Aegis hardcodes still exist across simulation and UI and must be removed as part of native faction work.
+- Synod is native and complete at the same catalog depth as Aegis.
+- Veyra still resolves through the explicit Aegis `legacy-alias` catalog.
+- Common simulation, mission, bot and UI systems now resolve faction content through the registry or mechanical roles instead of assuming Aegis IDs.
+- Remaining Aegis IDs in the neutral pirate implementation are intentional because pirate planets explicitly use `factionId: aegis`.
 - Bot decision timing is runtime-only and does not fully catch up skipped decision intervals.
 - command/event logs have no explicit long-session size budget.
 - diplomacy, coalitions, strategic stars, complete victory/defeat and final endgame are missing.
-- bots do not yet plan all expanded PvE, faction, command or diplomacy systems.
+- bots do not yet plan command doctrine or diplomacy.
 - exotic matter has no complete spending loop.
 - captured Nemexia HTML, CSS, screens and assets remain excluded from runtime and source control.
 
 ## Immediate sequence
 
-1. **#80 — full native Synod mechanical catalog**.
-2. **#81 — full native Veyra mechanical catalog**.
-3. After #81, run the stabilization gate from `docs/20-full-project-audit.md` before automatically starting diplomacy.
+1. **#81 — full native Veyra mechanical catalog**.
+2. After #81, run the stabilization gate from `docs/20-full-project-audit.md` before automatically starting diplomacy.
 
-The next implementation chat must work only on PR #80. It must not combine Synod, Veyra, diplomacy or general refactoring in one PR.
+Do not begin PR #81 without an explicit user request. When requested, create a fresh branch from current `main`; do not reuse old Veyra or Synod branches.
 
-## PR #80 acceptance boundary
+## PR #81 acceptance boundary
 
-Native Synod is complete only when all of the following are true:
+Native Veyra is complete only when all of the following are true:
 
-- Synod has its own building, research, ship and defense definitions at comparable depth to Aegis;
-- the faction manifest marks Synod as `native`, not `legacy-alias`;
-- global building/research/unit lookup paths resolve through the faction catalog registry;
-- initial Synod colonies use Synod building IDs and produce a valid economy;
-- laboratory, shipyard, sensor/defense-grid and capacity calculations are faction-aware;
-- research and production queues accept Synod definitions through the normal commands;
-- scout, recycle and colonization mission requirements do not hardcode Aegis hull IDs;
-- combat profiles exist for Synod combat units;
-- planet, research and production UI use the active faction catalog and registered runtime assets/fallbacks;
-- bot planners can discover and use Synod definitions without hidden shortcuts;
-- old saves containing Synod planets with Aegis legacy IDs remain deterministic and loadable through an explicit migration or compatibility mapping;
+- Veyra has its own building, research, ship and defense definitions at comparable depth to Aegis and Synod;
+- the faction manifest marks Veyra as `native`, not `legacy-alias`;
+- new Veyra games and colonies use only Veyra mechanical IDs;
+- laboratory, shipyard, sensor/defense-grid, economy, research effects and capacity calculations resolve Veyra definitions through existing registry and role paths;
+- research, production, missions, combat, upgrades, bots and UI accept Veyra definitions through normal commands;
+- old saves containing Veyra planets with Aegis legacy IDs remain deterministic and loadable through an explicit migration;
+- Veyra runtime assets or honest documented Veyra-only fallback frames are registered;
 - catalog validation, domain commands, persistence and representative UI paths have regression tests;
+- Aegis and Synod behavior remains unchanged;
 - lint, typecheck, full Vitest and production build are green.
 
-## Known Aegis-hardcode audit targets
+PR #81 must not include diplomacy, coalitions, endgame, audio, a screen manager or unrelated refactoring.
 
-Before implementing Synod, inspect at minimum:
+## PR #80 verification record
 
-- `src/simulation/planet/createInitialPlanetStates.ts`;
-- `src/simulation/planet/buildingCatalog.ts` and progression helpers;
-- `src/simulation/research/catalog.ts`;
-- `src/simulation/research/researchCommands.ts`;
-- `src/simulation/research/researchState.ts`;
-- `src/simulation/units/catalog.ts`;
-- `src/simulation/units/inventory.ts`;
-- `src/simulation/units/productionCommands.ts`;
-- `src/simulation/defense/planetaryDefense.ts`;
-- fleet mission validation for scout, recycler and colony hulls;
-- combat/research-effect lookups;
-- bot economy, research, production and fleet planners;
-- `src/ui/planetViewModel.ts`;
-- `src/ui/researchScreen.ts`;
-- `src/ui/productionScreen.ts`;
-- faction runtime asset selection and fallback manifests.
+PR #80 passed:
 
-This list is a starting audit, not permission to change unrelated systems.
+- lint;
+- TypeScript typecheck;
+- 63 Vitest files and 240 tests;
+- production build;
+- final GitHub CI run #388;
+- final diff review with no temporary workflow, patch script or unrelated file.
 
 ## Invariants
 
@@ -143,6 +138,6 @@ This list is a starting audit, not permission to change unrelated systems.
 
 ## Workflow
 
-Fresh branch from current `main` → focused implementation → tests/docs → PR → CI → diff review → squash merge → next branch from new `main`.
+Fresh branch from current `main` → focused implementation → tests/docs → PR → CI → diff review → squash merge → status update → stop.
 
 Do not stack a new runtime branch on an open or abandoned branch.
