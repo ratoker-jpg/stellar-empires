@@ -1,4 +1,7 @@
+import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
+import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
 import type { FactionId, PlanetZoneId } from '../simulation/planet/types';
+import { getUnitDefinition } from '../simulation/units/catalog';
 
 export type BuildingPresentationRole =
   | 'command'
@@ -70,13 +73,18 @@ const ZONE_TERRAINS: Readonly<Record<PlanetZoneId, string>> = {
 };
 
 export function getBuildingPresentationRole(buildingId: string): BuildingPresentationRole {
-  if (buildingId.endsWith('.metal-extractor')) return 'metal-extractor';
-  if (buildingId.endsWith('.crystal-refinery')) return 'crystal-refinery';
-  if (buildingId.endsWith('.gas-extractor')) return 'gas-extractor';
-  if (buildingId.endsWith('.power-plant')) return 'power-plant';
-  if (buildingId.endsWith('.research-lab')) return 'research-lab';
-  if (buildingId.endsWith('.shipyard')) return 'shipyard';
-  if (buildingId.endsWith('.sensor-array')) return 'sensor-array';
+  const parsed = parseMechanicalId(buildingId);
+  if (parsed?.kind !== 'building') return 'command';
+  const buildings = getFactionMechanicalRoles(parsed.factionId).buildings;
+  if (buildingId === buildings.metal) return 'metal-extractor';
+  if (buildingId === buildings.crystal) return 'crystal-refinery';
+  if (buildingId === buildings.gas) return 'gas-extractor';
+  if (buildingId === buildings.power) return 'power-plant';
+  if (buildingId === buildings.laboratory) return 'research-lab';
+  if (buildingId === buildings.shipyard) return 'shipyard';
+  if (buildingId === buildings.sensorGrid || buildingId === buildings.defenseIndustry) {
+    return 'sensor-array';
+  }
   return 'command';
 }
 
@@ -94,10 +102,7 @@ export function getZoneTerrainUrl(zoneId: PlanetZoneId): string {
 }
 
 export function getDefensePresentationArtUrl(factionId: FactionId, unitId: string): string {
-  const role = unitId.endsWith('.missile-battery')
-    ? 'missile'
-    : unitId.endsWith('.shield-generator')
-      ? 'shield'
-      : 'kinetic';
-  return DEFENSE_SHEETS[factionId][role] ?? DEFENSE_SHEETS[factionId].kinetic ?? '';
+  const role = getUnitDefinition(unitId)?.role;
+  const presentationRole = role === 'missile' || role === 'shield' ? role : 'kinetic';
+  return DEFENSE_SHEETS[factionId][presentationRole] ?? DEFENSE_SHEETS[factionId].kinetic ?? '';
 }
