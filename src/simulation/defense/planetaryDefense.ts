@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import { enqueueEvent } from '../eventQueue';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
@@ -26,7 +27,7 @@ export const DEFENSE_REPAIR_COST_PERMILLE = 400;
 export const DEFENSE_REPAIR_TIME_PERMILLE = 600;
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function replacePlanet(

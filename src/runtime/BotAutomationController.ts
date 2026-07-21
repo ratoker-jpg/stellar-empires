@@ -1,3 +1,4 @@
+import { createStateChecksum } from '../simulation/checksum';
 import type {
   BotSchedulerResponse,
   RunBotSchedulerRequest,
@@ -48,7 +49,7 @@ export class BotAutomationController {
     const request: RunBotSchedulerRequest = {
       type: 'RUN_BOT_SCHEDULER',
       requestId: this.requestSequence,
-      baseCommandCount: state.commandLog.length,
+      baseStateChecksum: createStateChecksum(state),
       state,
     };
     this.requestSequence += 1;
@@ -71,7 +72,7 @@ export class BotAutomationController {
     }
 
     const current = this.options.getState();
-    if (current.commandLog.length !== response.baseCommandCount) {
+    if (createStateChecksum(current) !== response.baseStateChecksum) {
       this.rerunRequested = true;
       this.runAgainWhenRequested();
       return;

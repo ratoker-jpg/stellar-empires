@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import { enqueueEvent } from '../eventQueue';
 import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import { estimateFlightToGalaxyPlanet } from '../fleets/flightCalculations';
@@ -38,7 +39,7 @@ export interface ExpeditionReport {
 }
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function hashText(value: string): number {

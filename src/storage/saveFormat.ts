@@ -1,5 +1,6 @@
 import { normalizeBotAutomationState } from '../simulation/bots/state';
 import { createStateChecksum } from '../simulation/checksum';
+import { STATE_HISTORY_LIMITS } from '../simulation/history/stateHistory';
 import { COMMAND_MAX_LEVEL, isCommandDoctrineId } from '../simulation/command/commandDoctrine';
 import {
   isPlanetDevelopmentTemplateId,
@@ -132,7 +133,10 @@ function isIntelligenceAlert(value: unknown): boolean {
 }
 function isIntelligenceState(value: unknown): boolean {
   return isRecord(value) && typeof value.empireId === 'string' && Array.isArray(value.observations) &&
-    value.observations.every(isObservation) && Array.isArray(value.alerts) && value.alerts.every(isIntelligenceAlert);
+    value.observations.length <= STATE_HISTORY_LIMITS.intelligenceObservationsPerEmpire &&
+    value.observations.every(isObservation) && Array.isArray(value.alerts) &&
+    value.alerts.length <= STATE_HISTORY_LIMITS.intelligenceAlertsPerEmpire &&
+    value.alerts.every(isIntelligenceAlert);
 }
 function isDebrisField(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.planetId === 'string' &&
@@ -164,7 +168,8 @@ function isMarket(value: unknown): boolean {
   return isRecord(value) && isRecord(value.reserves) && isPositiveInteger(value.reserves.metal) &&
     isPositiveInteger(value.reserves.crystal) && isPositiveInteger(value.reserves.gas) &&
     isNonNegativeInteger(value.feePermille) && isNonNegativeInteger(value.maxPriceImpactPermille) &&
-    isNonNegativeInteger(value.nextTradeSequence) && Array.isArray(value.trades) && value.trades.every(isMarketTrade);
+    isNonNegativeInteger(value.nextTradeSequence) && Array.isArray(value.trades) &&
+    value.trades.length <= STATE_HISTORY_LIMITS.marketTrades && value.trades.every(isMarketTrade);
 }
 function isSpaceObject(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.systemId === 'string' &&
@@ -198,7 +203,8 @@ function isWorldEventHistoryEntry(value: unknown): boolean {
 }
 function isWorldEventState(value: unknown): boolean {
   return isRecord(value) && Array.isArray(value.active) && value.active.every(isWorldEventInstance) &&
-    Array.isArray(value.history) && value.history.every(isWorldEventHistoryEntry) &&
+    Array.isArray(value.history) && value.history.length <= STATE_HISTORY_LIMITS.worldEvents &&
+    value.history.every(isWorldEventHistoryEntry) &&
     isRecord(value.cooldowns) && Object.entries(value.cooldowns).every(
       ([definitionId, cooldownUntil]) =>
         isWorldEventDefinitionId(definitionId) && isNonNegativeInteger(cooldownUntil),
@@ -216,7 +222,10 @@ function isBotAutomationState(
     normalizeBotAutomationState(value, validEmpireIds, elapsedSeconds) !== undefined;
 }
 function isGameState(value: unknown): value is GameState {
-  return isStateShell(value) && value.schemaVersion === 13 && Array.isArray(value.empires) &&
+  return isStateShell(value) && value.schemaVersion === 13 &&
+    Array.isArray(value.commandLog) && value.commandLog.length <= STATE_HISTORY_LIMITS.commands &&
+    Array.isArray(value.eventLog) && value.eventLog.length <= STATE_HISTORY_LIMITS.executedEvents &&
+    Array.isArray(value.empires) &&
     Array.isArray(value.planets) && value.planets.every(isPlanet) && Array.isArray(value.research) &&
     value.research.every(isResearchState) && Array.isArray(value.shipUpgrades) &&
     value.shipUpgrades.every(isShipUpgradeState) && value.shipUpgrades.length === value.empires.length &&

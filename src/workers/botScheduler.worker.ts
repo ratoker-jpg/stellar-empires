@@ -12,7 +12,7 @@ export function handleBotSchedulerRequest(
     return {
       type: 'BOT_SCHEDULER_RESULT',
       requestId: request.requestId,
-      baseCommandCount: request.baseCommandCount,
+      baseStateChecksum: request.baseStateChecksum,
       state: result.state,
       audit: result.audit,
       processedDecisions: result.processedDecisions,
@@ -22,7 +22,7 @@ export function handleBotSchedulerRequest(
     return {
       type: 'BOT_SCHEDULER_ERROR',
       requestId: request.requestId,
-      baseCommandCount: request.baseCommandCount,
+      baseStateChecksum: request.baseStateChecksum,
       message: error instanceof Error ? error.message : 'Unknown bot scheduler error',
     };
   }

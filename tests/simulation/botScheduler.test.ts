@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { createStateChecksum } from '../../src/simulation/checksum';
 import {
   MAX_BOT_DECISIONS_PER_RUN,
   runBotScheduler,
@@ -125,13 +126,13 @@ describe('autonomous bot scheduler', () => {
     const response = handleBotSchedulerRequest({
       type: 'RUN_BOT_SCHEDULER',
       requestId: 7,
-      baseCommandCount: state.commandLog.length,
+      baseStateChecksum: createStateChecksum(state),
       state,
     });
     expect(response).toMatchObject({
       type: 'BOT_SCHEDULER_RESULT',
       requestId: 7,
-      baseCommandCount: 0,
+      baseStateChecksum: createStateChecksum(state),
       processedDecisions: 3,
       hasMoreDueDecisions: false,
     });

@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import { collectDebris } from '../combat/debris';
 import { resolveAttackMission } from '../combat/resolveAttackMission';
 import type { BattleReport } from '../combat/types';
@@ -32,7 +33,7 @@ import {
 import type { FleetState } from './types';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function replaceFleet(

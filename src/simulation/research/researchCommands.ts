@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import { enqueueEvent } from '../eventQueue';
 import { getResearchCatalogForFaction } from '../factions/factionMechanicalCatalogRegistry';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
@@ -30,7 +31,7 @@ import {
 import type { EmpireResearchState } from './types';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function replacePlanet(

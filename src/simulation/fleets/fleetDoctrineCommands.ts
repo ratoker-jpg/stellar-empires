@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import {
   isFleetFormation,
   isFleetTargetPriority,
@@ -10,7 +11,7 @@ import type {
 } from '../types';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 export function setFleetCombatDoctrine(

@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import type { ResourceCost } from '../economy/types';
 import { enqueueEvent } from '../eventQueue';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
@@ -70,7 +71,7 @@ const REQUIRED_SHIP_ROLE_BY_KIND: Readonly<Record<SpaceObjectKind, ShipRole>> = 
 };
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function hashText(value: string): number {

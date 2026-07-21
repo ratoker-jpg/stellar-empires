@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import { refreshPlanetEconomy } from '../economy/planetEconomy';
 import type { CommandLogEntry, CommandResult, GameCommand, GameState } from '../types';
 import {
@@ -8,7 +9,7 @@ import {
 import type { PlanetState } from './types';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function replacePlanet(
