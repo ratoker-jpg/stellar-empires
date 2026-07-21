@@ -165,16 +165,15 @@ export function resolveAttackMission(
 ): AttackMissionResolution {
   const defenderUnits: Record<string, number> = {};
   mergeUnits(defenderUnits, target.inventory.defenses);
-  for (const fleet of state.fleets) {
-    if (
+  const defenderFleets = state.fleets.filter(
+    (fleet) =>
       fleet.empireId === target.ownerEmpireId &&
       fleet.status === 'stationed' &&
       fleet.location.type === 'planet' &&
-      fleet.location.planetId === target.id
-    ) {
-      mergeUnits(defenderUnits, fleet.ships);
-    }
-  }
+      fleet.location.planetId === target.id,
+  );
+  for (const fleet of defenderFleets) mergeUnits(defenderUnits, fleet.ships);
+  const defenderDoctrine = defenderFleets[0];
 
   const isPve = target.ownerEmpireId === PIRATE_EMPIRE_ID;
   const threatMultiplierPermille = isPve
@@ -198,11 +197,15 @@ export function resolveAttackMission(
     {
       empireId: attackerFleet.empireId,
       units: attackerFleet.ships,
+      formation: attackerFleet.formation,
+      targetPriority: attackerFleet.targetPriority,
       ...getCombatEffects(state, attackerFleet.empireId, attackerFleet.ships),
     },
     {
       empireId: target.ownerEmpireId,
       units: effectiveDefenderUnits,
+      formation: defenderDoctrine?.formation ?? 'line',
+      targetPriority: defenderDoctrine?.targetPriority ?? 'balanced',
       ...getCombatEffects(state, target.ownerEmpireId, effectiveDefenderUnits),
     },
   );
@@ -302,6 +305,10 @@ export function resolveAttackMission(
     mode: isPve ? 'pve' : 'pvp',
     threatMultiplierPermille,
     rewardMultiplierPermille,
+    attackerFormation: attackerFleet.formation,
+    attackerTargetPriority: attackerFleet.targetPriority,
+    defenderFormation: defenderDoctrine?.formation ?? 'line',
+    defenderTargetPriority: defenderDoctrine?.targetPriority ?? 'balanced',
   };
 
   return {
