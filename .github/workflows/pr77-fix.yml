@@ -1,0 +1,29 @@
+name: Apply PR77 fix
+
+on:
+  push:
+    branches:
+      - agent/pr77-full-aegis-catalog
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: ${{ !contains(github.event.head_commit.message, '[pr77-fixed]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/pr77-full-aegis-catalog
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22.12.0'
+      - run: node tools/pr77_fix.mjs
+      - run: |
+          git config user.name "stellar-empires-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src tests
+          git commit -m "fix: update full Aegis catalog contracts [pr77-fixed]"
+          git push origin HEAD:agent/pr77-full-aegis-catalog
