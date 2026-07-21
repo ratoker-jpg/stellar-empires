@@ -2,8 +2,10 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-21  
-**Baseline:** merged PR #68  
+**Baseline:** merged PR #77  
 **Release target:** 1.0
+
+> PR #78 is the full-project audit in `docs/20-full-project-audit.md`. Planned implementation PR numbers after #77 are shifted by one compared with the earlier roadmap revision.
 
 ## 1. Release boundary
 
@@ -36,8 +38,9 @@ Excluded:
 - Every incompatible state change gets a schema migration and fixtures.
 - Research is inspiration; adopted systems require original names, values and presentation.
 - Source assets are not runtime assets until registered and tested.
+- `docs/20-full-project-audit.md` defines the current stabilization risks and recommended gates.
 
-## 3. Delivered baseline through PR #68
+## 3. Delivered baseline through PR #77
 
 ### Foundation and vertical slice
 
@@ -65,41 +68,59 @@ Excluded:
 - 172 verified source assets across three packs;
 - generated runtime atlases/hero/emblem/background registry;
 - production galaxy, planet, object, pirate and fleet art;
-- design system, structured HUD and rebuilt planet workspace.
+- design system, structured HUD and rebuilt planet workspace;
+- responsive/accessibility runtime and local command ranking;
+- per-hull upgrades, formations, target priorities and class skills;
+- command doctrine progression and flagship framework;
+- faction catalog registry, stable IDs and full native Aegis catalog.
 
-## 4. Active six-PR batch
-
-| PR | Scope | Gate |
-|---:|---|---|
-| **#69** | Research, production and planetary defense presentation | committed building/terrain/ship/defense art; existing commands preserved |
-| **#70** | Market, logistics, PvE, world events and reports presentation | coherent operations workspace with preserved commands |
-| **#71** | Command profile, local ranking and faction polish | profile/ranking read models and faction identity |
-| **#72** | Responsive, keyboard/accessibility, performance and visual QA | 1366×768/1920×1080, keyboard path and budgets |
-| **#73** | Reimplement ship upgrades on fresh main | deterministic commands, schema migration and tests |
-| **#74** | Formations, target priorities and original class skills | deterministic combat integration and bot-safe defaults |
-
-## 5. Military and faction architecture
+## 4. Completed visual and military batch
 
 | PR | Scope |
 |---:|---|
+| **#69** | Research, production and planetary defense presentation |
+| **#70** | Market, logistics, PvE, world events and reports presentation |
+| **#71** | Command profile, local ranking and faction polish |
+| **#72** | Responsive, keyboard/accessibility, performance and visual QA |
+| **#73** | Deterministic per-hull ship upgrades |
+| **#74** | Formations, target priorities and original class skills |
 | **#75** | Command doctrine progression and flagship framework |
 | **#76** | Faction mechanical catalog architecture and ID migration policy |
 | **#77** | Full Aegis economy/buildings/research/unit roster |
-| **#78** | Full Synod economy/buildings/research/unit roster |
-| **#79** | Full Veyra economy/buildings/research/unit roster |
+| **#78** | Full project audit and stabilization recommendations |
 
-Gate after #79: three factions are mechanically distinct, bot-usable and save-compatible.
+## 5. Faction completion and stabilization gate
+
+| PR | Scope |
+|---:|---|
+| **#79** | Full Synod economy/buildings/research/unit roster |
+| **#80** | Full Veyra economy/buildings/research/unit roster |
+
+Gate after #80:
+
+- three factions are mechanically distinct, bot-usable and save-compatible;
+- direct shared Aegis dependencies are audited;
+- stabilization priorities from `docs/20-full-project-audit.md` are reviewed before diplomacy begins.
+
+Recommended stabilization package before or alongside diplomacy:
+
+- canonical bot time and catch-up;
+- serialized bot timing;
+- long-session state/log control;
+- temporary complete victory/defeat loop;
+- early headless balance harness;
+- browser E2E baseline.
 
 ## 6. Diplomacy, coalition and endgame
 
 | PR | Scope |
 |---:|---|
-| **#80** | Relations, reputation and diplomatic positions |
-| **#81** | Treaties, wars, coalition creation, roles and AI decisions |
-| **#82** | Coalition contributions, shared projects and coalition world |
-| **#83** | Strategic stars, support/assault operations and group battles |
-| **#84** | Rare meta-resource, anti-snowball and intermediate anchor arrays |
-| **#85** | Final transit nexus, victory/defeat and post-round state |
+| **#81** | Relations, reputation and diplomatic positions |
+| **#82** | Treaties, wars, coalition creation, roles and AI decisions |
+| **#83** | Coalition contributions, shared projects and coalition world |
+| **#84** | Strategic stars, support/assault operations and group battles |
+| **#85** | Rare meta-resource, anti-snowball and intermediate anchor arrays |
+| **#86** | Final transit nexus, victory/defeat and post-round state |
 
 Original terminology is mandatory. The external crystal/obelisk/gate chain is only a structural reference.
 
@@ -107,22 +128,24 @@ Original terminology is mandatory. The external crystal/obelisk/gate chain is on
 
 | PR | Scope |
 |---:|---|
-| **#86** | Achievements, local rankings and round statistics |
-| **#87** | Tutorial, contextual help and encyclopedia |
-| **#88** | Bot expedition/object/repair/diplomacy/endgame planning |
-| **#89** | Audio system, faction sound language and music |
-| **#90** | Notifications, reports, explanations and bookmarks |
-| **#91** | Save schema consolidation and offline resimulation |
-| **#92** | Balance harness and headless simulation batches |
-| **#93** | Economy/progression/battle/endgame balance pass |
-| **#94** | Aegis production content/art/effects/audio polish |
-| **#95** | Synod production content/art/effects/audio polish |
-| **#96** | Veyra production content/art/effects/audio polish |
-| **#97** | Accessibility and localization readiness |
-| **#98** | Performance/memory/startup budget and low-end fallback |
-| **#99** | Regression, migrations, replay and browser matrix |
-| **#100** | Release candidate, docs, credits/provenance and Pages QA |
-| **#101** | Release 1.0 stabilization and tagged public build |
+| **#87** | Achievements, local rankings and round statistics |
+| **#88** | Tutorial, contextual help and encyclopedia |
+| **#89** | Bot expedition/object/repair/diplomacy/endgame planning |
+| **#90** | Audio system, faction sound language and music |
+| **#91** | Notifications, reports, explanations and bookmarks |
+| **#92** | Save schema consolidation and offline resimulation |
+| **#93** | Balance harness and headless simulation batches |
+| **#94** | Economy/progression/battle/endgame balance pass |
+| **#95** | Aegis production content/art/effects/audio polish |
+| **#96** | Synod production content/art/effects/audio polish |
+| **#97** | Veyra production content/art/effects/audio polish |
+| **#98** | Accessibility and localization readiness |
+| **#99** | Performance/memory/startup budget and low-end fallback |
+| **#100** | Regression, migrations, replay and browser matrix |
+| **#101** | Release candidate, docs, credits/provenance and Pages QA |
+| **#102** | Release 1.0 stabilization and tagged public build |
+
+The full audit recommends moving canonical bot time, state-size control, a temporary complete game loop, balance harness and browser E2E earlier than these final completeness PRs.
 
 ## 8. Cross-cutting acceptance gates
 
@@ -135,6 +158,14 @@ Every gameplay system provides:
 - accessible UI state;
 - original terminology and asset provenance;
 - performance limits.
+
+Additional project-wide gates:
+
+- save/load must not change bot behaviour;
+- different time-step sizes must produce equivalent deterministic outcomes;
+- state and save growth must remain inside explicit budgets;
+- at least one complete victory/defeat path must be playable before final endgame expansion;
+- browser E2E must cover the main vertical slice.
 
 ## 9. Explicit non-goals
 
