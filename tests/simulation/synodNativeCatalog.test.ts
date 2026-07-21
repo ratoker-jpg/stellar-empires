@@ -54,7 +54,7 @@ function addSynodInfrastructure(state: GameState, empireId: string): GameState {
                 ].includes(building.buildingId),
               ),
               { buildingId: 'building.synod.concord-nexus', level: 4 },
-              { buildingId: 'building.synod.cognition-vault', level: 4 },
+              { buildingId: 'building.synod.cognition-vault', level: 5 },
               { buildingId: 'building.synod.lattice-yard', level: 4 },
               { buildingId: 'building.synod.deep-array', level: 4 },
               { buildingId: 'building.synod.shield-foundry', level: 3 },

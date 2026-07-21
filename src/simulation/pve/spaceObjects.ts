@@ -1,5 +1,7 @@
 import type { ResourceCost } from '../economy/types';
 import { enqueueEvent } from '../eventQueue';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
+import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import {
   calculateFlightDuration,
   calculateFlightFuel,
@@ -8,10 +10,7 @@ import {
 } from '../fleets/flightCalculations';
 import type { FleetState } from '../fleets/types';
 import type { GalaxyModel } from '../galaxy/types';
-import type { PlanetState } from '../planet/types';
-import { AEGIS_RESEARCH_CATALOG } from '../research/catalog';
-import { calculateResearchEffects } from '../research/progression';
-import { getEmpireResearch } from '../research/researchState';
+import type { FactionId, PlanetState } from '../planet/types';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -19,6 +18,8 @@ import type {
   GameState,
   ScheduledGameEvent,
 } from '../types';
+import { findShipIdByRole } from '../units/shipCapabilities';
+import type { ShipRole } from '../units/types';
 import { calculatePveRewardMultiplier } from './pveBalance';
 import {
   getWorldEventHazardModifier,
@@ -62,10 +63,10 @@ export interface SpaceObjectMissionReport {
 }
 
 const SPACE_OBJECT_KINDS: readonly SpaceObjectKind[] = ['asteroid', 'gas-cloud', 'anomaly'];
-const REQUIRED_SHIP_BY_KIND: Readonly<Record<SpaceObjectKind, string>> = {
-  asteroid: 'ship.aegis.recycler',
-  'gas-cloud': 'ship.aegis.cargo',
-  anomaly: 'ship.aegis.scout',
+const REQUIRED_SHIP_ROLE_BY_KIND: Readonly<Record<SpaceObjectKind, ShipRole>> = {
+  asteroid: 'recycler',
+  'gas-cloud': 'transport',
+  anomaly: 'scout',
 };
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
@@ -103,14 +104,20 @@ function replaceSpaceObject(
 }
 
 function getFleetSpeedBonus(state: GameState, empireId: string): number {
-  const research = getEmpireResearch(state.research, empireId);
-  return research === undefined
-    ? 0
-    : calculateResearchEffects(research, AEGIS_RESEARCH_CATALOG).fleetSpeedPercent;
+  return getResearchEffectsForEmpire(state, empireId).fleetSpeedPercent;
 }
 
-export function getRequiredSpaceObjectShipId(kind: SpaceObjectKind): string {
-  return REQUIRED_SHIP_BY_KIND[kind];
+export function getRequiredSpaceObjectShipId(
+  kind: SpaceObjectKind,
+  factionId: FactionId = 'aegis',
+): string {
+  const ships = getFactionMechanicalRoles(factionId).ships;
+  switch (REQUIRED_SHIP_ROLE_BY_KIND[kind]) {
+    case 'recycler': return ships.recycler;
+    case 'transport': return ships.transport;
+    case 'scout': return ships.scout;
+    default: throw new Error(`Unsupported space object ship role: ${REQUIRED_SHIP_ROLE_BY_KIND[kind]}`);
+  }
 }
 
 export function createInitialSpaceObjects(
@@ -190,6 +197,7 @@ function createMissionReport(
   object: SpaceObjectState,
   originPlanetId: string,
   resolvesAt: number,
+  specialistShipId: string,
 ): SpaceObjectMissionReport {
   const roll = hashText(
     `${state.seed}:${state.nextEventSequence}:${fleet.id}:${object.id}:space-object-mission`,
@@ -230,9 +238,8 @@ function createMissionReport(
     0,
     Math.min(950, object.hazardPermille + controlHazardModifier + worldHazardModifier),
   );
-  const requiredShipId = getRequiredSpaceObjectShipId(object.kind);
   const losses = Math.floor(roll / 19) % 1_000 < effectiveHazard
-    ? { [requiredShipId]: 1 }
+    ? { [specialistShipId]: 1 }
     : {};
   const reward =
     object.kind === 'asteroid'
@@ -314,13 +321,14 @@ export function startSpaceObjectMission(
       message: 'Another operation is already active at this space object.',
     };
   }
-  const requiredShipId = getRequiredSpaceObjectShipId(object.kind);
-  if ((fleet.ships[requiredShipId] ?? 0) <= 0) {
+  const requiredRole = REQUIRED_SHIP_ROLE_BY_KIND[object.kind];
+  const requiredShipId = findShipIdByRole(fleet.ships, requiredRole);
+  if (requiredShipId === undefined) {
     return {
       ok: false,
       code: 'SPACE_OBJECT_SPECIALIST_REQUIRED',
-      message: `Mission requires ${requiredShipId}.`,
-      details: { requiredShipId, kind: object.kind },
+      message: `Mission requires a ${requiredRole} hull.`,
+      details: { requiredRole, kind: object.kind },
     };
   }
   const estimate = estimateSpaceObjectMission(state, fleet, object);
@@ -337,7 +345,14 @@ export function startSpaceObjectMission(
   }
 
   const resolvesAt = state.clock.elapsedSeconds + estimate.totalDurationSeconds;
-  const report = createMissionReport(state, fleet, object, origin.id, resolvesAt);
+  const report = createMissionReport(
+    state,
+    fleet,
+    object,
+    origin.id,
+    resolvesAt,
+    requiredShipId,
+  );
   const event: ScheduledGameEvent = {
     id: `event-${state.nextEventSequence}`,
     executeAt: resolvesAt,
