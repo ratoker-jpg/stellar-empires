@@ -1,0 +1,52 @@
+name: Agent PR83 history retention autopatch
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/pr83-state-history-budgets
+          fetch-depth: 0
+      - name: Setup Node 22.12
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+      - name: Apply history retention patch
+        shell: bash
+        run: |
+          base64 --decode tools/pr83.patch.gz.b64 | gzip --decompress > /tmp/pr83.patch
+          git apply -p1 /tmp/pr83.patch
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate full repository gate
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run check 2>&1 | tee pr83-validation.log
+      - name: Upload validation diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr83-validation
+          path: pr83-validation.log
+          retention-days: 1
+      - name: Remove temporary files
+        run: rm -f tools/pr83.patch.gz.b64 .github/workflows/agent-pr83-autopatch.yml package-lock.json pr83-validation.log /tmp/pr83.patch
+      - name: Commit implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: bound long-session state histories"
+          git push origin HEAD:agent/pr83-state-history-budgets
