@@ -1,3 +1,4 @@
+import type { BotAutomationState } from './bots/state';
 import type { DebrisField } from './combat/debris';
 import type { FleetFormation, FleetTargetPriority } from './combat/fleetDoctrine';
 import type { BattleReport } from './combat/types';
@@ -310,6 +311,7 @@ export interface GameState {
   readonly spaceObjects: readonly SpaceObjectState[];
   readonly strategicResources: readonly EmpireStrategicResources[];
   readonly worldEvents: WorldEventState;
+  readonly botAutomation: BotAutomationState;
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
   readonly commandLog: readonly CommandLogEntry[];

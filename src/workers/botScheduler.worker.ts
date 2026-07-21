@@ -8,14 +8,15 @@ export function handleBotSchedulerRequest(
   request: RunBotSchedulerRequest,
 ): BotSchedulerResponse {
   try {
-    const result = runBotScheduler(request.state, request.cursor);
+    const result = runBotScheduler(request.state);
     return {
       type: 'BOT_SCHEDULER_RESULT',
       requestId: request.requestId,
       baseCommandCount: request.baseCommandCount,
       state: result.state,
-      cursor: result.cursor,
       audit: result.audit,
+      processedDecisions: result.processedDecisions,
+      hasMoreDueDecisions: result.hasMoreDueDecisions,
     };
   } catch (error: unknown) {
     return {

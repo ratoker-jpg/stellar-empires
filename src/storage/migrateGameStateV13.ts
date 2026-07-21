@@ -1,3 +1,4 @@
+import { normalizeBotAutomationState } from '../simulation/bots/state';
 import {
   calculateCommandLevel,
   createInitialCommandStates,
@@ -147,7 +148,16 @@ export function migrateGameStateV13(value: unknown): GameState | undefined {
   if (empireIds.length !== value.empires.length) return undefined;
   const shipUpgrades = readShipUpgradeStates(value.shipUpgrades, empireIds);
   const commanders = readCommandStates(value.commanders, empireIds);
-  if (shipUpgrades === undefined || commanders === undefined) return undefined;
+  const elapsedSeconds = isRecord(value.clock) && isNonNegativeInteger(value.clock.elapsedSeconds)
+    ? value.clock.elapsedSeconds
+    : undefined;
+  if (elapsedSeconds === undefined) return undefined;
+  const botAutomation = normalizeBotAutomationState(
+    value.botAutomation,
+    empireIds,
+    elapsedSeconds,
+  );
+  if (shipUpgrades === undefined || commanders === undefined || botAutomation === undefined) return undefined;
   const legacyInput = value.schemaVersion === 13 ? { ...value, schemaVersion: 12 } : value;
   const migrated = migrateGameState(legacyInput);
   if (migrated === undefined) return undefined;
@@ -156,5 +166,6 @@ export function migrateGameStateV13(value: unknown): GameState | undefined {
     schemaVersion: 13,
     shipUpgrades,
     commanders,
+    botAutomation,
   }));
 }

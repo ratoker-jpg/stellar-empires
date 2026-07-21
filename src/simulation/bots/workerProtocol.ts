@@ -1,15 +1,11 @@
 import type { GameState } from '../types';
-import type {
-  BotSchedulerAuditEntry,
-  BotSchedulerCursor,
-} from './scheduler';
+import type { BotSchedulerAuditEntry } from './scheduler';
 
 export interface RunBotSchedulerRequest {
   readonly type: 'RUN_BOT_SCHEDULER';
   readonly requestId: number;
   readonly baseCommandCount: number;
   readonly state: GameState;
-  readonly cursor: BotSchedulerCursor;
 }
 
 export interface RunBotSchedulerSuccess {
@@ -17,8 +13,9 @@ export interface RunBotSchedulerSuccess {
   readonly requestId: number;
   readonly baseCommandCount: number;
   readonly state: GameState;
-  readonly cursor: BotSchedulerCursor;
   readonly audit: readonly BotSchedulerAuditEntry[];
+  readonly processedDecisions: number;
+  readonly hasMoreDueDecisions: boolean;
 }
 
 export interface RunBotSchedulerFailure {

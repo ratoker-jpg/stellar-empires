@@ -200,6 +200,31 @@ describe('save format', () => {
     }
   });
 
+  it('adds a serializable bot schedule to schema-v13 saves that predate bot timing state', () => {
+    const current = createInitialGameState('bot-automation-migration');
+    const advanced = {
+      ...current,
+      clock: { ...current.clock, elapsedSeconds: 1_800 },
+    };
+    const { botAutomation: _botAutomation, ...legacyState } = advanced;
+    const legacySave = {
+      formatVersion: 2,
+      slotId: 'bot-automation-v13',
+      savedAt: '2026-07-21T16:00:00.000Z',
+      checksum: createStateChecksum(legacyState),
+      state: legacyState,
+    };
+    const parsed = parseSaveJson(JSON.stringify(legacySave));
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.value.state.botAutomation.nextDecisionAtByEmpire).toEqual({
+        'aegis-bot': 1_800,
+        'synod-bot': 1_800,
+        'veyra-bot': 1_800,
+      });
+    }
+  });
+
   it('adds default command profiles to schema-v13 saves that predate command progression', () => {
     const current = createInitialGameState('command-migration');
     const { commanders: _commanders, ...legacyState } = current;

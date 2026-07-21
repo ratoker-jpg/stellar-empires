@@ -1,3 +1,4 @@
+import { createInitialBotAutomationState } from './bots/state';
 import { createInitialCommandStates } from './command/commandDoctrine';
 import { generateGalaxy } from './galaxy/generateGalaxy';
 import { createInitialIntelligenceStates } from './intelligence/intelligenceState';
@@ -46,6 +47,7 @@ export function createInitialGameState(
     spaceObjects: createInitialSpaceObjects(galaxy, seed),
     strategicResources: createInitialStrategicResources(empires),
     worldEvents: createInitialWorldEventState(),
+    botAutomation: createInitialBotAutomationState(empires, 0),
     nextEventSequence: 0,
     pendingEvents: [],
     commandLog: [],
