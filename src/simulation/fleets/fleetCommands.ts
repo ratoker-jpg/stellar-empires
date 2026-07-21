@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import type { PlanetEconomyState, ResourceCost, ResourceId } from '../economy/types';
 import type { PlanetState } from '../planet/types';
 import type {
@@ -18,7 +19,7 @@ import type { FleetState } from './types';
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function replacePlanet(

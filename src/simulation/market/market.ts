@@ -1,3 +1,4 @@
+import { appendCommandHistory, STATE_HISTORY_LIMITS } from '../history/stateHistory';
 import type { ResourceId } from '../economy/types';
 import type { PlanetState } from '../planet/types';
 import type { CommandLogEntry, CommandResult, GameCommand, GameState } from '../types';
@@ -5,7 +6,6 @@ import type { MarketQuote, MarketState, MarketTrade } from './types';
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
 const INITIAL_RESERVE = 50_000;
-const MAX_HISTORY = 50;
 
 export function createInitialMarketState(): MarketState {
   return {
@@ -100,7 +100,7 @@ export function quoteMarketSwap(
 }
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function replacePlanet(
@@ -183,7 +183,7 @@ export function executeMarketSwap(
         state.market.reserves[command.receiveResourceId] - quote.receiveAmount,
     },
     nextTradeSequence: state.market.nextTradeSequence + 1,
-    trades: [...state.market.trades, trade].slice(-MAX_HISTORY),
+    trades: [...state.market.trades, trade].slice(-STATE_HISTORY_LIMITS.marketTrades),
   };
   return {
     ok: true,

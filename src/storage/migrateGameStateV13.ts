@@ -1,4 +1,5 @@
 import { normalizeBotAutomationState } from '../simulation/bots/state';
+import { compactGameStateHistory } from '../simulation/history/stateHistory';
 import {
   calculateCommandLevel,
   createInitialCommandStates,
@@ -161,11 +162,11 @@ export function migrateGameStateV13(value: unknown): GameState | undefined {
   const legacyInput = value.schemaVersion === 13 ? { ...value, schemaVersion: 12 } : value;
   const migrated = migrateGameState(legacyInput);
   if (migrated === undefined) return undefined;
-  return migrateLegacyVeyraAliases(migrateLegacySynodAliases({
+  return compactGameStateHistory(migrateLegacyVeyraAliases(migrateLegacySynodAliases({
     ...migrated,
     schemaVersion: 13,
     shipUpgrades,
     commanders,
     botAutomation,
-  }));
+  })));
 }

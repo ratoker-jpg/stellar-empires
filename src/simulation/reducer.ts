@@ -1,3 +1,4 @@
+import { appendCommandHistory, appendExecutedEventHistory } from './history/stateHistory';
 import { assignFlagship, setCommandDoctrine } from './command/commandDoctrine';
 import {
   cancelDefenseRepair,
@@ -79,7 +80,7 @@ import {
 } from './upgrades/shipUpgrades';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function isNonNegativeInteger(value: number): boolean {
@@ -382,7 +383,7 @@ function advanceTime(
       ...working,
       clock: { ...working.clock, elapsedSeconds: targetTime },
       commandLog: appendCommand(state, command),
-      eventLog: [...state.eventLog, ...executedEvents],
+      eventLog: appendExecutedEventHistory(state.eventLog, executedEvents),
     },
   };
 }

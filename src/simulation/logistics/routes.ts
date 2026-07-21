@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import type { ResourceId } from '../economy/types';
 import type { PlanetState } from '../planet/types';
 import type { CommandLogEntry, CommandResult, GameCommand, GameState } from '../types';
@@ -9,7 +10,7 @@ const MAX_INTERVAL_SECONDS = 86_400;
 const MAX_AMOUNT_PER_TRIP = 100_000;
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function isResourceId(value: unknown): value is ResourceId {

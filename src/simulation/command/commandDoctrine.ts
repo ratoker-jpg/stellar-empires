@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import type { BattleReport } from '../combat/types';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
@@ -91,7 +92,7 @@ function replaceCommandState(
 }
 
 function appendCommand(state: GameState, command: GameCommand): GameState['commandLog'] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 export function addCommandExperience(

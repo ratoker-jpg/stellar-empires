@@ -1,3 +1,4 @@
+import { retainNewest, STATE_HISTORY_LIMITS } from '../history/stateHistory';
 import { enqueueEvent } from '../eventQueue';
 import type { GameState, ScheduledGameEvent } from '../types';
 import { PIRATE_EMPIRE_ID } from './neutralForces';
@@ -245,10 +246,10 @@ function completeWorldEvent(
     worldEvents: {
       ...state.worldEvents,
       active: state.worldEvents.active.filter((event) => event.id !== instance.id),
-      history: [
-        ...state.worldEvents.history,
-        { ...instance, completedAt, completion: 'completed' },
-      ],
+      history: retainNewest(
+        [...state.worldEvents.history, { ...instance, completedAt, completion: 'completed' }],
+        STATE_HISTORY_LIMITS.worldEvents,
+      ),
       cooldowns: {
         ...state.worldEvents.cooldowns,
         [instance.definitionId]: completedAt + definition.cooldownSeconds,
@@ -361,14 +362,17 @@ export function reconcileWorldEventSchedule(state: GameState): GameState {
   pendingEvents.sort(
     (left, right) => left.executeAt - right.executeAt || left.sequence - right.sequence,
   );
-  const history: WorldEventHistoryEntry[] = [
-    ...state.worldEvents.history,
-    ...expired.map((event) => ({
-      ...event,
-      completedAt: state.clock.elapsedSeconds,
-      completion: 'recovered' as const,
-    })),
-  ];
+  const history = retainNewest<WorldEventHistoryEntry>(
+    [
+      ...state.worldEvents.history,
+      ...expired.map((event) => ({
+        ...event,
+        completedAt: state.clock.elapsedSeconds,
+        completion: 'recovered' as const,
+      })),
+    ],
+    STATE_HISTORY_LIMITS.worldEvents,
+  );
   const cooldowns: Partial<Record<WorldEventDefinitionId, number>> = {
     ...state.worldEvents.cooldowns,
   };

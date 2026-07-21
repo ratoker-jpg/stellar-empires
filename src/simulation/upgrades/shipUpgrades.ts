@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import type { ResourceCost } from '../economy/types';
 import { enqueueEvent } from '../eventQueue';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
@@ -61,7 +62,7 @@ export const SHIP_UPGRADE_TRACKS: Readonly<
 const EMPTY_LEVELS: ShipUpgradeLevels = { weapons: 0, armor: 0, cargo: 0 };
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function replacePlanet(

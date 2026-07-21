@@ -1,3 +1,4 @@
+import { appendCommandHistory } from '../history/stateHistory';
 import {
   getDefenseGridCapacity,
   getDefenseGridUsed,
@@ -36,7 +37,7 @@ import {
 import type { PlanetProductionQueues, UnitKind } from './types';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
-  return [...state.commandLog, { index: state.commandLog.length, command }];
+  return appendCommandHistory(state.commandLog, command);
 }
 
 function replacePlanet(

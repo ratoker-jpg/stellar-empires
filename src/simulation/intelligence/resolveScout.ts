@@ -1,3 +1,4 @@
+import { retainNewest, STATE_HISTORY_LIMITS } from '../history/stateHistory';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import type { FleetState } from '../fleets/types';
@@ -117,12 +118,15 @@ export function resolveScoutArrival(
   } as const;
   let intelligence = replaceIntelligence(state.intelligence, {
     ...observer,
-    observations: [
-      ...observer.observations.filter(
-        (item) => item.targetPlanetId !== target.id,
-      ),
-      observation,
-    ],
+    observations: retainNewest(
+      [
+        ...observer.observations.filter(
+          (item) => item.targetPlanetId !== target.id,
+        ),
+        observation,
+      ],
+      STATE_HISTORY_LIMITS.intelligenceObservationsPerEmpire,
+    ),
   });
 
   if (detected && target.ownerEmpireId !== fleet.empireId) {
@@ -144,7 +148,10 @@ export function resolveScoutArrival(
       };
       intelligence = replaceIntelligence(intelligence, {
         ...defender,
-        alerts: [...defender.alerts, alert],
+        alerts: retainNewest(
+          [...defender.alerts, alert],
+          STATE_HISTORY_LIMITS.intelligenceAlertsPerEmpire,
+        ),
       });
     }
   }
