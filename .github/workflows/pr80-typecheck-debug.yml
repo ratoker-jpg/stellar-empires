@@ -26,7 +26,7 @@ jobs:
           echo "$?" > typecheck-status.txt
           npm test -- --run > test.log 2>&1
           echo "$?" > test-status.txt
-          rg -n "AEGIS_|ship\.aegis\.(scout|recycler|colony)|building\.aegis\.|technology\.aegis\." src tests > hardcodes.log 2>&1
+          grep -RInE "AEGIS_|ship\.aegis\.(scout|recycler|colony)|building\.aegis\.|technology\.aegis\." src tests > hardcodes.log 2>&1
           exit 0
       - uses: actions/upload-artifact@v6
         with:
