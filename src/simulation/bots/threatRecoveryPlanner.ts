@@ -1,3 +1,5 @@
+import { getFactionIdForEmpire } from '../factions/factionMechanicalCatalogRegistry';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import type { IntelPlanetSnapshot } from '../intelligence/types';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
@@ -158,14 +160,16 @@ function recoveryPhase(
   perception: BotPerception,
   threat: BotThreatLevel,
 ): BotRecoveryPhase {
-  if (perception.ownPlanets.length === 0) return 'critical';
+  const firstPlanet = perception.ownPlanets[0];
+  if (firstPlanet === undefined) return 'critical';
+  const roles = getFactionMechanicalRoles(firstPlanet.factionId).buildings;
   const brokenEnergy = perception.ownPlanets.some(
     (planet) => planet.resources.energyProduced < planet.resources.energyConsumed,
   );
   const missingCore = perception.ownPlanets.every(
     (planet) =>
-      (planet.buildings['building.aegis.command'] ?? 0) < 1 ||
-      (planet.buildings['building.aegis.power-plant'] ?? 0) < 1,
+      (planet.buildings[roles.command] ?? 0) < 1 ||
+      (planet.buildings[roles.power] ?? 0) < 1,
   );
   if (brokenEnergy || missingCore) return 'critical';
   if (
@@ -194,10 +198,11 @@ function militaryRecoveryCommand(
   state: GameState,
   empireId: string,
 ): GameCommand | null {
+  const roles = getFactionMechanicalRoles(getFactionIdForEmpire(state, empireId));
   const candidates = [
-    { unitId: 'ship.aegis.fighter', quantity: 3 },
-    { unitId: 'defense.aegis.gun-battery', quantity: 2 },
-    { unitId: 'ship.aegis.frigate', quantity: 1 },
+    { unitId: roles.ships.fighter, quantity: 3 },
+    { unitId: roles.defenses.light, quantity: 2 },
+    { unitId: roles.ships.frigate, quantity: 1 },
   ] as const;
   const planets = state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
