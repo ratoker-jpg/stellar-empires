@@ -4,12 +4,15 @@ import {
   planBotThreatAndRecovery,
 } from '../../src/simulation/bots/threatRecoveryPlanner';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import { getFactionIdForEmpire } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
+import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
 import type { GameState } from '../../src/simulation/types';
 
 const ZERO_CARGO = { metal: 0, crystal: 0, gas: 0 } as const;
 
 function prepareMilitaryIndustry(state: GameState, empireId: string): GameState {
+  const roles = getFactionMechanicalRoles(getFactionIdForEmpire(state, empireId));
   return {
     ...state,
     planets: state.planets.map((planet) =>
@@ -20,13 +23,15 @@ function prepareMilitaryIndustry(state: GameState, empireId: string): GameState 
             buildings: [
               ...planet.buildings.filter(
                 (building) =>
-                  building.buildingId !== 'building.aegis.command' &&
-                  building.buildingId !== 'building.aegis.shipyard' &&
-                  building.buildingId !== 'building.aegis.research-lab',
+                  building.buildingId !== roles.buildings.command &&
+                  building.buildingId !== roles.buildings.shipyard &&
+                  building.buildingId !== roles.buildings.laboratory &&
+                  building.buildingId !== roles.buildings.sensorGrid,
               ),
-              { buildingId: 'building.aegis.command', level: 3 },
-              { buildingId: 'building.aegis.shipyard', level: 2 },
-              { buildingId: 'building.aegis.research-lab', level: 3 },
+              { buildingId: roles.buildings.command, level: 3 },
+              { buildingId: roles.buildings.shipyard, level: 2 },
+              { buildingId: roles.buildings.laboratory, level: 3 },
+              { buildingId: roles.buildings.sensorGrid, level: 2 },
             ],
             economy: {
               ...planet.economy,
@@ -55,10 +60,10 @@ function prepareMilitaryIndustry(state: GameState, empireId: string): GameState 
             ...research,
             levels: {
               ...research.levels,
-              'technology.aegis.construction': 2,
-              'technology.aegis.energy': 2,
-              'technology.aegis.sensors': 2,
-              'technology.aegis.weapons': 1,
+              [roles.research.construction]: 2,
+              [roles.research.energy]: 2,
+              [roles.research.sensors]: 2,
+              [roles.research.weapons]: 1,
             },
             queue: [],
           }
@@ -240,7 +245,11 @@ describe('bot threat, target and recovery planner', () => {
     expect(plan.threatLevel).toBe('high');
     expect(plan.selectedTargetPlanetId).toBeNull();
     expect(plan.reasonCode).toBe('high-threat-response');
-    expect(plan.command?.type).toBe('QUEUE_UNIT_BATCH');
+    expect(plan.command).toMatchObject({
+      type: 'QUEUE_UNIT_BATCH',
+      unitId: 'ship.synod.lancet',
+      quantity: 3,
+    });
   });
 
   it('returns a critical no-action plan after complete planet loss', () => {
