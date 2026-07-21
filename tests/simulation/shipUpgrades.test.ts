@@ -2,23 +2,29 @@ import { describe, expect, it } from 'vitest';
 import { resolveBattle } from '../../src/simulation/combat/resolveBattle';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { executeCommand } from '../../src/simulation/reducer';
+import type { GameState } from '../../src/simulation/types';
 import {
   applyCargoUpgrades,
   getShipUpgradeLevels,
 } from '../../src/simulation/upgrades/shipUpgrades';
-import type { GameState } from '../../src/simulation/types';
 
 function prepareUpgradeState(): { readonly state: GameState; readonly planetId: string } {
   const initial = createInitialGameState('ship-upgrades');
   const planet = initial.planets.find((candidate) => candidate.ownerEmpireId === 'player');
   if (planet === undefined) throw new Error('Player planet is missing.');
+  const hasShipyard = planet.buildings.some(
+    (building) => building.buildingId === 'building.aegis.shipyard',
+  );
+  const buildings = hasShipyard
+    ? planet.buildings.map((building) =>
+        building.buildingId === 'building.aegis.shipyard'
+          ? { ...building, level: Math.max(2, building.level) }
+          : building,
+      )
+    : [...planet.buildings, { buildingId: 'building.aegis.shipyard', level: 2 }];
   const upgradedPlanet = {
     ...planet,
-    buildings: planet.buildings.map((building) =>
-      building.buildingId === 'building.aegis.shipyard'
-        ? { ...building, level: Math.max(2, building.level) }
-        : building,
-    ),
+    buildings,
     economy: {
       ...planet.economy,
       resources: Object.fromEntries(
@@ -50,7 +56,7 @@ describe('ship upgrades', () => {
       unitId: 'ship.aegis.fighter',
       track: 'weapons',
     });
-    expect(queued.ok).toBe(true);
+    expect(queued.ok, queued.ok ? undefined : `${queued.code}: ${queued.message}`).toBe(true);
     if (!queued.ok) return;
 
     const item = queued.value.shipUpgrades.find((entry) => entry.empireId === 'player')?.queue[0];
@@ -90,7 +96,7 @@ describe('ship upgrades', () => {
       unitId: 'ship.aegis.frigate',
       track: 'armor',
     });
-    expect(queued.ok).toBe(true);
+    expect(queued.ok, queued.ok ? undefined : `${queued.code}: ${queued.message}`).toBe(true);
     if (!queued.ok) return;
     const item = queued.value.shipUpgrades.find((entry) => entry.empireId === 'player')?.queue[0];
     expect(item).toBeDefined();
