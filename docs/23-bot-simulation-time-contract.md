@@ -45,3 +45,5 @@ Regression coverage verifies:
 - save/load preservation of partially drained catch-up state;
 - deterministic migration of older schema-v13 saves;
 - continued hidden-information isolation.
+
+The final Node 22.12 repository gate passed lint, TypeScript typecheck, the complete Vitest suite and production build after all temporary automation files were removed.
