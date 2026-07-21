@@ -1,9 +1,9 @@
 name: PR80 Typecheck Diagnostics
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/pr80-native-synod-catalog
+      - main
 
 permissions:
   contents: read
