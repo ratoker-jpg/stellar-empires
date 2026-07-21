@@ -177,11 +177,11 @@ describe('save format', () => {
       speed: 14,
       cargoCapacity: 20,
     };
+    const { shipUpgrades: _shipUpgrades, ...legacyBase } = current;
     const legacyState = {
-      ...current,
+      ...legacyBase,
       schemaVersion: 6,
       fleets: [olderFleet],
-      shipUpgrades: undefined,
     };
     const legacySave = {
       formatVersion: 2,
