@@ -1,3 +1,4 @@
+import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getBuildingLevel } from '../simulation/planet/buildingProgression';
 import type { PlanetState } from '../simulation/planet/types';
 import {
@@ -18,11 +19,9 @@ export interface MilitaryZoneViewModel {
 }
 
 export function createMilitaryZoneViewModel(planet: PlanetState): MilitaryZoneViewModel {
-  const sensorLevel = getBuildingLevel(
-    planet.buildings,
-    'building.aegis.sensor-array',
-  );
-  const commandLevel = getBuildingLevel(planet.buildings, 'building.aegis.command');
+  const roles = getFactionMechanicalRoles(planet.factionId).buildings;
+  const sensorLevel = getBuildingLevel(planet.buildings, roles.sensorGrid);
+  const commandLevel = getBuildingLevel(planet.buildings, roles.command);
 
   return {
     buildings: createBuildingCardViewModels(planet).filter(
@@ -39,7 +38,7 @@ export function createMilitaryZoneViewModel(planet: PlanetState): MilitaryZoneVi
         id: 'fleet',
         label: 'Командование флотом',
         unlocked: commandLevel >= 2,
-        hint: commandLevel >= 2 ? `Центр командования ур. ${commandLevel}` : 'Требуется центр командования ур. 2',
+        hint: commandLevel >= 2 ? `Командный узел ур. ${commandLevel}` : 'Требуется командный узел ур. 2',
       },
     ],
   };
