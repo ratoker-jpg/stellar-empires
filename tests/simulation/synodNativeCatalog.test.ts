@@ -35,9 +35,10 @@ function fillResources(state: GameState, empireId: string): GameState {
 }
 
 function addSynodInfrastructure(state: GameState, empireId: string): GameState {
+  const funded = fillResources(state, empireId);
   return {
-    ...fillResources(state, empireId),
-    planets: fillResources(state, empireId).planets.map((planet) =>
+    ...funded,
+    planets: funded.planets.map((planet) =>
       planet.ownerEmpireId === empireId
         ? {
             ...planet,
@@ -61,7 +62,7 @@ function addSynodInfrastructure(state: GameState, empireId: string): GameState {
           }
         : planet,
     ),
-    research: state.research.map((research) =>
+    research: funded.research.map((research) =>
       research.empireId === empireId
         ? {
             ...research,
@@ -96,9 +97,9 @@ describe('native Synod runtime', () => {
     expect(planet.buildings).toHaveLength(5);
     expect(planet.buildings.every((building) => building.buildingId.startsWith('building.synod.'))).toBe(true);
     expect(planet.economy.energy.produced).toBeGreaterThan(planet.economy.energy.consumed);
-    expect(planet.economy.production.metal).toBeGreaterThan(0);
-    expect(planet.economy.production.crystal).toBeGreaterThan(0);
-    expect(planet.economy.production.gas).toBeGreaterThan(0);
+    expect(planet.economy.resources.metal.productionPerHour).toBeGreaterThan(0);
+    expect(planet.economy.resources.crystal.productionPerHour).toBeGreaterThan(0);
+    expect(planet.economy.resources.gas.productionPerHour).toBeGreaterThan(0);
   });
 
   it('accepts native Synod building, research, ship and defense queues', () => {
