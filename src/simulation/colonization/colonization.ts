@@ -1,6 +1,8 @@
 import { createInitialPlanetDefenseState } from '../defense/types';
 import { createPlanetEconomy } from '../economy/planetEconomy';
 import type { ResourceCost } from '../economy/types';
+import { getFactionMechanicalRoles, getStartingBuildingsForFaction } from '../factions/factionMechanicalRoles';
+import { getFactionIdForEmpire } from '../factions/factionMechanicalCatalogRegistry';
 import type { FleetState } from '../fleets/types';
 import type {
   GalaxyModel,
@@ -9,20 +11,12 @@ import type {
 } from '../galaxy/types';
 import type {
   FactionId,
-  PlanetBuildingState,
   PlanetState,
 } from '../planet/types';
 import { createPlanetZones } from '../planet/zones';
 import { getEmpireResearch, getResearchLevel } from '../research/researchState';
 import type { GameState } from '../types';
-
-const STARTER_BUILDINGS: readonly PlanetBuildingState[] = [
-  { buildingId: 'building.aegis.command', level: 1 },
-  { buildingId: 'building.aegis.metal-extractor', level: 1 },
-  { buildingId: 'building.aegis.crystal-refinery', level: 1 },
-  { buildingId: 'building.aegis.gas-extractor', level: 1 },
-  { buildingId: 'building.aegis.power-plant', level: 1 },
-];
+import { getUnitDefinition } from '../units/catalog';
 
 export interface GalaxyPlanetLocation {
   readonly system: StarSystemModel;
@@ -46,9 +40,12 @@ export function isColonizableGalaxyPlanet(planet: PlanetModel): boolean {
 
 export function getColonizationLevel(state: GameState, empireId: string): number {
   const research = getEmpireResearch(state.research, empireId);
-  return research === undefined
-    ? 0
-    : getResearchLevel(research, 'technology.aegis.colonization');
+  if (research === undefined) return 0;
+  const factionId = getFactionIdForEmpire(state, empireId);
+  return getResearchLevel(
+    research,
+    getFactionMechanicalRoles(factionId).research.colonization,
+  );
 }
 
 export function getColonyLimit(state: GameState, empireId: string): number {
@@ -64,7 +61,7 @@ export function createColonyPlanet(
   empireId: string,
   factionId: FactionId = 'aegis',
 ): PlanetState {
-  const buildings = STARTER_BUILDINGS;
+  const buildings = getStartingBuildingsForFaction(factionId);
   return {
     id: `colony-${location.planet.id}`,
     galaxyPlanetId: location.planet.id,
@@ -129,6 +126,19 @@ function unloadCargo(
   };
 }
 
+export function findFleetShipByRole(
+  ships: Readonly<Record<string, number>>,
+  role: 'scout' | 'transport' | 'fighter' | 'frigate' | 'colonizer' | 'recycler',
+): string | undefined {
+  return Object.keys(ships)
+    .sort()
+    .find((unitId) =>
+      (ships[unitId] ?? 0) > 0 &&
+      getUnitDefinition(unitId)?.kind === 'ship' &&
+      getUnitDefinition(unitId)?.role === role,
+    );
+}
+
 export interface ColonizationResolution {
   readonly state: GameState;
   readonly colony: PlanetState;
@@ -151,19 +161,18 @@ export function resolveColonization(
     return undefined;
   }
 
-  const colonyShipCount = fleet.ships['ship.aegis.colony'] ?? 0;
-  if (colonyShipCount <= 0 || getColonizationLevel(state, fleet.empireId) <= 0) {
+  const colonyShipId = findFleetShipByRole(fleet.ships, 'colonizer');
+  if (colonyShipId === undefined || getColonizationLevel(state, fleet.empireId) <= 0) {
     return undefined;
   }
 
-  const factionId =
-    state.planets.find((planet) => planet.ownerEmpireId === fleet.empireId)?.factionId ??
-    'aegis';
+  const factionId = getFactionIdForEmpire(state, fleet.empireId);
   const baseColony = createColonyPlanet(location, fleet.empireId, factionId);
   const unloaded = unloadCargo(baseColony, fleet.cargo);
   const ships = { ...fleet.ships };
-  if (colonyShipCount === 1) delete ships['ship.aegis.colony'];
-  else ships['ship.aegis.colony'] = colonyShipCount - 1;
+  const colonyShipCount = ships[colonyShipId] ?? 0;
+  if (colonyShipCount === 1) delete ships[colonyShipId];
+  else ships[colonyShipId] = colonyShipCount - 1;
 
   const survivingFleet: FleetState | undefined =
     Object.values(ships).some((count) => count > 0)
