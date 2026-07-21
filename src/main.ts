@@ -33,6 +33,7 @@ import {
 import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
+import { mountAccessibilityRuntime } from './ui/accessibilityRuntime';
 import { mountCommandRankingScreen } from './ui/commandRankingScreen';
 import { mountDevelopmentPresentation } from './ui/developmentPresentation';
 import { mountEmpireOverview } from './ui/empireOverview';
@@ -182,6 +183,7 @@ async function bootstrap(): Promise<void> {
     getState: () => runtimeState,
     getActivePlanetId: getPlanetScreenActivePlanetId,
   });
+  mountAccessibilityRuntime();
 
   if (saveManager !== undefined) {
     mountSaveManager({ manager: saveManager, getState: () => runtimeState, writeStatus: setStatus });
