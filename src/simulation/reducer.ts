@@ -7,6 +7,7 @@ import { accrueAllPlanetEconomies } from './economy/planetEconomy';
 import { enqueueEvent } from './eventQueue';
 import { canUseMechanicalDefinition } from './factions/sharedMechanicalCatalog';
 import { createFleet, disbandFleet } from './fleets/fleetCommands';
+import { setFleetCombatDoctrine } from './fleets/fleetDoctrineCommands';
 import { applyFlightEvent } from './fleets/flightCommands';
 import {
   createLogisticsRoute,
@@ -423,6 +424,7 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
     case 'CANCEL_SHIP_UPGRADE': return cancelShipUpgrade(state, command);
     case 'CREATE_FLEET': return createFleet(state, command);
     case 'DISBAND_FLEET': return disbandFleet(state, command);
+    case 'SET_FLEET_COMBAT_DOCTRINE': return setFleetCombatDoctrine(state, command);
     case 'SEND_FLEET': return sendFleetWithExpeditionGuard(state, command);
     case 'START_EXPEDITION': return startExpedition(state, command);
     case 'START_SPACE_OBJECT_MISSION': return startSpaceObjectMission(state, command);
