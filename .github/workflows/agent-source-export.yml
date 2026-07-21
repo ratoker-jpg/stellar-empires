@@ -1,0 +1,25 @@
+name: Agent source export
+
+on:
+  push:
+    branches:
+      - agent/bootstrap-audit-batch
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: stellar-empires-source
+          path: |
+            .
+            !.git
+          include-hidden-files: true
+          retention-days: 1
