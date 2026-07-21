@@ -1,3 +1,7 @@
+import { refreshPlanetEconomy } from '../simulation/economy/planetEconomy';
+import { getResearchCatalogForFaction } from '../simulation/factions/factionMechanicalCatalogRegistry';
+import { calculateResearchEffects } from '../simulation/research/progression';
+import type { EmpireResearchState } from '../simulation/research/types';
 import type { GameState } from '../simulation/types';
 
 export const LEGACY_AEGIS_TO_SYNOD_IDS: Readonly<Record<string, string>> = {
@@ -81,6 +85,19 @@ function hasSynodContext(
   return false;
 }
 
+function synodEnergyOutput(
+  research: readonly EmpireResearchState[],
+  empireId: string,
+): number {
+  const empireResearch = research.find((entry) => entry.empireId === empireId);
+  return empireResearch === undefined
+    ? 0
+    : calculateResearchEffects(
+        empireResearch,
+        getResearchCatalogForFaction('synod'),
+      ).energyOutputPercent;
+}
+
 export function migrateLegacySynodAliases(state: GameState): GameState {
   const synodPlanets = state.planets.filter((planet) => planet.factionId === 'synod');
   if (synodPlanets.length === 0) return state;
@@ -97,15 +114,27 @@ export function migrateLegacySynodAliases(state: GameState): GameState {
     hasSynodContext(value, synodEmpireIds, synodPlanetIds, synodFleetIds)
       ? mapMechanicalIds(value)
       : value;
+  const research = state.research.map((entry) =>
+    synodEmpireIds.has(entry.empireId) ? mapMechanicalIds(entry) : entry,
+  );
+  const planets = state.planets.map((planet) => {
+    if (planet.factionId !== 'synod') return planet;
+    const mapped = mapMechanicalIds(planet);
+    return {
+      ...mapped,
+      economy: refreshPlanetEconomy(
+        mapped.economy,
+        mapped.buildings,
+        synodEnergyOutput(research, mapped.ownerEmpireId),
+        mapped.specializationId,
+      ),
+    };
+  });
 
   return {
     ...state,
-    planets: state.planets.map((planet) =>
-      planet.factionId === 'synod' ? mapMechanicalIds(planet) : planet,
-    ),
-    research: state.research.map((research) =>
-      synodEmpireIds.has(research.empireId) ? mapMechanicalIds(research) : research,
-    ),
+    planets,
+    research,
     shipUpgrades: state.shipUpgrades.map((upgrades) =>
       synodEmpireIds.has(upgrades.empireId) ? mapMechanicalIds(upgrades) : upgrades,
     ),
