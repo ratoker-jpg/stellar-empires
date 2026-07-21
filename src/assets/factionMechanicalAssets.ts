@@ -18,6 +18,12 @@ interface MechanicalAssetSeed {
   readonly role: string;
 }
 
+const seed = (id: string, name: string, role: string): MechanicalAssetSeed => ({
+  id,
+  name,
+  role,
+});
+
 function atlasAssets(
   seeds: readonly MechanicalAssetSeed[],
   category: AegisVerticalSliceAsset['category'],
@@ -26,10 +32,10 @@ function atlasAssets(
   availableFrames: number,
   cellSize: number,
 ): readonly AegisVerticalSliceAsset[] {
-  return seeds.map((seed, index) => {
+  return seeds.map((assetSeed, index) => {
     const frameIndex = index % availableFrames;
     return {
-      ...seed,
+      ...assetSeed,
       category,
       atlasUrl,
       frame: frame(
@@ -45,19 +51,19 @@ function atlasAssets(
 
 const SYNOD_BUILDINGS = atlasAssets(
   [
-    ['building.synod.concord-nexus', 'Узел согласия', 'Управление колонией'],
-    ['building.synod.matter-weave', 'Материальная ткацкая', 'Добыча металла'],
-    ['building.synod.prism-refinery', 'Призматический очиститель', 'Добыча кристалла'],
-    ['building.synod.flux-well', 'Потоковый коллектор', 'Добыча газа'],
-    ['building.synod.resonant-core', 'Резонансное ядро', 'Производство энергии'],
-    ['building.synod.cognition-vault', 'Когнитивное хранилище', 'Исследования'],
-    ['building.synod.lattice-yard', 'Сетевая верфь', 'Производство кораблей'],
-    ['building.synod.deep-array', 'Дальняя сенсорная решётка', 'Сенсоры и оборонная сеть'],
-    ['building.synod.relay-archive', 'Архив ретрансляции', 'Хранение и логистика'],
-    ['building.synod.concord-habitat', 'Жилой контур согласия', 'Население и стабильность'],
-    ['building.synod.precision-forum', 'Форум точного командования', 'Военная координация'],
-    ['building.synod.shield-foundry', 'Щитовая мануфактура', 'Тяжёлая оборона'],
-  ].map(([id, name, role]) => ({ id, name, role })),
+    seed('building.synod.concord-nexus', 'Узел согласия', 'Управление колонией'),
+    seed('building.synod.matter-weave', 'Материальная ткацкая', 'Добыча металла'),
+    seed('building.synod.prism-refinery', 'Призматический очиститель', 'Добыча кристалла'),
+    seed('building.synod.flux-well', 'Потоковый коллектор', 'Добыча газа'),
+    seed('building.synod.resonant-core', 'Резонансное ядро', 'Производство энергии'),
+    seed('building.synod.cognition-vault', 'Когнитивное хранилище', 'Исследования'),
+    seed('building.synod.lattice-yard', 'Сетевая верфь', 'Производство кораблей'),
+    seed('building.synod.deep-array', 'Дальняя сенсорная решётка', 'Сенсоры и оборонная сеть'),
+    seed('building.synod.relay-archive', 'Архив ретрансляции', 'Хранение и логистика'),
+    seed('building.synod.concord-habitat', 'Жилой контур согласия', 'Население и стабильность'),
+    seed('building.synod.precision-forum', 'Форум точного командования', 'Военная координация'),
+    seed('building.synod.shield-foundry', 'Щитовая мануфактура', 'Тяжёлая оборона'),
+  ],
   'building',
   RUNTIME_ASSETS.factionSynodBuildingsAtlasWebp,
   4,
@@ -67,17 +73,17 @@ const SYNOD_BUILDINGS = atlasAssets(
 
 const SYNOD_SHIPS = atlasAssets(
   [
-    ['ship.synod.whisper', 'Разведчик «Шёпот»', 'Разведка'],
-    ['ship.synod.thread-carrier', 'Транспорт «Нить»', 'Перевозка'],
-    ['ship.synod.lancet', 'Истребитель «Ланцет»', 'Перехват'],
-    ['ship.synod.ward-frigate', 'Фрегат «Оберег»', 'Щитовой строй'],
-    ['ship.synod.seed-ark', 'Ковчег «Семя»', 'Колонизация'],
-    ['ship.synod.salvage-mind', 'Сборщик «Память»', 'Переработка'],
-    ['ship.synod.phase-corvette', 'Корвет «Фаза»', 'Сопровождение'],
-    ['ship.synod.chorus-cruiser', 'Крейсер «Хор»', 'Линейный бой'],
-    ['ship.synod.relay-carrier', 'Носитель «Реле»', 'Дальнее снабжение'],
-    ['ship.synod.oracle-dreadnought', 'Дредноут «Оракул»', 'Флагманский бой'],
-  ].map(([id, name, role]) => ({ id, name, role })),
+    seed('ship.synod.whisper', 'Разведчик «Шёпот»', 'Разведка'),
+    seed('ship.synod.thread-carrier', 'Транспорт «Нить»', 'Перевозка'),
+    seed('ship.synod.lancet', 'Истребитель «Ланцет»', 'Перехват'),
+    seed('ship.synod.ward-frigate', 'Фрегат «Оберег»', 'Щитовой строй'),
+    seed('ship.synod.seed-ark', 'Ковчег «Семя»', 'Колонизация'),
+    seed('ship.synod.salvage-mind', 'Сборщик «Память»', 'Переработка'),
+    seed('ship.synod.phase-corvette', 'Корвет «Фаза»', 'Сопровождение'),
+    seed('ship.synod.chorus-cruiser', 'Крейсер «Хор»', 'Линейный бой'),
+    seed('ship.synod.relay-carrier', 'Носитель «Реле»', 'Дальнее снабжение'),
+    seed('ship.synod.oracle-dreadnought', 'Дредноут «Оракул»', 'Флагманский бой'),
+  ],
   'ship',
   RUNTIME_ASSETS.factionSynodShipsAtlasWebp,
   3,
@@ -87,12 +93,12 @@ const SYNOD_SHIPS = atlasAssets(
 
 const SYNOD_DEFENSES = atlasAssets(
   [
-    ['defense.synod.lance-node', 'Узел направленного импульса', 'Точный огонь'],
-    ['defense.synod.arc-silo', 'Дуговой пусковой узел', 'Тяжёлый залп'],
-    ['defense.synod.harmonic-screen', 'Гармонический экран', 'Щитовая защита'],
-    ['defense.synod.predictive-intercept', 'Предиктивный перехватчик', 'Перехват'],
-    ['defense.synod.concord-bastion', 'Бастион согласия', 'Тяжёлая защита'],
-  ].map(([id, name, role]) => ({ id, name, role })),
+    seed('defense.synod.lance-node', 'Узел направленного импульса', 'Точный огонь'),
+    seed('defense.synod.arc-silo', 'Дуговой пусковой узел', 'Тяжёлый залп'),
+    seed('defense.synod.harmonic-screen', 'Гармонический экран', 'Щитовая защита'),
+    seed('defense.synod.predictive-intercept', 'Предиктивный перехватчик', 'Перехват'),
+    seed('defense.synod.concord-bastion', 'Бастион согласия', 'Тяжёлая защита'),
+  ],
   'defense',
   RUNTIME_ASSETS.factionSynodDefensesAtlasWebp,
   3,
@@ -105,17 +111,17 @@ const SYNOD_DEFENSES = atlasAssets(
 // treated as temporary runtime fallbacks instead of Aegis artwork.
 const SYNOD_TECHNOLOGIES = atlasAssets(
   [
-    ['technology.synod.distributed-construction', 'Распределённая сборка', 'Строительство'],
-    ['technology.synod.harmonic-grid', 'Гармоническая энергосеть', 'Энергетика'],
-    ['technology.synod.deep-sight', 'Глубинное зрение', 'Сенсоры'],
-    ['technology.synod.vector-folding', 'Свёртка векторов', 'Навигация'],
-    ['technology.synod.coherent-shields', 'Когерентные щиты', 'Защита'],
-    ['technology.synod.precision-fire', 'Прецизионный огонь', 'Вооружение'],
-    ['technology.synod.seed-consensus', 'Консенсус основания', 'Колонизация'],
-    ['technology.synod.relay-logistics', 'Ретрансляционная логистика', 'Логистика'],
-    ['technology.synod.predictive-screening', 'Предиктивное экранирование', 'Защита'],
-    ['technology.synod.chorus-command', 'Хоровое командование', 'Координация'],
-  ].map(([id, name, role]) => ({ id, name, role })),
+    seed('technology.synod.distributed-construction', 'Распределённая сборка', 'Строительство'),
+    seed('technology.synod.harmonic-grid', 'Гармоническая энергосеть', 'Энергетика'),
+    seed('technology.synod.deep-sight', 'Глубинное зрение', 'Сенсоры'),
+    seed('technology.synod.vector-folding', 'Свёртка векторов', 'Навигация'),
+    seed('technology.synod.coherent-shields', 'Когерентные щиты', 'Защита'),
+    seed('technology.synod.precision-fire', 'Прецизионный огонь', 'Вооружение'),
+    seed('technology.synod.seed-consensus', 'Консенсус основания', 'Колонизация'),
+    seed('technology.synod.relay-logistics', 'Ретрансляционная логистика', 'Логистика'),
+    seed('technology.synod.predictive-screening', 'Предиктивное экранирование', 'Защита'),
+    seed('technology.synod.chorus-command', 'Хоровое командование', 'Координация'),
+  ],
   'technology',
   RUNTIME_ASSETS.factionSynodBuildingsAtlasWebp,
   4,
