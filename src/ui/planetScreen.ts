@@ -863,6 +863,16 @@ export function applyPlanetScreenCommand(
   return applyCommand(command, successMessage);
 }
 
+export function applyPlanetScreenState(
+  state: GameState,
+  successMessage: string,
+): void {
+  currentState = state;
+  stateObserver(state);
+  statusWriter(successMessage);
+  renderPlanetDashboard();
+}
+
 export function getPlanetScreenActivePlanetId(): string {
   return getPlayerPlanet().id;
 }

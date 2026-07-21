@@ -11,7 +11,7 @@ import { planBotResearchAndProduction } from './researchProductionPlanner';
 import { planBotThreatAndRecovery } from './threatRecoveryPlanner';
 
 export type BotPlannerSource = 'economy' | 'research' | 'production' | 'fleet' | 'threat';
-export type BotSchedulerCursor = Readonly<Record<string, number>>;
+export const MAX_BOT_DECISIONS_PER_RUN = 32;
 
 export interface BotSchedulerAuditEntry {
   readonly empireId: string;
@@ -26,8 +26,9 @@ export interface BotSchedulerAuditEntry {
 
 export interface BotSchedulerResult {
   readonly state: GameState;
-  readonly cursor: BotSchedulerCursor;
   readonly audit: readonly BotSchedulerAuditEntry[];
+  readonly processedDecisions: number;
+  readonly hasMoreDueDecisions: boolean;
 }
 
 interface CommandCandidate {
@@ -35,19 +36,9 @@ interface CommandCandidate {
   readonly command: GameCommand | null;
 }
 
-export function createBotSchedulerCursor(
-  state: GameState,
-  profiles: readonly BotProfile[] = DEFAULT_BOT_PROFILES,
-  immediate = true,
-): BotSchedulerCursor {
-  return Object.fromEntries(
-    profiles.map((profile) => [
-      profile.empireId,
-      immediate
-        ? state.clock.elapsedSeconds - profile.decisionIntervalSeconds
-        : state.clock.elapsedSeconds,
-    ]),
-  );
+interface DueProfile {
+  readonly profile: BotProfile;
+  readonly nextDecisionAt: number;
 }
 
 function candidatesForPersonality(
@@ -91,6 +82,7 @@ function isSameCommand(left: GameCommand, right: GameCommand): boolean {
 function runProfileDecision(
   state: GameState,
   profile: BotProfile,
+  decidedAt: number,
 ): { readonly state: GameState; readonly audit: readonly BotSchedulerAuditEntry[] } {
   let working = state;
   const audit: BotSchedulerAuditEntry[] = [];
@@ -111,7 +103,7 @@ function runProfileDecision(
       empireId: profile.empireId,
       profileId: profile.id,
       personality: profile.personality,
-      decidedAt: state.clock.elapsedSeconds,
+      decidedAt,
       source: candidate.source,
       command: candidate.command,
       accepted: result.ok,
@@ -123,24 +115,69 @@ function runProfileDecision(
   return { state: working, audit };
 }
 
+function getNextDueProfile(
+  state: GameState,
+  profiles: readonly BotProfile[],
+): DueProfile | undefined {
+  const activeEmpires = new Set(state.empires);
+  return profiles
+    .filter((profile) => activeEmpires.has(profile.empireId))
+    .map((profile) => ({
+      profile,
+      nextDecisionAt:
+        state.botAutomation.nextDecisionAtByEmpire[profile.empireId] ??
+        state.clock.elapsedSeconds,
+    }))
+    .filter((entry) => entry.nextDecisionAt <= state.clock.elapsedSeconds)
+    .sort(
+      (left, right) =>
+        left.nextDecisionAt - right.nextDecisionAt ||
+        left.profile.empireId.localeCompare(right.profile.empireId),
+    )[0];
+}
+
+function advanceProfileCursor(
+  state: GameState,
+  due: DueProfile,
+): GameState {
+  return {
+    ...state,
+    botAutomation: {
+      nextDecisionAtByEmpire: {
+        ...state.botAutomation.nextDecisionAtByEmpire,
+        [due.profile.empireId]: due.nextDecisionAt + due.profile.decisionIntervalSeconds,
+      },
+    },
+  };
+}
+
 export function runBotScheduler(
   state: GameState,
-  cursor: BotSchedulerCursor,
   profiles: readonly BotProfile[] = DEFAULT_BOT_PROFILES,
+  maxDecisions = MAX_BOT_DECISIONS_PER_RUN,
 ): BotSchedulerResult {
-  let working = state;
-  const nextCursor: Record<string, number> = { ...cursor };
-  const audit: BotSchedulerAuditEntry[] = [];
-
-  for (const profile of [...profiles].sort((left, right) => left.empireId.localeCompare(right.empireId))) {
-    if (!working.empires.includes(profile.empireId)) continue;
-    const lastDecisionAt = cursor[profile.empireId] ?? working.clock.elapsedSeconds;
-    if (working.clock.elapsedSeconds - lastDecisionAt < profile.decisionIntervalSeconds) continue;
-    const decision = runProfileDecision(working, profile);
-    working = decision.state;
-    audit.push(...decision.audit);
-    nextCursor[profile.empireId] = working.clock.elapsedSeconds;
+  if (!Number.isInteger(maxDecisions) || maxDecisions < 1) {
+    throw new Error('Bot scheduler decision budget must be a positive integer.');
   }
 
-  return { state: working, cursor: nextCursor, audit };
+  let working = state;
+  const audit: BotSchedulerAuditEntry[] = [];
+  let processedDecisions = 0;
+
+  while (processedDecisions < maxDecisions) {
+    const due = getNextDueProfile(working, profiles);
+    if (due === undefined) break;
+    working = advanceProfileCursor(working, due);
+    const decision = runProfileDecision(working, due.profile, due.nextDecisionAt);
+    working = decision.state;
+    audit.push(...decision.audit);
+    processedDecisions += 1;
+  }
+
+  return {
+    state: working,
+    audit,
+    processedDecisions,
+    hasMoreDueDecisions: getNextDueProfile(working, profiles) !== undefined,
+  };
 }

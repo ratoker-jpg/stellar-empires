@@ -1,3 +1,4 @@
+import { normalizeBotAutomationState } from '../simulation/bots/state';
 import { createStateChecksum } from '../simulation/checksum';
 import { COMMAND_MAX_LEVEL, isCommandDoctrineId } from '../simulation/command/commandDoctrine';
 import {
@@ -203,6 +204,17 @@ function isWorldEventState(value: unknown): boolean {
         isWorldEventDefinitionId(definitionId) && isNonNegativeInteger(cooldownUntil),
     ) && isNonNegativeInteger(value.nextEvaluationAt);
 }
+function isBotAutomationState(
+  value: unknown,
+  empireIds: readonly unknown[],
+  elapsedSeconds: number,
+): boolean {
+  const validEmpireIds = empireIds.filter(
+    (empireId): empireId is string => typeof empireId === 'string',
+  );
+  return validEmpireIds.length === empireIds.length &&
+    normalizeBotAutomationState(value, validEmpireIds, elapsedSeconds) !== undefined;
+}
 function isGameState(value: unknown): value is GameState {
   return isStateShell(value) && value.schemaVersion === 13 && Array.isArray(value.empires) &&
     Array.isArray(value.planets) && value.planets.every(isPlanet) && Array.isArray(value.research) &&
@@ -216,7 +228,9 @@ function isGameState(value: unknown): value is GameState {
     value.logisticsRoutes.every(isLogisticsRoute) && isMarket(value.market) &&
     Array.isArray(value.spaceObjects) && value.spaceObjects.every(isSpaceObject) &&
     Array.isArray(value.strategicResources) && value.strategicResources.every(isStrategicResourceState) &&
-    value.strategicResources.length === value.empires.length && isWorldEventState(value.worldEvents);
+    value.strategicResources.length === value.empires.length && isWorldEventState(value.worldEvents) &&
+    isRecord(value.clock) && isNonNegativeInteger(value.clock.elapsedSeconds) &&
+    isBotAutomationState(value.botAutomation, value.empires, value.clock.elapsedSeconds);
 }
 
 export function createSaveEnvelope(slotId: string, state: GameState, savedAt: string): SaveEnvelope {

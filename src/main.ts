@@ -50,6 +50,7 @@ import { mountOperationsWorkspace } from './ui/operationsWorkspace';
 import { mountPlanetDevelopmentControls } from './ui/planetDevelopmentControls';
 import {
   applyPlanetScreenCommand,
+  applyPlanetScreenState,
   getPlanetScreenActivePlanetId,
   mountPlanetScreen,
   selectPlanetScreenPlanet,
@@ -144,14 +145,13 @@ async function bootstrap(): Promise<void> {
   });
   const botAutomation = new BotAutomationController({
     getState: () => runtimeState,
-    applyCommands: (commands) => {
-      let accepted = 0;
-      for (const command of commands) {
-        if (applyPlanetScreenCommand(command, 'Автономное решение бота выполнено')) {
-          accepted += 1;
-        }
-      }
-      if (accepted > 0) setStatus(`Боты выполнили действий · ${accepted}`);
+    applyState: (state, acceptedCommandCount) => {
+      applyPlanetScreenState(
+        state,
+        acceptedCommandCount > 0
+          ? `Боты выполнили действий · ${acceptedCommandCount}`
+          : 'График решений ботов синхронизирован',
+      );
     },
     onError: (message) => {
       console.error('[stellar-empires] bot scheduler failed', message);

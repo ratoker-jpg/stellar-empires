@@ -1,19 +1,24 @@
-import { createBotSchedulerCursor, type BotSchedulerCursor } from '../simulation/bots/scheduler';
 import type {
   BotSchedulerResponse,
   RunBotSchedulerRequest,
 } from '../simulation/bots/workerProtocol';
-import type { GameCommand, GameState } from '../simulation/types';
+import type { GameState } from '../simulation/types';
 
 export interface BotAutomationControllerOptions {
   readonly getState: () => GameState;
-  readonly applyCommands: (commands: readonly GameCommand[]) => void;
+  readonly applyState: (state: GameState, acceptedCommandCount: number) => void;
   readonly onError?: (message: string) => void;
+}
+
+function automationStateChanged(current: GameState, next: GameState): boolean {
+  const currentEntries = current.botAutomation.nextDecisionAtByEmpire;
+  const nextEntries = next.botAutomation.nextDecisionAtByEmpire;
+  const empireIds = new Set([...Object.keys(currentEntries), ...Object.keys(nextEntries)]);
+  return [...empireIds].some((empireId) => currentEntries[empireId] !== nextEntries[empireId]);
 }
 
 export class BotAutomationController {
   private readonly worker: Worker;
-  private cursor: BotSchedulerCursor;
   private requestSequence = 0;
   private pending = false;
   private applying = false;
@@ -21,7 +26,6 @@ export class BotAutomationController {
   private disposed = false;
 
   constructor(private readonly options: BotAutomationControllerOptions) {
-    this.cursor = createBotSchedulerCursor(options.getState());
     this.worker = new Worker(new URL('../workers/botScheduler.worker.ts', import.meta.url), {
       type: 'module',
     });
@@ -46,7 +50,6 @@ export class BotAutomationController {
       requestId: this.requestSequence,
       baseCommandCount: state.commandLog.length,
       state,
-      cursor: this.cursor,
     };
     this.requestSequence += 1;
     this.pending = true;
@@ -74,18 +77,16 @@ export class BotAutomationController {
       return;
     }
 
-    this.cursor = response.cursor;
-    const commands = response.audit
-      .filter((entry) => entry.accepted)
-      .map((entry) => entry.command);
-    if (commands.length > 0) {
+    const acceptedCommandCount = response.audit.filter((entry) => entry.accepted).length;
+    if (acceptedCommandCount > 0 || automationStateChanged(current, response.state)) {
       this.applying = true;
       try {
-        this.options.applyCommands(commands);
+        this.options.applyState(response.state, acceptedCommandCount);
       } finally {
         this.applying = false;
       }
     }
+    if (response.hasMoreDueDecisions) this.rerunRequested = true;
     this.runAgainWhenRequested();
   }
 
