@@ -2,10 +2,10 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-21  
-**Baseline:** merged PR #77  
+**Baseline:** merged PR #78  
 **Release target:** 1.0
 
-> PR #78 is the full-project audit in `docs/20-full-project-audit.md`. Planned implementation PR numbers after #77 are shifted by one compared with the earlier roadmap revision.
+> PR #78 is the full-project audit in `docs/20-full-project-audit.md`. PR #79 is a documentation-only post-audit handoff. Planned implementation PR numbers after #78 are therefore shifted by one again: native Synod starts at #80.
 
 ## 1. Release boundary
 
@@ -39,8 +39,9 @@ Excluded:
 - Research is inspiration; adopted systems require original names, values and presentation.
 - Source assets are not runtime assets until registered and tested.
 - `docs/20-full-project-audit.md` defines the current stabilization risks and recommended gates.
+- `docs/handoffs/2026-07-21-post-audit-handoff.md` defines the exact boundary for native Synod work.
 
-## 3. Delivered baseline through PR #77
+## 3. Delivered runtime baseline through PR #77
 
 ### Foundation and vertical slice
 
@@ -74,7 +75,7 @@ Excluded:
 - command doctrine progression and flagship framework;
 - faction catalog registry, stable IDs and full native Aegis catalog.
 
-## 4. Completed visual and military batch
+## 4. Completed military, faction-foundation and audit batch
 
 | PR | Scope |
 |---:|---|
@@ -88,18 +89,22 @@ Excluded:
 | **#76** | Faction mechanical catalog architecture and ID migration policy |
 | **#77** | Full Aegis economy/buildings/research/unit roster |
 | **#78** | Full project audit and stabilization recommendations |
+| **#79** | Documentation-only post-audit continuation handoff |
+
+PR #78 and #79 do not change runtime code.
 
 ## 5. Faction completion and stabilization gate
 
 | PR | Scope |
 |---:|---|
-| **#79** | Full Synod economy/buildings/research/unit roster |
-| **#80** | Full Veyra economy/buildings/research/unit roster |
+| **#80** | Full native Synod economy/buildings/research/unit roster |
+| **#81** | Full native Veyra economy/buildings/research/unit roster |
 
-Gate after #80:
+Gate after #81:
 
 - three factions are mechanically distinct, bot-usable and save-compatible;
-- direct shared Aegis dependencies are audited;
+- direct shared Aegis dependencies are audited and removed or explicitly isolated;
+- old alias-era saves load deterministically;
 - stabilization priorities from `docs/20-full-project-audit.md` are reviewed before diplomacy begins.
 
 Recommended stabilization package before or alongside diplomacy:
@@ -111,16 +116,18 @@ Recommended stabilization package before or alongside diplomacy:
 - early headless balance harness;
 - browser E2E baseline.
 
+Do not automatically begin #82 after #81 without checking whether the audit gate requires one or more inserted stabilization PRs. If stabilization PRs are inserted, renumber later planned PRs in the same documentation PR.
+
 ## 6. Diplomacy, coalition and endgame
 
 | PR | Scope |
 |---:|---|
-| **#81** | Relations, reputation and diplomatic positions |
-| **#82** | Treaties, wars, coalition creation, roles and AI decisions |
-| **#83** | Coalition contributions, shared projects and coalition world |
-| **#84** | Strategic stars, support/assault operations and group battles |
-| **#85** | Rare meta-resource, anti-snowball and intermediate anchor arrays |
-| **#86** | Final transit nexus, victory/defeat and post-round state |
+| **#82** | Relations, reputation and diplomatic positions |
+| **#83** | Treaties, wars, coalition creation, roles and AI decisions |
+| **#84** | Coalition contributions, shared projects and coalition world |
+| **#85** | Strategic stars, support/assault operations and group battles |
+| **#86** | Rare meta-resource, anti-snowball and intermediate anchor arrays |
+| **#87** | Final transit nexus, victory/defeat and post-round state |
 
 Original terminology is mandatory. The external crystal/obelisk/gate chain is only a structural reference.
 
@@ -128,22 +135,22 @@ Original terminology is mandatory. The external crystal/obelisk/gate chain is on
 
 | PR | Scope |
 |---:|---|
-| **#87** | Achievements, local rankings and round statistics |
-| **#88** | Tutorial, contextual help and encyclopedia |
-| **#89** | Bot expedition/object/repair/diplomacy/endgame planning |
-| **#90** | Audio system, faction sound language and music |
-| **#91** | Notifications, reports, explanations and bookmarks |
-| **#92** | Save schema consolidation and offline resimulation |
-| **#93** | Balance harness and headless simulation batches |
-| **#94** | Economy/progression/battle/endgame balance pass |
-| **#95** | Aegis production content/art/effects/audio polish |
-| **#96** | Synod production content/art/effects/audio polish |
-| **#97** | Veyra production content/art/effects/audio polish |
-| **#98** | Accessibility and localization readiness |
-| **#99** | Performance/memory/startup budget and low-end fallback |
-| **#100** | Regression, migrations, replay and browser matrix |
-| **#101** | Release candidate, docs, credits/provenance and Pages QA |
-| **#102** | Release 1.0 stabilization and tagged public build |
+| **#88** | Achievements, local rankings and round statistics |
+| **#89** | Tutorial, contextual help and encyclopedia |
+| **#90** | Bot expedition/object/repair/diplomacy/endgame planning |
+| **#91** | Audio system, faction sound language and music |
+| **#92** | Notifications, reports, explanations and bookmarks |
+| **#93** | Save schema consolidation and offline resimulation |
+| **#94** | Balance harness and headless simulation batches |
+| **#95** | Economy/progression/battle/endgame balance pass |
+| **#96** | Aegis production content/art/effects/audio polish |
+| **#97** | Synod production content/art/effects/audio polish |
+| **#98** | Veyra production content/art/effects/audio polish |
+| **#99** | Accessibility and localization readiness |
+| **#100** | Performance/memory/startup budget and low-end fallback |
+| **#101** | Regression, migrations, replay and browser matrix |
+| **#102** | Release candidate, docs, credits/provenance and Pages QA |
+| **#103** | Release 1.0 stabilization and tagged public build |
 
 The full audit recommends moving canonical bot time, state-size control, a temporary complete game loop, balance harness and browser E2E earlier than these final completeness PRs.
 
