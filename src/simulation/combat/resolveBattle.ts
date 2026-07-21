@@ -4,6 +4,13 @@ import {
   getUnitCombatProfile,
   type WeaponType,
 } from './combatProfiles';
+import {
+  FLEET_FORMATIONS,
+  getClassSkillBonusMaps,
+  getTargetPriorityWeightPermille,
+  type FleetFormation,
+  type FleetTargetPriority,
+} from './fleetDoctrine';
 import type {
   BattleResolution,
   BattleRoundReport,
@@ -29,6 +36,16 @@ interface DamageApplication {
   readonly random: number;
 }
 
+interface PreparedBattleSide {
+  readonly units: Readonly<Record<string, number>>;
+  readonly weaponBonusPercent: number;
+  readonly armorBonusPercent: number;
+  readonly unitWeaponBonusPercent: Readonly<Record<string, number>>;
+  readonly unitArmorBonusPercent: Readonly<Record<string, number>>;
+  readonly formation: FleetFormation;
+  readonly targetPriority: FleetTargetPriority;
+}
+
 function nextRandom(seed: number): number {
   let value = seed | 0;
   value ^= value << 13;
@@ -41,6 +58,39 @@ function countUnits(units: Readonly<Record<string, number>>): number {
   return Object.values(units).reduce((total, count) => total + count, 0);
 }
 
+function mergeBonusMaps(
+  base: Readonly<Record<string, number>>,
+  added: Readonly<Record<string, number>>,
+): Readonly<Record<string, number>> {
+  const result = { ...base };
+  for (const [unitId, bonus] of Object.entries(added)) {
+    result[unitId] = (result[unitId] ?? 0) + bonus;
+  }
+  return result;
+}
+
+function prepareSide(side: BattleSideInput): PreparedBattleSide {
+  const formation = side.formation ?? 'line';
+  const targetPriority = side.targetPriority ?? 'balanced';
+  const formationDefinition = FLEET_FORMATIONS[formation];
+  const classSkills = getClassSkillBonusMaps(side.units, formation);
+  return {
+    units: side.units,
+    weaponBonusPercent: side.weaponBonusPercent + formationDefinition.weaponBonusPercent,
+    armorBonusPercent: side.armorBonusPercent + formationDefinition.armorBonusPercent,
+    unitWeaponBonusPercent: mergeBonusMaps(
+      side.unitWeaponBonusPercent ?? {},
+      classSkills.weapon,
+    ),
+    unitArmorBonusPercent: mergeBonusMaps(
+      side.unitArmorBonusPercent ?? {},
+      classSkills.armor,
+    ),
+    formation,
+    targetPriority,
+  };
+}
+
 function unitDurability(
   unitId: string,
   armorBonusPercent: number,
@@ -48,7 +98,7 @@ function unitDurability(
 ): number {
   const definition = getUnitDefinition(unitId);
   const base = Math.max(1, (definition?.stats.armor ?? 1) + (definition?.stats.shield ?? 0));
-  const bonus = Math.max(0, armorBonusPercent + (unitArmorBonusPercent[unitId] ?? 0));
+  const bonus = Math.max(-90, armorBonusPercent + (unitArmorBonusPercent[unitId] ?? 0));
   return Math.max(1, Math.floor((base * (100 + bonus)) / 100));
 }
 
@@ -63,7 +113,7 @@ function collectWeaponContributions(
     const baseDamage = (definition?.stats.attack ?? 0) * count;
     if (baseDamage <= 0) continue;
     const profile = getUnitCombatProfile(unitId);
-    const bonus = Math.max(0, weaponBonusPercent + (unitWeaponBonusPercent[unitId] ?? 0));
+    const bonus = Math.max(-90, weaponBonusPercent + (unitWeaponBonusPercent[unitId] ?? 0));
     const modifiedDamage = Math.floor((baseDamage * (100 + bonus)) / 100);
     byWeapon[profile.weaponType] = (byWeapon[profile.weaponType] ?? 0) + modifiedDamage;
   }
@@ -141,6 +191,7 @@ function applyDamage(
   targetUnitArmorBonusPercent: Readonly<Record<string, number>>,
   weaponBonusPercent: number,
   unitWeaponBonusPercent: Readonly<Record<string, number>>,
+  targetPriority: FleetTargetPriority,
   damageCarry: Readonly<Record<string, number>>,
   seed: number,
 ): DamageApplication {
@@ -172,9 +223,13 @@ function applyDamage(
 
   const targetEntries = targetIds.map((targetUnitId) => ({
     key: targetUnitId,
-    weight:
-      unitDurability(targetUnitId, targetArmorBonusPercent, targetUnitArmorBonusPercent) *
-      (targetUnits[targetUnitId] ?? 0),
+    weight: Math.floor(
+      (
+        unitDurability(targetUnitId, targetArmorBonusPercent, targetUnitArmorBonusPercent) *
+        (targetUnits[targetUnitId] ?? 0) *
+        getTargetPriorityWeightPermille(targetPriority, targetUnitId)
+      ) / 1_000,
+    ),
   }));
   const targetAllocations = allocateByWeight(totalBaseDamage, targetEntries);
   let random = seed;
@@ -253,9 +308,11 @@ function resolveWinner(
 
 export function resolveBattle(
   seed: number,
-  attacker: BattleSideInput,
-  defender: BattleSideInput,
+  attackerInput: BattleSideInput,
+  defenderInput: BattleSideInput,
 ): BattleResolution {
+  const attacker = prepareSide(attackerInput);
+  const defender = prepareSide(defenderInput);
   let random = seed >>> 0;
   let attackerUnits = { ...attacker.units };
   let defenderUnits = { ...defender.units };
@@ -271,9 +328,10 @@ export function resolveBattle(
       attackerUnits,
       defenderUnits,
       defender.armorBonusPercent,
-      defender.unitArmorBonusPercent ?? {},
+      defender.unitArmorBonusPercent,
       attacker.weaponBonusPercent,
-      attacker.unitWeaponBonusPercent ?? {},
+      attacker.unitWeaponBonusPercent,
+      attacker.targetPriority,
       defenderDamageCarry,
       random,
     );
@@ -282,9 +340,10 @@ export function resolveBattle(
       defenderUnits,
       attackerUnits,
       attacker.armorBonusPercent,
-      attacker.unitArmorBonusPercent ?? {},
+      attacker.unitArmorBonusPercent,
       defender.weaponBonusPercent,
-      defender.unitWeaponBonusPercent ?? {},
+      defender.unitWeaponBonusPercent,
+      defender.targetPriority,
       attackerDamageCarry,
       nextRandom(random),
     );
