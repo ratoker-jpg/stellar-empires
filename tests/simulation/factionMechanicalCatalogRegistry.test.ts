@@ -28,12 +28,13 @@ describe('faction mechanical catalog architecture', () => {
     expect(parseMechanicalId('bad.id')).toBeUndefined();
   });
 
-  it('makes temporary shared catalogs explicit through the manifest', () => {
+  it('makes native and temporary alias catalogs explicit through the manifest', () => {
     expect(getFactionCatalogManifest('aegis')).toMatchObject({ mode: 'native', sourceFactionId: 'aegis' });
-    expect(getFactionCatalogManifest('synod')).toMatchObject({ mode: 'legacy-alias', sourceFactionId: 'aegis' });
+    expect(getFactionCatalogManifest('synod')).toMatchObject({ mode: 'native', sourceFactionId: 'synod' });
+    expect(hasNativeMechanicalCatalog('synod')).toBe(true);
     expect(hasNativeMechanicalCatalog('veyra')).toBe(false);
-    expect(canUseMechanicalDefinition('aegis', 'synod')).toBe(true);
-    expect(canUseMechanicalDefinition('synod', 'synod')).toBe(false);
+    expect(canUseMechanicalDefinition('aegis', 'synod')).toBe(false);
+    expect(canUseMechanicalDefinition('synod', 'synod')).toBe(true);
   });
 
   it('returns one validated catalog contract for every faction', () => {
@@ -45,5 +46,17 @@ describe('faction mechanical catalog architecture', () => {
       expect(catalog.units.length).toBeGreaterThan(0);
       expect(validateFactionMechanicalCatalog(catalog)).toEqual([]);
     }
+  });
+
+  it('registers a complete native Synod catalog', () => {
+    const catalog = getFactionMechanicalCatalog('synod');
+    expect(catalog.sourceFactionId).toBe('synod');
+    expect(catalog.buildings).toHaveLength(12);
+    expect(catalog.research).toHaveLength(10);
+    expect(catalog.units.filter((unit) => unit.kind === 'ship')).toHaveLength(10);
+    expect(catalog.units.filter((unit) => unit.kind === 'defense')).toHaveLength(5);
+    expect(catalog.buildings.every((definition) => definition.id.startsWith('building.synod.'))).toBe(true);
+    expect(catalog.research.every((definition) => definition.id.startsWith('technology.synod.'))).toBe(true);
+    expect(catalog.units.every((definition) => definition.id.includes('.synod.'))).toBe(true);
   });
 });
