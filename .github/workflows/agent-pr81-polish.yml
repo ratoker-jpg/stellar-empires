@@ -1,0 +1,39 @@
+name: Agent PR81 Veyra polish
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  polish-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/pr81-native-veyra
+          fetch-depth: 0
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Apply Veyra polish
+        run: python tools/agent_pr81_polish.py
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate
+        run: npm run check
+      - name: Remove temporary files
+        run: rm tools/agent_pr81_polish.py .github/workflows/agent-pr81-polish.yml package-lock.json
+      - name: Commit polish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: polish Veyra identity and utility stats"
+          git push origin HEAD:agent/pr81-native-veyra
