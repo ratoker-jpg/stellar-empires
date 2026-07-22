@@ -18,7 +18,7 @@
 | 2026-07-18 | `https://help.nemexia.com/` | old-help endpoint availability | loads 2Axion Help Home | CONFIRMED_HELP |
 | 2026-07-18 | `https://help.nemexia.com/en_EN/nemexia-new.html` | Nemexia help index and Races links | loaded read-only | CONFIRMED_HELP |
 | 2026-07-18 | Horus `zone_industry.php` revisit | deeper building-card research | session returned to login; no retry or authentication attempt | ACTION_REQUIRED |
-| 2026-07-18 | Horus `fleets.php?show=Simulator` | battle-simulator structure | captured read-only; Start, Save, Delete, and form edits avoided | CONFIRMED_UI |
+| 2026-07-18 | Horus `fleets.php?show=Simulator` | battle-simulator structure | captured read-only; Start, Save, Delete and form edits avoided | CONFIRMED_UI |
 | 2026-07-18 | Horus `ranking.php` | ranking landing page | opened read-only; rows not exposed in semantic view | CONFIRMED_UI |
 | 2026-07-18 | Horus `alliance.php` | alliance entry conditions | read-only; Command Chamber level 1 lock observed | LOCKED |
 | 2026-07-18 | Horus `options.php` | social/profile feature inventory | read-only; messages and settings not opened or changed | CONFIRMED_UI |
@@ -26,10 +26,12 @@
 | 2026-07-18 | Horus `advanced_search.php` | galaxy-search modes | read-only; no query entered or submitted | CONFIRMED_UI |
 | 2026-07-18 | Horus `arena.php` | arena schedule and entry points | read-only; did not join a battle | CONFIRMED_UI |
 | 2026-07-18 | `http://forums.incuvationgames.com/viewforum.php?f=22` | Help link | not opened after session boundary | UNKNOWN |
-
 | 2026-07-18 | Help overview articles: Galaxy, Planet, Resources, Buildings, Science, Ships, Commander Ships, Defence | historical mechanics inventory | opened read-only; details recorded in `data/help-articles.json` | CONFIRMED_HELP |
 | 2026-07-18 | Help overview articles: Universe, Crystals, Obelisks, SSG, Flights, Alliance, Battles, Admiral, Renegades | historical strategy/combat inventory | opened read-only; no game action | CONFIRMED_HELP |
 | 2026-07-18 | Help overview articles: Profile, Rankings, Achievements, Services, Arena, New units statistics, faction articles | historical meta/unit inventory | opened read-only; New Units is explicitly some-universes-only | CONFIRMED_HELP |
 | 2026-07-18 | Horus `ships.php` | complete visible Terteth ship-card capture; Defence-tab read | no quantity entered, no construction; Defence cards not exposed at level 1 | CONFIRMED_UI |
+| 2026-07-22 | User archive `Корабли, боевые корабли, оборона, наука.zip` | complete information-card inventory | all 101 saved HTML cards parsed: 39 standard ships, 13 shared commander ships, 27 defenses and 22 sciences; archive SHA-256 recorded in document 19 | USER_CAPTURED_HTML |
+| 2026-07-22 | User archive `stellar-empires-building-descriptions-screenshots.zip` | full building-function inventory | all 72 screenshots reviewed: 22 ordinary and 2 galactic cards for each of three factions; archive SHA-256 recorded in document 19 | USER_CAPTURED_SCREENSHOT |
+| 2026-07-22 | Three `stellar-empires-buildings-regenerated-*-cleaned-v3.zip` archives | original/generated Stellar Empires building-art QA | 24 assets per faction reviewed; RGBA sizes, alpha, atlases, duplicate hashes and manifest shapes checked; binaries intentionally deferred | USER_GENERATED_ASSET |
 
-No DOM/network/CDP extraction, asset copying, or irreversible UI action was performed. Source UI can change; screenshots provide capture-time evidence only. The user explicitly approved preserving visible in-game names and coordinates.
+No DOM/network/CDP extraction, irreversible UI action or runtime asset copying was performed during the browser audit. The supplied 2026-07-22 package was processed locally and read-only. Raw original-game HTML, screenshots and downloaded images are excluded from Git; only normalized derived documentation is committed.
