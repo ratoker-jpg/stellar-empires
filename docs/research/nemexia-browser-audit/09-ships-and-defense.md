@@ -1,9 +1,24 @@
 # 09 — Ships and defense
 
-## Historical Help cross-check
+## Earlier browser state
 
-The Help says ships and defence require a Shipyard, resources, free Population, and sometimes science; weapons are Laser/Ion/Plasma and armor is Light/Medium/Heavy. It also publishes a **custom configuration for some universes only**. Its Terteth rows corroborate historical names and named cost/stat fields for Space Armada, Goliath, and Bomberbot, as well as a nine-unit Terteth defence catalogue. Those values are stored as `CONFIRMED_HELP`, never promoted to current Horus values or requirements.
+The 2026-07-18 browser audit exposed a partial ship list and historical Help cross-check, while detailed defense cards remained locked.
 
-`CONFIRMED_UI`: Shipyard has Ships, Defense, Commander Ships, Ships Technology, upgrades, battle-priority, Flights, Battles, and Simulator entry points. On the second server it is level 1 and lists Solar Satellite, Spy Bot, Cargo Bot, Large Cargo Bot, Colonizer Bot, Recycler, Fighter, Interceptor, Shield Bot, Star Armada, Goliath, BomberBot, and Titan.
+## Complete user capture received on 2026-07-22
 
-Visible example gates: Spy Bot and Interceptor require Shipyard 3; Cargo Bot requires Shipyard 2; Large Cargo Bot, Colonizer Bot, and Recycler require Shipyard 4; Shield Bot requires Shipyard 5; Fighter requires Astronomy 3; Titan requires Shipyard 14. Per-unit cost triplets and construction times are retained in `data/ships.json` only as capture-time UI values. Selecting the Defense tab did not produce distinct defense cards in the semantic view, so defenses remain `UNKNOWN`.
+`USER_CAPTURED_HTML` now confirms:
+
+- **13 standard ships per faction** — 39 cards total;
+- **13 commander/combat ships shared by all factions**;
+- **9 planetary defenses per faction** — 27 cards total;
+- 7 attacking defense installations and 2 planetary shields per faction.
+
+For ships and defenses the capture records attack, life, weapon, armor, hangar/population use, cargo where applicable, fuel, speed, build time, resource cost, prerequisites, targeting priorities and special abilities. Combat classes 3–9 expose a shared cross-faction targeting matrix with +70% and −30% matchups. The three factions differ in hull statistics, requirements and several proc rates or unique class-7 abilities.
+
+The complete tables are in:
+
+- `19-complete-user-captured-catalog-2026-07-22.md`.
+
+## Evidence boundary
+
+These numbers are capture-time reference and must not be promoted automatically to Stellar Empires balance. Original-game ship, defense and science images remain excluded from source and runtime. A future adaptation PR must assign original IDs/names, rebalance values, preserve player/bot parity and add deterministic combat tests.

@@ -1,14 +1,26 @@
 # 07 — Buildings
 
-## Historical Help catalogue
+## Earlier browser state
 
-`CONFIRMED_HELP` exposes faction-named building catalogues. For the Terteth column relevant to visible Horus unit names, Resource: Metal Bot, Mineral Bot, Gas Probe, Infrared Transbot, Uranium Bot, Vault; Military: Experimental Facility, Shipyard, Stargate, Regulator Palace, Bank; Industrial: Construction Yard, Terteth Facility, Metal Depot, Mineral Treasury, Gas Chamber, Junk Yard, Trade Center, Ship Market. The Help overview confirms levels, maxima, prerequisites, economic-resource and Energy costs. It does **not** justify inventing the current-card costs/effects: those remain `UNKNOWN` until current UI exposes them.
+The 2026-07-18 browser pass confirmed the three building zones — Resource, Industry and Military — but did not expose complete semantic building cards. The historical Help catalogue supplied faction-specific names but was insufficient for current-card mechanics.
 
-`CONFIRMED_UI`: the game groups building-related content under Resource, Industry, and Military zones, while Shipyard is a separate construction screen. The three zone screenshots show empty/semantic-hidden definitions, so individual building labels and requirements were not safely extractable.
+## Complete user capture received on 2026-07-22
 
-| Area | Status | Notes |
-| --- | --- | --- |
-| Resource buildings | UNKNOWN | production summary is visible; cards are not |
-| Industry buildings | UNKNOWN | zone reached |
-| Military buildings | UNKNOWN | zone reached |
-| Shipyard | LOCKED | level 0, requires level 1 for ship construction |
+`USER_CAPTURED_SCREENSHOT` now confirms a complete 24-slot structure for each faction:
+
+- 22 ordinary buildings;
+- 2 galactic buildings;
+- 10 resource slots;
+- 7 industry slots;
+- 5 military slots;
+- 2 galactic slots.
+
+The repeated functional structure includes three metal producers, two mineral producers, two gas producers, basic and advanced energy, hangar, construction acceleration, advanced production, three storages, debris recycling, trade, shipyard, research, spaceport, planetary administration, bank, a faction obelisk and Supreme Galactic Gates.
+
+Exact names, faction mapping, visible requirements, functional summaries, all 72 newly generated building assets and the gap against the current 12-building runtime catalog are documented in:
+
+- `19-complete-user-captured-catalog-2026-07-22.md`.
+
+## Evidence boundary
+
+The screenshots are capture-time reference, not permission to copy original UI art or prose. Several galactic effects and exact per-level economic curves remain undisclosed. New `cleaned-v3` building art is original/generated Stellar Empires material, but binary intake and runtime connection are deferred to separate PRs.
