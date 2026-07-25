@@ -14,10 +14,10 @@ jobs:
       - uses: actions/checkout@v6
       - name: Pack source snapshot
         run: |
-          tar --exclude='.git' --exclude='node_modules' --exclude='assets/source' -czf stellar-empires-source.tgz .
+          tar --exclude='.git' --exclude='node_modules' --exclude='assets/source' -czf /tmp/stellar-empires-source.tgz .
       - uses: actions/upload-artifact@v4
         with:
           name: stellar-empires-source
-          path: stellar-empires-source.tgz
+          path: /tmp/stellar-empires-source.tgz
           if-no-files-found: error
           retention-days: 1
