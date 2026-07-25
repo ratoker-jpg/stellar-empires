@@ -1,4 +1,5 @@
 import type { FactionId } from '../planet/types';
+import type { CompleteCatalogRolloutStage } from './completeCatalogTargets';
 
 export type FactionCatalogMode = 'native' | 'legacy-alias';
 
@@ -7,6 +8,10 @@ export interface FactionCatalogManifestEntry {
   readonly sourceFactionId: FactionId;
   readonly mode: FactionCatalogMode;
   readonly migrationPolicy: 'stable-existing-ids' | 'replace-legacy-aliases';
+  /** Complete-catalog contract version, independent from save schema version. */
+  readonly targetCatalogVersion: 1;
+  /** Current content rollout stage for this faction. */
+  readonly rolloutStage: CompleteCatalogRolloutStage;
 }
 
 export const FACTION_CATALOG_MANIFEST: Readonly<
@@ -17,18 +22,24 @@ export const FACTION_CATALOG_MANIFEST: Readonly<
     sourceFactionId: 'aegis',
     mode: 'native',
     migrationPolicy: 'stable-existing-ids',
+    targetCatalogVersion: 1,
+    rolloutStage: 'foundation',
   },
   synod: {
     factionId: 'synod',
     sourceFactionId: 'synod',
     mode: 'native',
     migrationPolicy: 'replace-legacy-aliases',
+    targetCatalogVersion: 1,
+    rolloutStage: 'foundation',
   },
   veyra: {
     factionId: 'veyra',
     sourceFactionId: 'veyra',
     mode: 'native',
     migrationPolicy: 'replace-legacy-aliases',
+    targetCatalogVersion: 1,
+    rolloutStage: 'foundation',
   },
 };
 
