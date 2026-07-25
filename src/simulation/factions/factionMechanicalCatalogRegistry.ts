@@ -6,6 +6,10 @@ import type { ResearchDefinition } from '../research/types';
 import type { GameState } from '../types';
 import { AEGIS_UNIT_CATALOG } from '../units/aegisUnitCatalog';
 import type { UnitDefinition, UnitKind } from '../units/types';
+import {
+  COMPLETE_CATALOG_TARGETS,
+  type CompleteCatalogCounts,
+} from './completeCatalogTargets';
 import { getFactionCatalogManifest } from './factionCatalogManifest';
 import { parseMechanicalId } from './mechanicalIds';
 import {
@@ -25,6 +29,13 @@ export interface FactionMechanicalCatalog {
   readonly buildings: readonly BuildingDefinition[];
   readonly research: readonly ResearchDefinition[];
   readonly units: readonly UnitDefinition[];
+}
+
+export interface FactionCatalogCompleteness {
+  readonly factionId: FactionId;
+  readonly current: CompleteCatalogCounts;
+  readonly target: CompleteCatalogCounts;
+  readonly complete: boolean;
 }
 
 type MechanicalCatalogSource = Omit<FactionMechanicalCatalog, 'factionId'>;
@@ -96,6 +107,34 @@ export function getUnitCatalogForFaction(
   factionId: FactionId,
 ): readonly UnitDefinition[] {
   return getFactionMechanicalCatalog(factionId).units;
+}
+
+export function getFactionCatalogCompleteness(
+  factionId: FactionId,
+): FactionCatalogCompleteness {
+  const catalog = getFactionMechanicalCatalog(factionId);
+  const current: CompleteCatalogCounts = {
+    buildings: catalog.buildings.length,
+    technologies: catalog.research.length,
+    ships: catalog.units.filter((unit) => unit.kind === 'ship').length,
+    defenses: catalog.units.filter((unit) => unit.kind === 'defense').length,
+    commanderShips: 0,
+  };
+  const target: CompleteCatalogCounts = {
+    buildings: COMPLETE_CATALOG_TARGETS.buildingsPerFaction,
+    technologies: COMPLETE_CATALOG_TARGETS.sharedTechnologies,
+    ships: COMPLETE_CATALOG_TARGETS.shipsPerFaction,
+    defenses: COMPLETE_CATALOG_TARGETS.defensesPerFaction,
+    commanderShips: COMPLETE_CATALOG_TARGETS.sharedCommanderShips,
+  };
+  return {
+    factionId,
+    current,
+    target,
+    complete: (Object.keys(target) as (keyof CompleteCatalogCounts)[]).every(
+      (category) => current[category] === target[category],
+    ),
+  };
 }
 
 export function getFactionIdForEmpire(
@@ -203,5 +242,20 @@ export function validateFactionMechanicalCatalog(
       }
     }
   }
+
+  const counts = getFactionCatalogCompleteness(catalog.factionId);
+  if (counts.current.buildings > counts.target.buildings) {
+    errors.push(`Building catalog exceeds target count: ${counts.current.buildings}/${counts.target.buildings}`);
+  }
+  if (counts.current.technologies > counts.target.technologies) {
+    errors.push(`Technology catalog exceeds target count: ${counts.current.technologies}/${counts.target.technologies}`);
+  }
+  if (counts.current.ships > counts.target.ships) {
+    errors.push(`Ship catalog exceeds target count: ${counts.current.ships}/${counts.target.ships}`);
+  }
+  if (counts.current.defenses > counts.target.defenses) {
+    errors.push(`Defense catalog exceeds target count: ${counts.current.defenses}/${counts.target.defenses}`);
+  }
+
   return errors;
 }
