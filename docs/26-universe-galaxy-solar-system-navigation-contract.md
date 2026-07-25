@@ -2,19 +2,17 @@
 
 **Status:** canonical presentation and interaction contract v1  
 **Scope:** central space-map experience for Stellar Empires  
-**Source classes:**
+**Runtime impact:** none; this is a contract for a later implementation PR.
 
-- `USER_CANONICAL` — the project owner confirmed that the captured screen is the **Universe** view and requested faithful reproduction of the central map and its behavior;
-- `CAPTURE_REFERENCE` — geometry and interaction details recovered from the supplied 2026-07-26 saved pages, CSS, JavaScript and screenshots;
-- `PROJECT_ADAPTATION` — integration decisions required to fit the existing Stellar Empires shell without copying the source game's top or side chrome.
+Source classes:
 
-This document is a design contract for a future runtime PR. It does not itself change runtime code.
-
----
+- `USER_CANONICAL` — the project owner confirmed that the captured root screen is **Universe** and requested faithful reproduction of the central map and behavior.
+- `CAPTURE_REFERENCE` — geometry recovered from the supplied 2026-07-26 saved pages, `layout.css`, `galaxy.js` and screenshots.
+- `PROJECT_ADAPTATION` — original Stellar Empires UI and assets around the recovered central-map structure.
 
 ## 1. Scope boundary
 
-Stellar Empires must reproduce the **central navigation experience**:
+Required hierarchy:
 
 ```text
 Universe
@@ -23,20 +21,16 @@ Universe
       -> Sun, planets and strategic objects
 ```
 
-The following source-game chrome is explicitly excluded:
+Reproduce the central map, navigation and interactions. Do **not** copy:
 
 - the old Nemexia top navigation;
-- the old left-side information panel;
-- premium, rating, personal-account and unrelated shortcut UI;
-- source-game branding, portraits, frames and proprietary decorative assets.
+- the old side information panel;
+- premium/rating/account controls;
+- branding, portraits, decorative frames or captured binary art.
 
-The map must be embedded into the current Stellar Empires interface shell.
+The map belongs inside the current Stellar Empires shell.
 
----
-
-## 2. Shared navigation model
-
-The map has three explicit levels:
+## 2. Shared navigation
 
 ```ts
 type SpaceMapLevel = "universe" | "galaxy" | "solar-system";
@@ -48,7 +42,7 @@ type SpaceCoordinate = {
 };
 ```
 
-Breadcrumb behavior:
+Breadcrumb:
 
 ```text
 Universe
@@ -56,99 +50,60 @@ Universe -> Galaxy 2
 Universe -> Galaxy 2 -> Solar system 27
 ```
 
-Requirements:
+Rules:
 
-- every previous breadcrumb segment is clickable;
-- direct coordinate navigation is available;
-- browser refresh and save/load restore the same selected level and coordinate;
-- navigation does not mutate simulation state;
-- transitions must not dispatch fleets or missions;
+- previous breadcrumb segments are clickable;
+- direct galaxy/system coordinate navigation is available;
+- refresh and save/load restore the selected view and coordinate;
+- navigation never mutates world state or dispatches a mission;
 - invalid coordinates fail visibly and deterministically.
 
----
+## 3. Logical stage and responsive scaling
 
-## 3. Logical stage and scaling
-
-The captured layout is fixed-width. Stellar Empires must preserve the original logical geometry while scaling it into the available viewport.
-
-Canonical logical width:
-
-```text
-970 px
-```
-
-Views:
+Preserve fixed logical geometry and uniformly scale the whole stage.
 
 | View | Logical stage |
 |---|---:|
 | Universe | `970 x 468` |
 | Galaxy | `970 x 530` |
-| Solar system | `970 x 400` plus vertical presentation margin |
-
-Implementation rule:
+| Solar system | `970 x 400` plus presentation margin |
 
 ```text
 renderScale = min(availableWidth / 970, availableHeight / logicalHeight)
 ```
 
-The stage scales uniformly. Internal node coordinates do not reflow independently.
-
-Desktop behavior:
-
-- center the stage;
-- allow unused side space;
-- do not stretch objects non-uniformly.
-
-Small-screen behavior:
-
-- scale-to-fit first;
-- permit controlled pan/zoom only when the minimum readable scale is exceeded;
-- never rearrange galaxies or planet positions into a responsive grid.
-
----
+Do not independently reflow galaxies or planets into responsive grids. On small screens, scale first and permit controlled pan/zoom only below the minimum readable scale.
 
 ## 4. Universe view
 
 ### 4.1. Population
 
-The captured reference screen contains **15 populated galaxies**.
-
-The recovered stylesheet defines **20 layout slots**. Runtime support must therefore be:
-
-```text
-maximum visible galaxy slots: 20
-default campaign population: scenario-configurable
-reference scenario: 15 populated galaxies
-```
-
-No connecting lines are drawn between galaxy nodes.
+- the supplied screenshot shows **15 populated galaxies**;
+- the recovered stylesheet defines **20 layout slots**;
+- runtime supports 20 slots;
+- populated count is scenario-configurable;
+- no connecting lines are drawn.
 
 ### 4.2. Galaxy node geometry
 
-Each galaxy node uses a logical container:
-
 ```text
-200 x 200 px
+container: 200 x 200
+hit area: 80 x 80
+hit offset: left 60, top 60
 ```
 
-Interactive hit area inside the node:
+Required presentation:
 
-```text
-80 x 80 px
-offset: left 60 px, top 60 px
-```
+- small galaxy number in the hit area's top-right;
+- hover/focus outline;
+- empire count revealed on hover/focus;
+- current galaxy remains outlined;
+- aggregate markers may show collapsed/recovering **systems** inside a galaxy;
+- destroying one sun never marks or removes the entire galaxy.
 
-Required overlays:
+### 4.3. Exact Universe slots
 
-- small galaxy number in the top-right of the hit area;
-- hover/focus outline around the hit area;
-- player or empire count revealed on hover/focus;
-- the player's current galaxy remains outlined;
-- collapsed or rebuilding galaxies receive a distinct state treatment.
-
-### 4.3. Exact recovered slot positions
-
-Coordinates are relative to the `970 x 468` Universe stage.
+Coordinates are relative to the `970 x 468` stage.
 
 | Slot | Left | Top |
 |---:|---:|---:|
@@ -173,9 +128,7 @@ Coordinates are relative to the `970 x 468` Universe stage.
 | 19 | 802 | 307 |
 | 20 | -33 | 42 |
 
-The negative and overflowing coordinates are intentional. They create partial off-stage nebulae and visual depth.
-
-### 4.4. Universe node state
+Negative and overflowing positions are intentional.
 
 ```ts
 type GalaxyMapNode = {
@@ -183,80 +136,38 @@ type GalaxyMapNode = {
   layoutSlot: number;
   empireCount: number;
   isCurrentGalaxy: boolean;
-  state: "active" | "collapsed" | "protostar" | "recovering";
   discovered: boolean;
+  inhabitedSystemCount: number;
+  collapsedSystemCount: number;
+  recoveringSystemCount: number;
 };
 ```
 
-A galaxy may be hidden only by scenario rules. Discovery state must not alter deterministic world generation.
-
-### 4.5. Universe interactions
-
-Primary click:
-
-```text
-open selected galaxy
-```
-
-Hover/focus:
-
-- reveal galaxy ID;
-- reveal empire count;
-- show state summary;
-- show current-player marker when relevant.
-
-Optional context panel:
-
-- active alliances;
-- number of inhabited systems;
-- number of destroyed/recovering systems;
-- known hostile activity.
-
-The context panel belongs to Stellar Empires UI, not to the copied map geometry.
-
----
+Primary click opens the selected galaxy.
 
 ## 5. Galaxy view
 
-The Galaxy view presents solar systems as vertically staggered nodes in horizontally paged columns.
+Solar systems are vertically staggered nodes in horizontally paged columns.
 
-### 5.1. Recovered geometry
+Recovered geometry:
 
 ```text
-viewport: 970 x 530 px
-column width: 108 px
+viewport: 970 x 530
+column width: 108
 columns per page: 9
-page step: 972 px
-maximum columns represented by source layout: 81
+page step: 972
+maximum source-layout columns: 81
+vertical positions: 30, 50, 110, 160, 190, 260, 290, 310, 390
 ```
-
-Recovered vertical positions for system nodes:
-
-```text
-30, 50, 110, 160, 190, 260, 290, 310, 390 px
-```
-
-The nine positions are reused across columns to create an irregular starfield rather than a straight list.
-
-### 5.2. Paging
 
 Requirements:
 
-- left and right page controls;
-- visible range label, for example `1-9`, `10-18`, `19-27`;
-- keyboard navigation;
-- wheel/trackpad navigation only when it cannot interfere with page scrolling;
-- selected system remains stable after save/load.
-
-The source capture used a long slide animation. Stellar Empires may expose the duration as configuration, but the initial fidelity preset must use:
-
-```text
-galaxyPageTransitionMs = 1500
-```
-
-A later accessibility setting may reduce motion.
-
-### 5.3. System node model
+- left/right page controls;
+- range label such as `1-9`, `10-18`, `19-27`;
+- keyboard support;
+- selected system survives save/load;
+- fidelity preset uses `galaxyPageTransitionMs = 1500`;
+- reduced-motion mode may shorten or remove the animation.
 
 ```ts
 type SolarSystemMapNode = {
@@ -272,57 +183,34 @@ type SolarSystemMapNode = {
 
 Primary click opens the solar system.
 
----
-
 ## 6. Solar-system view
 
-### 6.1. Stage
-
-Recovered base stage:
+### 6.1. Stage and sun
 
 ```text
-970 x 400 px
+stage: 970 x 400
+source presentation margin: about 70 px vertical
+sun box: 250 x 250
+sun left: 368
+sun top: 70
 ```
 
-The original presentation used approximately `70 px` vertical margin around the stage.
+The sun is interactive. Its panel must expose:
 
-Background and orbital paths are decorative and must not determine simulation coordinates.
+- galaxy/system coordinate;
+- brightness and solar-energy multiplier;
+- active/collapsed/protostar/recovering state;
+- rebuild phase and remaining time;
+- support fleets;
+- eligible `Sun Attack` and `Sun Support` actions.
 
-### 6.2. Sun
+The authoritative mechanics are defined in `docs/25-solar-war-obelisks-gates-and-progression.md`.
 
-Recovered sun sprite box:
+### 6.2. Planet positions
 
-```text
-250 x 250 px
-left: 368 px
-top: 70 px
-```
+There are exactly **24 positions**. Each uses a `120 x 120` logical box.
 
-The sun is interactive.
-
-The Stellar Empires tooltip/action panel must show:
-
-- galaxy and system coordinate;
-- brightness;
-- solar energy multiplier;
-- current sun state;
-- rebuild phase and remaining duration when applicable;
-- stationed support fleets;
-- available `Sun Attack` or `Sun Support` action according to the canonical endgame contract in `docs/25-solar-war-obelisks-gates-and-progression.md`.
-
-### 6.3. Planet slots
-
-There are exactly **24 planet positions**.
-
-Each position uses a logical box:
-
-```text
-120 x 120 px
-```
-
-Exact recovered coordinates:
-
-| Position | Horizontal rule | Vertical rule |
+| Position | Horizontal | Vertical |
 |---:|---|---|
 | 1 | `left: 23` | `top: 5` |
 | 2 | `left: 160` | `top: -33` |
@@ -349,9 +237,9 @@ Exact recovered coordinates:
 | 23 | `right: 160` | `bottom: -33` |
 | 24 | `right: 23` | `bottom: 5` |
 
-Overflow is intentional and must not be clamped into a rectangular grid.
+Overflow is intentional.
 
-### 6.4. Slot types
+### 6.3. Slot types
 
 ```ts
 type SolarSystemSlot =
@@ -362,144 +250,90 @@ type SolarSystemSlot =
   | RenegadeSlot;
 ```
 
-Supported presentation:
+Presentation must distinguish:
 
-- normal planet;
-- current player's planet;
-- allied planet;
-- hostile planet;
-- neutral or currently non-attackable planet;
-- vacation/inactive/protected/blocked state;
+- own, allied, hostile and neutral planets;
+- inactive, vacation, blocked and protected states;
 - alliance command planet;
 - empty colonizable slot;
 - asteroid;
 - debris field;
 - Renegade PvE object.
 
-### 6.5. Status colors
-
-Initial compatibility palette recovered from the capture:
+Compatibility color semantics:
 
 | State | Reference color |
 |---|---|
-| Own planet | purple |
+| Own | purple |
 | Attackable enemy | red |
-| Cannot attack / neutral | green |
+| Neutral/cannot attack | green |
 | Vacation | dark blue |
 | Inactive | orange |
 | Blocked | gray |
 | Protected | cyan |
-| Alliance command planet | brown |
+| Command planet | brown |
 
-Stellar Empires may tune exact color values to its design system, but semantic distinctions must remain visible without relying only on color. Add icons or text for accessibility.
+Do not rely on color alone; add icons/text.
 
-### 6.6. Empty slots
+Empty slot behavior:
 
-Default:
+- hidden number by default;
+- dashed hit-box and number on hover/focus;
+- click opens colonization preparation;
+- never dispatch immediately.
 
-- no persistent label;
-- no fake planet artwork.
+Occupied tooltip minimum:
 
-Hover/focus:
-
-- reveal dashed hit-box;
-- reveal position number;
-- show `Colonize` eligibility and reason;
-- clicking opens mission preparation and never dispatches immediately.
-
-### 6.7. Occupied planet tooltip
-
-At minimum:
-
-- planet name;
-- owner;
-- alliance;
-- coordinates;
-- faction;
-- relation;
-- protection/inactivity state;
-- known defence or intelligence confidence;
+- name, owner, alliance, coordinate and faction;
+- relation and protection/inactivity state;
+- known defence/intelligence confidence;
 - available missions.
-
-Tooltip data may be cached by coordinate, but cache invalidation must follow authoritative simulation state.
-
----
 
 ## 7. Procedural placeholder phase
 
-The first runtime implementation must not wait for final artwork.
+The first implementation must not wait for final art.
 
-All placeholders must be deterministic from stable IDs:
+All generated visuals are deterministic:
 
 ```text
 seed = hash(universeSeed, galaxyId, systemId, slotId, assetRole)
 ```
 
-### 7.1. Procedural Universe galaxies
-
-Use Canvas, SVG or CSS layers:
+Procedural Universe galaxies:
 
 - 2-4 blurred radial-gradient clouds;
-- deterministic rotation and scale;
-- sparse star particles;
-- faction-neutral color palettes;
+- seeded rotation, scale, palette and stars;
 - transparent outer edge;
-- no baked labels.
+- fit the `200 x 200` node.
 
-The procedural galaxy must fit the same `200 x 200` node container and preserve the `80 x 80` hit area.
+Procedural Galaxy stars:
 
-### 7.2. Procedural Galaxy systems
-
-Use:
-
-- central star disc;
+- central stellar disc;
 - one or two glow layers;
-- deterministic temperature palette;
-- optional tiny orbit dots;
+- seeded temperature;
 - transparent background.
 
-### 7.3. Procedural suns
+Procedural suns:
 
-Use Canvas or SVG:
-
-- radial surface gradient;
-- deterministic noise bands;
+- radial surface;
+- seeded noise;
 - corona;
 - brightness-driven exposure;
-- collapsed, protostar and recovering states.
+- collapsed/protostar/recovering variants.
 
-### 7.4. Procedural planets
+Procedural planets:
 
-Use seeded:
+- seeded radius, palette, surface noise, terminator and atmosphere;
+- optional rings;
+- readable in `120 x 120`.
 
-- planet radius;
-- base palette;
-- terminator angle;
-- atmosphere rim;
-- surface noise;
-- rings only for compatible variants.
+Procedural strategic objects are allowed for asteroids, debris, Renegade stations and sun mission markers.
 
-The generated planet must remain readable inside a `120 x 120` slot.
-
-### 7.5. Procedural strategic objects
-
-Temporary vector/canvas shapes are permitted for:
-
-- asteroids;
-- debris fields;
-- Renegade stations;
-- support-fleet markers;
-- sun-attack markers.
-
-These placeholders must use final asset IDs so later artwork replacement does not require save migration.
-
----
+Use final asset IDs from the beginning so later art replacement needs no save migration.
 
 ## 8. Asset swap contract
 
-Runtime code must resolve visual roles through a manifest rather than direct imports.
-
-Example:
+Resolve visuals through a manifest, not direct component imports.
 
 ```ts
 type SpaceMapAssetManifest = {
@@ -513,7 +347,7 @@ type SpaceMapAssetManifest = {
 };
 ```
 
-Fallback order:
+Fallback:
 
 ```text
 final runtime asset
@@ -521,24 +355,11 @@ final runtime asset
 -> procedural renderer
 ```
 
-Missing artwork must never make the map unusable.
+An art swap must not change IDs, coordinates, mission rules, save schema or simulation checksums.
 
-Visual asset replacement must not change:
+The production specification and copy-paste prompts are in `docs/asset-prompts/universe-navigation-assets.md`.
 
-- IDs;
-- coordinates;
-- simulation state;
-- mission rules;
-- save schema;
-- checksums unrelated to presentation.
-
----
-
-## 9. Integration with simulation
-
-The navigation view reads authoritative state only.
-
-Required state:
+## 9. Simulation integration
 
 ```ts
 type SpaceNavigationState = {
@@ -549,51 +370,43 @@ type SpaceNavigationState = {
 };
 ```
 
-World state must expose:
+Authoritative world state must expose:
 
-- galaxy graph adjacency;
+- galaxy adjacency graph;
 - systems by galaxy;
 - 24 slots per system;
-- sun brightness and recovery state;
-- planets and ownership;
-- alliances and diplomatic relation;
-- active fleets and strategic missions;
-- visibility/intelligence confidence.
+- sun brightness and recovery;
+- planet ownership;
+- alliances and relation;
+- fleets and strategic missions;
+- intelligence confidence.
 
-Bots and the player use the same coordinates and mission validators.
-
----
+Player and bots use the same coordinates and mission validators.
 
 ## 10. Performance and accessibility
 
-Requirements:
-
-- do not mount tooltip-heavy components for all off-screen systems;
-- virtualize Galaxy pages beyond the current page and neighbors;
+- virtualize off-page Galaxy nodes;
 - cache deterministic procedural textures;
-- use pointer, keyboard and focus interactions;
-- provide reduced-motion mode;
-- maintain readable labels at the minimum supported scale;
-- avoid continuous full-stage rerenders for hover effects;
-- keep orbit animation cosmetic and independent of simulation time.
-
----
+- avoid full-stage rerenders on hover;
+- support pointer, keyboard and focus;
+- provide reduced motion;
+- keep orbit animation cosmetic and independent of simulation time;
+- keep labels readable at minimum supported scale.
 
 ## 11. Acceptance criteria
 
 A future runtime PR is complete only when:
 
-1. the central map works inside the current Stellar Empires shell;
-2. the old Nemexia top and side chrome are not copied;
-3. Universe, Galaxy and Solar-system levels are separate navigable states;
-4. the Universe stage uses the exact 20 recovered layout slots;
-5. a scenario can populate 15 galaxies like the supplied screenshot;
-6. Galaxy paging uses 9 systems per page and the recovered staggered positions;
-7. every solar system exposes one sun and exactly 24 planet positions;
-8. sun brightness and recovery state are visible and linked to the canonical solar-war state;
-9. empty, occupied, asteroid, debris and Renegade slots are distinguishable;
-10. navigation survives save/load;
-11. procedural rendering is deterministic;
-12. later final artwork can replace placeholders only through the manifest;
-13. no original captured binary, HTML, CSS or source-game artwork is committed to runtime;
-14. lint, typecheck, tests and production build pass.
+1. the central map works inside the existing Stellar Empires shell;
+2. old Nemexia top/side chrome is not copied;
+3. the three navigation levels are explicit;
+4. Universe uses all 20 recovered slots and can populate 15 like the screenshot;
+5. Galaxy uses 9 systems per page and recovered staggered positions;
+6. every system has one sun and exactly 24 planet slots;
+7. sun state connects to the canonical solar-war state;
+8. empty, planet, asteroid, debris and Renegade slots are distinct;
+9. navigation survives save/load;
+10. procedural rendering is deterministic;
+11. final art swaps only through the manifest;
+12. no captured source-game binaries, HTML or CSS enter runtime;
+13. lint, typecheck, tests and production build pass.
