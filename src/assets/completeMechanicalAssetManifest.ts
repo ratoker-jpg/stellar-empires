@@ -34,7 +34,7 @@ export const COMPLETE_MECHANICAL_ASSET_MANIFEST: CompleteMechanicalAssetManifest
 export interface MechanicalAssetResolution {
   readonly asset: AegisVerticalSliceAsset | undefined;
   readonly source: 'complete-manifest' | 'current-runtime-fallback' | 'missing';
-  readonly provenancePath?: string;
+  readonly provenancePath: string | undefined;
 }
 
 export function resolveCompleteMechanicalAsset(
