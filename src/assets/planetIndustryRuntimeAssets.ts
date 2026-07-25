@@ -1,7 +1,7 @@
+import type { FactionId, PlanetZoneId } from '../simulation/planet/types';
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
-import type { FactionId, PlanetZoneId } from '../simulation/planet/types';
-import { getUnitDefinition } from '../simulation/units/catalog';
+import { RUNTIME_ASSETS } from './runtimeAssets';
 
 export type BuildingPresentationRole =
   | 'command'
@@ -13,7 +13,7 @@ export type BuildingPresentationRole =
   | 'shipyard'
   | 'sensor-array';
 
-const BUILDING_SHEETS: Readonly<
+export const INDUSTRY_BUILDING_SHEETS: Readonly<
   Record<FactionId, Readonly<Record<BuildingPresentationRole, string>>>
 > = {
   aegis: {
@@ -48,19 +48,18 @@ const BUILDING_SHEETS: Readonly<
   },
 };
 
-const DEFENSE_SHEETS: Readonly<Record<FactionId, Readonly<Record<string, string>>>> = {
+export const DEFENSE_BUILDING_SHEETS: Readonly<
+  Record<FactionId, Readonly<Record<'missile' | 'shield', string>>>
+> = {
   aegis: {
-    kinetic: new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_defense_platform_sheet.png', import.meta.url).href,
     missile: new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_missile_battery_sheet.png', import.meta.url).href,
     shield: new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_shield_generator_sheet.png', import.meta.url).href,
   },
   synod: {
-    kinetic: new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_defense_platform_sheet.png', import.meta.url).href,
     missile: new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_missile_battery_sheet.png', import.meta.url).href,
     shield: new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_shield_generator_sheet.png', import.meta.url).href,
   },
   veyra: {
-    kinetic: new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_defense_platform_sheet.png', import.meta.url).href,
     missile: new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_missile_battery_sheet.png', import.meta.url).href,
     shield: new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_shield_generator_sheet.png', import.meta.url).href,
   },
@@ -74,7 +73,7 @@ const ZONE_TERRAINS: Readonly<Record<PlanetZoneId, string>> = {
 
 export function getBuildingPresentationRole(buildingId: string): BuildingPresentationRole {
   const parsed = parseMechanicalId(buildingId);
-  if (parsed?.kind !== 'building') return 'command';
+  if (parsed?.kind !== 'building' || parsed.factionId === 'shared') return 'command';
   const buildings = getFactionMechanicalRoles(parsed.factionId).buildings;
   if (buildingId === buildings.metal) return 'metal-extractor';
   if (buildingId === buildings.crystal) return 'crystal-refinery';
@@ -88,21 +87,6 @@ export function getBuildingPresentationRole(buildingId: string): BuildingPresent
   return 'command';
 }
 
-export function getBuildingSheetUrl(factionId: FactionId, buildingId: string): string {
-  return BUILDING_SHEETS[factionId][getBuildingPresentationRole(buildingId)];
-}
-
-export function getBuildingSheetFrame(level: number, maxLevel: number): number {
-  if (level <= 0 || maxLevel <= 1) return 0;
-  return Math.min(3, Math.floor(((level - 1) * 4) / maxLevel));
-}
-
-export function getZoneTerrainUrl(zoneId: PlanetZoneId): string {
-  return ZONE_TERRAINS[zoneId];
-}
-
-export function getDefensePresentationArtUrl(factionId: FactionId, unitId: string): string {
-  const role = getUnitDefinition(unitId)?.role;
-  const presentationRole = role === 'missile' || role === 'shield' ? role : 'kinetic';
-  return DEFENSE_SHEETS[factionId][presentationRole] ?? DEFENSE_SHEETS[factionId].kinetic ?? '';
+export function getZoneTerrainAsset(zoneId: PlanetZoneId): string {
+  return ZONE_TERRAINS[zoneId] ?? RUNTIME_ASSETS.planetTerrainResourceWebp;
 }
