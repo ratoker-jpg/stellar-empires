@@ -2,6 +2,8 @@
 
 The complete user-supplied package from 2026-07-22 closed the earlier inventory questions for buildings, ships, defence and sciences. The canonical endgame contract in [`docs/25-solar-war-obelisks-gates-and-progression.md`](../../25-solar-war-obelisks-gates-and-progression.md) additionally resolves the project-level questions around suns, Solar Crystals, faction obelisks, Supreme Galactic Gates, solo victory, Commander Ship scaling, detonation and initial progression formulas.
 
+The 2026-07-26 Universe capture and the canonical navigation contract in [`docs/26-universe-galaxy-solar-system-navigation-contract.md`](../../26-universe-galaxy-solar-system-navigation-contract.md) resolve the presentation hierarchy, exact recovered map geometry, procedural-first implementation boundary and future asset-swap contract.
+
 ## Resolved by canonical design
 
 - solar brightness and its effect on solar buildings and satellites;
@@ -13,7 +15,11 @@ The complete user-supplied package from 2026-07-22 closed the earlier inventory 
 - initial building, production and research progression formulas;
 - one-of-each Commander Ship ownership and one active commander ability per battle;
 - Commander Ship per-level effects;
-- interpretation of `1001%` as the `over 1000 demolition points` threshold.
+- interpretation of `1001%` as the `over 1000 demolition points` threshold;
+- three-level `Universe -> Galaxy -> Solar system` navigation;
+- exact 20-slot Universe layout and 24-slot Solar-system layout;
+- central-map-only adaptation without copying the old source-game top and side chrome;
+- deterministic procedural placeholders followed by manifest-driven original asset replacement.
 
 ## Still open
 
