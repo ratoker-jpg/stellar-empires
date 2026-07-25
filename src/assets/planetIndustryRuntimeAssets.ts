@@ -74,7 +74,7 @@ const ZONE_TERRAINS: Readonly<Record<PlanetZoneId, string>> = {
 
 export function getBuildingPresentationRole(buildingId: string): BuildingPresentationRole {
   const parsed = parseMechanicalId(buildingId);
-  if (parsed?.kind !== 'building') return 'command';
+  if (parsed?.kind !== 'building' || parsed.factionId === 'shared') return 'command';
   const buildings = getFactionMechanicalRoles(parsed.factionId).buildings;
   if (buildingId === buildings.metal) return 'metal-extractor';
   if (buildingId === buildings.crystal) return 'crystal-refinery';

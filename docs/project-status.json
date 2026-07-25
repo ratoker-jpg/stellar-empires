@@ -1,37 +1,33 @@
 {
-  "statusVersion": 2,
-  "updatedAt": "2026-07-21",
+  "statusVersion": 3,
+  "updatedAt": "2026-07-26",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
-  "roadmapVersion": 3,
+  "roadmapVersion": 4,
   "releaseTarget": "1.0",
-  "lastMergedPr": 83,
-  "lastMergeSha": "f71e641ed201423e2b2e9fd39b58dda692580458",
-  "activePr": null,
-  "nextPrAfterActive": 84,
-  "currentMilestone": "Playable-slice stabilization before metagame expansion",
+  "lastMergedPr": 88,
+  "lastMergeSha": "7e3a3442c9b78e1f232b1bfabb56e41eeb7db1a2",
+  "activePr": 89,
+  "nextPrAfterActive": 90,
+  "currentMilestone": "Complete core gameplay catalogs before Universe and endgame expansion",
   "currentBatch": {
     "standard": [
-      81,
-      82,
-      83,
-      84,
-      85,
-      86
+      89,
+      90,
+      91,
+      92,
+      93,
+      94
     ],
-    "completed": [
-      81,
-      82,
-      83
-    ],
+    "completed": [],
     "plannedCapabilities": [
-      "full native Veyra economy, buildings, research and unit roster",
-      "canonical serialized bot timing and bounded deterministic catch-up",
-      "long-session state and log budgets with deterministic compaction",
-      "temporary complete victory and defeat loop",
-      "headless balance and full-match simulation harness",
-      "browser end-to-end smoke and persistence baseline"
+      "complete-catalog architecture, stable IDs, registries, validation and asset manifests",
+      "24 functional buildings per faction and complete economy progression",
+      "22 shared technologies with real cross-domain effects",
+      "13 ordinary ships per faction and complete mission roles",
+      "9 planetary defences per faction and full combat integration",
+      "13 shared Commander Ships plus full-game deterministic validation"
     ]
   },
   "deliveredDomains": [
@@ -48,47 +44,41 @@
     "fleet formations, target priorities and original class skills",
     "command doctrine progression, battle experience and flagship fleet appointments",
     "explicit faction catalog manifest, stable mechanical IDs and dependency validation",
-    "full native Aegis mechanical catalog",
-    "complete cross-domain project audit and stabilization recommendations",
-    "post-audit continuation handoff with native-faction acceptance boundaries",
-    "full native Synod mechanical catalog with faction-aware shared runtime resolution",
-    "full native Veyra mechanical catalog with original adaptive faction identity",
-    "role-based scout, recycle, colonize, expedition and strategic-object capabilities",
-    "deterministic Synod and Veyra legacy-alias save migrations",
-    "native Aegis, Synod and Veyra runtime mechanical presentation",
+    "full native Aegis, Synod and Veyra prototype catalogs",
     "serialized canonical bot cadence with bounded deterministic catch-up",
-    "atomic Worker-to-runtime bot state handoff and save/load timing parity",
-    "deterministic retained-window budgets for command, event, market, world-event and intelligence histories",
-    "monotonic command indexing and oversized-save compaction without dropping pending gameplay state",
-    "full-state-checksum stale Worker response protection after command-log saturation"
+    "deterministic retained-window budgets for long-session histories",
+    "complete captured catalog research for 72 buildings, 39 ordinary ships, 27 defences, 22 sciences and 13 Commander Ships",
+    "174 new source assets committed without direct runtime coupling",
+    "canonical solar-war, obelisk, gates and victory design contract",
+    "canonical Universe, Galaxy and Solar-system navigation contract"
   ],
   "knownLimitations": [
-    "a complete victory and defeat loop is not yet playable",
-    "there is no headless full-match balance harness",
+    "runtime catalogs are still 12 buildings, 10 technologies, 10 ships and 5 defences per faction",
+    "Commander Ships are not separate producible runtime units",
+    "the complete captured economy and technology effects are not yet implemented",
+    "Universe, Galaxy and Solar-system navigation is documented but not implemented",
+    "alliances, Sun Attack, Solar Crystals and Supreme Galactic Gates are documented but not implemented",
+    "there is no headless full-match balance harness for the complete catalogs",
     "there is no browser end-to-end persistence smoke suite",
-    "diplomacy, coalitions, strategic stars and final endgame are missing",
-    "bots do not yet plan command doctrine or diplomacy",
-    "strategic exotic matter has no complete spending loop",
-    "captured Nemexia HTML/screens/assets are excluded"
+    "captured third-party HTML, CSS and binaries are excluded from runtime"
   ],
   "sourceAssetIntake": {
     "committedSourceLibrary": {
-      "filesValidated": 172,
-      "uncompressedBytes": 173846727,
+      "filesValidated": 174,
       "binaryPublication": "committed-source-only",
-      "filesCommitted": 172,
-      "committedBytes": 173846727,
+      "filesCommitted": 174,
       "packs": [
         "starter",
         "faction-delivery-v1",
-        "generated-factions-v1"
+        "generated-factions-v1",
+        "New assets"
       ]
     },
     "runtimeAssets": {
       "status": "partially-connected",
-      "connected": "galaxy, fleet, development, command identity and native Aegis, Synod and Veyra mechanical presentation",
+      "connected": "current prototype galaxy, fleets, development, command identity and native faction presentation",
       "runtimeConnected": false,
-      "remainingIntegration": "optional raster UI skins and dedicated Synod and Veyra technology atlases remain deferred"
+      "remainingIntegration": "complete gameplay catalogs and processed runtime bindings are delivered sequentially in PR #89-#94"
     },
     "document": "docs/assets/user-supplied-asset-intake.md"
   },
@@ -99,12 +89,10 @@
     "docs/16-execution-roadmap.md",
     "docs/20-full-project-audit.md",
     "docs/19-faction-catalog-id-policy.md",
-    "docs/21-native-synod-catalog.md",
-    "docs/22-native-veyra-catalog.md",
-    "docs/23-bot-simulation-time-contract.md",
-    "docs/24-long-session-history-retention.md",
-    "docs/handoffs/2026-07-21-post-audit-handoff.md",
-    "docs/assets/user-supplied-asset-intake.md",
+    "docs/25-solar-war-obelisks-gates-and-progression.md",
+    "docs/26-universe-galaxy-solar-system-navigation-contract.md",
+    "docs/research/nemexia-browser-audit/19-complete-user-captured-catalog-2026-07-22.md",
+    "docs/handoffs/pr89-full-catalog-foundation.md",
     "latest merged GitHub pull requests"
   ]
 }
