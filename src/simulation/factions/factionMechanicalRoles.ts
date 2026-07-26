@@ -1,6 +1,7 @@
 import { getCompleteBuildingIds, type CompleteBuildingIds } from '../planet/completeBuildingCatalog';
 import type { FactionId, PlanetBuildingState } from '../planet/types';
 import { getCompleteResearchId } from '../research/completeResearchCatalog';
+import { getCompleteShipIds, type CompleteShipIds } from '../units/completeShipCatalog';
 import { getMechanicalCatalogSourceFactionId } from './factionCatalogManifest';
 
 export interface FactionMechanicalRoles {
@@ -42,6 +43,7 @@ export interface FactionMechanicalRoles {
     readonly cruiser: string;
     readonly carrier: string;
     readonly dreadnought: string;
+    readonly complete: CompleteShipIds;
   };
   readonly defenses: {
     readonly light: string;
@@ -86,85 +88,71 @@ function createCompleteResearchRoles(factionId: FactionId): FactionMechanicalRol
   };
 }
 
-const NATIVE_ROLES: Readonly<Partial<Record<FactionId, FactionMechanicalRoles>>> = {
+function createCompleteShipRoles(factionId: FactionId): FactionMechanicalRoles['ships'] {
+  const complete = getCompleteShipIds(factionId);
+  return {
+    scout: complete.spyProbe,
+    transport: complete.smallTransport,
+    fighter: complete.lightFighter,
+    frigate: complete.lineBattleship,
+    colonizer: complete.colonizer,
+    recycler: complete.recycler,
+    corvette: complete.interceptor,
+    cruiser: complete.heavyAssault,
+    carrier: complete.largeTransport,
+    dreadnought: complete.planetDestroyer,
+    complete,
+  };
+}
+
+const DEFENSE_ROLES: Readonly<Record<FactionId, FactionMechanicalRoles['defenses']>> = {
+  aegis: {
+    light: 'defense.aegis.gun-battery',
+    heavy: 'defense.aegis.missile-battery',
+    shield: 'defense.aegis.shield-generator',
+    intercept: 'defense.aegis.point-defense',
+    bastion: 'defense.aegis.fortress-array',
+  },
+  synod: {
+    light: 'defense.synod.lance-node',
+    heavy: 'defense.synod.arc-silo',
+    shield: 'defense.synod.harmonic-screen',
+    intercept: 'defense.synod.predictive-intercept',
+    bastion: 'defense.synod.concord-bastion',
+  },
+  veyra: {
+    light: 'defense.veyra.thorn-spire',
+    heavy: 'defense.veyra.spore-mortar',
+    shield: 'defense.veyra.living-veil',
+    intercept: 'defense.veyra.snapper-node',
+    bastion: 'defense.veyra.hive-bastion',
+  },
+};
+
+const NATIVE_ROLES: Readonly<Record<FactionId, FactionMechanicalRoles>> = {
   aegis: {
     buildings: createCompleteBuildingRoles('aegis'),
     research: createCompleteResearchRoles('aegis'),
-    ships: {
-      scout: 'ship.aegis.scout',
-      transport: 'ship.aegis.cargo',
-      fighter: 'ship.aegis.fighter',
-      frigate: 'ship.aegis.frigate',
-      colonizer: 'ship.aegis.colony',
-      recycler: 'ship.aegis.recycler',
-      corvette: 'ship.aegis.corvette',
-      cruiser: 'ship.aegis.cruiser',
-      carrier: 'ship.aegis.carrier',
-      dreadnought: 'ship.aegis.dreadnought',
-    },
-    defenses: {
-      light: 'defense.aegis.gun-battery',
-      heavy: 'defense.aegis.missile-battery',
-      shield: 'defense.aegis.shield-generator',
-      intercept: 'defense.aegis.point-defense',
-      bastion: 'defense.aegis.fortress-array',
-    },
+    ships: createCompleteShipRoles('aegis'),
+    defenses: DEFENSE_ROLES.aegis,
   },
   synod: {
     buildings: createCompleteBuildingRoles('synod'),
     research: createCompleteResearchRoles('synod'),
-    ships: {
-      scout: 'ship.synod.whisper',
-      transport: 'ship.synod.thread-carrier',
-      fighter: 'ship.synod.lancet',
-      frigate: 'ship.synod.ward-frigate',
-      colonizer: 'ship.synod.seed-ark',
-      recycler: 'ship.synod.salvage-mind',
-      corvette: 'ship.synod.phase-corvette',
-      cruiser: 'ship.synod.chorus-cruiser',
-      carrier: 'ship.synod.relay-carrier',
-      dreadnought: 'ship.synod.oracle-dreadnought',
-    },
-    defenses: {
-      light: 'defense.synod.lance-node',
-      heavy: 'defense.synod.arc-silo',
-      shield: 'defense.synod.harmonic-screen',
-      intercept: 'defense.synod.predictive-intercept',
-      bastion: 'defense.synod.concord-bastion',
-    },
+    ships: createCompleteShipRoles('synod'),
+    defenses: DEFENSE_ROLES.synod,
   },
   veyra: {
     buildings: createCompleteBuildingRoles('veyra'),
     research: createCompleteResearchRoles('veyra'),
-    ships: {
-      scout: 'ship.veyra.wisp',
-      transport: 'ship.veyra.tendril',
-      fighter: 'ship.veyra.sting',
-      frigate: 'ship.veyra.shellwing',
-      colonizer: 'ship.veyra.brood-ark',
-      recycler: 'ship.veyra.devourer',
-      corvette: 'ship.veyra.dart',
-      cruiser: 'ship.veyra.manta',
-      carrier: 'ship.veyra.hive-carrier',
-      dreadnought: 'ship.veyra.leviathan',
-    },
-    defenses: {
-      light: 'defense.veyra.thorn-spire',
-      heavy: 'defense.veyra.spore-mortar',
-      shield: 'defense.veyra.living-veil',
-      intercept: 'defense.veyra.snapper-node',
-      bastion: 'defense.veyra.hive-bastion',
-    },
+    ships: createCompleteShipRoles('veyra'),
+    defenses: DEFENSE_ROLES.veyra,
   },
 };
 
 export function getFactionMechanicalRoles(factionId: FactionId): FactionMechanicalRoles {
   const sourceFactionId = getMechanicalCatalogSourceFactionId(factionId);
-  const roles = NATIVE_ROLES[sourceFactionId];
-  if (roles === undefined) {
-    throw new Error(`Mechanical roles are not registered: ${sourceFactionId}`);
-  }
-  return roles;
+  return NATIVE_ROLES[sourceFactionId];
 }
 
 export function getStartingBuildingsForFaction(
