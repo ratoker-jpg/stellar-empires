@@ -1,7 +1,0 @@
-raw-bytes=14525
-stripped-bytes=14525
-prefix=b'H4sIAAAAAAAAA+w87XbbNrL5radA25yV'
-suffix=b'lWqUpWqVKUqVanKfZf/AYEKp7gA8AAA='
-payload-bytes=10893
-payload-sha256=3ee2187a6b37876cb1798524d9e8fb91b2f5863a1ed0ec5629ce72e4b5aa03ff
-gzip-prefix=1f8b080000000000
