@@ -17,26 +17,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Rebuild archive
+      - name: Diagnose archive
         shell: bash
         run: |
-          set -euo pipefail
-          cat .github/payload/pr91.part00 \
-              .github/payload/pr91.part01 \
-              .github/payload/pr91.part02 \
-              .github/payload/pr91.part03 \
-              .github/payload/pr91.part04 \
-              .github/payload/pr91.part05 \
-              .github/payload/pr91.part06 \
-            | base64 -d > /tmp/pr91-payload.tar.gz
-          gzip -t /tmp/pr91-payload.tar.gz
-          tar -tzf /tmp/pr91-payload.tar.gz > /tmp/pr91-file-list.txt
-          sha256sum /tmp/pr91-payload.tar.gz > /tmp/pr91-sha256.txt
+          set +e
+          {
+            echo 'PART SIZES'
+            wc -c .github/payload/pr91.part*
+            echo
+            echo 'PART HASHES'
+            sha256sum .github/payload/pr91.part*
+            echo
+            echo 'JOINED BASE64 HASH'
+            cat .github/payload/pr91.part00 \
+                .github/payload/pr91.part01 \
+                .github/payload/pr91.part02 \
+                .github/payload/pr91.part03 \
+                .github/payload/pr91.part04 \
+                .github/payload/pr91.part05 \
+                .github/payload/pr91.part06 \
+              | tee /tmp/pr91-payload.b64 \
+              | sha256sum
+            base64 -d /tmp/pr91-payload.b64 > /tmp/pr91-payload.tar.gz
+            echo "BASE64_STATUS=$?"
+            ls -l /tmp/pr91-payload.tar.gz
+            sha256sum /tmp/pr91-payload.tar.gz
+            gzip -t /tmp/pr91-payload.tar.gz
+            echo "GZIP_STATUS=$?"
+            tar -tzf /tmp/pr91-payload.tar.gz > /tmp/pr91-file-list.txt
+            echo "TAR_STATUS=$?"
+            cat /tmp/pr91-file-list.txt
+          } > /tmp/pr91-diagnostics.txt 2>&1
+          cat /tmp/pr91-diagnostics.txt
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: pr91-recovered-payload
+          name: pr91-recovery-diagnostics
           path: |
+            /tmp/pr91-payload.b64
             /tmp/pr91-payload.tar.gz
             /tmp/pr91-file-list.txt
-            /tmp/pr91-sha256.txt
+            /tmp/pr91-diagnostics.txt
           retention-days: 1
