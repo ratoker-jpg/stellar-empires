@@ -96,7 +96,8 @@ export function inferFamily(repositoryPath) {
   if (
     universePath.includes('/universe/active-suns/') ||
     universePath.includes('/universe/protostars/') ||
-    universePath.includes('/universe/stellar-remnants/')
+    universePath.includes('/universe/stellar-remnants/') ||
+    universePath.includes('/generated/universe/suns/')
   ) {
     return 'universe-sun';
   }
@@ -104,7 +105,8 @@ export function inferFamily(repositoryPath) {
   if (
     universePath.includes('/universe/asteroids/') ||
     universePath.includes('/universe/debris/') ||
-    universePath.includes('/universe/renegades/')
+    universePath.includes('/universe/renegades/') ||
+    universePath.includes('/generated/universe/objects/')
   ) {
     return 'universe-object';
   }
@@ -134,6 +136,17 @@ export function inferSemanticId(repositoryPath) {
   const universePath = repositoryPath.replace('/universe-navigation/', '/universe/');
   if (/^(building|technology|ship|defense)\./.test(stem)) return stem;
   if (COMMANDER_ID_BY_FILE[stem] !== undefined) return COMMANDER_ID_BY_FILE[stem];
+
+  const generatedSun = universePath.match(/\/generated\/universe\/suns\/(thumb|detail)\/(active|protostar|collapsed)-(\d+)\.[^.]+$/);
+  if (generatedSun !== null) {
+    return `universe.sun.${generatedSun[2]}-${generatedSun[3]}.${generatedSun[1]}`;
+  }
+  const generatedObject = universePath.match(/\/generated\/universe\/objects\/(asteroid|debris|renegade)-(\d+)\.[^.]+$/);
+  if (generatedObject !== null) {
+    return `universe.object.${generatedObject[1]}-${generatedObject[2]}`;
+  }
+  if (universePath.endsWith('/generated/universe/markers/sun-attack.webp')) return 'ui.mission.sun-attack';
+  if (universePath.endsWith('/generated/universe/markers/sun-support.webp')) return 'ui.mission.sun-support';
 
   const suffix = numberSuffix(stem);
   if (universePath.includes('/universe/galaxies/')) {
