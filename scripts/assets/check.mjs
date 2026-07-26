@@ -82,7 +82,10 @@ if (atlasPlan.schemaVersion !== 1 || !Array.isArray(atlasPlan.atlases)) {
 }
 
 const sourceFiles = await textFiles(path.join(REPOSITORY_ROOT, 'src'));
-const provenanceMetadataAllowlist = new Set(['src/assets/completeMechanicalAssetManifest.ts']);
+const provenanceMetadataAllowlist = new Set([
+  'src/assets/completeMechanicalAssetManifest.ts',
+  ...config.legacyDirectSourceReferences,
+]);
 for (const file of sourceFiles) {
   const repositoryPath = path.relative(REPOSITORY_ROOT, file).split(path.sep).join('/');
   const content = await readFile(file, 'utf8');
