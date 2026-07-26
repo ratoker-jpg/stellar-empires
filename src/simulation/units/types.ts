@@ -56,6 +56,7 @@ export interface ShipAbilityDefinition {
 
 export type DefenseRole =
   | 'kinetic'
+  | 'missile'
   | 'laser'
   | 'ion'
   | 'plasma'
