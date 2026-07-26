@@ -3,10 +3,10 @@
   "updatedAt": "2026-07-26",
   "releaseTarget": "1.0",
   "authoritativeBaseline": {
-    "lastMergedPr": 92,
-    "mergeSha": "6314f78bd6417b905ccae170f505697734a46505"
+    "lastMergedPr": 93,
+    "mergeSha": "ae7940aa5b3f78ea7192cb15d6b003652a38ac59"
   },
-  "activePr": 93,
+  "activePr": 94,
   "phases": [
     {
       "id": "delivered-foundation",
@@ -44,8 +44,8 @@
     { "number": 90, "title": "Complete the 24-building economy", "status": "merged" },
     { "number": 91, "title": "Complete the 22-technology progression tree", "status": "superseded" },
     { "number": 92, "title": "Complete the 22-technology progression tree", "status": "merged", "mergeSha": "6314f78bd6417b905ccae170f505697734a46505" },
-    { "number": 93, "title": "Complete the 13-ship rosters", "status": "active" },
-    { "number": 94, "title": "Complete the 9-defence rosters", "status": "planned" },
+    { "number": 93, "title": "Complete the 13-ship rosters", "status": "merged", "mergeSha": "ae7940aa5b3f78ea7192cb15d6b003652a38ac59" },
+    { "number": 94, "title": "Complete the 9-defence rosters", "status": "active" },
     { "number": 95, "title": "Commander Ships and full-game validation", "status": "planned" },
     { "number": 96, "title": "Universe, Galaxy and Solar-system runtime navigation", "status": "planned" },
     { "number": 97, "title": "Coordinate missions and direct map actions", "status": "planned" },
