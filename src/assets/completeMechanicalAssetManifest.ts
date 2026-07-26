@@ -1,5 +1,7 @@
 import type { AegisVerticalSliceAsset } from './aegisVerticalSliceAssets';
 import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
+import { COMPLETE_SHIP_CATALOGS, getCompleteShipClass } from '../simulation/units/completeShipCatalog';
+import type { CompleteShipClass } from '../simulation/units/types';
 import { getFactionMechanicalAsset } from './factionMechanicalAssets';
 
 export type CompleteMechanicalAssetCategory =
@@ -26,12 +28,26 @@ export interface CompleteMechanicalAssetManifest {
   readonly bindings: Readonly<Record<string, CompleteMechanicalAssetBinding>>;
 }
 
+const SOURCE_ROOT = 'assets/source/New assets' as const;
+
+const COMPLETE_SHIP_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> = Object.fromEntries(
+  Object.values(COMPLETE_SHIP_CATALOGS)
+    .flat()
+    .map((definition) => [
+      definition.id,
+      {
+        mechanicalId: definition.id,
+        category: 'ship' as const,
+        sourcePath: `${SOURCE_ROOT}/ship/${definition.factionId}/${definition.id}.png`,
+      },
+    ]),
+);
+
 export const COMPLETE_MECHANICAL_ASSET_MANIFEST: CompleteMechanicalAssetManifest = {
   version: 1,
-  sourceRoot: 'assets/source/New assets',
-  bindings: {},
+  sourceRoot: SOURCE_ROOT,
+  bindings: COMPLETE_SHIP_BINDINGS,
 };
-
 
 const BUILDING_COMPATIBILITY_ASSETS = {
   aegis: {
@@ -66,6 +82,56 @@ const BUILDING_COMPATIBILITY_ASSETS = {
   },
 } as const;
 
+const SHIP_COMPATIBILITY_ASSETS: Readonly<
+  Record<'aegis' | 'synod' | 'veyra', Readonly<Record<CompleteShipClass, string>>>
+> = {
+  aegis: {
+    'small-transport': 'ship.aegis.cargo',
+    'large-transport': 'ship.aegis.carrier',
+    'light-fighter': 'ship.aegis.scout',
+    interceptor: 'ship.aegis.corvette',
+    'support-ship': 'ship.aegis.frigate',
+    'line-battleship': 'ship.aegis.cruiser',
+    'heavy-assault': 'ship.aegis.dreadnought',
+    bomber: 'ship.aegis.dreadnought',
+    'planet-destroyer': 'ship.aegis.dreadnought',
+    colonizer: 'ship.aegis.colony',
+    recycler: 'ship.aegis.recycler',
+    'spy-probe': 'ship.aegis.scout',
+    'energy-satellite': 'ship.aegis.cargo',
+  },
+  synod: {
+    'small-transport': 'ship.synod.thread-carrier',
+    'large-transport': 'ship.synod.relay-carrier',
+    'light-fighter': 'ship.synod.lancet',
+    interceptor: 'ship.synod.phase-corvette',
+    'support-ship': 'ship.synod.ward-frigate',
+    'line-battleship': 'ship.synod.chorus-cruiser',
+    'heavy-assault': 'ship.synod.oracle-dreadnought',
+    bomber: 'ship.synod.oracle-dreadnought',
+    'planet-destroyer': 'ship.synod.oracle-dreadnought',
+    colonizer: 'ship.synod.seed-ark',
+    recycler: 'ship.synod.salvage-mind',
+    'spy-probe': 'ship.synod.whisper',
+    'energy-satellite': 'ship.synod.thread-carrier',
+  },
+  veyra: {
+    'small-transport': 'ship.veyra.tendril',
+    'large-transport': 'ship.veyra.hive-carrier',
+    'light-fighter': 'ship.veyra.sting',
+    interceptor: 'ship.veyra.dart',
+    'support-ship': 'ship.veyra.shellwing',
+    'line-battleship': 'ship.veyra.manta',
+    'heavy-assault': 'ship.veyra.leviathan',
+    bomber: 'ship.veyra.leviathan',
+    'planet-destroyer': 'ship.veyra.leviathan',
+    colonizer: 'ship.veyra.brood-ark',
+    recycler: 'ship.veyra.devourer',
+    'spy-probe': 'ship.veyra.wisp',
+    'energy-satellite': 'ship.veyra.tendril',
+  },
+};
+
 function resolveBuildingCompatibilityAsset(mechanicalId: string): AegisVerticalSliceAsset | undefined {
   const parsed = parseMechanicalId(mechanicalId);
   if (parsed?.kind !== 'building' || parsed.factionId === 'shared') return undefined;
@@ -90,6 +156,15 @@ function resolveBuildingCompatibilityAsset(mechanicalId: string): AegisVerticalS
   return fallback === undefined ? undefined : { ...fallback, id: mechanicalId };
 }
 
+function resolveShipCompatibilityAsset(mechanicalId: string): AegisVerticalSliceAsset | undefined {
+  const parsed = parseMechanicalId(mechanicalId);
+  if (parsed?.kind !== 'ship' || parsed.factionId === 'shared') return undefined;
+  const shipClass = getCompleteShipClass(mechanicalId);
+  if (shipClass === undefined) return undefined;
+  const fallback = getFactionMechanicalAsset(SHIP_COMPATIBILITY_ASSETS[parsed.factionId][shipClass]);
+  return fallback === undefined ? undefined : { ...fallback, id: mechanicalId };
+}
+
 export interface MechanicalAssetResolution {
   readonly asset: AegisVerticalSliceAsset | undefined;
   readonly source: 'complete-manifest' | 'current-runtime-fallback' | 'missing';
@@ -109,7 +184,10 @@ export function resolveCompleteMechanicalAsset(
     };
   }
 
-  const fallback = getFactionMechanicalAsset(mechanicalId) ?? resolveBuildingCompatibilityAsset(mechanicalId);
+  const fallback =
+    getFactionMechanicalAsset(mechanicalId) ??
+    resolveBuildingCompatibilityAsset(mechanicalId) ??
+    resolveShipCompatibilityAsset(mechanicalId);
   if (fallback !== undefined) {
     return {
       asset: fallback,
