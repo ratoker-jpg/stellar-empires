@@ -17,7 +17,19 @@ export interface CommandDoctrineDefinition {
   readonly experiencePermille: number;
 }
 
-export const COMMAND_LEVEL_THRESHOLDS = [0, 100, 300, 700, 1_500] as const;
+const EARLY_COMMAND_LEVEL_THRESHOLDS = [0, 100, 300, 700, 1_500] as const;
+
+function createCommandLevelThresholds(): readonly number[] {
+  const thresholds = [...EARLY_COMMAND_LEVEL_THRESHOLDS];
+  let current = thresholds.at(-1) ?? 0;
+  for (let level = thresholds.length + 1; level <= 40; level += 1) {
+    current += 1_000 + (level - 6) * 500;
+    thresholds.push(current);
+  }
+  return thresholds;
+}
+
+export const COMMAND_LEVEL_THRESHOLDS = createCommandLevelThresholds();
 export const COMMAND_MAX_LEVEL = COMMAND_LEVEL_THRESHOLDS.length;
 export const FLAGSHIP_UNLOCK_LEVEL = 2;
 
