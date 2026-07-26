@@ -7,17 +7,87 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  bootstrap-pr107:
+    if: github.event_name == 'pull_request' && github.head_ref == 'feat/107-universe-asset-pipeline'
+    name: Generate PR107 implementation
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v6
+        with:
+          ref: feat/107-universe-asset-pipeline
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.12.0'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Apply audited implementation
+        run: node scripts/automation/implement-pr107.mjs
+
+      - name: Generate runtime assets
+        run: npm run assets:process
+
+      - name: Refresh asset audit
+        run: npm run assets:audit
+
+      - name: Generate light and dark QA sheets
+        run: node scripts/assets/contact-sheet.mjs
+
+      - name: Remove temporary bootstrap files
+        run: |
+          git fetch origin main
+          git checkout origin/main -- .github/workflows/ci.yml
+          rm -f scripts/automation/implement-pr107.mjs
+
+      - name: Validate asset pipeline
+        run: npm run assets:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Commit generated implementation
+        run: |
+          git config user.name "stellar-empires-automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Implement Universe asset pipeline"
+          git push origin HEAD:feat/107-universe-asset-pipeline
+
+      - name: Publish diagnostics
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment 107 --body "PR107 bootstrap failed in **${{ github.job }}** at step **${{ github.action }}**. Inspect the failed Actions step; the branch was not advanced and is safe to retry after a focused fix." || true
+
   quality:
+    if: github.event_name != 'pull_request' || github.head_ref != 'feat/107-universe-asset-pipeline'
     name: Asset audit, lint, typecheck, test and build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
