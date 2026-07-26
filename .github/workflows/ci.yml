@@ -48,12 +48,13 @@ jobs:
             exit "$status"
           fi
           python3 scripts/automation/patch-pr108-lint.py
+          python3 scripts/automation/patch-pr108-typecheck.py
 
       - name: Remove temporary bootstrap and evidence
         run: |
           git fetch origin main
           git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/automation/implement-pr108.py scripts/automation/patch-pr108-lint.py
+          rm -f scripts/automation/implement-pr108.py scripts/automation/patch-pr108-lint.py scripts/automation/patch-pr108-typecheck.py
           rm -f docs/audits/evidence/pr108-runtime-map.txt
 
       - name: Validate asset pipeline
