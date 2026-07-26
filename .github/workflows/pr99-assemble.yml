@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - agent/pr99-asset-processing-foundation
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   assemble:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -41,7 +45,7 @@ jobs:
       - name: Commit assembled PR
         shell: bash
         run: |
-          rm -f .agent/pr99-payload.b64 .github/workflows/pr99-assemble.yml
+          rm -f .agent/pr99-payload.b64 .agent/pr99-trigger .github/workflows/pr99-assemble.yml
           rmdir .agent 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
