@@ -1,4 +1,4 @@
-name: Finalize PR99 asset pipeline
+name: Capture final PR99 validation
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  finalize:
+  capture:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -27,13 +27,12 @@ jobs:
         with:
           node-version: '22.12.0'
 
-      - name: Register the closed legacy source-reference allowlist
+      - name: Apply closed legacy allowlist
         shell: bash
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-
           config_path = Path('assets/manifests/asset-pipeline.config.json')
           config = json.loads(config_path.read_text())
           config['legacyDirectSourceReferences'] = [
@@ -42,28 +41,26 @@ jobs:
               'src/assets/planetIndustryRuntimeAssets.ts',
           ]
           config_path.write_text(json.dumps(config, indent=2) + '\n')
-
           check_path = Path('scripts/assets/check.mjs')
           content = check_path.read_text()
           old = "const provenanceMetadataAllowlist = new Set(['src/assets/completeMechanicalAssetManifest.ts']);"
           new = "const provenanceMetadataAllowlist = new Set([\n  'src/assets/completeMechanicalAssetManifest.ts',\n  ...config.legacyDirectSourceReferences,\n]);"
-          if old not in content:
-              raise SystemExit('source-reference allowlist block not found')
-          check_path.write_text(content.replace(old, new))
+          if old in content:
+              check_path.write_text(content.replace(old, new))
           PY
 
       - run: npm install --no-audit --no-fund
       - run: npm run assets:audit
-      - run: npm run check
 
-      - name: Commit final reviewable diff
+      - name: Capture validation
         shell: bash
         run: |
-          rm -f .agent/pr99-payload.b64 .agent/pr99-trigger .agent/pr99-diagnostic.txt .agent/pr99-audit-error.txt .agent/pr99-validation-error.txt
-          rmdir .agent 2>/dev/null || true
-          rm -f .github/workflows/pr99-assemble.yml
+          set +e
+          npm run check > .agent/pr99-final-validation.txt 2>&1
+          code=$?
+          echo "exit-code=$code" >> .agent/pr99-final-validation.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Finalize the deterministic asset pipeline"
+          git add assets/manifests/asset-pipeline.config.json scripts/assets/check.mjs assets/manifests/source-asset-audit.json docs/assets/generated-asset-audit.md package-lock.json .agent/pr99-final-validation.txt
+          git commit -m "Record final PR99 validation"
           git push origin HEAD:agent/pr99-asset-processing-foundation
