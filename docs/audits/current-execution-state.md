@@ -5,30 +5,42 @@
 
 | Field | Current value |
 |---|---|
-| Protocol PR | #100 — audit-first autonomous delivery protocol |
-| Baseline main | `1868b5a7c1f540acb1882c0cc79d43ce185e216c` after merged #99 |
+| Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
+| Audit PR | #101 — `ASSET-RUNTIME-INTEGRATION-01` — accepted on merge |
+| Verified baseline | `5ca58493ab4eb1abd46e16e1307a9402efa636fa` after merged #100 |
 | Current batch | `ASSET-RUNTIME-INTEGRATION-01` |
-| Batch complexity | Medium — four implementation PRs after audit |
-| Active work item | Protocol installation only |
+| Batch complexity | Medium — four sequential implementation PRs |
+| Authorized work items | `ASSET-BUILDINGS`, `ASSET-TECHNOLOGIES`, `ASSET-SHIPS`, `ASSET-DEFENSE-COMMANDERS` |
+| Active work item | none — audit completed, implementation intentionally not started |
 | Active implementation PR | none |
-| Last completed atomic action | PR #99 merged with asset processing foundation |
-| Last successful validation | PR #99 asset audit, lint, typecheck, tests and production build |
-| Exact next action | create a dedicated Audit PR and replace the placeholder in `current-batch-audit.md` with the verified four-PR contract |
+| Last completed atomic action | wrote and validated the complete four-PR implementation contract |
+| Last successful validation | Graphify baseline evidence plus Audit PR #101 normal CI and Graphify gate |
+| Exact next action | create PR #102 from fresh `main` and implement only `ASSET-BUILDINGS` |
 | Blockers | none |
-| Divergence | roadmap numbering must account for the new Audit PR before implementation |
+| Divergence | future roadmap numbers shifted: implementation range is #102–#105 |
 
 ## Recovery rule
 
-A future session reads this file before starting work. It must not begin `ASSET-BUILDINGS` or another implementation item until the batch Audit PR is merged.
+A future session must read `current-batch-audit.md` and all three linked contract/evidence files before creating PR #102. It must not begin technologies, ships, defences or Commander work before the preceding implementation PR merges.
 
-## Update format
+## Batch checkpoints
 
-After every material step, replace the table values and append one compact record below.
+| Checkpoint | State |
+|---|---|
+| Audit contract | complete |
+| Critical unknowns | none |
+| Building implementation | not started |
+| Technology implementation | not started |
+| Ship implementation | not started |
+| Defence/Commander implementation | not started |
+| Batch archive | deferred to PR #105 |
 
-### 2026-07-26 — protocol bootstrap
+### 2026-07-26 — Audit PR #101
 
-- merged baseline: PR #99;
-- established audit-first workflow;
-- selected the next medium batch as four asset-integration work items;
-- implementation remains intentionally not started;
-- next action is the dedicated batch Audit PR.
+- reconciled current `main` after PR #100;
+- inspected asset pipeline, complete catalogs, runtime fallbacks, UI consumers, bots, persistence boundaries and tests;
+- used the Graphify code graph to verify dependency hubs and direct consumers;
+- fixed exact source-to-mechanical mapping rules;
+- selected 173 individual WebP derivatives under existing hard budgets;
+- authorized four implementation PRs #102–#105;
+- no runtime implementation was started.
