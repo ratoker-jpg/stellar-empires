@@ -21,45 +21,29 @@ jobs:
         with:
           ref: agent/pr99-asset-processing-foundation
           fetch-depth: 0
+          show-progress: false
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '22.12.0'
-
-      - name: Verify and extract payload
+      - name: Record payload diagnostics
         shell: bash
         run: |
-          python - <<'PY'
-          import base64, hashlib, pathlib
-          source = pathlib.Path('.agent/pr99-payload.b64').read_bytes().strip()
-          print(f'base64-bytes={len(source)}')
-          payload = base64.b64decode(source, validate=True)
-          digest = hashlib.sha256(payload).hexdigest()
-          print(f'payload-bytes={len(payload)}')
-          print(f'payload-sha256={digest}')
-          expected = '9098b5067b407eeeb9ee01bb9e6af743000898553737a89e69acc898d161fee8'
-          if digest != expected:
-              raise SystemExit(f'payload checksum mismatch: expected {expected}')
-          pathlib.Path('/tmp/pr99-payload.tar.gz').write_bytes(payload)
+          python - <<'PY' > .agent/pr99-diagnostic.txt 2>&1
+          import base64, hashlib, pathlib, traceback
+          path = pathlib.Path('.agent/pr99-payload.b64')
+          source = path.read_bytes()
+          print(f'raw-bytes={len(source)}')
+          print(f'stripped-bytes={len(source.strip())}')
+          print(f'prefix={source[:32]!r}')
+          print(f'suffix={source[-32:]!r}')
+          try:
+              payload = base64.b64decode(source.strip(), validate=True)
+              print(f'payload-bytes={len(payload)}')
+              print(f'payload-sha256={hashlib.sha256(payload).hexdigest()}')
+              print(f'gzip-prefix={payload[:8].hex()}')
+          except Exception:
+              traceback.print_exc()
           PY
-          tar -xzf /tmp/pr99-payload.tar.gz
-
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Generate committed asset audit
-        run: npm run assets:audit
-
-      - name: Validate assembled implementation
-        run: npm run check
-
-      - name: Commit assembled PR
-        shell: bash
-        run: |
-          rm -f .agent/pr99-payload.b64 .agent/pr99-trigger .github/workflows/pr99-assemble.yml
-          rmdir .agent 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Add deterministic asset processing foundation"
+          git add .agent/pr99-diagnostic.txt
+          git commit -m "Record PR99 payload diagnostics"
           git push origin HEAD:agent/pr99-asset-processing-foundation
