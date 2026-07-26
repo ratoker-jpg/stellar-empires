@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import { mkdir, rm } from 'node:fs/promises';
 import sharp from 'sharp';
 import { loadConfig, loadJson, resolveRepositoryPath } from './lib.mjs';
