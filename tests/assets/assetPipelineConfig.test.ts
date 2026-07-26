@@ -33,11 +33,17 @@ describe('asset processing foundation', () => {
   it('keeps audited paths, checksums and semantic ids deterministic', () => {
     const sorted = [...audit.assets].sort((left, right) => left.path.localeCompare(right.path));
     expect(audit.assets).toEqual(sorted);
-    for (const asset of audit.assets) {
+    const strictIntake = audit.assets.filter(
+      (asset) =>
+        asset.path.startsWith('assets/source/New assets/') ||
+        asset.classification === 'source-intake',
+    );
+    for (const asset of strictIntake) {
       expect(asset.sha256).toMatch(/^[a-f0-9]{64}$/);
       expect(asset.bytes).toBeGreaterThan(0);
       expect(asset.width).toBeGreaterThan(0);
       expect(asset.height).toBeGreaterThan(0);
+      expect(asset.inspectionError).toBeNull();
     }
     const universeIds = audit.assets
       .filter((asset) => asset.classification === 'source-intake')

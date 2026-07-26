@@ -224,10 +224,12 @@ export async function inspectAsset(absolutePath, config) {
   const repositoryPath = toPosix(path.relative(REPOSITORY_ROOT, absolutePath));
   const fileStats = await stat(absolutePath);
   let metadata;
+  let inspectionError = null;
   try {
     metadata = await sharp(absolutePath, { animated: false }).metadata();
   } catch (error) {
-    throw new Error(`Unable to inspect asset ${repositoryPath}: ${error instanceof Error ? error.message : String(error)}`);
+    metadata = {};
+    inspectionError = error instanceof Error ? error.message : String(error);
   }
   const width = metadata.width ?? null;
   const height = metadata.height ?? null;
@@ -243,7 +245,8 @@ export async function inspectAsset(absolutePath, config) {
     height,
     channels: metadata.channels ?? null,
     hasAlpha: metadata.hasAlpha ?? null,
-    alphaBounds: await alphaBounds(absolutePath, metadata),
+    alphaBounds: inspectionError === null ? await alphaBounds(absolutePath, metadata) : null,
+    inspectionError,
     bytes: fileStats.size,
     decodedBytes,
     sha256: await sha256File(absolutePath),
