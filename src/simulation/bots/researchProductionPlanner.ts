@@ -1,4 +1,6 @@
+import { getEmpireCommandState } from '../command/commandDoctrine';
 import {
+  getCommanderShipCatalog,
   getFactionIdForEmpire,
   getResearchCatalogForFaction,
   getUnitCatalogForFaction,
@@ -122,7 +124,7 @@ function chooseResearch(
 function countUnit(state: GameState, empireId: string, unitId: string): number {
   const definition = getUnitDefinition(unitId);
   const ids = [unitId, ...getLegacyUnitIdsForCanonical(unitId)];
-  return state.planets
+  const onPlanets = state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
     .reduce(
       (total, planet) =>
@@ -136,6 +138,30 @@ function countUnit(state: GameState, empireId: string, unitId: string): number {
         ),
       0,
     );
+  return state.fleets
+    .filter((fleet) => fleet.empireId === empireId)
+    .reduce((total, fleet) => total + ids.reduce(
+      (subtotal, id) => subtotal + (fleet.ships[id] ?? 0),
+      0,
+    ), onPlanets);
+}
+
+function commanderCandidates(
+  state: GameState,
+  empireId: string,
+): readonly { readonly id: string; readonly quantity: number }[] {
+  const level = getEmpireCommandState(state.commanders, empireId)?.level ?? 0;
+  return getCommanderShipCatalog()
+    .filter((definition) =>
+      (definition.requiredAdmiralLevel ?? 1) <= level &&
+      countUnit(state, empireId, definition.id) === 0,
+    )
+    .sort((left, right) =>
+      (left.commanderAbility?.battlePriority ?? 999) -
+        (right.commanderAbility?.battlePriority ?? 999) ||
+      left.id.localeCompare(right.id),
+    )
+    .map((definition) => ({ id: definition.id, quantity: 1 }));
 }
 
 function chooseProduction(
@@ -150,7 +176,11 @@ function chooseProduction(
   const roles = getFactionMechanicalRoles(factionId);
   const ships = roles.ships.complete;
   const defenses = roles.defenses.complete;
-  const unitIds = new Set(getUnitCatalogForFaction(factionId).map((definition) => definition.id));
+  const commanderIds = getCommanderShipCatalog().map((definition) => definition.id);
+  const unitIds = new Set([
+    ...getUnitCatalogForFaction(factionId).map((definition) => definition.id),
+    ...commanderIds,
+  ]);
   const productionExists = planets.some((planet) =>
     planet.buildings.some(
       (building) =>
@@ -180,8 +210,10 @@ function chooseProduction(
     };
   }
 
+  const availableCommanders = commanderCandidates(state, empireId);
   const priority: readonly { readonly id: string; readonly quantity: number }[] = threatened
     ? [
+        ...availableCommanders.slice(0, 1),
         { id: ships.lightFighter, quantity: 3 },
         { id: ships.interceptor, quantity: 2 },
         { id: defenses.basicTurret, quantity: 2 },
@@ -205,6 +237,7 @@ function chooseProduction(
         ...(countUnit(state, empireId, ships.recycler) === 0
           ? [{ id: ships.recycler, quantity: 1 }]
           : []),
+        ...availableCommanders.slice(0, 1),
         ...(countUnit(state, empireId, ships.largeTransport) === 0
           ? [{ id: ships.largeTransport, quantity: 1 }]
           : []),
@@ -230,7 +263,7 @@ function chooseProduction(
           reasonCode: 'production-selected',
           explanation: threatened
             ? `Разведка показывает угрозу: заказан ${candidate.id}.`
-            : `Закрывается дефицит сервисного, боевого или оборонного контура: ${candidate.id}.`,
+            : `Закрывается дефицит сервисного, командирского или оборонного контура: ${candidate.id}.`,
           command,
         };
       }
