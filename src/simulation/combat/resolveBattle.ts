@@ -4,6 +4,7 @@ import {
   getUnitCombatProfile,
   type WeaponType,
 } from './combatProfiles';
+import { getPlanetaryDefenseTargetPriority } from './defenseAbilities';
 import {
   FLEET_FORMATIONS,
   getClassSkillBonusMaps,
@@ -71,7 +72,7 @@ function mergeBonusMaps(
 
 function prepareSide(side: BattleSideInput): PreparedBattleSide {
   const formation = side.formation ?? 'line';
-  const targetPriority = side.targetPriority ?? 'balanced';
+  const targetPriority = side.targetPriority ?? getPlanetaryDefenseTargetPriority(side.units);
   const formationDefinition = FLEET_FORMATIONS[formation];
   const classSkills = getClassSkillBonusMaps(side.units, formation);
   return {
