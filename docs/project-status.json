@@ -1,96 +1,85 @@
 {
-  "statusVersion": 4,
+  "statusVersion": 5,
   "updatedAt": "2026-07-26",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
-  "roadmapVersion": 4,
+  "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 94,
-  "lastMergeSha": "aecbdf24bb6c24435e6cd4fc1f8915aeb4d2136b",
-  "activePr": 95,
-  "nextPrAfterActive": 96,
-  "currentMilestone": "Close complete core catalogs and begin Universe navigation",
+  "lastMergedPr": 97,
+  "lastMergeSha": "9d0cf6c542db2e4468080595d76c1ea5ad2f549a",
+  "activePr": 98,
+  "nextPrAfterActive": 99,
+  "currentMilestone": "Process and integrate the complete visual catalog before Universe navigation",
+  "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
+  "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "currentBatch": {
-    "standard": [89, 90, 92, 93, 94, 95],
+    "documentation": [96, 98],
+    "assetIntake": [97],
+    "completedCoreCatalogs": [89, 90, 92, 93, 94, 95],
     "superseded": [91],
-    "completed": [89, 90, 92, 93, 94],
-    "plannedCapabilities": [
-      "complete-catalog architecture, stable IDs, registries, validation and asset manifests",
-      "24 functional buildings per faction and complete economy progression",
-      "22 canonical technologies with real cross-domain effects",
-      "13 ordinary ships per faction and complete mission roles",
-      "9 planetary defences per faction and full combat integration",
-      "13 shared Commander Ships plus full-game deterministic validation"
-    ]
+    "nextImplementationRange": [99, 104]
+  },
+  "deliveredCatalogs": {
+    "buildingsPerFaction": 24,
+    "technologiesPerFaction": 22,
+    "ordinaryShipsPerFaction": 13,
+    "defencesPerFaction": 9,
+    "sharedCommanderShips": 13
   },
   "deliveredDomains": [
-    "deterministic simulation, event queue, replay/checksum and schema-v13 persistence",
-    "seeded galaxy, fog-aware intelligence and multi-colony management",
-    "resource economy, stability, storage, buildings, research and production",
-    "fleets, core missions, colonization, combat v2, debris and reports",
-    "logistics routes, market, pirates, expeditions, space objects and world events",
-    "planetary defense damage and repair lifecycle",
-    "honest autonomous bots with planners and Worker scheduler",
-    "three faction identities, runtime registry and new-game selection",
-    "production presentation, operations center, local ranking and accessibility runtime",
-    "per-hull weapon, armor and cargo upgrades with deterministic queue and combat effects",
-    "fleet formations, target priorities and original class skills",
-    "command doctrine progression, battle experience and flagship fleet appointments",
-    "explicit faction catalog manifest, stable mechanical IDs and dependency validation",
-    "24 functional buildings for Aegis, Synod and Veyra",
-    "22 canonical technologies for every faction with legacy-ID compatibility",
-    "13 ordinary ships for every faction with service, combat and mission integration",
-    "9 planetary defences for every faction with shield, repair, recovery and targeting integration",
-    "serialized canonical bot cadence with bounded deterministic catch-up",
-    "deterministic retained-window budgets for long-session histories",
-    "complete captured catalog research for 72 buildings, 39 ordinary ships, 27 defences, 22 sciences and 13 Commander Ships",
-    "174 new source assets committed without direct runtime coupling",
-    "canonical solar-war, obelisk, gates and victory design contract",
-    "canonical Universe, Galaxy and Solar-system navigation contract"
+    "deterministic schema-v13 simulation, event queue, replay and checksum",
+    "IndexedDB persistence, slots, import/export, recovery and migrations",
+    "multi-colony economy, research, production, fleets, combat and reports",
+    "ordinary missions, debris, defence repair, logistics, markets and PvE foundations",
+    "honest autonomous bots using the same command layer as the player",
+    "formations, priorities, ship upgrades, command doctrine and Commander Ships",
+    "complete building, technology, ordinary ship, defence and Commander catalogs",
+    "confirmed mechanics and navigation research references from PR #96",
+    "90 Universe navigation source PNGs from PR #97"
   ],
   "activeDelivery": [
-    "13 shared Commander Ships as producible runtime units",
-    "Admiral progression through level 40 and deterministic ability scaling",
-    "one active Commander ability per battle with player and bot use",
-    "Commander combat, speed, recovery, plunder, UI and reporting integration",
-    "all Commander source assets registered with runtime fallbacks",
-    "headless complete-catalog and production-path closure"
+    "canonical playable-game roadmap through Release 1.0",
+    "permanent runtime asset backlog and prompt register",
+    "updated continuation and project status entrypoints",
+    "exact PR #99 asset-processing handoff"
   ],
   "knownLimitations": [
-    "source PNGs remain provenance inputs until optimized runtime derivatives are produced",
-    "planet destruction and solar-satellite energy effects remain deferred to their strategic systems",
-    "Universe, Galaxy and Solar-system navigation is documented but not implemented",
-    "alliances, Sun Attack, Solar Crystals and Supreme Galactic Gates are documented but not implemented",
-    "there is no browser end-to-end persistence smoke suite",
-    "captured third-party HTML, CSS and binaries are excluded from runtime"
+    "many approved source assets still resolve through compatibility fallbacks rather than final optimized runtime derivatives",
+    "the PR #97 Universe pack is oversized and contains filename-contract mismatches",
+    "Universe, Galaxy and Solar-system runtime navigation is not implemented",
+    "the full confirmed interface/navigation shell is not implemented",
+    "ordinary mechanic parity, PvE/meta depth and bot parity remain incomplete",
+    "alliances, solar war, final Gates and complete victory are not implemented",
+    "balance, browser E2E, performance and release gates remain open"
   ],
   "sourceAssetIntake": {
-    "committedSourceLibrary": {
-      "filesValidated": 174,
-      "binaryPublication": "committed-source-only",
-      "filesCommitted": 174,
-      "packs": ["starter", "faction-delivery-v1", "generated-factions-v1", "New assets"]
+    "universePack": {
+      "files": 90,
+      "status": "source-ready-processing-required",
+      "path": "public/assets/universe",
+      "issues": [
+        "oversized canvases and excessive decoded-memory cost",
+        "filenames differ from the accepted semantic contract",
+        "no final runtime manifest or optimized derivative set"
+      ]
     },
-    "runtimeAssets": {
-      "status": "mechanically-connected",
-      "connected": "canonical building, technology, ordinary-ship, planetary-defense and Commander IDs all resolve through manifests and deterministic runtime fallbacks",
-      "runtimeConnected": true,
-      "remainingIntegration": "optimized production derivatives, atlas packing and final art polish remain post-core release work"
-    },
-    "document": "docs/assets/user-supplied-asset-intake.md"
+    "catalogArt": {
+      "status": "mechanically-connected-runtime-processing-incomplete",
+      "remainingIntegration": "processing, atlas/individual derivative policy, manifest coverage, visual QA and fallback retirement"
+    }
   },
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
-    "docs/16-execution-roadmap.md",
-    "docs/20-full-project-audit.md",
-    "docs/19-faction-catalog-id-policy.md",
+    "docs/27-playable-game-roadmap-v5.md",
+    "docs/asset-prompts/master-runtime-asset-backlog.md",
     "docs/25-solar-war-obelisks-gates-and-progression.md",
     "docs/26-universe-galaxy-solar-system-navigation-contract.md",
-    "docs/research/nemexia-browser-audit/19-complete-user-captured-catalog-2026-07-22.md",
-    "docs/handoffs/pr95-commander-ships-full-game-validation.md",
+    "docs/research/nemexia-final-complete-game-concept-2026-07-26.md",
+    "docs/research/nemexia-navigation-and-ui-reference-2026-07-26.md",
+    "docs/handoffs/2026-07-26-playable-roadmap-handoff.md",
     "latest merged GitHub pull requests"
   ]
 }
