@@ -1,4 +1,4 @@
-name: Diagnose PR99 asset audit
+name: Identify unsupported PR99 asset
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  diagnose:
+  identify:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -27,9 +27,23 @@ jobs:
         with:
           node-version: '22.12.0'
 
+      - name: Add path-aware inspection error
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/assets/lib.mjs')
+          content = path.read_text()
+          old = "  const fileStats = await stat(absolutePath);\n  const metadata = await sharp(absolutePath, { animated: false }).metadata();\n"
+          new = "  const fileStats = await stat(absolutePath);\n  let metadata;\n  try {\n    metadata = await sharp(absolutePath, { animated: false }).metadata();\n  } catch (error) {\n    throw new Error(`Unable to inspect asset ${repositoryPath}: ${error instanceof Error ? error.message : String(error)}`);\n  }\n"
+          if old not in content:
+              raise SystemExit('inspection block not found')
+          path.write_text(content.replace(old, new))
+          PY
+
       - run: npm install --no-audit --no-fund
 
-      - name: Capture audit output
+      - name: Capture path-aware audit output
         shell: bash
         run: |
           set +e
@@ -38,6 +52,6 @@ jobs:
           echo "exit-code=$code" >> .agent/pr99-audit-error.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .agent/pr99-audit-error.txt
-          git commit -m "Record PR99 audit diagnostics"
+          git add scripts/assets/lib.mjs .agent/pr99-audit-error.txt
+          git commit -m "Identify unsupported asset input"
           git push origin HEAD:agent/pr99-asset-processing-foundation
