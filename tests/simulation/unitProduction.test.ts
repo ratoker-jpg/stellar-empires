@@ -41,6 +41,7 @@ function preparePlayerProduction(state: GameState): GameState {
               'technology.aegis.propulsion': 2,
               'technology.aegis.armor': 2,
               'technology.aegis.weapons': 2,
+              'technology.aegis.astronomy': 1,
             },
           }
         : research,
