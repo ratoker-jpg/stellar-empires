@@ -1,5 +1,6 @@
 import type { AegisVerticalSliceAsset } from './aegisVerticalSliceAssets';
 import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
+import { COMPLETE_COMMANDER_SHIP_CATALOG } from '../simulation/units/completeCommanderShipCatalog';
 import {
   COMPLETE_DEFENSE_CATALOGS,
   getCompleteDefenseClass,
@@ -60,12 +61,40 @@ const COMPLETE_DEFENSE_BINDINGS: Readonly<Record<string, CompleteMechanicalAsset
     ]),
 );
 
+const COMMANDER_SOURCE_NAMES: Readonly<Record<string, string>> = {
+  'commander.shared.annihilator': 'commander-ship.annihilator.png',
+  'commander.shared.corsair': 'commander-ship.corsair.png',
+  'commander.shared.regenerator': 'commander-ship.reanimator.png',
+  'commander.shared.viper': 'commander-ship.viper.png',
+  'commander.shared.scorpion': 'commander-ship.scorpion.png',
+  'commander.shared.phantom': 'commander-ship.phantom.png',
+  'commander.shared.hunter': 'commander-ship.hunter.png',
+  'commander.shared.typhoon': 'commander-ship.typhoon.png',
+  'commander.shared.executor': 'commander-ship.executioner.png',
+  'commander.shared.juggernaut': 'commander-ship.juggernaut.png',
+  'commander.shared.argo': 'commander-ship.argo.png',
+  'commander.shared.judge': 'commander-ship.judge.png',
+  'commander.shared.polias': 'commander-ship.polias.png',
+};
+
+const COMPLETE_COMMANDER_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> = Object.fromEntries(
+  COMPLETE_COMMANDER_SHIP_CATALOG.map((definition) => [
+    definition.id,
+    {
+      mechanicalId: definition.id,
+      category: 'commander' as const,
+      sourcePath: `${SOURCE_ROOT}/comander_ship/${COMMANDER_SOURCE_NAMES[definition.id]}`,
+    },
+  ]),
+);
+
 export const COMPLETE_MECHANICAL_ASSET_MANIFEST: CompleteMechanicalAssetManifest = {
   version: 1,
   sourceRoot: SOURCE_ROOT,
   bindings: {
     ...COMPLETE_SHIP_BINDINGS,
     ...COMPLETE_DEFENSE_BINDINGS,
+    ...COMPLETE_COMMANDER_BINDINGS,
   },
 };
 
@@ -234,6 +263,13 @@ function resolveDefenseCompatibilityAsset(mechanicalId: string): AegisVerticalSl
   return fallback === undefined ? undefined : { ...fallback, id: mechanicalId };
 }
 
+function resolveCommanderCompatibilityAsset(mechanicalId: string): AegisVerticalSliceAsset | undefined {
+  const parsed = parseMechanicalId(mechanicalId);
+  if (parsed?.kind !== 'commander' || parsed.factionId !== 'shared') return undefined;
+  const fallback = getFactionMechanicalAsset('ship.aegis.frigate');
+  return fallback === undefined ? undefined : { ...fallback, id: mechanicalId };
+}
+
 export interface MechanicalAssetResolution {
   readonly asset: AegisVerticalSliceAsset | undefined;
   readonly source: 'complete-manifest' | 'current-runtime-fallback' | 'missing';
@@ -257,7 +293,8 @@ export function resolveCompleteMechanicalAsset(
     getFactionMechanicalAsset(mechanicalId) ??
     resolveBuildingCompatibilityAsset(mechanicalId) ??
     resolveShipCompatibilityAsset(mechanicalId) ??
-    resolveDefenseCompatibilityAsset(mechanicalId);
+    resolveDefenseCompatibilityAsset(mechanicalId) ??
+    resolveCommanderCompatibilityAsset(mechanicalId);
   if (fallback !== undefined) {
     return {
       asset: fallback,
