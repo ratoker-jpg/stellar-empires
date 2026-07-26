@@ -5,6 +5,7 @@ import {
   validateCompleteCatalogTargetManifest,
 } from '../../src/simulation/factions/completeCatalogTargets';
 import {
+  getCommanderShipCatalog,
   getFactionCatalogCompleteness,
   getFactionMechanicalCatalog,
   validateFactionMechanicalCatalog,
@@ -46,9 +47,9 @@ describe('faction mechanical catalog architecture', () => {
     expect(parseMechanicalId('bad.id')).toBeUndefined();
   });
 
-  it('declares the complete target catalog without pretending Commander Ships are delivered', () => {
+  it('declares the complete target catalog as delivered', () => {
     expect(validateCompleteCatalogTargetManifest()).toEqual([]);
-    expect(COMPLETE_CATALOG_TARGET_MANIFEST.rolloutStage).toBe('defenses');
+    expect(COMPLETE_CATALOG_TARGET_MANIFEST.rolloutStage).toBe('complete');
     expect(COMPLETE_CATALOG_TARGET_MANIFEST.targetCounts).toEqual({
       buildings: 24,
       technologies: 22,
@@ -56,7 +57,8 @@ describe('faction mechanical catalog architecture', () => {
       defenses: 9,
       commanderShips: 13,
     });
-    expect(COMPLETE_CATALOG_TARGETS.defensesPerFaction).toBe(9);
+    expect(COMPLETE_CATALOG_TARGETS.sharedCommanderShips).toBe(13);
+    expect(getCommanderShipCatalog()).toHaveLength(13);
   });
 
   it('makes all native catalogs explicit through the manifest', () => {
@@ -64,25 +66,26 @@ describe('faction mechanical catalog architecture', () => {
       mode: 'native',
       sourceFactionId: 'aegis',
       targetCatalogVersion: 1,
-      rolloutStage: 'defenses',
+      rolloutStage: 'complete',
     });
     expect(getFactionCatalogManifest('synod')).toMatchObject({
       mode: 'native',
       sourceFactionId: 'synod',
-      rolloutStage: 'defenses',
+      rolloutStage: 'complete',
     });
     expect(hasNativeMechanicalCatalog('synod')).toBe(true);
     expect(getFactionCatalogManifest('veyra')).toMatchObject({
       mode: 'native',
       sourceFactionId: 'veyra',
-      rolloutStage: 'defenses',
+      rolloutStage: 'complete',
     });
     expect(hasNativeMechanicalCatalog('veyra')).toBe(true);
     expect(canUseMechanicalDefinition('aegis', 'synod')).toBe(false);
     expect(canUseMechanicalDefinition('synod', 'synod')).toBe(true);
+    expect(canUseMechanicalDefinition('shared', 'veyra')).toBe(true);
   });
 
-  it('returns one validated catalog contract for every faction', () => {
+  it('returns one complete validated catalog contract for every faction', () => {
     for (const factionId of ['aegis', 'synod', 'veyra'] as const) {
       const catalog = getFactionMechanicalCatalog(factionId);
       expect(catalog.factionId).toBe(factionId);
@@ -92,26 +95,20 @@ describe('faction mechanical catalog architecture', () => {
       expect(validateFactionMechanicalCatalog(catalog)).toEqual([]);
 
       const completeness = getFactionCatalogCompleteness(factionId);
-      expect(completeness.current).toMatchObject({
-        buildings: 24,
-        technologies: 22,
-        ships: 13,
-        defenses: 9,
-        commanderShips: 0,
-      });
-      expect(completeness.target).toEqual({
+      expect(completeness.current).toEqual({
         buildings: 24,
         technologies: 22,
         ships: 13,
         defenses: 9,
         commanderShips: 13,
       });
-      expect(completeness.complete).toBe(false);
+      expect(completeness.target).toEqual(completeness.current);
+      expect(completeness.complete).toBe(true);
     }
   });
 
   it.each(['aegis', 'synod', 'veyra'] as const)(
-    'registers the complete %s ship and defense catalogs',
+    'registers the complete %s ordinary ship and defense catalogs',
     (factionId) => {
       const catalog = getFactionMechanicalCatalog(factionId);
       expect(catalog.sourceFactionId).toBe(factionId);
