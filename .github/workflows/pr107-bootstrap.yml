@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feat/107-universe-asset-pipeline
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
