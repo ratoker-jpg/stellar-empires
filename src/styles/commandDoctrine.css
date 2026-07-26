@@ -27,8 +27,10 @@
 .commander-roster-heading { padding: 6px 24px 0; border-top: 1px solid var(--border-subtle); }
 .commander-roster-heading h3 { margin: 4px 0 0; }
 .commander-ship-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 18px 24px 24px; }
-.commander-ship-card { padding: 16px; border: 1px solid var(--border-subtle); border-radius: 14px; background: var(--surface-panel); opacity: .78; }
-.commander-ship-card.is-owned { opacity: 1; border-color: var(--border-strong); }
+.commander-ship-card { overflow: hidden; padding: 16px; border: 1px solid var(--border-subtle); border-radius: 14px; background: var(--surface-panel); opacity: .78; }
+.commander-ship-card.is-owned, .commander-ship-card.is-available { opacity: 1; border-color: var(--border-strong); }
+.commander-ship-card.is-locked { filter: saturate(.55); }
+.commander-ship-card__art { height: 190px; margin: -16px -16px 14px; background-position: center; background-repeat: no-repeat; }
 .commander-ship-card.is-active { outline: 2px solid var(--accent-primary); outline-offset: 1px; }
 .commander-ship-card header { display: flex; justify-content: space-between; gap: 14px; align-items: start; }
 .commander-ship-card header span { max-width: 45%; text-align: right; color: var(--text-secondary); font-size: .78rem; }

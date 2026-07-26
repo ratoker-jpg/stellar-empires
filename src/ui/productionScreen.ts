@@ -35,17 +35,14 @@ export interface ProductionScreenOptions {
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 
 function setUnitArtwork(element: HTMLElement, definition: UnitDefinition): void {
-  if (definition.kind === 'ship') {
-    const asset = resolveCompleteMechanicalAsset(definition.assetId).asset;
-    if (asset !== undefined) applyMechanicalAssetArtwork(element, asset);
+  const complete = resolveCompleteMechanicalAsset(definition.assetId).asset;
+  if (complete?.layout === 'image') {
+    applyMechanicalAssetArtwork(element, complete);
     return;
   }
-  const asset = getFactionMechanicalAsset(definition.assetId);
-  if (asset === undefined) return;
-  const column = asset.frame.x / asset.frame.width;
-  element.style.backgroundImage = `url("${asset.atlasUrl}")`;
-  element.style.backgroundSize = '300% 100%';
-  element.style.backgroundPosition = `${column === 0 ? 0 : (column / 2) * 100}% 0`;
+  const fallback = getFactionMechanicalAsset(definition.assetId);
+  if (fallback === undefined) return;
+  applyMechanicalAssetArtwork(element, fallback);
 }
 
 function canAfford(

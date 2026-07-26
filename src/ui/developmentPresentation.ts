@@ -1,23 +1,14 @@
 import '../styles/developmentPresentation.css';
 import {
   getBuildingSheetUrl,
-  getDefensePresentationArtUrl,
   getZoneTerrainUrl,
 } from '../assets/planetIndustryRuntimeAssets';
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
-import { getUnitsByKind } from '../simulation/units/catalog';
 import type { GameState } from '../simulation/types';
 
 export interface DevelopmentPresentationOptions {
   readonly getState: () => GameState;
   readonly getActivePlanetId: () => string;
-}
-
-function setSheetArtwork(element: HTMLElement, url: string, frame: number): void {
-  element.style.backgroundImage = `linear-gradient(180deg, rgba(2, 8, 14, 0.02), rgba(2, 8, 14, 0.58)), url("${url}")`;
-  element.style.backgroundSize = '100% 100%, 400% 100%';
-  element.style.backgroundPosition = `center, ${frame === 0 ? 0 : (frame / 3) * 100}% center`;
-  element.style.backgroundRepeat = 'no-repeat';
 }
 
 function applyPlanetPresentation(state: GameState, planetId: string): void {
@@ -63,20 +54,7 @@ function applyProductionPresentation(state: GameState, planetId: string): void {
           : getFactionMechanicalRoles(planet.factionId).buildings.sensorGrid,
       )}")`,
     );
-    if (kind === 'ship') continue;
-    const definitions = getUnitsByKind(kind, planet.factionId);
-    const byName = new Map(definitions.map((definition) => [definition.name, definition]));
-    for (const card of dialog.querySelectorAll<HTMLElement>('.production-card')) {
-      const name = card.querySelector<HTMLHeadingElement>('h3')?.textContent;
-      const art = card.querySelector<HTMLElement>('.production-art');
-      const definition = name === undefined ? undefined : byName.get(name);
-      if (art === null || definition === undefined) continue;
-      setSheetArtwork(
-        art,
-        getDefensePresentationArtUrl(planet.factionId, definition.id),
-        2,
-      );
-    }
+
   }
 }
 

@@ -1,46 +1,33 @@
 # Current execution state
 
 **Updated:** 2026-07-26  
-**Safe to continue:** yes
+**Safe to continue:** yes, but implementation is blocked pending a fresh Audit PR
 
 | Field | Current value |
 |---|---|
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
-| Audit PR | #101 — `ASSET-RUNTIME-INTEGRATION-01` — accepted on merge |
-| Verified baseline | `5ca58493ab4eb1abd46e16e1307a9402efa636fa` after merged #100 |
-| Current batch | `ASSET-RUNTIME-INTEGRATION-01` |
-| Batch complexity | Medium — four sequential implementation PRs |
-| Authorized work items | `ASSET-BUILDINGS`, `ASSET-TECHNOLOGIES`, `ASSET-SHIPS`, `ASSET-DEFENSE-COMMANDERS` |
-| Active work item | none — audit completed, implementation intentionally not started |
-| Active implementation PR | #104 — ASSET-SHIPS |
-| Last completed atomic action | wrote and validated the complete four-PR implementation contract |
-| Last successful validation | Graphify baseline evidence plus Audit PR #101 normal CI and Graphify gate |
-| Exact next action | create PR #102 from fresh `main` and implement only `ASSET-BUILDINGS` |
-| Blockers | none |
-| Divergence | future roadmap numbers shifted: implementation range is #102–#105 |
+| Completed audit | #101 — `ASSET-RUNTIME-INTEGRATION-01` |
+| Completed implementation PRs | #102, #103, #104 and #105 |
+| Final PR merge SHA | `PR105_MERGE_SHA_PENDING` |
+| Batch outcome | 217 complete mechanical IDs → 173 generated runtime images |
+| Save/gameplay divergence | none |
+| Active implementation PR | none after #105 merges |
+| Exact next action | create a fresh Audit PR for the next coherent roadmap batch before implementation |
+| Blockers | no implementation contract exists for the next batch |
 
-## Recovery rule
-
-A future session must read `current-batch-audit.md` and all three linked contract/evidence files before creating PR #102. It must not begin technologies, ships, defences or Commander work before the preceding implementation PR merges.
-
-## Batch checkpoints
+## Completed batch checkpoints
 
 | Checkpoint | State |
 |---|---|
-| Audit contract | complete |
-| Critical unknowns | none |
-| Building implementation | not started |
-| Technology implementation | not started |
-| Ship implementation | not started |
-| Defence/Commander implementation | not started |
-| Batch archive | deferred to PR #105 |
+| Audit contract | complete and archived |
+| Building implementation | complete in #102 |
+| Technology implementation | complete in #103 |
+| Ship implementation | complete in #104 |
+| Defence/Commander implementation | complete in #105 |
+| Combined 217-ID gate | complete |
+| Generated set | exactly 173 textures |
+| Batch archive | `docs/audits/completed/asset-runtime-integration-01.md` |
 
-### 2026-07-26 — Audit PR #101
+## Recovery rule
 
-- reconciled current `main` after PR #100;
-- inspected asset pipeline, complete catalogs, runtime fallbacks, UI consumers, bots, persistence boundaries and tests;
-- used the Graphify code graph to verify dependency hubs and direct consumers;
-- fixed exact source-to-mechanical mapping rules;
-- selected 173 individual WebP derivatives under existing hard budgets;
-- authorized four implementation PRs #102–#105;
-- no runtime implementation was started.
+Do not start Universe navigation or another implementation item directly. Read the roadmap, current project status and completed audit, then create a dedicated Audit PR for the next batch.

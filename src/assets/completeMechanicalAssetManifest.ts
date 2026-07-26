@@ -8,15 +8,12 @@ import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
 import { COMPLETE_BUILDING_CATALOGS } from '../simulation/planet/completeBuildingCatalog';
 import { COMPLETE_RESEARCH_CATALOGS } from '../simulation/research/completeResearchCatalog';
 import { COMPLETE_COMMANDER_SHIP_CATALOG } from '../simulation/units/completeCommanderShipCatalog';
-import {
-  COMPLETE_DEFENSE_CATALOGS,
-  getCompleteDefenseClass,
-} from '../simulation/units/completeDefenseCatalog';
+import { COMPLETE_DEFENSE_CATALOGS } from '../simulation/units/completeDefenseCatalog';
 import {
   COMPLETE_SHIP_CATALOGS,
   getCompleteShipClass,
 } from '../simulation/units/completeShipCatalog';
-import type { CompleteDefenseClass, CompleteShipClass } from '../simulation/units/types';
+import type { CompleteShipClass } from '../simulation/units/types';
 
 export type CompleteMechanicalAssetCategory = RuntimeMechanicalAssetCategory;
 
@@ -139,6 +136,7 @@ const COMPLETE_DEFENSE_BINDINGS: Readonly<Record<string, CompleteMechanicalAsset
         {
           mechanicalId: definition.id,
           category: 'defense' as const,
+          runtimeSemanticId: definition.id,
           sourcePath: `${SOURCE_ROOT}/defenses/${definition.factionId}/${definition.id}.png`,
         },
       ]),
@@ -167,6 +165,7 @@ const COMPLETE_COMMANDER_BINDINGS: Readonly<Record<string, CompleteMechanicalAss
       {
         mechanicalId: definition.id,
         category: 'commander' as const,
+        runtimeSemanticId: definition.id,
         sourcePath: `${SOURCE_ROOT}/comander_ship/${COMMANDER_SOURCE_NAMES[definition.id]}`,
       },
     ]),
@@ -267,44 +266,6 @@ const SHIP_COMPATIBILITY_ASSETS: Readonly<
   },
 };
 
-const DEFENSE_COMPATIBILITY_ASSETS: Readonly<
-  Record<'aegis' | 'synod' | 'veyra', Readonly<Record<CompleteDefenseClass, string>>>
-> = {
-  aegis: {
-    'basic-turret': 'defense.aegis.gun-battery',
-    'laser-turret': 'defense.aegis.gun-battery',
-    'ion-turret': 'defense.aegis.missile-battery',
-    'plasma-turret': 'defense.aegis.missile-battery',
-    'secondary-shield': 'defense.aegis.shield-generator',
-    'planetary-shield': 'defense.aegis.shield-generator',
-    'laser-ion-battery': 'defense.aegis.missile-battery',
-    'plasma-laser-battery': 'defense.aegis.missile-battery',
-    'ion-plasma-battery': 'defense.aegis.missile-battery',
-  },
-  synod: {
-    'basic-turret': 'defense.synod.lance-node',
-    'laser-turret': 'defense.synod.lance-node',
-    'ion-turret': 'defense.synod.predictive-intercept',
-    'plasma-turret': 'defense.synod.arc-silo',
-    'secondary-shield': 'defense.synod.harmonic-screen',
-    'planetary-shield': 'defense.synod.concord-bastion',
-    'laser-ion-battery': 'defense.synod.predictive-intercept',
-    'plasma-laser-battery': 'defense.synod.arc-silo',
-    'ion-plasma-battery': 'defense.synod.concord-bastion',
-  },
-  veyra: {
-    'basic-turret': 'defense.veyra.thorn-spire',
-    'laser-turret': 'defense.veyra.thorn-spire',
-    'ion-turret': 'defense.veyra.snapper-node',
-    'plasma-turret': 'defense.veyra.spore-mortar',
-    'secondary-shield': 'defense.veyra.living-veil',
-    'planetary-shield': 'defense.veyra.hive-bastion',
-    'laser-ion-battery': 'defense.veyra.snapper-node',
-    'plasma-laser-battery': 'defense.veyra.spore-mortar',
-    'ion-plasma-battery': 'defense.veyra.hive-bastion',
-  },
-};
-
 function resolveBuildingCompatibilityAsset(mechanicalId: string): AegisVerticalSliceAsset | undefined {
   const parsed = parseMechanicalId(mechanicalId);
   if (parsed?.kind !== 'building' || parsed.factionId === 'shared') return undefined;
@@ -338,24 +299,6 @@ function resolveShipCompatibilityAsset(mechanicalId: string): AegisVerticalSlice
   return fallback === undefined ? undefined : { ...fallback, id: mechanicalId };
 }
 
-function resolveDefenseCompatibilityAsset(mechanicalId: string): AegisVerticalSliceAsset | undefined {
-  const parsed = parseMechanicalId(mechanicalId);
-  if (parsed?.kind !== 'defense' || parsed.factionId === 'shared') return undefined;
-  const defenseClass = getCompleteDefenseClass(mechanicalId);
-  if (defenseClass === undefined) return undefined;
-  const fallback = getFactionMechanicalAsset(
-    DEFENSE_COMPATIBILITY_ASSETS[parsed.factionId][defenseClass],
-  );
-  return fallback === undefined ? undefined : { ...fallback, id: mechanicalId };
-}
-
-function resolveCommanderCompatibilityAsset(mechanicalId: string): AegisVerticalSliceAsset | undefined {
-  const parsed = parseMechanicalId(mechanicalId);
-  if (parsed?.kind !== 'commander' || parsed.factionId !== 'shared') return undefined;
-  const fallback = getFactionMechanicalAsset('ship.aegis.frigate');
-  return fallback === undefined ? undefined : { ...fallback, id: mechanicalId };
-}
-
 export interface MechanicalAssetResolution {
   readonly asset: AegisVerticalSliceAsset | undefined;
   readonly source: 'complete-manifest' | 'current-runtime-fallback' | 'missing';
@@ -382,9 +325,7 @@ export function resolveCompleteMechanicalAsset(
   const fallback =
     getFactionMechanicalAsset(mechanicalId) ??
     resolveBuildingCompatibilityAsset(mechanicalId) ??
-    resolveShipCompatibilityAsset(mechanicalId) ??
-    resolveDefenseCompatibilityAsset(mechanicalId) ??
-    resolveCommanderCompatibilityAsset(mechanicalId);
+    resolveShipCompatibilityAsset(mechanicalId);
   if (fallback !== undefined) {
     return {
       asset: fallback,

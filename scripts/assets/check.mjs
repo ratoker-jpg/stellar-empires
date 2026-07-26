@@ -109,6 +109,29 @@ if (shipBindings.length !== 39) {
 if (new Set(shipBindings.map((entry) => entry.runtimeSemanticId)).size !== 39) {
   errors.push('Complete ships do not have 39 unique runtime semantic IDs.');
 }
+const defenseBindings = bindings.entries.filter((entry) => entry.category === 'defense');
+const commanderBindings = bindings.entries.filter((entry) => entry.category === 'commander');
+if (defenseBindings.length !== 27) {
+  errors.push(`Expected 27 defense runtime bindings, found ${defenseBindings.length}.`);
+}
+if (commanderBindings.length !== 13) {
+  errors.push(`Expected 13 Commander runtime bindings, found ${commanderBindings.length}.`);
+}
+if (bindings.entries.length !== 217) {
+  errors.push(`Expected 217 complete mechanical bindings, found ${bindings.entries.length}.`);
+}
+const expectedRuntimeIds = new Set(
+  bindings.entries.map((entry) => entry.runtimeSemanticId),
+);
+if (expectedRuntimeIds.size !== 173) {
+  errors.push(`Expected 173 unique runtime semantic IDs, found ${expectedRuntimeIds.size}.`);
+}
+if (processingPlan.entries.length !== 173) {
+  errors.push(`Expected 173 processing entries, found ${processingPlan.entries.length}.`);
+}
+if (runtimeManifest.assets.length !== 173) {
+  errors.push(`Expected 173 generated runtime textures, found ${runtimeManifest.assets.length}.`);
+}
 const generatedIds = new Set(runtimeManifest.assets.map((asset) => asset.semanticId));
 for (const binding of buildingBindings) {
   if (!generatedIds.has(binding.runtimeSemanticId)) {
@@ -123,6 +146,16 @@ for (const binding of technologyBindings) {
 for (const binding of shipBindings) {
   if (!generatedIds.has(binding.runtimeSemanticId)) {
     errors.push(`Missing generated ship runtime asset: ${binding.mechanicalId}`);
+  }
+}
+for (const binding of [...defenseBindings, ...commanderBindings]) {
+  if (!generatedIds.has(binding.runtimeSemanticId)) {
+    errors.push(`Missing final generated runtime asset: ${binding.mechanicalId}`);
+  }
+}
+for (const generatedId of generatedIds) {
+  if (!expectedRuntimeIds.has(generatedId)) {
+    errors.push(`Orphan generated runtime asset: ${generatedId}`);
   }
 }
 if (generatedIds.has('technology.shared.qa-edges-dark-light')) {

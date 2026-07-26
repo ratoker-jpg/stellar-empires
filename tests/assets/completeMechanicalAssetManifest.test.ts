@@ -21,19 +21,20 @@ describe('complete mechanical asset manifest', () => {
     );
   });
 
-  it('binds Commander source assets while retaining processed runtime fallbacks', () => {
+  it('binds Commander source assets to generated runtime art', () => {
     const resolution = resolveCompleteMechanicalAsset('commander.shared.annihilator');
-    expect(resolution.source).toBe('current-runtime-fallback');
+    expect(resolution.source).toBe('complete-manifest');
     expect(resolution.asset?.id).toBe('commander.shared.annihilator');
+    expect(resolution.asset?.atlasUrl).toContain('/assets/generated/catalog/commanders/shared/annihilator.webp');
     expect(resolution.provenancePath).toBe(
       'assets/source/New assets/comander_ship/commander-ship.annihilator.png',
     );
   });
 
-  it('does not invent source provenance for an unknown Commander ID', () => {
+  it('does not invent art or source provenance for an unknown Commander ID', () => {
     const resolution = resolveCompleteMechanicalAsset('commander.shared.unknown-future');
-    expect(resolution.source).toBe('current-runtime-fallback');
-    expect(resolution.asset?.id).toBe('commander.shared.unknown-future');
+    expect(resolution.source).toBe('missing');
+    expect(resolution.asset).toBeUndefined();
     expect(resolution.provenancePath).toBeUndefined();
     expect(COMPLETE_MECHANICAL_ASSET_MANIFEST.bindings[
       'commander.shared.unknown-future'

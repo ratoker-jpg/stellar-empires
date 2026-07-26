@@ -723,6 +723,406 @@
       "sha256": "fcdbf829142e1deffb4fc72f8889d6526818e39d8c84e2c2dff812704709ed27"
     },
     {
+      "semanticId": "commander.shared.annihilator",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.annihilator.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/annihilator.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 56800,
+      "sha256": "86416b2b583b93f25020a9720afa1de8a80fb2a961b14a71ceb10e70543844fc"
+    },
+    {
+      "semanticId": "commander.shared.argo",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.argo.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/argo.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 61798,
+      "sha256": "2f2513ab552b0ecf08a9c2b50f16f3c8224d95c07bb8d3865d11c56a659bfd6d"
+    },
+    {
+      "semanticId": "commander.shared.corsair",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.corsair.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/corsair.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 56560,
+      "sha256": "1b312338e776f370c959461874c611f1b98ad1aa1b78374104e4dce2c24f044f"
+    },
+    {
+      "semanticId": "commander.shared.executor",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.executioner.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/executor.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 45016,
+      "sha256": "d9031740592fd905848658d887383c7a385959ab5200fb8a6a5e2282314dc708"
+    },
+    {
+      "semanticId": "commander.shared.hunter",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.hunter.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/hunter.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 48778,
+      "sha256": "651244d8647062352aa51bb1493e0c7c9c56ddd4ffff292d3d1f70bb7b8ef3b2"
+    },
+    {
+      "semanticId": "commander.shared.judge",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.judge.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/judge.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 52286,
+      "sha256": "631514ef26e7011fe677f6c2676ffa814c2f3785a3f1236a9b930166f634c1ac"
+    },
+    {
+      "semanticId": "commander.shared.juggernaut",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.juggernaut.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/juggernaut.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 55678,
+      "sha256": "4d036cbfa047e5f8a42a867f67419245ca534364459d46c5e817e2868db773da"
+    },
+    {
+      "semanticId": "commander.shared.phantom",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.phantom.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/phantom.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 56500,
+      "sha256": "6664e133b23bfdab70d963632cdb64912ce578b3827d7c59dcaaa92aa16e7c5c"
+    },
+    {
+      "semanticId": "commander.shared.polias",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.polias.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/polias.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 75382,
+      "sha256": "a486d534273d50d1435f7f0f86c4e403c343b3e98795c473227d758489e4b551"
+    },
+    {
+      "semanticId": "commander.shared.regenerator",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.reanimator.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/regenerator.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 54860,
+      "sha256": "b3a11fe6ffd46cbeaed1726e39869a55476f73d5f0e4bc5ce73763444d6e19e4"
+    },
+    {
+      "semanticId": "commander.shared.scorpion",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.scorpion.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/scorpion.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 51174,
+      "sha256": "cce58bbe82ea13a3a38dac129b3879ddacd07ac97fb243506942c2790dbbb34a"
+    },
+    {
+      "semanticId": "commander.shared.typhoon",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.typhoon.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/typhoon.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 44706,
+      "sha256": "84d9afa6c2156cc72bdb3708fde4dc07197a1195fdcbc3cf0ab430783a3bfc73"
+    },
+    {
+      "semanticId": "commander.shared.viper",
+      "sourcePath": "assets/source/New assets/comander_ship/commander-ship.viper.png",
+      "outputPath": "public/assets/generated/catalog/commanders/shared/viper.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 54432,
+      "sha256": "b55e45de98830aa2ae19d2c038ebc804a88f4bf387cdcaa52465f63bf3adc9dd"
+    },
+    {
+      "semanticId": "defense.aegis.ballistic-turret",
+      "sourcePath": "assets/source/New assets/defenses/aegis/defense.aegis.ballistic-turret.png",
+      "outputPath": "public/assets/generated/catalog/defenses/aegis/ballistic-turret.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 33206,
+      "sha256": "3559c861fd5a8730a053d6c572dcf14e79682ab6954a96dac3dca8abd1585a10"
+    },
+    {
+      "semanticId": "defense.aegis.ion-plasma-battery",
+      "sourcePath": "assets/source/New assets/defenses/aegis/defense.aegis.ion-plasma-battery.png",
+      "outputPath": "public/assets/generated/catalog/defenses/aegis/ion-plasma-battery.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 48680,
+      "sha256": "2939494dd97ebfb9402c3b4e847e7bdf3ee17f18be6f28300097c79440578701"
+    },
+    {
+      "semanticId": "defense.aegis.ion-turret",
+      "sourcePath": "assets/source/New assets/defenses/aegis/defense.aegis.ion-turret.png",
+      "outputPath": "public/assets/generated/catalog/defenses/aegis/ion-turret.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 42980,
+      "sha256": "34f05cab3f2467dc4e59ababc2369189da45afcbd6da23c2784f25f4fe18c864"
+    },
+    {
+      "semanticId": "defense.aegis.laser-ion-battery",
+      "sourcePath": "assets/source/New assets/defenses/aegis/defense.aegis.laser-ion-battery.png",
+      "outputPath": "public/assets/generated/catalog/defenses/aegis/laser-ion-battery.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 40032,
+      "sha256": "b93ca41c04147227c71a47bc6632acf342d471cbaa5418a9ac8cc968886ab61f"
+    },
+    {
+      "semanticId": "defense.aegis.laser-turret",
+      "sourcePath": "assets/source/New assets/defenses/aegis/defense.aegis.laser-turret.png",
+      "outputPath": "public/assets/generated/catalog/defenses/aegis/laser-turret.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 33900,
+      "sha256": "ad643350f504e8d8c54df31c2278cb67d69d6ec05f0e87b15078d3469b059eae"
+    },
+    {
+      "semanticId": "defense.aegis.planetary-shield",
+      "sourcePath": "assets/source/New assets/defenses/aegis/defense.aegis.planetary-shield.png",
+      "outputPath": "public/assets/generated/catalog/defenses/aegis/planetary-shield.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 67024,
+      "sha256": "a8460445908d896e77a04c32ef5ba0e8c7fca7d9cc6e6f8b8cc2d57d19b889ae"
+    },
+    {
+      "semanticId": "defense.aegis.plasma-laser-battery",
+      "sourcePath": "assets/source/New assets/defenses/aegis/defense.aegis.plasma-laser-battery.png",
+      "outputPath": "public/assets/generated/catalog/defenses/aegis/plasma-laser-battery.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 46978,
+      "sha256": "c2b954dcad8cc2b55114565539371c08633992d4b896c76add6ec199b57df6b0"
+    },
+    {
+      "semanticId": "defense.aegis.plasma-turret",
+      "sourcePath": "assets/source/New assets/defenses/aegis/defense.aegis.plasma-turret.png",
+      "outputPath": "public/assets/generated/catalog/defenses/aegis/plasma-turret.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 40732,
+      "sha256": "427464ea04e88977f9bd4cc12e3058ba42d6445198f449c007e0386934e07c44"
+    },
+    {
+      "semanticId": "defense.aegis.tower-shield",
+      "sourcePath": "assets/source/New assets/defenses/aegis/defense.aegis.tower-shield.png",
+      "outputPath": "public/assets/generated/catalog/defenses/aegis/tower-shield.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 28550,
+      "sha256": "2feadf96c9853a6e69db0da6903d1588b02d304d239d45e4341a8130cd357a9a"
+    },
+    {
+      "semanticId": "defense.synod.defense-matrix",
+      "sourcePath": "assets/source/New assets/defenses/synod/defense.synod.defense-matrix.png",
+      "outputPath": "public/assets/generated/catalog/defenses/synod/defense-matrix.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 40722,
+      "sha256": "8b898ba4964322bafc8acb86f658710496048957ae6284f9346c48566f1021ff"
+    },
+    {
+      "semanticId": "defense.synod.ion-matrix",
+      "sourcePath": "assets/source/New assets/defenses/synod/defense.synod.ion-matrix.png",
+      "outputPath": "public/assets/generated/catalog/defenses/synod/ion-matrix.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 30746,
+      "sha256": "c4ef169befdcf70f90cb96eaadfac126a14061cb004fcdbe5c46d235a80905cb"
+    },
+    {
+      "semanticId": "defense.synod.ion-plasma-matrix",
+      "sourcePath": "assets/source/New assets/defenses/synod/defense.synod.ion-plasma-matrix.png",
+      "outputPath": "public/assets/generated/catalog/defenses/synod/ion-plasma-matrix.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 49828,
+      "sha256": "18888da4de435e7e148e34fa5612008ec5ef01749e0e225bf0bb45baf471dd81"
+    },
+    {
+      "semanticId": "defense.synod.laser-ion-matrix",
+      "sourcePath": "assets/source/New assets/defenses/synod/defense.synod.laser-ion-matrix.png",
+      "outputPath": "public/assets/generated/catalog/defenses/synod/laser-ion-matrix.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 41024,
+      "sha256": "f6545bb558762a01bc59efad106cec99cd73a00855135cfe44b0ee403fcda00b"
+    },
+    {
+      "semanticId": "defense.synod.laser-matrix",
+      "sourcePath": "assets/source/New assets/defenses/synod/defense.synod.laser-matrix.png",
+      "outputPath": "public/assets/generated/catalog/defenses/synod/laser-matrix.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 37656,
+      "sha256": "b44cb55805b40afcf5f89c67705c16cf504f570aa378c8254dbb81f86071fa0c"
+    },
+    {
+      "semanticId": "defense.synod.matrix-shield",
+      "sourcePath": "assets/source/New assets/defenses/synod/defense.synod.matrix-shield.png",
+      "outputPath": "public/assets/generated/catalog/defenses/synod/matrix-shield.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 54898,
+      "sha256": "04e40d7452b3a2411ac5b985f2e4f49d4c6f6558d313a77eb008f80c320a7e40"
+    },
+    {
+      "semanticId": "defense.synod.planetary-matrix",
+      "sourcePath": "assets/source/New assets/defenses/synod/defense.synod.planetary-matrix.png",
+      "outputPath": "public/assets/generated/catalog/defenses/synod/planetary-matrix.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 52202,
+      "sha256": "9f75c33108db500085ae197392ab45521b2a32601641254f1bb1a57d5f67e058"
+    },
+    {
+      "semanticId": "defense.synod.plasma-laser-matrix",
+      "sourcePath": "assets/source/New assets/defenses/synod/defense.synod.plasma-laser-matrix.png",
+      "outputPath": "public/assets/generated/catalog/defenses/synod/plasma-laser-matrix.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 34630,
+      "sha256": "289118740cc5f02704b8c721bd948c7965d60fb17c49380ef6b0575f8ac67140"
+    },
+    {
+      "semanticId": "defense.synod.plasma-matrix",
+      "sourcePath": "assets/source/New assets/defenses/synod/defense.synod.plasma-matrix.png",
+      "outputPath": "public/assets/generated/catalog/defenses/synod/plasma-matrix.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 38790,
+      "sha256": "6254aa4904aca47871d65e53ac16ae0a621bcecb4738612fb256593bb40cb6c6"
+    },
+    {
+      "semanticId": "defense.veyra.chitin-shield",
+      "sourcePath": "assets/source/New assets/defenses/veyra/defense.veyra.chitin-shield.png",
+      "outputPath": "public/assets/generated/catalog/defenses/veyra/chitin-shield.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 58434,
+      "sha256": "2fede4e22fff74d5a58d604859d30c16f047a140958ad369c7e8cd06c0562023"
+    },
+    {
+      "semanticId": "defense.veyra.ion-plasma-turret",
+      "sourcePath": "assets/source/New assets/defenses/veyra/defense.veyra.ion-plasma-turret.png",
+      "outputPath": "public/assets/generated/catalog/defenses/veyra/ion-plasma-turret.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 50906,
+      "sha256": "f4c4da7cbc5912992bf47ee2d59cef36d3ff78fdb8cac3711e369ad1411d76f9"
+    },
+    {
+      "semanticId": "defense.veyra.ion-weave",
+      "sourcePath": "assets/source/New assets/defenses/veyra/defense.veyra.ion-weave.png",
+      "outputPath": "public/assets/generated/catalog/defenses/veyra/ion-weave.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 53636,
+      "sha256": "a64b38b6b50c0f0f493ef008970a939a839a5a3689983b2f490402c49597d470"
+    },
+    {
+      "semanticId": "defense.veyra.laser-ion-turret",
+      "sourcePath": "assets/source/New assets/defenses/veyra/defense.veyra.laser-ion-turret.png",
+      "outputPath": "public/assets/generated/catalog/defenses/veyra/laser-ion-turret.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 51688,
+      "sha256": "5c03247a4c1762bdd503232daf18f6c2c650441094bc37752ea5a623a6672896"
+    },
+    {
+      "semanticId": "defense.veyra.laser-matter",
+      "sourcePath": "assets/source/New assets/defenses/veyra/defense.veyra.laser-matter.png",
+      "outputPath": "public/assets/generated/catalog/defenses/veyra/laser-matter.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 50020,
+      "sha256": "3c59c490ea5be7405eda6555df159e0250a9e133cf978bf771971c9d070e2003"
+    },
+    {
+      "semanticId": "defense.veyra.nox-archer",
+      "sourcePath": "assets/source/New assets/defenses/veyra/defense.veyra.nox-archer.png",
+      "outputPath": "public/assets/generated/catalog/defenses/veyra/nox-archer.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 50056,
+      "sha256": "09763594eea43b3bc1f998dec06697ca1b0d7096ef35e08e5179bdffbb406e9c"
+    },
+    {
+      "semanticId": "defense.veyra.plasma-laser-turret",
+      "sourcePath": "assets/source/New assets/defenses/veyra/defense.veyra.plasma-laser-turret.png",
+      "outputPath": "public/assets/generated/catalog/defenses/veyra/plasma-laser-turret.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 50224,
+      "sha256": "e3219da25fb9ee20579f9f48201dabe97f38dda603202b5e8fa1a834d78b30e3"
+    },
+    {
+      "semanticId": "defense.veyra.plasma-weave",
+      "sourcePath": "assets/source/New assets/defenses/veyra/defense.veyra.plasma-weave.png",
+      "outputPath": "public/assets/generated/catalog/defenses/veyra/plasma-weave.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 55208,
+      "sha256": "2e4af798d23d121051b6f2e071aebce518e7cdf3a0cda3b054f67a8b25b04410"
+    },
+    {
+      "semanticId": "defense.veyra.surface-shield",
+      "sourcePath": "assets/source/New assets/defenses/veyra/defense.veyra.surface-shield.png",
+      "outputPath": "public/assets/generated/catalog/defenses/veyra/surface-shield.webp",
+      "format": "webp",
+      "width": 384,
+      "height": 384,
+      "bytes": 48388,
+      "sha256": "bf1cc617930d9fc4645ff784954a0a01e710d4b9e2b1d2276ea654a2ba0a24de"
+    },
+    {
       "semanticId": "ship.aegis.battleship",
       "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.battleship.png",
       "outputPath": "public/assets/generated/catalog/ships/aegis/battleship.webp",
