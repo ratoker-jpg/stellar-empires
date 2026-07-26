@@ -92,11 +92,29 @@ const buildingBindings = bindings.entries.filter((entry) => entry.category === '
 if (buildingBindings.length !== 72) {
   errors.push(`Expected 72 building runtime bindings, found ${buildingBindings.length}.`);
 }
+const technologyBindings = bindings.entries.filter((entry) => entry.category === 'technology');
+if (technologyBindings.length !== 66) {
+  errors.push(`Expected 66 technology runtime bindings, found ${technologyBindings.length}.`);
+}
+const uniqueTechnologyRuntimeIds = new Set(
+  technologyBindings.map((entry) => entry.runtimeSemanticId),
+);
+if (uniqueTechnologyRuntimeIds.size !== 22) {
+  errors.push(`Expected 22 technology runtime concepts, found ${uniqueTechnologyRuntimeIds.size}.`);
+}
 const generatedIds = new Set(runtimeManifest.assets.map((asset) => asset.semanticId));
 for (const binding of buildingBindings) {
   if (!generatedIds.has(binding.runtimeSemanticId)) {
     errors.push(`Missing generated building runtime asset: ${binding.mechanicalId}`);
   }
+}
+for (const binding of technologyBindings) {
+  if (!generatedIds.has(binding.runtimeSemanticId)) {
+    errors.push(`Missing generated technology runtime asset: ${binding.mechanicalId}`);
+  }
+}
+if (generatedIds.has('technology.shared.qa-edges-dark-light')) {
+  errors.push('Technology QA reference was registered as runtime art.');
 }
 try {
   await readFile(resolveRepositoryPath(config.runtimeTypeScriptManifestPath), 'utf8');

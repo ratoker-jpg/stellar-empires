@@ -6,6 +6,7 @@ import {
 } from './runtimeMechanicalAssets';
 import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
 import { COMPLETE_BUILDING_CATALOGS } from '../simulation/planet/completeBuildingCatalog';
+import { COMPLETE_RESEARCH_CATALOGS } from '../simulation/research/completeResearchCatalog';
 import { COMPLETE_COMMANDER_SHIP_CATALOG } from '../simulation/units/completeCommanderShipCatalog';
 import {
   COMPLETE_DEFENSE_CATALOGS,
@@ -92,6 +93,28 @@ const COMPLETE_BUILDING_BINDINGS: Readonly<Record<string, CompleteMechanicalAsse
       }),
   );
 
+const COMPLETE_TECHNOLOGY_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> =
+  Object.fromEntries(
+    Object.values(COMPLETE_RESEARCH_CATALOGS)
+      .flat()
+      .map((definition) => {
+        const parsed = parseMechanicalId(definition.id);
+        if (parsed?.kind !== 'technology' || parsed.factionId === 'shared') {
+          throw new Error(`Invalid complete technology ID: ${definition.id}`);
+        }
+        const runtimeSemanticId = `technology.shared.${parsed.slug}`;
+        return [
+          definition.id,
+          {
+            mechanicalId: definition.id,
+            category: 'technology' as const,
+            runtimeSemanticId,
+            sourcePath: `${SOURCE_ROOT}/technologies/${runtimeSemanticId}.png`,
+          },
+        ];
+      }),
+  );
+
 const COMPLETE_SHIP_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> =
   Object.fromEntries(
     Object.values(COMPLETE_SHIP_CATALOGS)
@@ -153,6 +176,7 @@ export const COMPLETE_MECHANICAL_ASSET_MANIFEST: CompleteMechanicalAssetManifest
   sourceRoot: SOURCE_ROOT,
   bindings: {
     ...COMPLETE_BUILDING_BINDINGS,
+    ...COMPLETE_TECHNOLOGY_BINDINGS,
     ...COMPLETE_SHIP_BINDINGS,
     ...COMPLETE_DEFENSE_BINDINGS,
     ...COMPLETE_COMMANDER_BINDINGS,

@@ -51,11 +51,12 @@ describe('asset processing foundation', () => {
     expect(new Set(universeIds).size).toBe(universeIds.length);
   });
 
-  it('records deterministic building processing while keeping atlases empty', () => {
+  it('records deterministic building and technology processing while keeping atlases empty', () => {
     expect(processingPlan.schemaVersion).toBe(1);
-    expect(processingPlan.entries).toHaveLength(72);
-    expect(processingPlan.entries.every((entry) => entry.family === 'building')).toBe(true);
-    expect(new Set(processingPlan.entries.map((entry) => entry.semanticId)).size).toBe(72);
+    expect(processingPlan.entries).toHaveLength(94);
+    expect(processingPlan.entries.filter((entry) => entry.family === 'building')).toHaveLength(72);
+    expect(processingPlan.entries.filter((entry) => entry.family === 'technology')).toHaveLength(22);
+    expect(new Set(processingPlan.entries.map((entry) => entry.semanticId)).size).toBe(94);
     expect(atlasPlan).toEqual({ schemaVersion: 1, atlases: [] });
   });
 });

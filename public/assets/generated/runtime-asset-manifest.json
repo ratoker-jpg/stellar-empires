@@ -721,6 +721,226 @@
       "height": 384,
       "bytes": 51090,
       "sha256": "fcdbf829142e1deffb4fc72f8889d6526818e39d8c84e2c2dff812704709ed27"
+    },
+    {
+      "semanticId": "technology.shared.astronomy",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.astronomy.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/astronomy.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 29166,
+      "sha256": "dc588e7ea295c923606f28109c1ecfcbf9e102e30183074ecf1abd6a0ead7e98"
+    },
+    {
+      "semanticId": "technology.shared.chemistry",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.chemistry.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/chemistry.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 32172,
+      "sha256": "818b20b32740e4803d34c926a6dee0cbd3117829a525b9f72dd3e6c494d6499f"
+    },
+    {
+      "semanticId": "technology.shared.computer-systems",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.computer-systems.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/computer-systems.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 31964,
+      "sha256": "11bf5c8990ca6a8df53c86f04b6e1cf00013a3046166cf002ea6ef72f45d4012"
+    },
+    {
+      "semanticId": "technology.shared.critical-hit",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.critical-hit.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/critical-hit.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 30236,
+      "sha256": "c4e51e77e2baaf2c7ff9eed8809948028c9d3de56fd0b8b3e73ec73eea47ad62"
+    },
+    {
+      "semanticId": "technology.shared.ecology",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ecology.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ecology.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 31368,
+      "sha256": "2851b2d0a982b881902b7a697e677c4d3a8bf678bd865e2166b49998c39bfa0e"
+    },
+    {
+      "semanticId": "technology.shared.espionage",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.espionage.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/espionage.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 27780,
+      "sha256": "bdc4addad8b1d5b98fea3b39d6f1475c133f48e446010dcf6265df241687c718"
+    },
+    {
+      "semanticId": "technology.shared.fuel-cells",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.fuel-cells.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/fuel-cells.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 26408,
+      "sha256": "2b6997d39e54ce00dcae7a24cb190f78df37afe3b451de8d257cd8db47c5d43e"
+    },
+    {
+      "semanticId": "technology.shared.heavy-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.heavy-armor.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/heavy-armor.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 30374,
+      "sha256": "c37ba8b5216c8e6d87fa781d3d64694c1f5b5987344b939f20edd5966dc9a37c"
+    },
+    {
+      "semanticId": "technology.shared.hyperspace",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.hyperspace.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/hyperspace.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28870,
+      "sha256": "b4db7db6b2dc56e7a21851296216e0f377818c95061170109a52a9b61aef31ce"
+    },
+    {
+      "semanticId": "technology.shared.improved-construction",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.improved-construction.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/improved-construction.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 27506,
+      "sha256": "badc171de8040241bd73df8b1019571f4d85c9af3537c9cd04b244d5060328e9"
+    },
+    {
+      "semanticId": "technology.shared.ion-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ion-science.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ion-science.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 29118,
+      "sha256": "8c490747f3fcf455ecb89ac3c22fd958cfc1996ddc4eebfc1db00c9071b6157f"
+    },
+    {
+      "semanticId": "technology.shared.jet-engines",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.jet-engines.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/jet-engines.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 29442,
+      "sha256": "9d8a6d8c746d45552c52ca6d5a811090865bd836713bea83b76865339a30a83d"
+    },
+    {
+      "semanticId": "technology.shared.laser-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.laser-science.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/laser-science.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 27212,
+      "sha256": "9cf133e7e86323bee714bc3f59ee06210d647fbfd26979b433c3a4f8696394f4"
+    },
+    {
+      "semanticId": "technology.shared.light-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.light-armor.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/light-armor.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 29894,
+      "sha256": "5927ed55fdf610afc049dced1e1dffd987c39c4fc55b7b0bea8184ce609a2f15"
+    },
+    {
+      "semanticId": "technology.shared.maneuver-defense",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.maneuver-defense.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/maneuver-defense.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28644,
+      "sha256": "eb44ae83e05270ed4ff3a949d82d943abcf2c7e93948caa0944368bd338dbdde"
+    },
+    {
+      "semanticId": "technology.shared.mathematics",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.mathematics.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/mathematics.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 27154,
+      "sha256": "70e0f39684b4447fbdb171c8c994b104c1d3cb59d02b18d61343319ca77813c9"
+    },
+    {
+      "semanticId": "technology.shared.medium-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.medium-armor.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/medium-armor.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 26466,
+      "sha256": "f93ad69f0fee055a0cf985fe7d5ee0025b0defc1f8ca28cf48f52df6a6d4ce5e"
+    },
+    {
+      "semanticId": "technology.shared.parallel-universes",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.parallel-universes.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/parallel-universes.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 27608,
+      "sha256": "ab571e97612095027496fde7a00b599529f104c0ae5f3d079725765d80ef9874"
+    },
+    {
+      "semanticId": "technology.shared.physics",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.physics.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/physics.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28644,
+      "sha256": "55b5e43592159257df173d20ff9dfc123ff814ccd8bd5474ab59605bc3b16983"
+    },
+    {
+      "semanticId": "technology.shared.piercing-attack",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.piercing-attack.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/piercing-attack.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 29204,
+      "sha256": "db723a56df1fb177334e8ffd6eac813d27bf898d2eb85b8ddde5d588dfbd4874"
+    },
+    {
+      "semanticId": "technology.shared.plasma-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.plasma-science.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/plasma-science.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28826,
+      "sha256": "b9ee328408ad803f9867754b31c40d4e4e18fc91760522be4991440363079a97"
+    },
+    {
+      "semanticId": "technology.shared.ship-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ship-armor.png",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ship-armor.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 27116,
+      "sha256": "1de59ce37328b836fa3efc4169e39f3854de04000b02825f7511e329d0f49ea2"
     }
   ]
 }
