@@ -6,19 +6,19 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 4,
   "releaseTarget": "1.0",
-  "lastMergedPr": 92,
-  "lastMergeSha": "6314f78bd6417b905ccae170f505697734a46505",
-  "activePr": 93,
-  "nextPrAfterActive": 94,
+  "lastMergedPr": 93,
+  "lastMergeSha": "ae7940aa5b3f78ea7192cb15d6b003652a38ac59",
+  "activePr": 94,
+  "nextPrAfterActive": 95,
   "currentMilestone": "Complete core gameplay catalogs before Universe and endgame expansion",
   "currentBatch": {
     "standard": [89, 90, 92, 93, 94, 95],
     "superseded": [91],
-    "completed": [89, 90, 92],
+    "completed": [89, 90, 92, 93],
     "plannedCapabilities": [
       "complete-catalog architecture, stable IDs, registries, validation and asset manifests",
       "24 functional buildings per faction and complete economy progression",
-      "22 shared technologies with real cross-domain effects",
+      "22 canonical technologies with real cross-domain effects",
       "13 ordinary ships per faction and complete mission roles",
       "9 planetary defences per faction and full combat integration",
       "13 shared Commander Ships plus full-game deterministic validation"
@@ -40,6 +40,7 @@
     "explicit faction catalog manifest, stable mechanical IDs and dependency validation",
     "24 functional buildings for Aegis, Synod and Veyra",
     "22 canonical technologies for every faction with legacy-ID compatibility",
+    "13 ordinary ships for every faction with service, combat and mission integration",
     "serialized canonical bot cadence with bounded deterministic catch-up",
     "deterministic retained-window budgets for long-session histories",
     "complete captured catalog research for 72 buildings, 39 ordinary ships, 27 defences, 22 sciences and 13 Commander Ships",
@@ -48,7 +49,7 @@
     "canonical Universe, Galaxy and Solar-system navigation contract"
   ],
   "knownLimitations": [
-    "PR #93 is adding 13 ordinary ships per faction; planetary defences remain at five prototype units until PR #94",
+    "PR #94 is replacing five prototype defences with nine canonical planetary defences per faction",
     "Commander Ships are not separate producible runtime units until PR #95",
     "planet destruction and solar-satellite energy effects remain deferred to their strategic systems",
     "Universe, Galaxy and Solar-system navigation is documented but not implemented",
@@ -66,9 +67,9 @@
     },
     "runtimeAssets": {
       "status": "partially-connected",
-      "connected": "current prototype presentation plus canonical building, technology and ordinary-ship asset resolution",
+      "connected": "current prototype presentation plus canonical building, technology, ordinary-ship and planetary-defense asset resolution",
       "runtimeConnected": false,
-      "remainingIntegration": "defences and Commander Ships are delivered in PR #94-#95"
+      "remainingIntegration": "Commander Ships and final production asset processing remain for PR #95 and later polish"
     },
     "document": "docs/assets/user-supplied-asset-intake.md"
   },
@@ -82,7 +83,7 @@
     "docs/25-solar-war-obelisks-gates-and-progression.md",
     "docs/26-universe-galaxy-solar-system-navigation-contract.md",
     "docs/research/nemexia-browser-audit/19-complete-user-captured-catalog-2026-07-22.md",
-    "docs/handoffs/pr89-full-catalog-foundation.md",
+    "docs/handoffs/pr94-complete-defense-rosters.md",
     "latest merged GitHub pull requests"
   ]
 }
