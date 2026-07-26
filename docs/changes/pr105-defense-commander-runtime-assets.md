@@ -7,4 +7,5 @@
 - closed the combined 217-mechanical-ID / 173-runtime-image gate;
 - generated dark/light QA sheets, enforced budgets and rejected orphan outputs;
 - archived and closed `ASSET-RUNTIME-INTEGRATION-01`;
-- no mechanics, balance, bot-policy or save-schema changes.
+- no mechanics, balance, bot-policy or save-schema changes;
+- final branch validation includes asset freshness, lint, strict TypeScript, all tests, production build and Graphify.
