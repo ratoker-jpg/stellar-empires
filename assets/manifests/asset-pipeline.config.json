@@ -45,88 +45,57 @@
   },
   "families": {
     "building": {
-      "runtimeSizes": [
-        256,
-        384
-      ],
+      "runtimeSizes": [256, 384],
       "preferredFormat": "webp",
       "quality": 88
     },
     "technology": {
-      "runtimeSizes": [
-        128,
-        192,
-        256
-      ],
+      "runtimeSizes": [128, 192, 256],
       "preferredFormat": "webp",
       "quality": 88
     },
     "ship": {
-      "runtimeSizes": [
-        256,
-        384,
-        512
-      ],
+      "runtimeSizes": [256, 384, 512],
       "preferredFormat": "webp",
       "quality": 90
     },
     "defense": {
-      "runtimeSizes": [
-        256,
-        384
-      ],
+      "runtimeSizes": [256, 384],
       "preferredFormat": "webp",
       "quality": 90
     },
     "commander": {
-      "runtimeSizes": [
-        384,
-        512
-      ],
+      "runtimeSizes": [384, 512],
       "preferredFormat": "webp",
       "quality": 91
     },
     "universe-galaxy": {
-      "runtimeSizes": [
-        256
-      ],
+      "runtimeSizes": [256],
       "preferredFormat": "webp",
       "quality": 88
     },
     "universe-system-star": {
-      "runtimeSizes": [
-        128
-      ],
+      "runtimeSizes": [128],
       "preferredFormat": "webp",
       "quality": 88
     },
     "universe-sun": {
-      "runtimeSizes": [
-        128,
-        512
-      ],
+      "runtimeSizes": [128, 512],
       "preferredFormat": "webp",
       "quality": 90
     },
     "universe-planet": {
-      "runtimeSizes": [
-        256
-      ],
+      "runtimeSizes": [256],
       "preferredFormat": "webp",
       "quality": 90
     },
     "universe-object": {
-      "runtimeSizes": [
-        192,
-        256
-      ],
+      "runtimeSizes": [192, 256],
       "preferredFormat": "webp",
       "quality": 88
     },
     "universe-marker": {
-      "runtimeSizes": [
-        128
-      ],
+      "runtimeSizes": [128],
       "preferredFormat": "webp",
       "quality": 90
     },
@@ -151,6 +120,7 @@
   "spaceMapBudgets": {
     "totalTransferBytes": 16777216,
     "totalDecodedBytes": 29458432,
+    "minimumTransparentMarginRatio": 0.03,
     "viewDecodedBytes": {
       "universe": 8388608,
       "galaxy": 6291456,
