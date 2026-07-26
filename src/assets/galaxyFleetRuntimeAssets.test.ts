@@ -32,8 +32,9 @@ describe('galaxy and fleet runtime assets', () => {
   });
 
   it('derives presentation roles from shared mechanical ids', () => {
-    expect(getFleetShipPresentationRole('ship.aegis.scout')).toBe('scout');
-    expect(getFleetShipPresentationRole('ship.aegis.colony')).toBe('colony');
+    expect(getFleetShipPresentationRole('ship.aegis.spy-probe')).toBe('scout');
+    expect(getFleetShipPresentationRole('ship.aegis.scout')).toBe('fighter');
+    expect(getFleetShipPresentationRole('ship.aegis.colonizer')).toBe('colony');
     expect(getFleetShipPresentationRole('ship.aegis.unknown')).toBe('fighter');
   });
 });
