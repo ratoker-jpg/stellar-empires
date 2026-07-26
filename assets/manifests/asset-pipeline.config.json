@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "auditRoots": [
+    {
+      "path": "assets/source",
+      "classification": "source"
+    },
+    {
+      "path": "public/assets",
+      "classification": "runtime-existing"
+    }
+  ],
+  "classificationOverrides": [
+    {
+      "prefix": "public/assets/universe",
+      "classification": "source-intake"
+    },
+    {
+      "prefix": "public/assets/generated",
+      "classification": "generated-runtime"
+    }
+  ],
+  "generatedRuntimeRoot": "public/assets/generated",
+  "auditManifestPath": "assets/manifests/source-asset-audit.json",
+  "auditReportPath": "docs/assets/generated-asset-audit.md",
+  "processingPlanPath": "assets/manifests/runtime-processing-plan.json",
+  "atlasPlanPath": "assets/manifests/runtime-atlas-plan.json",
+  "runtimeManifestPath": "public/assets/generated/runtime-asset-manifest.json",
+  "supportedExtensions": [
+    ".png",
+    ".webp",
+    ".jpg",
+    ".jpeg",
+    ".svg"
+  ],
+  "expectedIntake": {
+    "newAssetsCount": 174,
+    "universeCount": 90
+  },
+  "budgets": {
+    "generatedRuntimeTotalBytes": 50331648,
+    "generatedRuntimeDecodedBytes": 201326592,
+    "generatedRuntimeTextureCount": 512,
+    "singleRuntimeTexturePixels": 4194304
+  },
+  "families": {
+    "building": {
+      "runtimeSizes": [
+        256,
+        384
+      ],
+      "preferredFormat": "webp",
+      "quality": 88
+    },
+    "technology": {
+      "runtimeSizes": [
+        128,
+        192,
+        256
+      ],
+      "preferredFormat": "webp",
+      "quality": 88
+    },
+    "ship": {
+      "runtimeSizes": [
+        256,
+        384,
+        512
+      ],
+      "preferredFormat": "webp",
+      "quality": 90
+    },
+    "defense": {
+      "runtimeSizes": [
+        256,
+        384
+      ],
+      "preferredFormat": "webp",
+      "quality": 90
+    },
+    "commander": {
+      "runtimeSizes": [
+        384,
+        512
+      ],
+      "preferredFormat": "webp",
+      "quality": 91
+    },
+    "universe-galaxy": {
+      "runtimeSizes": [
+        256
+      ],
+      "preferredFormat": "webp",
+      "quality": 88
+    },
+    "universe-system-star": {
+      "runtimeSizes": [
+        128
+      ],
+      "preferredFormat": "webp",
+      "quality": 88
+    },
+    "universe-sun": {
+      "runtimeSizes": [
+        256,
+        512
+      ],
+      "preferredFormat": "webp",
+      "quality": 90
+    },
+    "universe-planet": {
+      "runtimeSizes": [
+        128,
+        256
+      ],
+      "preferredFormat": "webp",
+      "quality": 90
+    },
+    "universe-object": {
+      "runtimeSizes": [
+        128,
+        192
+      ],
+      "preferredFormat": "webp",
+      "quality": 88
+    },
+    "universe-marker": {
+      "runtimeSizes": [
+        64,
+        128
+      ],
+      "preferredFormat": "webp",
+      "quality": 90
+    },
+    "runtime-other": {
+      "runtimeSizes": [],
+      "preferredFormat": "source",
+      "quality": 0
+    }
+  },
+  "legacyDirectSourceReferences": [
+    "src/assets/galaxyFleetRuntimeAssets.ts",
+    "src/assets/generatedFactionIdentityAssets.ts",
+    "src/assets/planetIndustryRuntimeAssets.ts"
+  ]
+}
