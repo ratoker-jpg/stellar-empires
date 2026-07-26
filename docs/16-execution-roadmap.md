@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-26  
-**Baseline:** merged PR #92  
+**Baseline:** merged PR #93  
 **Release target:** 1.0
 
 ## 1. Release boundary
@@ -39,7 +39,7 @@ Excluded:
 - Final asset swaps use stable mechanical IDs and manifests, not direct component imports.
 - The canonical design documents `docs/25-*` and `docs/26-*` remain deferred contracts until the core gameplay batch is complete.
 
-## 3. Delivered baseline through PR #92
+## 3. Delivered baseline through PR #93
 
 ### Runtime foundation
 
@@ -54,7 +54,8 @@ Excluded:
 - bounded long-session histories;
 - formations, priorities, upgrades, command doctrine and flagship framework;
 - 24 functional buildings per faction;
-- 22 canonical technologies per faction with deterministic compatibility aliases.
+- 22 canonical technologies per faction with deterministic compatibility aliases;
+- 13 ordinary ships per faction with complete service, combat and mission coverage.
 
 ### Documentation and asset baseline
 
@@ -75,8 +76,8 @@ PR #91 was closed without merge and replaced by clean PR #92. All later planned 
 | **#90** | merged | Complete 24-building economy | 24 functional buildings per faction, full resource/energy/storage/industry progression, bot and UI integration |
 | **#91** | superseded | Interrupted technology attempt | Closed without merge; no runtime delivery |
 | **#92** | merged | Complete 22-technology tree | 22 sciences with real economy, fleet, combat and prerequisite effects for every faction |
-| **#93** | active | Complete 13-ship rosters | 13 ordinary ships per faction, service/combat roles, missions, bot role use, abilities and asset bindings |
-| **#94** | planned | Complete 9-defence rosters | 9 planetary defences per faction, shields, mixed batteries, repair and combat targeting integration |
+| **#93** | merged | Complete 13-ship rosters | 13 ordinary ships per faction, service/combat roles, missions, bot role use, abilities and asset bindings |
+| **#94** | active | Complete 9-defence rosters | 9 planetary defences per faction, shields, mixed batteries, recovery, repair and combat targeting integration |
 | **#95** | planned | Commander Ships and full-game validation | 13 shared Commander Ships, Admiral unlock/progression, one active ability, bot selection and deterministic full-game harness |
 
 ### Gate after PR #95
