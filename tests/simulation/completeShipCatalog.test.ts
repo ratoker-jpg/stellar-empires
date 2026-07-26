@@ -57,19 +57,16 @@ describe('complete ordinary ship catalogs', () => {
 
   it('applies faction-specific heavy and support ability bonuses deterministically', () => {
     const synod = getCompleteShipIds('synod');
-    const bonuses = getShipAbilityBonusMaps({
-      [synod.goliath ?? synod.heavyAssault]: 2,
-      [synod.supportShip]: 4,
-      [synod.lightFighter]: 5,
-    });
-
-    expect(bonuses.weapon[synod.heavyAssault]).toBeGreaterThan(0);
-    expect(bonuses.armor[synod.lightFighter]).toBeGreaterThan(0);
-    expect(getShipAbilityBonusMaps({
+    const units = {
       [synod.heavyAssault]: 2,
       [synod.supportShip]: 4,
       [synod.lightFighter]: 5,
-    })).toEqual(bonuses);
+    };
+    const bonuses = getShipAbilityBonusMaps(units);
+
+    expect(bonuses.weapon[synod.heavyAssault]).toBeGreaterThan(0);
+    expect(bonuses.armor[synod.lightFighter]).toBeGreaterThan(0);
+    expect(getShipAbilityBonusMaps(units)).toEqual(bonuses);
   });
 
   it.each(FACTIONS)('keeps the %s energy satellite stationary', (factionId) => {
