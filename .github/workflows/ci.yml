@@ -51,13 +51,8 @@ jobs:
           node --trace-uncaught scripts/assets/audit.mjs 2>&1 | tee /tmp/pr107-audit.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
-            {
-              echo '### PR107 asset-audit diagnostics'
-              echo '```text'
-              tail -n 180 /tmp/pr107-audit.log
-              echo '```'
-            } > /tmp/pr107-audit-comment.md
-            gh pr comment 107 --body-file /tmp/pr107-audit-comment.md || true
+            { echo '### PR107 asset-audit diagnostics'; echo '```text'; tail -n 180 /tmp/pr107-audit.log; echo '```'; } > /tmp/pr107-comment.md
+            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
             exit "$status"
           fi
 
@@ -74,16 +69,56 @@ jobs:
         run: npm run assets:check
 
       - name: Lint
-        run: npm run lint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run lint 2>&1 | tee /tmp/pr107-lint.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR107 lint diagnostics'; echo '```text'; tail -n 220 /tmp/pr107-lint.log; echo '```'; } > /tmp/pr107-comment.md
+            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
+            exit "$status"
+          fi
 
       - name: Typecheck
-        run: npm run typecheck
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run typecheck 2>&1 | tee /tmp/pr107-typecheck.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR107 typecheck diagnostics'; echo '```text'; tail -n 220 /tmp/pr107-typecheck.log; echo '```'; } > /tmp/pr107-comment.md
+            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
+            exit "$status"
+          fi
 
       - name: Test
-        run: npm run test
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run test 2>&1 | tee /tmp/pr107-test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR107 test diagnostics'; echo '```text'; tail -n 260 /tmp/pr107-test.log; echo '```'; } > /tmp/pr107-comment.md
+            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
+            exit "$status"
+          fi
 
       - name: Build
-        run: npm run build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run build 2>&1 | tee /tmp/pr107-build.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR107 build diagnostics'; echo '```text'; tail -n 220 /tmp/pr107-build.log; echo '```'; } > /tmp/pr107-comment.md
+            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
+            exit "$status"
+          fi
 
       - name: Commit generated implementation
         run: |
