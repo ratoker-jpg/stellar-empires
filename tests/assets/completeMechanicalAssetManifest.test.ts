@@ -17,8 +17,17 @@ describe('complete mechanical asset manifest', () => {
     expect(resolution.asset?.id).toBe('ship.aegis.scout');
   });
 
-  it('reports missing future assets without inventing a binding', () => {
+  it('binds Commander source assets while retaining processed runtime fallbacks', () => {
     const resolution = resolveCompleteMechanicalAsset('commander.shared.annihilator');
+    expect(resolution.source).toBe('current-runtime-fallback');
+    expect(resolution.asset?.id).toBe('commander.shared.annihilator');
+    expect(resolution.provenancePath).toBe(
+      'assets/source/New assets/comander_ship/commander-ship.annihilator.png',
+    );
+  });
+
+  it('still reports unknown future mechanical IDs as missing', () => {
+    const resolution = resolveCompleteMechanicalAsset('commander.shared.unknown-future');
     expect(resolution).toEqual({ asset: undefined, source: 'missing', provenancePath: undefined });
   });
 });
