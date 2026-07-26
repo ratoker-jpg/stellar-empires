@@ -165,8 +165,8 @@ describe('bot research and production planner', () => {
     expect(plan.research.command?.type).toBe('QUEUE_RESEARCH');
     if (plan.research.command?.type === 'QUEUE_RESEARCH') {
       expect([
-        'technology.aegis.weapons',
-        'technology.aegis.armor',
+        'technology.aegis.laser-science',
+        'technology.aegis.ship-armor',
       ]).toContain(plan.research.command.technologyId);
     }
     expect(plan.production.command).toMatchObject({
