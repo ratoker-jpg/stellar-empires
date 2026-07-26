@@ -6,27 +6,23 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 104,
-  "lastMergeSha": "ba207dac57d3f6bf66559d074cf38abf54cdc12c",
-  "activePr": 105,
+  "lastMergedPr": 105,
+  "lastMergeSha": "af6954564531caa81c3dd83f924e3696ad984165",
+  "activePr": null,
   "nextPrAfterActive": 106,
   "nextPrKind": "audit",
   "currentMilestone": "Complete catalog runtime integration; next batch requires a fresh audit",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
-  "currentAudit": "docs/audits/current-batch-audit.md",
-  "currentAuditContracts": [
-    "docs/audits/contracts/asset-runtime-integration-01-mappings.md",
-    "docs/audits/contracts/asset-runtime-integration-01-prs.md",
-    "docs/audits/evidence/asset-runtime-integration-01-graphify.md"
-  ],
+  "currentAudit": "docs/audits/completed/asset-runtime-integration-01.md",
+  "currentAuditContracts": [],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "currentBatch": {
     "batchId": "ASSET-RUNTIME-INTEGRATION-01",
     "complexity": "medium",
     "auditPr": 101,
-    "auditStatus": "completed-on-pr105-merge",
+    "auditStatus": "completed",
     "implementationCount": 4,
     "implementationPrs": [
       102,
@@ -40,8 +36,9 @@
       "ASSET-SHIPS",
       "ASSET-DEFENSE-COMMANDERS"
     ],
-    "status": "closing-on-pr105-merge",
-    "nextWorkItem": null
+    "status": "completed",
+    "nextWorkItem": null,
+    "archivedAudit": "docs/audits/completed/asset-runtime-integration-01.md"
   },
   "auditDecisions": {
     "runtimeTextureCount": 173,
@@ -88,9 +85,9 @@
     "173 processed catalog runtime images with 217 complete mechanical bindings"
   ],
   "activeDelivery": [
-    "PR #105 final defence and Commander integration",
-    "217-ID combined runtime asset gate",
-    "ASSET-RUNTIME-INTEGRATION-01 archive and closure"
+    "ASSET-RUNTIME-INTEGRATION-01 completed and archived",
+    "217 complete mechanical IDs resolve through 173 generated runtime images",
+    "next implementation requires a fresh dedicated Audit PR"
   ],
   "knownLimitations": [
     "two historical runtime modules still directly reference licensed source libraries for non-catalog Galaxy/map and faction identity presentation",
@@ -126,17 +123,14 @@
     "catalogArt": {
       "files": 174,
       "runtimeAssetsPlanned": 173,
-      "status": "runtime-integrated-173-textures"
+      "status": "runtime-integrated-complete"
     }
   },
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
-    "docs/audits/current-batch-audit.md",
-    "docs/audits/contracts/asset-runtime-integration-01-mappings.md",
-    "docs/audits/contracts/asset-runtime-integration-01-prs.md",
-    "docs/audits/evidence/asset-runtime-integration-01-graphify.md",
+    "docs/audits/completed/asset-runtime-integration-01.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/27-playable-game-roadmap-v5.md",

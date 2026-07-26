@@ -1,11 +1,11 @@
 # Current implementation batch audit — ASSET-RUNTIME-INTEGRATION-01
 
-**Status:** completed by implementation PRs #102–#105; final merge SHA `PR105_MERGE_SHA_PENDING`  
+**Status:** completed by implementation PRs #102–#105; final merge SHA `af6954564531caa81c3dd83f924e3696ad984165`  
 **Protocol:** `docs/28-audit-first-autonomous-delivery-protocol.md`  
 **Verified baseline:** `main` after PR #100, SHA `5ca58493ab4eb1abd46e16e1307a9402efa636fa`  
 **Complexity:** medium  
 **Authorized implementation batch:** four PRs, #102–#105  
-**Implementation started:** no
+**Implementation completed:** yes
 
 ## 1. Executive decision
 
@@ -169,7 +169,7 @@ After Audit PR #101 merges, create PR #102 from fresh `main` and implement only 
 - PR #102 buildings: `43471d9ab2a6527e3337f1e73e507d85e2d8e094`;
 - PR #103 technologies: `b47ec8df9abc58d1ce455e3bf6ee1279d2e0d9d0`;
 - PR #104 ships: `ba207dac57d3f6bf66559d074cf38abf54cdc12c`;
-- PR #105 defences, Commanders and closure: `PR105_MERGE_SHA_PENDING`;
+- PR #105 defences, Commanders and closure: `af6954564531caa81c3dd83f924e3696ad984165`;
 - final coverage: 217 mechanical IDs resolving through 173 generated runtime images;
 - no save migration, mechanic change, balance change or bot-policy change;
 - next implementation batch is prohibited until a fresh Audit PR is accepted.

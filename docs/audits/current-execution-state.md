@@ -8,7 +8,7 @@
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
 | Completed audit | #101 — `ASSET-RUNTIME-INTEGRATION-01` |
 | Completed implementation PRs | #102, #103, #104 and #105 |
-| Final PR merge SHA | `PR105_MERGE_SHA_PENDING` |
+| Final PR merge SHA | `af6954564531caa81c3dd83f924e3696ad984165` |
 | Batch outcome | 217 complete mechanical IDs → 173 generated runtime images |
 | Save/gameplay divergence | none |
 | Active implementation PR | none after #105 merges |

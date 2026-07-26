@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-26  
-**Baseline:** merged PR #105, merge SHA `PR105_MERGE_SHA_PENDING`
+**Baseline:** merged PR #105, merge SHA `af6954564531caa81c3dd83f924e3696ad984165`
 
 ## Repository
 
