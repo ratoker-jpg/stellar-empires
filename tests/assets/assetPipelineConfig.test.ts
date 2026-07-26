@@ -13,12 +13,16 @@ describe('asset processing foundation', () => {
       'public/assets',
     ]);
     expect(config.classificationOverrides).toContainEqual({
+      prefix: 'assets/source/universe-navigation',
+      classification: 'source-intake',
+    });
+    expect(config.classificationOverrides).not.toContainEqual({
       prefix: 'public/assets/universe',
       classification: 'source-intake',
     });
   });
 
-  it('records the complete committed intake', () => {
+  it('records the complete committed intake behind the source boundary', () => {
     const newAssets = audit.assets.filter((asset) =>
       asset.path.startsWith('assets/source/New assets/'),
     );
@@ -27,6 +31,10 @@ describe('asset processing foundation', () => {
     );
     expect(newAssets).toHaveLength(config.expectedIntake.newAssetsCount);
     expect(universe).toHaveLength(config.expectedIntake.universeCount);
+    expect(universe.every((asset) =>
+      asset.path.startsWith('assets/source/universe-navigation/'),
+    )).toBe(true);
+    expect(audit.assets.some((asset) => asset.path.startsWith('public/assets/universe/'))).toBe(false);
     expect(audit.summary.totalFiles).toBe(audit.assets.length);
   });
 
@@ -51,15 +59,16 @@ describe('asset processing foundation', () => {
     expect(new Set(universeIds).size).toBe(universeIds.length);
   });
 
-  it('records all 173 catalog derivatives while keeping atlases empty', () => {
+  it('records 173 catalog and 102 Universe derivatives without atlases', () => {
     expect(processingPlan.schemaVersion).toBe(1);
-    expect(processingPlan.entries).toHaveLength(173);
+    expect(processingPlan.entries).toHaveLength(275);
     expect(processingPlan.entries.filter((entry) => entry.family === 'building')).toHaveLength(72);
     expect(processingPlan.entries.filter((entry) => entry.family === 'technology')).toHaveLength(22);
     expect(processingPlan.entries.filter((entry) => entry.family === 'ship')).toHaveLength(39);
     expect(processingPlan.entries.filter((entry) => entry.family === 'defense')).toHaveLength(27);
     expect(processingPlan.entries.filter((entry) => entry.family === 'commander')).toHaveLength(13);
-    expect(new Set(processingPlan.entries.map((entry) => entry.semanticId)).size).toBe(173);
+    expect(processingPlan.entries.filter((entry) => entry.family.startsWith('universe-'))).toHaveLength(102);
+    expect(new Set(processingPlan.entries.map((entry) => entry.semanticId)).size).toBe(275);
     expect(atlasPlan).toEqual({ schemaVersion: 1, atlases: [] });
   });
 });

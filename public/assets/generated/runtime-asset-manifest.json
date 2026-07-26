@@ -1731,6 +1731,1026 @@
       "height": 256,
       "bytes": 27116,
       "sha256": "1de59ce37328b836fa3efc4169e39f3854de04000b02825f7511e329d0f49ea2"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-01",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-01.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-01.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 16878,
+      "sha256": "85ef9218d000609f459bcf93c776c6ff93be67fd89a6f9fe450c06b4f456bba6"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-02",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-02.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-02.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 25076,
+      "sha256": "b20155bb0e02e855d02961e3506a9bdfb5f53dd8699fee61889667562cd5d973"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-03",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-03.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-03.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 39542,
+      "sha256": "716bfcb65be308514ed327c83cf636c4e6d472da92d2b6565a01da6e35b90a37"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-04",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-04.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-04.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 37988,
+      "sha256": "9a917cdaab816d506414f6aa4440d13262aa8f62f130a5dc8e01c47c355c6f3b"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-05",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-05.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-05.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 12014,
+      "sha256": "8afdb6139e8c6cdf99906aa9ad14770cd87387d11336c3e4d6303567e52e8eb7"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-06",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-06.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-06.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 33258,
+      "sha256": "262851e5c9b2c2fd7f997132dc541d08ecd53f4a4fd17aa209fdee25f0007cee"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-07",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-07.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-07.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 24780,
+      "sha256": "d6e5eae26769ea3a67f756238ba50d66a401561b60ebc4c289c7ae7fabab1451"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-08",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-08.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-08.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 20930,
+      "sha256": "d4877a363a19dbf0f991e54b834bb3cedeb3e63013286699bc61a95010da6ab3"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-09",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-09.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-09.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 33218,
+      "sha256": "c22e05149d7a66f7cfa646232b5bba5588ea69193b488a613c4a0b43daefdf4b"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-10",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-10.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-10.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 27082,
+      "sha256": "63274acf13d17d9ae602f283b0aad8a6f97b360ceb2ebcfa93fbf1dea555502a"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-11",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-11.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-11.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 25324,
+      "sha256": "94912ed9dd1428b360f3db8351e59199717d5d95a3c3f23f752dadc3865cd0fb"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-12",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-12.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-12.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 22540,
+      "sha256": "592856f98802edaccbf7cb627469887ca23e09de0e107a33fec010e08a687964"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-13",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-13.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-13.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 29776,
+      "sha256": "50f72910c45cd83c376223f175c1733136b99dab5c73b31da8d37dd415ace0ef"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-14",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-14.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-14.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28188,
+      "sha256": "fc31b6c74b6b1660185782f9eb4592cd5d46375096328d0270b56fbc50b1e73b"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-15",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-15.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-15.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 24978,
+      "sha256": "8b091396c86b0f9f7209bdfbdbfca748e84be53d64844aa38d30fe1483180279"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-16",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-16.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-16.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 27738,
+      "sha256": "0cbc6bb1995839b9f078de08511ccf65b2723f83cc4b3afa41aaf7bea4461b9d"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-17",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-17.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-17.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 9818,
+      "sha256": "ec39cae322c9529b6094464e5d9e9c93a9659c12255e24f8bcdc9f1c4e0a1f1e"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-18",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-18.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-18.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28378,
+      "sha256": "74d66b96791328b014e1f863b51b19c5ac3d691a36c3ffd7e9840a37fddd8298"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-19",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-19.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-19.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 31752,
+      "sha256": "7aff5976b9a044d4cd2eb6217ce31edac21c18e59b1c80eb2aae0d54e1a4897a"
+    },
+    {
+      "semanticId": "universe.galaxy.nebula-20",
+      "sourcePath": "assets/source/universe-navigation/galaxies/galaxy.nebula-20.png",
+      "outputPath": "public/assets/generated/universe/galaxies/nebula-20.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 29588,
+      "sha256": "4fe76528942325aa14d89102c9c51f92cfcbf58e6e7af957f88c1b7fc879b3b4"
+    },
+    {
+      "semanticId": "ui.mission.sun-attack",
+      "sourcePath": "assets/source/universe-navigation/markers/marker.variant-01.png",
+      "outputPath": "public/assets/generated/universe/markers/sun-attack.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 6234,
+      "sha256": "bcf085f98319d1b138e1c30ff962f04cc55a4a67f1da7e195939ee5d331c271a"
+    },
+    {
+      "semanticId": "ui.mission.sun-support",
+      "sourcePath": "assets/source/universe-navigation/markers/marker.variant-02.png",
+      "outputPath": "public/assets/generated/universe/markers/sun-support.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 6782,
+      "sha256": "79f22f27509af97441320a0dc4523f2f70f4bb4853241b114af769c617806017"
+    },
+    {
+      "semanticId": "universe.object.asteroid-01",
+      "sourcePath": "assets/source/universe-navigation/asteroids/asteroid.variant-01.png",
+      "outputPath": "public/assets/generated/universe/objects/asteroid-01.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 12518,
+      "sha256": "a41e22997671a58a2ff7b56c71549f6345292bc26b56a2b34f2cba2e45bde6b7"
+    },
+    {
+      "semanticId": "universe.object.asteroid-02",
+      "sourcePath": "assets/source/universe-navigation/asteroids/asteroid.variant-02.png",
+      "outputPath": "public/assets/generated/universe/objects/asteroid-02.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 14924,
+      "sha256": "5f2e7977186c9a7c2bfac9778a7476f9357b6de309b6fc1b32560bd3e9f3709c"
+    },
+    {
+      "semanticId": "universe.object.asteroid-03",
+      "sourcePath": "assets/source/universe-navigation/asteroids/asteroid.variant-03.png",
+      "outputPath": "public/assets/generated/universe/objects/asteroid-03.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 15374,
+      "sha256": "9de84dd089a0cf60e26ff3b400cf48f3e0104683c411eda19a6f9a6ef34d3dad"
+    },
+    {
+      "semanticId": "universe.object.asteroid-04",
+      "sourcePath": "assets/source/universe-navigation/asteroids/asteroid.variant-04.png",
+      "outputPath": "public/assets/generated/universe/objects/asteroid-04.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 14546,
+      "sha256": "ded0568e6c9ca00aed366892da4bd82c2d90c776dd4ef1d7dc244c1d42f0a020"
+    },
+    {
+      "semanticId": "universe.object.asteroid-05",
+      "sourcePath": "assets/source/universe-navigation/asteroids/asteroid.variant-05.png",
+      "outputPath": "public/assets/generated/universe/objects/asteroid-05.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 17128,
+      "sha256": "0b11a8c17c32e0805a1fc7611f8ac70c1e5a5e88bfe481f2cff10fb76ffbe570"
+    },
+    {
+      "semanticId": "universe.object.asteroid-06",
+      "sourcePath": "assets/source/universe-navigation/asteroids/asteroid.variant-06.png",
+      "outputPath": "public/assets/generated/universe/objects/asteroid-06.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 14562,
+      "sha256": "10ff563339ceae2d6fc30ba599803d938b237c8d1e7c90b954c9a7f9cdf218ca"
+    },
+    {
+      "semanticId": "universe.object.asteroid-07",
+      "sourcePath": "assets/source/universe-navigation/asteroids/asteroid.variant-07.png",
+      "outputPath": "public/assets/generated/universe/objects/asteroid-07.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 16862,
+      "sha256": "eafb54764d7ce573e30887e179744361c65d42be03c87ef56fd67f2ea999770e"
+    },
+    {
+      "semanticId": "universe.object.asteroid-08",
+      "sourcePath": "assets/source/universe-navigation/asteroids/asteroid.variant-08.png",
+      "outputPath": "public/assets/generated/universe/objects/asteroid-08.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 14598,
+      "sha256": "920f0af4f959309e7da59ca5c1a4b640e115027499a5fafddcad77df538c79d8"
+    },
+    {
+      "semanticId": "universe.object.debris-01",
+      "sourcePath": "assets/source/universe-navigation/debris/debris.variant-01.png",
+      "outputPath": "public/assets/generated/universe/objects/debris-01.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 20826,
+      "sha256": "c3e9f7c91debd58262b91b6cad7fbc9cd1fb7e3ac5b4383c06744f7b43428576"
+    },
+    {
+      "semanticId": "universe.object.debris-02",
+      "sourcePath": "assets/source/universe-navigation/debris/debris.variant-02.png",
+      "outputPath": "public/assets/generated/universe/objects/debris-02.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 14350,
+      "sha256": "ed69712e1f996498cfa8edafe41910c40b5e8d84bf5ad729840e69dd2e438a52"
+    },
+    {
+      "semanticId": "universe.object.debris-03",
+      "sourcePath": "assets/source/universe-navigation/debris/debris.variant-03.png",
+      "outputPath": "public/assets/generated/universe/objects/debris-03.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 10272,
+      "sha256": "521e836125e84885f65956f185dc8955fb89d9a99ae7234d6c2e71a208ecada9"
+    },
+    {
+      "semanticId": "universe.object.debris-04",
+      "sourcePath": "assets/source/universe-navigation/debris/debris.variant-04.png",
+      "outputPath": "public/assets/generated/universe/objects/debris-04.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 16166,
+      "sha256": "e60209f64e9d009e7a715a1532fdbfd128718feb806e7ee6de3a5b23eb296988"
+    },
+    {
+      "semanticId": "universe.object.debris-05",
+      "sourcePath": "assets/source/universe-navigation/debris/debris.variant-05.png",
+      "outputPath": "public/assets/generated/universe/objects/debris-05.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 15510,
+      "sha256": "9b2bf5ed70573e98217056a7dad3c49a4601bb71f3eab64b0862008615252df2"
+    },
+    {
+      "semanticId": "universe.object.debris-06",
+      "sourcePath": "assets/source/universe-navigation/debris/debris.variant-06.png",
+      "outputPath": "public/assets/generated/universe/objects/debris-06.webp",
+      "format": "webp",
+      "width": 192,
+      "height": 192,
+      "bytes": 13008,
+      "sha256": "55b2468a8655004f97c3b8c16730ca6762ac2a67d6d93f8692bd3ca4881d2156"
+    },
+    {
+      "semanticId": "universe.object.renegade-01",
+      "sourcePath": "assets/source/universe-navigation/renegades/renegade.variant-01.png",
+      "outputPath": "public/assets/generated/universe/objects/renegade-01.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 25172,
+      "sha256": "65aafb3fce35714f8b9591675c9ecc171ab0d98760a5228016b907a80e587ed8"
+    },
+    {
+      "semanticId": "universe.object.renegade-02",
+      "sourcePath": "assets/source/universe-navigation/renegades/renegade.variant-02.png",
+      "outputPath": "public/assets/generated/universe/objects/renegade-02.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 19820,
+      "sha256": "510f0b4a0cb7f2b43dde6141dc1503cb3eaed0898d1f75b9f163c5f322aca404"
+    },
+    {
+      "semanticId": "universe.object.renegade-03",
+      "sourcePath": "assets/source/universe-navigation/renegades/renegade.variant-03.png",
+      "outputPath": "public/assets/generated/universe/objects/renegade-03.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 12480,
+      "sha256": "8e33233a33a8292fbad1765827acc040ac8d70f35342c5ddeab673813f91c886"
+    },
+    {
+      "semanticId": "universe.object.renegade-04",
+      "sourcePath": "assets/source/universe-navigation/renegades/renegade.variant-04.png",
+      "outputPath": "public/assets/generated/universe/objects/renegade-04.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 23226,
+      "sha256": "c0b02faccf3199ba13179b920f89c47c7b37f06529ccaed70d17b95e58b28c6a"
+    },
+    {
+      "semanticId": "universe.object.renegade-05",
+      "sourcePath": "assets/source/universe-navigation/renegades/renegade.variant-05.png",
+      "outputPath": "public/assets/generated/universe/objects/renegade-05.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 18468,
+      "sha256": "0d67827fed2cee08d720c8980cde1229a00a9995d1a951df6e3ee7a2d4cacc6e"
+    },
+    {
+      "semanticId": "universe.object.renegade-06",
+      "sourcePath": "assets/source/universe-navigation/renegades/renegade.variant-06.png",
+      "outputPath": "public/assets/generated/universe/objects/renegade-06.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 19092,
+      "sha256": "a9fab5fe3c845749c94049b659332c2e26f7a1c8ed29ec46a83066cc7329b69d"
+    },
+    {
+      "semanticId": "universe.planet.variant-01",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-01.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-01.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28452,
+      "sha256": "21fdcdaadee5b1f4cba7923ff0e6497baa5d385e3bff8576bb1f1b75a6051823"
+    },
+    {
+      "semanticId": "universe.planet.variant-02",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-02.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-02.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 21650,
+      "sha256": "bb68703da9815b453416619c4076f7b161b14fa29595b371dbfa0bcf0cf306e1"
+    },
+    {
+      "semanticId": "universe.planet.variant-03",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-03.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-03.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28714,
+      "sha256": "1639c074181d4fc5674fc1940d5b6393add7f825b0312c0a89c89ca4d10eae25"
+    },
+    {
+      "semanticId": "universe.planet.variant-04",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-04.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-04.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 20502,
+      "sha256": "02ebae1be642d1cce1af07cb8d356fdf40e31f74024d577fa272e87aaf79f5a0"
+    },
+    {
+      "semanticId": "universe.planet.variant-05",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-05.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-05.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 24862,
+      "sha256": "8d58b7251896d8110eec8ec9b972c317641328bb6bc8f7800e2596324e46be16"
+    },
+    {
+      "semanticId": "universe.planet.variant-06",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-06.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-06.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 13436,
+      "sha256": "e60738e49c3ce9741925ad9d805e617acd38f4236557775572a33f5351ee6020"
+    },
+    {
+      "semanticId": "universe.planet.variant-07",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-07.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-07.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28068,
+      "sha256": "4fd792cab98c0f6850741c08162151397f60eadc2c6d8c6016458000d44ade14"
+    },
+    {
+      "semanticId": "universe.planet.variant-08",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-08.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-08.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 22246,
+      "sha256": "3d2aad1833ba92c1d7055fe593f20d5d447cb360c04282d957c3a6b6669fed50"
+    },
+    {
+      "semanticId": "universe.planet.variant-09",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-09.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-09.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 23404,
+      "sha256": "29c29faabd6ba414d0c8aa9693807d273cb715ec4d165e3f0a544af744ed07bf"
+    },
+    {
+      "semanticId": "universe.planet.variant-10",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-10.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-10.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 29304,
+      "sha256": "ef605767b3b8058a653f90f8008ab998bc344e3a8e6adf422543e1f1aecf1fa6"
+    },
+    {
+      "semanticId": "universe.planet.variant-11",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-11.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-11.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 19446,
+      "sha256": "de73bbe88a99be51b31b21567ba3b2b91fa74e61fd497bcbe02caf5360866539"
+    },
+    {
+      "semanticId": "universe.planet.variant-12",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-12.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-12.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28566,
+      "sha256": "dd936aa57b6fbf1569fcbed0c2f0fea23f85a47feac15238b89830c844c03672"
+    },
+    {
+      "semanticId": "universe.planet.variant-13",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-13.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-13.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 21638,
+      "sha256": "d847e88c5452f689f6444e2608464907bf492316d714e28782c858b7a8789fa5"
+    },
+    {
+      "semanticId": "universe.planet.variant-14",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-14.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-14.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 17920,
+      "sha256": "eceab6907b20563a2de038b6bd6201fba7763a41bfa016fd1ceabd4475b79c22"
+    },
+    {
+      "semanticId": "universe.planet.variant-15",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-15.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-15.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 16800,
+      "sha256": "d9990faff3208dd6db0eaa657b4df103e16fdaeb4a773444cc52ceb4701af27e"
+    },
+    {
+      "semanticId": "universe.planet.variant-16",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-16.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-16.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 26636,
+      "sha256": "527e05b86252ff83c724bededc5e5ee0a5e8cc584d579988270a528a2b1b76d7"
+    },
+    {
+      "semanticId": "universe.planet.variant-17",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-17.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-17.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 23998,
+      "sha256": "b38e9ebeac4ae1e9b76cbfcc09c1f98965a55549c999c2e208436d8b87454b40"
+    },
+    {
+      "semanticId": "universe.planet.variant-18",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-18.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-18.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 28354,
+      "sha256": "6deee84021d9ac9ac2ef5f0f8716de1994c92a54bb4c4aa01a34f11ad38cb123"
+    },
+    {
+      "semanticId": "universe.planet.variant-19",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-19.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-19.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 31928,
+      "sha256": "d5a15d48687c8d7176967b6ecafa64409835a617ee4f2e7760afec89b55d8d46"
+    },
+    {
+      "semanticId": "universe.planet.variant-20",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-20.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-20.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 25026,
+      "sha256": "69615bb9edf4ff04e81a63ca6be3cdd0b322764364b479c1418106cd2e2bab99"
+    },
+    {
+      "semanticId": "universe.planet.variant-21",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-21.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-21.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 31900,
+      "sha256": "30a965a84696cf8697b7aac58f29773373478a4c035fa823617079bee3cdfb6e"
+    },
+    {
+      "semanticId": "universe.planet.variant-22",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-22.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-22.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 23386,
+      "sha256": "8322f763521bcab2dfa7bf1348b99f810af2fb77e6a9c3d9d600d296b3417e85"
+    },
+    {
+      "semanticId": "universe.planet.variant-23",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-23.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-23.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 25422,
+      "sha256": "c26b4a64d0810f9ed1cd70ef19b615e8666dac96260c80631237cb4ce8909fdd"
+    },
+    {
+      "semanticId": "universe.planet.variant-24",
+      "sourcePath": "assets/source/universe-navigation/planets/planet.variant-24.png",
+      "outputPath": "public/assets/generated/universe/planets/planet-24.webp",
+      "format": "webp",
+      "width": 256,
+      "height": 256,
+      "bytes": 22506,
+      "sha256": "7416f90b80dd38924188155e5bfd2d4b350f5b6113521883157dae8d655ad555"
+    },
+    {
+      "semanticId": "universe.sun.active-01.detail",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-01.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/active-01.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 91032,
+      "sha256": "f51d5b01e35442a950d3cb09f27ec609de6ac1ab770ffd632adeec643818d018"
+    },
+    {
+      "semanticId": "universe.sun.active-02.detail",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-02.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/active-02.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 112752,
+      "sha256": "acf6cfd389c7d8b7b37d034a8ceb620c9b60082c56ca7b5c12ca367c4e64c74e"
+    },
+    {
+      "semanticId": "universe.sun.active-03.detail",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-03.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/active-03.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 100110,
+      "sha256": "91aa8e3ee395e60189c6edb82602a2efbf6ea11ca3815edb7166c9d9de9c1982"
+    },
+    {
+      "semanticId": "universe.sun.active-04.detail",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-04.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/active-04.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 67618,
+      "sha256": "cb39ec4733c9d6fb538d495f154899f773a5ecdcd63b48185679f28864585a57"
+    },
+    {
+      "semanticId": "universe.sun.active-05.detail",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-05.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/active-05.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 102500,
+      "sha256": "35365ee9f853ffb5f9c880ed0594e9aac32078416f851cbb1cdef2a3b5b551a0"
+    },
+    {
+      "semanticId": "universe.sun.active-06.detail",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-06.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/active-06.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 105716,
+      "sha256": "5d32b46ba3897bcf7c6f89e95c8e4499b0bba65f54c7aa1ca533e6d77c2a5543"
+    },
+    {
+      "semanticId": "universe.sun.active-07.detail",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-07.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/active-07.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 91170,
+      "sha256": "cd116f3fba93b62f879eabffee1fe7b87ee8115be1b32676767938924e910a2e"
+    },
+    {
+      "semanticId": "universe.sun.active-08.detail",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-08.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/active-08.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 85962,
+      "sha256": "5fe3e6561692e0e7c493b9bb7d6330f5c2593408d4f6347ddcb0b79eb1b2f15e"
+    },
+    {
+      "semanticId": "universe.sun.collapsed-01.detail",
+      "sourcePath": "assets/source/universe-navigation/stellar-remnants/stellar-remnant.variant-01.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/collapsed-01.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 68876,
+      "sha256": "e47b75cd8b380629721ef97c11b685abe0737526e6a0481fd20b10de33ea9a70"
+    },
+    {
+      "semanticId": "universe.sun.collapsed-02.detail",
+      "sourcePath": "assets/source/universe-navigation/stellar-remnants/stellar-remnant.variant-02.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/collapsed-02.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 84742,
+      "sha256": "9177ccbb65fcb71c60fc0b0ebd1fba6e73bd1d24e158b2232301abf235d2fc4a"
+    },
+    {
+      "semanticId": "universe.sun.protostar-01.detail",
+      "sourcePath": "assets/source/universe-navigation/protostars/protostar.variant-01.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/protostar-01.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 45306,
+      "sha256": "48fbd743a155b0c33818121b2cf8d7560d8deaceddf7207e373c3f2be886fc5e"
+    },
+    {
+      "semanticId": "universe.sun.protostar-02.detail",
+      "sourcePath": "assets/source/universe-navigation/protostars/protostar.variant-02.png",
+      "outputPath": "public/assets/generated/universe/suns/detail/protostar-02.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 55686,
+      "sha256": "d0ffdc24fa5e58a7491fc5fb00b953a993123ae525429e2ba4ab4589aeead6f8"
+    },
+    {
+      "semanticId": "universe.sun.active-01.thumb",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-01.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/active-01.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 9406,
+      "sha256": "9dc0ac4ffd2bbcd2c2d39407fa4808884435535732c4405ec8e2d67e301b08e2"
+    },
+    {
+      "semanticId": "universe.sun.active-02.thumb",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-02.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/active-02.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 10918,
+      "sha256": "5d74fe6a6ed9fbe46d1acc9c8698b27d398c454b022906b5e7e0b5236a85955d"
+    },
+    {
+      "semanticId": "universe.sun.active-03.thumb",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-03.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/active-03.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 10838,
+      "sha256": "13f613b16870e3ba47f66395f782477135d54ac8773cf7d55f084d0a71771e41"
+    },
+    {
+      "semanticId": "universe.sun.active-04.thumb",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-04.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/active-04.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 7010,
+      "sha256": "34a148a49d54a9c6c085980b8d0bf837773713d5f250a294fc96a16fed1f8762"
+    },
+    {
+      "semanticId": "universe.sun.active-05.thumb",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-05.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/active-05.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 10306,
+      "sha256": "e87580c7562ba17cde1df24eb22c1ba631340c8c5fff57d426520ca509004c89"
+    },
+    {
+      "semanticId": "universe.sun.active-06.thumb",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-06.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/active-06.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 10518,
+      "sha256": "f7619efad28824b5c7f72554429078dd8fa1cf52a86d8e2de75bb772e9a17668"
+    },
+    {
+      "semanticId": "universe.sun.active-07.thumb",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-07.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/active-07.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 9330,
+      "sha256": "9992833c5c529322c13785c7a19eddd8d850d3b024db4e0d9660a947d66a008f"
+    },
+    {
+      "semanticId": "universe.sun.active-08.thumb",
+      "sourcePath": "assets/source/universe-navigation/active-suns/active-sun.variant-08.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/active-08.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 9150,
+      "sha256": "bb7cd18af8044df2e4899a15bc81bb7769c5d9470050cb0eb131c2ef231ce4e9"
+    },
+    {
+      "semanticId": "universe.sun.collapsed-01.thumb",
+      "sourcePath": "assets/source/universe-navigation/stellar-remnants/stellar-remnant.variant-01.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/collapsed-01.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 7352,
+      "sha256": "f4b330f768f57b80970e4e2b86ac50dde95fac862f86e517d5fbaf7d0808a9ba"
+    },
+    {
+      "semanticId": "universe.sun.collapsed-02.thumb",
+      "sourcePath": "assets/source/universe-navigation/stellar-remnants/stellar-remnant.variant-02.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/collapsed-02.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 10288,
+      "sha256": "1419655fe4b4ec61707e2c22261e6caace92a018c4f027b2c15e06ee87c7ea60"
+    },
+    {
+      "semanticId": "universe.sun.protostar-01.thumb",
+      "sourcePath": "assets/source/universe-navigation/protostars/protostar.variant-01.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/protostar-01.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 5734,
+      "sha256": "f97f8dff296882ec7ef89482d865f96a452f912832d4a6aae718f31cd09b50d8"
+    },
+    {
+      "semanticId": "universe.sun.protostar-02.thumb",
+      "sourcePath": "assets/source/universe-navigation/protostars/protostar.variant-02.png",
+      "outputPath": "public/assets/generated/universe/suns/thumb/protostar-02.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 6696,
+      "sha256": "f04df161b1bae370d3ea2d26f1ae8c7c2b136fd3b039e891c31ac762a58f9cf4"
+    },
+    {
+      "semanticId": "universe.system-star.variant-01",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-01.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-01.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 11784,
+      "sha256": "c30ad6381dc9dc4b895a0231a6b75a08d719e7459a2afbb8e4cb6b8550960185"
+    },
+    {
+      "semanticId": "universe.system-star.variant-02",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-02.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-02.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 7926,
+      "sha256": "91af6fd182b858e2aa3b4a0845aab7bd1a9e787007f17fca48b85c848cdcc56c"
+    },
+    {
+      "semanticId": "universe.system-star.variant-03",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-03.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-03.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 7608,
+      "sha256": "090675fccf483deb7803ad453964fffd214f48c6044f99e7bc21cf27a3b0d139"
+    },
+    {
+      "semanticId": "universe.system-star.variant-04",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-04.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-04.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 8294,
+      "sha256": "0dbcc1dc6897dc1ac6e2d7c7782216da3ce47d68e30babe9031d01e6274fbe7c"
+    },
+    {
+      "semanticId": "universe.system-star.variant-05",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-05.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-05.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 10926,
+      "sha256": "92920236ca5018eac3d9e8912103c2a3d7a0e6ef420fa583496b1d8b70f10f94"
+    },
+    {
+      "semanticId": "universe.system-star.variant-06",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-06.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-06.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 8564,
+      "sha256": "f505e63b7e48cb1af1e5aaf5a59784d375c480c5910561aa97d39213d52d58b2"
+    },
+    {
+      "semanticId": "universe.system-star.variant-07",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-07.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-07.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 8390,
+      "sha256": "f6e651ff9ddde0ee173797b66a1b4a2032c30e0fa5984fd1b0bf2b468474dd4a"
+    },
+    {
+      "semanticId": "universe.system-star.variant-08",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-08.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-08.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 7742,
+      "sha256": "d0853f186a8d0ba1da06e806f538a8712ccb6fee4a64fedccd9d5148a7e690a2"
+    },
+    {
+      "semanticId": "universe.system-star.variant-09",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-09.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-09.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 7094,
+      "sha256": "c6b797d42c6e2efe5e317ff9cf79c5dc2f0cc5841fa0a38c291472f48fd70220"
+    },
+    {
+      "semanticId": "universe.system-star.variant-10",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-10.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-10.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 8778,
+      "sha256": "9b46fb5c31f052d87a697bec502c50fafec3282e92cc8132b7744cc37cc4823e"
+    },
+    {
+      "semanticId": "universe.system-star.variant-11",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-11.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-11.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 10530,
+      "sha256": "3d7d3c91a6cdcecd69aaa834be8b6f15cfe3d18f8b7c246ea12114b51145449b"
+    },
+    {
+      "semanticId": "universe.system-star.variant-12",
+      "sourcePath": "assets/source/universe-navigation/system-stars/system-star.variant-12.png",
+      "outputPath": "public/assets/generated/universe/system-stars/star-12.webp",
+      "format": "webp",
+      "width": 128,
+      "height": 128,
+      "bytes": 7784,
+      "sha256": "517465652bb61bf2d8cca16a02bb0638499bd844b8950a9ce188a5cd616ca443"
     }
   ]
 }

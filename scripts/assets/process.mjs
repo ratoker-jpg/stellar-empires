@@ -36,6 +36,69 @@ ${entries}
 `;
 }
 
+function generatedSpaceMapModule(bindings, outputById) {
+  const entries = [...bindings]
+    .sort((left, right) => left.runtimeSemanticId.localeCompare(right.runtimeSemanticId))
+    .map((binding) => {
+      const output = outputById.get(binding.runtimeSemanticId);
+      if (output === undefined) {
+        throw new Error(`Missing processed Space Map output: ${binding.runtimeSemanticId}`);
+      }
+      return `  ${JSON.stringify(binding.runtimeSemanticId)}: { textureKey: ${JSON.stringify(binding.textureKey)}, family: ${JSON.stringify(binding.family)}, viewGroup: ${JSON.stringify(binding.viewGroup)}, outputPath: ${JSON.stringify(output.outputPath)}, width: ${output.width}, height: ${output.height}, bytes: ${output.bytes}, decodedBytes: ${output.width * output.height * 4}, sha256: ${JSON.stringify(output.sha256)} },`;
+    })
+    .join('\n');
+  const idsFor = (predicate) =>
+    bindings
+      .filter(predicate)
+      .map((entry) => entry.runtimeSemanticId)
+      .sort()
+      .map((id) => JSON.stringify(id))
+      .join(', ');
+  return `export type GeneratedSpaceMapViewGroup = 'universe' | 'galaxy' | 'solar-system';
+
+export type GeneratedSpaceMapFamily =
+  | 'galaxy-nebula'
+  | 'system-star'
+  | 'sun-thumb'
+  | 'sun-detail'
+  | 'planet'
+  | 'asteroid'
+  | 'debris'
+  | 'renegade'
+  | 'marker';
+
+export interface GeneratedSpaceMapAsset {
+  readonly textureKey: string;
+  readonly family: GeneratedSpaceMapFamily;
+  readonly viewGroup: GeneratedSpaceMapViewGroup;
+  readonly outputPath: string;
+  readonly width: number;
+  readonly height: number;
+  readonly bytes: number;
+  readonly decodedBytes: number;
+  readonly sha256: string;
+}
+
+export const SPACE_MAP_ASSET_MANIFEST = {
+${entries}
+} as const satisfies Readonly<Record<string, GeneratedSpaceMapAsset>>;
+
+export const SPACE_MAP_ASSET_GROUPS = {
+  universe: [${idsFor((entry) => entry.viewGroup === 'universe')}],
+  galaxy: [${idsFor((entry) => entry.viewGroup === 'galaxy')}],
+} as const;
+
+export const SPACE_MAP_ASSET_FAMILIES = {
+  sunDetail: [${idsFor((entry) => entry.family === 'sun-detail')}],
+  planet: [${idsFor((entry) => entry.family === 'planet')}],
+  asteroid: [${idsFor((entry) => entry.family === 'asteroid')}],
+  debris: [${idsFor((entry) => entry.family === 'debris')}],
+  renegade: [${idsFor((entry) => entry.family === 'renegade')}],
+  marker: [${idsFor((entry) => entry.family === 'marker')}],
+} as const;
+`;
+}
+
 const config = await loadConfig();
 const planPath = argument('--plan', config.processingPlanPath);
 const plan = await loadJson(planPath);
@@ -94,4 +157,14 @@ await writeStableJson(config.runtimeManifestPath, {
   assets: outputs,
 });
 await writeText(config.runtimeTypeScriptManifestPath, generatedModule(outputs));
+
+const spaceMapBindings = await loadJson(config.spaceMapBindingsPath);
+if (spaceMapBindings.schemaVersion !== 1 || !Array.isArray(spaceMapBindings.entries)) {
+  throw new Error(`Invalid Space Map binding manifest: ${config.spaceMapBindingsPath}`);
+}
+const outputById = new Map(outputs.map((output) => [output.semanticId, output]));
+await writeText(
+  config.spaceMapRuntimeTypeScriptManifestPath,
+  generatedSpaceMapModule(spaceMapBindings.entries, outputById),
+);
 console.log(`Processed ${outputs.length} runtime asset derivatives from ${path.basename(planPath)}.`);

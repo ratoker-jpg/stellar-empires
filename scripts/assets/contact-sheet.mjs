@@ -58,13 +58,8 @@ const uniqueTechnologyEntries = [...new Map(
 if (uniqueTechnologyEntries.length !== 22) {
   throw new Error(`Expected 22 technology concepts, found ${uniqueTechnologyEntries.length}`);
 }
-await renderSheet(
-  uniqueTechnologyEntries,
-  'docs/assets/qa/technologies/shared',
-  6,
-  4,
-  160,
-);
+await renderSheet(uniqueTechnologyEntries, 'docs/assets/qa/technologies/shared', 6, 4, 160);
+
 for (const faction of ['aegis', 'synod', 'veyra']) {
   const entries = bindings.entries
     .filter((entry) =>
@@ -76,6 +71,7 @@ for (const faction of ['aegis', 'synod', 'veyra']) {
   }
   await renderSheet(entries, `docs/assets/qa/ships/${faction}`, 5, 3, 190);
 }
+
 for (const faction of ['aegis', 'synod', 'veyra']) {
   const entries = bindings.entries
     .filter((entry) =>
@@ -87,6 +83,7 @@ for (const faction of ['aegis', 'synod', 'veyra']) {
   }
   await renderSheet(entries, `docs/assets/qa/defenses/${faction}`, 3, 3, 190);
 }
+
 const commanderEntries = bindings.entries
   .filter((entry) => entry.category === 'commander')
   .sort((left, right) => left.mechanicalId.localeCompare(right.mechanicalId));
@@ -94,4 +91,24 @@ if (commanderEntries.length !== 13) {
   throw new Error(`Expected 13 Commander entries, found ${commanderEntries.length}`);
 }
 await renderSheet(commanderEntries, 'docs/assets/qa/commanders/shared', 5, 3, 190);
-console.log('Generated complete catalog contact sheets.');
+
+const spaceBindings = await loadJson(config.spaceMapBindingsPath);
+const sheetSpecs = [
+  ['galaxy-nebula', 'galaxies', 5, 4, 180],
+  ['system-star', 'system-stars', 4, 3, 170],
+  ['sun-thumb', 'sun-thumbnails', 4, 3, 170],
+  ['sun-detail', 'sun-details', 4, 3, 190],
+  ['planet', 'planets', 6, 4, 170],
+  ['asteroid', 'asteroids', 4, 2, 180],
+  ['debris', 'debris', 3, 2, 180],
+  ['renegade', 'renegades', 3, 2, 180],
+  ['marker', 'markers', 2, 1, 180],
+];
+for (const [family, slug, columns, rows, cell] of sheetSpecs) {
+  const entries = spaceBindings.entries
+    .filter((entry) => entry.family === family)
+    .sort((left, right) => left.runtimeSemanticId.localeCompare(right.runtimeSemanticId));
+  if (entries.length === 0) throw new Error(`Missing Universe QA family: ${family}`);
+  await renderSheet(entries, `docs/assets/qa/universe/${slug}`, columns, rows, cell);
+}
+console.log('Generated complete catalog and Universe contact sheets.');

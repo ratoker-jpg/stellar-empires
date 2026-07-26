@@ -1,18 +1,18 @@
 {
-  "statusVersion": 8,
-  "updatedAt": "2026-07-26",
+  "statusVersion": 9,
+  "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 105,
-  "lastMergeSha": "af6954564531caa81c3dd83f924e3696ad984165",
-  "verifiedMainBaseline": "49dd4913a941054fb89bc8f4166ead5dbfa73223",
-  "activePr": 106,
-  "nextPrAfterActive": 107,
+  "lastMergedPr": 106,
+  "lastMergeSha": "3bafad74907a92633f5c31c3d30bd96268c3dafb",
+  "verifiedMainBaseline": "3bafad74907a92633f5c31c3d30bd96268c3dafb",
+  "activePr": 107,
+  "nextPrAfterActive": 108,
   "nextPrKind": "implementation",
-  "currentMilestone": "Build a playable Universe, Galaxy and Solar-system navigation hierarchy",
+  "currentMilestone": "Universe asset runtime integration; spatial model remains next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -27,7 +27,7 @@
     "batchId": "UNIVERSE-NAVIGATION-01",
     "complexity": "medium",
     "auditPr": 106,
-    "auditStatus": "accepted-on-merge",
+    "auditStatus": "merged",
     "implementationCount": 4,
     "implementationPrs": [
       107,
@@ -41,7 +41,7 @@
       "UNIVERSE-NAVIGATION-VIEWS",
       "UNIVERSE-ACTIONS-GATE"
     ],
-    "status": "audit-active",
+    "status": "implementation-active",
     "nextWorkItem": "UNIVERSE-ASSET-PIPELINE"
   },
   "auditDecisions": {
@@ -111,14 +111,12 @@
     "173 processed catalog runtime images with 217 complete mechanical bindings"
   ],
   "activeDelivery": [
-    "Audit PR #106 for the four-PR Universe navigation batch",
-    "90-source to 102-runtime Universe asset pipeline in planned PR #107",
+    "PR #107 — 90-source to 102-runtime Universe asset pipeline",
     "schema-v14 Universe spatial model and migration in planned PR #108",
     "three-level spatial views in planned PR #109",
     "map actions, report backlinks, browser E2E and batch closure in planned PR #110"
   ],
   "knownLimitations": [
-    "the PR #97 Universe pack remains oversized source intake until PR #107",
     "the simulation remains a schema-v13 single-galaxy model until PR #108",
     "Universe, Galaxy and Solar-system runtime navigation is not implemented",
     "the full confirmed interface/navigation shell remains incomplete",
@@ -147,10 +145,11 @@
     "universePack": {
       "files": 90,
       "plannedRuntimeTextures": 102,
-      "status": "audited-processing-required",
-      "currentPath": "public/assets/universe",
+      "status": "runtime-processing-active",
+      "currentPath": "assets/source/universe-navigation",
       "plannedSourcePath": "assets/source/universe-navigation",
-      "plannedRuntimePath": "public/assets/generated/universe"
+      "plannedRuntimePath": "public/assets/generated/universe",
+      "runtimeTextures": 102
     },
     "catalogArt": {
       "files": 174,
