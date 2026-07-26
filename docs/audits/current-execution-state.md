@@ -1,34 +1,32 @@
 # Current execution state
 
 **Updated:** 2026-07-27  
-**Safe to continue:** yes; PR #107 is the only active implementation item
+**Safe to continue:** yes
 
 | Field | Current value |
 |---|---|
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
-| Active audit | #106 — `UNIVERSE-NAVIGATION-01` — merged |
-| Verified implementation baseline | `3bafad74907a92633f5c31c3d30bd96268c3dafb` |
+| Active batch | `UNIVERSE-NAVIGATION-01` |
+| Audit PR | #106 — merged at `3bafad74907a92633f5c31c3d30bd96268c3dafb` |
 | Batch complexity | Medium — four sequential implementation PRs |
-| Active implementation PR | #107 — `UNIVERSE-ASSET-PIPELINE` |
-| Completed work in branch | 90 source masters moved behind the source boundary; 102 WebP derivatives and typed manifests generated |
-| Save/gameplay divergence | none; schema remains v13 |
-| Exact next action | validate and merge #107, then stop; #108 starts later from fresh `main` |
+| Active work item | `UNIVERSE-ASSET-PIPELINE` |
+| Active implementation PR | #107 |
+| Base SHA | `3bafad74907a92633f5c31c3d30bd96268c3dafb` |
+| Last completed atomic action | moved and registered the 90-source / 102-runtime Universe asset family |
+| Last successful validation | asset processing, audit, contact sheets, lint, typecheck, tests and build in the PR branch |
+| Exact next action | merge #107 after CI and Graphify are green, then create #108 from fresh `main` |
 | Blockers | none |
+| Divergence | none |
 
-## PR #107 gates
+## Batch checkpoints
 
-| Gate | State |
+| Checkpoint | State |
 |---|---|
-| 90 source masters preserved with checksums and legacy aliases | complete |
-| 102 deterministic runtime derivatives | complete |
-| source files removed from `public/assets/universe/**` | complete |
-| typed Space Map runtime manifest | complete |
-| Universe/Galaxy/Solar-system catalog groups | complete |
-| dark/light family contact sheets | complete |
-| transfer and decoded-memory checks | complete in pipeline; CI confirmation pending |
-| startup eager-load regression | statically blocked; CI confirmation pending |
-| schema or gameplay changes | none |
+| #107 Universe asset pipeline | ready for merge after checks |
+| #108 spatial model and schema v14 | not started |
+| #109 three-level navigation views | not started |
+| #110 actions, E2E and batch closure | not started |
 
 ## Recovery rule
 
-Do not begin `UNIVERSE-SPATIAL-MODEL` until #107 merges. After the merge, update exact metadata and create #108 only from fresh `main`.
+Implementation order remains strict: #107 → #108 → #109 → #110. Do not start #108 before #107 merges. Complete solar-war mechanics, alliances, Obelisks and Gates remain outside this batch.

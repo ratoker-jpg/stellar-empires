@@ -1,5 +1,5 @@
 {
-  "statusVersion": 8,
+  "statusVersion": 9,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -27,7 +27,7 @@
     "batchId": "UNIVERSE-NAVIGATION-01",
     "complexity": "medium",
     "auditPr": 106,
-    "auditStatus": "accepted-on-merge",
+    "auditStatus": "merged",
     "implementationCount": 4,
     "implementationPrs": [
       107,
@@ -42,7 +42,7 @@
       "UNIVERSE-ACTIONS-GATE"
     ],
     "status": "implementation-active",
-    "nextWorkItem": "UNIVERSE-SPATIAL-MODEL"
+    "nextWorkItem": "UNIVERSE-ASSET-PIPELINE"
   },
   "auditDecisions": {
     "implementationCount": 4,
@@ -111,8 +111,10 @@
     "173 processed catalog runtime images with 217 complete mechanical bindings"
   ],
   "activeDelivery": [
-    "PR #107 integrates 90 Universe source masters into 102 generated runtime textures",
-    "PR #108 remains the next audited work item and has not started"
+    "PR #107 — 90-source to 102-runtime Universe asset pipeline",
+    "schema-v14 Universe spatial model and migration in planned PR #108",
+    "three-level spatial views in planned PR #109",
+    "map actions, report backlinks, browser E2E and batch closure in planned PR #110"
   ],
   "knownLimitations": [
     "the simulation remains a schema-v13 single-galaxy model until PR #108",
@@ -143,7 +145,7 @@
     "universePack": {
       "files": 90,
       "plannedRuntimeTextures": 102,
-      "status": "runtime-integrated-in-pr107",
+      "status": "runtime-processing-active",
       "currentPath": "assets/source/universe-navigation",
       "plannedSourcePath": "assets/source/universe-navigation",
       "plannedRuntimePath": "public/assets/generated/universe",

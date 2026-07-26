@@ -1,30 +1,28 @@
-# PR #107 — Universe asset pipeline
+# PR #107 — UNIVERSE-ASSET-PIPELINE
 
-## Outcome
+**Audit:** PR #106  
+**Work item:** `UNIVERSE-ASSET-PIPELINE`
 
-- moved all 90 PR #97 source PNGs from the browser runtime tree to `assets/source/universe-navigation/**`;
-- preserved source checksums in a machine-readable binding manifest;
-- generated 102 individual WebP runtime textures;
-- added semantic runtime helpers and three lazy texture groups;
-- added dark/light contact sheets by asset family;
-- expanded deterministic asset checks for source aliases, output uniqueness and Space Map budgets;
-- kept BootScene and the current map unchanged, so no new Universe texture is loaded at startup.
+## Scope
 
-## Runtime set
+- moved all 90 original Universe PNG files from the public runtime tree into `assets/source/universe-navigation/**` without changing bytes;
+- recorded explicit source aliases and SHA-256 provenance;
+- generated 102 individual WebP textures under `public/assets/generated/universe/**`;
+- added typed semantic lookup helpers and view-scoped lazy texture groups;
+- added light and dark contact sheets for every Universe family;
+- extended CI checks for missing, stale, duplicate, orphaned and direct-source runtime files.
 
-| Family | Textures | Size |
-|---|---:|---:|
-| Galaxy nebulae | 20 | 256×256 |
-| System stars | 12 | 128×128 |
-| Sun thumbnails | 12 | 128×128 |
-| Sun detail art | 12 | 512×512 |
-| Planets | 24 | 256×256 |
-| Asteroids | 8 | 192×192 |
-| Debris | 6 | 192×192 |
-| Renegades | 6 | 256×256 |
-| Sun markers | 2 | 128×128 |
-| **Total** | **102** | — |
+## Measured gates
 
-## Scope boundary
+- source files: 90;
+- runtime textures: 102;
+- full decoded worst case: 29,458,432 bytes;
+- full transfer gate: at most 16 MiB;
+- Universe active view: at most 8 MiB decoded;
+- Galaxy active view: at most 6 MiB decoded;
+- Solar-system active view: at most 20 MiB decoded;
+- initial BootScene requests from the new Universe family: zero.
 
-No save schema, world generation, Phaser navigation, mission or solar-war mechanics changed.
+## Intentional omissions
+
+This PR does not change schema, gameplay, saves, map routes, Phaser scene behavior or mission logic. Those remain assigned to PRs #108–#110.

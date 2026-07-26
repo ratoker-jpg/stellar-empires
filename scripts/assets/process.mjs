@@ -36,85 +36,67 @@ ${entries}
 `;
 }
 
-function generatedSpaceMapModule(bindings, outputs) {
-  const outputById = new Map(outputs.map((asset) => [asset.semanticId, asset]));
+function generatedSpaceMapModule(bindings, outputById) {
   const entries = [...bindings]
     .sort((left, right) => left.runtimeSemanticId.localeCompare(right.runtimeSemanticId))
     .map((binding) => {
       const output = outputById.get(binding.runtimeSemanticId);
-      if (output === undefined) throw new Error(`Missing processed Space Map asset: ${binding.runtimeSemanticId}`);
-      return `  ${JSON.stringify(binding.runtimeSemanticId)}: { outputPath: ${JSON.stringify(output.outputPath)}, width: ${output.width}, height: ${output.height}, family: ${JSON.stringify(binding.family)}, viewGroup: ${JSON.stringify(binding.viewGroup)} },`;
+      if (output === undefined) {
+        throw new Error(`Missing processed Space Map output: ${binding.runtimeSemanticId}`);
+      }
+      return `  ${JSON.stringify(binding.runtimeSemanticId)}: { textureKey: ${JSON.stringify(binding.textureKey)}, family: ${JSON.stringify(binding.family)}, viewGroup: ${JSON.stringify(binding.viewGroup)}, outputPath: ${JSON.stringify(output.outputPath)}, width: ${output.width}, height: ${output.height}, bytes: ${output.bytes}, decodedBytes: ${output.width * output.height * 4}, sha256: ${JSON.stringify(output.sha256)} },`;
     })
     .join('\n');
-  const groups = ['universe', 'galaxy', 'solar-system']
-    .map((group) => {
-      const ids = bindings
-        .filter((binding) => binding.viewGroup === group)
-        .map((binding) => binding.runtimeSemanticId)
-        .sort()
-        .map((id) => JSON.stringify(id))
-        .join(', ');
-      return `  ${JSON.stringify(group)}: [${ids}],`;
-    })
-    .join('\n');
-  return `export type SpaceMapTextureGroup = 'universe' | 'galaxy' | 'solar-system';
+  const idsFor = (predicate) =>
+    bindings
+      .filter(predicate)
+      .map((entry) => entry.runtimeSemanticId)
+      .sort()
+      .map((id) => JSON.stringify(id))
+      .join(', ');
+  return `export type GeneratedSpaceMapViewGroup = 'universe' | 'galaxy' | 'solar-system';
+
+export type GeneratedSpaceMapFamily =
+  | 'galaxy-nebula'
+  | 'system-star'
+  | 'sun-thumb'
+  | 'sun-detail'
+  | 'planet'
+  | 'asteroid'
+  | 'debris'
+  | 'renegade'
+  | 'marker';
 
 export interface GeneratedSpaceMapAsset {
+  readonly textureKey: string;
+  readonly family: GeneratedSpaceMapFamily;
+  readonly viewGroup: GeneratedSpaceMapViewGroup;
   readonly outputPath: string;
   readonly width: number;
   readonly height: number;
-  readonly family: string;
-  readonly viewGroup: SpaceMapTextureGroup;
+  readonly bytes: number;
+  readonly decodedBytes: number;
+  readonly sha256: string;
 }
 
 export const SPACE_MAP_ASSET_MANIFEST = {
 ${entries}
 } as const satisfies Readonly<Record<string, GeneratedSpaceMapAsset>>;
 
-export const SPACE_MAP_TEXTURE_GROUPS = {
-${groups}
-} as const satisfies Readonly<Record<SpaceMapTextureGroup, readonly string[]>>;
-`;
-}
+export const SPACE_MAP_ASSET_GROUPS = {
+  universe: [${idsFor((entry) => entry.viewGroup === 'universe')}],
+  galaxy: [${idsFor((entry) => entry.viewGroup === 'galaxy')}],
+} as const;
 
-function resizePipeline(pipeline, entry) {
-  const isUniverseRuntime = entry.outputPath.startsWith('public/assets/generated/universe/');
-  const contentScale = entry.contentScale ?? (isUniverseRuntime ? 0.9 : 1);
-  if (!(contentScale > 0 && contentScale <= 1)) {
-    throw new Error(`Invalid content scale for ${entry.semanticId}: ${contentScale}`);
-  }
-  if (contentScale === 1) {
-    return pipeline.resize({
-      width: entry.width,
-      height: entry.height,
-      fit: entry.fit ?? 'contain',
-      position: entry.position ?? 'centre',
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-      withoutEnlargement: entry.withoutEnlargement ?? false,
-    });
-  }
-  const innerWidth = Math.max(1, Math.floor(entry.width * contentScale));
-  const innerHeight = Math.max(1, Math.floor(entry.height * contentScale));
-  const horizontalPadding = entry.width - innerWidth;
-  const verticalPadding = entry.height - innerHeight;
-  const left = Math.floor(horizontalPadding / 2);
-  const top = Math.floor(verticalPadding / 2);
-  return pipeline
-    .resize({
-      width: innerWidth,
-      height: innerHeight,
-      fit: entry.fit ?? 'contain',
-      position: entry.position ?? 'centre',
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-      withoutEnlargement: entry.withoutEnlargement ?? false,
-    })
-    .extend({
-      left,
-      right: horizontalPadding - left,
-      top,
-      bottom: verticalPadding - top,
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-    });
+export const SPACE_MAP_ASSET_FAMILIES = {
+  sunDetail: [${idsFor((entry) => entry.family === 'sun-detail')}],
+  planet: [${idsFor((entry) => entry.family === 'planet')}],
+  asteroid: [${idsFor((entry) => entry.family === 'asteroid')}],
+  debris: [${idsFor((entry) => entry.family === 'debris')}],
+  renegade: [${idsFor((entry) => entry.family === 'renegade')}],
+  marker: [${idsFor((entry) => entry.family === 'marker')}],
+} as const;
+`;
 }
 
 const config = await loadConfig();
@@ -136,7 +118,14 @@ for (const entry of [...plan.entries].sort((left, right) => left.outputPath.loca
   if (entry.trim === true) {
     pipeline = pipeline.trim({ background: { r: 0, g: 0, b: 0, alpha: 0 } });
   }
-  pipeline = resizePipeline(pipeline, entry);
+  pipeline = pipeline.resize({
+    width: entry.width,
+    height: entry.height,
+    fit: entry.fit ?? 'contain',
+    position: entry.position ?? 'centre',
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+    withoutEnlargement: entry.withoutEnlargement ?? false,
+  });
   if (entry.format === 'png') {
     pipeline = pipeline.png({ compressionLevel: 9, adaptiveFiltering: false });
   } else if (entry.format === 'webp') {
@@ -168,14 +157,14 @@ await writeStableJson(config.runtimeManifestPath, {
   assets: outputs,
 });
 await writeText(config.runtimeTypeScriptManifestPath, generatedModule(outputs));
-if (config.spaceMapBindingsPath !== undefined && config.spaceMapTypeScriptManifestPath !== undefined) {
-  const spaceMapBindings = await loadJson(config.spaceMapBindingsPath);
-  if (spaceMapBindings.schemaVersion !== 1 || !Array.isArray(spaceMapBindings.entries)) {
-    throw new Error(`Invalid Space Map bindings: ${config.spaceMapBindingsPath}`);
-  }
-  await writeText(
-    config.spaceMapTypeScriptManifestPath,
-    generatedSpaceMapModule(spaceMapBindings.entries, outputs),
-  );
+
+const spaceMapBindings = await loadJson(config.spaceMapBindingsPath);
+if (spaceMapBindings.schemaVersion !== 1 || !Array.isArray(spaceMapBindings.entries)) {
+  throw new Error(`Invalid Space Map binding manifest: ${config.spaceMapBindingsPath}`);
 }
+const outputById = new Map(outputs.map((output) => [output.semanticId, output]));
+await writeText(
+  config.spaceMapRuntimeTypeScriptManifestPath,
+  generatedSpaceMapModule(spaceMapBindings.entries, outputById),
+);
 console.log(`Processed ${outputs.length} runtime asset derivatives from ${path.basename(planPath)}.`);

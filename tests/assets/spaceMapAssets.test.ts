@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  SPACE_MAP_ASSET_MANIFEST,
-  SPACE_MAP_TEXTURE_GROUPS,
-} from '../../src/assets/generated/spaceMapAssetManifest.generated';
+import bindings from '../../assets/manifests/space-map-runtime-bindings.json';
 import {
   getPlanetAsset,
   getSpaceMapTextureGroup,
@@ -10,33 +7,60 @@ import {
   getSunAsset,
   getSystemStarAsset,
   getUniverseGalaxyAsset,
+  selectDeterministicSpaceMapVariant,
 } from '../../src/assets/spaceMapAssets';
+import { SPACE_MAP_ASSET_MANIFEST } from '../../src/assets/generated/spaceMapAssetManifest.generated';
 
-describe('Space Map runtime assets', () => {
-  it('registers the audited 102 runtime derivatives', () => {
+describe('Space Map asset manifest', () => {
+  it('binds 90 sources to 102 unique runtime textures explicitly', () => {
+    expect(bindings.entries).toHaveLength(102);
+    expect(new Set(bindings.entries.map((entry) => entry.sourcePath)).size).toBe(90);
+    expect(new Set(bindings.entries.map((entry) => entry.runtimeSemanticId)).size).toBe(102);
+    expect(new Set(bindings.entries.map((entry) => entry.outputPath)).size).toBe(102);
+    expect(new Set(bindings.entries.map((entry) => entry.textureKey)).size).toBe(102);
     expect(Object.keys(SPACE_MAP_ASSET_MANIFEST)).toHaveLength(102);
-    expect(SPACE_MAP_TEXTURE_GROUPS.universe).toHaveLength(20);
-    expect(SPACE_MAP_TEXTURE_GROUPS.galaxy).toHaveLength(24);
-    expect(SPACE_MAP_TEXTURE_GROUPS['solar-system']).toHaveLength(58);
-  });
-
-  it('resolves every required physical family through stable semantic IDs', () => {
-    expect(getUniverseGalaxyAsset(1).id).toBe('universe.galaxy.nebula-01');
-    expect(getSystemStarAsset(12).id).toBe('universe.system-star.variant-12');
-    expect(getSunAsset('active', 8, 'detail').id).toBe('universe.sun.active-08.detail');
-    expect(getSunAsset('recovering', 2, 'thumb').id).toBe('universe.sun.protostar-02.thumb');
-    expect(getPlanetAsset(24).id).toBe('universe.planet.variant-24');
-    expect(getStrategicObjectAsset('asteroid', 8).id).toBe('universe.object.asteroid-08');
-    expect(getStrategicObjectAsset('debris', 6).id).toBe('universe.object.debris-06');
-    expect(getStrategicObjectAsset('renegade', 6).id).toBe('universe.object.renegade-06');
-  });
-
-  it('returns complete lazy texture groups without duplicate IDs', () => {
-    for (const group of ['universe', 'galaxy', 'solar-system'] as const) {
-      const assets = getSpaceMapTextureGroup(group);
-      expect(new Set(assets.map((asset) => asset.id)).size).toBe(assets.length);
-      expect(assets.every((asset) => asset.viewGroup === group)).toBe(true);
-      expect(assets.every((asset) => asset.url.includes('/assets/generated/universe/'))).toBe(true);
+    for (const entry of bindings.entries) {
+      expect(entry.sourceSha256).toMatch(/^[a-f0-9]{64}$/);
+      expect(SPACE_MAP_ASSET_MANIFEST).toHaveProperty(entry.runtimeSemanticId);
     }
+  });
+
+  it('meets the full and active-view decoded budgets', () => {
+    const all = Object.values(SPACE_MAP_ASSET_MANIFEST);
+    expect(all.reduce((sum, asset) => sum + asset.bytes, 0)).toBeLessThanOrEqual(
+      bindings.budgets.transferBytes,
+    );
+    expect(all.reduce((sum, asset) => sum + asset.decodedBytes, 0)).toBe(
+      bindings.budgets.decodedBytes,
+    );
+    const decoded = (assets: readonly { readonly decodedBytes: number }[]) =>
+      assets.reduce((sum, asset) => sum + asset.decodedBytes, 0);
+    expect(decoded(getSpaceMapTextureGroup('universe'))).toBeLessThanOrEqual(
+      bindings.budgets.universeViewDecodedBytes,
+    );
+    expect(decoded(getSpaceMapTextureGroup('galaxy'))).toBeLessThanOrEqual(
+      bindings.budgets.galaxyViewDecodedBytes,
+    );
+    expect(decoded(getSpaceMapTextureGroup('solar-system', {
+      sunState: 'collapsed',
+      sunVariant: 2,
+    }))).toBeLessThanOrEqual(bindings.budgets.solarSystemViewDecodedBytes);
+  });
+
+  it('resolves semantic helpers and deterministic variants without stateful randomness', () => {
+    expect(getUniverseGalaxyAsset(21).semanticId).toBe('universe.galaxy.nebula-01');
+    expect(getSystemStarAsset(13).semanticId).toBe('universe.system-star.variant-01');
+    expect(getSunAsset('recovering', 3, 'detail').semanticId).toBe(
+      'universe.sun.protostar-01.detail',
+    );
+    expect(getPlanetAsset(25).semanticId).toBe('universe.planet.variant-01');
+    expect(getStrategicObjectAsset('asteroid', 9).semanticId).toBe(
+      'universe.object.asteroid-01',
+    );
+    const first = selectDeterministicSpaceMapVariant(24, 41, 2, 7, 'planet');
+    const second = selectDeterministicSpaceMapVariant(24, 41, 2, 7, 'planet');
+    expect(first).toBe(second);
+    expect(first).toBeGreaterThanOrEqual(1);
+    expect(first).toBeLessThanOrEqual(24);
   });
 });

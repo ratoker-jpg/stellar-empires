@@ -7,134 +7,17 @@ on:
       - main
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  bootstrap-pr107:
-    if: github.event_name == 'pull_request' && github.head_ref == 'feat/107-universe-asset-pipeline'
-    name: Generate PR107 implementation
-    runs-on: ubuntu-latest
-    timeout-minutes: 75
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@v6
-        with:
-          ref: feat/107-universe-asset-pipeline
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22.12.0'
-
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Apply audited implementation
-        run: |
-          node scripts/automation/implement-pr107.mjs
-          node scripts/automation/patch-pr107-audit.mjs
-          node scripts/automation/patch-pr107-lint.mjs
-          node scripts/automation/patch-pr107-tests.mjs
-
-      - name: Generate runtime assets
-        run: npm run assets:process
-
-      - name: Refresh asset audit
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          node --trace-uncaught scripts/assets/audit.mjs 2>&1 | tee /tmp/pr107-audit.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR107 asset-audit diagnostics'; echo '```text'; tail -n 180 /tmp/pr107-audit.log; echo '```'; } > /tmp/pr107-comment.md
-            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
-            exit "$status"
-          fi
-
-      - name: Generate light and dark QA sheets
-        run: node scripts/assets/contact-sheet.mjs
-
-      - name: Remove temporary bootstrap files
-        run: |
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/automation/implement-pr107.mjs scripts/automation/patch-pr107-audit.mjs scripts/automation/patch-pr107-lint.mjs scripts/automation/patch-pr107-tests.mjs
-
-      - name: Validate asset pipeline
-        run: npm run assets:check
-
-      - name: Lint
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run lint 2>&1 | tee /tmp/pr107-lint.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR107 lint diagnostics'; echo '```text'; tail -n 220 /tmp/pr107-lint.log; echo '```'; } > /tmp/pr107-comment.md
-            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
-            exit "$status"
-          fi
-
-      - name: Typecheck
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run typecheck 2>&1 | tee /tmp/pr107-typecheck.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR107 typecheck diagnostics'; echo '```text'; tail -n 220 /tmp/pr107-typecheck.log; echo '```'; } > /tmp/pr107-comment.md
-            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
-            exit "$status"
-          fi
-
-      - name: Test
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run test 2>&1 | tee /tmp/pr107-test.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR107 test diagnostics'; echo '```text'; tail -n 260 /tmp/pr107-test.log; echo '```'; } > /tmp/pr107-comment.md
-            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
-            exit "$status"
-          fi
-
-      - name: Build
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run build 2>&1 | tee /tmp/pr107-build.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR107 build diagnostics'; echo '```text'; tail -n 220 /tmp/pr107-build.log; echo '```'; } > /tmp/pr107-comment.md
-            gh pr comment 107 --body-file /tmp/pr107-comment.md || true
-            exit "$status"
-          fi
-
-      - name: Commit generated implementation
-        run: |
-          git config user.name "stellar-empires-automation"
-          git config user.email "actions@users.noreply.github.com"
-          git add -A
-          git commit -m "Implement Universe asset pipeline"
-          git push origin HEAD:feat/107-universe-asset-pipeline
-
   quality:
-    if: github.event_name != 'pull_request' || github.head_ref != 'feat/107-universe-asset-pipeline'
     name: Asset audit, lint, typecheck, test and build
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     steps:
       - name: Checkout

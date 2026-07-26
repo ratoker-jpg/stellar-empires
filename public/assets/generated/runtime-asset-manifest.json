@@ -1739,8 +1739,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 14466,
-      "sha256": "916e4b16160908ace1f5d407d0ecf5e03ddac9b5a4846cc9eed1edb924768bc3"
+      "bytes": 16878,
+      "sha256": "85ef9218d000609f459bcf93c776c6ff93be67fd89a6f9fe450c06b4f456bba6"
     },
     {
       "semanticId": "universe.galaxy.nebula-02",
@@ -1749,8 +1749,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 20658,
-      "sha256": "5a5f574a3e8ffebf38eb2b2cb417255970beaf5a7b9287db8c81d6f4432296a7"
+      "bytes": 25076,
+      "sha256": "b20155bb0e02e855d02961e3506a9bdfb5f53dd8699fee61889667562cd5d973"
     },
     {
       "semanticId": "universe.galaxy.nebula-03",
@@ -1759,8 +1759,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 33230,
-      "sha256": "0531281990b85be16935ca6f15324225622caf924d3389efefe774ff6ccfbb14"
+      "bytes": 39542,
+      "sha256": "716bfcb65be308514ed327c83cf636c4e6d472da92d2b6565a01da6e35b90a37"
     },
     {
       "semanticId": "universe.galaxy.nebula-04",
@@ -1769,8 +1769,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 31540,
-      "sha256": "bf5629a17ae32de2b47b366eac9180e374832cfb320ef6a4bbce69c611cfd093"
+      "bytes": 37988,
+      "sha256": "9a917cdaab816d506414f6aa4440d13262aa8f62f130a5dc8e01c47c355c6f3b"
     },
     {
       "semanticId": "universe.galaxy.nebula-05",
@@ -1779,8 +1779,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 10064,
-      "sha256": "52311f178ad1e0934c409469add1545ccbb8cd958e73c8c3fd288d33a5ac6d92"
+      "bytes": 12014,
+      "sha256": "8afdb6139e8c6cdf99906aa9ad14770cd87387d11336c3e4d6303567e52e8eb7"
     },
     {
       "semanticId": "universe.galaxy.nebula-06",
@@ -1789,8 +1789,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 27178,
-      "sha256": "287301ae898fb91e4baabfe04c528fbd3bee8141c0bab4653921ccfd9e256845"
+      "bytes": 33258,
+      "sha256": "262851e5c9b2c2fd7f997132dc541d08ecd53f4a4fd17aa209fdee25f0007cee"
     },
     {
       "semanticId": "universe.galaxy.nebula-07",
@@ -1799,8 +1799,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 20598,
-      "sha256": "14cdd21b54c7cf2087ccd356ab670f9be06ff6f552af56b0a35afedd13470392"
+      "bytes": 24780,
+      "sha256": "d6e5eae26769ea3a67f756238ba50d66a401561b60ebc4c289c7ae7fabab1451"
     },
     {
       "semanticId": "universe.galaxy.nebula-08",
@@ -1809,8 +1809,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 17294,
-      "sha256": "c1e05a5eb6620007b15e7100f79d13e785e1937a58bcb8343eb50fe203e50f70"
+      "bytes": 20930,
+      "sha256": "d4877a363a19dbf0f991e54b834bb3cedeb3e63013286699bc61a95010da6ab3"
     },
     {
       "semanticId": "universe.galaxy.nebula-09",
@@ -1819,8 +1819,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 27434,
-      "sha256": "22dd27df77928bc8b6211bdd56227500e94649e9cda4e1ba1564835165b33da8"
+      "bytes": 33218,
+      "sha256": "c22e05149d7a66f7cfa646232b5bba5588ea69193b488a613c4a0b43daefdf4b"
     },
     {
       "semanticId": "universe.galaxy.nebula-10",
@@ -1829,8 +1829,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 22294,
-      "sha256": "bc5d172c97c732f99f4d53eb0fef6bdc59e0ed0f9b6fca83a1b4ef777864f370"
+      "bytes": 27082,
+      "sha256": "63274acf13d17d9ae602f283b0aad8a6f97b360ceb2ebcfa93fbf1dea555502a"
     },
     {
       "semanticId": "universe.galaxy.nebula-11",
@@ -1839,8 +1839,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 21372,
-      "sha256": "29af744ec7aa5b728bfa9e311a817bb81b52427428945ed2d7d4f1e018bba34d"
+      "bytes": 25324,
+      "sha256": "94912ed9dd1428b360f3db8351e59199717d5d95a3c3f23f752dadc3865cd0fb"
     },
     {
       "semanticId": "universe.galaxy.nebula-12",
@@ -1849,8 +1849,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 19170,
-      "sha256": "ea50e13243f3e553913de4c7063806aa179662022a68bb1635e40507f772411e"
+      "bytes": 22540,
+      "sha256": "592856f98802edaccbf7cb627469887ca23e09de0e107a33fec010e08a687964"
     },
     {
       "semanticId": "universe.galaxy.nebula-13",
@@ -1859,8 +1859,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 24602,
-      "sha256": "fa5420b7a0387b55d0f666c8d8cbfc2fb9e0da979064cc931575d29600962150"
+      "bytes": 29776,
+      "sha256": "50f72910c45cd83c376223f175c1733136b99dab5c73b31da8d37dd415ace0ef"
     },
     {
       "semanticId": "universe.galaxy.nebula-14",
@@ -1869,8 +1869,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 23998,
-      "sha256": "05a8d29beead51d67b8c7f33c29dfed1ff43fafb3611b164a5a87fa5d7b69800"
+      "bytes": 28188,
+      "sha256": "fc31b6c74b6b1660185782f9eb4592cd5d46375096328d0270b56fbc50b1e73b"
     },
     {
       "semanticId": "universe.galaxy.nebula-15",
@@ -1879,8 +1879,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 21152,
-      "sha256": "344411c8eea2c2402083932e1d4efa0a1c4c023d9cd9a6412b82b56e5b55285b"
+      "bytes": 24978,
+      "sha256": "8b091396c86b0f9f7209bdfbdbfca748e84be53d64844aa38d30fe1483180279"
     },
     {
       "semanticId": "universe.galaxy.nebula-16",
@@ -1889,8 +1889,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 23072,
-      "sha256": "5f618967e5ead585aac09545229418dae4f41a91427a0d5321d2a841db3f161d"
+      "bytes": 27738,
+      "sha256": "0cbc6bb1995839b9f078de08511ccf65b2723f83cc4b3afa41aaf7bea4461b9d"
     },
     {
       "semanticId": "universe.galaxy.nebula-17",
@@ -1899,8 +1899,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 8136,
-      "sha256": "e9c9732b55e9c51eb6b7a8b68a7e547185613e0fa76e704e92fbb1f6e3851e3b"
+      "bytes": 9818,
+      "sha256": "ec39cae322c9529b6094464e5d9e9c93a9659c12255e24f8bcdc9f1c4e0a1f1e"
     },
     {
       "semanticId": "universe.galaxy.nebula-18",
@@ -1909,8 +1909,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 23300,
-      "sha256": "47a53d6bb93440cbed4329620dbe7634d05dd90dfb03cae1f55044f3df57213e"
+      "bytes": 28378,
+      "sha256": "74d66b96791328b014e1f863b51b19c5ac3d691a36c3ffd7e9840a37fddd8298"
     },
     {
       "semanticId": "universe.galaxy.nebula-19",
@@ -1919,8 +1919,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 26462,
-      "sha256": "67e18aeb9bd2782df225383ed849b8d312814cbdc5ccd538d367f499f216bc85"
+      "bytes": 31752,
+      "sha256": "7aff5976b9a044d4cd2eb6217ce31edac21c18e59b1c80eb2aae0d54e1a4897a"
     },
     {
       "semanticId": "universe.galaxy.nebula-20",
@@ -1929,8 +1929,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 24510,
-      "sha256": "d2566c061ac9011666161314ebc01d780ec3b7a79638318351208c72eec1ee76"
+      "bytes": 29588,
+      "sha256": "4fe76528942325aa14d89102c9c51f92cfcbf58e6e7af957f88c1b7fc879b3b4"
     },
     {
       "semanticId": "ui.mission.sun-attack",
@@ -1939,8 +1939,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 5570,
-      "sha256": "b1b9f2ccd435651332f50587acb06fd905098899c15d68e63062a81472731860"
+      "bytes": 6234,
+      "sha256": "bcf085f98319d1b138e1c30ff962f04cc55a4a67f1da7e195939ee5d331c271a"
     },
     {
       "semanticId": "ui.mission.sun-support",
@@ -1949,8 +1949,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 5904,
-      "sha256": "d90a6dd3e0a132c2cfa72da51513b9c64a263aa885db5ec1efeef2b065c06cd2"
+      "bytes": 6782,
+      "sha256": "79f22f27509af97441320a0dc4523f2f70f4bb4853241b114af769c617806017"
     },
     {
       "semanticId": "universe.object.asteroid-01",
@@ -1959,8 +1959,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 10680,
-      "sha256": "5bf2275b66acc65c654ea7afcd5301fe0e939c9452234ffb147fb98cdcad679f"
+      "bytes": 12518,
+      "sha256": "a41e22997671a58a2ff7b56c71549f6345292bc26b56a2b34f2cba2e45bde6b7"
     },
     {
       "semanticId": "universe.object.asteroid-02",
@@ -1969,8 +1969,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 12474,
-      "sha256": "fcb22f2bbd9353c30f2bc85fda69dd6ac1ee34cebc545dc7f766b740d8a14340"
+      "bytes": 14924,
+      "sha256": "5f2e7977186c9a7c2bfac9778a7476f9357b6de309b6fc1b32560bd3e9f3709c"
     },
     {
       "semanticId": "universe.object.asteroid-03",
@@ -1979,8 +1979,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 12910,
-      "sha256": "d23ef6caf9e1b19a146cafede431af3032618b510c14b75b46d61fd42967d406"
+      "bytes": 15374,
+      "sha256": "9de84dd089a0cf60e26ff3b400cf48f3e0104683c411eda19a6f9a6ef34d3dad"
     },
     {
       "semanticId": "universe.object.asteroid-04",
@@ -1989,8 +1989,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 12388,
-      "sha256": "2a23164492cd2acbafb9a7b94666a43cbdacd1ee7f684ecc1d40ab8e2c3fc957"
+      "bytes": 14546,
+      "sha256": "ded0568e6c9ca00aed366892da4bd82c2d90c776dd4ef1d7dc244c1d42f0a020"
     },
     {
       "semanticId": "universe.object.asteroid-05",
@@ -1999,8 +1999,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 14530,
-      "sha256": "615417f12823026632cd16edfe172194022bd90c67126774fe3856f434627e0b"
+      "bytes": 17128,
+      "sha256": "0b11a8c17c32e0805a1fc7611f8ac70c1e5a5e88bfe481f2cff10fb76ffbe570"
     },
     {
       "semanticId": "universe.object.asteroid-06",
@@ -2009,8 +2009,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 12144,
-      "sha256": "d81a879b15902527cf2bfd640c84fc2d48113a4a3a81e4a39f0384cccb2ff2eb"
+      "bytes": 14562,
+      "sha256": "10ff563339ceae2d6fc30ba599803d938b237c8d1e7c90b954c9a7f9cdf218ca"
     },
     {
       "semanticId": "universe.object.asteroid-07",
@@ -2019,8 +2019,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 14000,
-      "sha256": "685e932b03ec700570a1362f983075ac501e764c9d3cb7ab9608ff5396ab80a5"
+      "bytes": 16862,
+      "sha256": "eafb54764d7ce573e30887e179744361c65d42be03c87ef56fd67f2ea999770e"
     },
     {
       "semanticId": "universe.object.asteroid-08",
@@ -2029,8 +2029,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 12140,
-      "sha256": "1dfbe003fa42f86e766524e6c832ce5820500451e715cf6f54f826638c517520"
+      "bytes": 14598,
+      "sha256": "920f0af4f959309e7da59ca5c1a4b640e115027499a5fafddcad77df538c79d8"
     },
     {
       "semanticId": "universe.object.debris-01",
@@ -2039,8 +2039,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 17544,
-      "sha256": "9ca0f454c3a1734b015321534a182de4693fcde535bb69ab18e3790d20011429"
+      "bytes": 20826,
+      "sha256": "c3e9f7c91debd58262b91b6cad7fbc9cd1fb7e3ac5b4383c06744f7b43428576"
     },
     {
       "semanticId": "universe.object.debris-02",
@@ -2049,8 +2049,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 12016,
-      "sha256": "47e447677a54945ed6225de51aa2157bb72d99f0acff0c0e7a67900cfcffa043"
+      "bytes": 14350,
+      "sha256": "ed69712e1f996498cfa8edafe41910c40b5e8d84bf5ad729840e69dd2e438a52"
     },
     {
       "semanticId": "universe.object.debris-03",
@@ -2059,8 +2059,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 8806,
-      "sha256": "e33cc55e1030db1bae717befcc595e97ca63565a17713ef5c8da731983253bae"
+      "bytes": 10272,
+      "sha256": "521e836125e84885f65956f185dc8955fb89d9a99ae7234d6c2e71a208ecada9"
     },
     {
       "semanticId": "universe.object.debris-04",
@@ -2069,8 +2069,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 13712,
-      "sha256": "e0ce0824a6aee3993090c3d1f72c1ab8db944c829de8be9fe30a628a7a78b4d4"
+      "bytes": 16166,
+      "sha256": "e60209f64e9d009e7a715a1532fdbfd128718feb806e7ee6de3a5b23eb296988"
     },
     {
       "semanticId": "universe.object.debris-05",
@@ -2079,8 +2079,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 13008,
-      "sha256": "a36460be58f2dd2ac5df8a6f2e3002cc388f7f3dfc28fd7ebaddfcb268265bb7"
+      "bytes": 15510,
+      "sha256": "9b2bf5ed70573e98217056a7dad3c49a4601bb71f3eab64b0862008615252df2"
     },
     {
       "semanticId": "universe.object.debris-06",
@@ -2089,8 +2089,8 @@
       "format": "webp",
       "width": 192,
       "height": 192,
-      "bytes": 11032,
-      "sha256": "4e5be1ae631e79328786ef4d35593ca9768348d445166a7173e0845b250e618c"
+      "bytes": 13008,
+      "sha256": "55b2468a8655004f97c3b8c16730ca6762ac2a67d6d93f8692bd3ca4881d2156"
     },
     {
       "semanticId": "universe.object.renegade-01",
@@ -2099,8 +2099,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 21428,
-      "sha256": "758f51c5f9dfbdcb8ec808077d9529002eae0fd6e110f79db9cc883b20ad1fbf"
+      "bytes": 25172,
+      "sha256": "65aafb3fce35714f8b9591675c9ecc171ab0d98760a5228016b907a80e587ed8"
     },
     {
       "semanticId": "universe.object.renegade-02",
@@ -2109,8 +2109,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 16674,
-      "sha256": "f42930a0210b681eeefdbe831512cdceb792e719abb623b145bee5a8d5481238"
+      "bytes": 19820,
+      "sha256": "510f0b4a0cb7f2b43dde6141dc1503cb3eaed0898d1f75b9f163c5f322aca404"
     },
     {
       "semanticId": "universe.object.renegade-03",
@@ -2119,8 +2119,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 10790,
-      "sha256": "fbfda914d0535edc0a114fa324db052ed3bf75495849c3ff5548dcf4a1bb974d"
+      "bytes": 12480,
+      "sha256": "8e33233a33a8292fbad1765827acc040ac8d70f35342c5ddeab673813f91c886"
     },
     {
       "semanticId": "universe.object.renegade-04",
@@ -2129,8 +2129,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 20020,
-      "sha256": "c47d9f4a7e102202cef3f531a3b5d7291a7cf59e9e3fdf01588857a1c1b56e15"
+      "bytes": 23226,
+      "sha256": "c0b02faccf3199ba13179b920f89c47c7b37f06529ccaed70d17b95e58b28c6a"
     },
     {
       "semanticId": "universe.object.renegade-05",
@@ -2139,8 +2139,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 15644,
-      "sha256": "d83f03b20757bf2f7c25e50e38f7afb9344a4b4c3c3301d26836f5d243f87ec2"
+      "bytes": 18468,
+      "sha256": "0d67827fed2cee08d720c8980cde1229a00a9995d1a951df6e3ee7a2d4cacc6e"
     },
     {
       "semanticId": "universe.object.renegade-06",
@@ -2149,8 +2149,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 16630,
-      "sha256": "bad616e128f0a54221f530d12ed0c3b4f76a54b6123422ac3ab5fabe1c4b7de4"
+      "bytes": 19092,
+      "sha256": "a9fab5fe3c845749c94049b659332c2e26f7a1c8ed29ec46a83066cc7329b69d"
     },
     {
       "semanticId": "universe.planet.variant-01",
@@ -2159,8 +2159,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 23004,
-      "sha256": "51f44ffe15980c088a3d1946081f5c75e598d424c0d5c843f6b357f79eb57927"
+      "bytes": 28452,
+      "sha256": "21fdcdaadee5b1f4cba7923ff0e6497baa5d385e3bff8576bb1f1b75a6051823"
     },
     {
       "semanticId": "universe.planet.variant-02",
@@ -2169,8 +2169,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 18180,
-      "sha256": "3112ef2b734058e9ca0950fa536e7b13e29ee67270eca427a1036d6791eaee08"
+      "bytes": 21650,
+      "sha256": "bb68703da9815b453416619c4076f7b161b14fa29595b371dbfa0bcf0cf306e1"
     },
     {
       "semanticId": "universe.planet.variant-03",
@@ -2179,8 +2179,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 23662,
-      "sha256": "564d6c6e1366dc46476f0ee2a3c92e6926289cebb909be31f4b7d38f0d8001e2"
+      "bytes": 28714,
+      "sha256": "1639c074181d4fc5674fc1940d5b6393add7f825b0312c0a89c89ca4d10eae25"
     },
     {
       "semanticId": "universe.planet.variant-04",
@@ -2189,8 +2189,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 16776,
-      "sha256": "b6872f9ead26d9a78185992addb54a8946cd380423d16072b21d6933e1e0441c"
+      "bytes": 20502,
+      "sha256": "02ebae1be642d1cce1af07cb8d356fdf40e31f74024d577fa272e87aaf79f5a0"
     },
     {
       "semanticId": "universe.planet.variant-05",
@@ -2199,8 +2199,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 21202,
-      "sha256": "871b20b64ac0e9068549c10483eec53087c06e1b61e08f4f56179c64d72c4ac7"
+      "bytes": 24862,
+      "sha256": "8d58b7251896d8110eec8ec9b972c317641328bb6bc8f7800e2596324e46be16"
     },
     {
       "semanticId": "universe.planet.variant-06",
@@ -2209,8 +2209,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 11714,
-      "sha256": "5af46cf87306b27756a0c622ef6d146ee084bc710ee4ebb7ae1014267b8e4fba"
+      "bytes": 13436,
+      "sha256": "e60738e49c3ce9741925ad9d805e617acd38f4236557775572a33f5351ee6020"
     },
     {
       "semanticId": "universe.planet.variant-07",
@@ -2219,8 +2219,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 22582,
-      "sha256": "1e47469af13ec883fde5947a3b9da16ad40ce0faad6bf0aa5bae09568af45eca"
+      "bytes": 28068,
+      "sha256": "4fd792cab98c0f6850741c08162151397f60eadc2c6d8c6016458000d44ade14"
     },
     {
       "semanticId": "universe.planet.variant-08",
@@ -2229,8 +2229,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 18886,
-      "sha256": "80923c6f0c1f4985655a78c9512bcfcb63adb8661fc8402150548ddf15c7d51b"
+      "bytes": 22246,
+      "sha256": "3d2aad1833ba92c1d7055fe593f20d5d447cb360c04282d957c3a6b6669fed50"
     },
     {
       "semanticId": "universe.planet.variant-09",
@@ -2239,8 +2239,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 19544,
-      "sha256": "eeb4a3eb3399519dd179d2d33629451688454a9bb259e38fa31186c871cfa0bf"
+      "bytes": 23404,
+      "sha256": "29c29faabd6ba414d0c8aa9693807d273cb715ec4d165e3f0a544af744ed07bf"
     },
     {
       "semanticId": "universe.planet.variant-10",
@@ -2249,8 +2249,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 24034,
-      "sha256": "4d8420a2d993e43f3b44ff9e5f253e1a5a24aa675d2590686a29d24ecf4aa529"
+      "bytes": 29304,
+      "sha256": "ef605767b3b8058a653f90f8008ab998bc344e3a8e6adf422543e1f1aecf1fa6"
     },
     {
       "semanticId": "universe.planet.variant-11",
@@ -2259,8 +2259,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 16230,
-      "sha256": "bdb157ee54caffb5003b03c83997278eabee2c08d8b5ff73f72668f0ef73e294"
+      "bytes": 19446,
+      "sha256": "de73bbe88a99be51b31b21567ba3b2b91fa74e61fd497bcbe02caf5360866539"
     },
     {
       "semanticId": "universe.planet.variant-12",
@@ -2269,8 +2269,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 23112,
-      "sha256": "bb7282d6a927e5a0fbaffef3fb5b68616e0fcfb811d3ead4c041bbdb17d4b3b9"
+      "bytes": 28566,
+      "sha256": "dd936aa57b6fbf1569fcbed0c2f0fea23f85a47feac15238b89830c844c03672"
     },
     {
       "semanticId": "universe.planet.variant-13",
@@ -2279,8 +2279,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 18082,
-      "sha256": "1f759d71ac8295b7a2098b5bb4a974c97726fa183d9a408cdbdf4c0b7c59e04b"
+      "bytes": 21638,
+      "sha256": "d847e88c5452f689f6444e2608464907bf492316d714e28782c858b7a8789fa5"
     },
     {
       "semanticId": "universe.planet.variant-14",
@@ -2289,8 +2289,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 15292,
-      "sha256": "f08e772de11dc106716277deeff03191195cc30b622f8fa034fb87bf1627813e"
+      "bytes": 17920,
+      "sha256": "eceab6907b20563a2de038b6bd6201fba7763a41bfa016fd1ceabd4475b79c22"
     },
     {
       "semanticId": "universe.planet.variant-15",
@@ -2299,8 +2299,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 14344,
-      "sha256": "41210ad37fbea1d6a14f6d11395f36b41c7e0dcfefc704d1a00634ecf3417e15"
+      "bytes": 16800,
+      "sha256": "d9990faff3208dd6db0eaa657b4df103e16fdaeb4a773444cc52ceb4701af27e"
     },
     {
       "semanticId": "universe.planet.variant-16",
@@ -2309,8 +2309,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 21782,
-      "sha256": "8dfc7b57c8e3040ae3eb14ed55835cfe81d6dca1561cc4d065a181b822bcf00e"
+      "bytes": 26636,
+      "sha256": "527e05b86252ff83c724bededc5e5ee0a5e8cc584d579988270a528a2b1b76d7"
     },
     {
       "semanticId": "universe.planet.variant-17",
@@ -2319,8 +2319,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 19058,
-      "sha256": "e293aa74bb3a01f1d0c28c4cc0dee9af3280c58e072b90c3c61092bf4485ac30"
+      "bytes": 23998,
+      "sha256": "b38e9ebeac4ae1e9b76cbfcc09c1f98965a55549c999c2e208436d8b87454b40"
     },
     {
       "semanticId": "universe.planet.variant-18",
@@ -2329,8 +2329,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 23918,
-      "sha256": "aecd294395da7ab4b99c8b4dba7b03343a0e80b47b3f14eb415aeec49f9d9ea0"
+      "bytes": 28354,
+      "sha256": "6deee84021d9ac9ac2ef5f0f8716de1994c92a54bb4c4aa01a34f11ad38cb123"
     },
     {
       "semanticId": "universe.planet.variant-19",
@@ -2339,8 +2339,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 25528,
-      "sha256": "a2b7f9f8820d026432e75326588dfd233cf0beda71b47597d0168e45794f2788"
+      "bytes": 31928,
+      "sha256": "d5a15d48687c8d7176967b6ecafa64409835a617ee4f2e7760afec89b55d8d46"
     },
     {
       "semanticId": "universe.planet.variant-20",
@@ -2349,8 +2349,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 20520,
-      "sha256": "4703af97d9438748d8903f625efd686e1043e13bea16073e1a275d851623fd8c"
+      "bytes": 25026,
+      "sha256": "69615bb9edf4ff04e81a63ca6be3cdd0b322764364b479c1418106cd2e2bab99"
     },
     {
       "semanticId": "universe.planet.variant-21",
@@ -2359,8 +2359,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 26026,
-      "sha256": "3e284091a746238bdccc7502d3f1139a74fc437edfac93d02f53e76de573cc82"
+      "bytes": 31900,
+      "sha256": "30a965a84696cf8697b7aac58f29773373478a4c035fa823617079bee3cdfb6e"
     },
     {
       "semanticId": "universe.planet.variant-22",
@@ -2369,8 +2369,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 19676,
-      "sha256": "db34f68e292d071e5fd6e9af0ed2bb4cbe55ef1b7fe477157684b10abf83d47b"
+      "bytes": 23386,
+      "sha256": "8322f763521bcab2dfa7bf1348b99f810af2fb77e6a9c3d9d600d296b3417e85"
     },
     {
       "semanticId": "universe.planet.variant-23",
@@ -2379,8 +2379,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 21314,
-      "sha256": "2402fd3100d8a6e28e6ac71e4ef4cd535f71a221a7bf60bf02f73324979127a0"
+      "bytes": 25422,
+      "sha256": "c26b4a64d0810f9ed1cd70ef19b615e8666dac96260c80631237cb4ce8909fdd"
     },
     {
       "semanticId": "universe.planet.variant-24",
@@ -2389,8 +2389,8 @@
       "format": "webp",
       "width": 256,
       "height": 256,
-      "bytes": 18902,
-      "sha256": "0a840015606173790243e786bc5260163ac58936ed4187796fc1d7905c118aee"
+      "bytes": 22506,
+      "sha256": "7416f90b80dd38924188155e5bfd2d4b350f5b6113521883157dae8d655ad555"
     },
     {
       "semanticId": "universe.sun.active-01.detail",
@@ -2399,8 +2399,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 76608,
-      "sha256": "9daf0b1c39e97b261ebea6b4fcc015ce8296405e047f7997c184f33632b9f153"
+      "bytes": 91032,
+      "sha256": "f51d5b01e35442a950d3cb09f27ec609de6ac1ab770ffd632adeec643818d018"
     },
     {
       "semanticId": "universe.sun.active-02.detail",
@@ -2409,8 +2409,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 92794,
-      "sha256": "1755f4bd3710c71e7a6f2e13423a49d133732e3d6503bbc228f630ecf5c2df3a"
+      "bytes": 112752,
+      "sha256": "acf6cfd389c7d8b7b37d034a8ceb620c9b60082c56ca7b5c12ca367c4e64c74e"
     },
     {
       "semanticId": "universe.sun.active-03.detail",
@@ -2419,8 +2419,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 84118,
-      "sha256": "7c395fc454621efe983acade9aae676ba466ea2a4b76be46c152afd1fd399f21"
+      "bytes": 100110,
+      "sha256": "91aa8e3ee395e60189c6edb82602a2efbf6ea11ca3815edb7166c9d9de9c1982"
     },
     {
       "semanticId": "universe.sun.active-04.detail",
@@ -2429,8 +2429,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 56304,
-      "sha256": "a7678192795f57920df87356a73cd35637ce5b1872bb005291377a02c5054ff3"
+      "bytes": 67618,
+      "sha256": "cb39ec4733c9d6fb538d495f154899f773a5ecdcd63b48185679f28864585a57"
     },
     {
       "semanticId": "universe.sun.active-05.detail",
@@ -2439,8 +2439,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 85836,
-      "sha256": "e39bd2c2bc4b3b10420ca54991961a42334c25d8ded06c5f04a43f2f5c29558c"
+      "bytes": 102500,
+      "sha256": "35365ee9f853ffb5f9c880ed0594e9aac32078416f851cbb1cdef2a3b5b551a0"
     },
     {
       "semanticId": "universe.sun.active-06.detail",
@@ -2449,8 +2449,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 88970,
-      "sha256": "fc32e4886b7640f6d854b9835c1c8944afa972c224196d8967bd7b4cd2c83299"
+      "bytes": 105716,
+      "sha256": "5d32b46ba3897bcf7c6f89e95c8e4499b0bba65f54c7aa1ca533e6d77c2a5543"
     },
     {
       "semanticId": "universe.sun.active-07.detail",
@@ -2459,8 +2459,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 74260,
-      "sha256": "69d58baa6306bda96afd7b4dbb0391959533f4545e60c87ff14812b9c8991311"
+      "bytes": 91170,
+      "sha256": "cd116f3fba93b62f879eabffee1fe7b87ee8115be1b32676767938924e910a2e"
     },
     {
       "semanticId": "universe.sun.active-08.detail",
@@ -2469,8 +2469,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 71356,
-      "sha256": "c28da951fad0600b2bf2ab37af2134c2bee36c8d8c76471a5821ce63889c3aca"
+      "bytes": 85962,
+      "sha256": "5fe3e6561692e0e7c493b9bb7d6330f5c2593408d4f6347ddcb0b79eb1b2f15e"
     },
     {
       "semanticId": "universe.sun.collapsed-01.detail",
@@ -2479,8 +2479,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 58082,
-      "sha256": "b629744c95ea334dd63e763671fb6d5ee024f7900e49bc5afd909ff440a3dbbd"
+      "bytes": 68876,
+      "sha256": "e47b75cd8b380629721ef97c11b685abe0737526e6a0481fd20b10de33ea9a70"
     },
     {
       "semanticId": "universe.sun.collapsed-02.detail",
@@ -2489,8 +2489,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 71770,
-      "sha256": "5f66e847f6b69a31acf00ecec829e7792624cfe1ca04bb9edea7cb6a2e3aab75"
+      "bytes": 84742,
+      "sha256": "9177ccbb65fcb71c60fc0b0ebd1fba6e73bd1d24e158b2232301abf235d2fc4a"
     },
     {
       "semanticId": "universe.sun.protostar-01.detail",
@@ -2499,8 +2499,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 38370,
-      "sha256": "17fd1b8929c04e174a990ffc4a0452523816f721e1db70e3e3a436b9d23d3e2d"
+      "bytes": 45306,
+      "sha256": "48fbd743a155b0c33818121b2cf8d7560d8deaceddf7207e373c3f2be886fc5e"
     },
     {
       "semanticId": "universe.sun.protostar-02.detail",
@@ -2509,8 +2509,8 @@
       "format": "webp",
       "width": 512,
       "height": 512,
-      "bytes": 46670,
-      "sha256": "a508e0cd00cad811375314a7c5e0c2c8f935dfb04a9b25fd5b1d7f69a3b11de4"
+      "bytes": 55686,
+      "sha256": "d0ffdc24fa5e58a7491fc5fb00b953a993123ae525429e2ba4ab4589aeead6f8"
     },
     {
       "semanticId": "universe.sun.active-01.thumb",
@@ -2519,8 +2519,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 7590,
-      "sha256": "b2476323fc1b16cb5dfb74b33fd6aea6cf7c59ee1419d0b550694110319a808f"
+      "bytes": 9406,
+      "sha256": "9dc0ac4ffd2bbcd2c2d39407fa4808884435535732c4405ec8e2d67e301b08e2"
     },
     {
       "semanticId": "universe.sun.active-02.thumb",
@@ -2529,8 +2529,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 8912,
-      "sha256": "1a4209febbacb0a2e189d5676e2e3d39eccc23c8f5e7745acda1418e0114ccc9"
+      "bytes": 10918,
+      "sha256": "5d74fe6a6ed9fbe46d1acc9c8698b27d398c454b022906b5e7e0b5236a85955d"
     },
     {
       "semanticId": "universe.sun.active-03.thumb",
@@ -2539,8 +2539,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 8784,
-      "sha256": "ed0b4b130b4f6b1aa533b760e7c537a565ed25390cc3e752c0c062ac00cddbf5"
+      "bytes": 10838,
+      "sha256": "13f613b16870e3ba47f66395f782477135d54ac8773cf7d55f084d0a71771e41"
     },
     {
       "semanticId": "universe.sun.active-04.thumb",
@@ -2549,8 +2549,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 5862,
-      "sha256": "65a79c06cb432c79ce5ed535674a04016432fe845d3341f8aaf5a3d63c6e5d8f"
+      "bytes": 7010,
+      "sha256": "34a148a49d54a9c6c085980b8d0bf837773713d5f250a294fc96a16fed1f8762"
     },
     {
       "semanticId": "universe.sun.active-05.thumb",
@@ -2559,8 +2559,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 8204,
-      "sha256": "125607773e5f212900aeef00fe6fe88d1968f7651e33e89589650f2edec9aeea"
+      "bytes": 10306,
+      "sha256": "e87580c7562ba17cde1df24eb22c1ba631340c8c5fff57d426520ca509004c89"
     },
     {
       "semanticId": "universe.sun.active-06.thumb",
@@ -2569,8 +2569,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 8344,
-      "sha256": "32ef85aa71f37ea929c2d168637346c83dfb1ea1a8d1963d0b3cef0b08a06323"
+      "bytes": 10518,
+      "sha256": "f7619efad28824b5c7f72554429078dd8fa1cf52a86d8e2de75bb772e9a17668"
     },
     {
       "semanticId": "universe.sun.active-07.thumb",
@@ -2579,8 +2579,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 7504,
-      "sha256": "8b439d5a21d1ed30e2be69eae8ace2e1ddce6ea80bfd063b52ecb2c52b4eafec"
+      "bytes": 9330,
+      "sha256": "9992833c5c529322c13785c7a19eddd8d850d3b024db4e0d9660a947d66a008f"
     },
     {
       "semanticId": "universe.sun.active-08.thumb",
@@ -2589,8 +2589,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 7380,
-      "sha256": "cb4973143c910145781225adf44573dd0bb4498ffc8a6318dc6849541724df59"
+      "bytes": 9150,
+      "sha256": "bb7cd18af8044df2e4899a15bc81bb7769c5d9470050cb0eb131c2ef231ce4e9"
     },
     {
       "semanticId": "universe.sun.collapsed-01.thumb",
@@ -2599,8 +2599,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 6164,
-      "sha256": "d9964ff83748d9d7fc1448a3b9dc5d997349845c7b6732e91828b84b257e31ab"
+      "bytes": 7352,
+      "sha256": "f4b330f768f57b80970e4e2b86ac50dde95fac862f86e517d5fbaf7d0808a9ba"
     },
     {
       "semanticId": "universe.sun.collapsed-02.thumb",
@@ -2609,8 +2609,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 8350,
-      "sha256": "bbf21a34ecf11337b53d8f979ad46992fad1b41ae6435002e9fdb111e30f27c6"
+      "bytes": 10288,
+      "sha256": "1419655fe4b4ec61707e2c22261e6caace92a018c4f027b2c15e06ee87c7ea60"
     },
     {
       "semanticId": "universe.sun.protostar-01.thumb",
@@ -2619,8 +2619,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 4784,
-      "sha256": "028d272bd923a68910c08ceab4c753c4e2e4242dd3932ef369adccff27fc288c"
+      "bytes": 5734,
+      "sha256": "f97f8dff296882ec7ef89482d865f96a452f912832d4a6aae718f31cd09b50d8"
     },
     {
       "semanticId": "universe.sun.protostar-02.thumb",
@@ -2629,8 +2629,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 5298,
-      "sha256": "5e36d651f2d14cd4ac67c39eb1a65a30784fec6d93c6cdc3bed68ed63abbd6f4"
+      "bytes": 6696,
+      "sha256": "f04df161b1bae370d3ea2d26f1ae8c7c2b136fd3b039e891c31ac762a58f9cf4"
     },
     {
       "semanticId": "universe.system-star.variant-01",
@@ -2639,8 +2639,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 10136,
-      "sha256": "7ebef843cd09bed952c18551ea5e4e0416f76551a68b05163eee791257ef230e"
+      "bytes": 11784,
+      "sha256": "c30ad6381dc9dc4b895a0231a6b75a08d719e7459a2afbb8e4cb6b8550960185"
     },
     {
       "semanticId": "universe.system-star.variant-02",
@@ -2649,8 +2649,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 6860,
-      "sha256": "9bff3f11c16ab72a91310f2517f7f5c740d66d3af2d9d37b22ae2181b6b14595"
+      "bytes": 7926,
+      "sha256": "91af6fd182b858e2aa3b4a0845aab7bd1a9e787007f17fca48b85c848cdcc56c"
     },
     {
       "semanticId": "universe.system-star.variant-03",
@@ -2659,8 +2659,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 6418,
-      "sha256": "805222d62eab51b542146a6775f44bc70e77213ae75572c1525e504d0bafacb3"
+      "bytes": 7608,
+      "sha256": "090675fccf483deb7803ad453964fffd214f48c6044f99e7bc21cf27a3b0d139"
     },
     {
       "semanticId": "universe.system-star.variant-04",
@@ -2669,8 +2669,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 7036,
-      "sha256": "e83fad7bd348ab4f229dbcb690ab2dd70f6fd94ca9b83729ba3e6252c00697b3"
+      "bytes": 8294,
+      "sha256": "0dbcc1dc6897dc1ac6e2d7c7782216da3ce47d68e30babe9031d01e6274fbe7c"
     },
     {
       "semanticId": "universe.system-star.variant-05",
@@ -2679,8 +2679,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 9214,
-      "sha256": "61d61926c3bf5276baf4e43cb4f476acb104b69f2405f15fa5a7178ab818e874"
+      "bytes": 10926,
+      "sha256": "92920236ca5018eac3d9e8912103c2a3d7a0e6ef420fa583496b1d8b70f10f94"
     },
     {
       "semanticId": "universe.system-star.variant-06",
@@ -2689,8 +2689,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 7302,
-      "sha256": "8133b0a2f9a68e92250e6afa523a65d3f201a66ef7a21e036f25efa8fe7bdae7"
+      "bytes": 8564,
+      "sha256": "f505e63b7e48cb1af1e5aaf5a59784d375c480c5910561aa97d39213d52d58b2"
     },
     {
       "semanticId": "universe.system-star.variant-07",
@@ -2699,8 +2699,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 7020,
-      "sha256": "202d8d636f20a9e5b7a0b7640b28da2e923a68a762b51fc19fe4945359130714"
+      "bytes": 8390,
+      "sha256": "f6e651ff9ddde0ee173797b66a1b4a2032c30e0fa5984fd1b0bf2b468474dd4a"
     },
     {
       "semanticId": "universe.system-star.variant-08",
@@ -2709,8 +2709,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 6416,
-      "sha256": "89c7aa8fc663cffce274bca885f2776943325c74ef7853e6a6759bdabf7258e2"
+      "bytes": 7742,
+      "sha256": "d0853f186a8d0ba1da06e806f538a8712ccb6fee4a64fedccd9d5148a7e690a2"
     },
     {
       "semanticId": "universe.system-star.variant-09",
@@ -2719,8 +2719,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 6304,
-      "sha256": "51fc0c19d1fd21e8ed0c19ac20132033c2b58c0f636525890b4f048673f985c1"
+      "bytes": 7094,
+      "sha256": "c6b797d42c6e2efe5e317ff9cf79c5dc2f0cc5841fa0a38c291472f48fd70220"
     },
     {
       "semanticId": "universe.system-star.variant-10",
@@ -2729,8 +2729,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 7392,
-      "sha256": "dfa19c77f3b43ed12e3467cd7856b4a22e929e65ecea490ed0364942c8e054ca"
+      "bytes": 8778,
+      "sha256": "9b46fb5c31f052d87a697bec502c50fafec3282e92cc8132b7744cc37cc4823e"
     },
     {
       "semanticId": "universe.system-star.variant-11",
@@ -2739,8 +2739,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 8716,
-      "sha256": "4d5f493be875b64fb40d43b2f9e99b26d60658db368672b2fc17466f9c61f583"
+      "bytes": 10530,
+      "sha256": "3d7d3c91a6cdcecd69aaa834be8b6f15cfe3d18f8b7c246ea12114b51145449b"
     },
     {
       "semanticId": "universe.system-star.variant-12",
@@ -2749,8 +2749,8 @@
       "format": "webp",
       "width": 128,
       "height": 128,
-      "bytes": 6570,
-      "sha256": "2df1cad84ae8c5ecd7da2cb65e23cc82e666cb858e186b9942b4b4d048513085"
+      "bytes": 7784,
+      "sha256": "517465652bb61bf2d8cca16a02bb0638499bd844b8950a9ce188a5cd616ca443"
     }
   ]
 }

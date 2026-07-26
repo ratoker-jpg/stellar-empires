@@ -1,38 +1,114 @@
-import { Buffer } from 'node:buffer';
-import { mkdir, rm } from 'node:fs/promises';
+import { mkdir } from 'node:fs/promises';
+import path from 'node:path';
 import sharp from 'sharp';
 import { loadConfig, loadJson, resolveRepositoryPath } from './lib.mjs';
 
 const config = await loadConfig();
-const bindings = await loadJson(config.spaceMapBindingsPath);
-const outputRoot = 'docs/assets/qa/universe';
-await rm(resolveRepositoryPath(outputRoot), { recursive: true, force: true });
-await mkdir(resolveRepositoryPath(outputRoot), { recursive: true });
-const groups = Map.groupBy(bindings.entries, (entry) => entry.family);
-for (const [family, entries] of [...groups.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-  const columns = Math.min(6, entries.length);
-  const rows = Math.ceil(entries.length / columns);
-  const cell = 176;
-  for (const theme of ['dark', 'light']) {
-    const background = theme === 'dark' ? '#071019' : '#edf3f7';
-    const textColor = theme === 'dark' ? '#d8f4ff' : '#13202a';
+const bindings = await loadJson(config.mechanicalBindingsPath);
+const backgrounds = [
+  ['dark', '#061018'],
+  ['light', '#e7edf2'],
+];
+
+async function renderSheet(entries, outputPrefix, columns, rows, cell) {
+  const width = columns * cell;
+  const height = rows * cell;
+  for (const [theme, background] of backgrounds) {
     const composites = [];
     for (const [index, entry] of entries.entries()) {
-      const image = await sharp(resolveRepositoryPath(entry.outputPath))
-        .resize({ width: 128, height: 128, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      const input = await sharp(resolveRepositoryPath(entry.outputPath))
+        .resize(cell - 36, cell - 36, {
+          fit: 'contain',
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
+        })
         .png()
         .toBuffer();
-      const x = (index % columns) * cell + 24;
-      const y = Math.floor(index / columns) * cell + 12;
-      composites.push({ input: image, left: x, top: y });
-      const label = entry.runtimeSemanticId.replace('universe.', '').replace('ui.mission.', 'mission.');
-      const svg = Buffer.from(`<svg width="168" height="30" xmlns="http://www.w3.org/2000/svg"><text x="84" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="${textColor}">${label}</text></svg>`);
-      composites.push({ input: svg, left: (index % columns) * cell + 4, top: Math.floor(index / columns) * cell + 142 });
+      composites.push({
+        input,
+        left: (index % columns) * cell + 18,
+        top: Math.floor(index / columns) * cell + 18,
+      });
     }
-    await sharp({ create: { width: columns * cell, height: rows * cell, channels: 4, background } })
+    const output = `${outputPrefix}-${theme}.png`;
+    await mkdir(path.dirname(resolveRepositoryPath(output)), { recursive: true });
+    await sharp({ create: { width, height, channels: 4, background } })
       .composite(composites)
-      .png({ compressionLevel: 9, adaptiveFiltering: false })
-      .toFile(resolveRepositoryPath(`${outputRoot}/${family}-${theme}.png`));
+      .png({ compressionLevel: 9 })
+      .toFile(resolveRepositoryPath(output));
   }
 }
-console.log(`Generated ${groups.size * 2} Universe QA contact sheets.`);
+
+for (const faction of ['aegis', 'synod', 'veyra']) {
+  const entries = bindings.entries
+    .filter((entry) =>
+      entry.category === 'building' && entry.mechanicalId.startsWith(`building.${faction}.`),
+    )
+    .sort((left, right) => left.mechanicalId.localeCompare(right.mechanicalId));
+  if (entries.length !== 24) {
+    throw new Error(`Expected 24 building entries for ${faction}, found ${entries.length}`);
+  }
+  await renderSheet(entries, `docs/assets/qa/buildings/${faction}`, 6, 4, 180);
+}
+
+const uniqueTechnologyEntries = [...new Map(
+  bindings.entries
+    .filter((entry) => entry.category === 'technology')
+    .map((entry) => [entry.runtimeSemanticId, entry]),
+).values()].sort((left, right) => left.runtimeSemanticId.localeCompare(right.runtimeSemanticId));
+if (uniqueTechnologyEntries.length !== 22) {
+  throw new Error(`Expected 22 technology concepts, found ${uniqueTechnologyEntries.length}`);
+}
+await renderSheet(uniqueTechnologyEntries, 'docs/assets/qa/technologies/shared', 6, 4, 160);
+
+for (const faction of ['aegis', 'synod', 'veyra']) {
+  const entries = bindings.entries
+    .filter((entry) =>
+      entry.category === 'ship' && entry.mechanicalId.startsWith(`ship.${faction}.`),
+    )
+    .sort((left, right) => left.mechanicalId.localeCompare(right.mechanicalId));
+  if (entries.length !== 13) {
+    throw new Error(`Expected 13 ship entries for ${faction}, found ${entries.length}`);
+  }
+  await renderSheet(entries, `docs/assets/qa/ships/${faction}`, 5, 3, 190);
+}
+
+for (const faction of ['aegis', 'synod', 'veyra']) {
+  const entries = bindings.entries
+    .filter((entry) =>
+      entry.category === 'defense' && entry.mechanicalId.startsWith(`defense.${faction}.`),
+    )
+    .sort((left, right) => left.mechanicalId.localeCompare(right.mechanicalId));
+  if (entries.length !== 9) {
+    throw new Error(`Expected 9 defense entries for ${faction}, found ${entries.length}`);
+  }
+  await renderSheet(entries, `docs/assets/qa/defenses/${faction}`, 3, 3, 190);
+}
+
+const commanderEntries = bindings.entries
+  .filter((entry) => entry.category === 'commander')
+  .sort((left, right) => left.mechanicalId.localeCompare(right.mechanicalId));
+if (commanderEntries.length !== 13) {
+  throw new Error(`Expected 13 Commander entries, found ${commanderEntries.length}`);
+}
+await renderSheet(commanderEntries, 'docs/assets/qa/commanders/shared', 5, 3, 190);
+
+const spaceBindings = await loadJson(config.spaceMapBindingsPath);
+const sheetSpecs = [
+  ['galaxy-nebula', 'galaxies', 5, 4, 180],
+  ['system-star', 'system-stars', 4, 3, 170],
+  ['sun-thumb', 'sun-thumbnails', 4, 3, 170],
+  ['sun-detail', 'sun-details', 4, 3, 190],
+  ['planet', 'planets', 6, 4, 170],
+  ['asteroid', 'asteroids', 4, 2, 180],
+  ['debris', 'debris', 3, 2, 180],
+  ['renegade', 'renegades', 3, 2, 180],
+  ['marker', 'markers', 2, 1, 180],
+];
+for (const [family, slug, columns, rows, cell] of sheetSpecs) {
+  const entries = spaceBindings.entries
+    .filter((entry) => entry.family === family)
+    .sort((left, right) => left.runtimeSemanticId.localeCompare(right.runtimeSemanticId));
+  if (entries.length === 0) throw new Error(`Missing Universe QA family: ${family}`);
+  await renderSheet(entries, `docs/assets/qa/universe/${slug}`, columns, rows, cell);
+}
+console.log('Generated complete catalog and Universe contact sheets.');
