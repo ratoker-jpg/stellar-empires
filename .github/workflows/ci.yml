@@ -34,6 +34,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Apply implementation
         run: node scripts/automation/implement-pr104.mjs
+      - name: Apply migrated expectation fixes
+        run: node scripts/automation/fix-pr104.mjs
       - name: Generate runtime assets
         run: npm run assets:process
       - name: Refresh asset audit
