@@ -7,6 +7,14 @@ import type { UnitDefinition, UnitKind } from './types';
 
 export { AEGIS_UNIT_CATALOG } from './aegisUnitCatalog';
 export {
+  COMPLETE_COMMANDER_SHIP_CATALOG,
+  COMPLETE_COMMANDER_SHIP_CLASSES,
+  getCompleteCommanderShipClass,
+  getCompleteCommanderShipDefinition,
+  getCompleteCommanderShipId,
+  getCompleteCommanderShipIds,
+} from './completeCommanderShipCatalog';
+export {
   COMPLETE_DEFENSE_CATALOGS,
   getCompleteDefenseClass,
   getCompleteDefenseId,
