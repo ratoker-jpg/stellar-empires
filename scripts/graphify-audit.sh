@@ -2,18 +2,18 @@
 set -euo pipefail
 
 MODE="${1:-code}"
-GRAPHIFY_VERSION="${GRAPHIFY_VERSION:-0.8.38}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+GRAPHIFY_VERSION="${GRAPHIFY_VERSION:-$(tr -d '[:space:]' < .graphify-version)}"
 
 install_graphify() {
   if ! command -v graphify >/dev/null 2>&1; then
-    "$PYTHON_BIN" -m pip install --disable-pip-version-check --index-url https://pypi.org/simple "graphifyy==${GRAPHIFY_VERSION}"
+    "$PYTHON_BIN" -m pip install \
+      --disable-pip-version-check \
+      --index-url https://pypi.org/simple \
+      "graphifyy==${GRAPHIFY_VERSION}"
   fi
-  graphify --help >/dev/null
-}
 
-install_project_skill() {
-  graphify install --project --platform codex
+  graphify --help >/dev/null
   test -s .agents/skills/graphify/SKILL.md
 }
 
@@ -27,7 +27,11 @@ build_code_graph() {
   cp -R tests "$temp_root/project/tests"
   cp package.json tsconfig.json "$temp_root/project/"
 
-  graphify extract "$temp_root/project" --directed --no-viz
+  (
+    cd "$temp_root/project"
+    graphify extract . --code-only --directed --no-viz
+  )
+
   test -s "$temp_root/project/graphify-out/graph.json"
   test -s "$temp_root/project/graphify-out/GRAPH_REPORT.md"
 
@@ -38,7 +42,6 @@ build_code_graph() {
 }
 
 install_graphify
-install_project_skill
 
 case "$MODE" in
   smoke)
