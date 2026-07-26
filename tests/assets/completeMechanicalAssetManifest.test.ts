@@ -11,10 +11,14 @@ describe('complete mechanical asset manifest', () => {
     expect(validateCompleteMechanicalAssetManifest()).toEqual([]);
   });
 
-  it('uses current runtime assets as deterministic compatibility fallbacks', () => {
+  it('uses generated runtime assets for complete ordinary ships', () => {
     const resolution = resolveCompleteMechanicalAsset('ship.aegis.scout');
-    expect(resolution.source).toBe('current-runtime-fallback');
+    expect(resolution.source).toBe('complete-manifest');
     expect(resolution.asset?.id).toBe('ship.aegis.scout');
+    expect(resolution.asset?.layout).toBe('image');
+    expect(resolution.asset?.atlasUrl).toContain(
+      '/assets/generated/catalog/ships/aegis/scout.webp',
+    );
   });
 
   it('binds Commander source assets while retaining processed runtime fallbacks', () => {

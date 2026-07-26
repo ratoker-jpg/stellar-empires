@@ -1,4 +1,6 @@
+import { resolveCompleteMechanicalAsset } from '../assets/completeMechanicalAssetManifest';
 import { getFactionMechanicalAsset } from '../assets/factionMechanicalAssets';
+import { applyMechanicalAssetArtwork } from '../assets/runtimeMechanicalAssets';
 import {
   calculateDefenseRepairCost,
   calculateDefenseRepairSeconds,
@@ -33,15 +35,17 @@ export interface ProductionScreenOptions {
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 
 function setUnitArtwork(element: HTMLElement, definition: UnitDefinition): void {
+  if (definition.kind === 'ship') {
+    const asset = resolveCompleteMechanicalAsset(definition.assetId).asset;
+    if (asset !== undefined) applyMechanicalAssetArtwork(element, asset);
+    return;
+  }
   const asset = getFactionMechanicalAsset(definition.assetId);
   if (asset === undefined) return;
   const column = asset.frame.x / asset.frame.width;
-  const row = asset.frame.y / asset.frame.height;
-  const columns = definition.kind === 'ship' ? 3 : 3;
-  const rows = definition.kind === 'ship' ? 2 : 1;
   element.style.backgroundImage = `url("${asset.atlasUrl}")`;
-  element.style.backgroundSize = `${columns * 100}% ${rows * 100}%`;
-  element.style.backgroundPosition = `${column === 0 ? 0 : (column / (columns - 1)) * 100}% ${row === 0 || rows === 1 ? 0 : 100}%`;
+  element.style.backgroundSize = '300% 100%';
+  element.style.backgroundPosition = `${column === 0 ? 0 : (column / 2) * 100}% 0`;
 }
 
 function canAfford(
@@ -242,6 +246,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
     for (const definition of getUnitsByKind(kind, planet.factionId)) {
       const card = document.createElement('article');
       card.className = 'production-card';
+      card.dataset.mechanicalId = definition.id;
       const art = document.createElement('div');
       art.className = 'production-art';
       art.setAttribute('role', 'img');

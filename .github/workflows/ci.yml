@@ -7,113 +7,41 @@ on:
       - main
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  bootstrap-pr104:
-    if: github.event_name == 'pull_request' && github.head_ref == 'feat/104-ship-runtime-assets'
-    name: Generate PR104 implementation
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@v6
-        with:
-          ref: feat/104-ship-runtime-assets
-          fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22.12.0'
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Apply implementation
-        run: node scripts/automation/implement-pr104.mjs
-      - name: Apply migrated expectation fixes
-        run: node scripts/automation/fix-pr104.mjs
-      - name: Generate runtime assets
-        run: npm run assets:process
-      - name: Refresh asset audit
-        run: npm run assets:audit
-      - name: Generate QA sheets
-        run: node scripts/assets/contact-sheet.mjs
-      - name: Validate asset pipeline
-        run: npm run assets:check
-      - name: Lint
-        run: npm run lint
-      - name: Typecheck
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run typecheck 2>&1 | tee /tmp/typecheck.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            {
-              echo '### PR104 typecheck diagnostics'
-              echo '```text'
-              cat /tmp/typecheck.log
-              echo '```'
-            } > /tmp/typecheck-comment.md
-            gh pr comment 104 --body-file /tmp/typecheck-comment.md
-            exit "$status"
-          fi
-      - name: Test
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NO_COLOR: '1'
-        run: |
-          set +e
-          npm run test 2>&1 | tee /tmp/test.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            {
-              echo '### PR104 concise test diagnostics'
-              echo '```text'
-              grep -E 'FAIL|AssertionError|Error:|Test Files|Tests|Snapshots|expected|received' /tmp/test.log | tail -n 140 || true
-              echo '```'
-            } > /tmp/test-comment.md
-            gh pr comment 104 --body-file /tmp/test-comment.md
-            exit "$status"
-          fi
-      - name: Build
-        run: npm run build
-      - name: Restore permanent workflow and commit
-        run: |
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/ci.yml
-          git config user.name "stellar-empires-automation"
-          git config user.email "actions@users.noreply.github.com"
-          git add -A
-          git commit -m "Integrate complete ship runtime assets"
-          git push origin HEAD:feat/104-ship-runtime-assets
-
   quality:
-    if: github.event_name != 'pull_request' || github.head_ref != 'feat/104-ship-runtime-assets'
     name: Asset audit, lint, typecheck, test and build
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '22.12.0'
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+
       - name: Validate asset pipeline
         run: npm run assets:check
+
       - name: Lint
         run: npm run lint
+
       - name: Typecheck
         run: npm run typecheck
+
       - name: Test
         run: npm run test
+
       - name: Build
         run: npm run build

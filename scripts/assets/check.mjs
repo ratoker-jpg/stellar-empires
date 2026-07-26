@@ -102,6 +102,13 @@ const uniqueTechnologyRuntimeIds = new Set(
 if (uniqueTechnologyRuntimeIds.size !== 22) {
   errors.push(`Expected 22 technology runtime concepts, found ${uniqueTechnologyRuntimeIds.size}.`);
 }
+const shipBindings = bindings.entries.filter((entry) => entry.category === 'ship');
+if (shipBindings.length !== 39) {
+  errors.push(`Expected 39 ship runtime bindings, found ${shipBindings.length}.`);
+}
+if (new Set(shipBindings.map((entry) => entry.runtimeSemanticId)).size !== 39) {
+  errors.push('Complete ships do not have 39 unique runtime semantic IDs.');
+}
 const generatedIds = new Set(runtimeManifest.assets.map((asset) => asset.semanticId));
 for (const binding of buildingBindings) {
   if (!generatedIds.has(binding.runtimeSemanticId)) {
@@ -111,6 +118,11 @@ for (const binding of buildingBindings) {
 for (const binding of technologyBindings) {
   if (!generatedIds.has(binding.runtimeSemanticId)) {
     errors.push(`Missing generated technology runtime asset: ${binding.mechanicalId}`);
+  }
+}
+for (const binding of shipBindings) {
+  if (!generatedIds.has(binding.runtimeSemanticId)) {
+    errors.push(`Missing generated ship runtime asset: ${binding.mechanicalId}`);
   }
 }
 if (generatedIds.has('technology.shared.qa-edges-dark-light')) {
