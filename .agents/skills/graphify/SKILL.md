@@ -24,8 +24,8 @@ bash scripts/graphify-audit.sh code
 The runner:
 
 - installs the version pinned in `.graphify-version` without owner involvement;
-- installs the Graphify skill at project scope;
-- builds a directed graph for `src` and `tests`;
+- validates this committed project-scoped skill;
+- builds a directed code-only graph for `src` and `tests` without an external model key;
 - writes `graphify-out/graph.json` and `graphify-out/GRAPH_REPORT.md`;
 - fails when installation or graph generation is incomplete.
 
