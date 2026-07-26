@@ -5,6 +5,7 @@ export type AegisAssetCategory =
   | 'ship'
   | 'defense'
   | 'technology'
+  | 'commander'
   | 'effect';
 
 export interface AtlasFrame {
@@ -22,6 +23,7 @@ export interface AegisVerticalSliceAsset {
   readonly frame: AtlasFrame;
   readonly role: string;
   readonly stage: 'P1';
+  readonly layout?: 'atlas' | 'image';
 }
 
 const frame = (x: number, y: number, width: number, height: number): AtlasFrame => ({

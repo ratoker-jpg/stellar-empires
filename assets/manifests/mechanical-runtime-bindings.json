@@ -1,0 +1,725 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "mechanicalId": "building.aegis.aksum-obelisk",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.galactic-obelisk",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.galactic-obelisk.png",
+      "runtimeSemanticId": "building.aegis.aksum-obelisk",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/aksum-obelisk.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.bank",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.bank",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.bank.png",
+      "runtimeSemanticId": "building.aegis.bank",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/bank.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.bunker",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.hangar",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.hangar.png",
+      "runtimeSemanticId": "building.aegis.bunker",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/bunker.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.construction",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.construction",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.construction.png",
+      "runtimeSemanticId": "building.aegis.construction",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/construction.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.control-chamber",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.planetary-government",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.planetary-government.png",
+      "runtimeSemanticId": "building.aegis.control-chamber",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/control-chamber.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.experimental-center",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.research",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.research.png",
+      "runtimeSemanticId": "building.aegis.experimental-center",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/experimental-center.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.gas-chamber",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.gas-storage",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.gas-storage.png",
+      "runtimeSemanticId": "building.aegis.gas-chamber",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/gas-chamber.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.gas-probe-1",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.gas-production-1",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.gas-production-1.png",
+      "runtimeSemanticId": "building.aegis.gas-probe-1",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/gas-probe-1.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.gas-probe-2",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.gas-production-2",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.gas-production-2.png",
+      "runtimeSemanticId": "building.aegis.gas-probe-2",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/gas-probe-2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.infrared-bot",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.basic-energy",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.basic-energy.png",
+      "runtimeSemanticId": "building.aegis.infrared-bot",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/infrared-bot.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.metal-bot-1",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.metal-production-1",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.metal-production-1.png",
+      "runtimeSemanticId": "building.aegis.metal-bot-1",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/metal-bot-1.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.metal-bot-2",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.metal-production-2",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.metal-production-2.png",
+      "runtimeSemanticId": "building.aegis.metal-bot-2",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/metal-bot-2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.metal-bot-3",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.metal-production-3",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.metal-production-3.png",
+      "runtimeSemanticId": "building.aegis.metal-bot-3",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/metal-bot-3.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.metal-vault",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.metal-storage",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.metal-storage.png",
+      "runtimeSemanticId": "building.aegis.metal-vault",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/metal-vault.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.mineral-bot-1",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.mineral-production-1",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.mineral-production-1.png",
+      "runtimeSemanticId": "building.aegis.mineral-bot-1",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/mineral-bot-1.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.mineral-bot-2",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.mineral-production-2",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.mineral-production-2.png",
+      "runtimeSemanticId": "building.aegis.mineral-bot-2",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/mineral-bot-2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.mineral-treasury",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.mineral-storage",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.mineral-storage.png",
+      "runtimeSemanticId": "building.aegis.mineral-treasury",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/mineral-treasury.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.scrapyard",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.recycling",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.recycling.png",
+      "runtimeSemanticId": "building.aegis.scrapyard",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/scrapyard.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.shipyard",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.shipyard",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.shipyard.png",
+      "runtimeSemanticId": "building.aegis.shipyard",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/shipyard.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.spaceport",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.spaceport",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.spaceport.png",
+      "runtimeSemanticId": "building.aegis.spaceport",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/spaceport.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.supreme-galactic-gates",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.supreme-galactic-gates",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.supreme-galactic-gates.png",
+      "runtimeSemanticId": "building.aegis.supreme-galactic-gates",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/supreme-galactic-gates.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.teret-factory",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.advanced-factory",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.advanced-factory.png",
+      "runtimeSemanticId": "building.aegis.teret-factory",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/teret-factory.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.trade-center",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.trade-center",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.trade-center.png",
+      "runtimeSemanticId": "building.aegis.trade-center",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/trade-center.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.aegis.uranium-bot",
+      "category": "building",
+      "sourceSemanticId": "building.aegis.advanced-energy",
+      "sourcePath": "assets/source/New assets/buildings/aegis/building.aegis.advanced-energy.png",
+      "runtimeSemanticId": "building.aegis.uranium-bot",
+      "outputPath": "public/assets/generated/catalog/buildings/aegis/uranium-bot.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.aksum-obelisk",
+      "category": "building",
+      "sourceSemanticId": "building.synod.galactic-obelisk",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.galactic-obelisk.png",
+      "runtimeSemanticId": "building.synod.aksum-obelisk",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/aksum-obelisk.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.bank",
+      "category": "building",
+      "sourceSemanticId": "building.synod.bank",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.bank.png",
+      "runtimeSemanticId": "building.synod.bank",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/bank.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.bunker",
+      "category": "building",
+      "sourceSemanticId": "building.synod.hangar",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.hangar.png",
+      "runtimeSemanticId": "building.synod.bunker",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/bunker.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.construction",
+      "category": "building",
+      "sourceSemanticId": "building.synod.construction",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.construction.png",
+      "runtimeSemanticId": "building.synod.construction",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/construction.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.control-chamber",
+      "category": "building",
+      "sourceSemanticId": "building.synod.planetary-government",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.planetary-government.png",
+      "runtimeSemanticId": "building.synod.control-chamber",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/control-chamber.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.experimental-center",
+      "category": "building",
+      "sourceSemanticId": "building.synod.research",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.research.png",
+      "runtimeSemanticId": "building.synod.experimental-center",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/experimental-center.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.gas-chamber",
+      "category": "building",
+      "sourceSemanticId": "building.synod.gas-storage",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.gas-storage.png",
+      "runtimeSemanticId": "building.synod.gas-chamber",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/gas-chamber.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.gas-probe-1",
+      "category": "building",
+      "sourceSemanticId": "building.synod.gas-production-1",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.gas-production-1.png",
+      "runtimeSemanticId": "building.synod.gas-probe-1",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/gas-probe-1.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.gas-probe-2",
+      "category": "building",
+      "sourceSemanticId": "building.synod.gas-production-2",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.gas-production-2.png",
+      "runtimeSemanticId": "building.synod.gas-probe-2",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/gas-probe-2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.infrared-bot",
+      "category": "building",
+      "sourceSemanticId": "building.synod.basic-energy",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.basic-energy.png",
+      "runtimeSemanticId": "building.synod.infrared-bot",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/infrared-bot.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.metal-bot-1",
+      "category": "building",
+      "sourceSemanticId": "building.synod.metal-production-1",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.metal-production-1.png",
+      "runtimeSemanticId": "building.synod.metal-bot-1",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/metal-bot-1.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.metal-bot-2",
+      "category": "building",
+      "sourceSemanticId": "building.synod.metal-production-2",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.metal-production-2.png",
+      "runtimeSemanticId": "building.synod.metal-bot-2",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/metal-bot-2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.metal-bot-3",
+      "category": "building",
+      "sourceSemanticId": "building.synod.metal-production-3",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.metal-production-3.png",
+      "runtimeSemanticId": "building.synod.metal-bot-3",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/metal-bot-3.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.metal-vault",
+      "category": "building",
+      "sourceSemanticId": "building.synod.metal-storage",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.metal-storage.png",
+      "runtimeSemanticId": "building.synod.metal-vault",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/metal-vault.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.mineral-bot-1",
+      "category": "building",
+      "sourceSemanticId": "building.synod.mineral-production-1",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.mineral-production-1.png",
+      "runtimeSemanticId": "building.synod.mineral-bot-1",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/mineral-bot-1.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.mineral-bot-2",
+      "category": "building",
+      "sourceSemanticId": "building.synod.mineral-production-2",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.mineral-production-2.png",
+      "runtimeSemanticId": "building.synod.mineral-bot-2",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/mineral-bot-2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.mineral-treasury",
+      "category": "building",
+      "sourceSemanticId": "building.synod.mineral-storage",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.mineral-storage.png",
+      "runtimeSemanticId": "building.synod.mineral-treasury",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/mineral-treasury.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.scrapyard",
+      "category": "building",
+      "sourceSemanticId": "building.synod.recycling",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.recycling.png",
+      "runtimeSemanticId": "building.synod.scrapyard",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/scrapyard.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.shipyard",
+      "category": "building",
+      "sourceSemanticId": "building.synod.shipyard",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.shipyard.png",
+      "runtimeSemanticId": "building.synod.shipyard",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/shipyard.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.spaceport",
+      "category": "building",
+      "sourceSemanticId": "building.synod.spaceport",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.spaceport.png",
+      "runtimeSemanticId": "building.synod.spaceport",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/spaceport.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.supreme-galactic-gates",
+      "category": "building",
+      "sourceSemanticId": "building.synod.supreme-galactic-gates",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.supreme-galactic-gates.png",
+      "runtimeSemanticId": "building.synod.supreme-galactic-gates",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/supreme-galactic-gates.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.teret-factory",
+      "category": "building",
+      "sourceSemanticId": "building.synod.advanced-factory",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.advanced-factory.png",
+      "runtimeSemanticId": "building.synod.teret-factory",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/teret-factory.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.trade-center",
+      "category": "building",
+      "sourceSemanticId": "building.synod.trade-center",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.trade-center.png",
+      "runtimeSemanticId": "building.synod.trade-center",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/trade-center.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.synod.uranium-bot",
+      "category": "building",
+      "sourceSemanticId": "building.synod.advanced-energy",
+      "sourcePath": "assets/source/New assets/buildings/synod/building.synod.advanced-energy.png",
+      "runtimeSemanticId": "building.synod.uranium-bot",
+      "outputPath": "public/assets/generated/catalog/buildings/synod/uranium-bot.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.aksum-obelisk",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.galactic-obelisk",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.galactic-obelisk.png",
+      "runtimeSemanticId": "building.veyra.aksum-obelisk",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/aksum-obelisk.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.bank",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.bank",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.bank.png",
+      "runtimeSemanticId": "building.veyra.bank",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/bank.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.bunker",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.hangar",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.hangar.png",
+      "runtimeSemanticId": "building.veyra.bunker",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/bunker.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.construction",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.construction",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.construction.png",
+      "runtimeSemanticId": "building.veyra.construction",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/construction.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.control-chamber",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.planetary-government",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.planetary-government.png",
+      "runtimeSemanticId": "building.veyra.control-chamber",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/control-chamber.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.experimental-center",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.research",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.research.png",
+      "runtimeSemanticId": "building.veyra.experimental-center",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/experimental-center.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.gas-chamber",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.gas-storage",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.gas-storage.png",
+      "runtimeSemanticId": "building.veyra.gas-chamber",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/gas-chamber.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.gas-probe-1",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.gas-production-1",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.gas-production-1.png",
+      "runtimeSemanticId": "building.veyra.gas-probe-1",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/gas-probe-1.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.gas-probe-2",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.gas-production-2",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.gas-production-2.png",
+      "runtimeSemanticId": "building.veyra.gas-probe-2",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/gas-probe-2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.infrared-bot",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.basic-energy",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.basic-energy.png",
+      "runtimeSemanticId": "building.veyra.infrared-bot",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/infrared-bot.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.metal-bot-1",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.metal-production-1",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.metal-production-1.png",
+      "runtimeSemanticId": "building.veyra.metal-bot-1",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/metal-bot-1.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.metal-bot-2",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.metal-production-2",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.metal-production-2.png",
+      "runtimeSemanticId": "building.veyra.metal-bot-2",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/metal-bot-2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.metal-bot-3",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.metal-production-3",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.metal-production-3.png",
+      "runtimeSemanticId": "building.veyra.metal-bot-3",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/metal-bot-3.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.metal-vault",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.metal-storage",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.metal-storage.png",
+      "runtimeSemanticId": "building.veyra.metal-vault",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/metal-vault.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.mineral-bot-1",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.mineral-production-1",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.mineral-production-1.png",
+      "runtimeSemanticId": "building.veyra.mineral-bot-1",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/mineral-bot-1.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.mineral-bot-2",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.mineral-production-2",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.mineral-production-2.png",
+      "runtimeSemanticId": "building.veyra.mineral-bot-2",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/mineral-bot-2.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.mineral-treasury",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.mineral-storage",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.mineral-storage.png",
+      "runtimeSemanticId": "building.veyra.mineral-treasury",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/mineral-treasury.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.scrapyard",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.recycling",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.recycling.png",
+      "runtimeSemanticId": "building.veyra.scrapyard",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/scrapyard.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.shipyard",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.shipyard",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.shipyard.png",
+      "runtimeSemanticId": "building.veyra.shipyard",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/shipyard.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.spaceport",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.spaceport",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.spaceport.png",
+      "runtimeSemanticId": "building.veyra.spaceport",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/spaceport.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.supreme-galactic-gates",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.supreme-galactic-gates",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.supreme-galactic-gates.png",
+      "runtimeSemanticId": "building.veyra.supreme-galactic-gates",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/supreme-galactic-gates.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.teret-factory",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.advanced-factory",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.advanced-factory.png",
+      "runtimeSemanticId": "building.veyra.teret-factory",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/teret-factory.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.trade-center",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.trade-center",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.trade-center.png",
+      "runtimeSemanticId": "building.veyra.trade-center",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/trade-center.webp",
+      "width": 384,
+      "height": 384
+    },
+    {
+      "mechanicalId": "building.veyra.uranium-bot",
+      "category": "building",
+      "sourceSemanticId": "building.veyra.advanced-energy",
+      "sourcePath": "assets/source/New assets/buildings/veyra/building.veyra.advanced-energy.png",
+      "runtimeSemanticId": "building.veyra.uranium-bot",
+      "outputPath": "public/assets/generated/catalog/buildings/veyra/uranium-bot.webp",
+      "width": 384,
+      "height": 384
+    }
+  ]
+}

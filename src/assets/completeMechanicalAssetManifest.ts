@@ -1,24 +1,28 @@
 import type { AegisVerticalSliceAsset } from './aegisVerticalSliceAssets';
+import { getFactionMechanicalAsset } from './factionMechanicalAssets';
+import {
+  getRuntimeMechanicalAsset,
+  type RuntimeMechanicalAssetCategory,
+} from './runtimeMechanicalAssets';
 import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
+import { COMPLETE_BUILDING_CATALOGS } from '../simulation/planet/completeBuildingCatalog';
 import { COMPLETE_COMMANDER_SHIP_CATALOG } from '../simulation/units/completeCommanderShipCatalog';
 import {
   COMPLETE_DEFENSE_CATALOGS,
   getCompleteDefenseClass,
 } from '../simulation/units/completeDefenseCatalog';
-import { COMPLETE_SHIP_CATALOGS, getCompleteShipClass } from '../simulation/units/completeShipCatalog';
+import {
+  COMPLETE_SHIP_CATALOGS,
+  getCompleteShipClass,
+} from '../simulation/units/completeShipCatalog';
 import type { CompleteDefenseClass, CompleteShipClass } from '../simulation/units/types';
-import { getFactionMechanicalAsset } from './factionMechanicalAssets';
 
-export type CompleteMechanicalAssetCategory =
-  | 'building'
-  | 'technology'
-  | 'ship'
-  | 'defense'
-  | 'commander';
+export type CompleteMechanicalAssetCategory = RuntimeMechanicalAssetCategory;
 
 export interface CompleteMechanicalAssetBinding {
   readonly mechanicalId: string;
   readonly category: CompleteMechanicalAssetCategory;
+  readonly runtimeSemanticId?: string;
   readonly runtimeAsset?: AegisVerticalSliceAsset;
   /**
    * Provenance-only repository path. Source files are never imported directly by
@@ -35,31 +39,86 @@ export interface CompleteMechanicalAssetManifest {
 
 const SOURCE_ROOT = 'assets/source/New assets' as const;
 
-const COMPLETE_SHIP_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> = Object.fromEntries(
-  Object.values(COMPLETE_SHIP_CATALOGS)
-    .flat()
-    .map((definition) => [
-      definition.id,
-      {
-        mechanicalId: definition.id,
-        category: 'ship' as const,
-        sourcePath: `${SOURCE_ROOT}/ship/${definition.factionId}/${definition.id}.png`,
-      },
-    ]),
-);
+const BUILDING_SOURCE_SUFFIX: Readonly<Record<string, string>> = {
+  'metal-bot-1': 'metal-production-1',
+  'metal-bot-2': 'metal-production-2',
+  'metal-bot-3': 'metal-production-3',
+  'mineral-bot-1': 'mineral-production-1',
+  'mineral-bot-2': 'mineral-production-2',
+  'gas-probe-1': 'gas-production-1',
+  'gas-probe-2': 'gas-production-2',
+  'infrared-bot': 'basic-energy',
+  'uranium-bot': 'advanced-energy',
+  bunker: 'hangar',
+  construction: 'construction',
+  'teret-factory': 'advanced-factory',
+  'metal-vault': 'metal-storage',
+  'mineral-treasury': 'mineral-storage',
+  'gas-chamber': 'gas-storage',
+  scrapyard: 'recycling',
+  'trade-center': 'trade-center',
+  shipyard: 'shipyard',
+  'experimental-center': 'research',
+  spaceport: 'spaceport',
+  'control-chamber': 'planetary-government',
+  bank: 'bank',
+  'aksum-obelisk': 'galactic-obelisk',
+  'supreme-galactic-gates': 'supreme-galactic-gates',
+};
 
-const COMPLETE_DEFENSE_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> = Object.fromEntries(
-  Object.values(COMPLETE_DEFENSE_CATALOGS)
-    .flat()
-    .map((definition) => [
-      definition.id,
-      {
-        mechanicalId: definition.id,
-        category: 'defense' as const,
-        sourcePath: `${SOURCE_ROOT}/defenses/${definition.factionId}/${definition.id}.png`,
-      },
-    ]),
-);
+const COMPLETE_BUILDING_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> =
+  Object.fromEntries(
+    Object.values(COMPLETE_BUILDING_CATALOGS)
+      .flat()
+      .map((definition) => {
+        const parsed = parseMechanicalId(definition.id);
+        if (parsed?.kind !== 'building' || parsed.factionId === 'shared') {
+          throw new Error(`Invalid complete building ID: ${definition.id}`);
+        }
+        const sourceSuffix = BUILDING_SOURCE_SUFFIX[parsed.slug];
+        if (sourceSuffix === undefined) {
+          throw new Error(`Missing building source mapping: ${definition.id}`);
+        }
+        return [
+          definition.id,
+          {
+            mechanicalId: definition.id,
+            category: 'building' as const,
+            runtimeSemanticId: definition.id,
+            sourcePath:
+              `${SOURCE_ROOT}/buildings/${parsed.factionId}/building.${parsed.factionId}.${sourceSuffix}.png`,
+          },
+        ];
+      }),
+  );
+
+const COMPLETE_SHIP_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> =
+  Object.fromEntries(
+    Object.values(COMPLETE_SHIP_CATALOGS)
+      .flat()
+      .map((definition) => [
+        definition.id,
+        {
+          mechanicalId: definition.id,
+          category: 'ship' as const,
+          sourcePath: `${SOURCE_ROOT}/ship/${definition.factionId}/${definition.id}.png`,
+        },
+      ]),
+  );
+
+const COMPLETE_DEFENSE_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> =
+  Object.fromEntries(
+    Object.values(COMPLETE_DEFENSE_CATALOGS)
+      .flat()
+      .map((definition) => [
+        definition.id,
+        {
+          mechanicalId: definition.id,
+          category: 'defense' as const,
+          sourcePath: `${SOURCE_ROOT}/defenses/${definition.factionId}/${definition.id}.png`,
+        },
+      ]),
+  );
 
 const COMMANDER_SOURCE_NAMES: Readonly<Record<string, string>> = {
   'commander.shared.annihilator': 'commander-ship.annihilator.png',
@@ -77,21 +136,23 @@ const COMMANDER_SOURCE_NAMES: Readonly<Record<string, string>> = {
   'commander.shared.polias': 'commander-ship.polias.png',
 };
 
-const COMPLETE_COMMANDER_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> = Object.fromEntries(
-  COMPLETE_COMMANDER_SHIP_CATALOG.map((definition) => [
-    definition.id,
-    {
-      mechanicalId: definition.id,
-      category: 'commander' as const,
-      sourcePath: `${SOURCE_ROOT}/comander_ship/${COMMANDER_SOURCE_NAMES[definition.id]}`,
-    },
-  ]),
-);
+const COMPLETE_COMMANDER_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBinding>> =
+  Object.fromEntries(
+    COMPLETE_COMMANDER_SHIP_CATALOG.map((definition) => [
+      definition.id,
+      {
+        mechanicalId: definition.id,
+        category: 'commander' as const,
+        sourcePath: `${SOURCE_ROOT}/comander_ship/${COMMANDER_SOURCE_NAMES[definition.id]}`,
+      },
+    ]),
+  );
 
 export const COMPLETE_MECHANICAL_ASSET_MANIFEST: CompleteMechanicalAssetManifest = {
   version: 1,
   sourceRoot: SOURCE_ROOT,
   bindings: {
+    ...COMPLETE_BUILDING_BINDINGS,
     ...COMPLETE_SHIP_BINDINGS,
     ...COMPLETE_DEFENSE_BINDINGS,
     ...COMPLETE_COMMANDER_BINDINGS,
@@ -281,11 +342,15 @@ export function resolveCompleteMechanicalAsset(
   manifest: CompleteMechanicalAssetManifest = COMPLETE_MECHANICAL_ASSET_MANIFEST,
 ): MechanicalAssetResolution {
   const binding = manifest.bindings[mechanicalId];
-  if (binding?.runtimeAsset !== undefined) {
+  const generated = binding?.runtimeSemanticId === undefined
+    ? undefined
+    : getRuntimeMechanicalAsset(mechanicalId, binding.runtimeSemanticId, binding.category);
+  const runtimeAsset = binding?.runtimeAsset ?? generated;
+  if (runtimeAsset !== undefined) {
     return {
-      asset: binding.runtimeAsset,
+      asset: runtimeAsset,
       source: 'complete-manifest',
-      provenancePath: binding.sourcePath,
+      provenancePath: binding?.sourcePath,
     };
   }
 

@@ -142,5 +142,7 @@
     "src/assets/galaxyFleetRuntimeAssets.ts",
     "src/assets/generatedFactionIdentityAssets.ts",
     "src/assets/planetIndustryRuntimeAssets.ts"
-  ]
+  ],
+  "mechanicalBindingsPath": "assets/manifests/mechanical-runtime-bindings.json",
+  "runtimeTypeScriptManifestPath": "src/assets/generated/runtimeAssetManifest.generated.ts"
 }

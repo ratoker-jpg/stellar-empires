@@ -74,11 +74,34 @@ for (const asset of generated) {
 
 const processingPlan = await loadJson(config.processingPlanPath);
 const atlasPlan = await loadJson(config.atlasPlanPath);
+const bindings = await loadJson(config.mechanicalBindingsPath);
+const runtimeManifest = await loadJson(config.runtimeManifestPath);
 if (processingPlan.schemaVersion !== 1 || !Array.isArray(processingPlan.entries)) {
   errors.push('Invalid runtime processing plan.');
 }
 if (atlasPlan.schemaVersion !== 1 || !Array.isArray(atlasPlan.atlases)) {
   errors.push('Invalid runtime atlas plan.');
+}
+if (bindings.schemaVersion !== 1 || !Array.isArray(bindings.entries)) {
+  errors.push('Invalid mechanical runtime bindings.');
+}
+if (runtimeManifest.schemaVersion !== 1 || !Array.isArray(runtimeManifest.assets)) {
+  errors.push('Invalid generated runtime manifest.');
+}
+const buildingBindings = bindings.entries.filter((entry) => entry.category === 'building');
+if (buildingBindings.length !== 72) {
+  errors.push(`Expected 72 building runtime bindings, found ${buildingBindings.length}.`);
+}
+const generatedIds = new Set(runtimeManifest.assets.map((asset) => asset.semanticId));
+for (const binding of buildingBindings) {
+  if (!generatedIds.has(binding.runtimeSemanticId)) {
+    errors.push(`Missing generated building runtime asset: ${binding.mechanicalId}`);
+  }
+}
+try {
+  await readFile(resolveRepositoryPath(config.runtimeTypeScriptManifestPath), 'utf8');
+} catch {
+  errors.push(`Missing generated TypeScript runtime manifest: ${config.runtimeTypeScriptManifestPath}`);
 }
 
 const sourceFiles = await textFiles(path.join(REPOSITORY_ROOT, 'src'));

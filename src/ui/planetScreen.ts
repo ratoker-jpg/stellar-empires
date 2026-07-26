@@ -1,4 +1,5 @@
 import type { AegisVerticalSliceAsset } from '../assets/aegisVerticalSliceAssets';
+import { applyMechanicalAssetArtwork } from '../assets/runtimeMechanicalAssets';
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getBuildingDefinition } from '../simulation/planet/buildingCatalog';
 import { getBuildingLevel } from '../simulation/planet/buildingProgression';
@@ -203,11 +204,7 @@ function createGatewayButton(
 }
 
 function setBuildingArtwork(element: HTMLElement, asset: AegisVerticalSliceAsset): void {
-  const column = asset.frame.x / asset.frame.width;
-  const row = asset.frame.y / asset.frame.height;
-  element.style.backgroundImage = `url("${asset.atlasUrl}")`;
-  element.style.backgroundSize = '400% 200%';
-  element.style.backgroundPosition = `${column === 0 ? 0 : (column / 3) * 100}% ${row === 0 ? 0 : 100}%`;
+  applyMechanicalAssetArtwork(element, asset);
 }
 
 function getZoneBuildingCards(planet: PlanetState, zoneId: PlanetZoneId): readonly BuildingCardViewModel[] {

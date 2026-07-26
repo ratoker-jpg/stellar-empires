@@ -9,11 +9,31 @@ import {
   sha256File,
   validatePlanPath,
   writeStableJson,
+  writeText,
 } from './lib.mjs';
 
 function argument(name, fallback) {
   const index = process.argv.indexOf(name);
   return index === -1 ? fallback : process.argv[index + 1] ?? fallback;
+}
+
+function generatedModule(outputs) {
+  const entries = [...outputs]
+    .sort((left, right) => left.semanticId.localeCompare(right.semanticId))
+    .map((asset) =>
+      `  ${JSON.stringify(asset.semanticId)}: { outputPath: ${JSON.stringify(asset.outputPath)}, width: ${asset.width}, height: ${asset.height} },`
+    )
+    .join('\n');
+  return `export interface GeneratedRuntimeAsset {
+  readonly outputPath: string;
+  readonly width: number;
+  readonly height: number;
+}
+
+export const RUNTIME_ASSET_MANIFEST = {
+${entries}
+} as const satisfies Readonly<Record<string, GeneratedRuntimeAsset>>;
+`;
 }
 
 const config = await loadConfig();
@@ -32,7 +52,9 @@ for (const entry of [...plan.entries].sort((left, right) => left.outputPath.loca
   await ensureParent(outputPath);
 
   let pipeline = sharp(resolveRepositoryPath(sourcePath), { animated: false }).rotate();
-  if (entry.trim === true) pipeline = pipeline.trim({ background: { r: 0, g: 0, b: 0, alpha: 0 } });
+  if (entry.trim === true) {
+    pipeline = pipeline.trim({ background: { r: 0, g: 0, b: 0, alpha: 0 } });
+  }
   pipeline = pipeline.resize({
     width: entry.width,
     height: entry.height,
@@ -44,7 +66,11 @@ for (const entry of [...plan.entries].sort((left, right) => left.outputPath.loca
   if (entry.format === 'png') {
     pipeline = pipeline.png({ compressionLevel: 9, adaptiveFiltering: false });
   } else if (entry.format === 'webp') {
-    pipeline = pipeline.webp({ quality: entry.quality ?? 88, alphaQuality: 100, smartSubsample: false });
+    pipeline = pipeline.webp({
+      quality: entry.quality ?? 88,
+      alphaQuality: 100,
+      smartSubsample: false,
+    });
   } else {
     throw new Error(`Unsupported output format for ${entry.semanticId}: ${entry.format}`);
   }
@@ -67,4 +93,5 @@ await writeStableJson(config.runtimeManifestPath, {
   generatedRoot: config.generatedRuntimeRoot,
   assets: outputs,
 });
+await writeText(config.runtimeTypeScriptManifestPath, generatedModule(outputs));
 console.log(`Processed ${outputs.length} runtime asset derivatives from ${path.basename(planPath)}.`);
