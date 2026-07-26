@@ -720,6 +720,666 @@
       "outputPath": "public/assets/generated/catalog/buildings/veyra/uranium-bot.webp",
       "width": 384,
       "height": 384
+    },
+    {
+      "mechanicalId": "technology.aegis.astronomy",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.astronomy",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.astronomy.png",
+      "runtimeSemanticId": "technology.shared.astronomy",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/astronomy.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.chemistry",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.chemistry",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.chemistry.png",
+      "runtimeSemanticId": "technology.shared.chemistry",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/chemistry.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.computer-systems",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.computer-systems",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.computer-systems.png",
+      "runtimeSemanticId": "technology.shared.computer-systems",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/computer-systems.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.critical-hit",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.critical-hit",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.critical-hit.png",
+      "runtimeSemanticId": "technology.shared.critical-hit",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/critical-hit.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.ecology",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.ecology",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ecology.png",
+      "runtimeSemanticId": "technology.shared.ecology",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ecology.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.espionage",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.espionage",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.espionage.png",
+      "runtimeSemanticId": "technology.shared.espionage",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/espionage.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.fuel-cells",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.fuel-cells",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.fuel-cells.png",
+      "runtimeSemanticId": "technology.shared.fuel-cells",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/fuel-cells.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.heavy-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.heavy-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.heavy-armor.png",
+      "runtimeSemanticId": "technology.shared.heavy-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/heavy-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.hyperspace",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.hyperspace",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.hyperspace.png",
+      "runtimeSemanticId": "technology.shared.hyperspace",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/hyperspace.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.improved-construction",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.improved-construction",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.improved-construction.png",
+      "runtimeSemanticId": "technology.shared.improved-construction",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/improved-construction.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.ion-science",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.ion-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ion-science.png",
+      "runtimeSemanticId": "technology.shared.ion-science",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ion-science.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.jet-engines",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.jet-engines",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.jet-engines.png",
+      "runtimeSemanticId": "technology.shared.jet-engines",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/jet-engines.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.laser-science",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.laser-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.laser-science.png",
+      "runtimeSemanticId": "technology.shared.laser-science",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/laser-science.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.light-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.light-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.light-armor.png",
+      "runtimeSemanticId": "technology.shared.light-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/light-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.maneuver-defense",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.maneuver-defense",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.maneuver-defense.png",
+      "runtimeSemanticId": "technology.shared.maneuver-defense",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/maneuver-defense.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.mathematics",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.mathematics",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.mathematics.png",
+      "runtimeSemanticId": "technology.shared.mathematics",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/mathematics.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.medium-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.medium-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.medium-armor.png",
+      "runtimeSemanticId": "technology.shared.medium-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/medium-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.parallel-universes",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.parallel-universes",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.parallel-universes.png",
+      "runtimeSemanticId": "technology.shared.parallel-universes",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/parallel-universes.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.physics",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.physics",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.physics.png",
+      "runtimeSemanticId": "technology.shared.physics",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/physics.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.piercing-attack",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.piercing-attack",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.piercing-attack.png",
+      "runtimeSemanticId": "technology.shared.piercing-attack",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/piercing-attack.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.plasma-science",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.plasma-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.plasma-science.png",
+      "runtimeSemanticId": "technology.shared.plasma-science",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/plasma-science.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.aegis.ship-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.ship-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ship-armor.png",
+      "runtimeSemanticId": "technology.shared.ship-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ship-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.astronomy",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.astronomy",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.astronomy.png",
+      "runtimeSemanticId": "technology.shared.astronomy",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/astronomy.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.chemistry",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.chemistry",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.chemistry.png",
+      "runtimeSemanticId": "technology.shared.chemistry",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/chemistry.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.computer-systems",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.computer-systems",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.computer-systems.png",
+      "runtimeSemanticId": "technology.shared.computer-systems",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/computer-systems.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.critical-hit",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.critical-hit",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.critical-hit.png",
+      "runtimeSemanticId": "technology.shared.critical-hit",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/critical-hit.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.ecology",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.ecology",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ecology.png",
+      "runtimeSemanticId": "technology.shared.ecology",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ecology.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.espionage",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.espionage",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.espionage.png",
+      "runtimeSemanticId": "technology.shared.espionage",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/espionage.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.fuel-cells",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.fuel-cells",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.fuel-cells.png",
+      "runtimeSemanticId": "technology.shared.fuel-cells",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/fuel-cells.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.heavy-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.heavy-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.heavy-armor.png",
+      "runtimeSemanticId": "technology.shared.heavy-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/heavy-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.hyperspace",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.hyperspace",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.hyperspace.png",
+      "runtimeSemanticId": "technology.shared.hyperspace",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/hyperspace.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.improved-construction",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.improved-construction",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.improved-construction.png",
+      "runtimeSemanticId": "technology.shared.improved-construction",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/improved-construction.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.ion-science",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.ion-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ion-science.png",
+      "runtimeSemanticId": "technology.shared.ion-science",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ion-science.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.jet-engines",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.jet-engines",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.jet-engines.png",
+      "runtimeSemanticId": "technology.shared.jet-engines",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/jet-engines.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.laser-science",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.laser-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.laser-science.png",
+      "runtimeSemanticId": "technology.shared.laser-science",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/laser-science.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.light-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.light-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.light-armor.png",
+      "runtimeSemanticId": "technology.shared.light-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/light-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.maneuver-defense",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.maneuver-defense",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.maneuver-defense.png",
+      "runtimeSemanticId": "technology.shared.maneuver-defense",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/maneuver-defense.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.mathematics",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.mathematics",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.mathematics.png",
+      "runtimeSemanticId": "technology.shared.mathematics",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/mathematics.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.medium-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.medium-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.medium-armor.png",
+      "runtimeSemanticId": "technology.shared.medium-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/medium-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.parallel-universes",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.parallel-universes",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.parallel-universes.png",
+      "runtimeSemanticId": "technology.shared.parallel-universes",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/parallel-universes.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.physics",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.physics",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.physics.png",
+      "runtimeSemanticId": "technology.shared.physics",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/physics.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.piercing-attack",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.piercing-attack",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.piercing-attack.png",
+      "runtimeSemanticId": "technology.shared.piercing-attack",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/piercing-attack.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.plasma-science",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.plasma-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.plasma-science.png",
+      "runtimeSemanticId": "technology.shared.plasma-science",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/plasma-science.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.synod.ship-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.ship-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ship-armor.png",
+      "runtimeSemanticId": "technology.shared.ship-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ship-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.astronomy",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.astronomy",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.astronomy.png",
+      "runtimeSemanticId": "technology.shared.astronomy",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/astronomy.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.chemistry",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.chemistry",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.chemistry.png",
+      "runtimeSemanticId": "technology.shared.chemistry",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/chemistry.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.computer-systems",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.computer-systems",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.computer-systems.png",
+      "runtimeSemanticId": "technology.shared.computer-systems",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/computer-systems.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.critical-hit",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.critical-hit",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.critical-hit.png",
+      "runtimeSemanticId": "technology.shared.critical-hit",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/critical-hit.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.ecology",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.ecology",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ecology.png",
+      "runtimeSemanticId": "technology.shared.ecology",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ecology.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.espionage",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.espionage",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.espionage.png",
+      "runtimeSemanticId": "technology.shared.espionage",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/espionage.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.fuel-cells",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.fuel-cells",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.fuel-cells.png",
+      "runtimeSemanticId": "technology.shared.fuel-cells",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/fuel-cells.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.heavy-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.heavy-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.heavy-armor.png",
+      "runtimeSemanticId": "technology.shared.heavy-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/heavy-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.hyperspace",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.hyperspace",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.hyperspace.png",
+      "runtimeSemanticId": "technology.shared.hyperspace",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/hyperspace.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.improved-construction",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.improved-construction",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.improved-construction.png",
+      "runtimeSemanticId": "technology.shared.improved-construction",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/improved-construction.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.ion-science",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.ion-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ion-science.png",
+      "runtimeSemanticId": "technology.shared.ion-science",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ion-science.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.jet-engines",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.jet-engines",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.jet-engines.png",
+      "runtimeSemanticId": "technology.shared.jet-engines",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/jet-engines.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.laser-science",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.laser-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.laser-science.png",
+      "runtimeSemanticId": "technology.shared.laser-science",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/laser-science.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.light-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.light-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.light-armor.png",
+      "runtimeSemanticId": "technology.shared.light-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/light-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.maneuver-defense",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.maneuver-defense",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.maneuver-defense.png",
+      "runtimeSemanticId": "technology.shared.maneuver-defense",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/maneuver-defense.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.mathematics",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.mathematics",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.mathematics.png",
+      "runtimeSemanticId": "technology.shared.mathematics",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/mathematics.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.medium-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.medium-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.medium-armor.png",
+      "runtimeSemanticId": "technology.shared.medium-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/medium-armor.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.parallel-universes",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.parallel-universes",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.parallel-universes.png",
+      "runtimeSemanticId": "technology.shared.parallel-universes",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/parallel-universes.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.physics",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.physics",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.physics.png",
+      "runtimeSemanticId": "technology.shared.physics",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/physics.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.piercing-attack",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.piercing-attack",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.piercing-attack.png",
+      "runtimeSemanticId": "technology.shared.piercing-attack",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/piercing-attack.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.plasma-science",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.plasma-science",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.plasma-science.png",
+      "runtimeSemanticId": "technology.shared.plasma-science",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/plasma-science.webp",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "mechanicalId": "technology.veyra.ship-armor",
+      "category": "technology",
+      "sourceSemanticId": "technology.shared.ship-armor",
+      "sourcePath": "assets/source/New assets/technologies/technology.shared.ship-armor.png",
+      "runtimeSemanticId": "technology.shared.ship-armor",
+      "outputPath": "public/assets/generated/catalog/technologies/shared/ship-armor.webp",
+      "width": 256,
+      "height": 256
     }
   ]
 }

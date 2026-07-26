@@ -1,4 +1,5 @@
-import { getFactionMechanicalAsset } from '../assets/factionMechanicalAssets';
+import { resolveCompleteMechanicalAsset } from '../assets/completeMechanicalAssetManifest';
+import { applyMechanicalAssetArtwork } from '../assets/runtimeMechanicalAssets';
 import { getResearchCatalogForFaction } from '../simulation/factions/factionMechanicalCatalogRegistry';
 import { getResearchDefinition } from '../simulation/research/catalog';
 import {
@@ -49,13 +50,9 @@ function canAffordResearch(
 }
 
 function setTechnologyArtwork(element: HTMLElement, assetId: string): void {
-  const asset = getFactionMechanicalAsset(assetId);
+  const asset = resolveCompleteMechanicalAsset(assetId).asset;
   if (asset === undefined) return;
-  const column = asset.frame.x / asset.frame.width;
-  const row = asset.frame.y / asset.frame.height;
-  element.style.backgroundImage = `url("${asset.atlasUrl}")`;
-  element.style.backgroundSize = '400% 300%';
-  element.style.backgroundPosition = `${column === 0 ? 0 : (column / 3) * 100}% ${row === 0 ? 0 : (row / 2) * 100}%`;
+  applyMechanicalAssetArtwork(element, asset);
 }
 
 function createDialog(): HTMLDialogElement {
@@ -168,6 +165,7 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
       const available = !maxed && missing.length === 0 && affordable && queueFree;
       const card = document.createElement('article');
       card.className = `research-card${available ? ' is-ready' : ' is-locked'}`;
+      card.dataset.mechanicalId = definition.id;
       const art = document.createElement('div');
       art.className = 'research-card-art';
       art.setAttribute('role', 'img');
