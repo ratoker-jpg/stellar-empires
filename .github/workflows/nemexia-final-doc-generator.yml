@@ -1,16 +1,20 @@
 name: Generate Nemexia Final documentation
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/nemexia-final-complete-mechanics-reference
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
 
 jobs:
   generate:
-    if: github.actor != 'github-actions[bot]'
+    if: github.head_ref == 'agent/nemexia-final-complete-mechanics-reference' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
