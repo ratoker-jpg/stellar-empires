@@ -7,6 +7,7 @@ import { createInitialGameState } from '../../src/simulation/createInitialGameSt
 import { getFactionIdForEmpire } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
+import { getCompleteResearchId } from '../../src/simulation/research/completeResearchCatalog';
 import type { GameState } from '../../src/simulation/types';
 
 function prepareBotInfrastructure(
@@ -68,10 +69,12 @@ function prepareBotInfrastructure(
 }
 
 function starterResearchLevels(state: GameState, empireId: string): Readonly<Record<string, number>> {
-  const roles = getFactionMechanicalRoles(getFactionIdForEmpire(state, empireId));
+  const factionId = getFactionIdForEmpire(state, empireId);
+  const roles = getFactionMechanicalRoles(factionId);
   return {
     [roles.research.construction]: 1,
     [roles.research.sensors]: 1,
+    [getCompleteResearchId(factionId, 'astronomy')]: 1,
   };
 }
 
@@ -127,6 +130,7 @@ describe('bot research and production planner', () => {
         'technology.aegis.energy': 2,
         'technology.aegis.sensors': 2,
         'technology.aegis.weapons': 1,
+        'technology.aegis.astronomy': 1,
       },
     );
     const playerPlanet = state.planets.find((planet) => planet.ownerEmpireId === 'player')!;
@@ -171,7 +175,7 @@ describe('bot research and production planner', () => {
     }
     expect(plan.production.command).toMatchObject({
       type: 'QUEUE_UNIT_BATCH',
-      unitId: 'ship.aegis.fighter',
+      unitId: 'ship.aegis.scout',
       quantity: 3,
     });
   });
