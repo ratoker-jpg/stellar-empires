@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-26  
-**Baseline:** merged PR #94; active PR #95
+**Baseline:** merged PR #97; active documentation PR #98
 
 ## Repository
 
@@ -19,89 +19,92 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 1. `AGENTS.md`
 2. this document
 3. `docs/project-status.json`
-4. `docs/16-execution-roadmap.md`
-5. `docs/roadmap-pr-index.json`
-6. `docs/20-full-project-audit.md`
-7. `docs/19-faction-catalog-id-policy.md`
-8. `docs/25-solar-war-obelisks-gates-and-progression.md`
-9. `docs/26-universe-galaxy-solar-system-navigation-contract.md`
-10. `docs/research/nemexia-browser-audit/19-complete-user-captured-catalog-2026-07-22.md`
-11. latest merged PRs and actual `main`
+4. `docs/27-playable-game-roadmap-v5.md`
+5. `docs/asset-prompts/master-runtime-asset-backlog.md`
+6. `docs/25-solar-war-obelisks-gates-and-progression.md`
+7. `docs/26-universe-galaxy-solar-system-navigation-contract.md`
+8. `docs/research/nemexia-final-complete-game-concept-2026-07-26.md`
+9. `docs/research/nemexia-navigation-and-ui-reference-2026-07-26.md`
+10. `docs/handoffs/2026-07-26-playable-roadmap-handoff.md`
+11. latest merged pull requests and actual `main`
+
+`docs/16-execution-roadmap.md` is retained as the historical v4 entrypoint. Roadmap v5 is authoritative after PR #98.
 
 ## Current authoritative state
 
 ```text
-#89 — complete catalog integration foundation — merged
-#90 — complete 24-building economy — merged
-#91 — interrupted technology attempt — closed without merge
-#92 — complete 22-technology progression tree — merged
-#93 — complete 13-ship rosters — merged
-#94 — complete 9-defence rosters — merged
-#95 — Commander Ships and full-game validation — active
-#96 — Universe/Galaxy/Solar-system navigation — next
+#89–#95 — complete mechanical catalogs and Commander Ships — merged
+#96 — complete Nemexia mechanics and navigation references — merged
+#97 — 90 Universe navigation source PNGs — merged
+#98 — playable-game roadmap and master asset backlog — active docs PR
+#99 — asset processing foundation and repository audit — next implementation PR
 ```
 
-PR #91 must never be treated as delivered or reused. PR #92 is its clean replacement.
+PR #91 remains superseded and must never be treated as delivered.
 
-## Delivered runtime through PR #94
+## Delivered runtime through PR #95
 
-- deterministic schema-v13 simulation, event queue, replay and checksum;
+- deterministic schema-v13 simulation, events, replay and checksums;
 - IndexedDB autosave, slots, import/export, recovery and migrations;
-- seeded galaxy, fog-aware intelligence and multi-colony management;
-- economy, buildings, research, production, fleets, combat, debris and reports;
-- logistics, market, pirates, expeditions, space objects and world events;
-- autonomous honest bots with serialized deterministic scheduling;
-- bounded long-session histories;
-- three native faction identities and registries;
-- formations, target priorities, per-hull upgrades and command doctrine;
+- multi-colony economy, buildings, research, queues and production;
+- fleets, ordinary missions, combat, debris, repair and reports;
+- logistics, markets, pirates, expeditions, space objects and events;
+- honest autonomous bots using the same command layer as the player;
+- formations, target priorities, ship upgrades, command doctrine and flagships;
 - 24 functional buildings per faction;
-- 22 canonical technologies per faction with deterministic legacy aliases;
-- 13 ordinary ships per faction with service, combat, mission, ability and asset integration;
-- 9 planetary defences per faction with shield, mixed-battery, recovery, repair, bot and asset integration.
+- 22 technologies per faction;
+- 13 ordinary ships per faction;
+- 9 planetary defences per faction;
+- 13 shared Commander Ships with Admiral progression and deterministic abilities;
+- full catalog dependency and production-path validation.
 
-## Active PR #95 boundary
+## Delivered documentation and source material
 
-PR #95 delivers:
+- PR #96 records the confirmed Nemexia mechanics and interface/navigation structure;
+- project-specific suns, crystals, Obelisks, Gates and victory remain defined by `docs/25-*`;
+- Universe/Galaxy/Solar-system structure remains defined by `docs/26-*`;
+- PR #97 adds 90 Universe source PNGs under `public/assets/universe`.
 
-- 13 shared producible Commander Ships under stable `commander.shared.*` IDs;
-- Admiral progression from level 1 through 40;
-- deterministic Admiral and shipyard unlock requirements;
-- empire-wide one-per-type ownership across planets, queues and fleets;
-- one active Commander ability in each battle, with explicit flagship selection for the player and deterministic implicit use by bots without an assignment;
-- combat, plunder, recovery, speed and battle-report integration;
-- bot production and use through the ordinary command path;
-- UI presentation for Admiral progress, unlocks, ownership and active ability;
-- source provenance bindings for all 13 committed Commander assets and processed runtime fallbacks;
-- deterministic full-game catalog and production-path validation.
+## Current limitations
 
-PR #95 intentionally does not deliver:
+- many approved building, ship, defence and Commander source images still resolve through processed compatibility fallbacks instead of final runtime derivatives;
+- the PR #97 Universe pack is oversized and has filename-contract mismatches, so it is source-ready but not runtime-ready;
+- Universe, Galaxy and Solar-system runtime navigation is not implemented;
+- the confirmed full interface/navigation contract from PR #96 is not yet implemented across all screens;
+- several ordinary Nemexia-depth systems, PvE/meta systems and bot behaviours remain incomplete;
+- alliances, solar war, final Gates and complete victory/defeat are not implemented;
+- browser E2E, balance, performance and release gates remain open.
 
-- direct loading of source PNGs as production runtime assets;
-- Universe navigation or coordinate mission UX;
-- alliances, solar war, final gates or victory;
-- final balance, optimized art processing, audio or release QA.
+## Immediate route
 
-## Next route
+1. finish PR #98 as documentation only;
+2. start PR #99 from fresh `main` after #98 merges;
+3. PR #99 creates the production asset pipeline, complete source/runtime audit, filename policy, processing budgets and visual QA reports;
+4. do not implement Universe navigation inside #99;
+5. continue in the exact order defined by `docs/27-playable-game-roadmap-v5.md`.
 
-1. merge PR #95 only after lint, typecheck, all tests and production build are green;
-2. start PR #96 from fresh `main` for Universe → Galaxy → Solar-system navigation;
-3. preserve stable mechanical IDs so later optimized asset swaps do not alter simulation state.
+## Asset rule
+
+Every procedural, CSS-generated, generic or semantically wrong fallback introduced by an implementation PR must be registered in `docs/asset-prompts/master-runtime-asset-backlog.md` in the same PR.
+
+Every asset entry must have a stable semantic ID, source/runtime path, target dimensions, prompt or generation brief, QA criteria, status and target replacement PR.
 
 ## Invariants
 
 - no `Math.random()` or system clock in simulation decisions;
 - UI never owns canonical game state;
-- bots and player use the same commands;
+- bots and player use the same commands and validators;
 - bots cannot read hidden state;
 - events execute once;
 - resources cannot become negative;
 - fleets cannot exist in two locations;
 - incompatible state changes require migration or deterministic alias resolution;
-- mechanical IDs follow `kind.faction.slug` or the explicit shared Commander namespace;
-- source assets are not runtime assets until registered and tested;
+- source assets do not become runtime assets until processed, registered and tested;
+- stable mechanical and semantic asset IDs survive visual replacement;
 - only original or clearly licensed assets enter runtime;
-- external mechanics research is reference-only.
+- confirmed Nemexia research defines depth and flow, not permission to copy third-party code, prose or art;
+- project-specific `docs/25-*` rules override historical Nemexia endgame logic.
 
 ## Workflow
 
-Fresh branch from current `main` → focused implementation → tests/docs → PR → CI → diff review → squash merge → status update → continue the authorized batch.
+Fresh branch from current `main` → focused implementation → tests/docs/backlog update → PR → CI → diff and visual review → squash merge → status update → continue only the authorized scope.
