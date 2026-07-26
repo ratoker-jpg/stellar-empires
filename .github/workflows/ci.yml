@@ -2,59 +2,55 @@ name: CI
 
 on:
   pull_request:
+  push:
+    branches:
+      - main
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality:
     name: Lint, typecheck, test and build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
+
     steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: agent/pr90-complete-building-economy
-          fetch-depth: 0
-      - name: Apply verified PR90 payload
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat \
-            .github/payload/pr90.part00 \
-            .github/payload/pr90.part01 \
-            .github/payload/pr90.part02a \
-            .github/payload/pr90.part02b \
-            .github/payload/pr90.part02c \
-            .github/payload/pr90.part02d \
-            .github/payload/pr90.part03 \
-            .github/payload/pr90.part04 \
-            .github/payload/pr90.part05 \
-            .github/payload/pr90.part06 \
-            | base64 -d > /tmp/pr90-payload.tar.gz
-          echo '29f50e441274581cf70f6b64d6b7ad6c6cd044f07daa2e63a5cf88732e954d32  /tmp/pr90-payload.tar.gz' | sha256sum -c -
-          tar -xzf /tmp/pr90-payload.tar.gz -C .
-          rm -rf .github/payload
-      - uses: actions/setup-node@v6
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
           node-version: '22.12.0'
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+
       - name: Lint
         run: npm run lint
+
       - name: Typecheck
         run: npm run typecheck
+
       - name: Test
         run: npm run test
+
       - name: Build
         run: npm run build
-      - name: Commit verified implementation
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf node_modules dist package-lock.json
-          git config user.name 'stellar-empires-automation'
-          git config user.email 'actions@users.noreply.github.com'
-          git add -A
-          git commit -m 'Implement complete 24-building economy'
-          git push origin HEAD:agent/pr90-complete-building-economy
+
+      - name: Pack validated source snapshot
+        if: github.event_name == 'pull_request'
+        run: tar --exclude='.git' --exclude='node_modules' --exclude='dist' --exclude='assets/source' -czf /tmp/stellar-empires-pr-source.tgz .
+
+      - name: Upload validated source snapshot
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: stellar-empires-pr-source
+          path: /tmp/stellar-empires-pr-source.tgz
+          retention-days: 1
