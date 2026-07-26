@@ -42,7 +42,7 @@ export interface CompleteCatalogTargetManifest {
 
 export const COMPLETE_CATALOG_TARGET_MANIFEST: CompleteCatalogTargetManifest = {
   version: 1,
-  rolloutStage: 'buildings',
+  rolloutStage: 'technologies',
   factions: ['aegis', 'synod', 'veyra'],
   targetCounts: {
     buildings: COMPLETE_CATALOG_TARGETS.buildingsPerFaction,
