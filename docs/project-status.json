@@ -6,15 +6,15 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 4,
   "releaseTarget": "1.0",
-  "lastMergedPr": 93,
-  "lastMergeSha": "ae7940aa5b3f78ea7192cb15d6b003652a38ac59",
-  "activePr": 94,
-  "nextPrAfterActive": 95,
-  "currentMilestone": "Complete core gameplay catalogs before Universe and endgame expansion",
+  "lastMergedPr": 94,
+  "lastMergeSha": "aecbdf24bb6c24435e6cd4fc1f8915aeb4d2136b",
+  "activePr": 95,
+  "nextPrAfterActive": 96,
+  "currentMilestone": "Close complete core catalogs and begin Universe navigation",
   "currentBatch": {
     "standard": [89, 90, 92, 93, 94, 95],
     "superseded": [91],
-    "completed": [89, 90, 92, 93],
+    "completed": [89, 90, 92, 93, 94],
     "plannedCapabilities": [
       "complete-catalog architecture, stable IDs, registries, validation and asset manifests",
       "24 functional buildings per faction and complete economy progression",
@@ -41,6 +41,7 @@
     "24 functional buildings for Aegis, Synod and Veyra",
     "22 canonical technologies for every faction with legacy-ID compatibility",
     "13 ordinary ships for every faction with service, combat and mission integration",
+    "9 planetary defences for every faction with shield, repair, recovery and targeting integration",
     "serialized canonical bot cadence with bounded deterministic catch-up",
     "deterministic retained-window budgets for long-session histories",
     "complete captured catalog research for 72 buildings, 39 ordinary ships, 27 defences, 22 sciences and 13 Commander Ships",
@@ -48,13 +49,19 @@
     "canonical solar-war, obelisk, gates and victory design contract",
     "canonical Universe, Galaxy and Solar-system navigation contract"
   ],
+  "activeDelivery": [
+    "13 shared Commander Ships as producible runtime units",
+    "Admiral progression through level 40 and deterministic ability scaling",
+    "one active Commander ability per battle with player and bot use",
+    "Commander combat, speed, recovery, plunder, UI and reporting integration",
+    "all Commander source assets registered with runtime fallbacks",
+    "headless complete-catalog and production-path closure"
+  ],
   "knownLimitations": [
-    "PR #94 is replacing five prototype defences with nine canonical planetary defences per faction",
-    "Commander Ships are not separate producible runtime units until PR #95",
+    "source PNGs remain provenance inputs until optimized runtime derivatives are produced",
     "planet destruction and solar-satellite energy effects remain deferred to their strategic systems",
     "Universe, Galaxy and Solar-system navigation is documented but not implemented",
     "alliances, Sun Attack, Solar Crystals and Supreme Galactic Gates are documented but not implemented",
-    "there is no headless full-match balance harness for the complete catalogs",
     "there is no browser end-to-end persistence smoke suite",
     "captured third-party HTML, CSS and binaries are excluded from runtime"
   ],
@@ -66,10 +73,10 @@
       "packs": ["starter", "faction-delivery-v1", "generated-factions-v1", "New assets"]
     },
     "runtimeAssets": {
-      "status": "partially-connected",
-      "connected": "current prototype presentation plus canonical building, technology, ordinary-ship and planetary-defense asset resolution",
-      "runtimeConnected": false,
-      "remainingIntegration": "Commander Ships and final production asset processing remain for PR #95 and later polish"
+      "status": "mechanically-connected",
+      "connected": "canonical building, technology, ordinary-ship, planetary-defense and Commander IDs all resolve through manifests and deterministic runtime fallbacks",
+      "runtimeConnected": true,
+      "remainingIntegration": "optimized production derivatives, atlas packing and final art polish remain post-core release work"
     },
     "document": "docs/assets/user-supplied-asset-intake.md"
   },
@@ -83,7 +90,7 @@
     "docs/25-solar-war-obelisks-gates-and-progression.md",
     "docs/26-universe-galaxy-solar-system-navigation-contract.md",
     "docs/research/nemexia-browser-audit/19-complete-user-captured-catalog-2026-07-22.md",
-    "docs/handoffs/pr94-complete-defense-rosters.md",
+    "docs/handoffs/pr95-commander-ships-full-game-validation.md",
     "latest merged GitHub pull requests"
   ]
 }
