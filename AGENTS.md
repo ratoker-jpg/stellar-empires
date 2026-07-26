@@ -12,8 +12,8 @@ The agent may:
 - open and update pull requests;
 - mark pull requests ready for review;
 - merge pull requests into `main` after available checks pass and no known blocking issue remains;
-- create follow-up pull requests required by the accepted roadmap;
-- choose whether a normal delivery batch contains six, seven, or eight sequential pull requests under the rules below.
+- create follow-up pull requests required by the accepted roadmap and audit contract;
+- choose the implementation batch size under the audit-first complexity rules below.
 
 ## Safety boundaries
 
@@ -35,11 +35,14 @@ Documentation-only and initial infrastructure pull requests may be merged after 
 Before planning or changing code, read these files in order:
 
 1. `AGENTS.md`;
-2. `docs/17-continuation-guide.md`;
-3. `docs/project-status.json`;
-4. `docs/16-execution-roadmap.md`;
-5. `docs/roadmap-pr-index.json`;
-6. the latest merged pull requests after the `lastMergedPr` recorded in `docs/project-status.json`.
+2. `docs/28-audit-first-autonomous-delivery-protocol.md`;
+3. `docs/audits/current-execution-state.md`;
+4. `docs/audits/current-batch-audit.md`;
+5. `docs/17-continuation-guide.md`;
+6. `docs/project-status.json`;
+7. `docs/16-execution-roadmap.md`;
+8. `docs/roadmap-pr-index.json`;
+9. the latest merged pull requests after the `lastMergedPr` recorded in `docs/project-status.json`.
 
 The agent must reconcile the recorded project status with actual `main` and GitHub PR history before starting work. When they disagree, actual merged GitHub state wins and the status documents must be corrected in the next safe change.
 
@@ -47,56 +50,68 @@ The agent must reconcile the recorded project status with actual `main` and GitH
 
 - Use a dedicated branch for each substantial task.
 - Keep pull requests focused and explain scope, validation, risks, and intentional omissions.
-- Update documentation in the same pull request when architecture, mechanics, data formats, or roadmap decisions change.
+- Update documentation in the same pull request when architecture, mechanics, data formats, audit decisions or roadmap decisions change.
 - Prefer squash merge unless preserving separate commits has a concrete benefit.
 - Do not perform irreversible actions when a reversible alternative exists.
 - Create every dependent branch from the latest merged `main`.
 - Do not claim background or asynchronous work. A requested delivery batch must be executed in the active session until completed or genuinely blocked.
+- The repository owner performs no normal local setup, command execution, CI retry, branch management or routine merging.
 
-## Delivery batch size
+## Audit-first delivery batches
 
-The standard autonomous delivery batch is **six sequential pull requests**.
+Every coherent implementation batch requires a dedicated Audit PR before implementation begins.
 
-The agent should normally:
+The Audit PR:
 
-1. select six focused roadmap items that form one coherent product step;
-2. create, validate, and merge them sequentially;
-3. start each dependent branch from the latest merged `main`;
-4. fix CI, type, lint, test, and build failures without asking the owner to intervene;
-5. update continuation/status documents at the end of the batch.
+- is separate from the implementation count;
+- studies the complete affected code, asset, UI, bot, persistence, test and documentation surface;
+- writes the verified contract to `docs/audits/current-batch-audit.md`;
+- updates `docs/audits/current-execution-state.md`;
+- must merge before the first implementation PR starts.
 
-The agent may autonomously extend a batch to **seven or eight pull requests** without asking for permission when all of the following are true:
+Implementation batch size is determined by the audit:
 
-- the additional roadmap items are direct continuations of the same product step;
-- the dependencies are already clear after the sixth PR;
-- `main` and CI are stable;
-- each additional PR remains independently reviewable;
-- there is no unresolved architecture, data-loss, licensing, or external-service question;
-- extending the batch reduces handoff overhead without creating an oversized or mixed PR.
+- **heavy:** one or two implementation PRs maximum;
+- **medium:** four implementation PRs by default;
+- **light:** six implementation PRs when the pattern is repetitive and low risk.
 
-The agent should prefer eight over six only when the extra two PRs are low-risk continuations, not merely because more roadmap items exist.
+Mixed-complexity work must be split into separate audits. Do not expand a batch merely because more roadmap work exists.
 
-A normal batch must not stop at four or five PR merely because an old minimum was reached. It may stop below six only when:
+Each implementation PR must cite its Audit PR and stable work-item ID. Broad architecture discovery should not be repeated inside every PR. Material divergence from the audit must be recorded before the implementation expands.
 
-- the current roadmap phase genuinely ends with fewer items;
-- the owner explicitly requests a smaller batch;
-- a genuine external or safety blocker is reached.
+The last implementation PR in a batch must validate the combined outcome, archive the audit under `docs/audits/completed/`, update `docs/audits/batch-history.md`, project status and continuation instructions.
 
-Ordinary code defects are not blockers. Missing secrets or permissions, unavailable infrastructure, licensing constraints, data-loss risk, paid-service requirements, or another action outside the granted authority are blockers.
+The detailed workflow is authoritative in `docs/28-audit-first-autonomous-delivery-protocol.md`.
+
+## Graphify
+
+The project-scoped Graphify skill is stored under `.agents/skills/graphify/` and the pinned CLI version is defined by the repository Graphify workflow.
+
+The agent must:
+
+- install and run Graphify itself through repository automation or its execution environment;
+- never require the repository owner to install or refresh it locally;
+- query an existing `graphify-out/graph.json` before broad file reading when the graph covers the current baseline;
+- rebuild or incrementally update the relevant graph during Audit PR preparation;
+- verify Graphify findings against current source, tests, GitHub history and canonical documents.
+
+## Stall rule
+
+Ordinary code, lint, type, test and build failures must be fixed by the agent.
+
+Stop the active process only for a genuine external or safety blocker, or when the same external workflow remains on the same state across three checks without observable progress. Before stopping, update `docs/audits/current-execution-state.md` with the exact evidence and next safe action. Do not start the next PR after a genuine stall.
 
 ## Handoff and continuation requirements
 
-After every merged PR, update `docs/project-status.json` when the next PR number, active batch, milestone, or material project state changed.
+After every merged PR, update `docs/project-status.json` and `docs/audits/current-execution-state.md` when the next PR number, active batch, milestone or material project state changed.
 
-At the end of every batch, update `docs/17-continuation-guide.md` or its linked status section with:
+At the end of every audited batch, update `docs/17-continuation-guide.md` or its linked status section with:
 
 - the last merged PR and merge SHA;
-- the next roadmap PR;
+- the next Audit PR;
 - the completed product state;
 - known limitations and unresolved risks;
-- the next standard six-PR batch;
-- optional seventh and eighth PRs, if they are already safe extensions.
+- the archived audit path;
+- the next proposed complexity-sized implementation batch.
 
 A new AI session must be able to continue from repository files and GitHub history without relying on private conversation memory.
-
-The detailed workflow is defined in `docs/14-delivery-batches.md`.

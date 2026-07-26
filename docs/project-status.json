@@ -1,24 +1,40 @@
 {
-  "statusVersion": 5,
+  "statusVersion": 6,
   "updatedAt": "2026-07-26",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 97,
-  "lastMergeSha": "9d0cf6c542db2e4468080595d76c1ea5ad2f549a",
-  "activePr": 98,
-  "nextPrAfterActive": 99,
-  "currentMilestone": "Process and integrate the complete visual catalog before Universe navigation",
+  "lastMergedPr": 99,
+  "lastMergeSha": "1868b5a7c1f540acb1882c0cc79d43ce185e216c",
+  "activePr": 100,
+  "nextPrAfterActive": 101,
+  "nextPrKind": "audit",
+  "currentMilestone": "Audit and integrate the complete visual catalog before Universe navigation",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
+  "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
+  "currentAudit": "docs/audits/current-batch-audit.md",
+  "currentExecutionState": "docs/audits/current-execution-state.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "currentBatch": {
-    "documentation": [96, 98],
-    "assetIntake": [97],
-    "completedCoreCatalogs": [89, 90, 92, 93, 94, 95],
-    "superseded": [91],
-    "nextImplementationRange": [99, 104]
+    "batchId": "ASSET-RUNTIME-INTEGRATION-01",
+    "complexity": "medium",
+    "auditPr": 101,
+    "implementationCount": 4,
+    "implementationPrs": [],
+    "workItems": [
+      "ASSET-BUILDINGS",
+      "ASSET-TECHNOLOGIES",
+      "ASSET-SHIPS",
+      "ASSET-DEFENSE-COMMANDERS"
+    ],
+    "status": "awaiting-audit"
+  },
+  "batchSizing": {
+    "heavy": [1, 2],
+    "medium": [4, 4],
+    "light": [6, 6]
   },
   "deliveredCatalogs": {
     "buildingsPerFaction": 24,
@@ -36,41 +52,53 @@
     "formations, priorities, ship upgrades, command doctrine and Commander Ships",
     "complete building, technology, ordinary ship, defence and Commander catalogs",
     "confirmed mechanics and navigation research references from PR #96",
-    "90 Universe navigation source PNGs from PR #97"
+    "90 Universe navigation source PNGs from PR #97",
+    "playable-game roadmap and master asset backlog from PR #98",
+    "deterministic asset processing foundation and 472-file audit from PR #99"
   ],
   "activeDelivery": [
-    "canonical playable-game roadmap through Release 1.0",
-    "permanent runtime asset backlog and prompt register",
-    "updated continuation and project status entrypoints",
-    "exact PR #99 asset-processing handoff"
+    "audit-first autonomous delivery protocol",
+    "complexity-sized implementation batches",
+    "recoverable current execution state",
+    "project-scoped Graphify skill and CI installation",
+    "next dedicated Audit PR for four asset-integration work items"
   ],
   "knownLimitations": [
-    "many approved source assets still resolve through compatibility fallbacks rather than final optimized runtime derivatives",
-    "the PR #97 Universe pack is oversized and contains filename-contract mismatches",
+    "approved catalog source art is not yet fully processed and connected as final runtime derivatives",
+    "three historical runtime modules remain in the closed direct-source allowlist",
+    "one historical runtime WebP is invalid and recorded by the audit",
+    "the PR #97 Universe pack is oversized and remains source intake",
     "Universe, Galaxy and Solar-system runtime navigation is not implemented",
     "the full confirmed interface/navigation shell is not implemented",
     "ordinary mechanic parity, PvE/meta depth and bot parity remain incomplete",
     "alliances, solar war, final Gates and complete victory are not implemented",
     "balance, browser E2E, performance and release gates remain open"
   ],
+  "graphify": {
+    "package": "graphifyy",
+    "version": "0.8.38",
+    "projectSkillPath": ".agents/skills/graphify",
+    "workflow": ".github/workflows/graphify-audit.yml",
+    "runner": "scripts/graphify-audit.sh",
+    "ownerLocalSetupRequired": false,
+    "status": "protocol-pr-installation"
+  },
   "sourceAssetIntake": {
     "universePack": {
       "files": 90,
       "status": "source-ready-processing-required",
-      "path": "public/assets/universe",
-      "issues": [
-        "oversized canvases and excessive decoded-memory cost",
-        "filenames differ from the accepted semantic contract",
-        "no final runtime manifest or optimized derivative set"
-      ]
+      "path": "public/assets/universe"
     },
     "catalogArt": {
-      "status": "mechanically-connected-runtime-processing-incomplete",
-      "remainingIntegration": "processing, atlas/individual derivative policy, manifest coverage, visual QA and fallback retirement"
+      "files": 174,
+      "status": "source-ready-runtime-processing-incomplete"
     }
   },
   "requiredStartupReading": [
     "AGENTS.md",
+    "docs/28-audit-first-autonomous-delivery-protocol.md",
+    "docs/audits/current-execution-state.md",
+    "docs/audits/current-batch-audit.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/27-playable-game-roadmap-v5.md",
@@ -79,7 +107,6 @@
     "docs/26-universe-galaxy-solar-system-navigation-contract.md",
     "docs/research/nemexia-final-complete-game-concept-2026-07-26.md",
     "docs/research/nemexia-navigation-and-ui-reference-2026-07-26.md",
-    "docs/handoffs/2026-07-26-playable-roadmap-handoff.md",
     "latest merged GitHub pull requests"
   ]
 }
