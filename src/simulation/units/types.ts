@@ -82,7 +82,7 @@ export interface UnitDefinition {
   readonly role: ShipRole | DefenseRole;
   readonly shipClass?: CompleteShipClass;
   readonly ability?: ShipAbilityDefinition;
-  readonly stationary?: boolean;
+  readonly stationary?: boolean | undefined;
   readonly description: string;
   readonly assetId: string;
   readonly baseCost: ResourceCost;
