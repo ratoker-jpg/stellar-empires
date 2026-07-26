@@ -51,18 +51,30 @@ jobs:
         run: npm run assets:check
 
       - name: Lint
-        run: npm run lint
+        id: lint
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          npm run lint 2>&1 | tee docs/changes/pr107-lint-diagnostics.txt
+          status=${PIPESTATUS[0]}
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit $status
 
       - name: Typecheck
+        if: steps.lint.outcome == 'success'
         run: npm run typecheck
 
       - name: Test
+        if: steps.lint.outcome == 'success'
         run: npm run test
 
       - name: Build
+        if: steps.lint.outcome == 'success'
         run: npm run build
 
-      - name: Commit generated implementation
+      - name: Commit generated implementation and diagnostics
+        if: always() && steps.lint.outcome != 'skipped'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
@@ -70,3 +82,7 @@ jobs:
           git add -A
           git commit -m "Integrate Universe runtime asset pipeline"
           git push origin HEAD:feat/107-universe-asset-pipeline
+
+      - name: Fail on lint diagnostics
+        if: steps.lint.outcome == 'failure'
+        run: exit 1
