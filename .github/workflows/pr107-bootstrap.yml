@@ -38,19 +38,29 @@ jobs:
           cat .github/bootstrap/pr107/part-* | base64 --decode | gzip --decompress > scripts/assets/bootstrap-universe-pipeline.mjs
           node scripts/assets/bootstrap-universe-pipeline.mjs
 
-      - name: Generate runtime assets and QA
-        run: |
-          npm run assets:process
-          npm run assets:contact-sheet
-          npm run assets:audit
+      - name: Generate runtime assets
+        run: npm run assets:process
 
-      - name: Validate complete change
-        run: |
-          npm run assets:check
-          npm run lint
-          npm run typecheck
-          npm run test
-          npm run build
+      - name: Generate Universe contact sheets
+        run: npm run assets:contact-sheet
+
+      - name: Regenerate asset audit
+        run: npm run assets:audit
+
+      - name: Validate asset pipeline
+        run: npm run assets:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
 
       - name: Commit generated implementation
         shell: bash
