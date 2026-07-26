@@ -42,7 +42,22 @@ jobs:
         run: npm run assets:process
 
       - name: Refresh asset audit
-        run: npm run assets:audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          node --trace-uncaught scripts/assets/audit.mjs 2>&1 | tee /tmp/pr107-audit.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            {
+              echo '### PR107 asset-audit diagnostics'
+              echo '```text'
+              tail -n 180 /tmp/pr107-audit.log
+              echo '```'
+            } > /tmp/pr107-audit-comment.md
+            gh pr comment 107 --body-file /tmp/pr107-audit-comment.md || true
+            exit "$status"
+          fi
 
       - name: Generate light and dark QA sheets
         run: node scripts/assets/contact-sheet.mjs
@@ -75,13 +90,6 @@ jobs:
           git add -A
           git commit -m "Implement Universe asset pipeline"
           git push origin HEAD:feat/107-universe-asset-pipeline
-
-      - name: Publish diagnostics
-        if: failure()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr comment 107 --body "PR107 bootstrap failed in **${{ github.job }}** at step **${{ github.action }}**. Inspect the failed Actions step; the branch was not advanced and is safe to retry after a focused fix." || true
 
   quality:
     if: github.event_name != 'pull_request' || github.head_ref != 'feat/107-universe-asset-pipeline'
