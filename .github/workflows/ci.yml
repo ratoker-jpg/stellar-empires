@@ -7,52 +7,14 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  inspect-pr108:
-    if: github.event_name == 'pull_request' && github.head_ref == 'feat/108-universe-spatial-model'
-    name: Build PR108 Graphify runtime map
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@v6
-        with:
-          ref: feat/108-universe-spatial-model
-          fetch-depth: 0
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
-      - name: Build Graphify graph
-        run: bash scripts/graphify-audit.sh code
-
-      - name: Extract scoped runtime map
-        run: bash scripts/automation/inspect-pr108.sh
-
-      - name: Remove temporary inspector
-        run: |
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/automation/inspect-pr108.sh
-
-      - name: Commit runtime map
-        run: |
-          git config user.name "stellar-empires-automation"
-          git config user.email "actions@users.noreply.github.com"
-          git add -A
-          git commit -m "Record PR108 scoped runtime map"
-          git push origin HEAD:feat/108-universe-spatial-model
-
   quality:
-    if: github.event_name != 'pull_request' || github.head_ref != 'feat/108-universe-spatial-model'
     name: Asset audit, lint, typecheck, test and build
     runs-on: ubuntu-latest
     timeout-minutes: 20
