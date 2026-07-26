@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-26  
-**Baseline:** merged PR #93; active PR #94
+**Baseline:** merged PR #94; active PR #95
 
 ## Repository
 
@@ -36,13 +36,14 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 #91 — interrupted technology attempt — closed without merge
 #92 — complete 22-technology progression tree — merged
 #93 — complete 13-ship rosters — merged
-#94 — complete 9-defence rosters — active
-#95 — Commander Ships and full-game validation — next
+#94 — complete 9-defence rosters — merged
+#95 — Commander Ships and full-game validation — active
+#96 — Universe/Galaxy/Solar-system navigation — next
 ```
 
 PR #91 must never be treated as delivered or reused. PR #92 is its clean replacement.
 
-## Delivered runtime through PR #93
+## Delivered runtime through PR #94
 
 - deterministic schema-v13 simulation, event queue, replay and checksum;
 - IndexedDB autosave, slots, import/export, recovery and migrations;
@@ -56,35 +57,35 @@ PR #91 must never be treated as delivered or reused. PR #92 is its clean replace
 - 24 functional buildings per faction;
 - 22 canonical technologies per faction with deterministic legacy aliases;
 - 13 ordinary ships per faction with service, combat, mission, ability and asset integration;
-- committed source catalog for 27 defences and 13 Commander Ships.
+- 9 planetary defences per faction with shield, mixed-battery, recovery, repair, bot and asset integration.
 
-## Active PR #94 boundary
+## Active PR #95 boundary
 
-PR #94 delivers:
+PR #95 delivers:
 
-- 9 planetary defences for each faction;
-- basic, laser, ion and plasma turrets;
-- secondary and planetary shield tiers;
-- laser-ion, plasma-laser and ion-plasma batteries;
-- faction-aware combat, recovery and repair traits;
-- deterministic defensive target priorities and bot production use;
-- deterministic compatibility aliases for old defence IDs;
-- source provenance and runtime fallback bindings for all 27 canonical IDs;
-- focused catalog, combat, repair, bot and asset tests.
+- 13 shared producible Commander Ships under stable `commander.shared.*` IDs;
+- Admiral progression from level 1 through 40;
+- deterministic Admiral and shipyard unlock requirements;
+- empire-wide one-per-type ownership across planets, queues and fleets;
+- one active Commander ability in each battle, with explicit flagship selection for the player and deterministic implicit use by bots without an assignment;
+- combat, plunder, recovery, speed and battle-report integration;
+- bot production and use through the ordinary command path;
+- UI presentation for Admiral progress, unlocks, ownership and active ability;
+- source provenance bindings for all 13 committed Commander assets and processed runtime fallbacks;
+- deterministic full-game catalog and production-path validation.
 
-PR #94 intentionally does not deliver:
+PR #95 intentionally does not deliver:
 
-- Commander Ships or Admiral progression;
-- planet destruction or solar-system destruction;
-- final solar-satellite energy formulas;
-- Universe navigation, alliances or endgame;
-- final balance and production-art processing.
+- direct loading of source PNGs as production runtime assets;
+- Universe navigation or coordinate mission UX;
+- alliances, solar war, final gates or victory;
+- final balance, optimized art processing, audio or release QA.
 
 ## Next route
 
-1. finish and merge PR #94 after lint, typecheck, full tests and build are green;
-2. create PR #95 from fresh `main` for 13 Commander Ships and deterministic full-game validation;
-3. begin Universe navigation only after the complete catalog gate passes.
+1. merge PR #95 only after lint, typecheck, all tests and production build are green;
+2. start PR #96 from fresh `main` for Universe → Galaxy → Solar-system navigation;
+3. preserve stable mechanical IDs so later optimized asset swaps do not alter simulation state.
 
 ## Invariants
 
@@ -96,7 +97,7 @@ PR #94 intentionally does not deliver:
 - resources cannot become negative;
 - fleets cannot exist in two locations;
 - incompatible state changes require migration or deterministic alias resolution;
-- mechanical IDs follow `kind.faction.slug`;
+- mechanical IDs follow `kind.faction.slug` or the explicit shared Commander namespace;
 - source assets are not runtime assets until registered and tested;
 - only original or clearly licensed assets enter runtime;
 - external mechanics research is reference-only.
