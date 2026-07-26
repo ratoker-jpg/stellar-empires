@@ -2,6 +2,7 @@ import type { ResourceCost } from '../economy/types';
 import type { FactionId } from '../planet/types';
 
 export type UnitKind = 'ship' | 'defense';
+export type UnitFactionId = FactionId | 'shared';
 
 export type ShipRole =
   | 'scout'
@@ -13,7 +14,8 @@ export type ShipRole =
   | 'capital'
   | 'colonizer'
   | 'recycler'
-  | 'satellite';
+  | 'satellite'
+  | 'commander';
 
 export type CompleteShipClass =
   | 'small-transport'
@@ -52,6 +54,46 @@ export interface ShipAbilityDefinition {
   readonly description: string;
   readonly valuePerUnitPermille: number;
   readonly maxPercent: number;
+}
+
+export type CommanderShipClass =
+  | 'annihilator'
+  | 'corsair'
+  | 'regenerator'
+  | 'viper'
+  | 'scorpion'
+  | 'phantom'
+  | 'hunter'
+  | 'typhoon'
+  | 'executor'
+  | 'juggernaut'
+  | 'argo'
+  | 'judge'
+  | 'polias';
+
+export type CommanderAbilityEffect =
+  | 'demolition'
+  | 'plunder'
+  | 'recovery'
+  | 'critical'
+  | 'paralysis'
+  | 'repulse'
+  | 'spy-detection'
+  | 'speed'
+  | 'attack'
+  | 'vitality'
+  | 'upgrade-points'
+  | 'armor-break'
+  | 'planet-shield';
+
+export interface CommanderAbilityDefinition {
+  readonly id: CommanderShipClass;
+  readonly effect: CommanderAbilityEffect;
+  readonly name: string;
+  readonly description: string;
+  readonly effectPerLevelBasisPoints: number;
+  readonly maximumLevel: number;
+  readonly battlePriority: number;
 }
 
 export type DefenseRole =
@@ -117,11 +159,15 @@ export interface UnitStats {
 export interface UnitDefinition {
   readonly id: string;
   readonly name: string;
-  readonly factionId: FactionId;
+  readonly factionId: UnitFactionId;
   readonly kind: UnitKind;
   readonly role: ShipRole | DefenseRole;
   readonly shipClass?: CompleteShipClass;
   readonly ability?: ShipAbilityDefinition;
+  readonly commanderClass?: CommanderShipClass;
+  readonly commanderAbility?: CommanderAbilityDefinition;
+  readonly requiredAdmiralLevel?: number;
+  readonly requiredShipyardLevel?: number;
   readonly defenseClass?: CompleteDefenseClass;
   readonly defenseAbility?: DefenseAbilityDefinition;
   readonly stationary?: boolean | undefined;
