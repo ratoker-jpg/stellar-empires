@@ -13,8 +13,8 @@
 | Active implementation PR | #108 |
 | Base SHA | `398a6074b8d7d62d00aa6beabc064a88b2565ca4` |
 | Last completed atomic action | implemented schema v14, compact Universe descriptors and deterministic coordinate migration |
-| Last successful validation | pending clean PR CI and Graphify on the final implementation head |
-| Exact next action | fix ordinary validation failures, merge #108 after CI and Graphify are green, then create #109 from fresh `main` |
+| Last successful validation | clean PR head passed asset checks, lint, typecheck, 322 tests, build and Graphify |
+| Exact next action | merge #108, then create #109 from fresh `main` |
 | Blockers | none |
 | Divergence | none |
 
@@ -23,7 +23,7 @@
 | Checkpoint | State |
 |---|---|
 | #107 Universe asset pipeline | merged |
-| #108 spatial model and schema v14 | implementation complete; validation active |
+| #108 spatial model and schema v14 | ready to merge |
 | #109 three-level navigation views | not started |
 | #110 actions, E2E and batch closure | not started |
 
