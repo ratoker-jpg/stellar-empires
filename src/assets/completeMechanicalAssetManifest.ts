@@ -1,4 +1,5 @@
 import type { AegisVerticalSliceAsset } from './aegisVerticalSliceAssets';
+import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
 import { getFactionMechanicalAsset } from './factionMechanicalAssets';
 
 export type CompleteMechanicalAssetCategory =
@@ -31,6 +32,64 @@ export const COMPLETE_MECHANICAL_ASSET_MANIFEST: CompleteMechanicalAssetManifest
   bindings: {},
 };
 
+
+const BUILDING_COMPATIBILITY_ASSETS = {
+  aegis: {
+    resourceMetal: 'building.aegis.metal-extractor',
+    resourceCrystal: 'building.aegis.crystal-refinery',
+    resourceGas: 'building.aegis.gas-extractor',
+    power: 'building.aegis.power-plant',
+    research: 'building.aegis.research-lab',
+    shipyard: 'building.aegis.shipyard',
+    military: 'building.aegis.sensor-array',
+    command: 'building.aegis.command',
+  },
+  synod: {
+    resourceMetal: 'building.synod.matter-weave',
+    resourceCrystal: 'building.synod.prism-refinery',
+    resourceGas: 'building.synod.flux-well',
+    power: 'building.synod.resonant-core',
+    research: 'building.synod.cognition-vault',
+    shipyard: 'building.synod.lattice-yard',
+    military: 'building.synod.deep-array',
+    command: 'building.synod.concord-nexus',
+  },
+  veyra: {
+    resourceMetal: 'building.veyra.alloy-bloom',
+    resourceCrystal: 'building.veyra.crystal-grove',
+    resourceGas: 'building.veyra.vapor-root',
+    power: 'building.veyra.solar-membrane',
+    research: 'building.veyra.memory-pod',
+    shipyard: 'building.veyra.living-dock',
+    military: 'building.veyra.pulse-canopy',
+    command: 'building.veyra.swarm-heart',
+  },
+} as const;
+
+function resolveBuildingCompatibilityAsset(mechanicalId: string): AegisVerticalSliceAsset | undefined {
+  const parsed = parseMechanicalId(mechanicalId);
+  if (parsed?.kind !== 'building' || parsed.factionId === 'shared') return undefined;
+  const assets = BUILDING_COMPATIBILITY_ASSETS[parsed.factionId];
+  const slug = parsed.slug;
+  const fallbackId = slug.startsWith('metal-')
+    ? assets.resourceMetal
+    : slug.startsWith('mineral-')
+      ? assets.resourceCrystal
+      : slug.startsWith('gas-')
+        ? assets.resourceGas
+        : slug === 'infrared-bot' || slug === 'uranium-bot'
+          ? assets.power
+          : slug === 'experimental-center'
+            ? assets.research
+            : slug === 'shipyard'
+              ? assets.shipyard
+              : slug === 'spaceport' || slug === 'teret-factory'
+                ? assets.military
+                : assets.command;
+  const fallback = getFactionMechanicalAsset(fallbackId);
+  return fallback === undefined ? undefined : { ...fallback, id: mechanicalId };
+}
+
 export interface MechanicalAssetResolution {
   readonly asset: AegisVerticalSliceAsset | undefined;
   readonly source: 'complete-manifest' | 'current-runtime-fallback' | 'missing';
@@ -50,7 +109,7 @@ export function resolveCompleteMechanicalAsset(
     };
   }
 
-  const fallback = getFactionMechanicalAsset(mechanicalId);
+  const fallback = getFactionMechanicalAsset(mechanicalId) ?? resolveBuildingCompatibilityAsset(mechanicalId);
   if (fallback !== undefined) {
     return {
       asset: fallback,

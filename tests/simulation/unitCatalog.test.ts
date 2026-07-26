@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AEGIS_BUILDING_CATALOG } from '../../src/simulation/planet/buildingCatalog';
+import { getFactionMechanicalCatalog } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { AEGIS_RESEARCH_CATALOG } from '../../src/simulation/research/catalog';
 import { AEGIS_UNIT_CATALOG } from '../../src/simulation/units/catalog';
@@ -11,11 +11,11 @@ describe('unit catalog and inventory', () => {
     expect(
       validateUnitCatalog(
         AEGIS_UNIT_CATALOG,
-        AEGIS_BUILDING_CATALOG,
+        getFactionMechanicalCatalog('aegis').buildings,
         AEGIS_RESEARCH_CATALOG,
       ),
     ).toEqual([]);
-    expect(AEGIS_BUILDING_CATALOG).toHaveLength(12);
+    expect(getFactionMechanicalCatalog('aegis').buildings).toHaveLength(24);
     expect(AEGIS_RESEARCH_CATALOG).toHaveLength(10);
     expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'ship')).toHaveLength(10);
     expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'defense')).toHaveLength(5);

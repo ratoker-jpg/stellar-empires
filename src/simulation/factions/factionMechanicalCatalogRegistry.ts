@@ -1,4 +1,5 @@
-import { AEGIS_BUILDING_CATALOG } from '../planet/aegisBuildingCatalog';
+import { COMPLETE_BUILDING_CATALOGS } from '../planet/completeBuildingCatalog';
+import { resolveCanonicalBuildingId } from '../planet/buildingAliases';
 import type { BuildingDefinition } from '../planet/buildingDefinitions';
 import type { FactionId } from '../planet/types';
 import { AEGIS_RESEARCH_CATALOG } from '../research/aegisResearchCatalog';
@@ -13,12 +14,10 @@ import {
 import { getFactionCatalogManifest } from './factionCatalogManifest';
 import { parseMechanicalId } from './mechanicalIds';
 import {
-  SYNOD_BUILDING_CATALOG,
   SYNOD_RESEARCH_CATALOG,
   SYNOD_UNIT_CATALOG,
 } from './synodMechanicalCatalog';
 import {
-  VEYRA_BUILDING_CATALOG,
   VEYRA_RESEARCH_CATALOG,
   VEYRA_UNIT_CATALOG,
 } from './veyraMechanicalCatalog';
@@ -43,19 +42,19 @@ type MechanicalCatalogSource = Omit<FactionMechanicalCatalog, 'factionId'>;
 const SOURCE_CATALOGS: Readonly<Partial<Record<FactionId, MechanicalCatalogSource>>> = {
   aegis: {
     sourceFactionId: 'aegis',
-    buildings: AEGIS_BUILDING_CATALOG,
+    buildings: COMPLETE_BUILDING_CATALOGS.aegis,
     research: AEGIS_RESEARCH_CATALOG,
     units: AEGIS_UNIT_CATALOG,
   },
   synod: {
     sourceFactionId: 'synod',
-    buildings: SYNOD_BUILDING_CATALOG,
+    buildings: COMPLETE_BUILDING_CATALOGS.synod,
     research: SYNOD_RESEARCH_CATALOG,
     units: SYNOD_UNIT_CATALOG,
   },
   veyra: {
     sourceFactionId: 'veyra',
-    buildings: VEYRA_BUILDING_CATALOG,
+    buildings: COMPLETE_BUILDING_CATALOGS.veyra,
     research: VEYRA_RESEARCH_CATALOG,
     units: VEYRA_UNIT_CATALOG,
   },
@@ -154,7 +153,7 @@ export function getResearchCatalogForEmpire(
 export function getRegisteredBuildingDefinition(
   buildingId: string,
 ): BuildingDefinition | undefined {
-  return BUILDINGS_BY_ID.get(buildingId);
+  return BUILDINGS_BY_ID.get(resolveCanonicalBuildingId(buildingId));
 }
 
 export function getRegisteredResearchDefinition(
@@ -218,7 +217,7 @@ export function validateFactionMechanicalCatalog(
   const researchIds = new Set(catalog.research.map((definition) => definition.id));
   for (const building of catalog.buildings) {
     for (const requirement of building.requirements) {
-      if (!buildingIds.has(requirement.buildingId)) {
+      if (!buildingIds.has(resolveCanonicalBuildingId(requirement.buildingId))) {
         errors.push(`Unknown building requirement ${requirement.buildingId} in ${building.id}`);
       }
     }
@@ -232,7 +231,7 @@ export function validateFactionMechanicalCatalog(
   }
   for (const unit of catalog.units) {
     for (const requirement of unit.buildingRequirements) {
-      if (!buildingIds.has(requirement.buildingId)) {
+      if (!buildingIds.has(resolveCanonicalBuildingId(requirement.buildingId))) {
         errors.push(`Unknown unit building requirement ${requirement.buildingId} in ${unit.id}`);
       }
     }

@@ -2,6 +2,8 @@ import { refreshPlanetEconomy } from '../economy/planetEconomy';
 import type { PlanetEconomyState, ResourceCost, ResourceId } from '../economy/types';
 import type { BuildingDefinition, BuildingRequirement } from './buildingCatalog';
 import { getBuildingDefinition } from './buildingCatalog';
+import { resolveCanonicalBuildingId } from './buildingAliases';
+import { getPlanetBuildingOperationalSummary } from './buildingOperations';
 import type { PlanetBuildingState, PlanetState } from './types';
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
@@ -20,7 +22,8 @@ export function getBuildingLevel(
   buildings: readonly PlanetBuildingState[],
   buildingId: string,
 ): number {
-  return buildings.find((building) => building.buildingId === buildingId)?.level ?? 0;
+  const canonicalId = resolveCanonicalBuildingId(buildingId);
+  return buildings.find((building) => resolveCanonicalBuildingId(building.buildingId) === canonicalId)?.level ?? 0;
 }
 
 export function calculateBuildingCost(
@@ -37,8 +40,15 @@ export function calculateBuildingCost(
 export function calculateBuildSeconds(
   definition: BuildingDefinition,
   targetLevel: number,
+  planet?: Pick<PlanetState, 'buildings'>,
 ): number {
-  return scaleInteger(definition.baseBuildSeconds, targetLevel, 145);
+  const baseSeconds = scaleInteger(definition.baseBuildSeconds, targetLevel, 145);
+  const speedPercent = planet === undefined
+    ? 0
+    : getPlanetBuildingOperationalSummary(planet).constructionSpeedPercent;
+  return speedPercent <= 0
+    ? baseSeconds
+    : Math.max(1, Math.ceil((baseSeconds * 100) / (100 + speedPercent)));
 }
 
 export function findMissingRequirements(
@@ -144,12 +154,17 @@ export function completeBuilding(
     };
   }
 
-  const existing = planet.buildings.find((building) => building.buildingId === buildingId);
+  const canonicalId = resolveCanonicalBuildingId(buildingId);
+  const existing = planet.buildings.find(
+    (building) => resolveCanonicalBuildingId(building.buildingId) === canonicalId,
+  );
   const buildings: readonly PlanetBuildingState[] =
     existing === undefined
       ? [...planet.buildings, { buildingId, level: targetLevel }]
       : planet.buildings.map((building) =>
-          building.buildingId === buildingId ? { ...building, level: targetLevel } : building,
+          resolveCanonicalBuildingId(building.buildingId) === canonicalId
+            ? { buildingId: canonicalId, level: targetLevel }
+            : building,
         );
   const zones: PlanetState['zones'] =
     currentLevel === 0

@@ -7,6 +7,7 @@ import {
   refundResources,
   spendResources,
 } from '../planet/buildingProgression';
+import { getPlanetBuildingOperationalSummary } from '../planet/buildingOperations';
 import type { PlanetState } from '../planet/types';
 import type {
   CommandLogEntry,
@@ -137,7 +138,8 @@ export function queueResearch(
   const baseSeconds = calculateResearchSeconds(definition, targetLevel);
   const duration = applySpeedPercent(
     baseSeconds,
-    Math.floor(effects.constructionSpeedPercent / 2),
+    Math.floor(effects.constructionSpeedPercent / 2) +
+      getPlanetBuildingOperationalSummary(planet).researchSpeedPercent,
   );
   const completesAt = state.clock.elapsedSeconds + duration;
   const queueItem = {

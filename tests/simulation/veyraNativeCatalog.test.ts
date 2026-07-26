@@ -46,14 +46,14 @@ function addVeyraInfrastructure(state: GameState, empireId: string): GameState {
             buildings: [
               ...planet.buildings.filter((building) =>
                 ![
-                  'building.veyra.swarm-heart',
+                  'building.veyra.metal-bot-1',
                   'building.veyra.memory-pod',
                   'building.veyra.living-dock',
                   'building.veyra.pulse-canopy',
                   'building.veyra.carapace-forge',
                 ].includes(building.buildingId),
               ),
-              { buildingId: 'building.veyra.swarm-heart', level: 4 },
+              { buildingId: 'building.veyra.metal-bot-1', level: 4 },
               { buildingId: 'building.veyra.memory-pod', level: 5 },
               { buildingId: 'building.veyra.living-dock', level: 4 },
               { buildingId: 'building.veyra.pulse-canopy', level: 4 },
@@ -109,7 +109,7 @@ describe('native Veyra runtime', () => {
       type: 'QUEUE_BUILDING',
       empireId: 'player',
       planetId: planet.id,
-      buildingId: 'building.veyra.swarm-heart',
+      buildingId: 'building.veyra.metal-bot-1',
     });
     expect(building.ok).toBe(true);
 
@@ -223,7 +223,7 @@ describe('native Veyra runtime', () => {
     const state = createInitialGameState('veyra-view-model', 'veyra');
     const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player')!;
     const cards = createBuildingCardViewModels(planet);
-    expect(cards).toHaveLength(12);
+    expect(cards).toHaveLength(24);
     expect(cards.every((card) => card.id.startsWith('building.veyra.'))).toBe(true);
     expect(cards.some((card) => card.id.includes('.aegis.'))).toBe(false);
   });

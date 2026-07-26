@@ -46,14 +46,14 @@ function addSynodInfrastructure(state: GameState, empireId: string): GameState {
             buildings: [
               ...planet.buildings.filter((building) =>
                 ![
-                  'building.synod.concord-nexus',
+                  'building.synod.metal-bot-1',
                   'building.synod.cognition-vault',
                   'building.synod.lattice-yard',
                   'building.synod.deep-array',
                   'building.synod.shield-foundry',
                 ].includes(building.buildingId),
               ),
-              { buildingId: 'building.synod.concord-nexus', level: 4 },
+              { buildingId: 'building.synod.metal-bot-1', level: 4 },
               { buildingId: 'building.synod.cognition-vault', level: 5 },
               { buildingId: 'building.synod.lattice-yard', level: 4 },
               { buildingId: 'building.synod.deep-array', level: 4 },
@@ -109,7 +109,7 @@ describe('native Synod runtime', () => {
       type: 'QUEUE_BUILDING',
       empireId: 'player',
       planetId: planet.id,
-      buildingId: 'building.synod.concord-nexus',
+      buildingId: 'building.synod.metal-bot-1',
     });
     expect(building.ok).toBe(true);
 
@@ -223,7 +223,7 @@ describe('native Synod runtime', () => {
     const state = createInitialGameState('synod-view-model', 'synod');
     const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player')!;
     const cards = createBuildingCardViewModels(planet);
-    expect(cards).toHaveLength(12);
+    expect(cards).toHaveLength(24);
     expect(cards.every((card) => card.id.startsWith('building.synod.'))).toBe(true);
     expect(cards.some((card) => card.id.includes('.aegis.'))).toBe(false);
   });

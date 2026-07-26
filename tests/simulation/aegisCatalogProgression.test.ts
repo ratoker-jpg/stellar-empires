@@ -6,7 +6,7 @@ describe('complete Aegis catalog', () => {
   it('resolves every extended progression dependency', () => {
     const catalog = getFactionMechanicalCatalog('aegis');
     expect(validateFactionMechanicalCatalog(catalog)).toEqual([]);
-    expect(catalog.buildings.map((entry) => entry.id)).toContain('building.aegis.defense-foundry');
+    expect(catalog.buildings.map((entry) => entry.id)).toContain('building.aegis.teret-factory');
     expect(catalog.research.map((entry) => entry.id)).toContain('technology.aegis.battle-network');
     expect(catalog.units.map((entry) => entry.id)).toContain('ship.aegis.dreadnought');
   });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
-import { AEGIS_BUILDING_CATALOG } from '../../src/simulation/planet/buildingCatalog';
+import { getFactionMechanicalCatalog } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 
 const ZONE_IDS = ['resource', 'industry', 'military'] as const;
 
@@ -46,22 +46,22 @@ describe('planet domain', () => {
     expect(playerPlanet?.factionId).toBe('aegis');
     expect(playerPlanet?.buildings.map((building) => building.buildingId)).toEqual(
       expect.arrayContaining([
-        'building.aegis.command',
-        'building.aegis.metal-extractor',
-        'building.aegis.crystal-refinery',
-        'building.aegis.gas-extractor',
-        'building.aegis.power-plant',
+        'building.aegis.control-chamber',
+        'building.aegis.metal-bot-1',
+        'building.aegis.mineral-bot-1',
+        'building.aegis.gas-probe-1',
+        'building.aegis.infrared-bot',
       ]),
     );
     expect(playerPlanet?.zones.resource.usedFields).toBe(4);
-    expect(playerPlanet?.zones.industry.usedFields).toBe(2);
-    expect(playerPlanet?.zones.military.usedFields).toBe(0);
+    expect(playerPlanet?.zones.industry.usedFields).toBe(0);
+    expect(playerPlanet?.zones.military.usedFields).toBe(1);
   });
 
   it('keeps every building definition inside exactly one valid zone', () => {
     const ids = new Set<string>();
 
-    for (const definition of AEGIS_BUILDING_CATALOG) {
+    for (const definition of getFactionMechanicalCatalog('aegis').buildings) {
       expect(ids.has(definition.id)).toBe(false);
       ids.add(definition.id);
       expect(ZONE_IDS).toContain(definition.zoneId);

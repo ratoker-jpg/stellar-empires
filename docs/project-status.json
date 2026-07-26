@@ -6,10 +6,10 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 4,
   "releaseTarget": "1.0",
-  "lastMergedPr": 88,
-  "lastMergeSha": "7e3a3442c9b78e1f232b1bfabb56e41eeb7db1a2",
-  "activePr": 89,
-  "nextPrAfterActive": 90,
+  "lastMergedPr": 89,
+  "lastMergeSha": "543794171faff24c42d2b75f482cbc2619688932",
+  "activePr": 90,
+  "nextPrAfterActive": 91,
   "currentMilestone": "Complete core gameplay catalogs before Universe and endgame expansion",
   "currentBatch": {
     "standard": [
@@ -20,7 +20,9 @@
       93,
       94
     ],
-    "completed": [],
+    "completed": [
+      89
+    ],
     "plannedCapabilities": [
       "complete-catalog architecture, stable IDs, registries, validation and asset manifests",
       "24 functional buildings per faction and complete economy progression",
@@ -53,7 +55,7 @@
     "canonical Universe, Galaxy and Solar-system navigation contract"
   ],
   "knownLimitations": [
-    "runtime catalogs are still 12 buildings, 10 technologies, 10 ships and 5 defences per faction",
+    "runtime now has 24 functional buildings per faction, while technologies, ships, defences and Commander Ships remain incomplete",
     "Commander Ships are not separate producible runtime units",
     "the complete captured economy and technology effects are not yet implemented",
     "Universe, Galaxy and Solar-system navigation is documented but not implemented",

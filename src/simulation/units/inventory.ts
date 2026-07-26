@@ -1,5 +1,6 @@
 import { getUnitCatalogForFaction } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
+import { getPlanetBuildingOperationalSummary } from '../planet/buildingOperations';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
 import type { EmpireResearchState } from '../research/types';
@@ -24,8 +25,10 @@ export function getUnitCount(
 }
 
 export function getHangarCapacity(planet: PlanetState): number {
-  const shipyardId = getFactionMechanicalRoles(planet.factionId).buildings.shipyard;
-  return getBuildingLevel(planet.buildings, shipyardId) * 25;
+  const operationsCapacity = getPlanetBuildingOperationalSummary(planet).hangarCapacity;
+  const legacyShipyardId = getFactionMechanicalRoles(planet.factionId).buildings.shipyard;
+  const compatibilityCapacity = getBuildingLevel(planet.buildings, legacyShipyardId) * 25;
+  return Math.max(operationsCapacity, compatibilityCapacity);
 }
 
 export function getHangarUsed(planet: PlanetState): number {

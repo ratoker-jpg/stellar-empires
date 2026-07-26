@@ -69,7 +69,7 @@ describe('bot economy planner', () => {
       reasonCode: 'energy-deficit',
       command: {
         type: 'QUEUE_BUILDING',
-        buildingId: 'building.aegis.power-plant',
+        buildingId: 'building.aegis.infrared-bot',
       },
     });
   });

@@ -1,6 +1,4 @@
-import {
-  getFactionMechanicalAsset,
-} from '../assets/factionMechanicalAssets';
+import { resolveCompleteMechanicalAsset } from '../assets/completeMechanicalAssetManifest';
 import type { AegisVerticalSliceAsset } from '../assets/aegisVerticalSliceAssets';
 import type { ResourceCost } from '../simulation/economy/types';
 import { getBuildingCatalogForFaction } from '../simulation/factions/factionMechanicalCatalogRegistry';
@@ -15,6 +13,7 @@ import {
   findMissingRequirements,
   getBuildingLevel,
 } from '../simulation/planet/buildingProgression';
+import { isBuildingEndgameLocked } from '../simulation/planet/buildingOperations';
 import type { PlanetState, PlanetZoneId } from '../simulation/planet/types';
 
 export interface BuildingCardViewModel {
@@ -32,7 +31,7 @@ export interface BuildingCardViewModel {
 }
 
 function requireBuildingAsset(definition: BuildingDefinition): AegisVerticalSliceAsset {
-  const asset = getFactionMechanicalAsset(definition.assetId);
+  const asset = resolveCompleteMechanicalAsset(definition.assetId).asset;
   if (asset === undefined) {
     throw new Error(`Building asset is not registered: ${definition.assetId}`);
   }
@@ -45,6 +44,9 @@ function getBlockReason(
   currentLevel: number,
   cost: ResourceCost,
 ): string | null {
+  if (isBuildingEndgameLocked(definition.id)) {
+    return 'Откроется после внедрения союзного endgame';
+  }
   if (planet.buildQueue.length > 0) {
     return 'Очередь строительства занята';
   }
@@ -92,7 +94,7 @@ export function createBuildingCardViewModels(
       targetLevel,
       maxLevel: definition.maxLevel,
       cost,
-      buildSeconds: calculateBuildSeconds(definition, targetLevel),
+      buildSeconds: calculateBuildSeconds(definition, targetLevel, planet),
       available: blockReason === null,
       blockReason,
       asset: requireBuildingAsset(definition),

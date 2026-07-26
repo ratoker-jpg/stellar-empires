@@ -1,5 +1,6 @@
 import type { ResourceCost } from '../economy/types';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
+import { getPlanetBuildingOperationalSummary } from '../planet/buildingOperations';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import {
   applySpecializationPercent,
@@ -28,12 +29,19 @@ export function calculateUnitBatchSeconds(
   const buildingId = definition.kind === 'ship' ? roles.shipyard : roles.sensorGrid;
   const level = Math.max(1, getBuildingLevel(planet.buildings, buildingId));
   const baseSeconds = Math.max(1, Math.ceil((definition.baseSeconds * quantity) / level));
+  const operations = getPlanetBuildingOperationalSummary(planet);
+  const buildingSpeedPercent = definition.kind === 'ship'
+    ? operations.shipProductionSpeedPercent
+    : operations.defenseProductionSpeedPercent;
   const effects = getPlanetSpecializationEffects(planet.specializationId);
   const speedPercent =
     definition.kind === 'ship'
       ? effects.shipProductionSpeedPercent
       : effects.defenseProductionSpeedPercent;
-  return applySpecializationPercent(baseSeconds, speedPercent);
+  const buildingAdjusted = buildingSpeedPercent <= 0
+    ? baseSeconds
+    : Math.max(1, Math.ceil((baseSeconds * 100) / (100 + buildingSpeedPercent)));
+  return applySpecializationPercent(buildingAdjusted, speedPercent);
 }
 
 export function addCompletedUnits(

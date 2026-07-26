@@ -6,6 +6,19 @@ export interface BuildingRequirement {
   readonly level: number;
 }
 
+export interface BuildingOperationalEffects {
+  readonly constructionSpeedPercent?: number;
+  readonly shipProductionSpeedPercent?: number;
+  readonly defenseProductionSpeedPercent?: number;
+  readonly researchSpeedPercent?: number;
+  readonly hangarCapacity?: number;
+  readonly salvageEfficiencyPercent?: number;
+  readonly marketEfficiencyPercent?: number;
+  readonly shipUpgradeCapacity?: number;
+  readonly bankCreditEfficiencyPercent?: number;
+  readonly endgameLocked?: boolean;
+}
+
 export interface BuildingDefinition {
   readonly id: string;
   readonly name: string;
@@ -18,4 +31,5 @@ export interface BuildingDefinition {
   readonly baseBuildSeconds: number;
   readonly requirements: readonly BuildingRequirement[];
   readonly economy?: EconomyContribution;
+  readonly operations?: BuildingOperationalEffects;
 }

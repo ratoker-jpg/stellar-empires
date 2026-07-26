@@ -21,6 +21,7 @@ import {
 } from './logistics/routes';
 import { executeMarketSwap } from './market/market';
 import { getBuildingDefinition } from './planet/buildingCatalog';
+import { isBuildingEndgameLocked } from './planet/buildingOperations';
 import {
   calculateBuildingCost,
   calculateBuildSeconds,
@@ -171,6 +172,13 @@ function queueBuilding(
   if (!canUseMechanicalDefinition(definition.factionId, planet.factionId)) {
     return { ok: false, code: 'WRONG_FACTION_BUILDING', message: 'The building belongs to another faction.' };
   }
+  if (isBuildingEndgameLocked(definition.id)) {
+    return {
+      ok: false,
+      code: 'BUILDING_FEATURE_LOCKED',
+      message: 'This galactic structure is reserved for the later alliance endgame.',
+    };
+  }
   const currentLevel = getBuildingLevel(planet.buildings, definition.id);
   const targetLevel = currentLevel + 1;
   if (targetLevel > definition.maxLevel) {
@@ -200,7 +208,7 @@ function queueBuilding(
   const queueItemId = `build-${sequence}`;
   const effects = getResearchEffectsForEmpire(state, command.empireId);
   const researchDuration = applySpeedPercent(
-    calculateBuildSeconds(definition, targetLevel),
+    calculateBuildSeconds(definition, targetLevel, planet),
     effects?.constructionSpeedPercent ?? 0,
   );
   const specialization = getPlanetSpecializationEffects(planet.specializationId);
