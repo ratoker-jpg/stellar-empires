@@ -26,6 +26,7 @@ import {
   plunderPlanet,
   type DebrisAmount,
 } from './debris';
+import { getPlanetaryDefenseTargetPriority } from './defenseAbilities';
 import { resolveBattle } from './resolveBattle';
 import type { BattleReport } from './types';
 
@@ -177,7 +178,8 @@ export function resolveAttackMission(
   const attackerFormation = attackerFleet.formation ?? 'line';
   const attackerTargetPriority = attackerFleet.targetPriority ?? 'balanced';
   const defenderFormation = defenderDoctrine?.formation ?? 'line';
-  const defenderTargetPriority = defenderDoctrine?.targetPriority ?? 'balanced';
+  const defenderTargetPriority = defenderDoctrine?.targetPriority ??
+    getPlanetaryDefenseTargetPriority(target.inventory.defenses);
 
   const isPve = target.ownerEmpireId === PIRATE_EMPIRE_ID;
   const threatMultiplierPermille = isPve
