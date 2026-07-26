@@ -7,6 +7,7 @@ import { resolveCanonicalResearchId } from '../research/researchAliases';
 import type { ResearchDefinition } from '../research/types';
 import type { GameState } from '../types';
 import { AEGIS_UNIT_CATALOG } from '../units/aegisUnitCatalog';
+import { COMPLETE_COMMANDER_SHIP_CATALOG } from '../units/completeCommanderShipCatalog';
 import { COMPLETE_DEFENSE_CATALOGS } from '../units/completeDefenseCatalog';
 import { COMPLETE_SHIP_CATALOGS } from '../units/completeShipCatalog';
 import { resolveCanonicalUnitId } from '../units/unitAliases';
@@ -68,7 +69,8 @@ const RESEARCH_BY_ID = new Map(
   REGISTERED_SOURCES.flatMap((source) => source.research).map((definition) => [definition.id, definition]),
 );
 const UNITS_BY_ID = new Map(
-  REGISTERED_SOURCES.flatMap((source) => source.units).map((definition) => [definition.id, definition]),
+  [...REGISTERED_SOURCES.flatMap((source) => source.units), ...COMPLETE_COMMANDER_SHIP_CATALOG]
+    .map((definition) => [definition.id, definition]),
 );
 const LEGACY_UNITS_BY_ID = new Map(
   [...AEGIS_UNIT_CATALOG, ...SYNOD_UNIT_CATALOG, ...VEYRA_UNIT_CATALOG]
@@ -110,6 +112,10 @@ export function getUnitCatalogForFaction(
   return getFactionMechanicalCatalog(factionId).units;
 }
 
+export function getCommanderShipCatalog(): readonly UnitDefinition[] {
+  return COMPLETE_COMMANDER_SHIP_CATALOG;
+}
+
 export function getFactionCatalogCompleteness(
   factionId: FactionId,
 ): FactionCatalogCompleteness {
@@ -119,7 +125,7 @@ export function getFactionCatalogCompleteness(
     technologies: catalog.research.length,
     ships: catalog.units.filter((unit) => unit.kind === 'ship').length,
     defenses: catalog.units.filter((unit) => unit.kind === 'defense').length,
-    commanderShips: 0,
+    commanderShips: COMPLETE_COMMANDER_SHIP_CATALOG.length,
   };
   const target: CompleteCatalogCounts = {
     buildings: COMPLETE_CATALOG_TARGETS.buildingsPerFaction,
@@ -179,8 +185,8 @@ export function getRegisteredUnitsByKind(
   factionId?: FactionId,
 ): readonly UnitDefinition[] {
   const catalog = factionId === undefined
-    ? REGISTERED_SOURCES.flatMap((source) => source.units)
-    : getUnitCatalogForFaction(factionId);
+    ? [...REGISTERED_SOURCES.flatMap((source) => source.units), ...COMPLETE_COMMANDER_SHIP_CATALOG]
+    : [...getUnitCatalogForFaction(factionId), ...COMPLETE_COMMANDER_SHIP_CATALOG];
   return catalog.filter((definition) => definition.kind === kind);
 }
 
