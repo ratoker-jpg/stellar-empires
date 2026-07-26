@@ -20,7 +20,7 @@ install_graphify() {
 build_code_graph() {
   local temp_root
   temp_root="$(mktemp -d)"
-  trap 'rm -rf "$temp_root"' EXIT
+  trap "rm -rf -- '$temp_root'" EXIT
 
   mkdir -p "$temp_root/project"
   cp -R src "$temp_root/project/src"
@@ -30,6 +30,7 @@ build_code_graph() {
   (
     cd "$temp_root/project"
     graphify extract . --code-only --directed --no-viz
+    graphify cluster-only . --no-viz
   )
 
   test -s "$temp_root/project/graphify-out/graph.json"
@@ -39,6 +40,9 @@ build_code_graph() {
   mkdir -p graphify-out
   cp "$temp_root/project/graphify-out/graph.json" graphify-out/graph.json
   cp "$temp_root/project/graphify-out/GRAPH_REPORT.md" graphify-out/GRAPH_REPORT.md
+
+  rm -rf -- "$temp_root"
+  trap - EXIT
 }
 
 install_graphify
