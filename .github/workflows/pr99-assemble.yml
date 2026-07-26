@@ -1,4 +1,4 @@
-name: Finalize PR99 asset pipeline
+name: Diagnose PR99 asset audit
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  finalize:
+  diagnose:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -27,23 +27,17 @@ jobs:
         with:
           node-version: '22.12.0'
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+      - run: npm install --no-audit --no-fund
 
-      - name: Generate committed asset audit
-        run: npm run assets:audit
-
-      - name: Validate implementation
-        run: npm run check
-
-      - name: Commit final reviewable diff
+      - name: Capture audit output
         shell: bash
         run: |
-          rm -f .agent/pr99-payload.b64 .agent/pr99-trigger .agent/pr99-diagnostic.txt
-          rmdir .agent 2>/dev/null || true
-          rm -f .github/workflows/pr99-assemble.yml
+          set +e
+          npm run assets:audit > .agent/pr99-audit-error.txt 2>&1
+          code=$?
+          echo "exit-code=$code" >> .agent/pr99-audit-error.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Generate the repository asset audit"
+          git add .agent/pr99-audit-error.txt
+          git commit -m "Record PR99 audit diagnostics"
           git push origin HEAD:agent/pr99-asset-processing-foundation
