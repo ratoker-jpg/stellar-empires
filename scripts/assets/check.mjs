@@ -183,6 +183,30 @@ for (const binding of spaceMapBindings.entries) {
   else if (source.sha256 !== binding.sourceSha256) errors.push(`Space Map source checksum changed: ${binding.sourcePath}`);
   if (outputPaths.has(binding.outputPath)) errors.push(`Duplicate Space Map output path: ${binding.outputPath}`);
   outputPaths.add(binding.outputPath);
+
+  const runtime = sourceAuditByPath.get(binding.outputPath);
+  if (runtime === undefined) {
+    errors.push(`Missing audited Space Map runtime output: ${binding.outputPath}`);
+    continue;
+  }
+  if (runtime.alphaBounds === null || runtime.width === null || runtime.height === null) {
+    errors.push(`Missing alpha bounds for Space Map runtime output: ${binding.outputPath}`);
+    continue;
+  }
+  const minimumMargin = Math.max(
+    2,
+    Math.floor(Math.min(runtime.width, runtime.height) * config.spaceMapBudgets.minimumTransparentMarginRatio),
+  );
+  const rightMargin = runtime.width - runtime.alphaBounds.x - runtime.alphaBounds.width;
+  const bottomMargin = runtime.height - runtime.alphaBounds.y - runtime.alphaBounds.height;
+  if (
+    runtime.alphaBounds.x < minimumMargin ||
+    runtime.alphaBounds.y < minimumMargin ||
+    rightMargin < minimumMargin ||
+    bottomMargin < minimumMargin
+  ) {
+    errors.push(`Space Map runtime safe area is too small: ${binding.outputPath}`);
+  }
 }
 const universeRuntime = runtimeManifest.assets.filter((asset) => asset.outputPath.startsWith('public/assets/generated/universe/'));
 const universeBytes = universeRuntime.reduce((sum, asset) => sum + asset.bytes, 0);
