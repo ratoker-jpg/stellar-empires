@@ -39,8 +39,16 @@ jobs:
         run: npm run assets:audit
       - name: Generate QA sheets
         run: node scripts/assets/contact-sheet.mjs
-      - name: Validate implementation
-        run: npm run check
+      - name: Validate asset pipeline
+        run: npm run assets:check
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm run test
+      - name: Build
+        run: npm run build
       - name: Restore permanent workflow and commit
         run: |
           git fetch origin main
