@@ -223,7 +223,12 @@ async function alphaBounds(absolutePath, metadata) {
 export async function inspectAsset(absolutePath, config) {
   const repositoryPath = toPosix(path.relative(REPOSITORY_ROOT, absolutePath));
   const fileStats = await stat(absolutePath);
-  const metadata = await sharp(absolutePath, { animated: false }).metadata();
+  let metadata;
+  try {
+    metadata = await sharp(absolutePath, { animated: false }).metadata();
+  } catch (error) {
+    throw new Error(`Unable to inspect asset ${repositoryPath}: ${error instanceof Error ? error.message : String(error)}`);
+  }
   const width = metadata.width ?? null;
   const height = metadata.height ?? null;
   const decodedBytes = width === null || height === null ? null : width * height * 4;

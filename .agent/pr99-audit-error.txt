@@ -2,14 +2,13 @@
 > stellar-empires@0.1.0 assets:audit
 > node scripts/assets/audit.mjs
 
-file:///home/runner/work/stellar-empires/stellar-empires/node_modules/sharp/dist/input.mjs:642
-  const stack = Error();
-                ^
+file:///home/runner/work/stellar-empires/stellar-empires/scripts/assets/lib.mjs:230
+    throw new Error(`Unable to inspect asset ${repositoryPath}: ${error instanceof Error ? error.message : String(error)}`);
+          ^
 
-Error: Input file contains unsupported image format
-    at Sharp.metadata (file:///home/runner/work/stellar-empires/stellar-empires/node_modules/sharp/dist/input.mjs:642:17)
-    at inspectAsset (file:///home/runner/work/stellar-empires/stellar-empires/scripts/assets/lib.mjs:226:67)
-    at async buildAuditManifest (file:///home/runner/work/stellar-empires/stellar-empires/scripts/assets/lib.mjs:278:17)
+Error: Unable to inspect asset public/assets/factions/aegis/background.webp: Input file contains unsupported image format
+    at inspectAsset (file:///home/runner/work/stellar-empires/stellar-empires/scripts/assets/lib.mjs:230:11)
+    at async buildAuditManifest (file:///home/runner/work/stellar-empires/stellar-empires/scripts/assets/lib.mjs:283:17)
     at async file:///home/runner/work/stellar-empires/stellar-empires/scripts/assets/audit.mjs:48:18
 
 Node.js v22.12.0
