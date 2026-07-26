@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-26  
-**Baseline:** merged PR #97; active documentation PR #98
+**Baseline:** merged PR #99; active protocol PR #100
 
 ## Repository
 
@@ -17,18 +17,20 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 ## Required startup reading
 
 1. `AGENTS.md`
-2. this document
-3. `docs/project-status.json`
-4. `docs/27-playable-game-roadmap-v5.md`
-5. `docs/asset-prompts/master-runtime-asset-backlog.md`
-6. `docs/25-solar-war-obelisks-gates-and-progression.md`
-7. `docs/26-universe-galaxy-solar-system-navigation-contract.md`
-8. `docs/research/nemexia-final-complete-game-concept-2026-07-26.md`
-9. `docs/research/nemexia-navigation-and-ui-reference-2026-07-26.md`
-10. `docs/handoffs/2026-07-26-playable-roadmap-handoff.md`
-11. latest merged pull requests and actual `main`
+2. `docs/28-audit-first-autonomous-delivery-protocol.md`
+3. `docs/audits/current-execution-state.md`
+4. `docs/audits/current-batch-audit.md`
+5. this document
+6. `docs/project-status.json`
+7. `docs/27-playable-game-roadmap-v5.md`
+8. `docs/asset-prompts/master-runtime-asset-backlog.md`
+9. `docs/25-solar-war-obelisks-gates-and-progression.md`
+10. `docs/26-universe-galaxy-solar-system-navigation-contract.md`
+11. `docs/research/nemexia-final-complete-game-concept-2026-07-26.md`
+12. `docs/research/nemexia-navigation-and-ui-reference-2026-07-26.md`
+13. latest merged pull requests and actual `main`
 
-`docs/16-execution-roadmap.md` is retained as the historical v4 entrypoint. Roadmap v5 is authoritative after PR #98.
+`docs/16-execution-roadmap.md` is retained as the historical v4 entrypoint. Roadmap v5 defines product order; the audit-first protocol defines how each coherent roadmap segment is prepared and delivered.
 
 ## Current authoritative state
 
@@ -36,13 +38,15 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 #89–#95 — complete mechanical catalogs and Commander Ships — merged
 #96 — complete Nemexia mechanics and navigation references — merged
 #97 — 90 Universe navigation source PNGs — merged
-#98 — playable-game roadmap and master asset backlog — active docs PR
-#99 — asset processing foundation and repository audit — next implementation PR
+#98 — playable-game roadmap and master asset backlog — merged
+#99 — deterministic asset processing foundation and repository audit — merged
+#100 — audit-first autonomous delivery protocol and Graphify project setup — active
+next — dedicated Audit PR for ASSET-RUNTIME-INTEGRATION-01
 ```
 
 PR #91 remains superseded and must never be treated as delivered.
 
-## Delivered runtime through PR #95
+## Delivered runtime and infrastructure through PR #99
 
 - deterministic schema-v13 simulation, events, replay and checksums;
 - IndexedDB autosave, slots, import/export, recovery and migrations;
@@ -56,19 +60,25 @@ PR #91 remains superseded and must never be treated as delivered.
 - 13 ordinary ships per faction;
 - 9 planetary defences per faction;
 - 13 shared Commander Ships with Admiral progression and deterministic abilities;
-- full catalog dependency and production-path validation.
+- complete catalog dependency and production-path validation;
+- deterministic asset audit, processing, atlas and CI foundation;
+- 472 audited asset files with semantic IDs, checksums, dimensions, alpha bounds and budgets.
 
 ## Delivered documentation and source material
 
 - PR #96 records the confirmed Nemexia mechanics and interface/navigation structure;
 - project-specific suns, crystals, Obelisks, Gates and victory remain defined by `docs/25-*`;
 - Universe/Galaxy/Solar-system structure remains defined by `docs/26-*`;
-- PR #97 adds 90 Universe source PNGs under `public/assets/universe`.
+- PR #97 adds 90 Universe source PNGs under `public/assets/universe`;
+- PR #98 defines the playable-game roadmap and permanent runtime asset backlog;
+- PR #100 introduces the audit-first protocol, recovery logs and project-scoped Graphify automation.
 
 ## Current limitations
 
-- many approved building, ship, defence and Commander source images still resolve through processed compatibility fallbacks instead of final runtime derivatives;
-- the PR #97 Universe pack is oversized and has filename-contract mismatches, so it is source-ready but not runtime-ready;
+- approved building, technology, ship, defence and Commander source images are not yet fully processed and connected as final runtime derivatives;
+- three historical runtime modules still directly reference source assets under a closed legacy allowlist;
+- one historical runtime WebP is invalid and recorded by the asset audit;
+- the Universe pack is oversized and remains source intake rather than runtime-ready art;
 - Universe, Galaxy and Solar-system runtime navigation is not implemented;
 - the confirmed full interface/navigation contract from PR #96 is not yet implemented across all screens;
 - several ordinary Nemexia-depth systems, PvE/meta systems and bot behaviours remain incomplete;
@@ -77,17 +87,27 @@ PR #91 remains superseded and must never be treated as delivered.
 
 ## Immediate route
 
-1. finish PR #98 as documentation only;
-2. start PR #99 from fresh `main` after #98 merges;
-3. PR #99 creates the production asset pipeline, complete source/runtime audit, filename policy, processing budgets and visual QA reports;
-4. do not implement Universe navigation inside #99;
-5. continue in the exact order defined by `docs/27-playable-game-roadmap-v5.md`.
+1. merge protocol PR #100 after Graphify and normal CI pass;
+2. create a dedicated Audit PR from fresh `main`;
+3. use Graphify plus direct code inspection to replace the placeholder in `docs/audits/current-batch-audit.md`;
+4. audit the medium batch `ASSET-RUNTIME-INTEGRATION-01`;
+5. do not begin implementation until the Audit PR merges;
+6. after the audit, implement exactly four work items in sequence:
+   - `ASSET-BUILDINGS`;
+   - `ASSET-TECHNOLOGIES`;
+   - `ASSET-SHIPS`;
+   - `ASSET-DEFENSE-COMMANDERS`;
+7. the fourth implementation PR closes and archives the batch audit.
+
+## Owner-effort rule
+
+The repository owner is not required to install tools, run commands, manage branches, retry CI or merge routine PRs. Graphify installation and refresh are performed by the assistant or repository automation.
 
 ## Asset rule
 
 Every procedural, CSS-generated, generic or semantically wrong fallback introduced by an implementation PR must be registered in `docs/asset-prompts/master-runtime-asset-backlog.md` in the same PR.
 
-Every asset entry must have a stable semantic ID, source/runtime path, target dimensions, prompt or generation brief, QA criteria, status and target replacement PR.
+Every asset entry must have a stable semantic ID, source/runtime path, target dimensions, prompt or generation brief, QA criteria, status and target replacement work item.
 
 ## Invariants
 
@@ -107,4 +127,4 @@ Every asset entry must have a stable semantic ID, source/runtime path, target di
 
 ## Workflow
 
-Fresh branch from current `main` → focused implementation → tests/docs/backlog update → PR → CI → diff and visual review → squash merge → status update → continue only the authorized scope.
+Fresh `main` → Audit PR → accepted implementation contract → complexity-sized implementation batch → combined batch gate → archive audit → update status → next Audit PR.
