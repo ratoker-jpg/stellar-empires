@@ -36,11 +36,19 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Graphify, generate project skill and build code graph
+      - name: Install Graphify and build code graph
+        id: graphify
         env:
           GRAPHIFY_VERSION: '0.8.38'
           PYTHON_BIN: python
-        run: bash scripts/graphify-audit.sh code
+        shell: bash
+        run: |
+          set +e
+          bash scripts/graphify-audit.sh code > graphify-ci.log 2>&1
+          code=$?
+          echo "exit-code=$code" >> graphify-ci.log
+          cat graphify-ci.log
+          exit "$code"
 
       - name: Validate generated outputs
         run: |
@@ -48,12 +56,14 @@ jobs:
           test -s graphify-out/graph.json
           test -s graphify-out/GRAPH_REPORT.md
 
-      - name: Upload Graphify outputs
+      - name: Upload Graphify outputs and diagnostics
+        if: always()
         uses: actions/upload-artifact@v6
         with:
           name: graphify-audit-output
           path: |
+            graphify-ci.log
             .agents/skills/graphify/
             graphify-out/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
