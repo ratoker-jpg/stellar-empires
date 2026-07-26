@@ -1,6 +1,7 @@
+import { getCompleteDefenseClass } from '../units/completeDefenseCatalog';
 import { getCompleteShipClass } from '../units/completeShipCatalog';
 import { LEGACY_UNIT_ALIASES, resolveCanonicalUnitId } from '../units/unitAliases';
-import type { CompleteShipClass } from '../units/types';
+import type { CompleteDefenseClass, CompleteShipClass } from '../units/types';
 
 export type WeaponType = 'kinetic' | 'plasma' | 'missile' | 'disruptor';
 export type ProtectionType = 'light-armor' | 'heavy-armor' | 'shield-grid' | 'fortified';
@@ -44,6 +45,18 @@ const COMPLETE_SHIP_PROFILES: Readonly<Record<CompleteShipClass, UnitCombatProfi
   recycler: { weaponType: 'kinetic', protectionType: 'heavy-armor', targetSize: 'medium' },
   'spy-probe': { weaponType: 'kinetic', protectionType: 'light-armor', targetSize: 'small' },
   'energy-satellite': { weaponType: 'kinetic', protectionType: 'shield-grid', targetSize: 'medium' },
+};
+
+const COMPLETE_DEFENSE_PROFILES: Readonly<Record<CompleteDefenseClass, UnitCombatProfile>> = {
+  'basic-turret': { weaponType: 'kinetic', protectionType: 'fortified', targetSize: 'installation' },
+  'laser-turret': { weaponType: 'plasma', protectionType: 'fortified', targetSize: 'installation' },
+  'ion-turret': { weaponType: 'disruptor', protectionType: 'fortified', targetSize: 'installation' },
+  'plasma-turret': { weaponType: 'plasma', protectionType: 'fortified', targetSize: 'installation' },
+  'secondary-shield': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
+  'planetary-shield': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
+  'laser-ion-battery': { weaponType: 'disruptor', protectionType: 'fortified', targetSize: 'installation' },
+  'plasma-laser-battery': { weaponType: 'plasma', protectionType: 'fortified', targetSize: 'installation' },
+  'ion-plasma-battery': { weaponType: 'missile', protectionType: 'fortified', targetSize: 'installation' },
 };
 
 const LEGACY_AND_DEFENSE_PROFILES: Readonly<Record<string, UnitCombatProfile>> = {
@@ -116,6 +129,8 @@ export function getUnitCombatProfile(unitId: string): UnitCombatProfile {
   const canonicalId = resolveCanonicalUnitId(unitId);
   const shipClass = getCompleteShipClass(canonicalId);
   if (shipClass !== undefined) return COMPLETE_SHIP_PROFILES[shipClass];
+  const defenseClass = getCompleteDefenseClass(canonicalId);
+  if (defenseClass !== undefined) return COMPLETE_DEFENSE_PROFILES[defenseClass];
   return LEGACY_AND_DEFENSE_PROFILES[canonicalId] ?? DEFAULT_PROFILE;
 }
 
