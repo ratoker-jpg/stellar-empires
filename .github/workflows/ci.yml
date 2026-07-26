@@ -39,6 +39,7 @@ jobs:
         run: |
           node scripts/automation/implement-pr107.mjs
           node scripts/automation/patch-pr107-audit.mjs
+          node scripts/automation/patch-pr107-lint.mjs
 
       - name: Generate runtime assets
         run: npm run assets:process
@@ -63,7 +64,7 @@ jobs:
         run: |
           git fetch origin main
           git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/automation/implement-pr107.mjs scripts/automation/patch-pr107-audit.mjs
+          rm -f scripts/automation/implement-pr107.mjs scripts/automation/patch-pr107-audit.mjs scripts/automation/patch-pr107-lint.mjs
 
       - name: Validate asset pipeline
         run: npm run assets:check
