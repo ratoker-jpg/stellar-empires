@@ -1,11 +1,16 @@
 import {
-  addDamagedDefenses,
-  calculateRecoveredDefenses,
-} from '../defense/planetaryDefense';
+  getCommanderFleetEffects,
+  recoverFleetShipsWithCommander,
+  type CommanderFleetEffects,
+} from '../command/commanderShips';
 import {
   awardBattleCommandExperience,
   getCommandCombatEffects,
 } from '../command/commandDoctrine';
+import {
+  addDamagedDefenses,
+  calculateRecoveredDefenses,
+} from '../defense/planetaryDefense';
 import type { ResourceCost } from '../economy/types';
 import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import type { FleetState } from '../fleets/types';
@@ -34,13 +39,28 @@ function getCombatEffects(
   state: GameState,
   empireId: string,
   units: Readonly<Record<string, number>>,
-  fleetId?: string,
+  fleetId: string | undefined,
+  commander: CommanderFleetEffects,
+  opponentCommander: CommanderFleetEffects,
+  installationsPresent: boolean,
 ) {
   const effects = getResearchEffectsForEmpire(state, empireId);
   const command = getCommandCombatEffects(state.commanders, empireId, fleetId);
+  const demolitionBonus = installationsPresent && commander.demolitionBasisPoints > 0
+    ? Math.max(1, Math.ceil(commander.demolitionBasisPoints / 100))
+    : 0;
   return {
-    weaponBonusPercent: effects.weaponStrengthPercent + command.weaponBonusPercent,
-    armorBonusPercent: effects.armorStrengthPercent + command.armorBonusPercent,
+    weaponBonusPercent:
+      effects.weaponStrengthPercent +
+      command.weaponBonusPercent +
+      commander.weaponBonusPercent +
+      demolitionBonus -
+      opponentCommander.enemyWeaponPenaltyPercent,
+    armorBonusPercent:
+      effects.armorStrengthPercent +
+      command.armorBonusPercent +
+      commander.armorBonusPercent -
+      opponentCommander.enemyArmorPenaltyPercent,
     unitWeaponBonusPercent: getShipUpgradeBonusMap(
       state.shipUpgrades,
       empireId,
@@ -104,6 +124,18 @@ function addRecoveredToRemaining(
     result[unitId] = (result[unitId] ?? 0) + quantity;
   }
   return result;
+}
+
+function recoveredDelta(
+  before: Readonly<Record<string, number>>,
+  after: Readonly<Record<string, number>>,
+): Readonly<Record<string, number>> {
+  return Object.fromEntries(
+    Object.keys(after)
+      .sort()
+      .map((unitId) => [unitId, Math.max(0, (after[unitId] ?? 0) - (before[unitId] ?? 0))] as const)
+      .filter(([, quantity]) => quantity > 0),
+  );
 }
 
 function redistributeDefenderShips(
@@ -196,6 +228,10 @@ export function resolveAttackMission(
   const effectiveDefenderUnits = isPve
     ? scalePveUnits(defenderUnits, threatMultiplierPermille)
     : defenderUnits;
+  const attackerCommander = getCommanderFleetEffects(state, attackerFleet);
+  const defenderCommander = defenderDoctrine === undefined
+    ? getCommanderFleetEffects(state, target.ownerEmpireId, undefined, effectiveDefenderUnits)
+    : getCommanderFleetEffects(state, defenderDoctrine);
 
   const seed = (state.seed ^ eventSequence ^ attackerFleet.id.length) >>> 0;
   const resolution = resolveBattle(
@@ -205,17 +241,45 @@ export function resolveAttackMission(
       units: attackerFleet.ships,
       formation: attackerFormation,
       targetPriority: attackerTargetPriority,
-      ...getCombatEffects(state, attackerFleet.empireId, attackerFleet.ships, attackerFleet.id),
+      ...getCombatEffects(
+        state,
+        attackerFleet.empireId,
+        attackerFleet.ships,
+        attackerFleet.id,
+        attackerCommander,
+        defenderCommander,
+        Object.keys(target.inventory.defenses).length > 0,
+      ),
     },
     {
       empireId: target.ownerEmpireId,
       units: effectiveDefenderUnits,
       formation: defenderFormation,
       targetPriority: defenderTargetPriority,
-      ...getCombatEffects(state, target.ownerEmpireId, effectiveDefenderUnits, defenderDoctrine?.id),
+      ...getCombatEffects(
+        state,
+        target.ownerEmpireId,
+        effectiveDefenderUnits,
+        defenderDoctrine?.id,
+        defenderCommander,
+        attackerCommander,
+        false,
+      ),
     },
   );
-  const defenderRemaining = splitDefenderRemaining(resolution.defenderRemaining);
+  const attackerAfterCommanderRecovery = recoverFleetShipsWithCommander(
+    attackerFleet.ships,
+    resolution.attackerRemaining,
+    attackerCommander.recoveryPermille,
+    seed ^ 0xa5a5a5a5,
+  );
+  const defenderAfterCommanderRecovery = recoverFleetShipsWithCommander(
+    effectiveDefenderUnits,
+    resolution.defenderRemaining,
+    defenderCommander.recoveryPermille,
+    seed ^ 0x5a5a5a5a,
+  );
+  const defenderRemaining = splitDefenderRemaining(defenderAfterCommanderRecovery);
   const activeDefenses = clampActiveDefenses(
     target.inventory.defenses,
     defenderRemaining.defenses,
@@ -224,6 +288,10 @@ export function resolveAttackMission(
     target.inventory.defenses,
     activeDefenses,
     seed,
+  );
+  const finalDefenderRemaining = addRecoveredToRemaining(
+    defenderAfterCommanderRecovery,
+    defensesRecovered,
   );
   let updatedTarget: PlanetState = {
     ...target,
@@ -239,14 +307,18 @@ export function resolveAttackMission(
     target.ownerEmpireId,
     defenderRemaining.ships,
   );
-  const attackerSurvived = Object.keys(resolution.attackerRemaining).length > 0;
+  const attackerSurvived = Object.keys(attackerAfterCommanderRecovery).length > 0;
   let updatedAttacker = attackerSurvived
-    ? { ...attackerFleet, ships: resolution.attackerRemaining }
+    ? { ...attackerFleet, ships: attackerAfterCommanderRecovery }
     : undefined;
   let plunderedCargo: ResourceCost = { metal: 0, crystal: 0, gas: 0 };
 
   if (resolution.winner === 'attacker' && updatedAttacker !== undefined) {
-    const plunder = plunderPlanet(updatedTarget, updatedAttacker);
+    const plunder = plunderPlanet(
+      updatedTarget,
+      updatedAttacker,
+      attackerCommander.plunderBonusPercent,
+    );
     if (isPve) {
       const adjusted = applyPvePlunderMultiplier(
         plunder.planet,
@@ -270,15 +342,11 @@ export function resolveAttackMission(
         fleet.id === attackerFleet.id ? updatedAttacker : fleet,
       );
 
-  const debrisDefenderRemaining = addRecoveredToRemaining(
-    resolution.defenderRemaining,
-    defensesRecovered,
-  );
   const baseDebris = calculateDebrisFromLosses(
     attackerFleet.ships,
-    resolution.attackerRemaining,
+    attackerAfterCommanderRecovery,
     effectiveDefenderUnits,
-    debrisDefenderRemaining,
+    finalDefenderRemaining,
   );
   const debrisCreated = addDestroyedCargoDebris(
     baseDebris,
@@ -303,8 +371,14 @@ export function resolveAttackMission(
     rounds: resolution.rounds,
     attackerInitial: { ...attackerFleet.ships },
     defenderInitial: effectiveDefenderUnits,
-    attackerRemaining: resolution.attackerRemaining,
-    defenderRemaining: resolution.defenderRemaining,
+    attackerRemaining: attackerAfterCommanderRecovery,
+    defenderRemaining: finalDefenderRemaining,
+    attackerCommanderId: attackerCommander.activeCommanderId,
+    defenderCommanderId: defenderCommander.activeCommanderId,
+    commanderRecoveredShips: {
+      attacker: recoveredDelta(resolution.attackerRemaining, attackerAfterCommanderRecovery),
+      defender: recoveredDelta(resolution.defenderRemaining, defenderAfterCommanderRecovery),
+    },
     defensesRecovered,
     debrisCreated,
     plunderedCargo,

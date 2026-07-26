@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-26  
-**Baseline:** merged PR #93  
+**Baseline:** merged PR #94; active PR #95  
 **Release target:** 1.0
 
 ## 1. Release boundary
@@ -39,7 +39,7 @@ Excluded:
 - Final asset swaps use stable mechanical IDs and manifests, not direct component imports.
 - The canonical design documents `docs/25-*` and `docs/26-*` remain deferred contracts until the core gameplay batch is complete.
 
-## 3. Delivered baseline through PR #93
+## 3. Delivered baseline through PR #94
 
 ### Runtime foundation
 
@@ -55,7 +55,8 @@ Excluded:
 - formations, priorities, upgrades, command doctrine and flagship framework;
 - 24 functional buildings per faction;
 - 22 canonical technologies per faction with deterministic compatibility aliases;
-- 13 ordinary ships per faction with complete service, combat and mission coverage.
+- 13 ordinary ships per faction with complete service, combat and mission coverage;
+- 9 planetary defences per faction with shields, mixed batteries, repair and targeting integration.
 
 ### Documentation and asset baseline
 
@@ -64,9 +65,9 @@ Excluded:
 - canonical solar-war and final-gates design in PR #87;
 - canonical Universe navigation design in PR #88.
 
-The source catalog and design documents are evidence and project contracts. They do not by themselves mean the runtime gameplay is complete.
+The source catalog and design documents are evidence and project contracts. They do not by themselves mean a source PNG may bypass runtime processing.
 
-## 4. Active core-gameplay batch
+## 4. Final core-gameplay PR
 
 PR #91 was closed without merge and replaced by clean PR #92. All later planned numbers shifted by one.
 
@@ -77,20 +78,21 @@ PR #91 was closed without merge and replaced by clean PR #92. All later planned 
 | **#91** | superseded | Interrupted technology attempt | Closed without merge; no runtime delivery |
 | **#92** | merged | Complete 22-technology tree | 22 sciences with real economy, fleet, combat and prerequisite effects for every faction |
 | **#93** | merged | Complete 13-ship rosters | 13 ordinary ships per faction, service/combat roles, missions, bot role use, abilities and asset bindings |
-| **#94** | active | Complete 9-defence rosters | 9 planetary defences per faction, shields, mixed batteries, recovery, repair and combat targeting integration |
-| **#95** | planned | Commander Ships and full-game validation | 13 shared Commander Ships, Admiral unlock/progression, one active ability, bot selection and deterministic full-game harness |
+| **#94** | merged | Complete 9-defence rosters | 9 planetary defences per faction, shields, mixed batteries, recovery, repair and combat targeting integration |
+| **#95** | active | Commander Ships and full-game validation | 13 shared producible Commander Ships, Admiral levels 1–40, one deterministic active ability per battle, bot use, source bindings and headless catalog closure |
 
-### Gate after PR #95
+### Gate delivered by PR #95
 
 - every faction has 24 buildings, 13 ordinary ships and 9 defences;
 - all factions use the same 22-science functional matrix with explicit faction modifiers where intended;
-- all 13 Commander Ships are real producible units with deterministic effects;
+- all 13 Commander Ships are real producible shared units with deterministic effects;
 - every catalog entry has valid prerequisites, producer, asset resolution and UI presentation;
 - all ordinary missions have at least one valid unit role;
 - bots can develop, research, produce, fight, recover and progress through the complete catalogs;
-- old saves migrate without losing levels, queues, inventories, fleets or reports;
-- full-game headless runs reveal no dependency dead ends;
-- CI remains green.
+- Commander ownership and abilities remain deterministic across planets, fleets and queues;
+- old saves remain schema-v13 compatible because Commander Ships use existing inventories, queues and fleet records;
+- full-game headless validation reveals no catalog dependency or production dead ends;
+- CI remains the final merge gate.
 
 ## 5. Universe and ordinary strategic play after core completion
 
@@ -121,7 +123,7 @@ Planned work includes:
 - notifications, reports, bookmarks and explanation quality;
 - save-schema consolidation and offline resimulation;
 - large headless balance batches and a balance pass;
-- faction art/effects/audio polish;
+- faction art/effects/audio polish and optimized runtime derivatives;
 - accessibility and localization readiness;
 - performance, memory and low-end budgets;
 - browser E2E, visual regression and release QA.

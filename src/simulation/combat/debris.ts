@@ -95,16 +95,18 @@ export interface PlunderResolution {
 export function plunderPlanet(
   planet: PlanetState,
   fleet: FleetState,
+  plunderBonusPercent = 0,
 ): PlunderResolution {
   let freeCapacity = Math.max(0, fleet.cargoCapacity - getCargoAmount(fleet.cargo));
   const cargo = { ...fleet.cargo };
   const resources = { ...planet.economy.resources };
   const plundered = { metal: 0, crystal: 0, gas: 0 };
+  const lootPermille = Math.max(0, 100 + Math.floor(plunderBonusPercent * 10));
 
   for (const resourceId of ['metal', 'crystal', 'gas'] as const) {
     if (freeCapacity <= 0) break;
     const stock = resources[resourceId];
-    const availableLoot = Math.floor(stock.amount * 0.1);
+    const availableLoot = Math.floor((stock.amount * lootPermille) / 1_000);
     const taken = Math.min(freeCapacity, availableLoot);
     resources[resourceId] = { ...stock, amount: stock.amount - taken };
     cargo[resourceId] += taken;

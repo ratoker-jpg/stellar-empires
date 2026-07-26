@@ -1,4 +1,5 @@
 import type { ResourceCost } from '../simulation/economy/types';
+import { getCommanderFleetEffects } from '../simulation/command/commanderShips';
 import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
 import {
   calculateFleetComposition,
@@ -125,8 +126,9 @@ export function createFleetComposerViewModel(
   };
 }
 
-function getFleetSpeedBonus(state: GameState, empireId: string): number {
-  return getResearchEffectsForEmpire(state, empireId).fleetSpeedPercent;
+function getFleetSpeedBonus(state: GameState, fleet: FleetState): number {
+  return getResearchEffectsForEmpire(state, fleet.empireId).fleetSpeedPercent +
+    getCommanderFleetEffects(state, fleet).speedBonusPercent;
 }
 
 export function createFleetRoutePreview(
@@ -152,14 +154,14 @@ export function createFleetRoutePreview(
           state.planets,
           fleet,
           targetPlanetId,
-          getFleetSpeedBonus(state, fleet.empireId),
+          getFleetSpeedBonus(state, fleet),
         )
       : estimateFlight(
           state.galaxy,
           state.planets,
           fleet,
           targetPlanetId,
-          getFleetSpeedBonus(state, fleet.empireId),
+          getFleetSpeedBonus(state, fleet),
         );
   } catch {
     return undefined;

@@ -1,3 +1,4 @@
+import { getCommanderFleetEffects } from '../command/commanderShips';
 import { appendCommandHistory } from '../history/stateHistory';
 import { collectDebris } from '../combat/debris';
 import { resolveAttackMission } from '../combat/resolveAttackMission';
@@ -50,14 +51,15 @@ function replacePlanet(
   return planets.map((planet) => (planet.id === replacement.id ? replacement : planet));
 }
 
-function getFleetSpeedBonus(state: GameState, empireId: string): number {
-  const research = getEmpireResearch(state.research, empireId);
-  return research === undefined
+function getFleetSpeedBonus(state: GameState, fleet: FleetState): number {
+  const research = getEmpireResearch(state.research, fleet.empireId);
+  const researchBonus = research === undefined
     ? 0
     : calculateResearchEffects(
         research,
-        getResearchCatalogForEmpire(state, empireId),
+        getResearchCatalogForEmpire(state, fleet.empireId),
       ).fleetSpeedPercent;
+  return researchBonus + getCommanderFleetEffects(state, fleet).speedBonusPercent;
 }
 
 function enqueueBattleReport(state: GameState, report: BattleReport): GameState {
@@ -191,7 +193,7 @@ function validateColonizationTarget(
       state.planets,
       fleet,
       targetPlanetId,
-      getFleetSpeedBonus(state, fleet.empireId),
+      getFleetSpeedBonus(state, fleet),
     ),
   };
 }
@@ -308,7 +310,7 @@ export function sendFleet(
       state.planets,
       fleet,
       target.id,
-      getFleetSpeedBonus(state, command.empireId),
+      getFleetSpeedBonus(state, fleet),
     );
   }
 

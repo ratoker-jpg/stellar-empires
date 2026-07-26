@@ -1,12 +1,16 @@
-import { appendCommandHistory } from '../history/stateHistory';
+import { countCommanderShipForEmpire } from '../command/commanderShips';
+import { getEmpireCommandState } from '../command/commandDoctrine';
 import {
   getDefenseGridCapacity,
   getDefenseGridUsed,
 } from '../defense/planetaryDefense';
+import { appendCommandHistory } from '../history/stateHistory';
 import { enqueueEvent } from '../eventQueue';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
 import {
   canAfford,
+  getBuildingLevel,
   refundResources,
   spendResources,
 } from '../planet/buildingProgression';
@@ -34,7 +38,7 @@ import {
   calculateUnitBatchCost,
   calculateUnitBatchSeconds,
 } from './production';
-import type { PlanetProductionQueues, UnitKind } from './types';
+import type { PlanetProductionQueues, UnitDefinition, UnitKind } from './types';
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
   return appendCommandHistory(state.commandLog, command);
@@ -49,6 +53,51 @@ function replacePlanet(
 
 function queueKeyForKind(kind: UnitKind): keyof PlanetProductionQueues {
   return kind === 'ship' ? 'shipyard' : 'defense';
+}
+
+function validateCommanderProduction(
+  state: GameState,
+  planet: PlanetState,
+  definition: UnitDefinition,
+  quantity: number,
+): CommandResult<true> {
+  if (definition.commanderClass === undefined) return { ok: true, value: true };
+  if (quantity !== 1) {
+    return {
+      ok: false,
+      code: 'COMMANDER_QUANTITY_LIMIT',
+      message: 'Commander Ships can only be produced one at a time.',
+    };
+  }
+  if (countCommanderShipForEmpire(state, planet.ownerEmpireId, definition.id) > 0) {
+    return {
+      ok: false,
+      code: 'COMMANDER_OWNERSHIP_LIMIT',
+      message: 'An empire may own at most one Commander Ship of each type.',
+    };
+  }
+  const command = getEmpireCommandState(state.commanders, planet.ownerEmpireId);
+  const requiredAdmiralLevel = definition.requiredAdmiralLevel ?? 1;
+  if ((command?.level ?? 0) < requiredAdmiralLevel) {
+    return {
+      ok: false,
+      code: 'COMMANDER_ADMIRAL_LEVEL_REQUIRED',
+      message: `Admiral level ${requiredAdmiralLevel} is required for this Commander Ship.`,
+      details: { requiredAdmiralLevel, currentAdmiralLevel: command?.level ?? 0 },
+    };
+  }
+  const shipyardId = getFactionMechanicalRoles(planet.factionId).buildings.shipyard;
+  const currentShipyardLevel = getBuildingLevel(planet.buildings, shipyardId);
+  const requiredShipyardLevel = definition.requiredShipyardLevel ?? 1;
+  if (currentShipyardLevel < requiredShipyardLevel) {
+    return {
+      ok: false,
+      code: 'COMMANDER_SHIPYARD_LEVEL_REQUIRED',
+      message: `Shipyard level ${requiredShipyardLevel} is required for this Commander Ship.`,
+      details: { shipyardId, requiredShipyardLevel, currentShipyardLevel },
+    };
+  }
+  return { ok: true, value: true };
 }
 
 export function queueUnitBatch(
@@ -78,6 +127,13 @@ export function queueUnitBatch(
   if (!canUseMechanicalDefinition(definition.factionId, planet.factionId)) {
     return { ok: false, code: 'WRONG_FACTION_UNIT', message: 'Unit belongs to another faction.' };
   }
+  const commanderValidation = validateCommanderProduction(
+    state,
+    planet,
+    definition,
+    command.quantity,
+  );
+  if (!commanderValidation.ok) return commanderValidation;
 
   const research = getEmpireResearch(state.research, command.empireId);
   if (research === undefined) {

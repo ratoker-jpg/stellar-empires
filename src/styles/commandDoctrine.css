@@ -1,5 +1,5 @@
 .command-doctrine-dialog {
-  width: min(920px, calc(100vw - 32px));
+  width: min(1040px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
   overflow: auto;
   border: 1px solid var(--border-strong);
@@ -15,7 +15,8 @@
 .command-progress, .command-doctrine-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 18px 24px; }
 .command-progress article, .command-doctrine-cards article { padding: 16px; border: 1px solid var(--border-subtle); border-radius: 14px; background: var(--surface-panel); }
 .command-progress span { display: block; color: var(--text-secondary); font-size: .82rem; margin-bottom: 6px; }
-.command-progress strong { font-size: 1.1rem; }
+.command-progress strong { display: block; font-size: 1.1rem; }
+.command-progress small { display: block; margin-top: 6px; color: var(--text-secondary); }
 .command-progress progress { width: 100%; margin-top: 10px; }
 .command-doctrine-form, .flagship-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; padding: 12px 24px; }
 .command-doctrine-form label, .flagship-form label { display: grid; gap: 7px; color: var(--text-secondary); }
@@ -23,7 +24,22 @@
 .command-doctrine-cards { padding-bottom: 24px; }
 .command-doctrine-cards strong { display: block; margin-bottom: 8px; }
 .command-doctrine-cards p { margin: 0; color: var(--text-secondary); line-height: 1.45; }
+.commander-roster-heading { padding: 6px 24px 0; border-top: 1px solid var(--border-subtle); }
+.commander-roster-heading h3 { margin: 4px 0 0; }
+.commander-ship-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 18px 24px 24px; }
+.commander-ship-card { padding: 16px; border: 1px solid var(--border-subtle); border-radius: 14px; background: var(--surface-panel); opacity: .78; }
+.commander-ship-card.is-owned { opacity: 1; border-color: var(--border-strong); }
+.commander-ship-card.is-active { outline: 2px solid var(--accent-primary); outline-offset: 1px; }
+.commander-ship-card header { display: flex; justify-content: space-between; gap: 14px; align-items: start; }
+.commander-ship-card header span { max-width: 45%; text-align: right; color: var(--text-secondary); font-size: .78rem; }
+.commander-ship-card p { margin: 10px 0; color: var(--text-secondary); line-height: 1.4; }
+.commander-ship-card dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+.commander-ship-card dl div { padding: 8px; border-radius: 9px; background: color-mix(in srgb, var(--surface-elevated) 75%, transparent); }
+.commander-ship-card dt { color: var(--text-secondary); font-size: .72rem; }
+.commander-ship-card dd { margin: 3px 0 0; font-size: .82rem; }
+.commander-ship-card > small { color: var(--text-secondary); line-height: 1.35; }
 @media (max-width: 720px) {
-  .command-progress, .command-doctrine-cards { grid-template-columns: 1fr; }
+  .command-progress, .command-doctrine-cards, .commander-ship-cards { grid-template-columns: 1fr; }
   .command-doctrine-form, .flagship-form { grid-template-columns: 1fr; }
+  .commander-ship-card dl { grid-template-columns: 1fr; }
 }

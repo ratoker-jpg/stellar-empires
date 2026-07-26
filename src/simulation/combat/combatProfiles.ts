@@ -1,3 +1,4 @@
+import { getCompleteCommanderShipClass } from '../units/completeCommanderShipCatalog';
 import { getCompleteDefenseClass } from '../units/completeDefenseCatalog';
 import { getCompleteShipClass } from '../units/completeShipCatalog';
 import { LEGACY_UNIT_ALIASES, resolveCanonicalUnitId } from '../units/unitAliases';
@@ -29,6 +30,12 @@ const DEFAULT_PROFILE: UnitCombatProfile = {
   weaponType: 'kinetic',
   protectionType: 'heavy-armor',
   targetSize: 'medium',
+};
+
+const COMMANDER_PROFILE: UnitCombatProfile = {
+  weaponType: 'disruptor',
+  protectionType: 'shield-grid',
+  targetSize: 'large',
 };
 
 const COMPLETE_SHIP_PROFILES: Readonly<Record<CompleteShipClass, UnitCombatProfile>> = {
@@ -127,6 +134,8 @@ export function getUnitCombatProfile(unitId: string): UnitCombatProfile {
     if (legacyProfile !== undefined) return legacyProfile;
   }
   const canonicalId = resolveCanonicalUnitId(unitId);
+  const commanderClass = getCompleteCommanderShipClass(canonicalId);
+  if (commanderClass !== undefined) return COMMANDER_PROFILE;
   const shipClass = getCompleteShipClass(canonicalId);
   if (shipClass !== undefined) return COMPLETE_SHIP_PROFILES[shipClass];
   const defenseClass = getCompleteDefenseClass(canonicalId);
