@@ -32,8 +32,8 @@ jobs:
 
           payload_dir = Path('.github/nemexia-final-payload')
           parts = sorted(payload_dir.glob('part-*.txt'))
-          if len(parts) != 5:
-              raise SystemExit(f'expected 5 payload parts, found {len(parts)}')
+          if len(parts) != 8:
+              raise SystemExit(f'expected 8 payload parts, found {len(parts)}')
           payload = ''.join(part.read_text(encoding='utf-8').strip() for part in parts)
           content = gzip.decompress(base64.b64decode(payload))
           expected = '1d2b42d6c8c06e8de5ae4ef0c8c10d95bc7cdc161493256fb80df4eabf9069fc'
