@@ -1,35 +1,50 @@
 {
-  "statusVersion": 6,
+  "statusVersion": 7,
   "updatedAt": "2026-07-26",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 99,
-  "lastMergeSha": "1868b5a7c1f540acb1882c0cc79d43ce185e216c",
-  "activePr": 100,
-  "nextPrAfterActive": 101,
-  "nextPrKind": "audit",
-  "currentMilestone": "Audit and integrate the complete visual catalog before Universe navigation",
+  "lastMergedPr": 100,
+  "lastMergeSha": "5ca58493ab4eb1abd46e16e1307a9402efa636fa",
+  "activePr": 101,
+  "nextPrAfterActive": 102,
+  "nextPrKind": "implementation",
+  "currentMilestone": "Integrate the complete approved visual catalog before Universe navigation",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
+  "currentAuditContracts": [
+    "docs/audits/contracts/asset-runtime-integration-01-mappings.md",
+    "docs/audits/contracts/asset-runtime-integration-01-prs.md",
+    "docs/audits/evidence/asset-runtime-integration-01-graphify.md"
+  ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "currentBatch": {
     "batchId": "ASSET-RUNTIME-INTEGRATION-01",
     "complexity": "medium",
     "auditPr": 101,
+    "auditStatus": "accepted-on-merge",
     "implementationCount": 4,
-    "implementationPrs": [],
+    "implementationPrs": [102, 103, 104, 105],
     "workItems": [
       "ASSET-BUILDINGS",
       "ASSET-TECHNOLOGIES",
       "ASSET-SHIPS",
       "ASSET-DEFENSE-COMMANDERS"
     ],
-    "status": "awaiting-audit"
+    "status": "audited-ready",
+    "nextWorkItem": "ASSET-BUILDINGS"
+  },
+  "auditDecisions": {
+    "runtimeTextureCount": 173,
+    "decodedBytesWorstCase": 118685696,
+    "atlasPolicy": "individual-webp-no-atlas",
+    "saveMigration": false,
+    "universeWorkIncluded": false,
+    "criticalUnknowns": 0
   },
   "batchSizing": {
     "heavy": [1, 2],
@@ -54,17 +69,19 @@
     "confirmed mechanics and navigation research references from PR #96",
     "90 Universe navigation source PNGs from PR #97",
     "playable-game roadmap and master asset backlog from PR #98",
-    "deterministic asset processing foundation and 472-file audit from PR #99"
+    "deterministic asset processing foundation and 472-file audit from PR #99",
+    "audit-first autonomous delivery protocol and Graphify from PR #100"
   ],
   "activeDelivery": [
-    "audit-first autonomous delivery protocol",
-    "complexity-sized implementation batches",
-    "recoverable current execution state",
-    "project-scoped Graphify skill and CI installation",
-    "next dedicated Audit PR for four asset-integration work items"
+    "accepted four-PR asset runtime implementation contract",
+    "72 building runtime derivatives in PR #102",
+    "22 shared technology derivatives and 66 bindings in PR #103",
+    "39 ordinary ship derivatives in PR #104",
+    "27 defence and 13 Commander derivatives plus batch closure in PR #105"
   ],
   "knownLimitations": [
-    "approved catalog source art is not yet fully processed and connected as final runtime derivatives",
+    "approved catalog source art is not yet processed and connected as final runtime derivatives",
+    "runtime processing and atlas plans are still empty before PR #102",
     "three historical runtime modules remain in the closed direct-source allowlist",
     "one historical runtime WebP is invalid and recorded by the audit",
     "the PR #97 Universe pack is oversized and remains source intake",
@@ -81,7 +98,13 @@
     "workflow": ".github/workflows/graphify-audit.yml",
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
-    "status": "protocol-pr-installation"
+    "status": "active",
+    "lastAuditGraph": {
+      "files": 245,
+      "nodes": 1660,
+      "relationships": 5507,
+      "communities": 68
+    }
   },
   "sourceAssetIntake": {
     "universePack": {
@@ -91,7 +114,8 @@
     },
     "catalogArt": {
       "files": 174,
-      "status": "source-ready-runtime-processing-incomplete"
+      "runtimeAssetsPlanned": 173,
+      "status": "audited-ready-for-sequential-integration"
     }
   },
   "requiredStartupReading": [
@@ -99,14 +123,15 @@
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
+    "docs/audits/contracts/asset-runtime-integration-01-mappings.md",
+    "docs/audits/contracts/asset-runtime-integration-01-prs.md",
+    "docs/audits/evidence/asset-runtime-integration-01-graphify.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/27-playable-game-roadmap-v5.md",
     "docs/asset-prompts/master-runtime-asset-backlog.md",
     "docs/25-solar-war-obelisks-gates-and-progression.md",
     "docs/26-universe-galaxy-solar-system-navigation-contract.md",
-    "docs/research/nemexia-final-complete-game-concept-2026-07-26.md",
-    "docs/research/nemexia-navigation-and-ui-reference-2026-07-26.md",
     "latest merged GitHub pull requests"
   ]
 }
