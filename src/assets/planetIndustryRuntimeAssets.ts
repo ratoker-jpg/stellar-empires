@@ -1,3 +1,4 @@
+import { resolveCompleteMechanicalAsset } from './completeMechanicalAssetManifest';
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
 import { resolveCanonicalBuildingId } from '../simulation/planet/buildingAliases';
@@ -13,41 +14,6 @@ export type BuildingPresentationRole =
   | 'research-lab'
   | 'shipyard'
   | 'sensor-array';
-
-const BUILDING_SHEETS: Readonly<
-  Record<FactionId, Readonly<Record<BuildingPresentationRole, string>>>
-> = {
-  aegis: {
-    command: new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_command_center_sheet.png', import.meta.url).href,
-    'metal-extractor': new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_metal_extractor_sheet.png', import.meta.url).href,
-    'crystal-refinery': new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_crystal_refinery_sheet.png', import.meta.url).href,
-    'gas-extractor': new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_gas_extractor_sheet.png', import.meta.url).href,
-    'power-plant': new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_solar_plant_sheet.png', import.meta.url).href,
-    'research-lab': new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_research_lab_sheet.png', import.meta.url).href,
-    shipyard: new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_shipyard_sheet.png', import.meta.url).href,
-    'sensor-array': new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_defense_platform_sheet.png', import.meta.url).href,
-  },
-  synod: {
-    command: new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_command_center_sheet.png', import.meta.url).href,
-    'metal-extractor': new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_metal_extractor_sheet.png', import.meta.url).href,
-    'crystal-refinery': new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_crystal_refinery_sheet.png', import.meta.url).href,
-    'gas-extractor': new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_gas_extractor_sheet.png', import.meta.url).href,
-    'power-plant': new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_solar_plant_sheet.png', import.meta.url).href,
-    'research-lab': new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_research_lab_sheet.png', import.meta.url).href,
-    shipyard: new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_shipyard_sheet.png', import.meta.url).href,
-    'sensor-array': new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_defense_platform_sheet.png', import.meta.url).href,
-  },
-  veyra: {
-    command: new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_command_center_sheet.png', import.meta.url).href,
-    'metal-extractor': new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_metal_extractor_sheet.png', import.meta.url).href,
-    'crystal-refinery': new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_crystal_refinery_sheet.png', import.meta.url).href,
-    'gas-extractor': new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_gas_extractor_sheet.png', import.meta.url).href,
-    'power-plant': new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_solar_plant_sheet.png', import.meta.url).href,
-    'research-lab': new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_research_lab_sheet.png', import.meta.url).href,
-    shipyard: new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_shipyard_sheet.png', import.meta.url).href,
-    'sensor-array': new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_defense_platform_sheet.png', import.meta.url).href,
-  },
-};
 
 const DEFENSE_SHEETS: Readonly<Record<FactionId, Readonly<Record<string, string>>>> = {
   aegis: {
@@ -84,19 +50,19 @@ export function getBuildingPresentationRole(buildingId: string): BuildingPresent
   if (canonicalBuildingId === buildings.power) return 'power-plant';
   if (canonicalBuildingId === buildings.laboratory) return 'research-lab';
   if (canonicalBuildingId === buildings.shipyard) return 'shipyard';
-  if (canonicalBuildingId === buildings.sensorGrid || canonicalBuildingId === buildings.defenseIndustry) {
-    return 'sensor-array';
-  }
+  if (
+    canonicalBuildingId === buildings.sensorGrid ||
+    canonicalBuildingId === buildings.defenseIndustry
+  ) return 'sensor-array';
   return 'command';
 }
 
-export function getBuildingSheetUrl(factionId: FactionId, buildingId: string): string {
-  return BUILDING_SHEETS[factionId][getBuildingPresentationRole(buildingId)];
+export function getBuildingSheetUrl(_factionId: FactionId, buildingId: string): string {
+  return resolveCompleteMechanicalAsset(resolveCanonicalBuildingId(buildingId)).asset?.atlasUrl ?? '';
 }
 
-export function getBuildingSheetFrame(level: number, maxLevel: number): number {
-  if (level <= 0 || maxLevel <= 1) return 0;
-  return Math.min(3, Math.floor(((level - 1) * 4) / maxLevel));
+export function getBuildingSheetFrame(_level: number, _maxLevel: number): number {
+  return 0;
 }
 
 export function getZoneTerrainUrl(zoneId: PlanetZoneId): string {

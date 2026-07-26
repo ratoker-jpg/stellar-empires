@@ -1,7 +1,6 @@
 import '../styles/developmentPresentation.css';
 import { getFleetShipArtUrl } from '../assets/galaxyFleetRuntimeAssets';
 import {
-  getBuildingSheetFrame,
   getBuildingSheetUrl,
   getDefensePresentationArtUrl,
   getZoneTerrainUrl,
@@ -9,7 +8,6 @@ import {
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getUnitsByKind } from '../simulation/units/catalog';
 import type { GameState } from '../simulation/types';
-import { createBuildingCardViewModels } from './planetViewModel';
 
 export interface DevelopmentPresentationOptions {
   readonly getState: () => GameState;
@@ -37,23 +35,6 @@ function applyPlanetPresentation(state: GameState, planetId: string): void {
     zoneStage.style.setProperty('--planet-zone-terrain', `url("${getZoneTerrainUrl(zoneId)}")`);
   }
 
-  const visibleCards = createBuildingCardViewModels(planet).filter(
-    (card) => zoneId === undefined || card.zoneId === zoneId,
-  );
-  const cardByName = new Map(visibleCards.map((card) => [card.name, card]));
-  for (const node of document.querySelectorAll<HTMLElement>(
-    '#planet-building-grid .planet-building-node',
-  )) {
-    const name = node.querySelector<HTMLElement>('.planet-building-node__body strong')?.textContent;
-    const art = node.querySelector<HTMLElement>('.planet-building-node__art');
-    const card = name === undefined ? undefined : cardByName.get(name);
-    if (art === null || card === undefined) continue;
-    setSheetArtwork(
-      art,
-      getBuildingSheetUrl(planet.factionId, card.id),
-      getBuildingSheetFrame(card.level, card.maxLevel),
-    );
-  }
 }
 
 function applyResearchPresentation(state: GameState, planetId: string): void {

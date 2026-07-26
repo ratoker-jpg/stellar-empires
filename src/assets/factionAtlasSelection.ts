@@ -12,6 +12,7 @@ export function getFactionAtlasUrl(
     case 'building':
       return assets.buildingsAtlasUrl;
     case 'ship':
+    case 'commander':
       return assets.shipsAtlasUrl;
     case 'defense':
       return assets.defensesAtlasUrl;

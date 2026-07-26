@@ -8,9 +8,9 @@ import {
 } from './planetIndustryRuntimeAssets';
 
 describe('planet industry runtime assets', () => {
-  it('maps shared mechanical ids to faction-specific source art', () => {
-    expect(getBuildingSheetUrl('synod', 'building.aegis.shipyard')).toContain('synod_shipyard_sheet.png');
-    expect(getBuildingSheetUrl('veyra', 'building.aegis.research-lab')).toContain('veyra_research_lab_sheet.png');
+  it('maps complete building ids to generated faction-specific art', () => {
+    expect(getBuildingSheetUrl('synod', 'building.synod.shipyard')).toContain('/assets/generated/catalog/buildings/synod/shipyard.webp');
+    expect(getBuildingSheetUrl('veyra', 'building.veyra.experimental-center')).toContain('/assets/generated/catalog/buildings/veyra/experimental-center.webp');
     expect(getDefensePresentationArtUrl('aegis', 'defense.aegis.missile-battery')).toContain('aegis_missile_battery_sheet.png');
   });
 
@@ -24,6 +24,6 @@ describe('planet industry runtime assets', () => {
     expect(getBuildingPresentationRole('building.aegis.sensor-array')).toBe('sensor-array');
     expect(getBuildingPresentationRole('building.aegis.unknown')).toBe('command');
     expect(getBuildingSheetFrame(0, 20)).toBe(0);
-    expect(getBuildingSheetFrame(20, 20)).toBe(3);
+    expect(getBuildingSheetFrame(20, 20)).toBe(0);
   });
 });
