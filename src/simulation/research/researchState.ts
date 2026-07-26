@@ -1,6 +1,10 @@
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
+import {
+  getLegacyResearchIdsForCanonical,
+  resolveCanonicalResearchId,
+} from './researchAliases';
 import type { EmpireResearchState, ResearchDefinition } from './types';
 
 export function createInitialResearchStates(
@@ -20,7 +24,12 @@ export function getResearchLevel(
   state: EmpireResearchState,
   technologyId: string,
 ): number {
-  return state.levels[technologyId] ?? 0;
+  const canonicalId = resolveCanonicalResearchId(technologyId);
+  let level = state.levels[canonicalId] ?? 0;
+  for (const legacyId of getLegacyResearchIdsForCanonical(canonicalId)) {
+    level = Math.max(level, state.levels[legacyId] ?? 0);
+  }
+  return level;
 }
 
 export interface MissingResearchRequirement {

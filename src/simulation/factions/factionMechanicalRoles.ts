@@ -1,5 +1,6 @@
 import { getCompleteBuildingIds, type CompleteBuildingIds } from '../planet/completeBuildingCatalog';
 import type { FactionId, PlanetBuildingState } from '../planet/types';
+import { getCompleteResearchId } from '../research/completeResearchCatalog';
 import { getMechanicalCatalogSourceFactionId } from './factionCatalogManifest';
 
 export interface FactionMechanicalRoles {
@@ -51,7 +52,6 @@ export interface FactionMechanicalRoles {
   };
 }
 
-
 function createCompleteBuildingRoles(factionId: FactionId): FactionMechanicalRoles['buildings'] {
   const complete = getCompleteBuildingIds(factionId);
   return {
@@ -71,21 +71,25 @@ function createCompleteBuildingRoles(factionId: FactionId): FactionMechanicalRol
   };
 }
 
+function createCompleteResearchRoles(factionId: FactionId): FactionMechanicalRoles['research'] {
+  return {
+    construction: getCompleteResearchId(factionId, 'improved-construction'),
+    energy: getCompleteResearchId(factionId, 'physics'),
+    sensors: getCompleteResearchId(factionId, 'espionage'),
+    propulsion: getCompleteResearchId(factionId, 'jet-engines'),
+    protection: getCompleteResearchId(factionId, 'ship-armor'),
+    weapons: getCompleteResearchId(factionId, 'laser-science'),
+    colonization: getCompleteResearchId(factionId, 'parallel-universes'),
+    logistics: getCompleteResearchId(factionId, 'computer-systems'),
+    advancedProtection: getCompleteResearchId(factionId, 'maneuver-defense'),
+    battleNetwork: getCompleteResearchId(factionId, 'critical-hit'),
+  };
+}
+
 const NATIVE_ROLES: Readonly<Partial<Record<FactionId, FactionMechanicalRoles>>> = {
   aegis: {
     buildings: createCompleteBuildingRoles('aegis'),
-    research: {
-      construction: 'technology.aegis.construction',
-      energy: 'technology.aegis.energy',
-      sensors: 'technology.aegis.sensors',
-      propulsion: 'technology.aegis.propulsion',
-      protection: 'technology.aegis.armor',
-      weapons: 'technology.aegis.weapons',
-      colonization: 'technology.aegis.colonization',
-      logistics: 'technology.aegis.logistics',
-      advancedProtection: 'technology.aegis.shield-harmonics',
-      battleNetwork: 'technology.aegis.battle-network',
-    },
+    research: createCompleteResearchRoles('aegis'),
     ships: {
       scout: 'ship.aegis.scout',
       transport: 'ship.aegis.cargo',
@@ -108,18 +112,7 @@ const NATIVE_ROLES: Readonly<Partial<Record<FactionId, FactionMechanicalRoles>>>
   },
   synod: {
     buildings: createCompleteBuildingRoles('synod'),
-    research: {
-      construction: 'technology.synod.distributed-construction',
-      energy: 'technology.synod.harmonic-grid',
-      sensors: 'technology.synod.deep-sight',
-      propulsion: 'technology.synod.vector-folding',
-      protection: 'technology.synod.coherent-shields',
-      weapons: 'technology.synod.precision-fire',
-      colonization: 'technology.synod.seed-consensus',
-      logistics: 'technology.synod.relay-logistics',
-      advancedProtection: 'technology.synod.predictive-screening',
-      battleNetwork: 'technology.synod.chorus-command',
-    },
+    research: createCompleteResearchRoles('synod'),
     ships: {
       scout: 'ship.synod.whisper',
       transport: 'ship.synod.thread-carrier',
@@ -142,18 +135,7 @@ const NATIVE_ROLES: Readonly<Partial<Record<FactionId, FactionMechanicalRoles>>>
   },
   veyra: {
     buildings: createCompleteBuildingRoles('veyra'),
-    research: {
-      construction: 'technology.veyra.adaptive-growth',
-      energy: 'technology.veyra.photosynthetic-grid',
-      sensors: 'technology.veyra.echo-sense',
-      propulsion: 'technology.veyra.living-thrust',
-      protection: 'technology.veyra.carapace-weave',
-      weapons: 'technology.veyra.predator-instinct',
-      colonization: 'technology.veyra.brood-seeding',
-      logistics: 'technology.veyra.mycelial-logistics',
-      advancedProtection: 'technology.veyra.regenerative-shells',
-      battleNetwork: 'technology.veyra.swarm-mind',
-    },
+    research: createCompleteResearchRoles('veyra'),
     ships: {
       scout: 'ship.veyra.wisp',
       transport: 'ship.veyra.tendril',
