@@ -6,6 +6,13 @@ import type { FactionId } from '../planet/types';
 import type { UnitDefinition, UnitKind } from './types';
 
 export { AEGIS_UNIT_CATALOG } from './aegisUnitCatalog';
+export {
+  COMPLETE_SHIP_CATALOGS,
+  getCompleteShipClass,
+  getCompleteShipId,
+  getCompleteShipIds,
+} from './completeShipCatalog';
+export { LEGACY_UNIT_ALIASES, resolveCanonicalUnitId } from './unitAliases';
 
 export function getUnitDefinition(unitId: string): UnitDefinition | undefined {
   return getRegisteredUnitDefinition(unitId);
