@@ -73,6 +73,10 @@ const RESEARCH_BY_ID = new Map(
 const UNITS_BY_ID = new Map(
   REGISTERED_SOURCES.flatMap((source) => source.units).map((definition) => [definition.id, definition]),
 );
+const LEGACY_UNITS_BY_ID = new Map(
+  [...AEGIS_UNIT_CATALOG, ...SYNOD_UNIT_CATALOG, ...VEYRA_UNIT_CATALOG]
+    .map((definition) => [definition.id, definition] as const),
+);
 
 export function getFactionMechanicalCatalog(
   factionId: FactionId,
@@ -166,7 +170,11 @@ export function getRegisteredResearchDefinition(
 export function getRegisteredUnitDefinition(
   unitId: string,
 ): UnitDefinition | undefined {
-  return UNITS_BY_ID.get(resolveCanonicalUnitId(unitId));
+  return (
+    UNITS_BY_ID.get(unitId) ??
+    LEGACY_UNITS_BY_ID.get(unitId) ??
+    UNITS_BY_ID.get(resolveCanonicalUnitId(unitId))
+  );
 }
 
 export function getRegisteredUnitsByKind(
