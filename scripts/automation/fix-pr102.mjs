@@ -15,4 +15,12 @@ atlas = atlas.replace(
   "    case 'ship':\n    case 'commander':\n      return assets.shipsAtlasUrl;",
 );
 await writeFile(atlasPath, atlas);
+
+const pipelineTestPath = 'tests/assets/assetPipelineConfig.test.ts';
+let pipelineTest = await readFile(pipelineTestPath, 'utf8');
+pipelineTest = pipelineTest.replace(
+  "  it('starts future processing and atlas work from explicit empty plans', () => {\n    expect(processingPlan).toEqual({ schemaVersion: 1, entries: [] });\n    expect(atlasPlan).toEqual({ schemaVersion: 1, atlases: [] });\n  });",
+  "  it('records deterministic building processing while keeping atlases empty', () => {\n    expect(processingPlan.schemaVersion).toBe(1);\n    expect(processingPlan.entries).toHaveLength(72);\n    expect(processingPlan.entries.every((entry) => entry.family === 'building')).toBe(true);\n    expect(new Set(processingPlan.entries.map((entry) => entry.semanticId)).size).toBe(72);\n    expect(atlasPlan).toEqual({ schemaVersion: 1, atlases: [] });\n  });",
+);
+await writeFile(pipelineTestPath, pipelineTest);
 await rm('scripts/automation/fix-pr102.mjs', { force: true });
