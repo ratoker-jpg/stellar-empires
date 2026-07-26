@@ -26,8 +26,13 @@ describe('complete mechanical asset manifest', () => {
     );
   });
 
-  it('still reports unknown future mechanical IDs as missing', () => {
+  it('does not invent source provenance for an unknown Commander ID', () => {
     const resolution = resolveCompleteMechanicalAsset('commander.shared.unknown-future');
-    expect(resolution).toEqual({ asset: undefined, source: 'missing', provenancePath: undefined });
+    expect(resolution.source).toBe('current-runtime-fallback');
+    expect(resolution.asset?.id).toBe('commander.shared.unknown-future');
+    expect(resolution.provenancePath).toBeUndefined();
+    expect(COMPLETE_MECHANICAL_ASSET_MANIFEST.bindings[
+      'commander.shared.unknown-future'
+    ]).toBeUndefined();
   });
 });
