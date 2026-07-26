@@ -1,6 +1,7 @@
 import { getCompleteBuildingIds, type CompleteBuildingIds } from '../planet/completeBuildingCatalog';
 import type { FactionId, PlanetBuildingState } from '../planet/types';
 import { getCompleteResearchId } from '../research/completeResearchCatalog';
+import { getCompleteDefenseIds, type CompleteDefenseIds } from '../units/completeDefenseCatalog';
 import { getCompleteShipIds, type CompleteShipIds } from '../units/completeShipCatalog';
 import { getMechanicalCatalogSourceFactionId } from './factionCatalogManifest';
 
@@ -51,6 +52,7 @@ export interface FactionMechanicalRoles {
     readonly shield: string;
     readonly intercept: string;
     readonly bastion: string;
+    readonly complete: CompleteDefenseIds;
   };
 }
 
@@ -105,48 +107,36 @@ function createCompleteShipRoles(factionId: FactionId): FactionMechanicalRoles['
   };
 }
 
-const DEFENSE_ROLES: Readonly<Record<FactionId, FactionMechanicalRoles['defenses']>> = {
-  aegis: {
-    light: 'defense.aegis.gun-battery',
-    heavy: 'defense.aegis.missile-battery',
-    shield: 'defense.aegis.shield-generator',
-    intercept: 'defense.aegis.point-defense',
-    bastion: 'defense.aegis.fortress-array',
-  },
-  synod: {
-    light: 'defense.synod.lance-node',
-    heavy: 'defense.synod.arc-silo',
-    shield: 'defense.synod.harmonic-screen',
-    intercept: 'defense.synod.predictive-intercept',
-    bastion: 'defense.synod.concord-bastion',
-  },
-  veyra: {
-    light: 'defense.veyra.thorn-spire',
-    heavy: 'defense.veyra.spore-mortar',
-    shield: 'defense.veyra.living-veil',
-    intercept: 'defense.veyra.snapper-node',
-    bastion: 'defense.veyra.hive-bastion',
-  },
-};
+function createCompleteDefenseRoles(factionId: FactionId): FactionMechanicalRoles['defenses'] {
+  const complete = getCompleteDefenseIds(factionId);
+  return {
+    light: complete.basicTurret,
+    heavy: complete.plasmaTurret,
+    shield: complete.secondaryShield,
+    intercept: complete.laserTurret,
+    bastion: complete.planetaryShield,
+    complete,
+  };
+}
 
 const NATIVE_ROLES: Readonly<Record<FactionId, FactionMechanicalRoles>> = {
   aegis: {
     buildings: createCompleteBuildingRoles('aegis'),
     research: createCompleteResearchRoles('aegis'),
     ships: createCompleteShipRoles('aegis'),
-    defenses: DEFENSE_ROLES.aegis,
+    defenses: createCompleteDefenseRoles('aegis'),
   },
   synod: {
     buildings: createCompleteBuildingRoles('synod'),
     research: createCompleteResearchRoles('synod'),
     ships: createCompleteShipRoles('synod'),
-    defenses: DEFENSE_ROLES.synod,
+    defenses: createCompleteDefenseRoles('synod'),
   },
   veyra: {
     buildings: createCompleteBuildingRoles('veyra'),
     research: createCompleteResearchRoles('veyra'),
     ships: createCompleteShipRoles('veyra'),
-    defenses: DEFENSE_ROLES.veyra,
+    defenses: createCompleteDefenseRoles('veyra'),
   },
 };
 
