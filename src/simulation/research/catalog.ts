@@ -1,4 +1,5 @@
 import { getRegisteredResearchDefinition } from '../factions/factionMechanicalCatalogRegistry';
+import { applyResearchDefinitionCompatibility } from './researchDefinitionCompatibility';
 import type { ResearchDefinition } from './types';
 
 export {
@@ -12,5 +13,8 @@ export {
 export function getResearchDefinition(
   technologyId: string,
 ): ResearchDefinition | undefined {
-  return getRegisteredResearchDefinition(technologyId);
+  const definition = getRegisteredResearchDefinition(technologyId);
+  return definition === undefined
+    ? undefined
+    : applyResearchDefinitionCompatibility(definition);
 }
