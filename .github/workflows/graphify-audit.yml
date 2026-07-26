@@ -1,0 +1,69 @@
+name: Graphify audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs/audit-first-delivery-protocol
+    paths:
+      - '.github/workflows/graphify-audit.yml'
+      - 'scripts/graphify-audit.sh'
+      - 'docs/28-audit-first-autonomous-delivery-protocol.md'
+      - 'docs/audits/**'
+      - 'AGENTS.md'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: graphify-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  graphify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: docs/audit-first-delivery-protocol
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install skill and build code graph
+        env:
+          GRAPHIFY_VERSION: '0.8.38'
+          PYTHON_BIN: python
+        run: bash scripts/graphify-audit.sh code
+
+      - name: Validate generated project skill
+        run: |
+          test -s .agents/skills/graphify/SKILL.md
+          test -s graphify-out/graph.json
+          test -s graphify-out/GRAPH_REPORT.md
+
+      - name: Persist project-scoped skill
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .agents/skills/graphify
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Install project-scoped Graphify skill"
+          git push origin HEAD:docs/audit-first-delivery-protocol
+
+      - name: Upload code graph
+        uses: actions/upload-artifact@v6
+        with:
+          name: graphify-code-graph
+          path: graphify-out/
+          if-no-files-found: error
+          retention-days: 14
