@@ -5,10 +5,17 @@ import { getResearchCatalogForEmpire } from './factionMechanicalCatalogRegistry'
 
 const EMPTY_RESEARCH_EFFECTS: ResearchEffectSummary = {
   constructionSpeedPercent: 0,
+  researchSpeedPercent: 0,
   energyOutputPercent: 0,
   fleetSpeedPercent: 0,
+  fuelEfficiencyPercent: 0,
+  flightSlots: 0,
   sensorStrength: 0,
   armorStrengthPercent: 0,
+  shipDurabilityPercent: 0,
+  armorPenetrationPercent: 0,
+  criticalChanceBasisPoints: 0,
+  ecologyCapacity: 0,
   weaponStrengthPercent: 0,
 };
 
