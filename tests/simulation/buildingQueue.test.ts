@@ -33,7 +33,7 @@ describe('building queue', () => {
   it('reserves resources and creates one completion event', () => {
     const state = createInitialGameState('queue-building');
     const planet = getPlayerPlanet(state);
-    const definition = getBuildingDefinition('building.aegis.command');
+    const definition = getBuildingDefinition('building.aegis.metal-bot-1');
 
     expect(definition).toBeDefined();
 
@@ -65,14 +65,14 @@ describe('building queue', () => {
   });
 
   it('blocks a second order while the queue is occupied', () => {
-    const first = queue(createInitialGameState('queue-busy'), 'building.aegis.command');
+    const first = queue(createInitialGameState('queue-busy'), 'building.aegis.metal-bot-1');
     expect(first.ok).toBe(true);
 
     if (!first.ok) {
       return;
     }
 
-    const second = queue(first.value, 'building.aegis.power-plant');
+    const second = queue(first.value, 'building.aegis.infrared-bot');
     expect(second).toEqual(
       expect.objectContaining({ ok: false, code: 'BUILD_QUEUE_BUSY' }),
     );
@@ -80,7 +80,7 @@ describe('building queue', () => {
 
   it('completes an upgrade once and recalculates production at the event time', () => {
     const initial = createInitialGameState('queue-complete');
-    const definition = getBuildingDefinition('building.aegis.metal-extractor');
+    const definition = getBuildingDefinition('building.aegis.metal-bot-1');
 
     expect(definition).toBeDefined();
 
@@ -110,7 +110,7 @@ describe('building queue', () => {
     const planet = getPlayerPlanet(advanced.value);
     expect(getBuildingLevel(planet.buildings, definition.id)).toBe(2);
     expect(planet.buildQueue).toHaveLength(0);
-    expect(planet.economy.resources.metal.productionPerHour).toBe(280);
+    expect(planet.economy.resources.metal.productionPerHour).toBe(258);
     expect(advanced.value.eventLog.filter((entry) => entry.event.payload.type === 'BUILDING_COMPLETE')).toHaveLength(1);
 
     const later = executeCommand(advanced.value, { type: 'ADVANCE_TIME', seconds: 3_600 });
@@ -123,42 +123,34 @@ describe('building queue', () => {
 
   it('enforces building requirements', () => {
     const initial = createInitialGameState('queue-requirements');
-    const blocked = queue(initial, 'building.aegis.research-lab');
+    const blocked = queue(initial, 'building.aegis.metal-bot-2');
 
     expect(blocked).toEqual(
       expect.objectContaining({ ok: false, code: 'BUILDING_REQUIREMENTS_NOT_MET' }),
     );
 
-    const commandUpgrade = queue(initial, 'building.aegis.command');
-    expect(commandUpgrade.ok).toBe(true);
+    const prepared: GameState = {
+      ...initial,
+      planets: initial.planets.map((planet) =>
+        planet.ownerEmpireId === 'player'
+          ? {
+              ...planet,
+              buildings: planet.buildings.map((building) =>
+                building.buildingId === 'building.aegis.metal-bot-1'
+                  ? { ...building, level: 10 }
+                  : building,
+              ),
+            }
+          : planet,
+      ),
+    };
 
-    if (!commandUpgrade.ok) {
-      return;
-    }
-
-    const item = getPlayerPlanet(commandUpgrade.value).buildQueue[0];
-    expect(item).toBeDefined();
-
-    if (item === undefined) {
-      return;
-    }
-
-    const completed = executeCommand(commandUpgrade.value, {
-      type: 'ADVANCE_TIME',
-      seconds: item.completesAt - commandUpgrade.value.clock.elapsedSeconds,
-    });
-    expect(completed.ok).toBe(true);
-
-    if (!completed.ok) {
-      return;
-    }
-
-    expect(queue(completed.value, 'building.aegis.research-lab').ok).toBe(true);
+    expect(queue(prepared, 'building.aegis.metal-bot-2').ok).toBe(true);
   });
 
   it('cancels an order with a 75 percent refund', () => {
     const initial = createInitialGameState('queue-cancel');
-    const queued = queue(initial, 'building.aegis.command');
+    const queued = queue(initial, 'building.aegis.metal-bot-1');
     expect(queued.ok).toBe(true);
 
     if (!queued.ok) {
@@ -202,7 +194,7 @@ describe('building queue', () => {
         type: 'BUILDING_COMPLETE',
         planetId: 'fake',
         queueItemId: 'fake',
-        buildingId: 'building.aegis.command',
+        buildingId: 'building.aegis.metal-bot-1',
         targetLevel: 9,
       },
     });

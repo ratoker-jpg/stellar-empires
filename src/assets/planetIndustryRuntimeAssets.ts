@@ -1,5 +1,6 @@
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
+import { resolveCanonicalBuildingId } from '../simulation/planet/buildingAliases';
 import type { FactionId, PlanetZoneId } from '../simulation/planet/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
 
@@ -73,16 +74,17 @@ const ZONE_TERRAINS: Readonly<Record<PlanetZoneId, string>> = {
 };
 
 export function getBuildingPresentationRole(buildingId: string): BuildingPresentationRole {
-  const parsed = parseMechanicalId(buildingId);
+  const canonicalBuildingId = resolveCanonicalBuildingId(buildingId);
+  const parsed = parseMechanicalId(canonicalBuildingId);
   if (parsed?.kind !== 'building' || parsed.factionId === 'shared') return 'command';
   const buildings = getFactionMechanicalRoles(parsed.factionId).buildings;
-  if (buildingId === buildings.metal) return 'metal-extractor';
-  if (buildingId === buildings.crystal) return 'crystal-refinery';
-  if (buildingId === buildings.gas) return 'gas-extractor';
-  if (buildingId === buildings.power) return 'power-plant';
-  if (buildingId === buildings.laboratory) return 'research-lab';
-  if (buildingId === buildings.shipyard) return 'shipyard';
-  if (buildingId === buildings.sensorGrid || buildingId === buildings.defenseIndustry) {
+  if (canonicalBuildingId === buildings.metal) return 'metal-extractor';
+  if (canonicalBuildingId === buildings.crystal) return 'crystal-refinery';
+  if (canonicalBuildingId === buildings.gas) return 'gas-extractor';
+  if (canonicalBuildingId === buildings.power) return 'power-plant';
+  if (canonicalBuildingId === buildings.laboratory) return 'research-lab';
+  if (canonicalBuildingId === buildings.shipyard) return 'shipyard';
+  if (canonicalBuildingId === buildings.sensorGrid || canonicalBuildingId === buildings.defenseIndustry) {
     return 'sensor-array';
   }
   return 'command';

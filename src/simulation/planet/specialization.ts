@@ -10,7 +10,7 @@ export type PlanetDevelopmentTemplateId =
   | 'resource-hub'
   | 'industrial-hub'
   | 'fortress';
-export type PlanetBuildingRole = keyof FactionMechanicalRoles['buildings'];
+export type PlanetBuildingRole = Exclude<keyof FactionMechanicalRoles['buildings'], 'complete'>;
 
 export interface PlanetSpecializationEffects {
   readonly resourceProductionPercent: number;

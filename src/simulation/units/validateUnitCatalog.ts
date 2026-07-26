@@ -1,4 +1,5 @@
 import type { BuildingDefinition } from '../planet/buildingCatalog';
+import { resolveCanonicalBuildingId } from '../planet/buildingAliases';
 import type { ResearchDefinition } from '../research/types';
 import type { UnitDefinition } from './types';
 
@@ -20,7 +21,12 @@ export function validateUnitCatalog(
 ): readonly UnitCatalogIssue[] {
   const issues: UnitCatalogIssue[] = [];
   const unitIds = new Set<string>();
-  const buildingIds = new Set(buildings.map((definition) => definition.id));
+  const buildingIds = new Set(
+    buildings.flatMap((definition) => [
+      definition.id,
+      resolveCanonicalBuildingId(definition.id),
+    ]),
+  );
   const researchIds = new Set(research.map((definition) => definition.id));
 
   for (const unit of units) {
@@ -51,7 +57,7 @@ export function validateUnitCatalog(
     }
 
     for (const requirement of unit.buildingRequirements) {
-      if (!buildingIds.has(requirement.buildingId)) {
+      if (!buildingIds.has(resolveCanonicalBuildingId(requirement.buildingId))) {
         issues.push({
           code: 'UNKNOWN_BUILDING_REQUIREMENT',
           unitId: unit.id,

@@ -149,11 +149,11 @@ describe('colonization', () => {
       colony?.buildings.map((building) => building.buildingId),
     ).toEqual(
       expect.arrayContaining([
-        'building.aegis.command',
-        'building.aegis.metal-extractor',
-        'building.aegis.crystal-refinery',
-        'building.aegis.gas-extractor',
-        'building.aegis.power-plant',
+        'building.aegis.control-chamber',
+        'building.aegis.metal-bot-1',
+        'building.aegis.mineral-bot-1',
+        'building.aegis.gas-probe-1',
+        'building.aegis.infrared-bot',
       ]),
     );
     expect(

@@ -23,20 +23,20 @@ describe('planet economy', () => {
     const { planet } = getPlayerPlanet('economy-start');
 
     expect(planet.economy.energy).toEqual({
-      produced: 120,
-      consumed: 70,
+      produced: 130,
+      consumed: 58,
       efficiencyPermille: 1_000,
     });
-    expect(planet.economy.population).toEqual({ used: 4, capacity: 50 });
+    expect(planet.economy.population).toEqual({ used: 4, capacity: 55 });
     expect(planet.economy.stability).toEqual({
-      capacity: 60,
-      demand: 36,
+      capacity: 73,
+      demand: 18,
       efficiencyPermille: 1_000,
     });
-    expect(planet.economy.resources.metal.productionPerHour).toBe(140);
-    expect(planet.economy.resources.crystal.productionPerHour).toBe(90);
-    expect(planet.economy.resources.gas.productionPerHour).toBe(60);
-    expect(planet.economy.resources.metal.capacity).toBe(12_000);
+    expect(planet.economy.resources.metal.productionPerHour).toBe(129);
+    expect(planet.economy.resources.crystal.productionPerHour).toBe(85);
+    expect(planet.economy.resources.gas.productionPerHour).toBe(52);
+    expect(planet.economy.resources.metal.capacity).toBe(10_000);
   });
 
   it('accrues one exact hour when world time advances', () => {
@@ -51,13 +51,13 @@ describe('planet economy', () => {
 
     const updated = result.value.planets.find((candidate) => candidate.id === planet.id);
     expect(updated?.economy.resources.metal.amount).toBe(
-      planet.economy.resources.metal.amount + 140,
+      planet.economy.resources.metal.amount + 129,
     );
     expect(updated?.economy.resources.crystal.amount).toBe(
-      planet.economy.resources.crystal.amount + 90,
+      planet.economy.resources.crystal.amount + 85,
     );
     expect(updated?.economy.resources.gas.amount).toBe(
-      planet.economy.resources.gas.amount + 60,
+      planet.economy.resources.gas.amount + 52,
     );
   });
 
@@ -90,13 +90,13 @@ describe('planet economy', () => {
 
   it('uses the strictest operating limit during a deficit', () => {
     const economy = createPlanetEconomy([
-      { buildingId: 'building.aegis.power-plant', level: 1 },
-      { buildingId: 'building.aegis.metal-extractor', level: 10 },
+      { buildingId: 'building.aegis.infrared-bot', level: 1 },
+      { buildingId: 'building.aegis.metal-bot-1', level: 10 },
     ]);
 
-    expect(economy.energy.efficiencyPermille).toBe(666);
-    expect(economy.stability.efficiencyPermille).toBe(500);
-    expect(economy.resources.metal.productionPerHour).toBe(700);
+    expect(economy.energy.efficiencyPermille).toBe(1_000);
+    expect(economy.stability.efficiencyPermille).toBe(300);
+    expect(economy.resources.metal.productionPerHour).toBe(387);
   });
 
   it('forecasts storage completion and never exceeds capacity', () => {

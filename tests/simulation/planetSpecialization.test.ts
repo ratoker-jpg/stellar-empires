@@ -23,7 +23,7 @@ describe('planet specializations', () => {
 
     const planet = specialization.value.planets.find((candidate) => candidate.id === planetId);
     expect(planet?.specializationId).toBe('resource');
-    expect(planet?.economy.resources.metal.productionPerHour).toBe(168);
+    expect(planet?.economy.resources.metal.productionPerHour).toBe(154);
 
     const template = executeCommand(specialization.value, {
       type: 'SET_PLANET_DEVELOPMENT_TEMPLATE',
@@ -46,7 +46,7 @@ describe('planet specializations', () => {
       type: 'QUEUE_BUILDING',
       empireId: 'player',
       planetId,
-      buildingId: 'building.aegis.command',
+      buildingId: 'building.aegis.metal-bot-1',
     });
     expect(queued.ok).toBe(true);
     if (!queued.ok) return;
@@ -76,7 +76,7 @@ describe('planet specializations', () => {
       type: 'QUEUE_BUILDING',
       empireId: 'player',
       planetId,
-      buildingId: 'building.aegis.command',
+      buildingId: 'building.aegis.metal-bot-1',
     });
     expect(queued.ok).toBe(true);
     if (!queued.ok) return;
@@ -84,7 +84,7 @@ describe('planet specializations', () => {
     const item = queued.value.planets.find((candidate) => candidate.id === planetId)?.buildQueue[0];
     expect(item).toBeDefined();
     if (item !== undefined) {
-      expect(item.completesAt - item.startedAt).toBeLessThan(120);
+      expect(item.completesAt - item.startedAt).toBeLessThan(109);
     }
   });
 });

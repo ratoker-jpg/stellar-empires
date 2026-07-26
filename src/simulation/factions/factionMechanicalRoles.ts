@@ -1,3 +1,4 @@
+import { getCompleteBuildingIds, type CompleteBuildingIds } from '../planet/completeBuildingCatalog';
 import type { FactionId, PlanetBuildingState } from '../planet/types';
 import { getMechanicalCatalogSourceFactionId } from './factionCatalogManifest';
 
@@ -15,6 +16,7 @@ export interface FactionMechanicalRoles {
     readonly civic: string;
     readonly tactical: string;
     readonly defenseIndustry: string;
+    readonly complete: CompleteBuildingIds;
   };
   readonly research: {
     readonly construction: string;
@@ -49,22 +51,29 @@ export interface FactionMechanicalRoles {
   };
 }
 
+
+function createCompleteBuildingRoles(factionId: FactionId): FactionMechanicalRoles['buildings'] {
+  const complete = getCompleteBuildingIds(factionId);
+  return {
+    command: complete.government,
+    metal: complete.metalPrimary,
+    crystal: complete.crystalPrimary,
+    gas: complete.gasPrimary,
+    power: complete.solarPower,
+    laboratory: complete.researchCenter,
+    shipyard: complete.shipyard,
+    sensorGrid: complete.spaceport,
+    depot: complete.hangar,
+    civic: complete.bank,
+    tactical: complete.government,
+    defenseIndustry: complete.advancedFactory,
+    complete,
+  };
+}
+
 const NATIVE_ROLES: Readonly<Partial<Record<FactionId, FactionMechanicalRoles>>> = {
   aegis: {
-    buildings: {
-      command: 'building.aegis.command',
-      metal: 'building.aegis.metal-extractor',
-      crystal: 'building.aegis.crystal-refinery',
-      gas: 'building.aegis.gas-extractor',
-      power: 'building.aegis.power-plant',
-      laboratory: 'building.aegis.research-lab',
-      shipyard: 'building.aegis.shipyard',
-      sensorGrid: 'building.aegis.sensor-array',
-      depot: 'building.aegis.orbital-depot',
-      civic: 'building.aegis.civic-core',
-      tactical: 'building.aegis.tactical-academy',
-      defenseIndustry: 'building.aegis.defense-foundry',
-    },
+    buildings: createCompleteBuildingRoles('aegis'),
     research: {
       construction: 'technology.aegis.construction',
       energy: 'technology.aegis.energy',
@@ -98,20 +107,7 @@ const NATIVE_ROLES: Readonly<Partial<Record<FactionId, FactionMechanicalRoles>>>
     },
   },
   synod: {
-    buildings: {
-      command: 'building.synod.concord-nexus',
-      metal: 'building.synod.matter-weave',
-      crystal: 'building.synod.prism-refinery',
-      gas: 'building.synod.flux-well',
-      power: 'building.synod.resonant-core',
-      laboratory: 'building.synod.cognition-vault',
-      shipyard: 'building.synod.lattice-yard',
-      sensorGrid: 'building.synod.deep-array',
-      depot: 'building.synod.relay-archive',
-      civic: 'building.synod.concord-habitat',
-      tactical: 'building.synod.precision-forum',
-      defenseIndustry: 'building.synod.shield-foundry',
-    },
+    buildings: createCompleteBuildingRoles('synod'),
     research: {
       construction: 'technology.synod.distributed-construction',
       energy: 'technology.synod.harmonic-grid',
@@ -145,20 +141,7 @@ const NATIVE_ROLES: Readonly<Partial<Record<FactionId, FactionMechanicalRoles>>>
     },
   },
   veyra: {
-    buildings: {
-      command: 'building.veyra.swarm-heart',
-      metal: 'building.veyra.alloy-bloom',
-      crystal: 'building.veyra.crystal-grove',
-      gas: 'building.veyra.vapor-root',
-      power: 'building.veyra.solar-membrane',
-      laboratory: 'building.veyra.memory-pod',
-      shipyard: 'building.veyra.living-dock',
-      sensorGrid: 'building.veyra.pulse-canopy',
-      depot: 'building.veyra.spore-vault',
-      civic: 'building.veyra.nest-cluster',
-      tactical: 'building.veyra.hunter-node',
-      defenseIndustry: 'building.veyra.carapace-forge',
-    },
+    buildings: createCompleteBuildingRoles('veyra'),
     research: {
       construction: 'technology.veyra.adaptive-growth',
       energy: 'technology.veyra.photosynthetic-grid',

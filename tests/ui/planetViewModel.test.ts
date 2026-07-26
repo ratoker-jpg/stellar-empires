@@ -18,89 +18,74 @@ function getPlayerPlanet(state: GameState) {
 }
 
 describe('planet view model', () => {
-  it('creates one building card for every Aegis catalog building', () => {
+  it('creates one building card for every complete Aegis catalog building', () => {
     const planet = getPlayerPlanet(createInitialGameState('planet-ui-cards'));
     const cards = createBuildingCardViewModels(planet);
 
-    expect(cards).toHaveLength(12);
-    expect(new Set(cards.map((card) => card.id)).size).toBe(12);
+    expect(cards).toHaveLength(24);
+    expect(new Set(cards.map((card) => card.id)).size).toBe(24);
     expect(cards.every((card) => card.asset.category === 'building')).toBe(true);
   });
 
-  it('explains that the research lab requires command center level two', () => {
+  it('explains the prerequisite for the second metal extraction tier', () => {
     const planet = getPlayerPlanet(createInitialGameState('planet-ui-requirement'));
     const card = createBuildingCardViewModels(planet).find(
-      (candidate) => candidate.id === 'building.aegis.research-lab',
+      (candidate) => candidate.id === 'building.aegis.metal-bot-2',
     );
 
     expect(card).toBeDefined();
     expect(card?.available).toBe(false);
-    expect(card?.blockReason).toBe('Центр командования ур. 2');
+    expect(card?.blockReason).toBe('Буровой комплекс «Кестрел I» ур. 10');
   });
 
-  it('marks every action blocked while the construction queue is occupied', () => {
+  it('marks ordinary actions blocked while preserving explicit endgame locks', () => {
     const initial = createInitialGameState('planet-ui-busy');
     const planet = getPlayerPlanet(initial);
     const queued = executeCommand(initial, {
       type: 'QUEUE_BUILDING',
       empireId: 'player',
       planetId: planet.id,
-      buildingId: 'building.aegis.command',
+      buildingId: 'building.aegis.metal-bot-1',
     });
 
     expect(queued.ok).toBe(true);
-
-    if (!queued.ok) {
-      return;
-    }
+    if (!queued.ok) return;
 
     const cards = createBuildingCardViewModels(getPlayerPlanet(queued.value));
-    expect(cards.every((card) => !card.available)).toBe(true);
-    expect(cards.every((card) => card.blockReason === 'Очередь строительства занята')).toBe(
-      true,
+    const ordinaryCards = cards.filter(
+      (card) =>
+        card.id !== 'building.aegis.aksum-obelisk' &&
+        card.id !== 'building.aegis.supreme-galactic-gates',
     );
+    expect(ordinaryCards.every((card) => !card.available)).toBe(true);
+    expect(
+      ordinaryCards.every((card) => card.blockReason === 'Очередь строительства занята'),
+    ).toBe(true);
+    expect(
+      cards
+        .filter((card) => card.id.includes('obelisk') || card.id.includes('galactic-gates'))
+        .every((card) => card.blockReason === 'Откроется после внедрения союзного endgame'),
+    ).toBe(true);
   });
 
-  it('unlocks the research lab after command center level two completes', () => {
+  it('unlocks the second extraction tier after its prerequisite reaches level ten', () => {
     const initial = createInitialGameState('planet-ui-unlock');
     const planet = getPlayerPlanet(initial);
-    const queued = executeCommand(initial, {
-      type: 'QUEUE_BUILDING',
-      empireId: 'player',
-      planetId: planet.id,
-      buildingId: 'building.aegis.command',
-    });
+    const prepared = {
+      ...planet,
+      buildings: planet.buildings.map((building) =>
+        building.buildingId === 'building.aegis.metal-bot-1'
+          ? { ...building, level: 10 }
+          : building,
+      ),
+    };
 
-    expect(queued.ok).toBe(true);
-
-    if (!queued.ok) {
-      return;
-    }
-
-    const queueItem = getPlayerPlanet(queued.value).buildQueue[0];
-    expect(queueItem).toBeDefined();
-
-    if (queueItem === undefined) {
-      return;
-    }
-
-    const advanced = executeCommand(queued.value, {
-      type: 'ADVANCE_TIME',
-      seconds: queueItem.completesAt - queued.value.clock.elapsedSeconds,
-    });
-
-    expect(advanced.ok).toBe(true);
-
-    if (!advanced.ok) {
-      return;
-    }
-
-    const research = createBuildingCardViewModels(getPlayerPlanet(advanced.value)).find(
-      (card) => card.id === 'building.aegis.research-lab',
+    const card = createBuildingCardViewModels(prepared).find(
+      (candidate) => candidate.id === 'building.aegis.metal-bot-2',
     );
 
-    expect(research?.available).toBe(true);
-    expect(research?.blockReason).toBeNull();
+    expect(card?.available).toBe(true);
+    expect(card?.blockReason).toBeNull();
   });
 
   it('formats game durations for interface labels', () => {
