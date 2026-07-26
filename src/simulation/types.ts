@@ -27,6 +27,7 @@ import type {
 } from './pve/worldEvents';
 import type { EmpireResearchState } from './research/types';
 import type { UnitKind } from './units/types';
+import type { UniverseModel } from './universe/model';
 import type { EmpireShipUpgradeState, ShipUpgradeTrack } from './upgrades/types';
 
 export interface GameClock {
@@ -294,10 +295,11 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 13;
+  readonly schemaVersion: 14;
   readonly seed: number;
   readonly clock: GameClock;
   readonly empires: readonly string[];
+  readonly universe: UniverseModel;
   readonly galaxy: GalaxyModel;
   readonly planets: readonly PlanetState[];
   readonly research: readonly EmpireResearchState[];

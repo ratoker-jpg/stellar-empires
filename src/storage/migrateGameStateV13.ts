@@ -14,6 +14,10 @@ import type {
   ShipUpgradeTrack,
 } from '../simulation/upgrades/types';
 import type { GameState } from '../simulation/types';
+
+export type LegacyGameStateV13 = Omit<GameState, 'schemaVersion' | 'universe'> & {
+  readonly schemaVersion: 13;
+};
 import { migrateGameState } from './migrateGameState';
 import { migrateLegacySynodAliases } from './migrateLegacySynodAliases';
 import { migrateLegacyVeyraAliases } from './migrateLegacyVeyraAliases';
@@ -143,7 +147,7 @@ function readCommandStates(
   );
 }
 
-export function migrateGameStateV13(value: unknown): GameState | undefined {
+export function migrateGameStateV13(value: unknown): LegacyGameStateV13 | undefined {
   if (!isRecord(value) || !Array.isArray(value.empires)) return undefined;
   const empireIds = value.empires.filter((empireId): empireId is string => typeof empireId === 'string');
   if (empireIds.length !== value.empires.length) return undefined;
@@ -162,11 +166,14 @@ export function migrateGameStateV13(value: unknown): GameState | undefined {
   const legacyInput = value.schemaVersion === 13 ? { ...value, schemaVersion: 12 } : value;
   const migrated = migrateGameState(legacyInput);
   if (migrated === undefined) return undefined;
-  return compactGameStateHistory(migrateLegacyVeyraAliases(migrateLegacySynodAliases({
+  const normalized = {
     ...migrated,
     schemaVersion: 13,
     shipUpgrades,
     commanders,
     botAutomation,
-  })));
+  } as unknown as GameState;
+  return compactGameStateHistory(
+    migrateLegacyVeyraAliases(migrateLegacySynodAliases(normalized)),
+  ) as unknown as LegacyGameStateV13;
 }

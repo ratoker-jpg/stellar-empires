@@ -42,6 +42,7 @@ function createSnapshot(
 ): IntelPlanetSnapshot {
   const snapshot: IntelPlanetSnapshot = {
     planetId: target.id,
+    coordinate: target.coordinate,
     name: target.name,
     ownerEmpireId: target.ownerEmpireId,
     factionId: target.factionId,
@@ -111,6 +112,7 @@ export function resolveScoutArrival(
     id: `intel-${eventSequence}-${fleet.id}`,
     observerEmpireId: fleet.empireId,
     targetPlanetId: target.id,
+    coordinate: target.coordinate,
     observedAt,
     expiresAt: observedAt + (level + 1) * 86_400,
     detected,
@@ -143,6 +145,7 @@ export function resolveScoutArrival(
         empireId: target.ownerEmpireId,
         sourceEmpireId: confidence === 'low' ? null : fleet.empireId,
         targetPlanetId: target.id,
+        coordinate: target.coordinate,
         detectedAt: observedAt,
         confidence,
       };

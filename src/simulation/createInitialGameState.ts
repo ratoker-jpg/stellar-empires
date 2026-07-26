@@ -1,6 +1,5 @@
 import { createInitialBotAutomationState } from './bots/state';
 import { createInitialCommandStates } from './command/commandDoctrine';
-import { generateGalaxy } from './galaxy/generateGalaxy';
 import { createInitialIntelligenceStates } from './intelligence/intelligenceState';
 import { createInitialMarketState } from './market/market';
 import { createInitialPlanetStates } from './planet/createInitialPlanetStates';
@@ -14,26 +13,33 @@ import { createInitialWorldEventState } from './pve/worldEvents';
 import { createInitialResearchStates } from './research/researchState';
 import { normalizeSeed } from './seed';
 import type { GameState } from './types';
+import {
+  createUniverseModel,
+  materializeGalaxy,
+  type UniverseTopologyPresetId,
+} from './universe/model';
 import { createInitialShipUpgradeStates } from './upgrades/shipUpgrades';
 
 export function createInitialGameState(
   seedSource: string,
   playerFaction: FactionId = 'aegis',
+  topologyPreset: UniverseTopologyPresetId = 'campaign',
 ): GameState {
   const seed = normalizeSeed(seedSource);
-  const galaxy = generateGalaxy(seed);
+  const universe = createUniverseModel(seed, topologyPreset);
+  const galaxy = materializeGalaxy(universe, 1);
   const empires = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'] as const;
   const colonies = createInitialPlanetStates(galaxy, playerFaction);
   const neutralForces = createInitialNeutralForces(galaxy, seed);
-
   return {
-    schemaVersion: 13,
+    schemaVersion: 14,
     seed,
     clock: {
       startedAt: '2026-07-18T00:00:00.000Z',
       elapsedSeconds: 0,
     },
     empires,
+    universe,
     galaxy,
     planets: [...colonies, ...neutralForces.planets],
     research: createInitialResearchStates(empires),

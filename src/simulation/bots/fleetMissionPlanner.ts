@@ -3,6 +3,7 @@ import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { createFleet } from '../fleets/fleetCommands';
 import { sendFleet } from '../fleets/flightCommands';
 import type { FleetMissionKind } from '../fleets/types';
+import { compareSpaceCoordinates } from '../space/coordinates';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
 import type { ShipRole } from '../units/types';
@@ -156,7 +157,10 @@ function missionPlan(
       const targets = state.galaxy.systems
         .flatMap((system) => system.planets)
         .filter((planet) => planet.biome !== 'gas')
-        .sort((left, right) => left.id.localeCompare(right.id));
+        .sort((left, right) =>
+          compareSpaceCoordinates(left.coordinate, right.coordinate) ||
+          left.id.localeCompare(right.id),
+        );
       for (const target of targets) {
         const command = sendCommand(perception.empireId, fleet.id, target.id, 'colonize');
         if (validSend(state, command)) {

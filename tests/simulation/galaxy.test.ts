@@ -27,6 +27,7 @@ describe('galaxy generation', () => {
       expect(system.y).toBeLessThanOrEqual(galaxy.height);
       expect(system.planets.length).toBeGreaterThanOrEqual(3);
       expect(system.planets.length).toBeLessThanOrEqual(10);
+      expect(system.planets.every((planet) => planet.coordinate.galaxy === 1)).toBe(true);
     }
   });
 

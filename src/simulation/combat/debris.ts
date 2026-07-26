@@ -1,4 +1,5 @@
 import type { ResourceCost } from '../economy/types';
+import type { SpaceCoordinate } from '../space/coordinates';
 import type { FleetState } from '../fleets/types';
 import { getCargoAmount } from '../fleets/fleetCalculations';
 import type { PlanetState } from '../planet/types';
@@ -7,6 +8,7 @@ import { getUnitDefinition } from '../units/catalog';
 export interface DebrisField {
   readonly id: string;
   readonly planetId: string;
+  readonly coordinate?: SpaceCoordinate;
   readonly metal: number;
   readonly crystal: number;
   readonly createdAt: number;
@@ -59,6 +61,7 @@ export function addDebrisField(
   planetId: string,
   amount: DebrisAmount,
   createdAt: number,
+  coordinate?: SpaceCoordinate,
 ): readonly DebrisField[] {
   if (amount.metal <= 0 && amount.crystal <= 0) return fields;
   const existing = fields.find((field) => field.planetId === planetId);
@@ -68,6 +71,7 @@ export function addDebrisField(
       {
         id: `debris-${planetId}`,
         planetId,
+        ...(coordinate === undefined ? {} : { coordinate }),
         metal: amount.metal,
         crystal: amount.crystal,
         createdAt,

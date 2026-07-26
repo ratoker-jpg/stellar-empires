@@ -7,8 +7,10 @@ import {
   isPlanetSpecializationId,
 } from '../simulation/planet/specialization';
 import { PLANET_ZONE_IDS } from '../simulation/planet/zones';
+import { isSpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
-import { migrateGameStateV13 } from './migrateGameStateV13';
+import { isUniverseModel } from '../simulation/universe/model';
+import { migrateGameStateV14 } from './migrateGameStateV14';
 import {
   SAVE_FORMAT_VERSION,
   type SaveEnvelope,
@@ -32,7 +34,7 @@ function isResourceCost(value: unknown): boolean {
     isNonNegativeInteger(value.crystal) && isNonNegativeInteger(value.gas);
 }
 function isStateShell(value: unknown): value is Record<string, unknown> {
-  return isRecord(value) && [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].includes(value.schemaVersion as number) &&
+  return isRecord(value) && [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(value.schemaVersion as number) &&
     typeof value.seed === 'number' && Number.isInteger(value.seed) && isRecord(value.clock) &&
     typeof value.clock.startedAt === 'string' && isNonNegativeInteger(value.clock.elapsedSeconds) &&
     Array.isArray(value.empires) && value.empires.every((item) => typeof item === 'string') &&
@@ -52,7 +54,8 @@ function isDefenseRepairQueueItem(value: unknown): boolean {
     isResourceCost(value.cost);
 }
 function isPlanet(value: unknown): boolean {
-  if (!isRecord(value) || !isPlanetSpecializationId(value.specializationId) ||
+  if (!isRecord(value) || !isSpaceCoordinate(value.coordinate) ||
+    !isPlanetSpecializationId(value.specializationId) ||
     !isPlanetDevelopmentTemplateId(value.developmentTemplateId) || !isRecord(value.zones) ||
     !Array.isArray(value.buildings) || !Array.isArray(value.buildQueue) || !isRecord(value.economy) ||
     !isRecord(value.inventory) || !isRecord(value.productionQueues) || !isRecord(value.defense)) return false;
@@ -121,15 +124,17 @@ function isFleet(value: unknown): boolean {
 }
 function isObservation(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.observerEmpireId === 'string' &&
-    typeof value.targetPlanetId === 'string' && isNonNegativeInteger(value.observedAt) &&
+    typeof value.targetPlanetId === 'string' && isSpaceCoordinate(value.coordinate) &&
+    isNonNegativeInteger(value.observedAt) &&
     isNonNegativeInteger(value.expiresAt) && value.expiresAt > value.observedAt && typeof value.detected === 'boolean' &&
-    isRecord(value.snapshot) && typeof value.snapshot.planetId === 'string' && typeof value.snapshot.name === 'string' &&
+    isRecord(value.snapshot) && isSpaceCoordinate(value.snapshot.coordinate) &&
+    typeof value.snapshot.planetId === 'string' && typeof value.snapshot.name === 'string' &&
     typeof value.snapshot.ownerEmpireId === 'string' && (value.snapshot.level === 1 || value.snapshot.level === 2 || value.snapshot.level === 3);
 }
 function isIntelligenceAlert(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.empireId === 'string' &&
     (value.sourceEmpireId === null || typeof value.sourceEmpireId === 'string') && typeof value.targetPlanetId === 'string' &&
-    isNonNegativeInteger(value.detectedAt) && (value.confidence === 'low' || value.confidence === 'medium' || value.confidence === 'high');
+    isSpaceCoordinate(value.coordinate) && isNonNegativeInteger(value.detectedAt) && (value.confidence === 'low' || value.confidence === 'medium' || value.confidence === 'high');
 }
 function isIntelligenceState(value: unknown): boolean {
   return isRecord(value) && typeof value.empireId === 'string' && Array.isArray(value.observations) &&
@@ -140,7 +145,7 @@ function isIntelligenceState(value: unknown): boolean {
 }
 function isDebrisField(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.planetId === 'string' &&
-    isNonNegativeInteger(value.metal) && isNonNegativeInteger(value.crystal) && isNonNegativeInteger(value.createdAt) &&
+    isSpaceCoordinate(value.coordinate) && isNonNegativeInteger(value.metal) && isNonNegativeInteger(value.crystal) && isNonNegativeInteger(value.createdAt) &&
     (value.metal > 0 || value.crystal > 0);
 }
 function isLogisticsResult(value: unknown): boolean {
@@ -173,7 +178,7 @@ function isMarket(value: unknown): boolean {
 }
 function isSpaceObject(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.systemId === 'string' &&
-    isPositiveInteger(value.position) &&
+    isSpaceCoordinate(value.coordinate) && isPositiveInteger(value.position) &&
     (value.kind === 'asteroid' || value.kind === 'gas-cloud' || value.kind === 'anomaly') &&
     isPositiveInteger(value.initialYield) && isNonNegativeInteger(value.remainingYield) &&
     value.remainingYield <= value.initialYield && isNonNegativeInteger(value.hazardPermille) &&
@@ -222,7 +227,7 @@ function isBotAutomationState(
     normalizeBotAutomationState(value, validEmpireIds, elapsedSeconds) !== undefined;
 }
 function isGameState(value: unknown): value is GameState {
-  return isStateShell(value) && value.schemaVersion === 13 &&
+  return isStateShell(value) && value.schemaVersion === 14 && isUniverseModel(value.universe) &&
     Array.isArray(value.commandLog) && value.commandLog.length <= STATE_HISTORY_LIMITS.commands &&
     Array.isArray(value.eventLog) && value.eventLog.length <= STATE_HISTORY_LIMITS.executedEvents &&
     Array.isArray(value.empires) &&
@@ -259,7 +264,7 @@ export function parseSaveJson(json: string): SaveParseResult {
   }
   const actualChecksum = createStateChecksum(parsed.state);
   if (actualChecksum !== parsed.checksum) return { ok: false, code: 'CHECKSUM_MISMATCH', message: 'Save data checksum does not match its state.' };
-  const state = migrateGameStateV13(parsed.state);
+  const state = migrateGameStateV14(parsed.state);
   if (!isGameState(state)) return { ok: false, code: 'SAVE_MIGRATION_FAILED', message: 'Save data could not be migrated to the current schema.' };
   return { ok: true, value: { formatVersion: SAVE_FORMAT_VERSION, slotId: parsed.slotId, savedAt: parsed.savedAt, checksum: createStateChecksum(state), state } };
 }
