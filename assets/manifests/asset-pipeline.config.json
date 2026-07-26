@@ -12,8 +12,8 @@
   ],
   "classificationOverrides": [
     {
-      "prefix": "public/assets/universe",
-      "classification": "source-intake"
+      "prefix": "assets/source/universe-navigation",
+      "classification": "source"
     },
     {
       "prefix": "public/assets/generated",
@@ -102,7 +102,7 @@
     },
     "universe-sun": {
       "runtimeSizes": [
-        256,
+        128,
         512
       ],
       "preferredFormat": "webp",
@@ -110,7 +110,6 @@
     },
     "universe-planet": {
       "runtimeSizes": [
-        128,
         256
       ],
       "preferredFormat": "webp",
@@ -118,15 +117,14 @@
     },
     "universe-object": {
       "runtimeSizes": [
-        128,
-        192
+        192,
+        256
       ],
       "preferredFormat": "webp",
       "quality": 88
     },
     "universe-marker": {
       "runtimeSizes": [
-        64,
         128
       ],
       "preferredFormat": "webp",
@@ -144,5 +142,19 @@
     "src/assets/planetIndustryRuntimeAssets.ts"
   ],
   "mechanicalBindingsPath": "assets/manifests/mechanical-runtime-bindings.json",
-  "runtimeTypeScriptManifestPath": "src/assets/generated/runtimeAssetManifest.generated.ts"
+  "runtimeTypeScriptManifestPath": "src/assets/generated/runtimeAssetManifest.generated.ts",
+  "universeSourceRoot": "assets/source/universe-navigation",
+  "spaceMapBindingsPath": "assets/manifests/space-map-runtime-bindings.json",
+  "spaceMapTypeScriptManifestPath": "src/assets/generated/spaceMapAssetManifest.generated.ts",
+  "spaceMapQaRoot": "docs/assets/qa/universe",
+  "spaceMapQaContactSheetCount": 16,
+  "spaceMapBudgets": {
+    "totalTransferBytes": 16777216,
+    "totalDecodedBytes": 29458432,
+    "viewDecodedBytes": {
+      "universe": 8388608,
+      "galaxy": 6291456,
+      "solar-system": 20971520
+    }
+  }
 }

@@ -17,7 +17,8 @@
     "assets:check": "node scripts/assets/check.mjs",
     "assets:process": "node scripts/assets/process.mjs",
     "assets:atlas": "node scripts/assets/atlas.mjs",
-    "check": "npm run assets:check && npm run lint && npm run typecheck && npm run test && vite build"
+    "check": "npm run assets:check && npm run lint && npm run typecheck && npm run test && vite build",
+    "assets:contact-sheet": "node scripts/assets/contact-sheet.mjs"
   },
   "dependencies": {
     "phaser": "4.2.1"

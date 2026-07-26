@@ -1,54 +1,34 @@
 # Current execution state
 
-**Updated:** 2026-07-26  
-**Safe to continue:** yes, after Audit PR #106 merges
+**Updated:** 2026-07-27  
+**Safe to continue:** yes; PR #107 is the only active implementation item
 
 | Field | Current value |
 |---|---|
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
-| Completed catalog batch | `ASSET-RUNTIME-INTEGRATION-01`, PRs #102–#105 |
-| Active Audit PR | #106 — `UNIVERSE-NAVIGATION-01` |
-| Verified audit baseline | `49dd4913a941054fb89bc8f4166ead5dbfa73223` |
+| Active audit | #106 — `UNIVERSE-NAVIGATION-01` — merged |
+| Verified implementation baseline | `3bafad74907a92633f5c31c3d30bd96268c3dafb` |
 | Batch complexity | Medium — four sequential implementation PRs |
-| Authorized work items on audit merge | `UNIVERSE-ASSET-PIPELINE`, `UNIVERSE-SPATIAL-MODEL`, `UNIVERSE-NAVIGATION-VIEWS`, `UNIVERSE-ACTIONS-GATE` |
-| Planned implementation PRs | #107, #108, #109 and #110 |
-| Active implementation PR | none |
-| Last completed atomic action | audited current world model, assets, Phaser presentation, mission bridge, persistence and Graphify dependencies |
-| Last successful validation | PR #105 final CI and Graphify; Audit PR #106 validation pending |
-| Exact next action | merge Audit PR #106 after green CI, then stop; later create PR #107 from fresh `main` |
+| Active implementation PR | #107 — `UNIVERSE-ASSET-PIPELINE` |
+| Completed work in branch | 90 source masters moved behind the source boundary; 102 WebP derivatives and typed manifests generated |
+| Save/gameplay divergence | none; schema remains v13 |
+| Exact next action | validate and merge #107, then stop; #108 starts later from fresh `main` |
 | Blockers | none |
-| Divergence | roadmap’s historical PR numbers shifted; stable work-item IDs are authoritative |
 
-## Batch checkpoints
+## PR #107 gates
 
-| Checkpoint | State |
+| Gate | State |
 |---|---|
-| Current-code reconciliation | complete |
-| Graphify evidence | complete |
-| Asset/source mapping | complete |
-| Schema and migration contract | complete |
-| Three-level route/render contract | complete |
-| Mission/report integration contract | complete |
-| Critical unknowns | none |
-| Runtime implementation | intentionally not started |
+| 90 source masters preserved with checksums and legacy aliases | complete |
+| 102 deterministic runtime derivatives | complete |
+| source files removed from `public/assets/universe/**` | complete |
+| typed Space Map runtime manifest | complete |
+| Universe/Galaxy/Solar-system catalog groups | complete |
+| dark/light family contact sheets | complete |
+| transfer and decoded-memory checks | complete in pipeline; CI confirmation pending |
+| startup eager-load regression | statically blocked; CI confirmation pending |
+| schema or gameplay changes | none |
 
 ## Recovery rule
 
-Before implementation, read:
-
-1. `docs/audits/current-batch-audit.md`;
-2. `docs/audits/contracts/universe-navigation-01-prs.md`;
-3. `docs/audits/contracts/universe-navigation-01-data-assets.md`;
-4. `docs/audits/evidence/universe-navigation-01-graphify.md`.
-
-Implementation order is strict: #107 → #108 → #109 → #110. Do not start #108 before #107 merges, and do not add unaudited Stage C or solar-war work.
-
-### 2026-07-26 — Audit PR #106
-
-- selected a medium four-PR batch rather than overcombining into two or artificially splitting into six;
-- fixed 102 runtime Universe derivatives from 90 source files;
-- fixed the schema-v14 spatial model and migration boundary;
-- kept route selection outside authoritative GameState;
-- reused the existing mission-composer command bridge;
-- deferred complete solar-war mechanics;
-- no implementation was started.
+Do not begin `UNIVERSE-SPATIAL-MODEL` until #107 merges. After the merge, update exact metadata and create #108 only from fresh `main`.

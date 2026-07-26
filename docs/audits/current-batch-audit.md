@@ -5,7 +5,7 @@
 **Verified baseline:** `main` SHA `49dd4913a941054fb89bc8f4166ead5dbfa73223` after completed PR #105 metadata  
 **Complexity:** medium  
 **Authorized implementation batch:** four sequential PRs, planned #107–#110  
-**Implementation started:** no
+**Implementation started:** yes — PR #107 only
 
 ## 1. Executive decision
 
@@ -22,7 +22,7 @@ The batch contains four implementation PRs:
 
 | Planned PR | Work item | Main result |
 |---:|---|---|
-| #107 | `UNIVERSE-ASSET-PIPELINE` | all 90 Universe source files move behind the source/runtime boundary and produce a typed, lazy-loaded 102-texture runtime family |
+| #107 | `UNIVERSE-ASSET-PIPELINE` | active: all 90 Universe source files move behind the source/runtime boundary and produce a typed, lazy-loaded 102-texture runtime family |
 | #108 | `UNIVERSE-SPATIAL-MODEL` | schema v14 introduces canonical Universe/Galaxy/System coordinates, deterministic 24-slot systems and a migration from the legacy single-galaxy model |
 | #109 | `UNIVERSE-NAVIGATION-VIEWS` | the current single Phaser galaxy canvas becomes explicit Universe, Galaxy and Solar-system views with breadcrumbs, paging, URL/history restoration and accessibility |
 | #110 | `UNIVERSE-ACTIONS-GATE` | tooltips, intelligence redaction, map-to-mission preparation, report backlinks, route overlays, browser E2E and performance gates close the batch |

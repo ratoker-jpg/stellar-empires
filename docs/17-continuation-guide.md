@@ -1,8 +1,8 @@
 # AI Continuation Guide
 
-**Status:** Accepted on merge of Audit PR #106  
+**Status:** PR #107 implementation active  
 **Updated:** 2026-07-26  
-**Verified baseline:** `main` SHA `49dd4913a941054fb89bc8f4166ead5dbfa73223`
+**Verified baseline:** merged Audit PR #106, SHA `3bafad74907a92633f5c31c3d30bd96268c3dafb`
 
 ## Repository
 
@@ -33,7 +33,7 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - all 217 complete mechanical IDs resolve through 173 generated WebP runtime images;
 - save schema remains v13 before the new spatial-model implementation;
 - Audit PR #106 defines the next medium four-PR batch `UNIVERSE-NAVIGATION-01`;
-- no Universe implementation is included in Audit PR #106.
+- PR #107 moves 90 Universe masters into the source library and generates 102 production runtime textures; no schema/gameplay change is included.
 
 ## Accepted batch decision
 
@@ -108,4 +108,4 @@ The batch is medium and contains four implementation PRs.
 
 ## Immediate route
 
-After Audit PR #106 merges, stop. The next later action is PR #107 from fresh `main`; do not begin #108 or unrelated roadmap work first.
+Validate and merge PR #107, then stop. PR #108 begins later from fresh `main`; do not start it inside #107.

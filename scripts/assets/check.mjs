@@ -35,12 +35,16 @@ if (stable(committed) !== stable(fresh)) {
 }
 
 const newAssets = fresh.assets.filter((asset) => asset.path.startsWith('assets/source/New assets/'));
-const universe = fresh.assets.filter((asset) => asset.classification === 'source-intake');
+const universe = fresh.assets.filter((asset) => asset.path.startsWith(`${config.universeSourceRoot}/`));
+const universePublicIntake = fresh.assets.filter((asset) => asset.path.startsWith('public/assets/universe/'));
 if (newAssets.length !== config.expectedIntake.newAssetsCount) {
   errors.push(`Expected ${config.expectedIntake.newAssetsCount} New assets files, found ${newAssets.length}.`);
 }
 if (universe.length !== config.expectedIntake.universeCount) {
-  errors.push(`Expected ${config.expectedIntake.universeCount} Universe intake files, found ${universe.length}.`);
+  errors.push(`Expected ${config.expectedIntake.universeCount} Universe source files, found ${universe.length}.`);
+}
+if (universePublicIntake.length !== 0) {
+  errors.push(`Unprocessed Universe files remain under public/assets/universe: ${universePublicIntake.length}.`);
 }
 
 for (const scope of [newAssets, universe]) {
@@ -76,6 +80,7 @@ const processingPlan = await loadJson(config.processingPlanPath);
 const atlasPlan = await loadJson(config.atlasPlanPath);
 const bindings = await loadJson(config.mechanicalBindingsPath);
 const runtimeManifest = await loadJson(config.runtimeManifestPath);
+const spaceMapBindings = await loadJson(config.spaceMapBindingsPath);
 if (processingPlan.schemaVersion !== 1 || !Array.isArray(processingPlan.entries)) {
   errors.push('Invalid runtime processing plan.');
 }
@@ -87,6 +92,9 @@ if (bindings.schemaVersion !== 1 || !Array.isArray(bindings.entries)) {
 }
 if (runtimeManifest.schemaVersion !== 1 || !Array.isArray(runtimeManifest.assets)) {
   errors.push('Invalid generated runtime manifest.');
+}
+if (spaceMapBindings.schemaVersion !== 1 || !Array.isArray(spaceMapBindings.entries)) {
+  errors.push('Invalid Space Map runtime bindings.');
 }
 const buildingBindings = bindings.entries.filter((entry) => entry.category === 'building');
 if (buildingBindings.length !== 72) {
@@ -126,13 +134,19 @@ const expectedRuntimeIds = new Set(
 if (expectedRuntimeIds.size !== 173) {
   errors.push(`Expected 173 unique runtime semantic IDs, found ${expectedRuntimeIds.size}.`);
 }
-if (processingPlan.entries.length !== 173) {
-  errors.push(`Expected 173 processing entries, found ${processingPlan.entries.length}.`);
+if (spaceMapBindings.entries.length !== 102) {
+  errors.push(`Expected 102 Space Map runtime bindings, found ${spaceMapBindings.entries.length}.`);
 }
-if (runtimeManifest.assets.length !== 173) {
-  errors.push(`Expected 173 generated runtime textures, found ${runtimeManifest.assets.length}.`);
+if (processingPlan.entries.length !== 275) {
+  errors.push(`Expected 275 processing entries, found ${processingPlan.entries.length}.`);
+}
+if (runtimeManifest.assets.length !== 275) {
+  errors.push(`Expected 275 generated runtime textures, found ${runtimeManifest.assets.length}.`);
 }
 const generatedIds = new Set(runtimeManifest.assets.map((asset) => asset.semanticId));
+const spaceMapIds = new Set(spaceMapBindings.entries.map((entry) => entry.runtimeSemanticId));
+if (spaceMapIds.size !== 102) errors.push(`Expected 102 unique Space Map semantic IDs, found ${spaceMapIds.size}.`);
+const allowedGeneratedIds = new Set([...expectedRuntimeIds, ...spaceMapIds]);
 for (const binding of buildingBindings) {
   if (!generatedIds.has(binding.runtimeSemanticId)) {
     errors.push(`Missing generated building runtime asset: ${binding.mechanicalId}`);
@@ -153,16 +167,55 @@ for (const binding of [...defenseBindings, ...commanderBindings]) {
     errors.push(`Missing final generated runtime asset: ${binding.mechanicalId}`);
   }
 }
+for (const binding of spaceMapBindings.entries) {
+  if (!generatedIds.has(binding.runtimeSemanticId)) errors.push(`Missing generated Space Map asset: ${binding.runtimeSemanticId}`);
+}
 for (const generatedId of generatedIds) {
-  if (!expectedRuntimeIds.has(generatedId)) {
+  if (!allowedGeneratedIds.has(generatedId)) {
     errors.push(`Orphan generated runtime asset: ${generatedId}`);
   }
 }
+const sourceAuditByPath = new Map(fresh.assets.map((asset) => [asset.path, asset]));
+const outputPaths = new Set();
+for (const binding of spaceMapBindings.entries) {
+  const source = sourceAuditByPath.get(binding.sourcePath);
+  if (source === undefined) errors.push(`Missing Space Map source: ${binding.sourcePath}`);
+  else if (source.sha256 !== binding.sourceSha256) errors.push(`Space Map source checksum changed: ${binding.sourcePath}`);
+  if (outputPaths.has(binding.outputPath)) errors.push(`Duplicate Space Map output path: ${binding.outputPath}`);
+  outputPaths.add(binding.outputPath);
+}
+const universeRuntime = runtimeManifest.assets.filter((asset) => asset.outputPath.startsWith('public/assets/generated/universe/'));
+const universeBytes = universeRuntime.reduce((sum, asset) => sum + asset.bytes, 0);
+const universeDecoded = universeRuntime.reduce((sum, asset) => sum + asset.width * asset.height * 4, 0);
+if (universeRuntime.length !== 102) errors.push(`Expected 102 generated Universe textures, found ${universeRuntime.length}.`);
+if (universeBytes > config.spaceMapBudgets.totalTransferBytes) errors.push(`Universe transfer budget exceeded: ${universeBytes} bytes.`);
+if (universeDecoded > config.spaceMapBudgets.totalDecodedBytes) errors.push(`Universe decoded budget exceeded: ${universeDecoded} bytes.`);
+const decodedById = new Map(universeRuntime.map((asset) => [asset.semanticId, asset.width * asset.height * 4]));
+const groupDecoded = (group) => spaceMapBindings.entries
+  .filter((entry) => entry.viewGroup === group)
+  .reduce((sum, entry) => sum + (decodedById.get(entry.runtimeSemanticId) ?? 0), 0);
+const solarSunMax = Math.max(...spaceMapBindings.entries.filter((entry) => entry.family === 'universe-sun' && entry.runtimeSemanticId.endsWith('.detail')).map((entry) => decodedById.get(entry.runtimeSemanticId) ?? 0));
+const solarSlotMax = Math.max(...spaceMapBindings.entries.filter((entry) => ['universe-planet', 'universe-asteroid', 'universe-debris', 'universe-renegade'].includes(entry.family)).map((entry) => decodedById.get(entry.runtimeSemanticId) ?? 0));
+const solarMarkers = spaceMapBindings.entries.filter((entry) => entry.family === 'universe-marker').reduce((sum, entry) => sum + (decodedById.get(entry.runtimeSemanticId) ?? 0), 0);
+const activeViewDecoded = {
+  universe: groupDecoded('universe'),
+  galaxy: groupDecoded('galaxy'),
+  'solar-system': solarSunMax + solarSlotMax * 24 + solarMarkers,
+};
+for (const [group, limit] of Object.entries(config.spaceMapBudgets.viewDecodedBytes)) {
+  const decoded = activeViewDecoded[group] ?? Number.POSITIVE_INFINITY;
+  if (decoded > limit) errors.push(`${group} decoded budget exceeded: ${decoded} bytes.`);
+}
+const qaFiles = (await readdir(resolveRepositoryPath(config.spaceMapQaRoot))).filter((name) => name.endsWith('.png'));
+if (qaFiles.length !== config.spaceMapQaContactSheetCount) errors.push(`Expected ${config.spaceMapQaContactSheetCount} Universe QA contact sheets, found ${qaFiles.length}.`);
+const bootScene = await readFile(resolveRepositoryPath('src/game/scenes/BootScene.ts'), 'utf8');
+if (bootScene.includes('spaceMapAssets') || bootScene.includes('generated/universe')) errors.push('BootScene eagerly references the Universe runtime family.');
 if (generatedIds.has('technology.shared.qa-edges-dark-light')) {
   errors.push('Technology QA reference was registered as runtime art.');
 }
 try {
   await readFile(resolveRepositoryPath(config.runtimeTypeScriptManifestPath), 'utf8');
+  await readFile(resolveRepositoryPath(config.spaceMapTypeScriptManifestPath), 'utf8');
 } catch {
   errors.push(`Missing generated TypeScript runtime manifest: ${config.runtimeTypeScriptManifestPath}`);
 }
@@ -178,8 +231,8 @@ for (const file of sourceFiles) {
   if (content.includes('assets/source/') && !provenanceMetadataAllowlist.has(repositoryPath)) {
     errors.push(`Production source directly references provenance assets: ${repositoryPath}`);
   }
-  if (content.includes('assets/universe/')) {
-    errors.push(`Production source directly references unprocessed Universe intake: ${repositoryPath}`);
+  if (content.includes('assets/universe/') || content.includes('assets/source/universe-navigation/')) {
+    errors.push(`Production source directly references unprocessed Universe source art: ${repositoryPath}`);
   }
 }
 

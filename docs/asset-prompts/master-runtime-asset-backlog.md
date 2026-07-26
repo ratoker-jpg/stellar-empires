@@ -92,24 +92,24 @@ notes
 
 | Family | Count | Current status | Contract target |
 |---|---:|---|---|
-| Galaxy nebulae | 20 | `PROCESSING_REQUIRED` | 256×256 runtime masters/variants |
-| System stars | 12 | `PROCESSING_REQUIRED` | 128×128 |
-| Active suns | 8 | `PROCESSING_REQUIRED` | 512×512 master + smaller derivatives |
-| Protostars | 2 | `PROCESSING_REQUIRED` | 512×512 master + smaller derivatives |
-| Stellar remnants | 2 | `PROCESSING_REQUIRED` | 512×512 master + smaller derivatives |
-| Planets | 24 | `PROCESSING_REQUIRED` | 256×256 |
-| Asteroids | 8 | `PROCESSING_REQUIRED` | documented strategic-object size |
-| Debris fields | 6 | `PROCESSING_REQUIRED` | documented strategic-object size |
-| Renegade objects | 6 | `PROCESSING_REQUIRED` | documented strategic-object size |
-| Generic markers | 2 | `PROCESSING_REQUIRED`; insufficient semantic coverage | replace/supplement with semantic marker family |
+| Galaxy nebulae | 20 | `RUNTIME_INTEGRATED` in PR #107 | 256×256 runtime masters/variants |
+| System stars | 12 | `RUNTIME_INTEGRATED` in PR #107 | 128×128 |
+| Active suns | 8 | `RUNTIME_INTEGRATED` in PR #107 | 512×512 master + smaller derivatives |
+| Protostars | 2 | `RUNTIME_INTEGRATED` in PR #107 | 512×512 master + smaller derivatives |
+| Stellar remnants | 2 | `RUNTIME_INTEGRATED` in PR #107 | 512×512 master + smaller derivatives |
+| Planets | 24 | `RUNTIME_INTEGRATED` in PR #107 | 256×256 |
+| Asteroids | 8 | `RUNTIME_INTEGRATED` in PR #107 | documented strategic-object size |
+| Debris fields | 6 | `RUNTIME_INTEGRATED` in PR #107 | documented strategic-object size |
+| Renegade objects | 6 | `RUNTIME_INTEGRATED` in PR #107 | documented strategic-object size |
+| Generic markers | 2 | `RUNTIME_INTEGRATED` in PR #107; insufficient semantic coverage | replace/supplement with semantic marker family |
 
-Known PR #97 issues:
+PR #107 resolution:
 
-- all images exceed contracted dimensions;
-- about 130 MiB transfer as committed in `public`;
-- about 306 MiB decoded texture footprint if loaded together;
-- filenames differ from `docs/asset-prompts/universe-navigation-assets.md`;
-- only two generic marker variants exist.
+- all 90 masters are preserved under `assets/source/universe-navigation/**`;
+- 102 optimized WebP derivatives are generated under `public/assets/generated/universe/**`;
+- typed lazy groups prevent eager startup loading and enforce per-view budgets;
+- semantic aliases resolve historical filename differences;
+- the two supplied markers are bound to sun attack/support; remaining overlays stay in section 8.
 
 ---
 
@@ -202,7 +202,7 @@ All PR #97 objects must retain their visual content but be processed behind stab
 
 ```text
 assetId: universe.galaxy.nebula.<01-20>
-status: PROCESSING_REQUIRED
+status: RUNTIME_INTEGRATED
 sourcePath: public/assets/universe/galaxies/galaxy.nebula-XX.png
 runtimeDestination: public/assets/generated/universe/galaxies/galaxy.nebula-XX.webp
 usage: Universe 200×200 galaxy node
@@ -210,101 +210,101 @@ masterCanvas: 256×256
 alphaRequirement: transparent outer edge
 safeArea: luminous structure inside central 80%; no cropped arms
 negativePrompt: rectangular background, hard border, text, labels, giant stars, opaque black corners
-replacementTargetPr: #105
+deliveredPr: #107
 ```
 
 ### UNIVERSE.SYSTEM.STAR.01-12
 
 ```text
 assetId: universe.system.star.<01-12>
-status: PROCESSING_REQUIRED
+status: RUNTIME_INTEGRATED
 usage: Galaxy view system node
 masterCanvas: 128×128
 alphaRequirement: transparent outside corona
 safeArea: corona within 90%
 negativePrompt: planet, lens frame, text, square background
-replacementTargetPr: #105
+deliveredPr: #107
 ```
 
 ### UNIVERSE.SUN.ACTIVE.01-08
 
 ```text
 assetId: universe.sun.active.<01-08>
-status: PROCESSING_REQUIRED
+status: RUNTIME_INTEGRATED
 masterCanvas: 512×512
 runtimeSizes: 128, 256, 512
 usage: Solar-system center and sun panels
 alphaRequirement: transparent outside corona
 negativePrompt: planet surface, black square, labels, artificial ring, cropped corona
-replacementTargetPr: #105
+deliveredPr: #107
 ```
 
 ### UNIVERSE.SUN.PROTOSTAR.01-02
 
 ```text
 assetId: universe.sun.protostar.<01-02>
-status: PROCESSING_REQUIRED
+status: RUNTIME_INTEGRATED
 masterCanvas: 512×512
 usage: recovering system state
 visual requirement: visibly forming, unstable and distinct from active star
-replacementTargetPr: #105
+deliveredPr: #107
 ```
 
 ### UNIVERSE.SUN.COLLAPSED.01-02
 
 ```text
 assetId: universe.sun.collapsed.<01-02>
-status: PROCESSING_REQUIRED
+status: RUNTIME_INTEGRATED
 masterCanvas: 512×512
 usage: collapsed/destroyed system state
 visual requirement: dark stellar remnant, readable without implying the whole galaxy is destroyed
-replacementTargetPr: #105
+deliveredPr: #107
 ```
 
 ### UNIVERSE.PLANET.01-24
 
 ```text
 assetId: universe.planet.<01-24>
-status: PROCESSING_REQUIRED
+status: RUNTIME_INTEGRATED
 masterCanvas: 256×256
 runtimeSizes: 96, 120, 256
 usage: Solar-system fixed slots and planet switcher thumbnails
 alphaRequirement: true alpha
 safeArea: atmosphere/rings inside canvas
 negativePrompt: starfield, UI ring, text, rectangular background, cropped rings
-replacementTargetPr: #105
+deliveredPr: #107
 ```
 
 ### UNIVERSE.ASTEROID.01-08
 
 ```text
 assetId: universe.object.asteroid.<01-08>
-status: PROCESSING_REQUIRED
+status: RUNTIME_INTEGRATED
 usage: asteroid/gas/extraction strategic object
 alphaRequirement: true alpha
 negativePrompt: ground, large planet, ship, text
-replacementTargetPr: #105
+deliveredPr: #107
 ```
 
 ### UNIVERSE.DEBRIS.01-06
 
 ```text
 assetId: universe.object.debris.<01-06>
-status: PROCESSING_REQUIRED
+status: RUNTIME_INTEGRATED
 usage: debris field
 visual requirement: sparse readable fragments; no full intact ship
 alphaRequirement: true alpha with no bright rectangle
-replacementTargetPr: #105
+deliveredPr: #107
 ```
 
 ### UNIVERSE.RENEGADE.01-06
 
 ```text
 assetId: universe.object.renegade.<01-06>
-status: PROCESSING_REQUIRED
+status: RUNTIME_INTEGRATED
 usage: Renegade PvE object
 visual requirement: clearly non-planetary and hostile; readable at 120px
-replacementTargetPr: #105
+deliveredPr: #107
 ```
 
 ---

@@ -9,7 +9,8 @@ function markdownReport(manifest) {
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([family, count]) => `| ${family} | ${count} |`)
     .join('\n');
-  const universe = manifest.assets.filter((asset) => asset.classification === 'source-intake');
+  const universe = manifest.assets.filter((asset) => asset.path.startsWith('assets/source/universe-navigation/'));
+  const universeRuntime = manifest.assets.filter((asset) => asset.path.startsWith('public/assets/generated/universe/'));
   const newAssets = manifest.assets.filter((asset) => asset.path.startsWith('assets/source/New assets/'));
   const oversizedUniverse = universe
     .filter((asset) => {
@@ -28,14 +29,15 @@ function markdownReport(manifest) {
     `## Totals\n\n` +
     `- audited files: **${manifest.summary.totalFiles}**\n` +
     `- source library files under \`assets/source/New assets\`: **${newAssets.length}**\n` +
-    `- Universe intake files: **${universe.length}**\n` +
+    `- Universe source files: **${universe.length}**\n` +
+    `- Universe runtime derivatives: **${universeRuntime.length}**\n` +
     `- audited transfer bytes: **${formatBytes(manifest.summary.totalBytes)}**\n` +
     `- estimated decoded RGBA bytes: **${formatBytes(manifest.summary.totalDecodedBytes)}**\n\n` +
     `## Classification\n\n| Classification | Files |\n|---|---:|\n${classifications}\n\n` +
     `## Families\n\n| Family | Files |\n|---|---:|\n${families}\n\n` +
-    `## Universe intake requiring resize\n\n` +
+    `## Universe source masters above runtime size\n\n` +
     (oversizedUniverse.length === 0
-      ? `No oversized Universe intake files were detected.\n`
+      ? `No oversized Universe source masters were detected.\n`
       : `| Path | Dimensions | Bytes | Semantic ID |\n|---|---:|---:|---|\n${oversizedUniverse
           .map((asset) => `| \`${asset.path}\` | ${asset.width}×${asset.height} | ${formatBytes(asset.bytes)} | \`${asset.semanticId ?? 'unassigned'}\` |`)
           .join('\n')}\n`) +

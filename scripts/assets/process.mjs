@@ -36,6 +36,47 @@ ${entries}
 `;
 }
 
+function generatedSpaceMapModule(bindings, outputs) {
+  const outputById = new Map(outputs.map((asset) => [asset.semanticId, asset]));
+  const entries = [...bindings]
+    .sort((left, right) => left.runtimeSemanticId.localeCompare(right.runtimeSemanticId))
+    .map((binding) => {
+      const output = outputById.get(binding.runtimeSemanticId);
+      if (output === undefined) throw new Error(`Missing processed Space Map asset: ${binding.runtimeSemanticId}`);
+      return `  ${JSON.stringify(binding.runtimeSemanticId)}: { outputPath: ${JSON.stringify(output.outputPath)}, width: ${output.width}, height: ${output.height}, family: ${JSON.stringify(binding.family)}, viewGroup: ${JSON.stringify(binding.viewGroup)} },`;
+    })
+    .join('\n');
+  const groups = ['universe', 'galaxy', 'solar-system']
+    .map((group) => {
+      const ids = bindings
+        .filter((binding) => binding.viewGroup === group)
+        .map((binding) => binding.runtimeSemanticId)
+        .sort()
+        .map((id) => JSON.stringify(id))
+        .join(', ');
+      return `  ${JSON.stringify(group)}: [${ids}],`;
+    })
+    .join('\n');
+  return `export type SpaceMapTextureGroup = 'universe' | 'galaxy' | 'solar-system';
+
+export interface GeneratedSpaceMapAsset {
+  readonly outputPath: string;
+  readonly width: number;
+  readonly height: number;
+  readonly family: string;
+  readonly viewGroup: SpaceMapTextureGroup;
+}
+
+export const SPACE_MAP_ASSET_MANIFEST = {
+${entries}
+} as const satisfies Readonly<Record<string, GeneratedSpaceMapAsset>>;
+
+export const SPACE_MAP_TEXTURE_GROUPS = {
+${groups}
+} as const satisfies Readonly<Record<SpaceMapTextureGroup, readonly string[]>>;
+`;
+}
+
 const config = await loadConfig();
 const planPath = argument('--plan', config.processingPlanPath);
 const plan = await loadJson(planPath);
@@ -94,4 +135,14 @@ await writeStableJson(config.runtimeManifestPath, {
   assets: outputs,
 });
 await writeText(config.runtimeTypeScriptManifestPath, generatedModule(outputs));
+if (config.spaceMapBindingsPath !== undefined && config.spaceMapTypeScriptManifestPath !== undefined) {
+  const spaceMapBindings = await loadJson(config.spaceMapBindingsPath);
+  if (spaceMapBindings.schemaVersion !== 1 || !Array.isArray(spaceMapBindings.entries)) {
+    throw new Error(`Invalid Space Map bindings: ${config.spaceMapBindingsPath}`);
+  }
+  await writeText(
+    config.spaceMapTypeScriptManifestPath,
+    generatedSpaceMapModule(spaceMapBindings.entries, outputs),
+  );
+}
 console.log(`Processed ${outputs.length} runtime asset derivatives from ${path.basename(planPath)}.`);
