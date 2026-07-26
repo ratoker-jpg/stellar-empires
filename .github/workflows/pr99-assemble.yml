@@ -29,8 +29,19 @@ jobs:
       - name: Verify and extract payload
         shell: bash
         run: |
-          base64 --decode .agent/pr99-payload.b64 > /tmp/pr99-payload.tar.gz
-          echo "9098b5067b407eeeb9ee01bb9e6af743000898553737a89e69acc898d161fee8  /tmp/pr99-payload.tar.gz" | sha256sum --check
+          python - <<'PY'
+          import base64, hashlib, pathlib
+          source = pathlib.Path('.agent/pr99-payload.b64').read_bytes().strip()
+          print(f'base64-bytes={len(source)}')
+          payload = base64.b64decode(source, validate=True)
+          digest = hashlib.sha256(payload).hexdigest()
+          print(f'payload-bytes={len(payload)}')
+          print(f'payload-sha256={digest}')
+          expected = '9098b5067b407eeeb9ee01bb9e6af743000898553737a89e69acc898d161fee8'
+          if digest != expected:
+              raise SystemExit(f'payload checksum mismatch: expected {expected}')
+          pathlib.Path('/tmp/pr99-payload.tar.gz').write_bytes(payload)
+          PY
           tar -xzf /tmp/pr99-payload.tar.gz
 
       - name: Install dependencies
