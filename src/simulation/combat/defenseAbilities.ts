@@ -1,4 +1,5 @@
 import { getUnitDefinition } from '../units/catalog';
+import { resolveCanonicalUnitId } from '../units/unitAliases';
 
 export interface DefenseAbilityBonusMaps {
   readonly weapon: Readonly<Record<string, number>>;
@@ -16,16 +17,20 @@ function scaledBonus(count: number, perUnitPermille: number, maximum: number): n
   return Math.min(maximum, Math.max(1, Math.floor((count * perUnitPermille) / 10)));
 }
 
+function getCanonicalDefinition(unitId: string) {
+  return getUnitDefinition(resolveCanonicalUnitId(unitId));
+}
+
 export function getDefenseAbilityBonusMaps(
   units: Readonly<Record<string, number>>,
 ): DefenseAbilityBonusMaps {
   const weapon: Record<string, number> = {};
   const armor: Record<string, number> = {};
   const activeIds = Object.keys(units).filter((unitId) => (units[unitId] ?? 0) > 0).sort();
-  const defenseIds = activeIds.filter((unitId) => getUnitDefinition(unitId)?.kind === 'defense');
+  const defenseIds = activeIds.filter((unitId) => getCanonicalDefinition(unitId)?.kind === 'defense');
 
   for (const unitId of defenseIds) {
-    const definition = getUnitDefinition(unitId);
+    const definition = getCanonicalDefinition(unitId);
     const ability = definition?.defenseAbility;
     if (definition?.kind !== 'defense' || ability === undefined) continue;
     const bonus = scaledBonus(units[unitId] ?? 0, ability.valuePerUnitPermille, ability.maxPercent);
@@ -72,7 +77,7 @@ export function getPlanetaryDefenseTargetPriority(
   let capitalScore = 0;
   for (const [unitId, quantity] of Object.entries(defenses)) {
     if (quantity <= 0) continue;
-    const definition = getUnitDefinition(unitId);
+    const definition = getCanonicalDefinition(unitId);
     const weight = Math.max(1, definition?.defenseGridCost ?? 1) * quantity;
     switch (definition?.defenseClass) {
       case 'basic-turret':
