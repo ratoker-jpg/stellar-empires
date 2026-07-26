@@ -77,6 +77,46 @@ ${groups}
 `;
 }
 
+function resizePipeline(pipeline, entry) {
+  const isUniverseRuntime = entry.outputPath.startsWith('public/assets/generated/universe/');
+  const contentScale = entry.contentScale ?? (isUniverseRuntime ? 0.9 : 1);
+  if (!(contentScale > 0 && contentScale <= 1)) {
+    throw new Error(`Invalid content scale for ${entry.semanticId}: ${contentScale}`);
+  }
+  if (contentScale === 1) {
+    return pipeline.resize({
+      width: entry.width,
+      height: entry.height,
+      fit: entry.fit ?? 'contain',
+      position: entry.position ?? 'centre',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+      withoutEnlargement: entry.withoutEnlargement ?? false,
+    });
+  }
+  const innerWidth = Math.max(1, Math.floor(entry.width * contentScale));
+  const innerHeight = Math.max(1, Math.floor(entry.height * contentScale));
+  const horizontalPadding = entry.width - innerWidth;
+  const verticalPadding = entry.height - innerHeight;
+  const left = Math.floor(horizontalPadding / 2);
+  const top = Math.floor(verticalPadding / 2);
+  return pipeline
+    .resize({
+      width: innerWidth,
+      height: innerHeight,
+      fit: entry.fit ?? 'contain',
+      position: entry.position ?? 'centre',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+      withoutEnlargement: entry.withoutEnlargement ?? false,
+    })
+    .extend({
+      left,
+      right: horizontalPadding - left,
+      top,
+      bottom: verticalPadding - top,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    });
+}
+
 const config = await loadConfig();
 const planPath = argument('--plan', config.processingPlanPath);
 const plan = await loadJson(planPath);
@@ -96,14 +136,7 @@ for (const entry of [...plan.entries].sort((left, right) => left.outputPath.loca
   if (entry.trim === true) {
     pipeline = pipeline.trim({ background: { r: 0, g: 0, b: 0, alpha: 0 } });
   }
-  pipeline = pipeline.resize({
-    width: entry.width,
-    height: entry.height,
-    fit: entry.fit ?? 'contain',
-    position: entry.position ?? 'centre',
-    background: { r: 0, g: 0, b: 0, alpha: 0 },
-    withoutEnlargement: entry.withoutEnlargement ?? false,
-  });
+  pipeline = resizePipeline(pipeline, entry);
   if (entry.format === 'png') {
     pipeline = pipeline.png({ compressionLevel: 9, adaptiveFiltering: false });
   } else if (entry.format === 'webp') {
