@@ -51,6 +51,29 @@ function getDefenseDefinition(unitId: string): UnitDefinition | undefined {
   return definition?.kind === 'defense' ? definition : undefined;
 }
 
+function getRecoveryPermille(definition: UnitDefinition | undefined): number {
+  return Math.min(
+    900,
+    DEFENSE_RECOVERY_PERMILLE + (definition?.defenseAbility?.recoveryBonusPermille ?? 0),
+  );
+}
+
+function getRepairCostPermille(definition: UnitDefinition): number {
+  return Math.floor(
+    (DEFENSE_REPAIR_COST_PERMILLE *
+      (definition.defenseAbility?.repairCostPermille ?? 1_000)) /
+      1_000,
+  );
+}
+
+function getRepairTimePermille(definition: UnitDefinition): number {
+  return Math.floor(
+    (DEFENSE_REPAIR_TIME_PERMILLE *
+      (definition.defenseAbility?.repairTimePermille ?? 1_000)) /
+      1_000,
+  );
+}
+
 export function getDefenseGridCapacity(planet: PlanetState): number {
   const infrastructureId = getFactionMechanicalRoles(planet.factionId).buildings.sensorGrid;
   return getBuildingLevel(planet.buildings, infrastructureId) *
@@ -79,10 +102,11 @@ export function calculateDefenseRepairCost(
   definition: UnitDefinition,
   quantity: number,
 ): { readonly metal: number; readonly crystal: number; readonly gas: number } {
+  const repairPermille = getRepairCostPermille(definition);
   return {
-    metal: Math.ceil((definition.baseCost.metal * quantity * DEFENSE_REPAIR_COST_PERMILLE) / 1_000),
-    crystal: Math.ceil((definition.baseCost.crystal * quantity * DEFENSE_REPAIR_COST_PERMILLE) / 1_000),
-    gas: Math.ceil((definition.baseCost.gas * quantity * DEFENSE_REPAIR_COST_PERMILLE) / 1_000),
+    metal: Math.ceil((definition.baseCost.metal * quantity * repairPermille) / 1_000),
+    crystal: Math.ceil((definition.baseCost.crystal * quantity * repairPermille) / 1_000),
+    gas: Math.ceil((definition.baseCost.gas * quantity * repairPermille) / 1_000),
   };
 }
 
@@ -92,7 +116,7 @@ export function calculateDefenseRepairSeconds(
 ): number {
   return Math.max(
     30,
-    Math.ceil((definition.baseSeconds * quantity * DEFENSE_REPAIR_TIME_PERMILLE) / 1_000),
+    Math.ceil((definition.baseSeconds * quantity * getRepairTimePermille(definition)) / 1_000),
   );
 }
 
@@ -107,7 +131,7 @@ export function calculateRecoveredDefenses(
     const remainingCount = Math.min(initialCount, remaining[unitId] ?? 0);
     const destroyed = Math.max(0, initialCount - remainingCount);
     if (destroyed <= 0) continue;
-    const scaled = destroyed * DEFENSE_RECOVERY_PERMILLE;
+    const scaled = destroyed * getRecoveryPermille(getDefenseDefinition(unitId));
     const guaranteed = Math.floor(scaled / 1_000);
     const remainder = scaled % 1_000;
     const bonus = hashText(`${seed}:${unitId}:defense-recovery`) % 1_000 < remainder ? 1 : 0;

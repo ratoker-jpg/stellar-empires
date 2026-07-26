@@ -23,7 +23,7 @@ export const FACTION_CATALOG_MANIFEST: Readonly<
     mode: 'native',
     migrationPolicy: 'stable-existing-ids',
     targetCatalogVersion: 1,
-    rolloutStage: 'ships',
+    rolloutStage: 'defenses',
   },
   synod: {
     factionId: 'synod',
@@ -31,7 +31,7 @@ export const FACTION_CATALOG_MANIFEST: Readonly<
     mode: 'native',
     migrationPolicy: 'replace-legacy-aliases',
     targetCatalogVersion: 1,
-    rolloutStage: 'ships',
+    rolloutStage: 'defenses',
   },
   veyra: {
     factionId: 'veyra',
@@ -39,7 +39,7 @@ export const FACTION_CATALOG_MANIFEST: Readonly<
     mode: 'native',
     migrationPolicy: 'replace-legacy-aliases',
     targetCatalogVersion: 1,
-    rolloutStage: 'ships',
+    rolloutStage: 'defenses',
   },
 };
 

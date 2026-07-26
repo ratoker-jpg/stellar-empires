@@ -1,6 +1,7 @@
 import { getUnitDefinition } from '../units/catalog';
 import type { ShipRole } from '../units/types';
 import { getUnitCombatProfile, type TargetSize } from './combatProfiles';
+import { getDefenseAbilityBonusMaps } from './defenseAbilities';
 import { getShipAbilityBonusMaps } from './shipAbilities';
 
 export type FleetFormation = 'line' | 'screen' | 'wedge';
@@ -137,9 +138,10 @@ export function getClassSkillBonusMaps(
       if (skill.armorBonusPercent !== 0) armor[unitId] = skill.armorBonusPercent;
     }
   }
-  const abilities = getShipAbilityBonusMaps(units);
+  const shipAbilities = getShipAbilityBonusMaps(units);
+  const defenseAbilities = getDefenseAbilityBonusMaps(units);
   return {
-    weapon: mergeBonusMaps(weapon, abilities.weapon),
-    armor: mergeBonusMaps(armor, abilities.armor),
+    weapon: mergeBonusMaps(mergeBonusMaps(weapon, shipAbilities.weapon), defenseAbilities.weapon),
+    armor: mergeBonusMaps(mergeBonusMaps(armor, shipAbilities.armor), defenseAbilities.armor),
   };
 }

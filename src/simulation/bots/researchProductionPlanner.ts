@@ -149,16 +149,20 @@ function chooseProduction(
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId);
   const ships = roles.ships.complete;
+  const defenses = roles.defenses.complete;
   const unitIds = new Set(getUnitCatalogForFaction(factionId).map((definition) => definition.id));
   const productionExists = planets.some((planet) =>
     planet.buildings.some(
-      (building) => building.buildingId === roles.buildings.shipyard && building.level > 0,
+      (building) =>
+        (building.buildingId === roles.buildings.shipyard ||
+          building.buildingId === roles.buildings.defenseIndustry) &&
+        building.level > 0,
     ),
   );
   if (!productionExists) {
     return {
       reasonCode: 'production-infrastructure-missing',
-      explanation: 'Нет действующей верфи.',
+      explanation: 'Нет действующей верфи или оборонного производства.',
       command: null,
     };
   }
@@ -180,12 +184,16 @@ function chooseProduction(
     ? [
         { id: ships.lightFighter, quantity: 3 },
         { id: ships.interceptor, quantity: 2 },
+        { id: defenses.basicTurret, quantity: 2 },
+        { id: defenses.laserTurret, quantity: 1 },
         { id: ships.supportShip, quantity: 1 },
-        { id: roles.defenses.light, quantity: 2 },
+        { id: defenses.secondaryShield, quantity: 1 },
         { id: ships.lineBattleship, quantity: 1 },
+        { id: defenses.plasmaTurret, quantity: 1 },
         { id: ships.heavyAssault, quantity: 1 },
         { id: ships.bomber, quantity: 1 },
-        { id: roles.defenses.shield, quantity: 1 },
+        { id: defenses.laserIonBattery, quantity: 1 },
+        { id: defenses.planetaryShield, quantity: 1 },
       ]
     : [
         ...(countUnit(state, empireId, ships.spyProbe) === 0
@@ -203,7 +211,8 @@ function chooseProduction(
         { id: ships.lightFighter, quantity: 2 },
         { id: ships.interceptor, quantity: 1 },
         { id: ships.lineBattleship, quantity: 1 },
-        { id: roles.defenses.light, quantity: 1 },
+        { id: defenses.basicTurret, quantity: 1 },
+        { id: defenses.secondaryShield, quantity: 1 },
       ];
 
   for (const candidate of priority) {
@@ -221,7 +230,7 @@ function chooseProduction(
           reasonCode: 'production-selected',
           explanation: threatened
             ? `Разведка показывает угрозу: заказан ${candidate.id}.`
-            : `Закрывается дефицит сервисного или базового флота: ${candidate.id}.`,
+            : `Закрывается дефицит сервисного, боевого или оборонного контура: ${candidate.id}.`,
           command,
         };
       }

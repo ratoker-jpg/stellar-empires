@@ -54,7 +54,47 @@ export interface ShipAbilityDefinition {
   readonly maxPercent: number;
 }
 
-export type DefenseRole = 'kinetic' | 'missile' | 'shield';
+export type DefenseRole =
+  | 'kinetic'
+  | 'missile'
+  | 'laser'
+  | 'ion'
+  | 'plasma'
+  | 'shield'
+  | 'hybrid';
+
+export type CompleteDefenseClass =
+  | 'basic-turret'
+  | 'laser-turret'
+  | 'ion-turret'
+  | 'plasma-turret'
+  | 'secondary-shield'
+  | 'planetary-shield'
+  | 'laser-ion-battery'
+  | 'plasma-laser-battery'
+  | 'ion-plasma-battery';
+
+export type DefenseAbilityId =
+  | 'interceptor-grid'
+  | 'laser-focus'
+  | 'ion-suppression'
+  | 'plasma-overload'
+  | 'secondary-barrier'
+  | 'planetary-barrier'
+  | 'laser-ion-link'
+  | 'plasma-laser-link'
+  | 'ion-plasma-link';
+
+export interface DefenseAbilityDefinition {
+  readonly id: DefenseAbilityId;
+  readonly name: string;
+  readonly description: string;
+  readonly valuePerUnitPermille: number;
+  readonly maxPercent: number;
+  readonly recoveryBonusPermille: number;
+  readonly repairCostPermille: number;
+  readonly repairTimePermille: number;
+}
 
 export interface UnitBuildingRequirement {
   readonly buildingId: string;
@@ -82,6 +122,8 @@ export interface UnitDefinition {
   readonly role: ShipRole | DefenseRole;
   readonly shipClass?: CompleteShipClass;
   readonly ability?: ShipAbilityDefinition;
+  readonly defenseClass?: CompleteDefenseClass;
+  readonly defenseAbility?: DefenseAbilityDefinition;
   readonly stationary?: boolean | undefined;
   readonly description: string;
   readonly assetId: string;
