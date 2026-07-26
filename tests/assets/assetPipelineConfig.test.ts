@@ -51,13 +51,15 @@ describe('asset processing foundation', () => {
     expect(new Set(universeIds).size).toBe(universeIds.length);
   });
 
-  it('records deterministic building, technology and ship processing while keeping atlases empty', () => {
+  it('records all 173 catalog derivatives while keeping atlases empty', () => {
     expect(processingPlan.schemaVersion).toBe(1);
-    expect(processingPlan.entries).toHaveLength(133);
+    expect(processingPlan.entries).toHaveLength(173);
     expect(processingPlan.entries.filter((entry) => entry.family === 'building')).toHaveLength(72);
     expect(processingPlan.entries.filter((entry) => entry.family === 'technology')).toHaveLength(22);
     expect(processingPlan.entries.filter((entry) => entry.family === 'ship')).toHaveLength(39);
-    expect(new Set(processingPlan.entries.map((entry) => entry.semanticId)).size).toBe(133);
+    expect(processingPlan.entries.filter((entry) => entry.family === 'defense')).toHaveLength(27);
+    expect(processingPlan.entries.filter((entry) => entry.family === 'commander')).toHaveLength(13);
+    expect(new Set(processingPlan.entries.map((entry) => entry.semanticId)).size).toBe(173);
     expect(atlasPlan).toEqual({ schemaVersion: 1, atlases: [] });
   });
 });

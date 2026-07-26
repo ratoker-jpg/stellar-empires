@@ -2,15 +2,11 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-26  
-**Baseline:** merged PR #100; Audit PR #101 accepted on merge
+**Baseline:** merged PR #105, merge SHA `PR105_MERGE_SHA_PENDING`
 
 ## Repository
 
-```text
-Repository: ratoker-jpg/stellar-empires
-Default branch: main
-Pages: https://ratoker-jpg.github.io/stellar-empires/
-```
+`ratoker-jpg/stellar-empires` · default branch `main` · GitHub Pages deployment.
 
 GitHub history and current `main` override stale prose, prior chat memory and abandoned branches.
 
@@ -19,82 +15,34 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 1. `AGENTS.md`
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
-4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/contracts/asset-runtime-integration-01-mappings.md`
-6. `docs/audits/contracts/asset-runtime-integration-01-prs.md`
-7. `docs/audits/evidence/asset-runtime-integration-01-graphify.md`
-8. this document
-9. `docs/project-status.json`
-10. `docs/27-playable-game-roadmap-v5.md`
-11. `docs/asset-prompts/master-runtime-asset-backlog.md`
-12. `docs/25-solar-war-obelisks-gates-and-progression.md`
-13. `docs/26-universe-galaxy-solar-system-navigation-contract.md`
-14. latest merged pull requests and actual `main`
-
-`docs/16-execution-roadmap.md` is retained as the historical v4 entrypoint. Roadmap v5 defines product order; the audit-first protocol and current audit define implementation order.
+4. `docs/audits/completed/asset-runtime-integration-01.md`
+5. this document
+6. `docs/project-status.json`
+7. `docs/27-playable-game-roadmap-v5.md`
+8. `docs/26-universe-galaxy-solar-system-navigation-contract.md`
+9. latest merged pull requests and actual `main`
 
 ## Current authoritative state
 
-```text
-#89–#95 — complete mechanical catalogs and Commander Ships — merged
-#96 — complete Nemexia mechanics and navigation references — merged
-#97 — 90 Universe navigation source PNGs — merged
-#98 — playable-game roadmap and master asset backlog — merged
-#99 — deterministic asset processing foundation and repository audit — merged
-#100 — audit-first autonomous delivery protocol and Graphify — merged
-#101 — four-PR asset runtime integration audit — accepted on merge
-#102 — ASSET-BUILDINGS — next implementation PR
-#103 — ASSET-TECHNOLOGIES — planned after #102
-#104 — ASSET-SHIPS — planned after #103
-#105 — ASSET-DEFENSE-COMMANDERS and batch closure — planned after #104
-```
+- #89–#100 delivered the complete mechanical baseline, research, roadmap, asset pipeline and audit protocol;
+- #101 audited the four-PR catalog runtime integration batch;
+- #102 integrated 72 building images;
+- #103 integrated 22 technology concepts across 66 faction IDs;
+- #104 integrated 39 ordinary ship images;
+- #105 integrated 27 defence and 13 Commander images and closed the batch;
+- all 217 complete mechanical IDs resolve through 173 generated WebP runtime images;
+- save schema remains v13 and gameplay, balance and bot policy were not changed by the visual batch.
 
-PR #91 remains superseded and must never be treated as delivered.
+## Remaining limitations
 
-## Delivered runtime and infrastructure through PR #100
-
-- deterministic schema-v13 simulation, events, replay and checksums;
-- IndexedDB autosave, slots, import/export, recovery and migrations;
-- multi-colony economy, buildings, research, queues and production;
-- fleets, missions, combat, debris, repair, reports, logistics and markets;
-- honest autonomous bots using the same command layer as the player;
-- complete catalogs: 24 buildings, 22 technologies, 13 ordinary ships and 9 defences per faction, plus 13 shared Commander Ships;
-- deterministic asset audit, processing, atlas and CI foundation;
-- audit-first autonomous delivery and project-scoped Graphify.
-
-## Accepted audit result
-
-`ASSET-RUNTIME-INTEGRATION-01` is a medium four-PR batch. It will generate 173 individual WebP runtime images:
-
-- 72 buildings at 384×384;
-- 22 shared technologies at 256×256, bound to 66 faction technology IDs;
-- 39 ordinary ships at 512×512;
-- 27 defences at 384×384;
-- 13 Commander Ships at 512×512.
-
-The audit fixes exact source aliases, runtime paths, resolver architecture, UI consumers, tests and stop conditions. No save migration, mechanic change, balance change, bot-policy change or Universe implementation is allowed in this batch.
-
-## Current limitations
-
-- approved catalog art is still source-only until PRs #102–#105 run the processing plan;
-- runtime processing and atlas plans are empty before PR #102;
-- current UI mixes old atlas rendering with post-render source-sheet replacement;
-- ordinary ships collapse to six role images, defences to three role images and Commander Ships to a frigate fallback;
 - the Universe pack remains oversized source intake;
-- Universe/Galaxy/Solar-system navigation and the full confirmed interface shell remain incomplete;
-- balance, browser E2E, performance and release gates remain open.
+- Universe, Galaxy and Solar-system runtime navigation is not implemented;
+- the full confirmed interface/navigation shell remains incomplete;
+- alliance, solar-war, final Gate, balance, browser E2E, performance and release gates remain open.
 
 ## Immediate route
 
-1. create PR #102 from fresh `main`;
-2. implement only `ASSET-BUILDINGS` according to the accepted audit;
-3. merge #102 after asset processing, visual QA, normal CI and Graphify pass;
-4. continue #103, #104 and #105 sequentially from fresh `main`;
-5. #105 runs the 217-mechanical-ID combined gate and archives the audit.
-
-## Owner-effort rule
-
-The repository owner is not required to install tools, run commands, manage branches, retry CI or merge routine PRs. Graphify installation and refresh are performed by the assistant or repository automation.
+The next action is a new dedicated Audit PR for the next coherent roadmap batch. No implementation starts before that audit is accepted.
 
 ## Invariants
 
@@ -109,7 +57,3 @@ The repository owner is not required to install tools, run commands, manage bran
 - source assets do not become runtime assets until processed, registered and tested;
 - stable mechanical IDs survive visual replacement;
 - project-specific `docs/25-*` rules override historical Nemexia endgame logic.
-
-## Workflow
-
-Fresh `main` → accepted current audit → one authorized implementation PR → CI/Graphify/visual gate → merge → update execution state → next authorized PR.

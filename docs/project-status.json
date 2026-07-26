@@ -6,12 +6,12 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 103,
-  "lastMergeSha": "b47ec8df9abc58d1ce455e3bf6ee1279d2e0d9d0",
-  "activePr": 104,
-  "nextPrAfterActive": 105,
-  "nextPrKind": "implementation",
-  "currentMilestone": "Integrate the complete approved visual catalog before Universe navigation",
+  "lastMergedPr": 104,
+  "lastMergeSha": "ba207dac57d3f6bf66559d074cf38abf54cdc12c",
+  "activePr": 105,
+  "nextPrAfterActive": 106,
+  "nextPrKind": "audit",
+  "currentMilestone": "Complete catalog runtime integration; next batch requires a fresh audit",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -26,12 +26,13 @@
     "batchId": "ASSET-RUNTIME-INTEGRATION-01",
     "complexity": "medium",
     "auditPr": 101,
-    "auditStatus": "accepted-on-merge",
+    "auditStatus": "completed-on-pr105-merge",
     "implementationCount": 4,
     "implementationPrs": [
       102,
       103,
-      104
+      104,
+      105
     ],
     "workItems": [
       "ASSET-BUILDINGS",
@@ -39,8 +40,8 @@
       "ASSET-SHIPS",
       "ASSET-DEFENSE-COMMANDERS"
     ],
-    "status": "implementing-ships",
-    "nextWorkItem": "ASSET-BUILDINGS"
+    "status": "closing-on-pr105-merge",
+    "nextWorkItem": null
   },
   "auditDecisions": {
     "runtimeTextureCount": 173,
@@ -83,19 +84,16 @@
     "90 Universe navigation source PNGs from PR #97",
     "playable-game roadmap and master asset backlog from PR #98",
     "deterministic asset processing foundation and 472-file audit from PR #99",
-    "audit-first autonomous delivery protocol and Graphify from PR #100"
+    "audit-first autonomous delivery protocol and Graphify from PR #100",
+    "173 processed catalog runtime images with 217 complete mechanical bindings"
   ],
   "activeDelivery": [
-    "accepted four-PR asset runtime implementation contract",
-    "72 building runtime derivatives in PR #102",
-    "22 shared technology derivatives and 66 bindings in PR #103",
-    "39 ordinary ship derivatives in PR #104",
-    "27 defence and 13 Commander derivatives plus batch closure in PR #105"
+    "PR #105 final defence and Commander integration",
+    "217-ID combined runtime asset gate",
+    "ASSET-RUNTIME-INTEGRATION-01 archive and closure"
   ],
   "knownLimitations": [
-    "approved catalog source art is not yet processed and connected as final runtime derivatives",
-    "runtime processing and atlas plans are still empty before PR #102",
-    "three historical runtime modules remain in the closed direct-source allowlist",
+    "two historical runtime modules still directly reference licensed source libraries for non-catalog Galaxy/map and faction identity presentation",
     "one historical runtime WebP is invalid and recorded by the audit",
     "the PR #97 Universe pack is oversized and remains source intake",
     "Universe, Galaxy and Solar-system runtime navigation is not implemented",
@@ -128,7 +126,7 @@
     "catalogArt": {
       "files": 174,
       "runtimeAssetsPlanned": 173,
-      "status": "buildings-technologies-ships-runtime-integrated"
+      "status": "runtime-integrated-173-textures"
     }
   },
   "requiredStartupReading": [

@@ -3,7 +3,6 @@ import { getFactionMechanicalRoles } from '../simulation/factions/factionMechani
 import { parseMechanicalId } from '../simulation/factions/mechanicalIds';
 import { resolveCanonicalBuildingId } from '../simulation/planet/buildingAliases';
 import type { FactionId, PlanetZoneId } from '../simulation/planet/types';
-import { getUnitDefinition } from '../simulation/units/catalog';
 
 export type BuildingPresentationRole =
   | 'command'
@@ -14,24 +13,6 @@ export type BuildingPresentationRole =
   | 'research-lab'
   | 'shipyard'
   | 'sensor-array';
-
-const DEFENSE_SHEETS: Readonly<Record<FactionId, Readonly<Record<string, string>>>> = {
-  aegis: {
-    kinetic: new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_defense_platform_sheet.png', import.meta.url).href,
-    missile: new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_missile_battery_sheet.png', import.meta.url).href,
-    shield: new URL('../../assets/source/faction-delivery-v1/building_sheets/aegis_shield_generator_sheet.png', import.meta.url).href,
-  },
-  synod: {
-    kinetic: new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_defense_platform_sheet.png', import.meta.url).href,
-    missile: new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_missile_battery_sheet.png', import.meta.url).href,
-    shield: new URL('../../assets/source/faction-delivery-v1/building_sheets/synod_shield_generator_sheet.png', import.meta.url).href,
-  },
-  veyra: {
-    kinetic: new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_defense_platform_sheet.png', import.meta.url).href,
-    missile: new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_missile_battery_sheet.png', import.meta.url).href,
-    shield: new URL('../../assets/source/faction-delivery-v1/building_sheets/veyra_shield_generator_sheet.png', import.meta.url).href,
-  },
-};
 
 const ZONE_TERRAINS: Readonly<Record<PlanetZoneId, string>> = {
   resource: new URL('../../assets/source/faction-delivery-v1/territories/resource-terrain.png', import.meta.url).href,
@@ -69,8 +50,6 @@ export function getZoneTerrainUrl(zoneId: PlanetZoneId): string {
   return ZONE_TERRAINS[zoneId];
 }
 
-export function getDefensePresentationArtUrl(factionId: FactionId, unitId: string): string {
-  const role = getUnitDefinition(unitId)?.role;
-  const presentationRole = role === 'missile' || role === 'shield' ? role : 'kinetic';
-  return DEFENSE_SHEETS[factionId][presentationRole] ?? DEFENSE_SHEETS[factionId].kinetic ?? '';
+export function getDefensePresentationArtUrl(_factionId: FactionId, unitId: string): string {
+  return resolveCompleteMechanicalAsset(unitId).asset?.atlasUrl ?? '';
 }

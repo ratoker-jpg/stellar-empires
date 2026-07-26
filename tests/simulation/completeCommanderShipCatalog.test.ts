@@ -65,8 +65,10 @@ describe('complete Commander Ship catalog', () => {
       expect(definition.commanderAbility).toBeDefined();
       expect(definition.requiredAdmiralLevel).toBeGreaterThanOrEqual(2);
       const resolution = resolveCompleteMechanicalAsset(definition.id);
-      expect(resolution.source).toBe('current-runtime-fallback');
+      expect(resolution.source).toBe('complete-manifest');
       expect(resolution.asset?.id).toBe(definition.id);
+      expect(resolution.asset?.layout).toBe('image');
+      expect(resolution.asset?.atlasUrl).toContain('/assets/generated/catalog/commanders/shared/');
       expect(resolution.provenancePath).toContain('/comander_ship/commander-ship.');
     }
   });

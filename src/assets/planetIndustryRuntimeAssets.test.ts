@@ -11,7 +11,7 @@ describe('planet industry runtime assets', () => {
   it('maps complete building ids to generated faction-specific art', () => {
     expect(getBuildingSheetUrl('synod', 'building.synod.shipyard')).toContain('/assets/generated/catalog/buildings/synod/shipyard.webp');
     expect(getBuildingSheetUrl('veyra', 'building.veyra.experimental-center')).toContain('/assets/generated/catalog/buildings/veyra/experimental-center.webp');
-    expect(getDefensePresentationArtUrl('aegis', 'defense.aegis.missile-battery')).toContain('aegis_missile_battery_sheet.png');
+    expect(getDefensePresentationArtUrl('aegis', 'defense.aegis.plasma-turret')).toContain('/assets/generated/catalog/defenses/aegis/plasma-turret.webp');
   });
 
   it('maps all zone terrain backgrounds', () => {

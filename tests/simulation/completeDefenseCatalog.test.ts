@@ -38,11 +38,13 @@ describe('complete planetary defense catalogs', () => {
     expect(validateUnitCatalog(defenses, catalog.buildings, catalog.research)).toEqual([]);
   });
 
-  it.each(FACTIONS)('binds every %s defense to source provenance and runtime fallback', (factionId) => {
+  it.each(FACTIONS)('binds every %s defense to source provenance and generated art', (factionId) => {
     for (const defense of COMPLETE_DEFENSE_CATALOGS[factionId]) {
       const resolution = resolveCompleteMechanicalAsset(defense.assetId);
-      expect(resolution.source).toBe('current-runtime-fallback');
+      expect(resolution.source).toBe('complete-manifest');
       expect(resolution.asset?.id).toBe(defense.id);
+      expect(resolution.asset?.layout).toBe('image');
+      expect(resolution.asset?.atlasUrl).toContain(`/assets/generated/catalog/defenses/${factionId}/`);
       expect(resolution.provenancePath).toBe(
         `assets/source/New assets/defenses/${factionId}/${defense.id}.png`,
       );

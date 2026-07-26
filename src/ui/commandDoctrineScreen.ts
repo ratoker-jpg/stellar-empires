@@ -1,4 +1,6 @@
 import '../styles/commandDoctrine.css';
+import { resolveCompleteMechanicalAsset } from '../assets/completeMechanicalAssetManifest';
+import { applyMechanicalAssetArtwork } from '../assets/runtimeMechanicalAssets';
 import {
   countCommanderShipForEmpire,
   selectActiveCommanderShip,
@@ -149,7 +151,8 @@ export function mountCommandDoctrineScreen(bridge: CommandDoctrineBridge): void 
         const unlocked = command.level >= (definition.requiredAdmiralLevel ?? 1);
         const active = activeCommander?.unitId === definition.id;
         const card = document.createElement('article');
-        card.className = `commander-ship-card${active ? ' is-active' : ''}${owned ? ' is-owned' : ''}`;
+        card.className = `commander-ship-card${active ? ' is-active' : ''}${owned ? ' is-owned' : ''}${!owned && unlocked ? ' is-available' : ''}${!unlocked ? ' is-locked' : ''}`;
+        card.dataset.mechanicalId = definition.id;
         const status = active
           ? 'Активен во флагманском флоте'
           : owned
@@ -157,12 +160,19 @@ export function mountCommandDoctrineScreen(bridge: CommandDoctrineBridge): void 
             : unlocked
               ? 'Доступен для производства'
               : `Откроется на уровне ${definition.requiredAdmiralLevel}`;
+        const art = document.createElement('div');
+        art.className = 'commander-ship-card__art';
+        art.setAttribute('role', 'img');
+        art.setAttribute('aria-label', definition.name);
+        const asset = resolveCompleteMechanicalAsset(definition.id).asset;
+        if (asset !== undefined) applyMechanicalAssetArtwork(art, asset);
         card.innerHTML = `
           <header><strong>${definition.name}</strong><span>${status}</span></header>
           <p>${definition.description}</p>
           <dl><div><dt>Адмирал</dt><dd>${definition.requiredAdmiralLevel}</dd></div><div><dt>Верфь</dt><dd>${definition.requiredShipyardLevel}</dd></div><div><dt>Способность</dt><dd>${definition.commanderAbility?.name ?? '—'}</dd></div></dl>
           <small>${definition.commanderAbility?.description ?? ''}</small>
         `;
+        card.prepend(art);
         return card;
       }),
     );

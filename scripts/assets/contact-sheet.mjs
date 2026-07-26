@@ -76,4 +76,22 @@ for (const faction of ['aegis', 'synod', 'veyra']) {
   }
   await renderSheet(entries, `docs/assets/qa/ships/${faction}`, 5, 3, 190);
 }
-console.log('Generated building, technology and ship contact sheets.');
+for (const faction of ['aegis', 'synod', 'veyra']) {
+  const entries = bindings.entries
+    .filter((entry) =>
+      entry.category === 'defense' && entry.mechanicalId.startsWith(`defense.${faction}.`),
+    )
+    .sort((left, right) => left.mechanicalId.localeCompare(right.mechanicalId));
+  if (entries.length !== 9) {
+    throw new Error(`Expected 9 defense entries for ${faction}, found ${entries.length}`);
+  }
+  await renderSheet(entries, `docs/assets/qa/defenses/${faction}`, 3, 3, 190);
+}
+const commanderEntries = bindings.entries
+  .filter((entry) => entry.category === 'commander')
+  .sort((left, right) => left.mechanicalId.localeCompare(right.mechanicalId));
+if (commanderEntries.length !== 13) {
+  throw new Error(`Expected 13 Commander entries, found ${commanderEntries.length}`);
+}
+await renderSheet(commanderEntries, 'docs/assets/qa/commanders/shared', 5, 3, 190);
+console.log('Generated complete catalog contact sheets.');
