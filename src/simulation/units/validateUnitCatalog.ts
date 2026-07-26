@@ -1,5 +1,6 @@
 import type { BuildingDefinition } from '../planet/buildingCatalog';
 import { resolveCanonicalBuildingId } from '../planet/buildingAliases';
+import { resolveCanonicalResearchId } from '../research/researchAliases';
 import type { ResearchDefinition } from '../research/types';
 import type { UnitDefinition } from './types';
 
@@ -27,7 +28,12 @@ export function validateUnitCatalog(
       resolveCanonicalBuildingId(definition.id),
     ]),
   );
-  const researchIds = new Set(research.map((definition) => definition.id));
+  const researchIds = new Set(
+    research.flatMap((definition) => [
+      definition.id,
+      resolveCanonicalResearchId(definition.id),
+    ]),
+  );
 
   for (const unit of units) {
     if (unitIds.has(unit.id)) {
@@ -67,7 +73,7 @@ export function validateUnitCatalog(
     }
 
     for (const requirement of unit.researchRequirements) {
-      if (!researchIds.has(requirement.technologyId)) {
+      if (!researchIds.has(resolveCanonicalResearchId(requirement.technologyId))) {
         issues.push({
           code: 'UNKNOWN_RESEARCH_REQUIREMENT',
           unitId: unit.id,
