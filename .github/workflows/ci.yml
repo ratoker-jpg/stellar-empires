@@ -15,9 +15,9 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint, typecheck, test and build
+    name: Asset audit, lint, typecheck, test and build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -30,6 +30,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+
+      - name: Validate asset pipeline
+        run: npm run assets:check
 
       - name: Lint
         run: npm run lint
