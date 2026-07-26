@@ -314,6 +314,7 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
         const definition = getUnitDefinition(unitId);
         const card = document.createElement('article');
         card.className = 'mission-ship-option';
+        card.dataset.mechanicalId = unitId;
         const image = document.createElement('img');
         image.src = getFleetShipArtUrl(origin?.factionId ?? factionId, unitId);
         image.alt = '';

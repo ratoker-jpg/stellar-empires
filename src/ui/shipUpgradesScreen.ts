@@ -168,6 +168,7 @@ export function mountShipUpgradesScreen(bridge: ShipUpgradeBridge): void {
       const levels = getShipUpgradeLevels(state.shipUpgrades, 'player', ship.id);
       const card = document.createElement('article');
       card.className = 'ship-upgrade-card';
+      card.dataset.mechanicalId = ship.id;
       const art = document.createElement('img');
       art.src = getFleetShipArtUrl(factionId, ship.id);
       art.alt = '';

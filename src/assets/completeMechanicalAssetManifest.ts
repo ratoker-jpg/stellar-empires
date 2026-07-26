@@ -124,6 +124,7 @@ const COMPLETE_SHIP_BINDINGS: Readonly<Record<string, CompleteMechanicalAssetBin
         {
           mechanicalId: definition.id,
           category: 'ship' as const,
+          runtimeSemanticId: definition.id,
           sourcePath: `${SOURCE_ROOT}/ship/${definition.factionId}/${definition.id}.png`,
         },
       ]),

@@ -29,11 +29,15 @@ describe('complete ordinary ship catalogs', () => {
     expect(validateUnitCatalog(ships, catalog.buildings, catalog.research)).toEqual([]);
   });
 
-  it.each(FACTIONS)('binds every %s ship to a source asset and runtime fallback', (factionId) => {
+  it.each(FACTIONS)('binds every %s ship to generated runtime art and source provenance', (factionId) => {
     for (const ship of COMPLETE_SHIP_CATALOGS[factionId]) {
       const resolution = resolveCompleteMechanicalAsset(ship.assetId);
-      expect(resolution.source).toBe('current-runtime-fallback');
+      expect(resolution.source).toBe('complete-manifest');
       expect(resolution.asset?.id).toBe(ship.id);
+      expect(resolution.asset?.layout).toBe('image');
+      expect(resolution.asset?.atlasUrl).toContain(
+        `/assets/generated/catalog/ships/${factionId}/`,
+      );
       expect(resolution.provenancePath).toBe(
         `assets/source/New assets/ship/${factionId}/${ship.id}.png`,
       );

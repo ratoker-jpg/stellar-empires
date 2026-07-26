@@ -6,10 +6,10 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 102,
-  "lastMergeSha": "43471d9ab2a6527e3337f1e73e507d85e2d8e094",
-  "activePr": 103,
-  "nextPrAfterActive": 104,
+  "lastMergedPr": 103,
+  "lastMergeSha": "b47ec8df9abc58d1ce455e3bf6ee1279d2e0d9d0",
+  "activePr": 104,
+  "nextPrAfterActive": 105,
   "nextPrKind": "implementation",
   "currentMilestone": "Integrate the complete approved visual catalog before Universe navigation",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
@@ -30,7 +30,8 @@
     "implementationCount": 4,
     "implementationPrs": [
       102,
-      103
+      103,
+      104
     ],
     "workItems": [
       "ASSET-BUILDINGS",
@@ -38,7 +39,7 @@
       "ASSET-SHIPS",
       "ASSET-DEFENSE-COMMANDERS"
     ],
-    "status": "implementing-technologies",
+    "status": "implementing-ships",
     "nextWorkItem": "ASSET-BUILDINGS"
   },
   "auditDecisions": {
@@ -127,7 +128,7 @@
     "catalogArt": {
       "files": 174,
       "runtimeAssetsPlanned": 173,
-      "status": "buildings-and-technologies-runtime-integrated"
+      "status": "buildings-technologies-ships-runtime-integrated"
     }
   },
   "requiredStartupReading": [

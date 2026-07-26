@@ -1,3 +1,4 @@
+import { resolveCompleteMechanicalAsset } from './completeMechanicalAssetManifest';
 import type { PlanetBiome, StarClass } from '../simulation/galaxy/types';
 import type { FactionId } from '../simulation/planet/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
@@ -242,5 +243,9 @@ export function getFleetShipPresentationRole(unitId: string): FleetShipPresentat
 }
 
 export function getFleetShipArtUrl(factionId: FactionId, unitId: string): string {
+  const complete = resolveCompleteMechanicalAsset(unitId);
+  if (complete.source === 'complete-manifest' && complete.asset !== undefined) {
+    return complete.asset.atlasUrl;
+  }
   return SHIP_ART_BY_FACTION[factionId][getFleetShipPresentationRole(unitId)];
 }

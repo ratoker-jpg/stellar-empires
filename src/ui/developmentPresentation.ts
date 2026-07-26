@@ -1,5 +1,4 @@
 import '../styles/developmentPresentation.css';
-import { getFleetShipArtUrl } from '../assets/galaxyFleetRuntimeAssets';
 import {
   getBuildingSheetUrl,
   getDefensePresentationArtUrl,
@@ -64,6 +63,7 @@ function applyProductionPresentation(state: GameState, planetId: string): void {
           : getFactionMechanicalRoles(planet.factionId).buildings.sensorGrid,
       )}")`,
     );
+    if (kind === 'ship') continue;
     const definitions = getUnitsByKind(kind, planet.factionId);
     const byName = new Map(definitions.map((definition) => [definition.name, definition]));
     for (const card of dialog.querySelectorAll<HTMLElement>('.production-card')) {
@@ -71,18 +71,11 @@ function applyProductionPresentation(state: GameState, planetId: string): void {
       const art = card.querySelector<HTMLElement>('.production-art');
       const definition = name === undefined ? undefined : byName.get(name);
       if (art === null || definition === undefined) continue;
-      if (kind === 'ship') {
-        art.style.backgroundImage = `linear-gradient(180deg, transparent, rgba(2, 8, 14, 0.68)), url("${getFleetShipArtUrl(planet.factionId, definition.id)}")`;
-        art.style.backgroundSize = '100% 100%, contain';
-        art.style.backgroundPosition = 'center';
-        art.style.backgroundRepeat = 'no-repeat';
-      } else {
-        setSheetArtwork(
-          art,
-          getDefensePresentationArtUrl(planet.factionId, definition.id),
-          2,
-        );
-      }
+      setSheetArtwork(
+        art,
+        getDefensePresentationArtUrl(planet.factionId, definition.id),
+        2,
+      );
     }
   }
 }

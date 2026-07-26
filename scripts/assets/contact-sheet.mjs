@@ -65,4 +65,15 @@ await renderSheet(
   4,
   160,
 );
-console.log('Generated building and technology contact sheets.');
+for (const faction of ['aegis', 'synod', 'veyra']) {
+  const entries = bindings.entries
+    .filter((entry) =>
+      entry.category === 'ship' && entry.mechanicalId.startsWith(`ship.${faction}.`),
+    )
+    .sort((left, right) => left.mechanicalId.localeCompare(right.mechanicalId));
+  if (entries.length !== 13) {
+    throw new Error(`Expected 13 ship entries for ${faction}, found ${entries.length}`);
+  }
+  await renderSheet(entries, `docs/assets/qa/ships/${faction}`, 5, 3, 190);
+}
+console.log('Generated building, technology and ship contact sheets.');

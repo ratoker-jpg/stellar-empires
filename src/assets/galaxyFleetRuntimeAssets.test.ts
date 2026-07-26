@@ -13,13 +13,16 @@ describe('galaxy and fleet runtime assets', () => {
     expect(new Set(keys).size).toBe(keys.length);
   });
 
-  it('maps biome and faction ship art to the committed source library', () => {
+  it('keeps legacy map adapters while complete ships use generated art', () => {
     expect(getPlanetArtUrl('volcanic')).toContain('planet_volcanic.png');
     expect(getFleetShipArtUrl('synod', 'ship.aegis.cargo')).toContain(
       'synod_cargo_ship.png',
     );
     expect(getFleetShipArtUrl('veyra', 'ship.aegis.recycler')).toContain(
-      'veyra_recycler_ship.png',
+      '/assets/generated/catalog/ships/aegis/recycler.webp',
+    );
+    expect(getFleetShipArtUrl('synod', 'ship.synod.titan')).toContain(
+      '/assets/generated/catalog/ships/synod/titan.webp',
     );
   });
 

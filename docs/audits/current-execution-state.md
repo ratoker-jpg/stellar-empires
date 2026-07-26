@@ -12,7 +12,7 @@
 | Batch complexity | Medium — four sequential implementation PRs |
 | Authorized work items | `ASSET-BUILDINGS`, `ASSET-TECHNOLOGIES`, `ASSET-SHIPS`, `ASSET-DEFENSE-COMMANDERS` |
 | Active work item | none — audit completed, implementation intentionally not started |
-| Active implementation PR | #103 — ASSET-TECHNOLOGIES |
+| Active implementation PR | #104 — ASSET-SHIPS |
 | Last completed atomic action | wrote and validated the complete four-PR implementation contract |
 | Last successful validation | Graphify baseline evidence plus Audit PR #101 normal CI and Graphify gate |
 | Exact next action | create PR #102 from fresh `main` and implement only `ASSET-BUILDINGS` |

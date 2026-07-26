@@ -723,6 +723,396 @@
       "sha256": "fcdbf829142e1deffb4fc72f8889d6526818e39d8c84e2c2dff812704709ed27"
     },
     {
+      "semanticId": "ship.aegis.battleship",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.battleship.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/battleship.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 69068,
+      "sha256": "ee149ac28fa03f50b141725118e348cf7dea7a4bc1f4e517547ce39f036f6591"
+    },
+    {
+      "semanticId": "ship.aegis.bomber",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.bomber.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/bomber.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 62314,
+      "sha256": "5e1e5229298a5dd46c0d81c662d179c0e108d0d56ee0bf8d63eb377eeec86ae8"
+    },
+    {
+      "semanticId": "ship.aegis.colonizer",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.colonizer.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/colonizer.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 60462,
+      "sha256": "7164673de9e76dec4da5395e12ce1fb75e1fbb093844b8eab0402855e9007d00"
+    },
+    {
+      "semanticId": "ship.aegis.cruiser",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.cruiser.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/cruiser.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 63404,
+      "sha256": "bd5dc3c4d6436ad10c2e4c267d00d3c5dbd788eee64310d78c32777f5e054348"
+    },
+    {
+      "semanticId": "ship.aegis.death-star",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.death-star.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/death-star.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 67916,
+      "sha256": "bc326935ca68020d2e7f6641ebb77e8015cd40464a5a64a1539520ab29035bf8"
+    },
+    {
+      "semanticId": "ship.aegis.defender",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.defender.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/defender.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 131584,
+      "sha256": "3cf0adc1f9d08ed65c097954b8f4f48a2be5f5da613a7061115a77f62bb836c6"
+    },
+    {
+      "semanticId": "ship.aegis.destroyer",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.destroyer.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/destroyer.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 53592,
+      "sha256": "36d2b6af57614e5a7ba3d768705183703c893dbfec083ae34076ed64ecfdf5c7"
+    },
+    {
+      "semanticId": "ship.aegis.mega-transporter",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.mega-transporter.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/mega-transporter.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 52638,
+      "sha256": "a01648de81ab058cb2c4881c42e6525cb6e98f8b778fbad88ae977986aab5bcc"
+    },
+    {
+      "semanticId": "ship.aegis.recycler",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.recycler.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/recycler.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 60236,
+      "sha256": "ff32c0a8449c0af0470b22d0d8b28435da4ccd3c544881ee8f8004a51763bc53"
+    },
+    {
+      "semanticId": "ship.aegis.scout",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.scout.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/scout.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 57480,
+      "sha256": "fecb11861d4dd93462d3cc0f6e43676c4b37ee054e39221706c719a754f74f1f"
+    },
+    {
+      "semanticId": "ship.aegis.solar-satellite",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.solar-satellite.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/solar-satellite.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 64922,
+      "sha256": "1c761974069109a85b062412a27e1f0f3f4b813474542a8c089ec1c85eae6dc6"
+    },
+    {
+      "semanticId": "ship.aegis.spy-probe",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.spy-probe.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/spy-probe.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 45996,
+      "sha256": "20854e667dfab60bb6cd289d5ef8332b0e7f4ba93527697efdad443d913b0493"
+    },
+    {
+      "semanticId": "ship.aegis.transporter",
+      "sourcePath": "assets/source/New assets/ship/aegis/ship.aegis.transporter.png",
+      "outputPath": "public/assets/generated/catalog/ships/aegis/transporter.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 64790,
+      "sha256": "6850c7c366afc339a74c25522b04c66624ae17d0b83cea3cd78bc9d41638ee18"
+    },
+    {
+      "semanticId": "ship.synod.bomberbot",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.bomberbot.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/bomberbot.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 67234,
+      "sha256": "67ab382c4059f45f8def8f84e71e635aebd20603ebef9c7b53276454bfe44f0c"
+    },
+    {
+      "semanticId": "ship.synod.cargo-bot",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.cargo-bot.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/cargo-bot.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 67876,
+      "sha256": "b657977a8e71bdfc451434c09db0e71293c0f6cc4654f80acc20cd9ac492c7b0"
+    },
+    {
+      "semanticId": "ship.synod.colonizer-bot",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.colonizer-bot.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/colonizer-bot.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 47148,
+      "sha256": "79b2e205b1ca099abd17ffafee883aff6dd7420a326d4515c974027e837730ef"
+    },
+    {
+      "semanticId": "ship.synod.fighter",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.fighter.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/fighter.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 63672,
+      "sha256": "b3c435cd3ee457240ac69d227970e05c4a5efe72395c3a9c89be099d15d44f17"
+    },
+    {
+      "semanticId": "ship.synod.goliath",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.goliath.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/goliath.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 75160,
+      "sha256": "ed49abee3f174ceda153017863f2f836f75ebe193e23336c98533af82582d9af"
+    },
+    {
+      "semanticId": "ship.synod.interceptor",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.interceptor.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/interceptor.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 52470,
+      "sha256": "1af0eb3e9326246f30b50f715fd816e5c549856ef7b87dd25f80896e2b02a6c3"
+    },
+    {
+      "semanticId": "ship.synod.large-cargo-bot",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.large-cargo-bot.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/large-cargo-bot.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 83124,
+      "sha256": "c3aa62a2ae4c4530f4bdf6d721a7772bda2f2548b6f4b04349fd155b4e55085b"
+    },
+    {
+      "semanticId": "ship.synod.recycler",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.recycler.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/recycler.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 61078,
+      "sha256": "824600eff134dbd026943d50fe1017edb65f3a8aba48f762e9253a1681cc4dcc"
+    },
+    {
+      "semanticId": "ship.synod.shield-bot",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.shield-bot.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/shield-bot.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 75492,
+      "sha256": "96150d45b60f1b989f3e1c1cd4eb8d1ddebc7b97e337c38471842d8089c6d084"
+    },
+    {
+      "semanticId": "ship.synod.solar-satellite",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.solar-satellite.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/solar-satellite.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 77618,
+      "sha256": "7422cf75432e4c8da03760ebd1cf5aa56babd6d158e0a568016a7982216219e8"
+    },
+    {
+      "semanticId": "ship.synod.spy-bot",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.spy-bot.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/spy-bot.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 66262,
+      "sha256": "d1df81a9d5cce72d3408191751ac09b7646d3c3b367960c74b9cff8b84d50c15"
+    },
+    {
+      "semanticId": "ship.synod.star-armada",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.star-armada.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/star-armada.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 81434,
+      "sha256": "223633aa156ebf4f6522d75f7467545a4e9ac5f4a27ca06bbc2b39b9ac2072d6"
+    },
+    {
+      "semanticId": "ship.synod.titan",
+      "sourcePath": "assets/source/New assets/ship/synod/ship.synod.titan.png",
+      "outputPath": "public/assets/generated/catalog/ships/synod/titan.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 86068,
+      "sha256": "28e5d96ac84e50936d548aafcc478207adb11d143ab1141880bfb72db73dadfb"
+    },
+    {
+      "semanticId": "ship.veyra.absorber",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.absorber.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/absorber.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 66322,
+      "sha256": "94cf4d8a563a42b5450cdb9d44cc6e80ed6fabb3c46842c783b6441b431773e2"
+    },
+    {
+      "semanticId": "ship.veyra.bomber",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.bomber.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/bomber.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 65792,
+      "sha256": "8495b3e6bb2ae184bb49b403c66bb22798f78d03e76fe85021d3e679219df924"
+    },
+    {
+      "semanticId": "ship.veyra.ghost",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.ghost.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/ghost.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 71688,
+      "sha256": "91dfff74262bf10f1a447de7989ebc8f831bf23a784413071f74f624576e6b9f"
+    },
+    {
+      "semanticId": "ship.veyra.hornet",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.hornet.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/hornet.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 78598,
+      "sha256": "881ef73735c63c38c10ffd102c12a3fb958dd4b364fe9fa68e008ed01fb56df3"
+    },
+    {
+      "semanticId": "ship.veyra.mega-transporter",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.mega-transporter.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/mega-transporter.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 69268,
+      "sha256": "c3cb70d9d19add1dc2fa6ec9967d3b67f6c0137e90959845edd00cc7c1975476"
+    },
+    {
+      "semanticId": "ship.veyra.nemesis",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.nemesis.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/nemesis.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 64170,
+      "sha256": "ecd5b3e49bc313e90fe38aaffef291675e281b91b7c83ae93f656a15a94ed2e4"
+    },
+    {
+      "semanticId": "ship.veyra.nox-dart",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.nox-dart.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/nox-dart.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 48234,
+      "sha256": "c53185f5b39066bae30c9827cb06299d971329b3a84c0aca9b072bbd099943fd"
+    },
+    {
+      "semanticId": "ship.veyra.nox-mind",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.nox-mind.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/nox-mind.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 56382,
+      "sha256": "04ba96d2df5abcbac642259b69aaecdba0559d5c5c137c8c31af4df14798cf4d"
+    },
+    {
+      "semanticId": "ship.veyra.nox-queen",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.nox-queen.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/nox-queen.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 89742,
+      "sha256": "890fd13a4f6d417a111a52856133a54b18687d5c33304aedfb1e0f67b644b4bc"
+    },
+    {
+      "semanticId": "ship.veyra.organic-satellite",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.organic-satellite.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/organic-satellite.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 61664,
+      "sha256": "0c438782b18bff86c4b46ebe6d9630d6fa1007727e8da16eaf242aa0c5cf8b7a"
+    },
+    {
+      "semanticId": "ship.veyra.recycler-drone",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.recycler-drone.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/recycler-drone.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 74272,
+      "sha256": "48e1cc92676b920cb22cc562feab031dc94f5eb7efac10b0a7b6948561f63e24"
+    },
+    {
+      "semanticId": "ship.veyra.settler",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.settler.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/settler.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 69564,
+      "sha256": "3a076930ac6b84ed7f338ac03781d9fe32d65ac8c1dca7c6e39b0e27eaeb138f"
+    },
+    {
+      "semanticId": "ship.veyra.transporter",
+      "sourcePath": "assets/source/New assets/ship/veyra/ship.veyra.transporter.png",
+      "outputPath": "public/assets/generated/catalog/ships/veyra/transporter.webp",
+      "format": "webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 67440,
+      "sha256": "51ec9b3e35f912bd89032b6df8f9df7253a037af04da08ab063d35f11cf17a5e"
+    },
+    {
       "semanticId": "technology.shared.astronomy",
       "sourcePath": "assets/source/New assets/technologies/technology.shared.astronomy.png",
       "outputPath": "public/assets/generated/catalog/technologies/shared/astronomy.webp",
