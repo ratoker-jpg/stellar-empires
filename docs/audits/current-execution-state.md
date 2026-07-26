@@ -1,33 +1,54 @@
 # Current execution state
 
 **Updated:** 2026-07-26  
-**Safe to continue:** yes, but implementation is blocked pending a fresh Audit PR
+**Safe to continue:** yes, after Audit PR #106 merges
 
 | Field | Current value |
 |---|---|
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
-| Completed audit | #101 — `ASSET-RUNTIME-INTEGRATION-01` |
-| Completed implementation PRs | #102, #103, #104 and #105 |
-| Final PR merge SHA | `af6954564531caa81c3dd83f924e3696ad984165` |
-| Batch outcome | 217 complete mechanical IDs → 173 generated runtime images |
-| Save/gameplay divergence | none |
-| Active implementation PR | none after #105 merges |
-| Exact next action | create a fresh Audit PR for the next coherent roadmap batch before implementation |
-| Blockers | no implementation contract exists for the next batch |
+| Completed catalog batch | `ASSET-RUNTIME-INTEGRATION-01`, PRs #102–#105 |
+| Active Audit PR | #106 — `UNIVERSE-NAVIGATION-01` |
+| Verified audit baseline | `49dd4913a941054fb89bc8f4166ead5dbfa73223` |
+| Batch complexity | Medium — four sequential implementation PRs |
+| Authorized work items on audit merge | `UNIVERSE-ASSET-PIPELINE`, `UNIVERSE-SPATIAL-MODEL`, `UNIVERSE-NAVIGATION-VIEWS`, `UNIVERSE-ACTIONS-GATE` |
+| Planned implementation PRs | #107, #108, #109 and #110 |
+| Active implementation PR | none |
+| Last completed atomic action | audited current world model, assets, Phaser presentation, mission bridge, persistence and Graphify dependencies |
+| Last successful validation | PR #105 final CI and Graphify; Audit PR #106 validation pending |
+| Exact next action | merge Audit PR #106 after green CI, then stop; later create PR #107 from fresh `main` |
+| Blockers | none |
+| Divergence | roadmap’s historical PR numbers shifted; stable work-item IDs are authoritative |
 
-## Completed batch checkpoints
+## Batch checkpoints
 
 | Checkpoint | State |
 |---|---|
-| Audit contract | complete and archived |
-| Building implementation | complete in #102 |
-| Technology implementation | complete in #103 |
-| Ship implementation | complete in #104 |
-| Defence/Commander implementation | complete in #105 |
-| Combined 217-ID gate | complete |
-| Generated set | exactly 173 textures |
-| Batch archive | `docs/audits/completed/asset-runtime-integration-01.md` |
+| Current-code reconciliation | complete |
+| Graphify evidence | complete |
+| Asset/source mapping | complete |
+| Schema and migration contract | complete |
+| Three-level route/render contract | complete |
+| Mission/report integration contract | complete |
+| Critical unknowns | none |
+| Runtime implementation | intentionally not started |
 
 ## Recovery rule
 
-Do not start Universe navigation or another implementation item directly. Read the roadmap, current project status and completed audit, then create a dedicated Audit PR for the next batch.
+Before implementation, read:
+
+1. `docs/audits/current-batch-audit.md`;
+2. `docs/audits/contracts/universe-navigation-01-prs.md`;
+3. `docs/audits/contracts/universe-navigation-01-data-assets.md`;
+4. `docs/audits/evidence/universe-navigation-01-graphify.md`.
+
+Implementation order is strict: #107 → #108 → #109 → #110. Do not start #108 before #107 merges, and do not add unaudited Stage C or solar-war work.
+
+### 2026-07-26 — Audit PR #106
+
+- selected a medium four-PR batch rather than overcombining into two or artificially splitting into six;
+- fixed 102 runtime Universe derivatives from 90 source files;
+- fixed the schema-v14 spatial model and migration boundary;
+- kept route selection outside authoritative GameState;
+- reused the existing mission-composer command bridge;
+- deferred complete solar-war mechanics;
+- no implementation was started.
