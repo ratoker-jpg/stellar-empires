@@ -110,14 +110,17 @@ function percentFromBasisPoints(basisPoints: number): number {
 
 export function getCommanderFleetEffects(
   state: Pick<GameState, 'commanders'>,
-  empireId: string,
-  fleetId: string | undefined,
-  units: Readonly<Record<string, number>>,
+  empireOrFleet: string | Pick<FleetState, 'id' | 'empireId' | 'ships'>,
+  fleetId?: string,
+  units: Readonly<Record<string, number>> = {},
 ): CommanderFleetEffects {
+  const empireId = typeof empireOrFleet === 'string' ? empireOrFleet : empireOrFleet.empireId;
+  const resolvedFleetId = typeof empireOrFleet === 'string' ? fleetId : empireOrFleet.id;
+  const resolvedUnits = typeof empireOrFleet === 'string' ? units : empireOrFleet.ships;
   const active = selectActiveCommanderShip(
     getEmpireCommandState(state.commanders, empireId),
-    fleetId,
-    units,
+    resolvedFleetId,
+    resolvedUnits,
   );
   const ability = active?.definition.commanderAbility;
   if (active === undefined || ability === undefined) return NO_COMMANDER_EFFECTS;
@@ -167,7 +170,7 @@ export function getFleetCommanderEffects(
   state: Pick<GameState, 'commanders'>,
   fleet: Pick<FleetState, 'id' | 'empireId' | 'ships'>,
 ): CommanderFleetEffects {
-  return getCommanderFleetEffects(state, fleet.empireId, fleet.id, fleet.ships);
+  return getCommanderFleetEffects(state, fleet);
 }
 
 export function countCommanderShipForEmpire(
