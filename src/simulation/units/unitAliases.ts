@@ -1,4 +1,5 @@
 import type { FactionId } from '../planet/types';
+import { getCompleteDefenseIds } from './completeDefenseCatalog';
 import { getCompleteShipIds } from './completeShipCatalog';
 
 const LEGACY_SHIP_ALIASES_BY_FACTION: Readonly<Record<FactionId, Readonly<Record<string, string>>>> = {
@@ -46,9 +47,45 @@ const LEGACY_SHIP_ALIASES_BY_FACTION: Readonly<Record<FactionId, Readonly<Record
   })(),
 };
 
+const LEGACY_DEFENSE_ALIASES_BY_FACTION: Readonly<
+  Record<FactionId, Readonly<Record<string, string>>>
+> = {
+  aegis: (() => {
+    const defenses = getCompleteDefenseIds('aegis');
+    return {
+      'defense.aegis.gun-battery': defenses.basicTurret,
+      'defense.aegis.missile-battery': defenses.plasmaTurret,
+      'defense.aegis.shield-generator': defenses.secondaryShield,
+      'defense.aegis.point-defense': defenses.laserTurret,
+      'defense.aegis.fortress-array': defenses.ionPlasmaBattery,
+    };
+  })(),
+  synod: (() => {
+    const defenses = getCompleteDefenseIds('synod');
+    return {
+      'defense.synod.lance-node': defenses.laserTurret,
+      'defense.synod.arc-silo': defenses.plasmaTurret,
+      'defense.synod.harmonic-screen': defenses.secondaryShield,
+      'defense.synod.predictive-intercept': defenses.ionTurret,
+      'defense.synod.concord-bastion': defenses.planetaryShield,
+    };
+  })(),
+  veyra: (() => {
+    const defenses = getCompleteDefenseIds('veyra');
+    return {
+      'defense.veyra.thorn-spire': defenses.basicTurret,
+      'defense.veyra.spore-mortar': defenses.plasmaTurret,
+      'defense.veyra.living-veil': defenses.secondaryShield,
+      'defense.veyra.snapper-node': defenses.ionTurret,
+      'defense.veyra.hive-bastion': defenses.planetaryShield,
+    };
+  })(),
+};
+
 export const LEGACY_UNIT_ALIASES: Readonly<Record<string, string>> = Object.assign(
   {},
   ...Object.values(LEGACY_SHIP_ALIASES_BY_FACTION),
+  ...Object.values(LEGACY_DEFENSE_ALIASES_BY_FACTION),
 );
 
 export function resolveCanonicalUnitId(unitId: string): string {
