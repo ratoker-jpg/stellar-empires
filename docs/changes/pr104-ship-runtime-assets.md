@@ -6,4 +6,5 @@
 - removed ship-card MutationObserver/name-based replacement;
 - retained the legacy map-ship adapter for the later Universe navigation audit;
 - added faction dark/light QA sheets and 39-unique-URL gates;
+- validated asset freshness, lint, strict TypeScript, tests and production build;
 - no mechanics, balance, bot or save-schema changes.
