@@ -1,4 +1,3 @@
-import { getUnitCatalogForFaction } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getPlanetBuildingOperationalSummary } from '../planet/buildingOperations';
 import { getBuildingLevel } from '../planet/buildingProgression';
@@ -32,19 +31,31 @@ export function getHangarCapacity(planet: PlanetState): number {
 }
 
 export function getHangarUsed(planet: PlanetState): number {
-  return getUnitCatalogForFaction(planet.factionId).reduce((used, definition) => {
-    if (definition.kind !== 'ship') {
-      return used;
-    }
-    return used + getUnitCount(planet, definition.id, 'ship') * definition.hangarCost;
+  return Object.entries(planet.inventory.ships).reduce((used, [unitId, quantity]) => {
+    const definition = getUnitDefinition(unitId);
+    if (definition?.kind !== 'ship') return used;
+    return used + quantity * definition.hangarCost;
   }, 0);
 }
 
 export function getUnitPopulationUsed(planet: PlanetState): number {
-  return getUnitCatalogForFaction(planet.factionId).reduce(
-    (used, definition) =>
-      used + getUnitCount(planet, definition.id, definition.kind) * definition.populationCost,
+  const shipPopulation = Object.entries(planet.inventory.ships).reduce(
+    (used, [unitId, quantity]) => {
+      const definition = getUnitDefinition(unitId);
+      return definition?.kind === 'ship'
+        ? used + quantity * definition.populationCost
+        : used;
+    },
     0,
+  );
+  return Object.entries(planet.inventory.defenses).reduce(
+    (used, [unitId, quantity]) => {
+      const definition = getUnitDefinition(unitId);
+      return definition?.kind === 'defense'
+        ? used + quantity * definition.populationCost
+        : used;
+    },
+    shipPopulation,
   );
 }
 
