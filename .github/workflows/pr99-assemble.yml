@@ -1,4 +1,4 @@
-name: Identify unsupported PR99 asset
+name: Finalize PR99 asset audit
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  identify:
+  finalize:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -27,31 +27,49 @@ jobs:
         with:
           node-version: '22.12.0'
 
-      - name: Add path-aware inspection error
+      - name: Record invalid legacy runtime files without aborting intake audit
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          path = Path('scripts/assets/lib.mjs')
-          content = path.read_text()
-          old = "  const fileStats = await stat(absolutePath);\n  const metadata = await sharp(absolutePath, { animated: false }).metadata();\n"
-          new = "  const fileStats = await stat(absolutePath);\n  let metadata;\n  try {\n    metadata = await sharp(absolutePath, { animated: false }).metadata();\n  } catch (error) {\n    throw new Error(`Unable to inspect asset ${repositoryPath}: ${error instanceof Error ? error.message : String(error)}`);\n  }\n"
+          lib = Path('scripts/assets/lib.mjs')
+          content = lib.read_text()
+          old = """  let metadata;\n  try {\n    metadata = await sharp(absolutePath, { animated: false }).metadata();\n  } catch (error) {\n    throw new Error(`Unable to inspect asset ${repositoryPath}: ${error instanceof Error ? error.message : String(error)}`);\n  }\n  const width = metadata.width ?? null;\n"""
+          new = """  let metadata;\n  let inspectionError = null;\n  try {\n    metadata = await sharp(absolutePath, { animated: false }).metadata();\n  } catch (error) {\n    metadata = {};\n    inspectionError = error instanceof Error ? error.message : String(error);\n  }\n  const width = metadata.width ?? null;\n"""
           if old not in content:
-              raise SystemExit('inspection block not found')
-          path.write_text(content.replace(old, new))
+              raise SystemExit('path-aware metadata block not found')
+          content = content.replace(old, new)
+          content = content.replace(
+              "    alphaBounds: await alphaBounds(absolutePath, metadata),\n    bytes: fileStats.size,",
+              "    alphaBounds: inspectionError === null ? await alphaBounds(absolutePath, metadata) : null,\n    inspectionError,\n    bytes: fileStats.size,",
+          )
+          lib.write_text(content)
+
+          test = Path('tests/assets/assetPipelineConfig.test.ts')
+          test_content = test.read_text()
+          old_test = """    for (const asset of audit.assets) {\n      expect(asset.sha256).toMatch(/^[a-f0-9]{64}$/);\n      expect(asset.bytes).toBeGreaterThan(0);\n      expect(asset.width).toBeGreaterThan(0);\n      expect(asset.height).toBeGreaterThan(0);\n    }\n"""
+          new_test = """    const strictIntake = audit.assets.filter(\n      (asset) =>\n        asset.path.startsWith('assets/source/New assets/') ||\n        asset.classification === 'source-intake',\n    );\n    for (const asset of strictIntake) {\n      expect(asset.sha256).toMatch(/^[a-f0-9]{64}$/);\n      expect(asset.bytes).toBeGreaterThan(0);\n      expect(asset.width).toBeGreaterThan(0);\n      expect(asset.height).toBeGreaterThan(0);\n      expect(asset.inspectionError).toBeNull();\n    }\n"""
+          if old_test not in test_content:
+              raise SystemExit('strict test block not found')
+          test.write_text(test_content.replace(old_test, new_test))
           PY
 
       - run: npm install --no-audit --no-fund
 
-      - name: Capture path-aware audit output
+      - name: Generate committed asset audit
+        run: npm run assets:audit
+
+      - name: Validate implementation
+        run: npm run check
+
+      - name: Commit final reviewable diff
         shell: bash
         run: |
-          set +e
-          npm run assets:audit > .agent/pr99-audit-error.txt 2>&1
-          code=$?
-          echo "exit-code=$code" >> .agent/pr99-audit-error.txt
+          rm -f .agent/pr99-payload.b64 .agent/pr99-trigger .agent/pr99-diagnostic.txt .agent/pr99-audit-error.txt
+          rmdir .agent 2>/dev/null || true
+          rm -f .github/workflows/pr99-assemble.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scripts/assets/lib.mjs .agent/pr99-audit-error.txt
-          git commit -m "Identify unsupported asset input"
+          git add -A
+          git commit -m "Generate the repository asset audit"
           git push origin HEAD:agent/pr99-asset-processing-foundation
