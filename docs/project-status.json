@@ -1,5 +1,5 @@
 {
-  "statusVersion": 7,
+  "statusVersion": 8,
   "updatedAt": "2026-07-26",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -8,45 +8,69 @@
   "releaseTarget": "1.0",
   "lastMergedPr": 105,
   "lastMergeSha": "af6954564531caa81c3dd83f924e3696ad984165",
-  "activePr": null,
-  "nextPrAfterActive": 106,
-  "nextPrKind": "audit",
-  "currentMilestone": "Complete catalog runtime integration; next batch requires a fresh audit",
+  "verifiedMainBaseline": "49dd4913a941054fb89bc8f4166ead5dbfa73223",
+  "activePr": 106,
+  "nextPrAfterActive": 107,
+  "nextPrKind": "implementation",
+  "currentMilestone": "Build a playable Universe, Galaxy and Solar-system navigation hierarchy",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
-  "currentAudit": "docs/audits/completed/asset-runtime-integration-01.md",
-  "currentAuditContracts": [],
+  "currentAudit": "docs/audits/current-batch-audit.md",
+  "currentAuditContracts": [
+    "docs/audits/contracts/universe-navigation-01-prs.md",
+    "docs/audits/contracts/universe-navigation-01-data-assets.md",
+    "docs/audits/evidence/universe-navigation-01-graphify.md"
+  ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "currentBatch": {
-    "batchId": "ASSET-RUNTIME-INTEGRATION-01",
+    "batchId": "UNIVERSE-NAVIGATION-01",
     "complexity": "medium",
-    "auditPr": 101,
-    "auditStatus": "completed",
+    "auditPr": 106,
+    "auditStatus": "accepted-on-merge",
     "implementationCount": 4,
     "implementationPrs": [
-      102,
-      103,
-      104,
-      105
+      107,
+      108,
+      109,
+      110
     ],
     "workItems": [
-      "ASSET-BUILDINGS",
-      "ASSET-TECHNOLOGIES",
-      "ASSET-SHIPS",
-      "ASSET-DEFENSE-COMMANDERS"
+      "UNIVERSE-ASSET-PIPELINE",
+      "UNIVERSE-SPATIAL-MODEL",
+      "UNIVERSE-NAVIGATION-VIEWS",
+      "UNIVERSE-ACTIONS-GATE"
     ],
-    "status": "completed",
-    "nextWorkItem": null,
-    "archivedAudit": "docs/audits/completed/asset-runtime-integration-01.md"
+    "status": "audit-active",
+    "nextWorkItem": "UNIVERSE-ASSET-PIPELINE"
   },
   "auditDecisions": {
-    "runtimeTextureCount": 173,
-    "decodedBytesWorstCase": 118685696,
+    "implementationCount": 4,
+    "schemaTarget": 14,
+    "navigationStateLocation": "url-history-not-game-state",
+    "universeSlots": 20,
+    "positionsPerSystem": 24,
+    "runtimeSourceFiles": 90,
+    "runtimeTextureCount": 102,
+    "decodedBytesWorstCase": 29458432,
+    "runtimeTransferBudgetBytes": 16777216,
     "atlasPolicy": "individual-webp-no-atlas",
-    "saveMigration": false,
-    "universeWorkIncluded": false,
+    "solarWarMechanicsIncluded": false,
     "criticalUnknowns": 0
+  },
+  "scenarioPresets": {
+    "test": {
+      "populatedGalaxies": 2,
+      "systemsPerGalaxy": 9
+    },
+    "campaign": {
+      "populatedGalaxies": 6,
+      "systemsPerGalaxy": 27
+    },
+    "fidelity": {
+      "populatedGalaxies": 15,
+      "systemsPerGalaxy": 81
+    }
   },
   "batchSizing": {
     "heavy": [
@@ -67,7 +91,9 @@
     "technologiesPerFaction": 22,
     "ordinaryShipsPerFaction": 13,
     "defencesPerFaction": 9,
-    "sharedCommanderShips": 13
+    "sharedCommanderShips": 13,
+    "completeMechanicalBindings": 217,
+    "catalogRuntimeTextures": 173
   },
   "deliveredDomains": [
     "deterministic schema-v13 simulation, event queue, replay and checksum",
@@ -80,21 +106,23 @@
     "confirmed mechanics and navigation research references from PR #96",
     "90 Universe navigation source PNGs from PR #97",
     "playable-game roadmap and master asset backlog from PR #98",
-    "deterministic asset processing foundation and 472-file audit from PR #99",
+    "deterministic asset processing foundation and audit from PR #99",
     "audit-first autonomous delivery protocol and Graphify from PR #100",
     "173 processed catalog runtime images with 217 complete mechanical bindings"
   ],
   "activeDelivery": [
-    "ASSET-RUNTIME-INTEGRATION-01 completed and archived",
-    "217 complete mechanical IDs resolve through 173 generated runtime images",
-    "next implementation requires a fresh dedicated Audit PR"
+    "Audit PR #106 for the four-PR Universe navigation batch",
+    "90-source to 102-runtime Universe asset pipeline in planned PR #107",
+    "schema-v14 Universe spatial model and migration in planned PR #108",
+    "three-level spatial views in planned PR #109",
+    "map actions, report backlinks, browser E2E and batch closure in planned PR #110"
   ],
   "knownLimitations": [
-    "two historical runtime modules still directly reference licensed source libraries for non-catalog Galaxy/map and faction identity presentation",
-    "one historical runtime WebP is invalid and recorded by the audit",
-    "the PR #97 Universe pack is oversized and remains source intake",
+    "the PR #97 Universe pack remains oversized source intake until PR #107",
+    "the simulation remains a schema-v13 single-galaxy model until PR #108",
     "Universe, Galaxy and Solar-system runtime navigation is not implemented",
-    "the full confirmed interface/navigation shell is not implemented",
+    "the full confirmed interface/navigation shell remains incomplete",
+    "complete solar-war actions are intentionally outside the current batch",
     "ordinary mechanic parity, PvE/meta depth and bot parity remain incomplete",
     "alliances, solar war, final Gates and complete victory are not implemented",
     "balance, browser E2E, performance and release gates remain open"
@@ -108,17 +136,21 @@
     "ownerLocalSetupRequired": false,
     "status": "active",
     "lastAuditGraph": {
-      "files": 245,
-      "nodes": 1660,
-      "relationships": 5507,
-      "communities": 68
+      "nodes": 1666,
+      "relationships": 5531,
+      "communities": 74,
+      "extractedPercent": 100,
+      "inferredPercent": 0
     }
   },
   "sourceAssetIntake": {
     "universePack": {
       "files": 90,
-      "status": "source-ready-processing-required",
-      "path": "public/assets/universe"
+      "plannedRuntimeTextures": 102,
+      "status": "audited-processing-required",
+      "currentPath": "public/assets/universe",
+      "plannedSourcePath": "assets/source/universe-navigation",
+      "plannedRuntimePath": "public/assets/generated/universe"
     },
     "catalogArt": {
       "files": 174,
@@ -130,13 +162,15 @@
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
-    "docs/audits/completed/asset-runtime-integration-01.md",
+    "docs/audits/current-batch-audit.md",
+    "docs/audits/contracts/universe-navigation-01-prs.md",
+    "docs/audits/contracts/universe-navigation-01-data-assets.md",
+    "docs/audits/evidence/universe-navigation-01-graphify.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/27-playable-game-roadmap-v5.md",
-    "docs/asset-prompts/master-runtime-asset-backlog.md",
-    "docs/25-solar-war-obelisks-gates-and-progression.md",
     "docs/26-universe-galaxy-solar-system-navigation-contract.md",
+    "docs/25-solar-war-obelisks-gates-and-progression.md",
     "latest merged GitHub pull requests"
   ]
 }
