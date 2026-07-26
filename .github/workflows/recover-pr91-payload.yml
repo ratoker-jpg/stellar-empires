@@ -1,61 +1,86 @@
-name: Recover PR91 payload
+name: Apply verified PR91 source
 
 on:
-  push:
-    branches:
-      - agent/pr91-complete-technology-tree
   pull_request:
     branches:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  recover:
-    if: github.head_ref == 'agent/pr91-complete-technology-tree' || github.ref_name == 'agent/pr91-complete-technology-tree'
+  apply:
+    if: github.head_ref == 'agent/pr91-complete-technology-tree'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
-      - name: Diagnose archive
+        with:
+          ref: agent/pr91-complete-technology-tree
+          fetch-depth: 0
+
+      - name: Detect staged source archive
         shell: bash
         run: |
-          set +e
-          {
-            echo 'PART SIZES'
-            wc -c .github/payload/pr91.part*
-            echo
-            echo 'PART HASHES'
-            sha256sum .github/payload/pr91.part*
-            echo
-            echo 'JOINED BASE64 HASH'
-            cat .github/payload/pr91.part00 \
-                .github/payload/pr91.part01 \
-                .github/payload/pr91.part02 \
-                .github/payload/pr91.part03 \
-                .github/payload/pr91.part04 \
-                .github/payload/pr91.part05 \
-                .github/payload/pr91.part06 \
-              | tee /tmp/pr91-payload.b64 \
-              | sha256sum
-            base64 -d /tmp/pr91-payload.b64 > /tmp/pr91-payload.tar.gz
-            echo "BASE64_STATUS=$?"
-            ls -l /tmp/pr91-payload.tar.gz
-            sha256sum /tmp/pr91-payload.tar.gz
-            gzip -t /tmp/pr91-payload.tar.gz
-            echo "GZIP_STATUS=$?"
-            tar -tzf /tmp/pr91-payload.tar.gz > /tmp/pr91-file-list.txt
-            echo "TAR_STATUS=$?"
-            cat /tmp/pr91-file-list.txt
-          } > /tmp/pr91-diagnostics.txt 2>&1
-          cat /tmp/pr91-diagnostics.txt
-      - uses: actions/upload-artifact@v4
-        if: always()
+          if [ -f .github/payload/pr91-clean.part00 ]; then
+            echo 'APPLY_PR91=1' >> "$GITHUB_ENV"
+          else
+            echo 'APPLY_PR91=0' >> "$GITHUB_ENV"
+          fi
+
+      - name: Apply verified source archive
+        if: env.APPLY_PR91 == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/payload/pr91-clean.part00 \
+              .github/payload/pr91-clean.part01 \
+              .github/payload/pr91-clean.part02 \
+              .github/payload/pr91-clean.part03-04 \
+              .github/payload/pr91-clean.part05-06 \
+              .github/payload/pr91-clean.part07-08 \
+              .github/payload/pr91-clean.part09-10 \
+              .github/payload/pr91-clean.part11 \
+            | base64 -d > /tmp/pr91-clean-src.tar.gz
+          echo '8a0481e8143832c218605bc11e08bee70d52fe2558247da5c7abbe60c7a6091f  /tmp/pr91-clean-src.tar.gz' | sha256sum -c -
+          gzip -t /tmp/pr91-clean-src.tar.gz
+          test "$(tar -tzf /tmp/pr91-clean-src.tar.gz | wc -l)" -eq 34
+          tar -xzf /tmp/pr91-clean-src.tar.gz -C .
+          rm -rf .github/payload
+
+      - uses: actions/setup-node@v6
+        if: env.APPLY_PR91 == '1'
         with:
-          name: pr91-recovery-diagnostics
-          path: |
-            /tmp/pr91-payload.b64
-            /tmp/pr91-payload.tar.gz
-            /tmp/pr91-file-list.txt
-            /tmp/pr91-diagnostics.txt
-          retention-days: 1
+          node-version: '22.12.0'
+
+      - name: Install dependencies
+        if: env.APPLY_PR91 == '1'
+        run: npm install --no-audit --no-fund
+
+      - name: Lint
+        if: env.APPLY_PR91 == '1'
+        run: npm run lint
+
+      - name: Typecheck
+        if: env.APPLY_PR91 == '1'
+        run: npm run typecheck
+
+      - name: Test
+        if: env.APPLY_PR91 == '1'
+        run: npm run test
+
+      - name: Build
+        if: env.APPLY_PR91 == '1'
+        run: npm run build
+
+      - name: Commit verified PR91 source
+        if: env.APPLY_PR91 == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf node_modules dist package-lock.json
+          git config user.name 'stellar-empires-automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A -- . ':!.github/workflows/recover-pr91-payload.yml'
+          git commit -m 'Implement complete 22-technology progression tree'
+          git push origin HEAD:agent/pr91-complete-technology-tree
