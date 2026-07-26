@@ -1,10 +1,10 @@
 # Audited implementation batch history
 
-This file is append-only. A batch is added only when its final implementation PR closes the accepted audit.
+This file is append-only for completed batches. An active row may be updated until its final implementation PR closes the batch.
 
 | Batch ID | Complexity | Audit PR | Implementation PRs | Outcome | Archived audit |
 |---|---|---:|---|---|---|
-| `ASSET-RUNTIME-INTEGRATION-01` | Medium | pending | pending | audit not started | pending |
+| `ASSET-RUNTIME-INTEGRATION-01` | Medium | #101 | planned #102–#105 | audit accepted; implementation not started | archived by #105 |
 
 ## Recording rules
 
