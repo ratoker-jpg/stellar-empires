@@ -7,7 +7,7 @@ describe('complete Aegis catalog', () => {
     const catalog = getFactionMechanicalCatalog('aegis');
     expect(validateFactionMechanicalCatalog(catalog)).toEqual([]);
     expect(catalog.buildings.map((entry) => entry.id)).toContain('building.aegis.teret-factory');
-    expect(catalog.research.map((entry) => entry.id)).toContain('technology.aegis.battle-network');
+    expect(catalog.research.map((entry) => entry.id)).toContain('technology.aegis.critical-hit');
     expect(catalog.units.map((entry) => entry.id)).toContain('ship.aegis.dreadnought');
   });
 

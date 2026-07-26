@@ -2,7 +2,8 @@ import { COMPLETE_BUILDING_CATALOGS } from '../planet/completeBuildingCatalog';
 import { resolveCanonicalBuildingId } from '../planet/buildingAliases';
 import type { BuildingDefinition } from '../planet/buildingDefinitions';
 import type { FactionId } from '../planet/types';
-import { AEGIS_RESEARCH_CATALOG } from '../research/aegisResearchCatalog';
+import { COMPLETE_RESEARCH_CATALOGS } from '../research/completeResearchCatalog';
+import { resolveCanonicalResearchId } from '../research/researchAliases';
 import type { ResearchDefinition } from '../research/types';
 import type { GameState } from '../types';
 import { AEGIS_UNIT_CATALOG } from '../units/aegisUnitCatalog';
@@ -13,14 +14,8 @@ import {
 } from './completeCatalogTargets';
 import { getFactionCatalogManifest } from './factionCatalogManifest';
 import { parseMechanicalId } from './mechanicalIds';
-import {
-  SYNOD_RESEARCH_CATALOG,
-  SYNOD_UNIT_CATALOG,
-} from './synodMechanicalCatalog';
-import {
-  VEYRA_RESEARCH_CATALOG,
-  VEYRA_UNIT_CATALOG,
-} from './veyraMechanicalCatalog';
+import { SYNOD_UNIT_CATALOG } from './synodMechanicalCatalog';
+import { VEYRA_UNIT_CATALOG } from './veyraMechanicalCatalog';
 
 export interface FactionMechanicalCatalog {
   readonly factionId: FactionId;
@@ -43,19 +38,19 @@ const SOURCE_CATALOGS: Readonly<Partial<Record<FactionId, MechanicalCatalogSourc
   aegis: {
     sourceFactionId: 'aegis',
     buildings: COMPLETE_BUILDING_CATALOGS.aegis,
-    research: AEGIS_RESEARCH_CATALOG,
+    research: COMPLETE_RESEARCH_CATALOGS.aegis,
     units: AEGIS_UNIT_CATALOG,
   },
   synod: {
     sourceFactionId: 'synod',
     buildings: COMPLETE_BUILDING_CATALOGS.synod,
-    research: SYNOD_RESEARCH_CATALOG,
+    research: COMPLETE_RESEARCH_CATALOGS.synod,
     units: SYNOD_UNIT_CATALOG,
   },
   veyra: {
     sourceFactionId: 'veyra',
     buildings: COMPLETE_BUILDING_CATALOGS.veyra,
-    research: VEYRA_RESEARCH_CATALOG,
+    research: COMPLETE_RESEARCH_CATALOGS.veyra,
     units: VEYRA_UNIT_CATALOG,
   },
 };
@@ -159,7 +154,7 @@ export function getRegisteredBuildingDefinition(
 export function getRegisteredResearchDefinition(
   technologyId: string,
 ): ResearchDefinition | undefined {
-  return RESEARCH_BY_ID.get(technologyId);
+  return RESEARCH_BY_ID.get(resolveCanonicalResearchId(technologyId));
 }
 
 export function getRegisteredUnitDefinition(
@@ -224,7 +219,8 @@ export function validateFactionMechanicalCatalog(
   }
   for (const technology of catalog.research) {
     for (const requirement of technology.requirements) {
-      if (!researchIds.has(requirement.technologyId)) {
+      const canonicalRequirementId = resolveCanonicalResearchId(requirement.technologyId);
+      if (!researchIds.has(canonicalRequirementId)) {
         errors.push(`Unknown research requirement ${requirement.technologyId} in ${technology.id}`);
       }
     }
@@ -236,7 +232,8 @@ export function validateFactionMechanicalCatalog(
       }
     }
     for (const requirement of unit.researchRequirements) {
-      if (!researchIds.has(requirement.technologyId)) {
+      const canonicalRequirementId = resolveCanonicalResearchId(requirement.technologyId);
+      if (!researchIds.has(canonicalRequirementId)) {
         errors.push(`Unknown unit research requirement ${requirement.technologyId} in ${unit.id}`);
       }
     }

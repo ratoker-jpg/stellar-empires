@@ -1,5 +1,6 @@
 import type { ResourceCost } from '../economy/types';
 import { getResearchDefinition } from './catalog';
+import { getResearchLevel } from './researchState';
 import type { EmpireResearchState, ResearchDefinition } from './types';
 
 const COST_SCALE_PERMILLE = 1_600;
@@ -33,10 +34,17 @@ export function calculateResearchSeconds(
 
 export interface ResearchEffectSummary {
   readonly constructionSpeedPercent: number;
+  readonly researchSpeedPercent: number;
   readonly energyOutputPercent: number;
   readonly fleetSpeedPercent: number;
+  readonly fuelEfficiencyPercent: number;
+  readonly flightSlots: number;
   readonly sensorStrength: number;
   readonly armorStrengthPercent: number;
+  readonly shipDurabilityPercent: number;
+  readonly armorPenetrationPercent: number;
+  readonly criticalChanceBasisPoints: number;
+  readonly ecologyCapacity: number;
   readonly weaponStrengthPercent: number;
 }
 
@@ -45,10 +53,17 @@ export function calculateResearchEffects(
   catalog: readonly ResearchDefinition[],
 ): ResearchEffectSummary {
   let constructionSpeedPercent = 0;
+  let researchSpeedPercent = 0;
   let energyOutputPercent = 0;
   let fleetSpeedPercent = 0;
+  let fuelEfficiencyPercent = 0;
+  let flightSlots = 0;
   let sensorStrength = 0;
   let armorStrengthPercent = 0;
+  let shipDurabilityPercent = 0;
+  let armorPenetrationPercent = 0;
+  let criticalChanceBasisPoints = 0;
+  let ecologyCapacity = 0;
   let weaponStrengthPercent = 0;
 
   const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
@@ -58,11 +73,14 @@ export function calculateResearchEffects(
   }
 
   for (const definition of definitions.values()) {
-    const level = research.levels[definition.id] ?? 0;
+    const level = getResearchLevel(research, definition.id);
     for (const effect of definition.effects) {
       switch (effect.type) {
         case 'CONSTRUCTION_SPEED':
           constructionSpeedPercent += effect.percentPerLevel * level;
+          break;
+        case 'RESEARCH_SPEED':
+          researchSpeedPercent += effect.percentPerLevel * level;
           break;
         case 'ENERGY_OUTPUT':
           energyOutputPercent += effect.percentPerLevel * level;
@@ -70,11 +88,29 @@ export function calculateResearchEffects(
         case 'FLEET_SPEED':
           fleetSpeedPercent += effect.percentPerLevel * level;
           break;
+        case 'FUEL_EFFICIENCY':
+          fuelEfficiencyPercent += effect.percentPerLevel * level;
+          break;
+        case 'FLIGHT_SLOTS':
+          flightSlots += effect.pointsPerLevel * level;
+          break;
         case 'SENSOR_STRENGTH':
           sensorStrength += effect.pointsPerLevel * level;
           break;
         case 'ARMOR_STRENGTH':
           armorStrengthPercent += effect.percentPerLevel * level;
+          break;
+        case 'SHIP_DURABILITY':
+          shipDurabilityPercent += effect.percentPerLevel * level;
+          break;
+        case 'ARMOR_PENETRATION':
+          armorPenetrationPercent += effect.percentPerLevel * level;
+          break;
+        case 'CRITICAL_CHANCE':
+          criticalChanceBasisPoints += effect.basisPointsPerLevel * level;
+          break;
+        case 'ECOLOGY_CAPACITY':
+          ecologyCapacity += effect.pointsPerLevel * level;
           break;
         case 'WEAPON_STRENGTH':
           weaponStrengthPercent += effect.percentPerLevel * level;
@@ -85,10 +121,17 @@ export function calculateResearchEffects(
 
   return {
     constructionSpeedPercent,
+    researchSpeedPercent,
     energyOutputPercent,
     fleetSpeedPercent,
+    fuelEfficiencyPercent,
+    flightSlots,
     sensorStrength,
     armorStrengthPercent,
+    shipDurabilityPercent,
+    armorPenetrationPercent,
+    criticalChanceBasisPoints: Math.min(1_200, criticalChanceBasisPoints),
+    ecologyCapacity,
     weaponStrengthPercent,
   };
 }

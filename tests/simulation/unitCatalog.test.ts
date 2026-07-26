@@ -16,7 +16,7 @@ describe('unit catalog and inventory', () => {
       ),
     ).toEqual([]);
     expect(getFactionMechanicalCatalog('aegis').buildings).toHaveLength(24);
-    expect(AEGIS_RESEARCH_CATALOG).toHaveLength(10);
+    expect(AEGIS_RESEARCH_CATALOG).toHaveLength(22);
     expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'ship')).toHaveLength(10);
     expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'defense')).toHaveLength(5);
   });

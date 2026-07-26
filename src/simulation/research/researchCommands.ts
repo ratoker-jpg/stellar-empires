@@ -24,6 +24,7 @@ import {
   calculateResearchEffects,
   calculateResearchSeconds,
 } from './progression';
+import { resolveCanonicalResearchId } from './researchAliases';
 import {
   findMissingResearchRequirements,
   getEmpireResearch,
@@ -138,7 +139,8 @@ export function queueResearch(
   const baseSeconds = calculateResearchSeconds(definition, targetLevel);
   const duration = applySpeedPercent(
     baseSeconds,
-    Math.floor(effects.constructionSpeedPercent / 2) +
+    effects.researchSpeedPercent +
+      Math.floor(effects.constructionSpeedPercent / 2) +
       getPlanetBuildingOperationalSummary(planet).researchSpeedPercent,
   );
   const completesAt = state.clock.elapsedSeconds + duration;
@@ -250,9 +252,10 @@ export function completeResearch(
     return states;
   }
   const queueItem = research.queue.find((item) => item.id === payload.queueItemId);
+  const canonicalTechnologyId = resolveCanonicalResearchId(payload.technologyId);
   if (
     queueItem === undefined ||
-    queueItem.technologyId !== payload.technologyId ||
+    resolveCanonicalResearchId(queueItem.technologyId) !== canonicalTechnologyId ||
     queueItem.targetLevel !== payload.targetLevel
   ) {
     return states;
@@ -262,7 +265,7 @@ export function completeResearch(
     ...research,
     levels: {
       ...research.levels,
-      [payload.technologyId]: payload.targetLevel,
+      [canonicalTechnologyId]: payload.targetLevel,
     },
     queue: research.queue.filter((item) => item.id !== queueItem.id),
   });

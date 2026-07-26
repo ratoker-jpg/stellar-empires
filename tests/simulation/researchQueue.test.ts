@@ -7,6 +7,9 @@ import { calculateResearchCost } from '../../src/simulation/research/progression
 import { AEGIS_RESEARCH_CATALOG } from '../../src/simulation/research/catalog';
 import type { GameState } from '../../src/simulation/types';
 
+const LEGACY_CONSTRUCTION_ID = 'technology.aegis.construction';
+const CANONICAL_CONSTRUCTION_ID = 'technology.aegis.improved-construction';
+
 function withPlayerLaboratory(state: GameState): GameState {
   return {
     ...state,
@@ -56,6 +59,16 @@ function getPlayerPlanet(state: GameState) {
   return planet;
 }
 
+function getConstructionDefinition() {
+  const definition = AEGIS_RESEARCH_CATALOG.find(
+    (technology) => technology.id === CANONICAL_CONSTRUCTION_ID,
+  );
+  if (definition === undefined) {
+    throw new Error('Canonical construction technology missing.');
+  }
+  return definition;
+}
+
 describe('research queue', () => {
   it('reserves resources and completes a technology exactly once', () => {
     const initial = withPlayerLaboratory(createInitialGameState('research-complete'));
@@ -64,7 +77,7 @@ describe('research queue', () => {
       type: 'QUEUE_RESEARCH',
       empireId: 'player',
       planetId: planet.id,
-      technologyId: 'technology.aegis.construction',
+      technologyId: LEGACY_CONSTRUCTION_ID,
     });
 
     expect(queued.ok).toBe(true);
@@ -79,8 +92,9 @@ describe('research queue', () => {
     if (item === undefined) {
       return;
     }
+    expect(item.technologyId).toBe(CANONICAL_CONSTRUCTION_ID);
 
-    const cost = calculateResearchCost(AEGIS_RESEARCH_CATALOG[0]!, 1);
+    const cost = calculateResearchCost(getConstructionDefinition(), 1);
     expect(getPlayerPlanet(queued.value).economy.resources.metal.amount).toBe(
       planet.economy.resources.metal.amount - cost.metal,
     );
@@ -97,7 +111,7 @@ describe('research queue', () => {
     const research = completed.value.research.find(
       (candidate) => candidate.empireId === 'player',
     );
-    expect(research?.levels['technology.aegis.construction']).toBe(1);
+    expect(research?.levels[CANONICAL_CONSTRUCTION_ID]).toBe(1);
     expect(research?.queue).toEqual([]);
     expect(
       completed.value.eventLog.filter(
@@ -123,7 +137,7 @@ describe('research queue', () => {
       type: 'QUEUE_RESEARCH',
       empireId: 'player',
       planetId: planet.id,
-      technologyId: 'technology.aegis.construction',
+      technologyId: LEGACY_CONSTRUCTION_ID,
     });
     expect(queued.ok).toBe(true);
     if (!queued.ok) {
@@ -159,7 +173,7 @@ describe('research queue', () => {
   it('applies construction and energy research effects to real formulas', () => {
     const base = createInitialGameState('research-effects');
     const boosted = setPlayerResearchLevel(
-      setPlayerResearchLevel(base, 'technology.aegis.construction', 1),
+      setPlayerResearchLevel(base, LEGACY_CONSTRUCTION_ID, 1),
       'technology.aegis.energy',
       1,
     );

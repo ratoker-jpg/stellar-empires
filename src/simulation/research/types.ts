@@ -16,10 +16,17 @@ export interface ResearchRequirement {
 
 export type ResearchEffect =
   | { readonly type: 'CONSTRUCTION_SPEED'; readonly percentPerLevel: number }
+  | { readonly type: 'RESEARCH_SPEED'; readonly percentPerLevel: number }
   | { readonly type: 'ENERGY_OUTPUT'; readonly percentPerLevel: number }
   | { readonly type: 'FLEET_SPEED'; readonly percentPerLevel: number }
+  | { readonly type: 'FUEL_EFFICIENCY'; readonly percentPerLevel: number }
+  | { readonly type: 'FLIGHT_SLOTS'; readonly pointsPerLevel: number }
   | { readonly type: 'SENSOR_STRENGTH'; readonly pointsPerLevel: number }
   | { readonly type: 'ARMOR_STRENGTH'; readonly percentPerLevel: number }
+  | { readonly type: 'SHIP_DURABILITY'; readonly percentPerLevel: number }
+  | { readonly type: 'ARMOR_PENETRATION'; readonly percentPerLevel: number }
+  | { readonly type: 'CRITICAL_CHANCE'; readonly basisPointsPerLevel: number }
+  | { readonly type: 'ECOLOGY_CAPACITY'; readonly pointsPerLevel: number }
   | { readonly type: 'WEAPON_STRENGTH'; readonly percentPerLevel: number };
 
 export interface ResearchDefinition {
