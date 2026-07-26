@@ -42,15 +42,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Pack validated source snapshot
-        if: github.event_name == 'pull_request'
-        run: tar --exclude='.git' --exclude='node_modules' --exclude='dist' --exclude='assets/source' -czf /tmp/stellar-empires-pr-source.tgz .
-
-      - name: Upload validated source snapshot
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: stellar-empires-pr-source
-          path: /tmp/stellar-empires-pr-source.tgz
-          retention-days: 1
