@@ -47,12 +47,13 @@ jobs:
             gh pr comment 108 --body-file /tmp/pr108-comment.md || true
             exit "$status"
           fi
+          python3 scripts/automation/patch-pr108-lint.py
 
       - name: Remove temporary bootstrap and evidence
         run: |
           git fetch origin main
           git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/automation/implement-pr108.py
+          rm -f scripts/automation/implement-pr108.py scripts/automation/patch-pr108-lint.py
           rm -f docs/audits/evidence/pr108-runtime-map.txt
 
       - name: Validate asset pipeline
