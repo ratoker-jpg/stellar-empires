@@ -81,9 +81,9 @@ export function selectActiveCommanderShip(
   fleetId: string | undefined,
   units: Readonly<Record<string, number>>,
 ): ActiveCommanderShip | undefined {
+  if (commandState === undefined || fleetId === undefined) return undefined;
   if (
-    commandState === undefined ||
-    fleetId === undefined ||
+    commandState.flagshipFleetId !== null &&
     commandState.flagshipFleetId !== fleetId
   ) {
     return undefined;
