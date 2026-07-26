@@ -17,7 +17,7 @@ export interface CommandDoctrineDefinition {
   readonly experiencePermille: number;
 }
 
-const EARLY_COMMAND_LEVEL_THRESHOLDS = [0, 100, 300, 700, 1_500] as const;
+const EARLY_COMMAND_LEVEL_THRESHOLDS: readonly number[] = [0, 100, 300, 700, 1_500];
 
 function createCommandLevelThresholds(): readonly number[] {
   const thresholds = [...EARLY_COMMAND_LEVEL_THRESHOLDS];
