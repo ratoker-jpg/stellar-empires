@@ -1,4 +1,5 @@
 import type { FactionId } from '../planet/types';
+import type { SpaceCoordinate } from '../space/coordinates';
 
 export interface IntelResourceSnapshot {
   readonly metal: number;
@@ -10,6 +11,7 @@ export interface IntelResourceSnapshot {
 
 export interface IntelPlanetSnapshot {
   readonly planetId: string;
+  readonly coordinate?: SpaceCoordinate;
   readonly name: string;
   readonly ownerEmpireId: string;
   readonly factionId: FactionId;
@@ -27,6 +29,7 @@ export interface IntelObservation {
   readonly id: string;
   readonly observerEmpireId: string;
   readonly targetPlanetId: string;
+  readonly coordinate?: SpaceCoordinate;
   readonly observedAt: number;
   readonly expiresAt: number;
   readonly detected: boolean;
@@ -38,6 +41,7 @@ export interface IntelligenceAlert {
   readonly empireId: string;
   readonly sourceEmpireId: string | null;
   readonly targetPlanetId: string;
+  readonly coordinate?: SpaceCoordinate;
   readonly detectedAt: number;
   readonly confidence: 'low' | 'medium' | 'high';
 }

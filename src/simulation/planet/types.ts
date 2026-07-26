@@ -1,4 +1,5 @@
 import type { PlanetDefenseState } from '../defense/types';
+import type { SpaceCoordinate } from '../space/coordinates';
 import type { PlanetEconomyState, ResourceCost } from '../economy/types';
 import type {
   PlanetDevelopmentTemplateId,
@@ -37,6 +38,7 @@ export interface PlanetState {
   readonly galaxyPlanetId: string;
   readonly systemId: string;
   readonly position: number;
+  readonly coordinate: SpaceCoordinate;
   readonly name: string;
   readonly ownerEmpireId: string;
   readonly factionId: FactionId;

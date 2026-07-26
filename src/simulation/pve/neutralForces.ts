@@ -54,6 +54,7 @@ function createPiratePlanet(candidate: Candidate, tier: number): PlanetState {
     galaxyPlanetId: candidate.planet.id,
     systemId: candidate.system.id,
     position: candidate.planet.position,
+    coordinate: candidate.planet.coordinate,
     name: `Пиратский оплот ${candidate.system.name}-${candidate.planet.position}`,
     ownerEmpireId: PIRATE_EMPIRE_ID,
     factionId: 'aegis',

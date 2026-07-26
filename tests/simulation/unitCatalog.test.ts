@@ -26,7 +26,7 @@ describe('unit catalog and inventory', () => {
     const managedPlanets = state.planets.filter((planet) =>
       state.empires.includes(planet.ownerEmpireId),
     );
-    expect(state.schemaVersion).toBe(13);
+    expect(state.schemaVersion).toBe(14);
     expect(state.fleets).toEqual([]);
     expect(state.debrisFields).toEqual([]);
     expect(state.logisticsRoutes).toEqual([]);

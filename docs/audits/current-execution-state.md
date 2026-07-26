@@ -7,14 +7,14 @@
 |---|---|
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
 | Active batch | `UNIVERSE-NAVIGATION-01` |
-| Audit PR | #106 — merged at `3bafad74907a92633f5c31c3d30bd96268c3dafb` |
-| Batch complexity | Medium — four sequential implementation PRs |
-| Active work item | `UNIVERSE-ASSET-PIPELINE` |
-| Active implementation PR | #107 |
-| Base SHA | `3bafad74907a92633f5c31c3d30bd96268c3dafb` |
-| Last completed atomic action | moved and registered the 90-source / 102-runtime Universe asset family |
-| Last successful validation | asset processing, audit, contact sheets, lint, typecheck, tests and build in the PR branch |
-| Exact next action | merge #107 after CI and Graphify are green, then create #108 from fresh `main` |
+| Audit PR | #106 — merged |
+| Last merged implementation | #107 — `UNIVERSE-ASSET-PIPELINE` — merge `398a6074b8d7d62d00aa6beabc064a88b2565ca4` |
+| Active work item | `UNIVERSE-SPATIAL-MODEL` |
+| Active implementation PR | #108 |
+| Base SHA | `398a6074b8d7d62d00aa6beabc064a88b2565ca4` |
+| Last completed atomic action | implemented schema v14, compact Universe descriptors and deterministic coordinate migration |
+| Last successful validation | pending clean PR CI and Graphify on the final implementation head |
+| Exact next action | fix ordinary validation failures, merge #108 after CI and Graphify are green, then create #109 from fresh `main` |
 | Blockers | none |
 | Divergence | none |
 
@@ -22,11 +22,11 @@
 
 | Checkpoint | State |
 |---|---|
-| #107 Universe asset pipeline | ready for merge after checks |
-| #108 spatial model and schema v14 | not started |
+| #107 Universe asset pipeline | merged |
+| #108 spatial model and schema v14 | implementation complete; validation active |
 | #109 three-level navigation views | not started |
 | #110 actions, E2E and batch closure | not started |
 
 ## Recovery rule
 
-Implementation order remains strict: #107 → #108 → #109 → #110. Do not start #108 before #107 merges. Complete solar-war mechanics, alliances, Obelisks and Gates remain outside this batch.
+Implementation order remains strict: #107 → #108 → #109 → #110. Do not start #109 before #108 merges. Route/UI state is not part of `GameState`; complete solar-war mechanics remain outside this batch.

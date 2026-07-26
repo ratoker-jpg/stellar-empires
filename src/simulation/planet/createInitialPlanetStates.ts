@@ -40,6 +40,7 @@ export function createInitialPlanetStates(
         galaxyPlanetId: planet.id,
         systemId: system.id,
         position: planet.position,
+        coordinate: planet.coordinate,
         name: `${system.name} ${planet.position}`,
         ownerEmpireId: planet.ownerEmpireId,
         factionId,

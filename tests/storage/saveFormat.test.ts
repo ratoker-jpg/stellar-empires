@@ -8,7 +8,7 @@ import {
 } from '../../src/storage/saveFormat';
 
 describe('save format', () => {
-  it('round-trips a valid schema-v13 save', () => {
+  it('round-trips a valid schema-v14 save', () => {
     const state = createInitialGameState('save-round-trip');
     const save = createSaveEnvelope('slot-1', state, '2026-07-18T12:00:00.000Z');
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
@@ -41,7 +41,7 @@ describe('save format', () => {
     const parsed = parseSaveJson(JSON.stringify(legacySave));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(13);
+      expect(parsed.value.state.schemaVersion).toBe(14);
       expect(parsed.value.state.debrisFields).toEqual([]);
       expect(parsed.value.state.logisticsRoutes).toEqual([]);
       expect(parsed.value.state.market.reserves).toEqual({
@@ -100,6 +100,7 @@ describe('save format', () => {
           metal: 500,
           crystal: 250,
           createdAt: 100,
+          coordinate: current.planets[0]!.coordinate,
         },
       ],
       fleets: [
@@ -196,7 +197,7 @@ describe('save format', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.state.fleets[0]?.mission).toBeNull();
-      expect(parsed.value.state.schemaVersion).toBe(13);
+      expect(parsed.value.state.schemaVersion).toBe(14);
     }
   });
 

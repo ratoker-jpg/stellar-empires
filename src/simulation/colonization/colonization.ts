@@ -16,6 +16,7 @@ import type {
 import { createPlanetZones } from '../planet/zones';
 import { getEmpireResearch, getResearchLevel } from '../research/researchState';
 import type { GameState } from '../types';
+import { resolveUniversePlanet, selectStarSystemDescriptor } from '../universe/model';
 import { getUnitDefinition } from '../units/catalog';
 import type { ShipRole } from '../units/types';
 
@@ -33,6 +34,24 @@ export function findGalaxyPlanet(
     if (planet !== undefined) return { system, planet };
   }
   return undefined;
+}
+
+export function findUniversePlanet(
+  state: GameState,
+  galaxyPlanetId: string,
+): GalaxyPlanetLocation | undefined {
+  const materialized = findGalaxyPlanet(state.galaxy, galaxyPlanetId);
+  if (materialized !== undefined) return materialized;
+  const planet = resolveUniversePlanet(state.universe, galaxyPlanetId);
+  if (planet === undefined) return undefined;
+  return {
+    system: selectStarSystemDescriptor(
+      state.universe,
+      planet.coordinate.galaxy,
+      planet.coordinate.solarSystem,
+    ),
+    planet,
+  };
 }
 
 export function isColonizableGalaxyPlanet(planet: PlanetModel): boolean {
@@ -68,6 +87,7 @@ export function createColonyPlanet(
     galaxyPlanetId: location.planet.id,
     systemId: location.system.id,
     position: location.planet.position,
+    coordinate: location.planet.coordinate,
     name: `${location.system.name} ${location.planet.position}`,
     ownerEmpireId: empireId,
     factionId,
@@ -153,7 +173,7 @@ export function resolveColonization(
   fleet: FleetState,
   galaxyPlanetId: string,
 ): ColonizationResolution | undefined {
-  const location = findGalaxyPlanet(state.galaxy, galaxyPlanetId);
+  const location = findUniversePlanet(state, galaxyPlanetId);
   if (
     location === undefined ||
     !isColonizableGalaxyPlanet(location.planet) ||

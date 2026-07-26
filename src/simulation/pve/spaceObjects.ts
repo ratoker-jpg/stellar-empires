@@ -12,6 +12,7 @@ import {
 import type { FleetState } from '../fleets/types';
 import type { GalaxyModel } from '../galaxy/types';
 import type { FactionId, PlanetState } from '../planet/types';
+import type { SpaceCoordinate } from '../space/coordinates';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -33,6 +34,7 @@ export interface SpaceObjectState {
   readonly id: string;
   readonly systemId: string;
   readonly position: number;
+  readonly coordinate?: SpaceCoordinate;
   readonly kind: SpaceObjectKind;
   readonly initialYield: number;
   readonly remainingYield: number;
@@ -128,10 +130,9 @@ export function createInitialSpaceObjects(
   return galaxy.systems.map((system, index): SpaceObjectState => {
     const roll = hashText(`${seed}:${system.id}:space-object`);
     const kind = SPACE_OBJECT_KINDS[index % SPACE_OBJECT_KINDS.length] ?? 'asteroid';
-    const maxPlanetPosition = system.planets.reduce(
-      (maximum, planet) => Math.max(maximum, planet.position),
-      0,
-    );
+    const occupied = new Set(system.planets.map((planet) => planet.position));
+    const position = Array.from({ length: 24 }, (_, offset) => 24 - offset)
+      .find((candidate) => !occupied.has(candidate)) ?? 24;
     const initialYield =
       kind === 'asteroid'
         ? 3_200 + (roll % 2_401)
@@ -141,7 +142,8 @@ export function createInitialSpaceObjects(
     return {
       id: `space-object-${system.id}`,
       systemId: system.id,
-      position: maxPlanetPosition + 1 + (Math.floor(roll / 11) % 3),
+      position,
+      coordinate: { galaxy: system.galaxy, solarSystem: system.solarSystem, position },
       kind,
       initialYield,
       remainingYield: initialYield,

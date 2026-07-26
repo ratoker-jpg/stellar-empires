@@ -358,6 +358,7 @@ export function resolveAttackMission(
     target.id,
     debrisCreated,
     state.clock.elapsedSeconds,
+    target.coordinate,
   );
 
   const report: BattleReport = {

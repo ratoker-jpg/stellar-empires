@@ -4,11 +4,13 @@ import type {
   IntelligenceAlert,
 } from '../intelligence/types';
 import type { PlanetState } from '../planet/types';
+import type { SpaceCoordinate } from '../space/coordinates';
 import { getEmpireResearch } from '../research/researchState';
 import type { GameState } from '../types';
 
 export interface BotOwnPlanetPerception {
   readonly id: string;
+  readonly coordinate: SpaceCoordinate;
   readonly name: string;
   readonly factionId: PlanetState['factionId'];
   readonly specializationId: PlanetState['specializationId'];
@@ -30,6 +32,7 @@ export interface BotOwnPlanetPerception {
 
 export interface BotForeignPlanetPerception {
   readonly planetId: string;
+  readonly coordinate?: SpaceCoordinate;
   readonly snapshot: IntelPlanetSnapshot;
   readonly observedAt: number;
   readonly expiresAt: number;
@@ -45,6 +48,7 @@ export interface BotPerception {
   readonly publicColonyIds: readonly string[];
   readonly ownDebrisFields: readonly {
     readonly planetId: string;
+    readonly coordinate?: SpaceCoordinate;
     readonly metal: number;
     readonly crystal: number;
   }[];
@@ -66,6 +70,7 @@ export interface BotPerception {
 function createOwnPlanetPerception(planet: PlanetState): BotOwnPlanetPerception {
   return {
     id: planet.id,
+    coordinate: planet.coordinate,
     name: planet.name,
     factionId: planet.factionId,
     specializationId: planet.specializationId,
@@ -115,20 +120,25 @@ export function createBotPerception(
     ownPlanets: state.planets
       .filter((planet) => planet.ownerEmpireId === empireId)
       .map(createOwnPlanetPerception),
-    foreignPlanets: [...latestByPlanet.values()].map((observation) => ({
-      planetId: observation.targetPlanetId,
-      snapshot: structuredClone(observation.snapshot),
-      observedAt: observation.observedAt,
-      expiresAt: observation.expiresAt,
-      ageSeconds: Math.max(0, state.clock.elapsedSeconds - observation.observedAt),
-      freshness:
-        observation.expiresAt > state.clock.elapsedSeconds ? 'current' : 'stale',
-    })),
+    foreignPlanets: [...latestByPlanet.values()].map((observation) => {
+      const coordinate = observation.coordinate ?? observation.snapshot.coordinate;
+      return {
+        planetId: observation.targetPlanetId,
+        ...(coordinate === undefined ? {} : { coordinate }),
+        snapshot: structuredClone(observation.snapshot),
+        observedAt: observation.observedAt,
+        expiresAt: observation.expiresAt,
+        ageSeconds: Math.max(0, state.clock.elapsedSeconds - observation.observedAt),
+        freshness:
+          observation.expiresAt > state.clock.elapsedSeconds ? 'current' : 'stale',
+      };
+    }),
     publicColonyIds: state.planets.map((planet) => planet.id).sort(),
     ownDebrisFields: state.debrisFields
       .filter((field) => ownPlanetIds.has(field.planetId))
       .map((field) => ({
         planetId: field.planetId,
+        ...(field.coordinate === undefined ? {} : { coordinate: field.coordinate }),
         metal: field.metal,
         crystal: field.crystal,
       }))
