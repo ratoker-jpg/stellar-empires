@@ -55,7 +55,7 @@ jobs:
           git fetch origin main
           git checkout origin/main -- .github/workflows/ci.yml
           rm -f scripts/automation/implement-pr108.py scripts/automation/patch-pr108-lint.py scripts/automation/patch-pr108-typecheck.py
-          rm -f docs/audits/evidence/pr108-runtime-map.txt
+          rm -f docs/audits/evidence/pr108-runtime-map.txt docs/audits/evidence/pr108-test-failure.txt
 
       - name: Validate asset pipeline
         run: npm run assets:check
@@ -97,6 +97,21 @@ jobs:
             { echo '### PR108 test diagnostics'; echo '```text'; tail -n 360 /tmp/pr108-test.log; echo '```'; } > /tmp/pr108-comment.md
             gh pr comment 108 --body-file /tmp/pr108-comment.md || true
             exit "$status"
+          fi
+
+      - name: Persist test diagnostics
+        if: failure()
+        run: |
+          if [ -f /tmp/pr108-test.log ]; then
+            mkdir -p docs/audits/evidence
+            cp /tmp/pr108-test.log docs/audits/evidence/pr108-test-failure.txt
+            git config user.name "stellar-empires-automation"
+            git config user.email "actions@users.noreply.github.com"
+            git add docs/audits/evidence/pr108-test-failure.txt
+            if ! git diff --cached --quiet; then
+              git commit -m "Record PR108 test diagnostics"
+              git push origin HEAD:feat/108-universe-spatial-model
+            fi
           fi
 
       - name: Build
