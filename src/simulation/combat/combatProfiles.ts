@@ -1,3 +1,7 @@
+import { getCompleteShipClass } from '../units/completeShipCatalog';
+import { LEGACY_UNIT_ALIASES, resolveCanonicalUnitId } from '../units/unitAliases';
+import type { CompleteShipClass } from '../units/types';
+
 export type WeaponType = 'kinetic' | 'plasma' | 'missile' | 'disruptor';
 export type ProtectionType = 'light-armor' | 'heavy-armor' | 'shield-grid' | 'fortified';
 export type TargetSize = 'small' | 'medium' | 'large' | 'installation';
@@ -26,58 +30,33 @@ const DEFAULT_PROFILE: UnitCombatProfile = {
   targetSize: 'medium',
 };
 
-export const UNIT_COMBAT_PROFILES: Readonly<Record<string, UnitCombatProfile>> = {
-  'ship.aegis.scout': {
-    weaponType: 'kinetic',
-    protectionType: 'light-armor',
-    targetSize: 'small',
-  },
-  'ship.aegis.cargo': {
-    weaponType: 'kinetic',
-    protectionType: 'heavy-armor',
-    targetSize: 'medium',
-  },
-  'ship.aegis.fighter': {
-    weaponType: 'plasma',
-    protectionType: 'light-armor',
-    targetSize: 'small',
-  },
-  'ship.aegis.frigate': {
-    weaponType: 'missile',
-    protectionType: 'heavy-armor',
-    targetSize: 'large',
-  },
-  'ship.aegis.colony': {
-    weaponType: 'kinetic',
-    protectionType: 'heavy-armor',
-    targetSize: 'large',
-  },
-  'ship.aegis.recycler': {
-    weaponType: 'kinetic',
-    protectionType: 'heavy-armor',
-    targetSize: 'medium',
-  },
+const COMPLETE_SHIP_PROFILES: Readonly<Record<CompleteShipClass, UnitCombatProfile>> = {
+  'small-transport': { weaponType: 'kinetic', protectionType: 'light-armor', targetSize: 'medium' },
+  'large-transport': { weaponType: 'kinetic', protectionType: 'heavy-armor', targetSize: 'large' },
+  'light-fighter': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
+  interceptor: { weaponType: 'disruptor', protectionType: 'light-armor', targetSize: 'small' },
+  'support-ship': { weaponType: 'plasma', protectionType: 'shield-grid', targetSize: 'medium' },
+  'line-battleship': { weaponType: 'missile', protectionType: 'heavy-armor', targetSize: 'large' },
+  'heavy-assault': { weaponType: 'plasma', protectionType: 'heavy-armor', targetSize: 'large' },
+  bomber: { weaponType: 'missile', protectionType: 'heavy-armor', targetSize: 'large' },
+  'planet-destroyer': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'large' },
+  colonizer: { weaponType: 'kinetic', protectionType: 'heavy-armor', targetSize: 'large' },
+  recycler: { weaponType: 'kinetic', protectionType: 'heavy-armor', targetSize: 'medium' },
+  'spy-probe': { weaponType: 'kinetic', protectionType: 'light-armor', targetSize: 'small' },
+  'energy-satellite': { weaponType: 'kinetic', protectionType: 'shield-grid', targetSize: 'medium' },
+};
+
+const LEGACY_AND_DEFENSE_PROFILES: Readonly<Record<string, UnitCombatProfile>> = {
+  'ship.aegis.scout': { weaponType: 'kinetic', protectionType: 'light-armor', targetSize: 'small' },
+  'ship.aegis.cargo': { weaponType: 'kinetic', protectionType: 'heavy-armor', targetSize: 'medium' },
+  'ship.aegis.fighter': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
+  'ship.aegis.frigate': { weaponType: 'missile', protectionType: 'heavy-armor', targetSize: 'large' },
+  'ship.aegis.colony': { weaponType: 'kinetic', protectionType: 'heavy-armor', targetSize: 'large' },
+  'ship.aegis.recycler': { weaponType: 'kinetic', protectionType: 'heavy-armor', targetSize: 'medium' },
   'ship.aegis.corvette': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
   'ship.aegis.cruiser': { weaponType: 'missile', protectionType: 'heavy-armor', targetSize: 'large' },
   'ship.aegis.carrier': { weaponType: 'kinetic', protectionType: 'shield-grid', targetSize: 'large' },
   'ship.aegis.dreadnought': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'large' },
-  'defense.aegis.point-defense': { weaponType: 'kinetic', protectionType: 'fortified', targetSize: 'installation' },
-  'defense.aegis.fortress-array': { weaponType: 'missile', protectionType: 'fortified', targetSize: 'installation' },
-  'defense.aegis.gun-battery': {
-    weaponType: 'kinetic',
-    protectionType: 'fortified',
-    targetSize: 'installation',
-  },
-  'defense.aegis.missile-battery': {
-    weaponType: 'missile',
-    protectionType: 'fortified',
-    targetSize: 'installation',
-  },
-  'defense.aegis.shield-generator': {
-    weaponType: 'disruptor',
-    protectionType: 'shield-grid',
-    targetSize: 'installation',
-  },
   'ship.synod.whisper': { weaponType: 'plasma', protectionType: 'shield-grid', targetSize: 'small' },
   'ship.synod.thread-carrier': { weaponType: 'kinetic', protectionType: 'shield-grid', targetSize: 'medium' },
   'ship.synod.lancet': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
@@ -88,11 +67,6 @@ export const UNIT_COMBAT_PROFILES: Readonly<Record<string, UnitCombatProfile>> =
   'ship.synod.chorus-cruiser': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'large' },
   'ship.synod.relay-carrier': { weaponType: 'missile', protectionType: 'shield-grid', targetSize: 'large' },
   'ship.synod.oracle-dreadnought': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'large' },
-  'defense.synod.lance-node': { weaponType: 'plasma', protectionType: 'shield-grid', targetSize: 'installation' },
-  'defense.synod.arc-silo': { weaponType: 'missile', protectionType: 'shield-grid', targetSize: 'installation' },
-  'defense.synod.harmonic-screen': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
-  'defense.synod.predictive-intercept': { weaponType: 'plasma', protectionType: 'fortified', targetSize: 'installation' },
-  'defense.synod.concord-bastion': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
   'ship.veyra.wisp': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
   'ship.veyra.tendril': { weaponType: 'kinetic', protectionType: 'light-armor', targetSize: 'medium' },
   'ship.veyra.sting': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'small' },
@@ -103,6 +77,16 @@ export const UNIT_COMBAT_PROFILES: Readonly<Record<string, UnitCombatProfile>> =
   'ship.veyra.manta': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'large' },
   'ship.veyra.hive-carrier': { weaponType: 'missile', protectionType: 'light-armor', targetSize: 'large' },
   'ship.veyra.leviathan': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'large' },
+  'defense.aegis.gun-battery': { weaponType: 'kinetic', protectionType: 'fortified', targetSize: 'installation' },
+  'defense.aegis.missile-battery': { weaponType: 'missile', protectionType: 'fortified', targetSize: 'installation' },
+  'defense.aegis.shield-generator': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
+  'defense.aegis.point-defense': { weaponType: 'kinetic', protectionType: 'fortified', targetSize: 'installation' },
+  'defense.aegis.fortress-array': { weaponType: 'missile', protectionType: 'fortified', targetSize: 'installation' },
+  'defense.synod.lance-node': { weaponType: 'plasma', protectionType: 'shield-grid', targetSize: 'installation' },
+  'defense.synod.arc-silo': { weaponType: 'missile', protectionType: 'shield-grid', targetSize: 'installation' },
+  'defense.synod.harmonic-screen': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
+  'defense.synod.predictive-intercept': { weaponType: 'plasma', protectionType: 'fortified', targetSize: 'installation' },
+  'defense.synod.concord-bastion': { weaponType: 'disruptor', protectionType: 'shield-grid', targetSize: 'installation' },
   'defense.veyra.thorn-spire': { weaponType: 'plasma', protectionType: 'light-armor', targetSize: 'installation' },
   'defense.veyra.spore-mortar': { weaponType: 'missile', protectionType: 'light-armor', targetSize: 'installation' },
   'defense.veyra.living-veil': { weaponType: 'plasma', protectionType: 'shield-grid', targetSize: 'installation' },
@@ -111,61 +95,28 @@ export const UNIT_COMBAT_PROFILES: Readonly<Record<string, UnitCombatProfile>> =
 };
 
 const WEAPON_VS_PROTECTION: Readonly<Record<WeaponType, Readonly<Record<ProtectionType, number>>>> = {
-  kinetic: {
-    'light-armor': 1_250,
-    'heavy-armor': 900,
-    'shield-grid': 700,
-    fortified: 1_000,
-  },
-  plasma: {
-    'light-armor': 1_050,
-    'heavy-armor': 1_150,
-    'shield-grid': 1_300,
-    fortified: 850,
-  },
-  missile: {
-    'light-armor': 750,
-    'heavy-armor': 1_200,
-    'shield-grid': 900,
-    fortified: 1_350,
-  },
-  disruptor: {
-    'light-armor': 900,
-    'heavy-armor': 800,
-    'shield-grid': 1_500,
-    fortified: 950,
-  },
+  kinetic: { 'light-armor': 1_250, 'heavy-armor': 900, 'shield-grid': 700, fortified: 1_000 },
+  plasma: { 'light-armor': 1_050, 'heavy-armor': 1_150, 'shield-grid': 1_300, fortified: 850 },
+  missile: { 'light-armor': 750, 'heavy-armor': 1_200, 'shield-grid': 900, fortified: 1_350 },
+  disruptor: { 'light-armor': 900, 'heavy-armor': 800, 'shield-grid': 1_500, fortified: 950 },
 };
 
 const WEAPON_VS_SIZE: Readonly<Record<WeaponType, Readonly<Record<TargetSize, number>>>> = {
-  kinetic: {
-    small: 1_200,
-    medium: 1_100,
-    large: 900,
-    installation: 900,
-  },
-  plasma: {
-    small: 1_100,
-    medium: 1_100,
-    large: 1_000,
-    installation: 900,
-  },
-  missile: {
-    small: 650,
-    medium: 950,
-    large: 1_300,
-    installation: 1_350,
-  },
-  disruptor: {
-    small: 1_000,
-    medium: 1_050,
-    large: 1_000,
-    installation: 1_150,
-  },
+  kinetic: { small: 1_200, medium: 1_100, large: 900, installation: 900 },
+  plasma: { small: 1_100, medium: 1_100, large: 1_000, installation: 900 },
+  missile: { small: 650, medium: 950, large: 1_300, installation: 1_350 },
+  disruptor: { small: 1_000, medium: 1_050, large: 1_000, installation: 1_150 },
 };
 
 export function getUnitCombatProfile(unitId: string): UnitCombatProfile {
-  return UNIT_COMBAT_PROFILES[unitId] ?? DEFAULT_PROFILE;
+  if (LEGACY_UNIT_ALIASES[unitId] !== undefined) {
+    const legacyProfile = LEGACY_AND_DEFENSE_PROFILES[unitId];
+    if (legacyProfile !== undefined) return legacyProfile;
+  }
+  const canonicalId = resolveCanonicalUnitId(unitId);
+  const shipClass = getCompleteShipClass(canonicalId);
+  if (shipClass !== undefined) return COMPLETE_SHIP_PROFILES[shipClass];
+  return LEGACY_AND_DEFENSE_PROFILES[canonicalId] ?? DEFAULT_PROFILE;
 }
 
 export function calculateCombatModifier(

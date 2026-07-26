@@ -7,12 +7,14 @@ import { createInitialGameState } from '../../src/simulation/createInitialGameSt
 import { getFactionIdForEmpire } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
+import { getCompleteResearchId } from '../../src/simulation/research/completeResearchCatalog';
 import type { GameState } from '../../src/simulation/types';
 
 const ZERO_CARGO = { metal: 0, crystal: 0, gas: 0 } as const;
 
 function prepareMilitaryIndustry(state: GameState, empireId: string): GameState {
-  const roles = getFactionMechanicalRoles(getFactionIdForEmpire(state, empireId));
+  const factionId = getFactionIdForEmpire(state, empireId);
+  const roles = getFactionMechanicalRoles(factionId);
   return {
     ...state,
     planets: state.planets.map((planet) =>
@@ -64,6 +66,7 @@ function prepareMilitaryIndustry(state: GameState, empireId: string): GameState 
               [roles.research.energy]: 2,
               [roles.research.sensors]: 2,
               [roles.research.weapons]: 1,
+              [getCompleteResearchId(factionId, 'astronomy')]: 1,
             },
             queue: [],
           }
@@ -186,7 +189,7 @@ describe('bot threat, target and recovery planner', () => {
     expect(plan.command).toMatchObject({
       type: 'QUEUE_UNIT_BATCH',
       empireId: 'veyra-bot',
-      unitId: 'ship.veyra.sting',
+      unitId: 'ship.veyra.nox-dart',
       quantity: 3,
     });
     if (plan.command !== null) {
@@ -247,7 +250,7 @@ describe('bot threat, target and recovery planner', () => {
     expect(plan.reasonCode).toBe('high-threat-response');
     expect(plan.command).toMatchObject({
       type: 'QUEUE_UNIT_BATCH',
-      unitId: 'ship.synod.lancet',
+      unitId: 'ship.synod.fighter',
       quantity: 3,
     });
   });

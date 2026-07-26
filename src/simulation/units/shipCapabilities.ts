@@ -1,16 +1,24 @@
 import { getUnitDefinition } from './catalog';
 import type { ShipRole } from './types';
 
+function matchesShipRole(unitId: string, role: ShipRole): boolean {
+  const definition = getUnitDefinition(unitId);
+  if (definition?.kind !== 'ship') return false;
+  if (definition.role === role) return true;
+  return role === 'scout' && definition.shipClass === 'light-fighter';
+}
+
 export function getShipCountByRole(
   ships: Readonly<Record<string, number>>,
   role: ShipRole,
 ): number {
-  return Object.entries(ships).reduce((total, [unitId, quantity]) => {
-    const definition = getUnitDefinition(unitId);
-    return definition?.kind === 'ship' && definition.role === role
-      ? total + Math.max(0, quantity)
-      : total;
-  }, 0);
+  return Object.entries(ships).reduce(
+    (total, [unitId, quantity]) =>
+      matchesShipRole(unitId, role)
+        ? total + Math.max(0, quantity)
+        : total,
+    0,
+  );
 }
 
 export function hasShipRole(
@@ -26,12 +34,5 @@ export function findShipIdByRole(
 ): string | undefined {
   return Object.keys(ships)
     .sort()
-    .find((unitId) => {
-      const definition = getUnitDefinition(unitId);
-      return (
-        (ships[unitId] ?? 0) > 0 &&
-        definition?.kind === 'ship' &&
-        definition.role === role
-      );
-    });
+    .find((unitId) => (ships[unitId] ?? 0) > 0 && matchesShipRole(unitId, role));
 }

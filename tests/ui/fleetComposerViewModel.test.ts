@@ -69,7 +69,7 @@ describe('fleet composer view model', () => {
     expect(view).toMatchObject({
       speed: 9,
       shipCount: 3,
-      cargoCapacity: 2_420,
+      cargoCapacity: 2_430,
       cargoAmount: 1_600,
       errors: [],
       canCreate: true,

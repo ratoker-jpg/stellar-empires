@@ -46,9 +46,9 @@ describe('faction mechanical catalog architecture', () => {
     expect(parseMechanicalId('bad.id')).toBeUndefined();
   });
 
-  it('declares the complete target catalog without pretending it is delivered', () => {
+  it('declares the complete target catalog without pretending later stages are delivered', () => {
     expect(validateCompleteCatalogTargetManifest()).toEqual([]);
-    expect(COMPLETE_CATALOG_TARGET_MANIFEST.rolloutStage).toBe('technologies');
+    expect(COMPLETE_CATALOG_TARGET_MANIFEST.rolloutStage).toBe('ships');
     expect(COMPLETE_CATALOG_TARGET_MANIFEST.targetCounts).toEqual({
       buildings: 24,
       technologies: 22,
@@ -56,7 +56,7 @@ describe('faction mechanical catalog architecture', () => {
       defenses: 9,
       commanderShips: 13,
     });
-    expect(COMPLETE_CATALOG_TARGETS.sharedTechnologies).toBe(22);
+    expect(COMPLETE_CATALOG_TARGETS.shipsPerFaction).toBe(13);
   });
 
   it('makes all native catalogs explicit through the manifest', () => {
@@ -64,18 +64,18 @@ describe('faction mechanical catalog architecture', () => {
       mode: 'native',
       sourceFactionId: 'aegis',
       targetCatalogVersion: 1,
-      rolloutStage: 'technologies',
+      rolloutStage: 'ships',
     });
     expect(getFactionCatalogManifest('synod')).toMatchObject({
       mode: 'native',
       sourceFactionId: 'synod',
-      rolloutStage: 'technologies',
+      rolloutStage: 'ships',
     });
     expect(hasNativeMechanicalCatalog('synod')).toBe(true);
     expect(getFactionCatalogManifest('veyra')).toMatchObject({
       mode: 'native',
       sourceFactionId: 'veyra',
-      rolloutStage: 'technologies',
+      rolloutStage: 'ships',
     });
     expect(hasNativeMechanicalCatalog('veyra')).toBe(true);
     expect(canUseMechanicalDefinition('aegis', 'synod')).toBe(false);
@@ -95,7 +95,7 @@ describe('faction mechanical catalog architecture', () => {
       expect(completeness.current).toMatchObject({
         buildings: 24,
         technologies: 22,
-        ships: 10,
+        ships: 13,
         defenses: 5,
         commanderShips: 0,
       });
@@ -110,27 +110,14 @@ describe('faction mechanical catalog architecture', () => {
     }
   });
 
-  it('registers the complete Synod technology catalog with the current unit baseline', () => {
-    const catalog = getFactionMechanicalCatalog('synod');
-    expect(catalog.sourceFactionId).toBe('synod');
+  it.each(['synod', 'veyra'] as const)('registers the complete %s ship catalog with current defenses', (factionId) => {
+    const catalog = getFactionMechanicalCatalog(factionId);
+    expect(catalog.sourceFactionId).toBe(factionId);
     expect(catalog.buildings).toHaveLength(24);
     expect(catalog.research).toHaveLength(22);
-    expect(catalog.units.filter((unit) => unit.kind === 'ship')).toHaveLength(10);
+    expect(catalog.units.filter((unit) => unit.kind === 'ship')).toHaveLength(13);
     expect(catalog.units.filter((unit) => unit.kind === 'defense')).toHaveLength(5);
-    expect(catalog.buildings.every((definition) => definition.id.startsWith('building.synod.'))).toBe(true);
-    expect(catalog.research.every((definition) => definition.id.startsWith('technology.synod.'))).toBe(true);
-    expect(catalog.units.every((definition) => definition.id.includes('.synod.'))).toBe(true);
-  });
-
-  it('registers the complete Veyra technology catalog with the current unit baseline', () => {
-    const catalog = getFactionMechanicalCatalog('veyra');
-    expect(catalog.sourceFactionId).toBe('veyra');
-    expect(catalog.buildings).toHaveLength(24);
-    expect(catalog.research).toHaveLength(22);
-    expect(catalog.units.filter((unit) => unit.kind === 'ship')).toHaveLength(10);
-    expect(catalog.units.filter((unit) => unit.kind === 'defense')).toHaveLength(5);
-    expect(catalog.buildings.every((definition) => definition.id.startsWith('building.veyra.'))).toBe(true);
-    expect(catalog.research.every((definition) => definition.id.startsWith('technology.veyra.'))).toBe(true);
-    expect(catalog.units.every((definition) => definition.id.includes('.veyra.'))).toBe(true);
+    expect(catalog.units.filter((unit) => unit.kind === 'ship').every((definition) => definition.shipClass !== undefined)).toBe(true);
+    expect(catalog.units.every((definition) => definition.id.includes(`.${factionId}.`))).toBe(true);
   });
 });

@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Updated:** 2026-07-26  
-**Baseline:** merged PR #88  
+**Baseline:** merged PR #92  
 **Release target:** 1.0
 
 ## 1. Release boundary
@@ -39,7 +39,7 @@ Excluded:
 - Final asset swaps use stable mechanical IDs and manifests, not direct component imports.
 - The canonical design documents `docs/25-*` and `docs/26-*` remain deferred contracts until the core gameplay batch is complete.
 
-## 3. Delivered baseline through PR #88
+## 3. Delivered baseline through PR #92
 
 ### Runtime foundation
 
@@ -52,8 +52,9 @@ Excluded:
 - multi-colony specialization, logistics and market;
 - honest autonomous bot planners with serialized deterministic timing;
 - bounded long-session histories;
-- three native prototype faction catalogs;
-- formations, priorities, upgrades, command doctrine and flagship framework.
+- formations, priorities, upgrades, command doctrine and flagship framework;
+- 24 functional buildings per faction;
+- 22 canonical technologies per faction with deterministic compatibility aliases.
 
 ### Documentation and asset baseline
 
@@ -66,21 +67,22 @@ The source catalog and design documents are evidence and project contracts. They
 
 ## 4. Active core-gameplay batch
 
-The next six PRs complete the ordinary game before Universe, alliances or endgame are implemented.
+PR #91 was closed without merge and replaced by clean PR #92. All later planned numbers shifted by one.
 
-| PR | Scope | Runtime outcome |
-|---:|---|---|
-| **#89** | Complete-catalog foundation | Stable shared/faction IDs, target manifests, rollout metadata, registry validation, asset resolver and compatibility reporting |
-| **#90** | Complete 24-building economy | 24 functional buildings per faction, full resource/energy/storage/industry progression, bot and UI integration |
-| **#91** | Complete 22-technology tree | One shared 22-science tree with real economy, fleet, combat and prerequisite effects for all factions |
-| **#92** | Complete 13-ship rosters | 13 ordinary ships per faction, all service/combat roles, missions, bot role use and asset bindings |
-| **#93** | Complete 9-defence rosters | 9 planetary defences per faction, shields, mixed batteries, repair and combat targeting integration |
-| **#94** | Commander Ships and full-game validation | 13 shared Commander Ships, Admiral unlock/progression, one active ability, bot selection and deterministic full-game harness |
+| PR | Status | Scope | Runtime outcome |
+|---:|---|---|---|
+| **#89** | merged | Complete-catalog foundation | Stable shared/faction IDs, target manifests, rollout metadata, registry validation, asset resolver and compatibility reporting |
+| **#90** | merged | Complete 24-building economy | 24 functional buildings per faction, full resource/energy/storage/industry progression, bot and UI integration |
+| **#91** | superseded | Interrupted technology attempt | Closed without merge; no runtime delivery |
+| **#92** | merged | Complete 22-technology tree | 22 sciences with real economy, fleet, combat and prerequisite effects for every faction |
+| **#93** | active | Complete 13-ship rosters | 13 ordinary ships per faction, service/combat roles, missions, bot role use, abilities and asset bindings |
+| **#94** | planned | Complete 9-defence rosters | 9 planetary defences per faction, shields, mixed batteries, repair and combat targeting integration |
+| **#95** | planned | Commander Ships and full-game validation | 13 shared Commander Ships, Admiral unlock/progression, one active ability, bot selection and deterministic full-game harness |
 
-### Gate after PR #94
+### Gate after PR #95
 
 - every faction has 24 buildings, 13 ordinary ships and 9 defences;
-- all factions use the same 22 shared technologies with explicit faction modifiers where intended;
+- all factions use the same 22-science functional matrix with explicit faction modifiers where intended;
 - all 13 Commander Ships are real producible units with deterministic effects;
 - every catalog entry has valid prerequisites, producer, asset resolution and UI presentation;
 - all ordinary missions have at least one valid unit role;
@@ -93,9 +95,9 @@ The next six PRs complete the ordinary game before Universe, alliances or endgam
 
 | Planned PR | Scope |
 |---:|---|
-| **#95** | Runtime Universe → Galaxy → Solar-system navigation with deterministic procedural visuals and asset manifests |
-| **#96** | Complete coordinate-based missions, route timing, direct map actions, tooltips and report backlinks |
-| **#97** | Alliance creation, membership, leadership, relations and bot diplomacy |
+| **#96** | Runtime Universe → Galaxy → Solar-system navigation with deterministic procedural visuals and asset manifests |
+| **#97** | Complete coordinate-based missions, route timing, direct map actions, tooltips and report backlinks |
+| **#98** | Alliance creation, membership, leadership, relations and bot diplomacy |
 
 The exact PR numbers may shift if a required stabilization fix is inserted. The ordering must not shift: complete core gameplay first, then spatial navigation, then alliances.
 
@@ -103,10 +105,10 @@ The exact PR numbers may shift if a required stabilization fix is inserted. The 
 
 | Planned PR | Scope |
 |---:|---|
-| **#98** | Sun brightness, Sun Attack, Sun Support, Solar Crystals and destroyed-system lifecycle |
-| **#99** | Galactic Obelisks, Supreme Galactic Gates, alliance victory, solo stolen-crystal victory and final round screen |
+| **#99** | Sun brightness, Sun Attack, Sun Support, Solar Crystals and destroyed-system lifecycle |
+| **#100** | Galactic Obelisks, Supreme Galactic Gates, alliance victory, solo stolen-crystal victory and final round screen |
 
-No solar-war or gates implementation begins before PR #97 is merged and the complete core catalogs are playable.
+No solar-war or gates implementation begins before PR #98 is merged and the complete core catalogs are playable.
 
 ## 7. Product completeness after the first full victory path
 

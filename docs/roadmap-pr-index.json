@@ -1,54 +1,56 @@
 {
-  "roadmapVersion": 3,
-  "updatedAt": "2026-07-21",
+  "roadmapVersion": 4,
+  "updatedAt": "2026-07-26",
   "releaseTarget": "1.0",
   "authoritativeBaseline": {
-    "lastMergedPr": 67,
-    "mergeSha": "dddcfadcc63ccf4d6973aa0281b03c54b8f66f26"
+    "lastMergedPr": 92,
+    "mergeSha": "6314f78bd6417b905ccae170f505697734a46505"
   },
-  "activePr": 68,
+  "activePr": 93,
   "phases": [
-    { "id": "delivered", "startPr": 1, "endPr": 65, "outcome": "Current playable deterministic vertical slice and visual foundation" },
-    { "id": "visual", "startPr": 66, "endPr": 71, "outcome": "Mechanics-informed production client and integrated source art" },
-    { "id": "military-factions", "startPr": 72, "endPr": 78, "outcome": "Military depth and three asymmetric factions" },
-    { "id": "diplomacy-endgame", "startPr": 79, "endPr": 84, "outcome": "Coalitions, strategic stars and victory path" },
-    { "id": "product-release", "startPr": 85, "endPr": 100, "outcome": "Meta, onboarding, balance, QA and Release 1.0" }
+    {
+      "id": "delivered-foundation",
+      "startPr": 1,
+      "endPr": 88,
+      "outcome": "Deterministic playable PvE foundation, factions, assets and strategic design contracts"
+    },
+    {
+      "id": "complete-core-catalogs",
+      "startPr": 89,
+      "endPr": 95,
+      "outcome": "24 buildings, 22 technologies, 13 ordinary ships, 9 defences and 13 Commander Ships"
+    },
+    {
+      "id": "universe-alliances",
+      "startPr": 96,
+      "endPr": 98,
+      "outcome": "Universe navigation, coordinate missions and alliances"
+    },
+    {
+      "id": "solar-war-endgame",
+      "startPr": 99,
+      "endPr": 100,
+      "outcome": "Solar war, crystals, final gates and complete victory path"
+    },
+    {
+      "id": "product-release",
+      "startPr": 101,
+      "endPr": null,
+      "outcome": "Meta, onboarding, balance, polish, QA and Release 1.0"
+    }
   ],
   "planned": [
-    { "number": 66, "title": "Mechanics reference, audit, roadmap v3 and source asset intake", "status": "merged", "mergeSha": "55dfc931b19b4eb8ccca82d89fb41097f4fd4511" },
-    { "number": 67, "title": "Fleet mission flow and galaxy presentation", "status": "merged", "mergeSha": "dddcfadcc63ccf4d6973aa0281b03c54b8f66f26" },
-    { "number": 68, "title": "Import remaining generated faction source assets", "status": "active" },
-    { "number": 69, "title": "Market, logistics, PvE, world events and reports presentation" },
-    { "number": 70, "title": "Command profile, local ranking and faction polish" },
-    { "number": 71, "title": "Responsive, accessibility, performance and visual QA" },
-    { "number": 72, "title": "Ship upgrades reimplementation" },
-    { "number": 73, "title": "Formations, target priorities and class skills" },
-    { "number": 74, "title": "Command doctrine and flagships" },
-    { "number": 75, "title": "Faction mechanical catalog architecture" },
-    { "number": 76, "title": "Full Aegis content" },
-    { "number": 77, "title": "Full Synod content" },
-    { "number": 78, "title": "Full Veyra content" },
-    { "number": 79, "title": "Relations and reputation" },
-    { "number": 80, "title": "Treaties, wars and coalitions" },
-    { "number": 81, "title": "Coalition projects and coalition world" },
-    { "number": 82, "title": "Strategic stars and group operations" },
-    { "number": 83, "title": "Rare meta-resource and anchor arrays" },
-    { "number": 84, "title": "Final transit nexus and victory" },
-    { "number": 85, "title": "Achievements, rankings and round statistics" },
-    { "number": 86, "title": "Tutorial and encyclopedia" },
-    { "number": 87, "title": "Expanded bot planning" },
-    { "number": 88, "title": "Audio and music" },
-    { "number": 89, "title": "Notifications and report UX" },
-    { "number": 90, "title": "Save/offline consolidation" },
-    { "number": 91, "title": "Balance harness" },
-    { "number": 92, "title": "Balance pass" },
-    { "number": 93, "title": "Aegis production polish" },
-    { "number": 94, "title": "Synod production polish" },
-    { "number": 95, "title": "Veyra production polish" },
-    { "number": 96, "title": "Accessibility/localization readiness" },
-    { "number": 97, "title": "Performance and low-end fallback" },
-    { "number": 98, "title": "Full regression/browser matrix" },
-    { "number": 99, "title": "Release candidate and provenance" },
-    { "number": 100, "title": "Release 1.0" }
+    { "number": 89, "title": "Complete catalog integration foundation", "status": "merged", "mergeSha": "543794171faff24c42d2b75f482cbc2619688932" },
+    { "number": 90, "title": "Complete the 24-building economy", "status": "merged" },
+    { "number": 91, "title": "Complete the 22-technology progression tree", "status": "superseded" },
+    { "number": 92, "title": "Complete the 22-technology progression tree", "status": "merged", "mergeSha": "6314f78bd6417b905ccae170f505697734a46505" },
+    { "number": 93, "title": "Complete the 13-ship rosters", "status": "active" },
+    { "number": 94, "title": "Complete the 9-defence rosters", "status": "planned" },
+    { "number": 95, "title": "Commander Ships and full-game validation", "status": "planned" },
+    { "number": 96, "title": "Universe, Galaxy and Solar-system runtime navigation", "status": "planned" },
+    { "number": 97, "title": "Coordinate missions and direct map actions", "status": "planned" },
+    { "number": 98, "title": "Alliances and bot diplomacy", "status": "planned" },
+    { "number": 99, "title": "Solar war and destroyed-system lifecycle", "status": "planned" },
+    { "number": 100, "title": "Galactic gates and final victory", "status": "planned" }
   ]
 }

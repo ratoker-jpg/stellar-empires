@@ -7,6 +7,7 @@ import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { queueResearch } from '../research/researchCommands';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
+import { getLegacyUnitIdsForCanonical } from '../units/unitAliases';
 import { queueUnitBatch } from '../units/productionCommands';
 import { createBotPerception } from './perception';
 
@@ -73,9 +74,10 @@ function chooseResearch(
         roles.research.weapons,
         roles.research.protection,
         roles.research.sensors,
+        roles.research.propulsion,
+        roles.research.battleNetwork,
         roles.research.construction,
         roles.research.energy,
-        roles.research.propulsion,
         roles.research.colonization,
       ]
     : [
@@ -83,6 +85,7 @@ function chooseResearch(
         roles.research.energy,
         roles.research.sensors,
         roles.research.propulsion,
+        roles.research.logistics,
         roles.research.protection,
         roles.research.weapons,
         roles.research.colonization,
@@ -118,14 +121,19 @@ function chooseResearch(
 
 function countUnit(state: GameState, empireId: string, unitId: string): number {
   const definition = getUnitDefinition(unitId);
+  const ids = [unitId, ...getLegacyUnitIdsForCanonical(unitId)];
   return state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
     .reduce(
       (total, planet) =>
-        total +
-        (definition?.kind === 'defense'
-          ? planet.inventory.defenses[unitId] ?? 0
-          : planet.inventory.ships[unitId] ?? 0),
+        total + ids.reduce(
+          (subtotal, id) => subtotal + (
+            definition?.kind === 'defense'
+              ? planet.inventory.defenses[id] ?? 0
+              : planet.inventory.ships[id] ?? 0
+          ),
+          0,
+        ),
       0,
     );
 }
@@ -140,6 +148,7 @@ function chooseProduction(
     .sort((left, right) => left.id.localeCompare(right.id));
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId);
+  const ships = roles.ships.complete;
   const unitIds = new Set(getUnitCatalogForFaction(factionId).map((definition) => definition.id));
   const productionExists = planets.some((planet) =>
     planet.buildings.some(
@@ -169,23 +178,31 @@ function chooseProduction(
 
   const priority: readonly { readonly id: string; readonly quantity: number }[] = threatened
     ? [
-        { id: roles.ships.fighter, quantity: 3 },
+        { id: ships.lightFighter, quantity: 3 },
+        { id: ships.interceptor, quantity: 2 },
+        { id: ships.supportShip, quantity: 1 },
         { id: roles.defenses.light, quantity: 2 },
-        { id: roles.ships.frigate, quantity: 1 },
+        { id: ships.lineBattleship, quantity: 1 },
+        { id: ships.heavyAssault, quantity: 1 },
+        { id: ships.bomber, quantity: 1 },
         { id: roles.defenses.shield, quantity: 1 },
-        { id: roles.ships.scout, quantity: 1 },
       ]
     : [
-        ...(countUnit(state, empireId, roles.ships.scout) === 0
-          ? [{ id: roles.ships.scout, quantity: 1 }]
+        ...(countUnit(state, empireId, ships.spyProbe) === 0
+          ? [{ id: ships.spyProbe, quantity: 1 }]
           : []),
-        ...(countUnit(state, empireId, roles.ships.transport) === 0
-          ? [{ id: roles.ships.transport, quantity: 1 }]
+        ...(countUnit(state, empireId, ships.smallTransport) === 0
+          ? [{ id: ships.smallTransport, quantity: 1 }]
           : []),
-        ...(countUnit(state, empireId, roles.ships.recycler) === 0
-          ? [{ id: roles.ships.recycler, quantity: 1 }]
+        ...(countUnit(state, empireId, ships.recycler) === 0
+          ? [{ id: ships.recycler, quantity: 1 }]
           : []),
-        { id: roles.ships.fighter, quantity: 2 },
+        ...(countUnit(state, empireId, ships.largeTransport) === 0
+          ? [{ id: ships.largeTransport, quantity: 1 }]
+          : []),
+        { id: ships.lightFighter, quantity: 2 },
+        { id: ships.interceptor, quantity: 1 },
+        { id: ships.lineBattleship, quantity: 1 },
         { id: roles.defenses.light, quantity: 1 },
       ];
 

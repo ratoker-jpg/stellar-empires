@@ -17,6 +17,7 @@ import { createPlanetZones } from '../planet/zones';
 import { getEmpireResearch, getResearchLevel } from '../research/researchState';
 import type { GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
+import type { ShipRole } from '../units/types';
 
 export interface GalaxyPlanetLocation {
   readonly system: StarSystemModel;
@@ -128,15 +129,17 @@ function unloadCargo(
 
 export function findFleetShipByRole(
   ships: Readonly<Record<string, number>>,
-  role: 'scout' | 'transport' | 'fighter' | 'frigate' | 'colonizer' | 'recycler',
+  role: ShipRole,
 ): string | undefined {
   return Object.keys(ships)
     .sort()
-    .find((unitId) =>
-      (ships[unitId] ?? 0) > 0 &&
-      getUnitDefinition(unitId)?.kind === 'ship' &&
-      getUnitDefinition(unitId)?.role === role,
-    );
+    .find((unitId) => {
+      if ((ships[unitId] ?? 0) <= 0) return false;
+      const definition = getUnitDefinition(unitId);
+      if (definition?.kind !== 'ship') return false;
+      if (definition.role === role) return true;
+      return role === 'scout' && definition.shipClass === 'light-fighter';
+    });
 }
 
 export interface ColonizationResolution {

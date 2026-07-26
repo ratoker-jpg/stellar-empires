@@ -8,8 +8,51 @@ export type ShipRole =
   | 'transport'
   | 'fighter'
   | 'frigate'
+  | 'support'
+  | 'bomber'
+  | 'capital'
   | 'colonizer'
-  | 'recycler';
+  | 'recycler'
+  | 'satellite';
+
+export type CompleteShipClass =
+  | 'small-transport'
+  | 'large-transport'
+  | 'light-fighter'
+  | 'interceptor'
+  | 'support-ship'
+  | 'line-battleship'
+  | 'heavy-assault'
+  | 'bomber'
+  | 'planet-destroyer'
+  | 'colonizer'
+  | 'recycler'
+  | 'spy-probe'
+  | 'energy-satellite';
+
+export type ShipAbilityId =
+  | 'cargo-network'
+  | 'armor-pierce'
+  | 'crushing-strike'
+  | 'fleet-vitality'
+  | 'fleet-armor'
+  | 'combat-recovery'
+  | 'overdrive'
+  | 'freezing-strike'
+  | 'artillery'
+  | 'planet-breaker'
+  | 'colony-core'
+  | 'salvage-array'
+  | 'deep-scan'
+  | 'solar-array';
+
+export interface ShipAbilityDefinition {
+  readonly id: ShipAbilityId;
+  readonly name: string;
+  readonly description: string;
+  readonly valuePerUnitPermille: number;
+  readonly maxPercent: number;
+}
 
 export type DefenseRole = 'kinetic' | 'missile' | 'shield';
 
@@ -37,6 +80,9 @@ export interface UnitDefinition {
   readonly factionId: FactionId;
   readonly kind: UnitKind;
   readonly role: ShipRole | DefenseRole;
+  readonly shipClass?: CompleteShipClass;
+  readonly ability?: ShipAbilityDefinition;
+  readonly stationary?: boolean | undefined;
   readonly description: string;
   readonly assetId: string;
   readonly baseCost: ResourceCost;

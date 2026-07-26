@@ -10,8 +10,8 @@ import { executeCommand } from '../../src/simulation/reducer';
 describe('fleet doctrine', () => {
   it('provides original class skills and target-priority weights', () => {
     expect(
-      getClassSkillBonusMaps({ 'ship.aegis.scout': 4 }, 'screen').armor,
-    ).toEqual({ 'ship.aegis.scout': 18 });
+      getClassSkillBonusMaps({ 'ship.aegis.spy-probe': 4 }, 'screen').armor,
+    ).toEqual({ 'ship.aegis.spy-probe': 18 });
     expect(
       getClassSkillBonusMaps({ 'ship.aegis.fighter': 4 }, 'wedge').weapon,
     ).toEqual({ 'ship.aegis.fighter': 15 });

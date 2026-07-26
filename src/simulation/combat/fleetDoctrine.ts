@@ -1,6 +1,7 @@
 import { getUnitDefinition } from '../units/catalog';
 import type { ShipRole } from '../units/types';
 import { getUnitCombatProfile, type TargetSize } from './combatProfiles';
+import { getShipAbilityBonusMaps } from './shipAbilities';
 
 export type FleetFormation = 'line' | 'screen' | 'wedge';
 export type FleetTargetPriority = 'balanced' | 'interceptors' | 'capitals' | 'installations';
@@ -27,7 +28,7 @@ export const FLEET_FORMATIONS: Readonly<Record<FleetFormation, FormationDefiniti
   line: {
     id: 'line',
     name: 'Линейный строй',
-    description: 'Стабильное построение без общего штрафа. Фрегаты формируют защитную связку.',
+    description: 'Стабильное построение без общего штрафа. Линейные корабли формируют защитную связку.',
     weaponBonusPercent: 0,
     armorBonusPercent: 0,
   },
@@ -51,7 +52,7 @@ export const CLASS_SKILLS: readonly ClassSkillDefinition[] = [
   {
     id: 'ghost-screen',
     name: 'Призрачный экран',
-    description: 'Разведчики получают +18% защиты в защитном экране.',
+    description: 'Разведывательные аппараты получают +18% защиты в защитном экране.',
     role: 'scout',
     formation: 'screen',
     weaponBonusPercent: 0,
@@ -69,7 +70,7 @@ export const CLASS_SKILLS: readonly ClassSkillDefinition[] = [
   {
     id: 'bulwark-link',
     name: 'Связка бастионов',
-    description: 'Фрегаты получают +8% защиты в линейном строю.',
+    description: 'Линейные корабли получают +8% защиты в линейном строю.',
     role: 'frigate',
     formation: 'line',
     weaponBonusPercent: 0,
@@ -106,6 +107,17 @@ export function getTargetPriorityWeightPermille(
   return TARGET_PRIORITY_WEIGHTS[priority][getUnitCombatProfile(targetUnitId).targetSize];
 }
 
+function mergeBonusMaps(
+  left: Readonly<Record<string, number>>,
+  right: Readonly<Record<string, number>>,
+): Readonly<Record<string, number>> {
+  const result = { ...left };
+  for (const [unitId, value] of Object.entries(right)) {
+    result[unitId] = (result[unitId] ?? 0) + value;
+  }
+  return result;
+}
+
 export function getClassSkillBonusMaps(
   units: Readonly<Record<string, number>>,
   formation: FleetFormation,
@@ -125,5 +137,9 @@ export function getClassSkillBonusMaps(
       if (skill.armorBonusPercent !== 0) armor[unitId] = skill.armorBonusPercent;
     }
   }
-  return { weapon, armor };
+  const abilities = getShipAbilityBonusMaps(units);
+  return {
+    weapon: mergeBonusMaps(weapon, abilities.weapon),
+    armor: mergeBonusMaps(armor, abilities.armor),
+  };
 }
