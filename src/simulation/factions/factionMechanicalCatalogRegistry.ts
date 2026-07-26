@@ -7,6 +7,8 @@ import { resolveCanonicalResearchId } from '../research/researchAliases';
 import type { ResearchDefinition } from '../research/types';
 import type { GameState } from '../types';
 import { AEGIS_UNIT_CATALOG } from '../units/aegisUnitCatalog';
+import { COMPLETE_SHIP_CATALOGS } from '../units/completeShipCatalog';
+import { resolveCanonicalUnitId } from '../units/unitAliases';
 import type { UnitDefinition, UnitKind } from '../units/types';
 import {
   COMPLETE_CATALOG_TARGETS,
@@ -34,24 +36,28 @@ export interface FactionCatalogCompleteness {
 
 type MechanicalCatalogSource = Omit<FactionMechanicalCatalog, 'factionId'>;
 
+function defensesFrom(catalog: readonly UnitDefinition[]): readonly UnitDefinition[] {
+  return catalog.filter((definition) => definition.kind === 'defense');
+}
+
 const SOURCE_CATALOGS: Readonly<Partial<Record<FactionId, MechanicalCatalogSource>>> = {
   aegis: {
     sourceFactionId: 'aegis',
     buildings: COMPLETE_BUILDING_CATALOGS.aegis,
     research: COMPLETE_RESEARCH_CATALOGS.aegis,
-    units: AEGIS_UNIT_CATALOG,
+    units: [...COMPLETE_SHIP_CATALOGS.aegis, ...defensesFrom(AEGIS_UNIT_CATALOG)],
   },
   synod: {
     sourceFactionId: 'synod',
     buildings: COMPLETE_BUILDING_CATALOGS.synod,
     research: COMPLETE_RESEARCH_CATALOGS.synod,
-    units: SYNOD_UNIT_CATALOG,
+    units: [...COMPLETE_SHIP_CATALOGS.synod, ...defensesFrom(SYNOD_UNIT_CATALOG)],
   },
   veyra: {
     sourceFactionId: 'veyra',
     buildings: COMPLETE_BUILDING_CATALOGS.veyra,
     research: COMPLETE_RESEARCH_CATALOGS.veyra,
-    units: VEYRA_UNIT_CATALOG,
+    units: [...COMPLETE_SHIP_CATALOGS.veyra, ...defensesFrom(VEYRA_UNIT_CATALOG)],
   },
 };
 
@@ -160,7 +166,7 @@ export function getRegisteredResearchDefinition(
 export function getRegisteredUnitDefinition(
   unitId: string,
 ): UnitDefinition | undefined {
-  return UNITS_BY_ID.get(unitId);
+  return UNITS_BY_ID.get(resolveCanonicalUnitId(unitId));
 }
 
 export function getRegisteredUnitsByKind(
