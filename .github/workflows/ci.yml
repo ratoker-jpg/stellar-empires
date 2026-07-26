@@ -2,125 +2,40 @@ name: CI
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
 
 permissions:
-  contents: write
-
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  contents: read
 
 jobs:
-  quality:
-    name: Lint, typecheck, test and build
+  diagnose-pr90-payload:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-          fetch-depth: 0
-
-      - name: Apply verified PR90 payload
-        if: github.event_name == 'pull_request' && github.head_ref == 'agent/pr90-complete-building-economy'
+          ref: agent/pr90-complete-building-economy
+      - name: Diagnose payload
         shell: bash
         run: |
-          set -euo pipefail
-          cat > /tmp/pr90-checksums <<'CHECKSUMS'
-          2c316c6d90d439c8e76f422b68ff1eacbb195bbcec02e2854d3107a8bd38cc94  .github/payload/pr90.part00
-          8fe914ca490649f508f0aa88f4b7ecbd4cd45c8a29ede44673097486f7a746f7  .github/payload/pr90.part01
-          11976797eb9c0d38d04d3ee2d37820f88c1d82ae602f7850c547dc6247cdecf4  .github/payload/pr90.part02
-          2f039656cdbb743dc024297ef6ed50ffa6151881aadcac6571edea5b2d5ab271  .github/payload/pr90.part03
-          158316f9d3f0d3ed463d508f320a04250ae5a66402f6302d0a7d4235917330c8  .github/payload/pr90.part04
-          11c009bf95584348ea546eb0e8108c584a158bc78920b98053f49aedeb6fde45  .github/payload/pr90.part05
-          31a2510e5407601636f4962a7a08e8f4d8990428a0704d491be5a26c77e9cec1  .github/payload/pr90.part06
-          CHECKSUMS
-          sha256sum -c /tmp/pr90-checksums
-          cat .github/payload/pr90.part* | base64 -d > /tmp/pr90-payload.tar.gz
-          echo '29f50e441274581cf70f6b64d6b7ad6c6cd044f07daa2e63a5cf88732e954d32  /tmp/pr90-payload.tar.gz' | sha256sum -c -
-          gzip -t /tmp/pr90-payload.tar.gz
-          tar -xzf /tmp/pr90-payload.tar.gz -C .
-          rm -rf .github/payload .github/workflows/apply-pr90.yml
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+          set +e
+          {
+            echo 'FILES'
+            wc -c .github/payload/pr90.part*
+            echo 'PART HASHES'
+            sha256sum .github/payload/pr90.part*
+            echo 'JOINED HASH'
+            cat .github/payload/pr90.part* | sha256sum
+            cat .github/payload/pr90.part* | base64 -d > /tmp/pr90-payload.tar.gz
+            echo "BASE64_STATUS=$?"
+            sha256sum /tmp/pr90-payload.tar.gz
+            gzip -t /tmp/pr90-payload.tar.gz
+            echo "GZIP_STATUS=$?"
+            tar -tzf /tmp/pr90-payload.tar.gz >/tmp/pr90-tar-list.txt
+            echo "TAR_STATUS=$?"
+            cat /tmp/pr90-tar-list.txt
+          } > /tmp/pr90-diagnostics.txt 2>&1
+          cat /tmp/pr90-diagnostics.txt
+      - uses: actions/upload-artifact@v4
         with:
-          node-version: '22.12.0'
-
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Test
-        run: npm run test
-
-      - name: Build
-        run: npm run build
-
-      - name: Commit verified PR90 implementation
-        if: github.event_name == 'pull_request' && github.head_ref == 'agent/pr90-complete-building-economy'
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf node_modules dist package-lock.json
-          cat > .github/workflows/ci.yml <<'WORKFLOW'
-          name: CI
-
-          on:
-            pull_request:
-            push:
-              branches:
-                - main
-
-          permissions:
-            contents: read
-
-          concurrency:
-            group: ci-${{ github.workflow }}-${{ github.ref }}
-            cancel-in-progress: true
-
-          jobs:
-            quality:
-              name: Lint, typecheck, test and build
-              runs-on: ubuntu-latest
-              timeout-minutes: 15
-
-              steps:
-                - name: Checkout
-                  uses: actions/checkout@v6
-
-                - name: Setup Node.js
-                  uses: actions/setup-node@v6
-                  with:
-                    node-version: '22.12.0'
-
-                - name: Install dependencies
-                  run: npm install --no-audit --no-fund
-
-                - name: Lint
-                  run: npm run lint
-
-                - name: Typecheck
-                  run: npm run typecheck
-
-                - name: Test
-                  run: npm run test
-
-                - name: Build
-                  run: npm run build
-          WORKFLOW
-          git config user.name 'stellar-empires-automation'
-          git config user.email 'actions@users.noreply.github.com'
-          git add -A
-          git commit -m 'Implement complete 24-building economy'
-          git push origin HEAD:${GITHUB_HEAD_REF}
+          name: pr90-payload-diagnostics
+          path: /tmp/pr90-diagnostics.txt
+          retention-days: 1
