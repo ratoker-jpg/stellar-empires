@@ -1,0 +1,53 @@
+name: Generate Nemexia Final documentation
+
+on:
+  push:
+    branches:
+      - agent/nemexia-final-complete-mechanics-reference
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/nemexia-final-complete-mechanics-reference
+      - name: Generate audited Markdown
+        shell: bash
+        run: |
+          python - <<'PYDOC'
+          from pathlib import Path
+          import base64
+          import gzip
+          import hashlib
+          import shutil
+
+          payload_dir = Path('.github/nemexia-final-payload')
+          parts = sorted(payload_dir.glob('part-*.txt'))
+          if len(parts) != 5:
+              raise SystemExit(f'expected 5 payload parts, found {len(parts)}')
+          payload = ''.join(part.read_text(encoding='utf-8').strip() for part in parts)
+          content = gzip.decompress(base64.b64decode(payload))
+          expected = '1d2b42d6c8c06e8de5ae4ef0c8c10d95bc7cdc161493256fb80df4eabf9069fc'
+          actual = hashlib.sha256(content).hexdigest()
+          if actual != expected:
+              raise SystemExit(f'checksum mismatch: {actual}')
+
+          target = Path('docs/research/nemexia-final-complete-game-concept-2026-07-26.md')
+          target.parent.mkdir(parents=True, exist_ok=True)
+          target.write_bytes(content)
+          shutil.rmtree(payload_dir)
+          Path('.github/workflows/nemexia-final-doc-generator.yml').unlink()
+          PYDOC
+      - name: Commit generated documentation
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Document the complete Nemexia mechanics reference'
+          git push origin HEAD:agent/nemexia-final-complete-mechanics-reference
