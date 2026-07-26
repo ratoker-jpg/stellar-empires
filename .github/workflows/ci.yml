@@ -7,53 +7,14 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  inspect-pr109:
-    if: github.event_name == 'pull_request' && github.head_ref == 'feat/109-universe-navigation-views'
-    name: Build PR109 Graphify navigation map
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@v6
-        with:
-          ref: feat/109-universe-navigation-views
-          fetch-depth: 1
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-
-      - name: Build Graphify graph
-        run: bash scripts/graphify-audit.sh code
-
-      - name: Extract navigation map
-        run: bash scripts/automation/inspect-pr109.sh
-
-      - name: Remove temporary inspector
-        run: |
-          git fetch --depth=1 origin main
-          git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/automation/inspect-pr109.sh
-          rm -rf graphify-out
-
-      - name: Commit scoped map
-        run: |
-          git config user.name "stellar-empires-automation"
-          git config user.email "actions@users.noreply.github.com"
-          git add -A
-          git commit -m "Record PR109 scoped navigation map"
-          git push origin HEAD:feat/109-universe-navigation-views
-
   quality:
-    if: github.event_name != 'pull_request' || github.head_ref != 'feat/109-universe-navigation-views'
     name: Asset audit, lint, typecheck, test and build
     runs-on: ubuntu-latest
     timeout-minutes: 20
