@@ -17,7 +17,7 @@ import {
 } from '../galaxy/intelligenceView';
 import { getEmpireIntelligence } from '../intelligence/intelligenceState';
 import { getScoutCooldownStatus } from '../intelligence/resolveScout';
-import type { FactionId } from '../planet/types';
+import type { FactionId, PlanetState } from '../planet/types';
 import type { SpaceCoordinate } from '../space/coordinates';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
@@ -372,7 +372,7 @@ export function getMissionAvailability(
     command.empireId,
     command.targetPlanetId,
   );
-  let regularTarget;
+  let regularTarget: PlanetState | undefined;
 
   if (command.mission === 'colonize') {
     const target = findGalaxyPlanet(state.galaxy, command.targetPlanetId);
