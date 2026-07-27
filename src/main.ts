@@ -26,9 +26,11 @@ import { bindFactionRuntimeAssets } from './assets/bindFactionRuntimeAssets';
 import { createGame, updateGamePresentation } from './game/createGame';
 import {
   createBrowserSpaceMapNavigationEnvironment,
+  parseSpaceMapRoute,
   SpaceMapNavigationController,
 } from './navigation/spaceMapRoute';
 import { BotAutomationController } from './runtime/BotAutomationController';
+import { GameApplicationController } from './runtime/GameApplicationController';
 import {
   E2E_RUNTIME_ENABLED,
   prepareE2eState,
@@ -44,6 +46,10 @@ import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { SaveManager } from './storage/SaveManager';
 import { mountAccessibilityRuntime } from './ui/accessibilityRuntime';
+import {
+  AppShellController,
+  createBrowserAppShellEnvironment,
+} from './ui/appShellController';
 import { mountCommandDoctrineScreen } from './ui/commandDoctrineScreen';
 import { mountCommandRankingScreen } from './ui/commandRankingScreen';
 import { mountDevelopmentPresentation } from './ui/developmentPresentation';
@@ -59,7 +65,6 @@ import { selectNewGameFaction } from './ui/newGameFactionPicker';
 import { mountOperationsWorkspace } from './ui/operationsWorkspace';
 import { mountPlanetDevelopmentControls } from './ui/planetDevelopmentControls';
 import {
-  applyPlanetScreenCommand,
   applyPlanetScreenState,
   getPlanetScreenActivePlanetId,
   mountPlanetScreen,
@@ -80,9 +85,11 @@ function requireElement<T extends HTMLElement>(selector: string): T {
   if (element === null) throw new Error(`Required element not found: ${selector}`);
   return element;
 }
+
 function setStatus(message: string): void {
   requireElement<HTMLElement>('#app-status').textContent = message;
 }
+
 function writeAutoSaveStatus(status: AutoSaveStatus): void {
   switch (status.phase) {
     case 'pending': setStatus('Изменения ожидают сохранения'); break;
@@ -95,6 +102,7 @@ function writeAutoSaveStatus(status: AutoSaveStatus): void {
     case 'idle': break;
   }
 }
+
 async function createFreshGame(statusPrefix = 'Новая партия'): Promise<{
   readonly state: GameState;
   readonly status: string;
@@ -103,13 +111,12 @@ async function createFreshGame(statusPrefix = 'Новая партия'): Promis
   const state = prepareE2eState(createInitialGameState('stellar-empires-m1', faction));
   return { state, status: `${statusPrefix} · ${faction.toUpperCase()} · seed ${state.seed}` };
 }
+
 async function bootstrap(): Promise<void> {
   const version = requireElement<HTMLElement>('#build-version');
   const systemCount = requireElement<HTMLElement>('#system-count');
   const repository = new IndexedDbSaveRepository();
-  const botAutomationRef: { current?: BotAutomationController } = {};
-  let initialState = createInitialGameState('stellar-empires-m1');
-  let runtimeState: GameState = initialState;
+  let initialState: GameState;
   let startupStatus: string;
   let autosave: AutoSaveController | undefined;
   let saveManager: SaveManager | undefined;
@@ -118,17 +125,17 @@ async function bootstrap(): Promise<void> {
     const restored = await loadAutosave(repository);
     if (restored.status === 'loaded') {
       initialState = prepareE2eState(restored.state);
-      runtimeState = initialState;
       startupStatus = restored.source === 'snapshot'
         ? `Партия восстановлена из резерва · seed ${initialState.seed}`
         : `Партия восстановлена · seed ${initialState.seed}`;
     } else {
-      if (restored.status === 'invalid') console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
+      if (restored.status === 'invalid') {
+        console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
+      }
       const fresh = await createFreshGame(
         restored.status === 'invalid' ? 'Сохранения повреждены · новая партия' : 'Новая партия',
       );
       initialState = fresh.state;
-      runtimeState = fresh.state;
       startupStatus = fresh.status;
     }
     saveManager = new SaveManager(repository);
@@ -137,36 +144,94 @@ async function bootstrap(): Promise<void> {
     console.error('[stellar-empires] persistence unavailable', error);
     const fresh = await createFreshGame('Локальное хранилище недоступно · новая партия');
     initialState = fresh.state;
-    runtimeState = fresh.state;
     startupStatus = fresh.status;
   }
 
-  const playerFaction = initialState.planets.find((planet) => planet.ownerEmpireId === 'player')?.factionId ?? 'aegis';
+  const playerFaction = initialState.planets.find(
+    (planet) => planet.ownerEmpireId === 'player',
+  )?.factionId ?? 'aegis';
   bindFactionRuntimeAssets(playerFaction);
   applyFactionShellIdentity(playerFaction);
   version.textContent = `v${__APP_VERSION__}`;
   systemCount.textContent = String(initialState.galaxy.systems.length);
+
+  const botAutomationRef: { current?: BotAutomationController } = {};
+  const gameRef: { current?: ReturnType<typeof createGame> } = {};
+  const spaceMapUiRef: { current?: ReturnType<typeof mountSpaceMapNavigation> } = {};
+  let syncingPlanetScreen = false;
+
+  const application = new GameApplicationController(initialState, {
+    writeStatus: setStatus,
+    onTransition: ({ state, source, message }) => {
+      if (source !== 'planet-compatibility') {
+        syncingPlanetScreen = true;
+        try {
+          applyPlanetScreenState(state, message);
+        } finally {
+          syncingPlanetScreen = false;
+        }
+      }
+      if (gameRef.current !== undefined) updateGamePresentation(gameRef.current, state);
+      spaceMapUiRef.current?.refresh();
+      updateE2eRuntimeDiagnostics(state);
+      autosave?.request(state);
+      if (source !== 'bot') botAutomationRef.current?.request();
+    },
+  });
+
   const spaceMapNavigation = new SpaceMapNavigationController(
     createBrowserSpaceMapNavigationEnvironment(),
-    () => runtimeState.universe,
+    () => application.getState().universe,
   );
   const game = createGame('phaser-game', initialState, spaceMapNavigation);
-  const spaceMapUi = mountSpaceMapNavigation(spaceMapNavigation, () => runtimeState);
-  updateE2eRuntimeDiagnostics(runtimeState);
+  gameRef.current = game;
+  const spaceMapUi = mountSpaceMapNavigation(
+    spaceMapNavigation,
+    () => application.getState(),
+  );
+  spaceMapUiRef.current = spaceMapUi;
+  updateE2eRuntimeDiagnostics(initialState);
   renderAssetShowcases();
+
   mountPlanetScreen(initialState, setStatus, (state) => {
-    runtimeState = state;
-    updateGamePresentation(game, state);
-    spaceMapUi.refresh();
-    updateE2eRuntimeDiagnostics(state);
-    autosave?.request(state);
-    botAutomationRef.current?.request();
+    if (syncingPlanetScreen) return;
+    application.applyState(state, 'planet-compatibility', 'Состояние колонии обновлено');
   });
+  application.selectActivePlanet(getPlanetScreenActivePlanetId(), false);
+
+  const activatePlanet = (planetId: string, mode: 'overview' | 'resource' | 'industry' | 'military'): void => {
+    requireElement<HTMLElement>('#galaxy-view').hidden = true;
+    requireElement<HTMLElement>('#planet-view').hidden = false;
+    requireElement<HTMLElement>('.game-layout').classList.add('is-planet-view');
+    selectPlanetScreenPlanet(planetId, false);
+    requireElement<HTMLButtonElement>(`[data-planet-mode="${mode}"]`).click();
+  };
+  const activateSpace = (): void => {
+    requireElement<HTMLElement>('#galaxy-view').hidden = false;
+    requireElement<HTMLElement>('#planet-view').hidden = true;
+    requireElement<HTMLElement>('.game-layout').classList.remove('is-planet-view');
+    const parsed = parseSpaceMapRoute(
+      window.location.hash,
+      application.getState().universe,
+    );
+    spaceMapNavigation.navigate(parsed.route, 'replace');
+  };
+
+  const appShell = new AppShellController(createBrowserAppShellEnvironment(), {
+    getState: () => application.getState(),
+    getActivePlanetId: () => application.getActivePlanetId(),
+    selectActivePlanet: (planetId) => application.selectActivePlanet(planetId, false),
+    activatePlanet,
+    activateSpace,
+    writeStatus: setStatus,
+  });
+
   const botAutomation = new BotAutomationController({
-    getState: () => runtimeState,
+    getState: () => application.getState(),
     applyState: (state, acceptedCommandCount) => {
-      applyPlanetScreenState(
+      application.applyState(
         state,
+        'bot',
         acceptedCommandCount > 0
           ? `Боты выполнили действий · ${acceptedCommandCount}`
           : 'График решений ботов синхронизирован',
@@ -178,32 +243,30 @@ async function bootstrap(): Promise<void> {
     },
   });
   botAutomationRef.current = botAutomation;
-  const commandBridge = {
-    getState: () => runtimeState,
-    getActivePlanetId: getPlanetScreenActivePlanetId,
-    execute: applyPlanetScreenCommand,
-  };
-  mountGalaxyIntelPanel({ getState: () => runtimeState });
+
+  const commandBridge = application.createCommandBridge();
+  mountGalaxyIntelPanel({ getState: () => application.getState() });
   mountExpeditionPanel(commandBridge);
   mountSpaceObjectsPanel(commandBridge);
-  mountWorldEventsPanel({ getState: () => runtimeState });
+  mountWorldEventsPanel({ getState: () => application.getState() });
   mountMissionReportsPanel({
-    getState: () => runtimeState,
+    getState: () => application.getState(),
     navigateToCoordinate: (coordinate) => {
       spaceMapNavigation.navigate({ level: 'solar-system', ...coordinate });
+      appShell.navigateToSpace();
       spaceMapUi.refresh();
     },
   });
   mountPlanetDevelopmentControls(commandBridge);
   mountLogisticsRoutesPanel(commandBridge);
   mountMarketPanel(commandBridge);
-  mountOperationsWorkspace({ getState: () => runtimeState });
+  mountOperationsWorkspace({ getState: () => application.getState() });
   mountEmpireOverview({
-    getState: () => runtimeState,
-    getActivePlanetId: getPlanetScreenActivePlanetId,
-    selectPlanet: (planetId) => { selectPlanetScreenPlanet(planetId); },
+    getState: () => application.getState(),
+    getActivePlanetId: () => application.getActivePlanetId(),
+    selectPlanet: (planetId) => appShell.navigateToPlanet(planetId),
   });
-  mountCommandRankingScreen({ getState: () => runtimeState });
+  mountCommandRankingScreen({ getState: () => application.getState() });
   mountCommandDoctrineScreen(commandBridge);
   mountResearchScreen(commandBridge);
   mountProductionScreens(commandBridge);
@@ -211,28 +274,37 @@ async function bootstrap(): Promise<void> {
   mountShipUpgradesScreen(commandBridge);
   mountFleetDoctrineScreen(commandBridge);
   mountDevelopmentPresentation({
-    getState: () => runtimeState,
-    getActivePlanetId: getPlanetScreenActivePlanetId,
+    getState: () => application.getState(),
+    getActivePlanetId: () => application.getActivePlanetId(),
   });
   mountAccessibilityRuntime();
 
   if (saveManager !== undefined) {
-    mountSaveManager({ manager: saveManager, getState: () => runtimeState, writeStatus: setStatus });
+    mountSaveManager({
+      manager: saveManager,
+      getState: () => application.getState(),
+      writeStatus: setStatus,
+    });
   }
+
   const flushAutosave = (): void => { void autosave?.flush(); };
   window.addEventListener('pagehide', flushAutosave);
   window.addEventListener('beforeunload', () => {
     botAutomation.dispose();
+    appShell.dispose();
+    application.dispose();
     spaceMapUi.dispose();
     spaceMapNavigation.dispose();
   }, { once: true });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flushAutosave();
   });
+
   botAutomation.request();
   setStatus(startupStatus);
   document.documentElement.dataset.appReady = 'true';
 }
+
 void bootstrap().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : 'Unknown startup error';
   const status = document.querySelector<HTMLElement>('#app-status');

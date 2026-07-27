@@ -51,6 +51,11 @@ function galaxyDescriptor(
   return universe.galaxies.find((candidate) => candidate.slot === galaxy);
 }
 
+export function isSpaceMapHash(hash: string): boolean {
+  const normalized = hash.trim();
+  return normalized === SPACE_MAP_HASH_PREFIX || normalized.startsWith(`${SPACE_MAP_HASH_PREFIX}/`);
+}
+
 export function getGalaxyPageCount(universe: UniverseModel, galaxy: number): number {
   const descriptor = galaxyDescriptor(universe, galaxy);
   return descriptor === undefined
@@ -201,11 +206,14 @@ export class SpaceMapNavigationController {
   ) {
     this.#environment = environment;
     this.#getUniverse = getUniverse;
-    const parsed = parseSpaceMapRoute(environment.readHash(), getUniverse());
-    this.#snapshot = parsed;
-    const canonical = serializeSpaceMapRoute(parsed.route);
-    if (environment.readHash() !== canonical || parsed.error !== null) {
-      environment.replaceHash(canonical);
+    const hash = environment.readHash();
+    if (isSpaceMapHash(hash) || hash.trim() === '' || hash.trim() === '#') {
+      const parsed = parseSpaceMapRoute(hash, getUniverse());
+      this.#snapshot = parsed;
+      const canonical = serializeSpaceMapRoute(parsed.route);
+      if (hash !== canonical || parsed.error !== null) environment.replaceHash(canonical);
+    } else {
+      this.#snapshot = { route: { level: 'universe' }, error: null };
     }
     this.#unsubscribeEnvironment = environment.subscribe(() => this.syncFromUrl());
   }
@@ -247,11 +255,11 @@ export class SpaceMapNavigationController {
   }
 
   private syncFromUrl(): void {
-    const parsed = parseSpaceMapRoute(this.#environment.readHash(), this.#getUniverse());
+    const hash = this.#environment.readHash();
+    if (!isSpaceMapHash(hash)) return;
+    const parsed = parseSpaceMapRoute(hash, this.#getUniverse());
     const canonical = serializeSpaceMapRoute(parsed.route);
-    if (this.#environment.readHash() !== canonical || parsed.error !== null) {
-      this.#environment.replaceHash(canonical);
-    }
+    if (hash !== canonical || parsed.error !== null) this.#environment.replaceHash(canonical);
     this.#snapshot = parsed;
     this.emit();
   }

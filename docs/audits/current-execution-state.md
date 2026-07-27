@@ -7,61 +7,53 @@
 |---|---|
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
 | Current batch | `COHERENT-UI-SHELL-01` |
-| Audit PR | #111 — accepted by merge of this Audit PR; merge SHA is authoritative in GitHub metadata |
-| Runtime baseline | `main` after #110 · `8e9e848b0725c52263ff7e310bc9d899a81554c4` |
+| Audit PR | #111 — accepted and merged |
+| Completed implementation PR | #112 — `UI-SHELL-RUNTIME-ROUTER` — completed by merge of this PR |
+| Active implementation PR | none after #112 merge |
+| Runtime baseline | post-#112 `main`; exact merge SHA is authoritative in GitHub metadata |
 | Complexity | medium |
-| Authorized implementation PRs | #112 → #113 → #114 → #115 |
-| Active implementation PR | none |
-| Active work item | none until PR #112 is created from fresh post-#111 `main` |
-| Last completed atomic action | completed the coherent-shell audit, reconciled roadmap/status and passed documentation-only validation |
-| Last successful validation | Audit #111 clean-head asset audit, lint, TypeScript, full unit suite, production build, Browser E2E and Graphify |
-| Exact next action | create PR #112 from fresh merged `main` and implement only `UI-SHELL-RUNTIME-ROUTER` |
+| Remaining authorized implementation PRs | #113 → #114 → #115 |
+| Active work item | none |
+| Last completed atomic action | passed the clean-head application controller, Planet/Space shell route, static registry, Browser E2E and Graphify gate |
+| Last successful validation | PR #112 asset audit, lint, TypeScript, full unit suite, production build, Browser E2E and Graphify |
+| Exact next action | create PR #113 from fresh post-#112 `main` and implement only `UI-SHELL-DEVELOPMENT-WORKSPACES` |
 | Blockers | none |
 | Divergence | none |
 
-## Accepted audit decision
+## Delivered by PR #112
 
-The next batch is presentation-only `COHERENT-UI-SHELL-01`:
+- `GameApplicationController` now owns current runtime state, active-colony presentation context and accepted-command effects;
+- non-Planet compatibility screens use the application command bridge rather than `planetScreen.ts` as the command owner;
+- canonical Planet routes are `#/planet/<planet-id>/<overview|resource|industry|military>`;
+- existing `#/space/...` parsing remains owned by `SpaceMapNavigationController`;
+- one typed registry creates the stable primary navigation controls;
+- route buttons own Planet/Space visibility and suppress obsolete competing route handlers;
+- legacy cloned launchers are reconciled so they cannot impersonate registry items or active routes;
+- browser back, forward, reload, invalid-route normalization and keyboard rail order are covered;
+- shell routing remains outside `GameState`, saves, command logs and checksums;
+- no gameplay command, balance value, schema field or migration changed.
 
-```text
-#112 UI-SHELL-RUNTIME-ROUTER
-#113 UI-SHELL-DEVELOPMENT-WORKSPACES
-#114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES
-#115 UI-SHELL-COMMAND-SYSTEM-GATE
-```
+## Compatibility intentionally retained
 
-## Verified audit findings
+The following remain for their assigned later work items:
 
-- `src/main.ts::bootstrap()` directly calls 26 UI mount/apply functions;
-- the shared command bridge delegates unrelated screens to `planetScreen.ts`;
-- at least sixteen modules own top-level dialogs/workspace dialogs;
-- eight modules create and insert navigation buttons dynamically;
-- static Fleet, Research, Ranking, Reports and System rail items are disabled despite existing screen code;
-- Space Map is the only primary family with canonical browser URL/history restoration;
-- no `GameState` schema change is required for the shell batch;
-- critical unknowns: zero.
+- Planet development screen implementation remains a compatibility adapter until #113;
+- Research, Production, Defence and Ship Upgrades remain modal/legacy surfaces until #113;
+- Fleet, intelligence, operations and reports remain legacy surfaces until #114;
+- Command, ranking, doctrines, saves/settings and final HUD/context cleanup remain until #115;
+- legacy launchers may still exist, but only typed registry items own canonical route metadata.
 
-## Audit files
+## Validation recorded for PR #112
 
-```text
-docs/audits/current-batch-audit.md
-docs/audits/contracts/coherent-ui-shell-01-prs.md
-docs/audits/contracts/coherent-ui-shell-01-route-layout.md
-docs/audits/evidence/coherent-ui-shell-01-graphify.md
-```
-
-## Validation recorded for Audit #111
-
-- documentation/status-only diff;
 - asset pipeline check: passed;
 - lint: passed;
 - TypeScript: passed;
 - full unit suite: passed;
 - production build: passed;
-- Chromium Browser E2E: passed;
+- Chromium Browser E2E: passed, including existing Universe coverage and new shell routing coverage;
 - fresh Graphify audit: passed;
-- generated Graphify, Playwright and temporary diagnostic files: absent from the diff.
+- temporary lint diagnostics, generated Graphify output and Playwright reports: absent from the final diff.
 
 ## Recovery rule
 
-Create #112 only after #111 is merged. Start it from the exact latest `main`. Do not begin alliances, solar war, Obelisks, Gates, balance, or any work item outside the four accepted contracts.
+After PR #112 merges, start #113 only from the exact latest `main`. Do not combine #114/#115 work, alliances, solar war, Obelisks, Gates, balance, or another unaudited feature into #113.

@@ -1,18 +1,18 @@
 {
-  "statusVersion": 15,
+  "statusVersion": 16,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 111,
-  "lastMergeSha": "recorded in GitHub PR #111 merge metadata",
-  "verifiedMainBaseline": "Audit PR #111 accepted on merge; runtime baseline remains merged PR #110",
+  "lastMergedPr": 112,
+  "lastMergeSha": "recorded in GitHub PR #112 merge metadata",
+  "verifiedMainBaseline": "PR #112 clean-head CI, Browser E2E and Graphify; Audit #111 remains active",
   "activePr": null,
-  "nextPrAfterActive": 112,
+  "nextPrAfterActive": 113,
   "nextPrKind": "implementation",
-  "currentMilestone": "Coherent full UI shell audited; UI-SHELL-RUNTIME-ROUTER is next",
+  "currentMilestone": "Coherent full UI shell in progress; development workspaces are next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -35,14 +35,17 @@
       114,
       115
     ],
+    "completedImplementationPrs": [
+      112
+    ],
     "workItems": [
       "UI-SHELL-RUNTIME-ROUTER",
       "UI-SHELL-DEVELOPMENT-WORKSPACES",
       "UI-SHELL-FLEET-OPERATIONS-WORKSPACES",
       "UI-SHELL-COMMAND-SYSTEM-GATE"
     ],
-    "status": "ready-for-implementation",
-    "nextWorkItem": "UI-SHELL-RUNTIME-ROUTER",
+    "status": "implementation-in-progress",
+    "nextWorkItem": "UI-SHELL-DEVELOPMENT-WORKSPACES",
     "archive": null
   },
   "auditDecisions": {
@@ -114,14 +117,17 @@
     "intelligence-aware object details, explicit action gates and existing mission-composer target handoff",
     "report-to-map backlinks and semantic SVG route, fleet and mission overlays",
     "Playwright browser E2E for navigation, reload, history, target prefill, duplicate mission prevention, viewports and runtime budgets",
+    "GameApplicationController-owned runtime state, accepted-command effects and active-colony presentation context",
+    "canonical Planet and Space shell routes with browser history, reload and invalid-route normalization",
+    "typed primary navigation registry with canonical metadata isolated from legacy launchers",
     "audit-first autonomous delivery protocol and Graphify validation"
   ],
   "activeDelivery": [],
   "knownLimitations": [
-    "runtime presentation composition is manually mounted from src/main.ts",
-    "unrelated screens currently execute through planetScreen presentation state",
-    "many implemented primary screens are modal-only or launched by runtime-inserted navigation buttons",
-    "only Space Map has canonical application URL/history restoration",
+    "Planet development, Research, Production, Defence and Ship Upgrades remain legacy/modal compatibility surfaces until PR #113",
+    "Fleet, intelligence, operations and reports remain legacy surfaces until PR #114",
+    "Command, ranking, doctrines, saves/settings, global HUD and final shell cleanup remain until PR #115",
+    "legacy launchers still exist but no longer own canonical route metadata",
     "complete solar-war attack, destruction, support and rebuilding mechanics are deferred",
     "alliances, Obelisks, Gates and final victory are not implemented",
     "ordinary mechanic parity, PvE/meta depth, bot parity, balance and release hardening remain incomplete"
@@ -134,7 +140,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on the Audit PR #111 clean head",
+    "lastValidation": "passed on the PR #112 clean head",
     "lastAuditGraph": {
       "nodes": 1913,
       "relationships": 6246,
@@ -172,5 +178,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged GitHub pull requests and actual main"
   ],
-  "nextAction": "Create PR #112 from fresh merged main and implement only UI-SHELL-RUNTIME-ROUTER."
+  "nextAction": "Create PR #113 from fresh post-#112 main and implement only UI-SHELL-DEVELOPMENT-WORKSPACES."
 }
