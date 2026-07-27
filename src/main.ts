@@ -6,6 +6,7 @@ import './styles/uiPrimitives.css';
 import './styles/newGame.css';
 import './styles/aegisAssets.css';
 import './styles/galaxyIntel.css';
+import './styles/spaceMap.css';
 import './styles/expeditions.css';
 import './styles/spaceObjects.css';
 import './styles/worldEvents.css';
@@ -23,6 +24,10 @@ import './styles/empire.css';
 import './styles/globalHud.css';
 import { bindFactionRuntimeAssets } from './assets/bindFactionRuntimeAssets';
 import { createGame, updateGamePresentation } from './game/createGame';
+import {
+  createBrowserSpaceMapNavigationEnvironment,
+  SpaceMapNavigationController,
+} from './navigation/spaceMapRoute';
 import { BotAutomationController } from './runtime/BotAutomationController';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
@@ -62,6 +67,7 @@ import { mountSaveManager } from './ui/saveManager';
 import { renderAssetShowcases } from './ui/showcase';
 import { mountShipUpgradesScreen } from './ui/shipUpgradesScreen';
 import { mountSpaceObjectsPanel } from './ui/spaceObjectsPanel';
+import { mountSpaceMapNavigation } from './ui/spaceMapNavigation';
 import { mountWorldEventsPanel } from './ui/worldEventsPanel';
 
 function requireElement<T extends HTMLElement>(selector: string): T {
@@ -135,7 +141,11 @@ async function bootstrap(): Promise<void> {
   applyFactionShellIdentity(playerFaction);
   version.textContent = `v${__APP_VERSION__}`;
   systemCount.textContent = String(initialState.galaxy.systems.length);
-  const game = createGame('phaser-game', initialState);
+  const spaceMapNavigation = new SpaceMapNavigationController(
+    createBrowserSpaceMapNavigationEnvironment(),
+    () => runtimeState.universe,
+  );
+  const game = createGame('phaser-game', initialState, spaceMapNavigation);
   renderAssetShowcases();
   mountPlanetScreen(initialState, setStatus, (state) => {
     runtimeState = state;
@@ -164,6 +174,10 @@ async function bootstrap(): Promise<void> {
     getActivePlanetId: getPlanetScreenActivePlanetId,
     execute: applyPlanetScreenCommand,
   };
+  const unmountSpaceMapNavigation = mountSpaceMapNavigation(
+    spaceMapNavigation,
+    () => runtimeState,
+  );
   mountGalaxyIntelPanel({ getState: () => runtimeState });
   mountExpeditionPanel(commandBridge);
   mountSpaceObjectsPanel(commandBridge);
@@ -196,7 +210,11 @@ async function bootstrap(): Promise<void> {
   }
   const flushAutosave = (): void => { void autosave?.flush(); };
   window.addEventListener('pagehide', flushAutosave);
-  window.addEventListener('beforeunload', () => botAutomation.dispose(), { once: true });
+  window.addEventListener('beforeunload', () => {
+    botAutomation.dispose();
+    unmountSpaceMapNavigation();
+    spaceMapNavigation.dispose();
+  }, { once: true });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') flushAutosave();
   });

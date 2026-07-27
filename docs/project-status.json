@@ -1,16 +1,16 @@
 {
-  "statusVersion": 10,
+  "statusVersion": 11,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 107,
-  "lastMergeSha": "398a6074b8d7d62d00aa6beabc064a88b2565ca4",
-  "verifiedMainBaseline": "398a6074b8d7d62d00aa6beabc064a88b2565ca4",
-  "activePr": 108,
-  "nextPrAfterActive": 109,
+  "lastMergedPr": 108,
+  "lastMergeSha": "430eb8d51f49c1846caad37d33668fad6c685201",
+  "verifiedMainBaseline": "430eb8d51f49c1846caad37d33668fad6c685201",
+  "activePr": 109,
+  "nextPrAfterActive": 110,
   "nextPrKind": "implementation",
   "currentMilestone": "Universe asset runtime integration; spatial model remains next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
@@ -42,7 +42,7 @@
       "UNIVERSE-ACTIONS-GATE"
     ],
     "status": "implementation-active",
-    "nextWorkItem": "UNIVERSE-SPATIAL-MODEL"
+    "nextWorkItem": "UNIVERSE-NAVIGATION-VIEWS"
   },
   "auditDecisions": {
     "implementationCount": 4,
@@ -111,8 +111,7 @@
     "173 processed catalog runtime images with 217 complete mechanical bindings"
   ],
   "activeDelivery": [
-    "PR #108 — schema-v14 compact Universe spatial model and migration",
-    "three-level spatial views in planned PR #109",
+    "PR #109 — URL/history-driven Universe, Galaxy and Solar-system views",
     "map actions, report backlinks, browser E2E and batch closure in planned PR #110"
   ],
   "knownLimitations": [
