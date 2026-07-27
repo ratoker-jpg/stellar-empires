@@ -1,3 +1,4 @@
+import '../styles/intelligencePresentation.css';
 import type { FleetMissionKind } from '../simulation/fleets/types';
 import { createIncomingFlightContacts } from '../simulation/intelligence/incomingFlights';
 import type { GameState } from '../simulation/types';
