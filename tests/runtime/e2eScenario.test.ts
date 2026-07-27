@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createE2eFixtureState } from '../../src/runtime/e2eScenario';
+import {
+  createE2eFixtureState,
+  E2E_FLEET_ID,
+} from '../../src/runtime/e2eScenario';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import { getMissionAvailability } from '../../src/simulation/fleets/missionRules';
 
 describe('E2E scenario fixture', () => {
   it('defers every bot decision so app readiness starts from a stable checksum', () => {
@@ -27,7 +31,7 @@ describe('E2E scenario fixture', () => {
           Object.keys(state.botAutomation.nextDecisionAtByEmpire).map(
             (empireId) => [empireId, later],
           ),
-        ),
+        },
       },
     };
 
@@ -35,5 +39,23 @@ describe('E2E scenario fixture', () => {
     expect(Object.values(fixture.botAutomation.nextDecisionAtByEmpire)).toEqual(
       Object.values(advancedSchedule.botAutomation.nextDecisionAtByEmpire),
     );
+  });
+
+  it('provides one legal scout probe after the fixture intelligence cooldown', () => {
+    const fixture = createE2eFixtureState(createInitialGameState('e2e-legal-scout'));
+    const target = fixture.planets.find((planet) => planet.ownerEmpireId === 'pirate-neutral')
+      ?? fixture.planets.find((planet) => planet.ownerEmpireId !== 'player');
+    expect(target).toBeDefined();
+    if (target === undefined) return;
+
+    expect(
+      getMissionAvailability(fixture, {
+        type: 'SEND_FLEET',
+        empireId: 'player',
+        fleetId: E2E_FLEET_ID,
+        targetPlanetId: target.id,
+        mission: 'scout',
+      }),
+    ).toMatchObject({ allowed: true, code: 'MISSION_READY' });
   });
 });
