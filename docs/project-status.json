@@ -1,14 +1,14 @@
 {
-  "statusVersion": 24,
-  "updatedAt": "2026-07-27",
+  "statusVersion": 25,
+  "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
   "lastMergedPr": 120,
-  "lastMergeSha": "recorded in GitHub PR #120 merge metadata",
-  "verifiedMainBaseline": "PR #120 final clean-head asset audit, lint, TypeScript, 392-test suite, production build, Browser E2E and Graphify",
+  "lastMergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665",
+  "verifiedMainBaseline": "PR #120 squash merge c59a2dd7afdc31fc250d2ec21364f655d6a4e665; final PR head dec823e52f55436f6708bfa74aca4996b18c16a7 passed asset audit, lint, TypeScript, 392-test suite, production build, Browser E2E and Graphify",
   "activePr": null,
   "nextPrAfterActive": 121,
   "nextPrKind": "audit",
@@ -156,7 +156,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on PR #120 final code head 5eb70955a971c5ecb4c0b8b418885128faaa5477",
+    "lastValidation": "passed on PR #120 final head dec823e52f55436f6708bfa74aca4996b18c16a7",
     "lastAuditGraph": {
       "nodes": 2130,
       "relationships": 6795,
@@ -164,7 +164,7 @@
       "extractedPercent": 100,
       "inferredPercent": 0,
       "ambiguousPercent": 0,
-      "workflowRun": 30308372832
+      "workflowRun": 30311719069
     }
   },
   "sourceAssetIntake": {
