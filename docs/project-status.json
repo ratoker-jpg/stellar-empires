@@ -8,7 +8,7 @@
   "releaseTarget": "1.0",
   "lastMergedPr": 117,
   "lastMergeSha": "recorded in GitHub PR #117 merge metadata",
-  "verifiedMainBaseline": "PR #117 clean-head asset audit, lint, TypeScript, 370-test suite, production build, Browser E2E and Graphify",
+  "verifiedMainBaseline": "PR #117 clean-head asset audit, lint, TypeScript, 372-test suite, production build, Browser E2E and Graphify",
   "activePr": null,
   "nextPrAfterActive": 118,
   "nextPrKind": "implementation",
@@ -29,18 +29,8 @@
     "auditPr": 111,
     "auditStatus": "completed",
     "implementationCount": 4,
-    "implementationPrs": [
-      112,
-      113,
-      114,
-      115
-    ],
-    "completedImplementationPrs": [
-      112,
-      113,
-      114,
-      115
-    ],
+    "implementationPrs": [112, 113, 114, 115],
+    "completedImplementationPrs": [112, 113, 114, 115],
     "status": "completed",
     "archive": "docs/audits/completed/coherent-ui-shell-01.md",
     "authorizedAuditArchive": "docs/audits/completed/coherent-ui-shell-01-authorized-audit.md",
@@ -54,15 +44,8 @@
     "auditStatus": "accepted",
     "baselineSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
     "implementationCount": 4,
-    "implementationPrs": [
-      117,
-      118,
-      119,
-      120
-    ],
-    "completedImplementationPrs": [
-      117
-    ],
+    "implementationPrs": [117, 118, 119, 120],
+    "completedImplementationPrs": [117],
     "workItems": [
       "MISSION-RULES-REGISTRY",
       "ESPIONAGE-COUNTERINTELLIGENCE",
@@ -78,18 +61,8 @@
     "schemaChange": false,
     "newGameplayCommands": false,
     "newMissionKinds": false,
-    "ordinaryMissionKinds": [
-      "transport",
-      "deploy",
-      "scout",
-      "attack",
-      "recycle",
-      "colonize"
-    ],
-    "specializedMissionOwnershipPreserved": [
-      "expedition",
-      "space-object"
-    ],
+    "ordinaryMissionKinds": ["transport", "deploy", "scout", "attack", "recycle", "colonize"],
+    "specializedMissionOwnershipPreserved": ["expedition", "space-object"],
     "sharedMissionRulesRequired": true,
     "flightSlotsActivatedFromExistingResearch": true,
     "attackRequiresCurrentLevelThreeIntelligence": true,
@@ -102,32 +75,14 @@
     "criticalUnknowns": 0
   },
   "scenarioPresets": {
-    "test": {
-      "populatedGalaxies": 2,
-      "systemsPerGalaxy": 9
-    },
-    "campaign": {
-      "populatedGalaxies": 6,
-      "systemsPerGalaxy": 27
-    },
-    "fidelity": {
-      "populatedGalaxies": 15,
-      "systemsPerGalaxy": 81
-    }
+    "test": { "populatedGalaxies": 2, "systemsPerGalaxy": 9 },
+    "campaign": { "populatedGalaxies": 6, "systemsPerGalaxy": 27 },
+    "fidelity": { "populatedGalaxies": 15, "systemsPerGalaxy": 81 }
   },
   "batchSizing": {
-    "heavy": [
-      1,
-      2
-    ],
-    "medium": [
-      4,
-      4
-    ],
-    "light": [
-      6,
-      6
-    ]
+    "heavy": [1, 2],
+    "medium": [4, 4],
+    "light": [6, 6]
   },
   "deliveredCatalogs": {
     "buildingsPerFaction": 24,
@@ -154,6 +109,7 @@
     "shared pure ordinary mission availability for reducer, Fleet UI and bots",
     "research-derived flight-slot enforcement and current level-three attack intelligence",
     "redacted Fleet mission targets without unknown owner or faction leakage",
+    "checksum-stable E2E app readiness without changing production bot scheduling",
     "full-shell Browser E2E and Graphify validation"
   ],
   "activeDelivery": [],
