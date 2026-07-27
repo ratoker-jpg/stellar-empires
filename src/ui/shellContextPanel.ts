@@ -1,4 +1,5 @@
 import { getEmpireCommandState } from '../simulation/command/commandDoctrine';
+import { createIncomingFlightContacts } from '../simulation/intelligence/incomingFlights';
 import { createUnifiedMissionReports } from '../simulation/reports/missionReports';
 import type { GameState } from '../simulation/types';
 import type { AutoSaveStatus } from '../storage/AutoSaveController';
@@ -88,12 +89,14 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
 
     if (route.family === 'fleets') {
       const fleets = state.fleets.filter((fleet) => fleet.empireId === 'player');
+      const incoming = createIncomingFlightContacts(state, 'player');
       host.replaceChildren(
         createCard('Флотский контур', 'Флоты и миссии', `Режим: ${route.mode}`),
         createMetrics([
           ['Всего флотов', String(fleets.length)],
           ['На орбите', String(fleets.filter((fleet) => fleet.status === 'stationed').length)],
           ['В полёте', String(fleets.filter((fleet) => fleet.status !== 'stationed').length)],
+          ['Входящие контакты', String(incoming.length)],
           ['Активная колония', activePlanet.name],
         ]),
       );
@@ -157,14 +160,16 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
     }
 
     if (route.family === 'reports') {
-      const reports = createUnifiedMissionReports(state).filter(
-        (report) => report.primaryEmpireId === 'player' || report.secondaryEmpireId === 'player',
-      );
+      const reports = createUnifiedMissionReports(state).filter((report) => {
+        if (report.kind === 'intelligence') return report.primaryEmpireId === 'player';
+        return report.primaryEmpireId === 'player' || report.secondaryEmpireId === 'player';
+      });
       host.replaceChildren(
         createCard('Оперативная разведка', 'Единые отчёты', `Фильтр: ${route.filter}`),
         createMetrics([
           ['Всего отчётов', String(reports.length)],
           ['Боевые', String(reports.filter((report) => report.kind === 'battle').length)],
+          ['Разведка', String(reports.filter((report) => report.kind === 'intelligence').length)],
           ['PvE', String(reports.filter((report) => report.mode === 'pve').length)],
         ]),
       );
