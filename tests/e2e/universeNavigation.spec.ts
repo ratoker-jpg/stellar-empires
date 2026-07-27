@@ -27,7 +27,7 @@ async function targetCoordinate(page: Page): Promise<{ galaxy: number; system: n
   }));
 }
 
-test('new game → map target → composer → report backlink → reload/history', async ({ page }) => {
+test('new game → map target → routed composer → routed report backlink → reload/history', async ({ page }) => {
   await page.goto('/?e2e=1#/space/universe');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await waitForLevel(page, 'universe');
@@ -51,25 +51,31 @@ test('new game → map target → composer → report backlink → reload/histor
   await expect(page.locator('html')).toHaveAttribute('data-send-fleet-command-count', '0');
 
   await page.locator('[data-action-id="mission-scout"]').click();
-  const dialog = page.locator('#mission-screen-dialog');
-  await expect(dialog).toHaveAttribute('open', '');
+  await expect(page).toHaveURL(/#\/fleets\/compose$/);
+  await expect(page.locator('#fleets-view')).toBeVisible();
+  await expect(page.locator('#mission-screen-dialog')).toHaveCount(0);
   await expect(page.locator('[data-testid="mission-target-notice"]')).toBeVisible();
   const targetId = await page.locator('html').getAttribute('data-e2e-target-id');
   await expect(page.locator('[data-testid="mission-target-fleet-e2e-player"]')).toHaveValue(targetId ?? '');
   await expect(page.locator('html')).toHaveAttribute('data-send-fleet-command-count', '0');
   await page.locator('[data-testid="mission-send-fleet-e2e-player"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-send-fleet-command-count', '1');
-  await expect(page.locator('[data-semantic-id="space-mission-fleet-e2e-player"]')).toHaveCount(1);
-  await dialog.locator('.dialog-close').click();
+
+  await page.locator('#nav-galaxy').click();
+  await expect(page).toHaveURL(/#\/space\/universe$/);
+  await waitForLevel(page, 'universe');
   await expect(page.locator('#app-status')).toContainText(/Сохранено|Флот отправлен/);
 
-  await page.locator('#space-map-breadcrumbs button').first().click();
-  await expect(page).toHaveURL(/#\/space\/universe$/);
   await page.locator('#nav-reports').click();
+  await expect(page).toHaveURL(/#\/reports\/all$/);
+  await expect(page.locator('#reports-view')).toBeVisible();
+  await expect(page.locator('#mission-reports-dialog')).toHaveCount(0);
   await page.locator('[data-report-map-link="report-e2e-map-backlink"]').click();
   await expect(page).toHaveURL(new RegExp(`#\\/space\\/solar\\/${target.galaxy}\\/${target.system}\\/${target.position}$`));
+  await waitForLevel(page, 'solar-system');
   await page.goBack();
-  await expect(page).toHaveURL(/#\/space\/universe$/);
+  await expect(page).toHaveURL(/#\/reports\/all$/);
+  await expect(page.locator('#reports-view')).toBeVisible();
   await page.goForward();
   await expect(page).toHaveURL(new RegExp(`#\\/space\\/solar\\/${target.galaxy}\\/${target.system}\\/${target.position}$`));
 
