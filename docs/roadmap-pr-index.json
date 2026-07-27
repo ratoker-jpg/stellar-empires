@@ -5,13 +5,13 @@
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 113,
-    "mergeSha": "recorded in GitHub PR #113 merge metadata",
-    "runtimeBaselinePr": 113,
-    "runtimeBaselineSha": "recorded in GitHub PR #113 merge metadata"
+    "lastMergedPr": 114,
+    "mergeSha": "recorded in GitHub PR #114 merge metadata",
+    "runtimeBaselinePr": 114,
+    "runtimeBaselineSha": "recorded in GitHub PR #114 merge metadata"
   },
   "activePr": null,
-  "nextPrAfterActive": 114,
+  "nextPrAfterActive": 115,
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -42,9 +42,9 @@
       "startPr": 112,
       "endPr": 115,
       "status": "implementation-in-progress",
-      "completedPrs": [112, 113],
-      "nextPr": 114,
-      "outcome": "Application controller, canonical shell routing, static navigation and routed primary workspaces"
+      "completedPrs": [112, 113, 114],
+      "nextPr": 115,
+      "outcome": "Application controller, canonical shell routing, typed navigation and routed primary workspaces"
     },
     {
       "id": "ordinary-mechanics-completion",
@@ -174,15 +174,16 @@
       "kind": "implementation",
       "workItem": "UI-SHELL-DEVELOPMENT-WORKSPACES",
       "title": "Route development workspaces",
-      "status": "merged-on-this-pr",
-      "mergeSha": "recorded in GitHub PR #113 merge metadata"
+      "status": "merged",
+      "mergeSha": "e64485dd5a1603c8d06743de1610e0feee12e26d"
     },
     {
       "number": 114,
       "kind": "implementation",
       "workItem": "UI-SHELL-FLEET-OPERATIONS-WORKSPACES",
       "title": "Route fleet and operations workspaces",
-      "status": "planned"
+      "status": "merged-on-this-pr",
+      "mergeSha": "recorded in GitHub PR #114 merge metadata"
     },
     {
       "number": 115,
@@ -192,5 +193,5 @@
       "status": "planned"
     }
   ],
-  "nextAction": "Create PR #114 from fresh post-#113 main and implement only UI-SHELL-FLEET-OPERATIONS-WORKSPACES."
+  "nextAction": "Create PR #115 from fresh post-#114 main and implement only UI-SHELL-COMMAND-SYSTEM-GATE."
 }
