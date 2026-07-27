@@ -3,6 +3,7 @@ import {
   parseAppShellRoute,
   serializeAppShellRoute,
   type AppShellRoute,
+  type PlanetDevelopmentSurface,
   type PlanetShellMode,
 } from './appShellRoute';
 import {
@@ -22,8 +23,13 @@ export interface AppShellControllerOptions {
   readonly getState: () => GameState;
   readonly getActivePlanetId: () => string;
   readonly selectActivePlanet: (planetId: string) => boolean;
-  readonly activatePlanet: (planetId: string, mode: PlanetShellMode) => void;
+  readonly activatePlanet: (
+    planetId: string,
+    mode: PlanetShellMode,
+    surface: PlanetDevelopmentSurface,
+  ) => void;
   readonly activateSpace: () => void;
+  readonly activateResearch: () => void;
   readonly writeStatus?: (message: string) => void;
   readonly registry?: readonly ShellScreenDefinition[];
 }
@@ -86,13 +92,14 @@ export class AppShellController {
     const registryErrors = validateScreenRegistry(this.#registry);
     if (registryErrors.length > 0) throw new Error(registryErrors.join('\n'));
     this.renderNavigation();
-    this.bindPlanetRouteSync();
     const parsed = parseAppShellRoute(
       environment.readHash(),
       options.getState(),
       options.getActivePlanetId(),
     );
     this.#snapshot = { route: parsed.route, error: parsed.error };
+    this.bindPlanetRouteSync();
+    this.bindActivePlanetSelectors();
     if (environment.readHash() !== parsed.canonicalHash || parsed.error !== null) {
       environment.replaceHash(parsed.canonicalHash);
     }
@@ -125,9 +132,10 @@ export class AppShellController {
   public navigateToPlanet(
     planetId = this.#options.getActivePlanetId(),
     mode: PlanetShellMode = 'overview',
+    surface: PlanetDevelopmentSurface = 'zone',
     historyMode: 'push' | 'replace' = 'push',
   ): void {
-    this.navigate({ family: 'planet', planetId, mode }, historyMode);
+    this.navigate({ family: 'planet', planetId, mode, surface }, historyMode);
   }
 
   public navigateToSpace(historyMode: 'push' | 'replace' = 'push'): void {
@@ -136,6 +144,10 @@ export class AppShellController {
       ? current
       : '#/space/universe';
     this.navigate({ family: 'space', hash }, historyMode);
+  }
+
+  public navigateToResearch(historyMode: 'push' | 'replace' = 'push'): void {
+    this.navigate({ family: 'research' }, historyMode);
   }
 
   public reconcileNavigationMetadata(): void {
@@ -181,7 +193,8 @@ export class AppShellController {
           event.preventDefault();
           event.stopImmediatePropagation();
           if (definition.routeFamily === 'planet') this.navigateToPlanet();
-          else this.navigateToSpace();
+          else if (definition.routeFamily === 'space') this.navigateToSpace();
+          else this.navigateToResearch();
         };
         button.addEventListener('click', onClick);
         this.#cleanup.push(() => button.removeEventListener('click', onClick));
@@ -201,35 +214,44 @@ export class AppShellController {
 
   private bindPlanetRouteSync(): void {
     const planetView = document.querySelector<HTMLElement>('#planet-view');
-    const selector = document.querySelector<HTMLSelectElement>('#planet-selector');
-    if (planetView !== null) {
-      const syncMode = (): void => {
-        if (this.#applyingRoute || this.#snapshot?.route.family !== 'planet') return;
-        queueMicrotask(() => {
-          if (this.#applyingRoute || this.#snapshot.route.family !== 'planet') return;
-          const active = document.querySelector<HTMLButtonElement>(
-            '[data-planet-mode][aria-selected="true"]',
-          );
-          const mode = active?.dataset.planetMode as PlanetShellMode | undefined;
-          if (mode === undefined || mode === this.#snapshot.route.mode) return;
-          this.navigateToPlanet(this.#options.getActivePlanetId(), mode);
-        });
-      };
-      planetView.addEventListener('click', syncMode);
-      planetView.addEventListener('keydown', syncMode);
-      this.#cleanup.push(() => {
-        planetView.removeEventListener('click', syncMode);
-        planetView.removeEventListener('keydown', syncMode);
+    if (planetView === null) return;
+    const syncMode = (): void => {
+      if (this.#applyingRoute || this.#snapshot.route.family !== 'planet') return;
+      queueMicrotask(() => {
+        if (this.#applyingRoute || this.#snapshot.route.family !== 'planet') return;
+        const active = document.querySelector<HTMLButtonElement>(
+          '[data-planet-mode][aria-selected="true"]',
+        );
+        const mode = active?.dataset.planetMode as PlanetShellMode | undefined;
+        if (mode === undefined || mode === this.#snapshot.route.mode) return;
+        this.navigateToPlanet(this.#options.getActivePlanetId(), mode, 'zone');
       });
-    }
-    if (selector !== null) {
+    };
+    planetView.addEventListener('click', syncMode);
+    planetView.addEventListener('keydown', syncMode);
+    this.#cleanup.push(() => {
+      planetView.removeEventListener('click', syncMode);
+      planetView.removeEventListener('keydown', syncMode);
+    });
+  }
+
+  private bindActivePlanetSelectors(): void {
+    const selectors = [
+      document.querySelector<HTMLSelectElement>('#planet-selector'),
+      document.querySelector<HTMLSelectElement>('#hud-planet-selector'),
+    ].filter((selector): selector is HTMLSelectElement => selector !== null);
+    for (const selector of selectors) {
       const onChange = (): void => {
-        if (this.#applyingRoute) return;
-        if (!this.#options.selectActivePlanet(selector.value)) return;
-        const mode = this.#snapshot.route.family === 'planet'
-          ? this.#snapshot.route.mode
-          : 'overview';
-        this.navigateToPlanet(selector.value, mode);
+        if (this.#applyingRoute || !this.#options.selectActivePlanet(selector.value)) return;
+        if (this.#snapshot.route.family === 'planet') {
+          this.navigateToPlanet(
+            selector.value,
+            this.#snapshot.route.mode,
+            this.#snapshot.route.surface,
+          );
+        } else {
+          this.activate(this.#snapshot.route, null);
+        }
       };
       selector.addEventListener('change', onChange);
       this.#cleanup.push(() => selector.removeEventListener('change', onChange));
@@ -253,14 +275,21 @@ export class AppShellController {
     try {
       if (route.family === 'planet') {
         this.#options.selectActivePlanet(route.planetId);
-        this.#options.activatePlanet(route.planetId, route.mode);
-      } else {
+        this.#options.activatePlanet(route.planetId, route.mode, route.surface);
+      } else if (route.family === 'space') {
         this.#options.activateSpace();
+      } else {
+        this.#options.activateResearch();
       }
       this.updateNavigationState(route);
       this.#snapshot = { route, error };
       document.documentElement.dataset.shellRouteFamily = route.family;
       document.documentElement.dataset.shellRoute = serializeAppShellRoute(route);
+      if (route.family === 'planet') {
+        document.documentElement.dataset.planetDevelopmentSurface = route.surface;
+      } else {
+        delete document.documentElement.dataset.planetDevelopmentSurface;
+      }
       if (error !== null) this.#options.writeStatus?.(error);
       this.emit();
     } finally {
