@@ -1,9 +1,9 @@
 # AI Continuation Guide
 
-**Status:** PR #118 completes `ESPIONAGE-COUNTERINTELLIGENCE` on merge  
+**Status:** PR #119 completes `INTELLIGENCE-REPORTS-PRESENTATION` on merge  
 **Updated:** 2026-07-27  
 **Current batch:** `ORDINARY-MISSIONS-INTELLIGENCE-01` · Audit #116  
-**Next implementation after #118 merge:** #119 `INTELLIGENCE-REPORTS-PRESENTATION`
+**Next implementation after #119 merge:** #120 `MISSION-INTELLIGENCE-BOT-GATE`
 
 ## Repository
 
@@ -32,32 +32,33 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - #111–#115: coherent nine-route application shell, persistent HUD/context and full Browser E2E;
 - #116: accepted `ORDINARY-MISSIONS-INTELLIGENCE-01`;
 - #117: shared ordinary mission rules, flight slots, redacted Fleet targets and attack-intelligence gate;
-- #118: deterministic scout composition, intelligence tiers, cooldown, detection, probe loss and defender alerts.
+- #118: deterministic scout composition, intelligence tiers, cooldown, detection, probe loss and defender alerts;
+- #119: derived intelligence reports, exact map backlinks and redacted incoming-flight presentation.
 
-## PR #118 result
+## PR #119 result
 
-The existing `scout` mission now has a complete deterministic contract:
+The existing intelligence state now has a complete routed presentation without adding save state:
 
-- exactly one scout-role ship and zero cargo;
-- observer strength uses existing sensor research plus the probe baseline;
-- counter-strength uses defender sensor research plus target sensor-grid level;
-- relative strength produces level-1 identity, level-2 economy/buildings or level-3 defense/fleet intelligence;
-- cooldown derives from saved observation history and opens on its exact boundary;
-- detection is seeded by game seed, event sequence, fleet ID and target ID;
-- detected probes preserve the observation, create a bounded defender alert, are removed and do not return;
-- undetected probes follow the existing return lifecycle;
-- schema remains v14 with no new persisted field or migration.
+- `#/reports/intelligence` parses, serializes, reloads and participates in browser history;
+- observations and defender alerts become derived `intelligence` reports;
+- freshness and detection/loss state are calculated at view time;
+- exact report coordinates open the canonical solar-system route;
+- only reports owned by the player appear in the player intelligence view;
+- incoming-flight visibility follows sensor thresholds 0–4, 5–9 and 10+;
+- current level-three intelligence on the source promotes the contact to full mission/composition visibility;
+- cargo is never part of the incoming-contact model;
+- route/filter/HUD/context presentation remains checksum-neutral;
+- schema remains v14 with no new command, mission kind or persisted field.
 
 ## Remaining accepted chain
 
 ```text
-#119 INTELLIGENCE-REPORTS-PRESENTATION
-→ #120 MISSION-INTELLIGENCE-BOT-GATE
+#120 MISSION-INTELLIGENCE-BOT-GATE
 ```
 
 ## Next work item
 
-PR #119 may derive and route intelligence reports and incoming-flight presentation from existing observations, alerts and fleet state. It must preserve redaction and must not add persisted report state.
+PR #120 must close the batch through the accepted combined mission/intelligence/bot parity gate. It may test and align bot decisions against the shared redacted mission and intelligence selectors, but it must not introduce a new unaudited mechanic.
 
 ## Invariants
 
@@ -67,7 +68,7 @@ PR #119 may derive and route intelligence reports and incoming-flight presentati
 - player and bots consume shared selectors and validators;
 - route/report state remains outside `GameState`;
 - reports derive from bounded observations and alerts;
-- no hidden foreign owner/composition data;
+- incoming cargo and unknown foreign details remain hidden;
 - every implementation PR starts from fresh merged `main`.
 
 ## Explicit exclusions
@@ -76,4 +77,4 @@ Planet destruction/recovery, economy/logistics redesign, pirate raid, Space Trip
 
 ## Immediate route
 
-After #118 merges, create only PR #119 from fresh post-#118 `main`. Do not start #120 and do not expand #119 beyond `INTELLIGENCE-REPORTS-PRESENTATION`.
+After #119 merges, create only PR #120 from fresh post-#119 `main`. Do not begin any unaudited batch before #120 closes `ORDINARY-MISSIONS-INTELLIGENCE-01`.

@@ -12,6 +12,7 @@ import {
 import type { SpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
 import type { ReportShellFilter } from './appShellRoute';
+import { createIncomingFlightsSection } from './intelligencePresentation';
 import { formatGameDuration } from './planetViewModel';
 
 export interface ReportsWorkspaceOptions {
@@ -27,12 +28,20 @@ export interface ReportsWorkspace {
   dispose(): void;
 }
 
-const FILTERS: readonly ReportShellFilter[] = ['all', 'combat', 'expedition', 'object', 'event'];
+const FILTERS: readonly ReportShellFilter[] = [
+  'all',
+  'combat',
+  'expedition',
+  'object',
+  'event',
+  'intelligence',
+];
 const KIND_LABELS: Readonly<Record<MissionReportKind, string>> = {
   battle: 'Бой',
   expedition: 'Экспедиция',
   'space-object': 'Космический объект',
   'world-event': 'Мировое событие',
+  intelligence: 'Разведка',
 };
 const MODE_LABELS: Readonly<Record<MissionReportMode, string>> = {
   pve: 'PvE',
@@ -44,6 +53,16 @@ function requireElement<T extends HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector);
   if (element === null) throw new Error(`Reports workspace element is missing: ${selector}`);
   return element;
+}
+
+function ensureIntelligenceTab(tabs: HTMLElement): void {
+  if (tabs.querySelector('[data-report-filter="intelligence"]') !== null) return;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.setAttribute('role', 'tab');
+  button.dataset.reportFilter = 'intelligence';
+  button.textContent = 'Разведка';
+  tabs.append(button);
 }
 
 function rewardText(reward: MissionReportReward): string {
@@ -62,7 +81,16 @@ function filterKind(filter: ReportShellFilter): MissionReportKind | 'all' {
   if (filter === 'expedition') return 'expedition';
   if (filter === 'object') return 'space-object';
   if (filter === 'event') return 'world-event';
+  if (filter === 'intelligence') return 'intelligence';
   return 'all';
+}
+
+export function isMissionReportVisibleToEmpire(
+  report: UnifiedMissionReport,
+  empireId: string,
+): boolean {
+  if (report.kind === 'intelligence') return report.primaryEmpireId === empireId;
+  return report.primaryEmpireId === empireId || report.secondaryEmpireId === empireId;
 }
 
 function createSelect(
@@ -93,11 +121,12 @@ function createReportCard(
 ): HTMLElement {
   const card = document.createElement('article');
   card.className = `mission-report-card is-${report.kind} is-${report.mode}`;
+  card.dataset.reportId = report.id;
   const header = document.createElement('header');
   const title = document.createElement('strong');
   title.textContent = report.title;
   const badges = document.createElement('div');
-  for (const label of [KIND_LABELS[report.kind], MODE_LABELS[report.mode], report.outcome]) {
+  for (const label of [KIND_LABELS[report.kind] ?? report.kind, MODE_LABELS[report.mode], report.outcome]) {
     const badge = document.createElement('span');
     badge.textContent = label;
     badges.append(badge);
@@ -107,12 +136,10 @@ function createReportCard(
   summary.textContent = report.summary;
   const target = document.createElement('p');
   target.textContent = `Цель: ${report.targetId} · участники ${report.primaryEmpireId ?? '—'} / ${report.secondaryEmpireId ?? '—'}`;
-  const rewards = document.createElement('p');
-  rewards.textContent = `Награда ${rewardText(report.reward)}`;
-  const losses = document.createElement('p');
-  losses.textContent = `Потери: свои ${lossesText(report.primaryLosses)} · противник ${lossesText(report.secondaryLosses)}`;
   const balance = document.createElement('small');
-  balance.textContent = `Время ${formatGameDuration(report.resolvedAt)} · угроза ${report.threatMultiplierPermille / 10}% · награда ${report.rewardMultiplierPermille / 10}%`;
+  balance.textContent = report.kind === 'intelligence'
+    ? `Время ${formatGameDuration(report.resolvedAt)} · данные получены из журнала разведки`
+    : `Время ${formatGameDuration(report.resolvedAt)} · угроза ${report.threatMultiplierPermille / 10}% · награда ${report.rewardMultiplierPermille / 10}%`;
   const coordinate = resolveMissionReportCoordinate(state, report);
   const mapLink = document.createElement('button');
   mapLink.type = 'button';
@@ -122,7 +149,15 @@ function createReportCard(
   if (coordinate !== undefined) {
     mapLink.addEventListener('click', () => navigateToCoordinate(coordinate));
   }
-  card.append(header, summary, target, rewards, losses, balance, mapLink);
+  card.append(header, summary, target);
+  if (report.kind !== 'intelligence') {
+    const rewards = document.createElement('p');
+    rewards.textContent = `Награда ${rewardText(report.reward)}`;
+    const losses = document.createElement('p');
+    losses.textContent = `Потери: свои ${lossesText(report.primaryLosses)} · противник ${lossesText(report.secondaryLosses)}`;
+    card.append(rewards, losses);
+  }
+  card.append(balance, mapLink);
   if ((report.combatBreakdown?.length ?? 0) > 0) {
     const details = document.createElement('details');
     const detailsSummary = document.createElement('summary');
@@ -155,6 +190,7 @@ function createReportCard(
 export function mountReportsWorkspace(options: ReportsWorkspaceOptions): ReportsWorkspace {
   const host = requireElement<HTMLElement>('#mission-reports-view');
   const tabs = requireElement<HTMLElement>('#reports-route-tabs');
+  ensureIntelligenceTab(tabs);
   let filter: ReportShellFilter = 'all';
   let active = false;
   let searchValue = '';
@@ -174,8 +210,10 @@ export function mountReportsWorkspace(options: ReportsWorkspaceOptions): Reports
     if (!active) return;
     refreshTabs();
     const state = options.getState();
-    const all = createUnifiedMissionReports(state);
-    const filtered = filterMissionReports(all, {
+    const visible = createUnifiedMissionReports(state).filter(
+      (report) => report.kind !== 'intelligence' || isMissionReportVisibleToEmpire(report, 'player'),
+    );
+    const filtered = filterMissionReports(visible, {
       search: searchValue,
       kind: filterKind(filter),
       mode: modeValue,
@@ -250,7 +288,9 @@ export function mountReportsWorkspace(options: ReportsWorkspaceOptions): Reports
     list.className = 'mission-reports-list';
     list.replaceChildren(...filtered.map((report) => createReportCard(state, report, options.navigateToCoordinate)));
     if (filtered.length === 0) list.textContent = 'По заданным фильтрам отчётов нет.';
-    host.replaceChildren(summary, controls, comparison, list);
+    const incoming = createIncomingFlightsSection(state, 'player');
+    incoming.hidden = filter !== 'all' && filter !== 'intelligence';
+    host.replaceChildren(summary, controls, incoming, comparison, list);
   };
 
   const onTabClick = (event: Event): void => {

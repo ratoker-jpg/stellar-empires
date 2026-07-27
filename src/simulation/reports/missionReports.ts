@@ -9,7 +9,14 @@ import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
 import { parsePlanetCoordinate, type SpaceCoordinate } from '../space/coordinates';
 import type { GameState } from '../types';
 
-export type MissionReportKind = 'battle' | 'expedition' | 'space-object' | 'world-event';
+export type BuiltInMissionReportKind =
+  | 'battle'
+  | 'expedition'
+  | 'space-object'
+  | 'world-event';
+export type MissionReportKind =
+  | BuiltInMissionReportKind
+  | (string & Record<never, never>);
 export type MissionReportMode = 'pve' | 'pvp' | 'system';
 export type MissionReportOutcome = 'success' | 'failure' | 'draw' | 'completed' | 'recovered';
 export type MissionCombatSide = 'attacker' | 'defender';
@@ -49,6 +56,7 @@ export interface UnifiedMissionReport {
   readonly title: string;
   readonly summary: string;
   readonly targetId: string;
+  readonly coordinate?: SpaceCoordinate | undefined;
   readonly primaryEmpireId: string | null;
   readonly secondaryEmpireId: string | null;
   readonly outcome: MissionReportOutcome;
@@ -87,11 +95,11 @@ export interface EmpirePvePvpComparison {
   readonly losses: number;
 }
 
-
 export function resolveMissionReportCoordinate(
   state: GameState,
-  report: Pick<UnifiedMissionReport, 'targetId'>,
+  report: Pick<UnifiedMissionReport, 'targetId' | 'coordinate'>,
 ): SpaceCoordinate | undefined {
+  if (report.coordinate !== undefined) return report.coordinate;
   const planet = state.planets.find(
     (candidate) => candidate.id === report.targetId || candidate.galaxyPlanetId === report.targetId,
   );
@@ -306,11 +314,61 @@ function createWorldEventReports(state: GameState): UnifiedMissionReport[] {
   }));
 }
 
+function freshnessLabel(state: GameState, expiresAt: number): string {
+  const remaining = expiresAt - state.clock.elapsedSeconds;
+  return remaining > 0 ? `актуально ещё ${remaining}с` : `устарело ${Math.abs(remaining)}с назад`;
+}
+
+function createIntelligenceReports(state: GameState): UnifiedMissionReport[] {
+  return state.intelligence.flatMap((intelligence) => {
+    const observerReports = intelligence.observations.map((observation): UnifiedMissionReport => ({
+      id: `intelligence-observation-${observation.id}`,
+      resolvedAt: observation.observedAt,
+      kind: 'intelligence',
+      mode: 'system',
+      title: 'Разведка планеты',
+      summary: `Уровень ${observation.snapshot.level} · ${freshnessLabel(state, observation.expiresAt)} · ${observation.detected ? 'зонд обнаружен и потерян' : 'зонд не обнаружен'}`,
+      targetId: observation.targetPlanetId,
+      coordinate: observation.coordinate ?? observation.snapshot.coordinate,
+      primaryEmpireId: observation.observerEmpireId,
+      secondaryEmpireId: observation.snapshot.ownerEmpireId,
+      outcome: observation.detected ? 'failure' : 'completed',
+      reward: ZERO_REWARD,
+      primaryLosses: {},
+      secondaryLosses: {},
+      threatMultiplierPermille: 1_000,
+      rewardMultiplierPermille: 1_000,
+    }));
+    const defenderReports = intelligence.alerts.map((alert): UnifiedMissionReport => ({
+      id: `intelligence-alert-${alert.id}`,
+      resolvedAt: alert.detectedAt,
+      kind: 'intelligence',
+      mode: 'system',
+      title: 'Контрразведка',
+      summary: `Обнаружен разведывательный зонд · достоверность ${alert.confidence} · источник ${alert.sourceEmpireId ?? 'не установлен'}`,
+      targetId: alert.targetPlanetId,
+      coordinate: alert.coordinate,
+      primaryEmpireId: alert.empireId,
+      secondaryEmpireId: alert.sourceEmpireId,
+      outcome: 'recovered',
+      reward: ZERO_REWARD,
+      primaryLosses: {},
+      secondaryLosses: {},
+      threatMultiplierPermille: 1_000,
+      rewardMultiplierPermille: 1_000,
+    }));
+    return [...observerReports, ...defenderReports];
+  });
+}
+
 export function createUnifiedMissionReports(
   state: GameState,
 ): readonly UnifiedMissionReport[] {
-  return [...createEventReports(state), ...createWorldEventReports(state)]
-    .sort((left, right) => right.resolvedAt - left.resolvedAt || left.id.localeCompare(right.id));
+  return [
+    ...createEventReports(state),
+    ...createWorldEventReports(state),
+    ...createIntelligenceReports(state),
+  ].sort((left, right) => right.resolvedAt - left.resolvedAt || left.id.localeCompare(right.id));
 }
 
 export function filterMissionReports(

@@ -196,7 +196,7 @@ function createReportCard(
   title.textContent = report.title;
   const badges = document.createElement('div');
   const kind = document.createElement('span');
-  kind.textContent = KIND_LABELS[report.kind];
+  kind.textContent = KIND_LABELS[report.kind] ?? report.kind;
   const mode = document.createElement('span');
   mode.textContent = MODE_LABELS[report.mode];
   const outcome = document.createElement('span');

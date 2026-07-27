@@ -104,10 +104,11 @@ export function mountGlobalHud(options: GlobalHudOptions): GlobalHudController {
     renderCapacity('#hud-hangar', '#hud-hangar-value', '#hud-hangar-state', view.hangar);
 
     requireElement<HTMLElement>('#hud-queue-badge').textContent = `Очереди ${view.queueCount}`;
-    requireElement<HTMLElement>('#hud-mission-badge').textContent = `Миссии ${view.activeMissionCount}`;
+    requireElement<HTMLElement>('#hud-mission-badge').textContent =
+      `Миссии ${view.activeMissionCount} · входящие ${view.incomingContactCount}`;
     requireElement<HTMLElement>('#hud-report-badge').textContent = `Отчёты ${view.reportCount}`;
     renderBadge('nav-planet-badge', 'Активные очереди', view.queueCount);
-    renderBadge('nav-fleet-badge', 'Активные миссии', view.activeMissionCount);
+    renderBadge('nav-fleet-badge', 'Активные и входящие миссии', view.activeMissionCount + view.incomingContactCount);
     renderBadge('nav-research-badge', 'Активные исследования', state.research.find((item) => item.empireId === 'player')?.queue.length ?? 0);
     renderBadge('nav-operations-badge', 'Активные события', state.worldEvents.active.length);
     renderBadge('nav-reports-badge', 'Отчёты', view.reportCount);

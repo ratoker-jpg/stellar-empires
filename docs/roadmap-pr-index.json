@@ -5,13 +5,13 @@
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 118,
-    "mergeSha": "46570544da064f839055afd3c10a387326452811",
-    "runtimeBaselinePr": 118,
-    "runtimeBaselineSha": "46570544da064f839055afd3c10a387326452811"
+    "lastMergedPr": 119,
+    "mergeSha": "recorded in GitHub PR #119 merge metadata",
+    "runtimeBaselinePr": 119,
+    "runtimeBaselineSha": "recorded in GitHub PR #119 merge metadata"
   },
   "activePr": null,
-  "nextPrAfterActive": 119,
+  "nextPrAfterActive": 120,
   "nextPrKind": "implementation",
   "phases": [
     {
@@ -45,7 +45,7 @@
       "status": "completed",
       "completedPrs": [112, 113, 114, 115],
       "nextPr": null,
-      "outcome": "One application controller, nine canonical route families, routed workspaces, persistent HUD/context and full browser/accessibility gate",
+      "outcome": "One application controller, nine canonical primary routes, routed workspaces, persistent HUD/context and full browser/accessibility gate",
       "archive": "docs/audits/completed/coherent-ui-shell-01.md"
     },
     {
@@ -55,8 +55,8 @@
       "endPr": 120,
       "status": "in-progress",
       "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01",
-      "completedPrs": [117, 118],
-      "nextPr": 119,
+      "completedPrs": [117, 118, 119],
+      "nextPr": 120,
       "outcome": "Shared ordinary mission rules, deterministic intelligence/counter-intelligence, redacted reports/UI and honest bot gate"
     },
     {
@@ -103,8 +103,8 @@
     {"number": 116, "kind": "audit", "title": "Audit ordinary missions and intelligence", "status": "merged", "mergeSha": "3cdd4f106f163a57a564d8ac2b2ff3c38b5ebbe5"},
     {"number": 117, "kind": "implementation", "workItem": "MISSION-RULES-REGISTRY", "title": "Unify ordinary mission rules", "status": "merged", "mergeSha": "669cca1510f242cb7069831420edd488af435d4d"},
     {"number": 118, "kind": "implementation", "workItem": "ESPIONAGE-COUNTERINTELLIGENCE", "title": "Complete espionage and counter-intelligence", "status": "merged", "mergeSha": "46570544da064f839055afd3c10a387326452811"},
-    {"number": 119, "kind": "implementation", "workItem": "INTELLIGENCE-REPORTS-PRESENTATION", "title": "Route intelligence reports and redacted presentation", "status": "planned"},
+    {"number": 119, "kind": "implementation", "workItem": "INTELLIGENCE-REPORTS-PRESENTATION", "title": "Route intelligence reports and redacted presentation", "status": "merged-on-this-pr", "mergeSha": "recorded in GitHub PR #119 merge metadata"},
     {"number": 120, "kind": "implementation", "workItem": "MISSION-INTELLIGENCE-BOT-GATE", "title": "Gate mission intelligence bot parity", "status": "planned"}
   ],
-  "nextAction": "Create PR #119 from fresh post-#118 main and implement only INTELLIGENCE-REPORTS-PRESENTATION."
+  "nextAction": "After PR #119 merges, create PR #120 from fresh main and implement only MISSION-INTELLIGENCE-BOT-GATE."
 }
