@@ -1,22 +1,22 @@
 # Current execution state
 
 **Updated:** 2026-07-27  
-**Safe to continue:** yes — Audit PR #116 only until merge
+**Safe to continue:** yes — after Audit PR #116 merges, start PR #117 only
 
 | Field | Current value |
 |---|---|
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
 | Current batch | `ORDINARY-MISSIONS-INTELLIGENCE-01` |
-| Audit PR | #116 — active; accepted when merged |
+| Audit PR | #116 — accepted by merge of this PR |
 | Audit baseline | post-#115 `main` · `da1b3c943107ab13a003d5eb9bb084a229bdb51c` |
 | Complexity | medium |
 | Planned implementation PRs | #117–#120 |
 | Completed implementation PRs | none |
 | Active implementation PR | none |
-| Active work item | audit finalization only |
+| Active work item | none after Audit #116 merge |
 | Last completed atomic action | selected mission/intelligence scope and wrote rules, PR split and Graphify evidence |
 | Last successful validation | fresh Graphify run `30278509430` passed: 2,130 nodes, 6,795 edges, 103 communities, 100% extracted |
-| Exact next action | finish Audit #116 status/roadmap reconciliation, run clean-head checks, merge; then create #117 from fresh post-#116 `main` |
+| Exact next action | create PR #117 from fresh post-#116 `main` and implement only `MISSION-RULES-REGISTRY` |
 | Blockers | none |
 | Divergence | none; audit-only diff |
 
@@ -49,4 +49,4 @@ Audit #116 does not authorize:
 
 ## Recovery rule
 
-Before Audit #116 merges, do not create #117 or any implementation branch. After #116 merges, start only `MISSION-RULES-REGISTRY` from the exact latest `main` and follow the recorded file map.
+After Audit #116 merges, start only `MISSION-RULES-REGISTRY` from the exact latest `main` and follow the recorded file map.
