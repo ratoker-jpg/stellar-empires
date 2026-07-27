@@ -15,6 +15,7 @@ import './styles/planet.css';
 import './styles/planetWorkspace.css';
 import './styles/planetDevelopment.css';
 import './styles/developmentWorkspace.css';
+import './styles/operationsRoutes.css';
 import './styles/logistics.css';
 import './styles/market.css';
 import './styles/saveManager.css';
@@ -52,8 +53,11 @@ import {
   createBrowserAppShellEnvironment,
 } from './ui/appShellController';
 import type {
+  FleetShellMode,
+  OperationsShellMode,
   PlanetDevelopmentSurface,
   PlanetShellMode,
+  ReportShellFilter,
 } from './ui/appShellRoute';
 import { mountCommandDoctrineScreen } from './ui/commandDoctrineScreen';
 import { mountCommandRankingScreen } from './ui/commandRankingScreen';
@@ -61,13 +65,9 @@ import { mountDevelopmentHud } from './ui/developmentHud';
 import { mountDevelopmentPresentation } from './ui/developmentPresentation';
 import { mountDevelopmentWorkspaceRouter } from './ui/developmentWorkspaceRouter';
 import { mountEmpireOverview } from './ui/empireOverview';
-import { mountExpeditionPanel } from './ui/expeditionPanel';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
 import { mountFleetDoctrineScreen } from './ui/fleetDoctrineScreen';
-import { mountGalaxyIntelPanel } from './ui/galaxyIntelPanel';
-import { mountLogisticsRoutesPanel } from './ui/logisticsRoutesPanel';
-import { mountMarketPanel } from './ui/marketPanel';
-import { mountMissionReportsPanel } from './ui/missionReportsPanel';
+import { mountFleetOperationsWorkspace } from './ui/fleetOperationsWorkspace';
 import { mountMissionScreen } from './ui/missionScreen';
 import { selectNewGameFaction } from './ui/newGameFactionPicker';
 import { mountOperationsWorkspace } from './ui/operationsWorkspace';
@@ -79,13 +79,12 @@ import {
   selectPlanetScreenPlanet,
 } from './ui/planetScreen';
 import { mountProductionScreens } from './ui/productionScreen';
+import { mountReportsWorkspace } from './ui/reportsWorkspace';
 import { mountResearchScreen } from './ui/researchScreen';
 import { mountSaveManager } from './ui/saveManager';
 import { renderAssetShowcases } from './ui/showcase';
 import { mountShipUpgradesScreen } from './ui/shipUpgradesScreen';
-import { mountSpaceObjectsPanel } from './ui/spaceObjectsPanel';
 import { mountSpaceMapNavigation } from './ui/spaceMapNavigation';
-import { mountWorldEventsPanel } from './ui/worldEventsPanel';
 
 function requireElement<T extends HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector);
@@ -229,16 +228,42 @@ async function bootstrap(): Promise<void> {
       appShellRef.current?.navigateToPlanet(application.getActivePlanetId(), mode, surface);
     },
   });
+  const fleetWorkspace = mountFleetOperationsWorkspace({
+    ...commandBridge,
+    navigateToMode: (mode) => appShellRef.current?.navigateToFleets(mode),
+  });
+  const operationsWorkspace = mountOperationsWorkspace({
+    ...commandBridge,
+    navigateToMode: (mode) => appShellRef.current?.navigateToOperations(mode),
+  });
+  const reportsWorkspace = mountReportsWorkspace({
+    getState: () => application.getState(),
+    navigateToFilter: (filter) => appShellRef.current?.navigateToReports(filter),
+    navigateToCoordinate: (coordinate) => {
+      spaceMapNavigation.navigate({ level: 'solar-system', ...coordinate });
+      appShellRef.current?.navigateToSpace();
+      spaceMapUi.refresh();
+    },
+  });
 
+  const primaryViewIds = [
+    '#galaxy-view',
+    '#planet-view',
+    '#research-view',
+    '#fleets-view',
+    '#operations-view',
+    '#reports-view',
+  ] as const;
   const hidePrimaryViews = (): void => {
-    requireElement<HTMLElement>('#galaxy-view').hidden = true;
-    requireElement<HTMLElement>('#planet-view').hidden = true;
-    requireElement<HTMLElement>('#research-view').hidden = true;
+    for (const selector of primaryViewIds) requireElement<HTMLElement>(selector).hidden = true;
   };
-  const deactivateDevelopmentScreens = (): void => {
+  const deactivateRoutedScreens = (): void => {
     researchScreen.deactivate();
     productionScreens.deactivate();
     shipUpgradesScreen.deactivate();
+    fleetWorkspace.deactivate();
+    operationsWorkspace.deactivate();
+    reportsWorkspace.deactivate();
   };
   const activatePlanet = (
     planetId: string,
@@ -246,13 +271,11 @@ async function bootstrap(): Promise<void> {
     surface: PlanetDevelopmentSurface,
   ): void => {
     hidePrimaryViews();
-    researchScreen.deactivate();
+    deactivateRoutedScreens();
     requireElement<HTMLElement>('#planet-view').hidden = false;
     requireElement<HTMLElement>('.game-layout').classList.add('is-planet-view');
     selectPlanetScreenPlanet(planetId, false);
     requireElement<HTMLButtonElement>(`[data-planet-mode="${mode}"]`).click();
-    productionScreens.deactivate();
-    shipUpgradesScreen.deactivate();
     developmentRouter.activate(mode, surface);
     if (surface === 'shipyard') productionScreens.activate('ship');
     if (surface === 'defense') productionScreens.activate('defense');
@@ -261,7 +284,7 @@ async function bootstrap(): Promise<void> {
   };
   const activateSpace = (): void => {
     hidePrimaryViews();
-    deactivateDevelopmentScreens();
+    deactivateRoutedScreens();
     requireElement<HTMLElement>('#galaxy-view').hidden = false;
     requireElement<HTMLElement>('.game-layout').classList.remove('is-planet-view');
     const parsed = parseSpaceMapRoute(
@@ -272,11 +295,31 @@ async function bootstrap(): Promise<void> {
   };
   const activateResearch = (): void => {
     hidePrimaryViews();
-    productionScreens.deactivate();
-    shipUpgradesScreen.deactivate();
+    deactivateRoutedScreens();
     requireElement<HTMLElement>('.game-layout').classList.remove('is-planet-view');
     researchScreen.activate();
     developmentPresentation.refresh();
+  };
+  const activateFleets = (mode: FleetShellMode): void => {
+    hidePrimaryViews();
+    deactivateRoutedScreens();
+    requireElement<HTMLElement>('#fleets-view').hidden = false;
+    requireElement<HTMLElement>('.game-layout').classList.remove('is-planet-view');
+    fleetWorkspace.activate(mode);
+  };
+  const activateOperations = (mode: OperationsShellMode): void => {
+    hidePrimaryViews();
+    deactivateRoutedScreens();
+    requireElement<HTMLElement>('#operations-view').hidden = false;
+    requireElement<HTMLElement>('.game-layout').classList.remove('is-planet-view');
+    operationsWorkspace.activate(mode);
+  };
+  const activateReports = (filter: ReportShellFilter): void => {
+    hidePrimaryViews();
+    deactivateRoutedScreens();
+    requireElement<HTMLElement>('#reports-view').hidden = false;
+    requireElement<HTMLElement>('.game-layout').classList.remove('is-planet-view');
+    reportsWorkspace.activate(filter);
   };
 
   const appShell = new AppShellController(createBrowserAppShellEnvironment(), {
@@ -286,6 +329,9 @@ async function bootstrap(): Promise<void> {
     activatePlanet,
     activateSpace,
     activateResearch,
+    activateFleets,
+    activateOperations,
+    activateReports,
     writeStatus: setStatus,
   });
   appShellRef.current = appShell;
@@ -298,6 +344,9 @@ async function bootstrap(): Promise<void> {
     shipUpgradesScreen.refresh();
     developmentRouter.refresh();
     developmentPresentation.refresh();
+    fleetWorkspace.refresh();
+    operationsWorkspace.refresh();
+    reportsWorkspace.refresh();
   });
 
   const botAutomation = new BotAutomationController({
@@ -318,21 +367,6 @@ async function bootstrap(): Promise<void> {
   });
   botAutomationRef.current = botAutomation;
 
-  mountGalaxyIntelPanel({ getState: () => application.getState() });
-  mountExpeditionPanel(commandBridge);
-  mountSpaceObjectsPanel(commandBridge);
-  mountWorldEventsPanel({ getState: () => application.getState() });
-  mountMissionReportsPanel({
-    getState: () => application.getState(),
-    navigateToCoordinate: (coordinate) => {
-      spaceMapNavigation.navigate({ level: 'solar-system', ...coordinate });
-      appShell.navigateToSpace();
-      spaceMapUi.refresh();
-    },
-  });
-  mountLogisticsRoutesPanel(commandBridge);
-  mountMarketPanel(commandBridge);
-  mountOperationsWorkspace({ getState: () => application.getState() });
   mountEmpireOverview({
     getState: () => application.getState(),
     getActivePlanetId: () => application.getActivePlanetId(),
@@ -365,6 +399,9 @@ async function bootstrap(): Promise<void> {
     researchScreen.dispose();
     productionScreens.dispose();
     shipUpgradesScreen.dispose();
+    fleetWorkspace.dispose();
+    operationsWorkspace.dispose();
+    reportsWorkspace.dispose();
     application.dispose();
     spaceMapUi.dispose();
     spaceMapNavigation.dispose();

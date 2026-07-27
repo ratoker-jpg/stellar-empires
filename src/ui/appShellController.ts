@@ -3,8 +3,11 @@ import {
   parseAppShellRoute,
   serializeAppShellRoute,
   type AppShellRoute,
+  type FleetShellMode,
+  type OperationsShellMode,
   type PlanetDevelopmentSurface,
   type PlanetShellMode,
+  type ReportShellFilter,
 } from './appShellRoute';
 import {
   SHELL_SCREEN_REGISTRY,
@@ -30,6 +33,9 @@ export interface AppShellControllerOptions {
   ) => void;
   readonly activateSpace: () => void;
   readonly activateResearch: () => void;
+  readonly activateFleets: (mode: FleetShellMode) => void;
+  readonly activateOperations: (mode: OperationsShellMode) => void;
+  readonly activateReports: (filter: ReportShellFilter) => void;
   readonly writeStatus?: (message: string) => void;
   readonly registry?: readonly ShellScreenDefinition[];
 }
@@ -150,6 +156,27 @@ export class AppShellController {
     this.navigate({ family: 'research' }, historyMode);
   }
 
+  public navigateToFleets(
+    mode: FleetShellMode = 'overview',
+    historyMode: 'push' | 'replace' = 'push',
+  ): void {
+    this.navigate({ family: 'fleets', mode }, historyMode);
+  }
+
+  public navigateToOperations(
+    mode: OperationsShellMode = 'overview',
+    historyMode: 'push' | 'replace' = 'push',
+  ): void {
+    this.navigate({ family: 'operations', mode }, historyMode);
+  }
+
+  public navigateToReports(
+    filter: ReportShellFilter = 'all',
+    historyMode: 'push' | 'replace' = 'push',
+  ): void {
+    this.navigate({ family: 'reports', filter }, historyMode);
+  }
+
   public reconcileNavigationMetadata(): void {
     const definitionsByElement = new Map(
       this.#registry.map((definition) => [definition.elementId, definition] as const),
@@ -192,9 +219,14 @@ export class AppShellController {
         const onClick = (event: MouseEvent): void => {
           event.preventDefault();
           event.stopImmediatePropagation();
-          if (definition.routeFamily === 'planet') this.navigateToPlanet();
-          else if (definition.routeFamily === 'space') this.navigateToSpace();
-          else this.navigateToResearch();
+          switch (definition.routeFamily) {
+            case 'planet': this.navigateToPlanet(); break;
+            case 'fleets': this.navigateToFleets(); break;
+            case 'space': this.navigateToSpace(); break;
+            case 'research': this.navigateToResearch(); break;
+            case 'operations': this.navigateToOperations(); break;
+            case 'reports': this.navigateToReports(); break;
+          }
         };
         button.addEventListener('click', onClick);
         this.#cleanup.push(() => button.removeEventListener('click', onClick));
@@ -273,13 +305,16 @@ export class AppShellController {
   private activate(route: AppShellRoute, error: string | null): void {
     this.#applyingRoute = true;
     try {
-      if (route.family === 'planet') {
-        this.#options.selectActivePlanet(route.planetId);
-        this.#options.activatePlanet(route.planetId, route.mode, route.surface);
-      } else if (route.family === 'space') {
-        this.#options.activateSpace();
-      } else {
-        this.#options.activateResearch();
+      switch (route.family) {
+        case 'planet':
+          this.#options.selectActivePlanet(route.planetId);
+          this.#options.activatePlanet(route.planetId, route.mode, route.surface);
+          break;
+        case 'space': this.#options.activateSpace(); break;
+        case 'research': this.#options.activateResearch(); break;
+        case 'fleets': this.#options.activateFleets(route.mode); break;
+        case 'operations': this.#options.activateOperations(route.mode); break;
+        case 'reports': this.#options.activateReports(route.filter); break;
       }
       this.updateNavigationState(route);
       this.#snapshot = { route, error };
@@ -290,6 +325,12 @@ export class AppShellController {
       } else {
         delete document.documentElement.dataset.planetDevelopmentSurface;
       }
+      if (route.family === 'fleets') document.documentElement.dataset.fleetRouteMode = route.mode;
+      else delete document.documentElement.dataset.fleetRouteMode;
+      if (route.family === 'operations') document.documentElement.dataset.operationsRouteMode = route.mode;
+      else delete document.documentElement.dataset.operationsRouteMode;
+      if (route.family === 'reports') document.documentElement.dataset.reportRouteFilter = route.filter;
+      else delete document.documentElement.dataset.reportRouteFilter;
       if (error !== null) this.#options.writeStatus?.(error);
       this.emit();
     } finally {

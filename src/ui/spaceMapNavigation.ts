@@ -266,9 +266,6 @@ export function mountSpaceMapNavigation(
     renderOverlay(state, route);
   };
   const unsub = navigation.subscribe(renderSnapshot);
-  const navGalaxy = requireElement<HTMLButtonElement>('#nav-galaxy');
-  const onGalaxy = (): void => { latestSelection = null; navigation.navigate({ level: 'universe' }); };
-  navGalaxy.addEventListener('click', onGalaxy);
   const previous = requireElement<HTMLButtonElement>('#space-map-page-previous');
   const next = requireElement<HTMLButtonElement>('#space-map-page-next');
   const onPrevious = (): void => {
@@ -308,7 +305,6 @@ export function mountSpaceMapNavigation(
     refresh: () => renderSnapshot(navigation.snapshot),
     dispose: () => {
       unsub();
-      navGalaxy.removeEventListener('click', onGalaxy);
       previous.removeEventListener('click', onPrevious);
       next.removeEventListener('click', onNext);
       form.removeEventListener('submit', onSubmit);

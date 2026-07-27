@@ -44,6 +44,63 @@ describe('application shell routes', () => {
     });
   });
 
+  it('serializes and restores every Fleet route mode', () => {
+    for (const mode of ['overview', 'compose', 'active', 'battles'] as const) {
+      const route = { family: 'fleets', mode } as const;
+      const hash = `#/fleets/${mode}`;
+      expect(serializeAppShellRoute(route)).toBe(hash);
+      expect(parseAppShellRoute(hash, state, planetId)).toEqual({
+        route,
+        canonicalHash: hash,
+        error: null,
+      });
+    }
+  });
+
+  it('serializes and restores every Operations route mode', () => {
+    for (const mode of ['overview', 'expeditions', 'objects', 'events', 'market', 'logistics'] as const) {
+      const route = { family: 'operations', mode } as const;
+      const hash = `#/operations/${mode}`;
+      expect(serializeAppShellRoute(route)).toBe(hash);
+      expect(parseAppShellRoute(hash, state, planetId)).toEqual({
+        route,
+        canonicalHash: hash,
+        error: null,
+      });
+    }
+  });
+
+  it('serializes and restores every Reports filter', () => {
+    for (const filter of ['all', 'combat', 'expedition', 'object', 'event'] as const) {
+      const route = { family: 'reports', filter } as const;
+      const hash = `#/reports/${filter}`;
+      expect(serializeAppShellRoute(route)).toBe(hash);
+      expect(parseAppShellRoute(hash, state, planetId)).toEqual({
+        route,
+        canonicalHash: hash,
+        error: null,
+      });
+    }
+  });
+
+  it('normalizes missing and invalid operation modes without changing GameState', () => {
+    expect(parseAppShellRoute('#/fleets', state, planetId)).toEqual({
+      route: { family: 'fleets', mode: 'overview' },
+      canonicalHash: '#/fleets/overview',
+      error: null,
+    });
+    expect(parseAppShellRoute('#/operations/missing', state, planetId)).toEqual({
+      route: { family: 'operations', mode: 'overview' },
+      canonicalHash: '#/operations/overview',
+      error: 'Режим операций не распознан. Открыта операционная сводка.',
+    });
+    expect(parseAppShellRoute('#/reports/missing', state, planetId)).toEqual({
+      route: { family: 'reports', filter: 'all' },
+      canonicalHash: '#/reports/all',
+      error: 'Фильтр отчётов не распознан. Открыт единый журнал.',
+    });
+  });
+
   it('delegates the complete space hash without interpreting map details', () => {
     const hash = '#/space/solar/1/2/3';
     expect(parseAppShellRoute(hash, state, planetId)).toEqual({

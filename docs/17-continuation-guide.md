@@ -1,9 +1,9 @@
 # AI Continuation Guide
 
-**Status:** `UI-SHELL-DEVELOPMENT-WORKSPACES` completed by PR #113 on merge  
+**Status:** `UI-SHELL-FLEET-OPERATIONS-WORKSPACES` completed by PR #114 on merge  
 **Updated:** 2026-07-27  
 **Audit:** #111 — `COHERENT-UI-SHELL-01`  
-**Next implementation:** #114 — `UI-SHELL-FLEET-OPERATIONS-WORKSPACES`
+**Next implementation:** #115 — `UI-SHELL-COMMAND-SYSTEM-GATE`
 
 ## Repository
 
@@ -31,43 +31,44 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - PR #106–#110 completed schema-v14 Universe navigation, action gates and Browser E2E;
 - PR #111 accepted medium batch `COHERENT-UI-SHELL-01`;
 - PR #112 delivered the application controller, canonical Planet/Space shell routes and typed primary registry;
-- PR #113 delivered routed development workspaces and persistent active-colony context.
+- PR #113 delivered routed development workspaces and persistent active-colony context;
+- PR #114 delivered routed Fleet, Operations and Reports workspaces.
 
-### PR #113 development contract
+### PR #114 operations contract
 
-- Research is the canonical `#/research` workspace;
-- Planet routes remain `#/planet/<planet-id>/<overview|resource|industry|military>`;
-- local Planet surfaces use checksum-neutral URL query state for shipyard, Defence/Repair and upgrades;
-- Industry and Military gateways open real workspaces even when requirements keep actions disabled;
-- Research, Production, repair and upgrade queues refresh through application subscriptions;
-- active colony, coordinates and world time remain visible outside Planet-only presentation;
-- all commands still use existing reducer validation;
+- Fleet routes are `#/fleets/<overview|compose|active|battles>`;
+- Operations routes are `#/operations/<overview|expeditions|objects|events|market|logistics>`;
+- Reports routes are `#/reports/<all|combat|expedition|object|event>`;
+- target handoff prefills the Fleet composer and does not send a mission before explicit confirmation;
+- intelligence continues to use the existing redacted selectors;
+- Market and Logistics continue through existing reducer commands;
+- Reports remain directly reachable and map backlinks restore exact Space coordinates;
+- routed workspaces refresh through application subscriptions;
+- legacy Fleet/Operations/Reports dialogs and runtime-created primary buttons are not mounted;
 - no save schema, gameplay command or balance value changed.
 
 ## Accepted implementation chain
 
 ```text
 #112 UI-SHELL-RUNTIME-ROUTER — completed
-→ #113 UI-SHELL-DEVELOPMENT-WORKSPACES — completed by this merge
-→ #114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES — next
-→ #115 UI-SHELL-COMMAND-SYSTEM-GATE
+→ #113 UI-SHELL-DEVELOPMENT-WORKSPACES — completed
+→ #114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES — completed by this merge
+→ #115 UI-SHELL-COMMAND-SYSTEM-GATE — next
 ```
 
-## Scope for PR #114 only
+## Scope for PR #115 only
 
-PR #114 migrates the fleet and operations family onto routed shell workspaces:
+PR #115 completes the coherent shell batch:
 
-- Fleet overview, composer, active missions and battles;
-- Galaxy intelligence;
-- Expeditions;
-- Space Objects;
-- World Events;
-- Market and Logistics;
-- Reports and map backlinks;
-- Operations summary;
-- preservation of explicit mission confirmation and first-click non-dispatch behavior.
+- route Command overview and Ranking;
+- route Command Doctrine and Fleet Doctrine;
+- route System/settings and Save Manager;
+- finish HUD warnings/badges and context ownership;
+- remove obsolete compatibility launchers and hidden runtime showcase surfaces where authorized;
+- run the full shell Browser E2E and Graphify gate;
+- archive Audit #111 and close `COHERENT-UI-SHELL-01` only after every acceptance condition passes.
 
-Do not include Command/System/HUD closure from #115.
+Do not include alliances, solar war, Obelisks, Gates, new mechanics, balance changes or a framework rewrite.
 
 ## Batch invariants
 
@@ -80,16 +81,14 @@ Do not include Command/System/HUD closure from #115.
 - player and bots continue using the same command validators;
 - no Alliance item before an alliance audit;
 - no solar-war/endgame work in this batch;
-- no framework rewrite;
 - no copied Nemexia HTML, CSS, prose, branding or assets.
 
-## Known limitations outside PR #114
+## Known limitations outside PR #115
 
-- Command, ranking, doctrines, saves/settings, final HUD/context and batch closure remain for #115;
 - alliances, solar war, Obelisks, Gates and victory remain unaudited future work;
 - complete phone/mobile layout is not included;
-- balance and release hardening remain open.
+- ordinary mechanic parity, PvE/meta depth, balance and release hardening remain open.
 
 ## Immediate route
 
-After PR #113 merges, create PR #114 from that exact fresh `main` and implement only `UI-SHELL-FLEET-OPERATIONS-WORKSPACES`. Do not start #115 in the same branch or PR.
+After PR #114 merges, create PR #115 from that exact fresh `main` and implement only `UI-SHELL-COMMAND-SYSTEM-GATE`. Do not start another unaudited batch in the same branch or PR.
