@@ -6,35 +6,53 @@
 | Field | Current value |
 |---|---|
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
-| Completed batch | `UNIVERSE-NAVIGATION-01` |
-| Audit PR | #106 — archived in `docs/audits/completed/universe-navigation-01.md` |
-| Implementation PRs | #107 → #108 → #109 → #110 |
-| Active implementation PR | none after #110 merge |
-| Last completed atomic action | passed the final clean-head asset, lint, TypeScript, unit, build, Browser E2E and Graphify gates for #110 |
-| Exact next action | create a new Audit PR; no implementation work is authorized |
+| Current batch | `COHERENT-UI-SHELL-01` |
+| Audit PR | #111 — active until accepted and merged |
+| Audit base | `main` SHA `8e9e848b0725c52263ff7e310bc9d899a81554c4` |
+| Audit branch | `audit/111-coherent-ui-shell` |
+| Complexity | medium |
+| Authorized implementation PRs | planned #112 → #113 → #114 → #115 |
+| Active implementation PR | none; implementation is forbidden until #111 merges |
+| Active work item | audit and implementation contract only |
+| Last completed atomic action | inspected current main, PR #110 Graphify artifact, shell/bootstrap, route, HUD, dialogs, command bridge, tests and canonical UI documents |
+| Last successful validation | PR #110 clean-head asset, lint, TypeScript, unit, build, Browser E2E and Graphify gate |
+| Exact next action | finish Audit PR #111, pass CI and Graphify, merge it, then stop |
 | Blockers | none |
 | Divergence | none |
 
-## Closed checkpoints
+## Audit decision
 
-| Checkpoint | State |
-|---|---|
-| #107 Universe asset pipeline | merged |
-| #108 spatial model and schema v14 | merged |
-| #109 three-level navigation views | merged |
-| #110 actions, Browser E2E and batch closure | completed on merge |
+The next batch is presentation-only `COHERENT-UI-SHELL-01`:
 
-## Final package gate
+```text
+#112 UI-SHELL-RUNTIME-ROUTER
+#113 UI-SHELL-DEVELOPMENT-WORKSPACES
+#114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES
+#115 UI-SHELL-COMMAND-SYSTEM-GATE
+```
 
-- asset audit: passed;
-- lint: passed;
-- TypeScript: passed;
-- full unit suite: passed;
-- production build: passed;
-- Chromium Playwright E2E: passed;
-- Graphify audit: passed;
-- temporary bootstrap, diagnostic and generated Graphify files: absent from the final diff.
+## Verified audit findings
+
+- `src/main.ts::bootstrap()` directly calls 26 UI mount/apply functions;
+- the shared command bridge delegates unrelated screens to `planetScreen.ts`;
+- at least sixteen modules own top-level dialogs/workspace dialogs;
+- eight modules create and insert navigation buttons dynamically;
+- static Fleet, Research, Ranking, Reports and System rail items are disabled despite existing screen code;
+- Space Map is the only primary family with canonical browser URL/history restoration;
+- no `GameState` schema change is required for the shell batch;
+- critical unknowns: zero.
+
+## Audit files
+
+```text
+docs/audits/current-batch-audit.md
+docs/audits/contracts/coherent-ui-shell-01-prs.md
+docs/audits/contracts/coherent-ui-shell-01-route-layout.md
+docs/audits/evidence/coherent-ui-shell-01-graphify.md
+```
 
 ## Recovery rule
 
-After #110 merges, stop. Do not begin solar-war, alliances, Obelisks, Gates or any other roadmap implementation until a new Audit PR is accepted.
+If Audit PR #111 merges, the next safe action is PR #112 from fresh `main`. Do not start alliances, solar war, Obelisks, Gates, balance, or another UI work item outside the four recorded contracts.
+
+If #111 does not pass CI/Graphify, fix the documentation/status defects in #111. Do not begin implementation.
