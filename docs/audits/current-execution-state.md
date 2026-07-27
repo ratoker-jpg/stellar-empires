@@ -8,13 +8,13 @@
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
 | Active batch | `UNIVERSE-NAVIGATION-01` |
 | Audit PR | #106 — merged |
-| Last merged implementation | #107 — `UNIVERSE-ASSET-PIPELINE` — merge `398a6074b8d7d62d00aa6beabc064a88b2565ca4` |
-| Active work item | `UNIVERSE-SPATIAL-MODEL` |
-| Active implementation PR | #108 |
-| Base SHA | `398a6074b8d7d62d00aa6beabc064a88b2565ca4` |
-| Last completed atomic action | implemented schema v14, compact Universe descriptors and deterministic coordinate migration |
-| Last successful validation | clean PR head passed asset checks, lint, typecheck, 322 tests, build and Graphify |
-| Exact next action | merge #108, then create #109 from fresh `main` |
+| Last merged implementation | #108 — `UNIVERSE-SPATIAL-MODEL` — merge `430eb8d51f49c1846caad37d33668fad6c685201` |
+| Active work item | `UNIVERSE-NAVIGATION-VIEWS` |
+| Active implementation PR | #109 |
+| Base SHA | `430eb8d51f49c1846caad37d33668fad6c685201` |
+| Last completed atomic action | produced the clean #109 implementation head without bootstrap, diagnostic or Graphify output files |
+| Last successful validation | bootstrap head passed asset checks, lint, typecheck, tests, build and Graphify; clean-head rerun requested by this checkpoint commit |
+| Exact next action | merge #109 after clean-head CI and Graphify are green, then create #110 from fresh `main` |
 | Blockers | none |
 | Divergence | none |
 
@@ -23,10 +23,10 @@
 | Checkpoint | State |
 |---|---|
 | #107 Universe asset pipeline | merged |
-| #108 spatial model and schema v14 | ready to merge |
-| #109 three-level navigation views | not started |
+| #108 spatial model and schema v14 | merged |
+| #109 three-level navigation views | implementation complete; clean-head validation active |
 | #110 actions, E2E and batch closure | not started |
 
 ## Recovery rule
 
-Implementation order remains strict: #107 → #108 → #109 → #110. Do not start #109 before #108 merges. Route/UI state is not part of `GameState`; complete solar-war mechanics remain outside this batch.
+Implementation order remains strict: #107 → #108 → #109 → #110. Do not start #110 before #109 merges. Navigation remains checksum-neutral and route state remains outside `GameState`.

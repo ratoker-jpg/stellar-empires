@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
-import { GALAXY_SCENE_IMAGE_ASSETS } from '../../assets/galaxyFleetRuntimeAssets';
-import { RUNTIME_ASSETS } from '../../assets/runtimeAssets';
+import { GALAXY_BACKGROUND_ASSET } from '../../assets/galaxyFleetRuntimeAssets';
 
 export class BootScene extends Phaser.Scene {
   public constructor() {
@@ -8,16 +7,10 @@ export class BootScene extends Phaser.Scene {
   }
 
   public preload(): void {
-    this.load.svg('background.galaxy', RUNTIME_ASSETS.galaxyBackground, {
-      width: 1600,
-      height: 900,
-    });
-    for (const asset of GALAXY_SCENE_IMAGE_ASSETS) {
-      this.load.image(asset.key, asset.url);
-    }
+    this.load.image(GALAXY_BACKGROUND_ASSET.key, GALAXY_BACKGROUND_ASSET.url);
   }
 
   public create(): void {
-    this.scene.start('GalaxyScene');
+    this.scene.start('SpaceMapScene');
   }
 }
