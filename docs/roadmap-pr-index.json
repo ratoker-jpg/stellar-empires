@@ -1,56 +1,189 @@
 {
-  "roadmapVersion": 4,
-  "updatedAt": "2026-07-26",
+  "roadmapVersion": 5,
+  "updatedAt": "2026-07-27",
   "releaseTarget": "1.0",
+  "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
+  "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 94,
-    "mergeSha": "aecbdf24bb6c24435e6cd4fc1f8915aeb4d2136b"
+    "lastMergedPr": 110,
+    "mergeSha": "8e9e848b0725c52263ff7e310bc9d899a81554c4"
   },
-  "activePr": 95,
+  "activePr": 111,
+  "nextPrAfterActive": 112,
   "phases": [
     {
-      "id": "delivered-foundation",
+      "id": "delivered-foundation-and-catalogs",
       "startPr": 1,
-      "endPr": 88,
-      "outcome": "Deterministic playable PvE foundation, factions, assets and strategic design contracts"
-    },
-    {
-      "id": "complete-core-catalogs",
-      "startPr": 89,
-      "endPr": 95,
-      "outcome": "24 buildings, 22 technologies, 13 ordinary ships, 9 defences and 13 Commander Ships"
-    },
-    {
-      "id": "universe-alliances",
-      "startPr": 96,
-      "endPr": 98,
-      "outcome": "Universe navigation, coordinate missions and alliances"
-    },
-    {
-      "id": "solar-war-endgame",
-      "startPr": 99,
       "endPr": 100,
-      "outcome": "Solar war, crystals, final gates and complete victory path"
+      "status": "completed",
+      "outcome": "Deterministic PvE foundation, complete mechanical catalogs, canonical roadmap and audit-first delivery protocol"
     },
     {
-      "id": "product-release",
-      "startPr": 101,
+      "id": "catalog-runtime-integration",
+      "auditPr": 101,
+      "startPr": 102,
+      "endPr": 105,
+      "status": "completed",
+      "outcome": "217 mechanical IDs resolve through 173 generated runtime images"
+    },
+    {
+      "id": "universe-navigation",
+      "auditPr": 106,
+      "startPr": 107,
+      "endPr": 110,
+      "status": "completed",
+      "outcome": "Schema v14, 102 Universe textures, three-level spatial navigation, action gate and Browser E2E"
+    },
+    {
+      "id": "coherent-ui-shell",
+      "auditPr": 111,
+      "startPr": 112,
+      "endPr": 115,
+      "status": "audit-active",
+      "outcome": "Application controller, canonical shell routing, static navigation and routed primary workspaces"
+    },
+    {
+      "id": "ordinary-mechanics-completion",
+      "auditPr": null,
+      "startPr": null,
       "endPr": null,
-      "outcome": "Meta, onboarding, balance, polish, QA and Release 1.0"
+      "status": "not-audited",
+      "outcome": "Complete ordinary economy, mission, espionage, combat and destruction rules"
+    },
+    {
+      "id": "pve-meta-and-bot-parity",
+      "auditPr": null,
+      "startPr": null,
+      "endPr": null,
+      "status": "not-audited",
+      "outcome": "PvE/meta depth and honest autonomous bot parity"
+    },
+    {
+      "id": "alliances-and-endgame",
+      "auditPr": null,
+      "startPr": null,
+      "endPr": null,
+      "status": "not-audited",
+      "outcome": "Alliances, solar war, Obelisks, Gates and complete victory"
+    },
+    {
+      "id": "release-candidate",
+      "auditPr": null,
+      "startPr": null,
+      "endPr": null,
+      "status": "not-audited",
+      "outcome": "Balance, performance, onboarding, QA and reproducible Pages release"
     }
   ],
   "planned": [
-    { "number": 89, "title": "Complete catalog integration foundation", "status": "merged", "mergeSha": "543794171faff24c42d2b75f482cbc2619688932" },
-    { "number": 90, "title": "Complete the 24-building economy", "status": "merged" },
-    { "number": 91, "title": "Complete the 22-technology progression tree", "status": "superseded" },
-    { "number": 92, "title": "Complete the 22-technology progression tree", "status": "merged", "mergeSha": "6314f78bd6417b905ccae170f505697734a46505" },
-    { "number": 93, "title": "Complete the 13-ship rosters", "status": "merged", "mergeSha": "ae7940aa5b3f78ea7192cb15d6b003652a38ac59" },
-    { "number": 94, "title": "Complete the 9-defence rosters", "status": "merged", "mergeSha": "aecbdf24bb6c24435e6cd4fc1f8915aeb4d2136b" },
-    { "number": 95, "title": "Commander Ships and full-game validation", "status": "active" },
-    { "number": 96, "title": "Universe, Galaxy and Solar-system runtime navigation", "status": "planned" },
-    { "number": 97, "title": "Coordinate missions and direct map actions", "status": "planned" },
-    { "number": 98, "title": "Alliances and bot diplomacy", "status": "planned" },
-    { "number": 99, "title": "Solar war and destroyed-system lifecycle", "status": "planned" },
-    { "number": 100, "title": "Galactic gates and final victory", "status": "planned" }
-  ]
+    {
+      "number": 101,
+      "kind": "audit",
+      "title": "Audit catalog runtime integration",
+      "status": "merged",
+      "mergeSha": "2eb5d4996bb24cb7fa48305bb010e48a1263c465"
+    },
+    {
+      "number": 102,
+      "kind": "implementation",
+      "title": "Integrate building runtime assets",
+      "status": "merged",
+      "mergeSha": "43471d9ab2a6527e3337f1e73e507d85e2d8e094"
+    },
+    {
+      "number": 103,
+      "kind": "implementation",
+      "title": "Integrate technology runtime assets",
+      "status": "merged",
+      "mergeSha": "b47ec8df9abc58d1ce455e3bf6ee1279d2e0d9d0"
+    },
+    {
+      "number": 104,
+      "kind": "implementation",
+      "title": "Integrate ordinary ship runtime assets",
+      "status": "merged",
+      "mergeSha": "ba207dac57d3f6bf66559d074cf38abf54cdc12c"
+    },
+    {
+      "number": 105,
+      "kind": "implementation",
+      "title": "Integrate defence and Commander runtime assets",
+      "status": "merged",
+      "mergeSha": "af6954564531caa81c3dd83f924e3696ad984165"
+    },
+    {
+      "number": 106,
+      "kind": "audit",
+      "title": "Audit playable Universe navigation",
+      "status": "merged",
+      "mergeSha": "3bafad74907a92633f5c31c3d30bd96268c3dafb"
+    },
+    {
+      "number": 107,
+      "kind": "implementation",
+      "workItem": "UNIVERSE-ASSET-PIPELINE",
+      "title": "Implement Universe asset pipeline",
+      "status": "merged",
+      "mergeSha": "398a6074b8d7d62d00aa6beabc064a88b2565ca4"
+    },
+    {
+      "number": 108,
+      "kind": "implementation",
+      "workItem": "UNIVERSE-SPATIAL-MODEL",
+      "title": "Implement Universe spatial model",
+      "status": "merged",
+      "mergeSha": "430eb8d51f49c1846caad37d33668fad6c685201"
+    },
+    {
+      "number": 109,
+      "kind": "implementation",
+      "workItem": "UNIVERSE-NAVIGATION-VIEWS",
+      "title": "Implement Universe navigation views",
+      "status": "merged",
+      "mergeSha": "04d2e872e380fa9f5f303e424a548c209afbaa14"
+    },
+    {
+      "number": 110,
+      "kind": "implementation",
+      "workItem": "UNIVERSE-ACTIONS-GATE",
+      "title": "Gate Universe actions and close navigation batch",
+      "status": "merged",
+      "mergeSha": "8e9e848b0725c52263ff7e310bc9d899a81554c4"
+    },
+    {
+      "number": 111,
+      "kind": "audit",
+      "title": "Audit the coherent game shell batch",
+      "status": "active"
+    },
+    {
+      "number": 112,
+      "kind": "implementation",
+      "workItem": "UI-SHELL-RUNTIME-ROUTER",
+      "title": "Build the shell runtime controller and router",
+      "status": "planned"
+    },
+    {
+      "number": 113,
+      "kind": "implementation",
+      "workItem": "UI-SHELL-DEVELOPMENT-WORKSPACES",
+      "title": "Route development workspaces",
+      "status": "planned"
+    },
+    {
+      "number": 114,
+      "kind": "implementation",
+      "workItem": "UI-SHELL-FLEET-OPERATIONS-WORKSPACES",
+      "title": "Route fleet and operations workspaces",
+      "status": "planned"
+    },
+    {
+      "number": 115,
+      "kind": "implementation",
+      "workItem": "UI-SHELL-COMMAND-SYSTEM-GATE",
+      "title": "Complete command, system and full-shell gate",
+      "status": "planned"
+    }
+  ],
+  "nextAction": "Merge Audit PR #111 before starting PR #112 from fresh main."
 }
