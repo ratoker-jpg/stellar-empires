@@ -1,0 +1,36 @@
+name: PR119 compatibility autofix
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-legacy-report-label:
+    if: github.head_ref == 'agent/intelligence-reports-presentation'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Patch compatibility report label
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/ui/missionReportsPanel.ts')
+          text = path.read_text()
+          old = '  kind.textContent = KIND_LABELS[report.kind];'
+          new = '  kind.textContent = KIND_LABELS[report.kind] ?? report.kind;'
+          if old in text:
+              path.write_text(text.replace(old, new))
+          PY
+          if git diff --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/ui/missionReportsPanel.ts
+          git commit -m 'Handle extensible report kinds in compatibility panel'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
