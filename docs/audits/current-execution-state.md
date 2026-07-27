@@ -11,7 +11,7 @@
 | Completed implementation PRs | #117 merged; #118 completed on merge of this PR |
 | Active implementation PR | none after #118 merge |
 | Last completed action | deterministic scout composition, intelligence tiers, cooldown, detection, probe loss, defender alert and normal undetected return |
-| Validation | asset audit, lint, TypeScript, 378 tests, production build and Graphify passed; final clean-head Browser E2E required before merge |
+| Validation | final clean-head asset audit, lint, TypeScript, 379 tests, production build, Browser E2E and Graphify passed |
 | Exact next action | create PR #119 from fresh post-#118 `main` and implement only `INTELLIGENCE-REPORTS-PRESENTATION` |
 | Divergence | none; schema v14, command set, mission enum and persisted fields unchanged |
 
@@ -22,6 +22,7 @@
 - cooldown derives from bounded observation history and opens on the exact boundary;
 - detected probes preserve the observation, create a bounded defender alert, are removed and do not return;
 - undetected probes use the existing return lifecycle;
+- E2E uses one legal scout probe beyond its cooldown boundary;
 - save/load remains schema v14.
 
 ## Remaining accepted sequence
