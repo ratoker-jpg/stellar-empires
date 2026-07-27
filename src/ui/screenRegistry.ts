@@ -1,5 +1,5 @@
 export type ShellScreenKind = 'route' | 'legacy';
-export type ShellRouteFamily = 'planet' | 'space' | 'research';
+export type ShellRouteFamily = 'planet' | 'fleets' | 'space' | 'research' | 'operations' | 'reports';
 
 export interface ShellScreenDefinition {
   readonly id: string;
@@ -20,7 +20,7 @@ export const SHELL_SCREEN_REGISTRY: readonly ShellScreenDefinition[] = [
   },
   {
     id: 'fleets', elementId: 'nav-fleet', label: 'Флоты', ariaLabel: 'Флот', icon: '◆',
-    order: 20, utility: false, kind: 'legacy',
+    order: 20, utility: false, kind: 'route', routeFamily: 'fleets',
   },
   {
     id: 'space', elementId: 'nav-galaxy', label: 'Галактика', ariaLabel: 'Галактика', icon: '✦',
@@ -39,12 +39,16 @@ export const SHELL_SCREEN_REGISTRY: readonly ShellScreenDefinition[] = [
     order: 60, utility: false, kind: 'legacy',
   },
   {
+    id: 'operations', elementId: 'nav-operations', label: 'Операции', ariaLabel: 'Операционный центр', icon: '◎',
+    order: 70, utility: true, kind: 'route', routeFamily: 'operations',
+  },
+  {
     id: 'reports', elementId: 'nav-reports', label: 'Отчёты', ariaLabel: 'Отчёты', icon: '▤',
-    order: 70, utility: true, kind: 'legacy',
+    order: 80, utility: true, kind: 'route', routeFamily: 'reports',
   },
   {
     id: 'system', elementId: 'nav-system', label: 'Система', ariaLabel: 'Настройки', icon: '⚙',
-    order: 80, utility: true, kind: 'legacy',
+    order: 90, utility: true, kind: 'legacy',
   },
 ] as const;
 
