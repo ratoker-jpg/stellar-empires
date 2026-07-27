@@ -1,18 +1,18 @@
 {
-  "statusVersion": 17,
+  "statusVersion": 18,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 113,
-  "lastMergeSha": "recorded in GitHub PR #113 merge metadata",
-  "verifiedMainBaseline": "PR #113 clean-head CI, Browser E2E and Graphify; Audit #111 remains active",
+  "lastMergedPr": 114,
+  "lastMergeSha": "recorded in GitHub PR #114 merge metadata",
+  "verifiedMainBaseline": "PR #114 clean-head CI, Browser E2E and Graphify; Audit #111 remains active",
   "activePr": null,
-  "nextPrAfterActive": 114,
+  "nextPrAfterActive": 115,
   "nextPrKind": "implementation",
-  "currentMilestone": "Coherent full UI shell in progress; fleet and operations workspaces are next",
+  "currentMilestone": "Coherent full UI shell in progress; command, system and final batch gate are next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -30,7 +30,7 @@
     "auditStatus": "accepted",
     "implementationCount": 4,
     "implementationPrs": [112, 113, 114, 115],
-    "completedImplementationPrs": [112, 113],
+    "completedImplementationPrs": [112, 113, 114],
     "workItems": [
       "UI-SHELL-RUNTIME-ROUTER",
       "UI-SHELL-DEVELOPMENT-WORKSPACES",
@@ -38,7 +38,7 @@
       "UI-SHELL-COMMAND-SYSTEM-GATE"
     ],
     "status": "implementation-in-progress",
-    "nextWorkItem": "UI-SHELL-FLEET-OPERATIONS-WORKSPACES",
+    "nextWorkItem": "UI-SHELL-COMMAND-SYSTEM-GATE",
     "archive": null
   },
   "auditDecisions": {
@@ -89,22 +89,22 @@
     "20-slot compact Universe model with test, campaign and fidelity topology presets",
     "URL and browser-history driven Universe to Galaxy to Solar-system navigation",
     "exact audited Universe, Galaxy and Solar-system geometry with keyboard and reduced-motion parity",
-    "intelligence-aware object details, explicit action gates and existing mission-composer target handoff",
+    "intelligence-aware object details, explicit action gates and mission-composer target handoff",
     "report-to-map backlinks and semantic SVG route, fleet and mission overlays",
-    "Playwright browser E2E for navigation, reload, history, target prefill, duplicate mission prevention, viewports and runtime budgets",
     "GameApplicationController-owned runtime state, accepted-command effects and active-colony presentation context",
-    "canonical Planet, Space and Research shell routes with browser history, reload and invalid-route normalization",
-    "typed primary navigation registry with canonical metadata isolated from legacy launchers",
-    "routed Research, ship Production, Defence/Repair and Ship Upgrades workspaces",
+    "canonical Planet, Space, Research, Fleet, Operations and Reports shell routes",
+    "typed primary navigation registry with canonical metadata isolated from compatibility launchers",
+    "routed Research, Production, Defence/Repair and Ship Upgrades workspaces",
+    "routed Fleet composer, active missions, battles, intelligence, expeditions, objects, events, market, logistics and reports",
     "persistent active-colony, coordinate and world-time HUD context",
-    "application-driven queue, card, requirements and artwork refresh without remounting",
+    "application-driven routed workspace refresh without remounting",
+    "Playwright Browser E2E for route history, reload, checksum neutrality, explicit mission confirmation, backlinks and release viewports",
     "audit-first autonomous delivery protocol and Graphify validation"
   ],
   "activeDelivery": [],
   "knownLimitations": [
-    "Fleet, intelligence, operations and reports remain legacy surfaces until PR #114",
-    "Command, ranking, doctrines, saves/settings, final HUD warnings/badges and context cleanup remain until PR #115",
-    "legacy launchers still exist but no longer own canonical route metadata",
+    "Command, ranking, doctrines, saves/settings, final HUD/context cleanup and batch closure remain until PR #115",
+    "compatibility launchers for later command/system work still exist but do not own Fleet/Operations/Reports routes",
     "complete solar-war attack, destruction, support and rebuilding mechanics are deferred",
     "alliances, Obelisks, Gates and final victory are not implemented",
     "ordinary mechanic parity, PvE/meta depth, bot parity, balance and release hardening remain incomplete"
@@ -117,7 +117,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on the PR #113 clean head",
+    "lastValidation": "passed on the PR #114 clean head",
     "lastAuditGraph": {
       "nodes": 1913,
       "relationships": 6246,
@@ -155,5 +155,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged GitHub pull requests and actual main"
   ],
-  "nextAction": "Create PR #114 from fresh post-#113 main and implement only UI-SHELL-FLEET-OPERATIONS-WORKSPACES."
+  "nextAction": "Create PR #115 from fresh post-#114 main and implement only UI-SHELL-COMMAND-SYSTEM-GATE."
 }
