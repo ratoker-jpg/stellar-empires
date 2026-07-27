@@ -1,0 +1,46 @@
+.incoming-intelligence-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 9px;
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid rgba(96, 205, 255, 0.2);
+  border-radius: 9px;
+  background: rgba(5, 17, 29, 0.88);
+}
+
+.incoming-intelligence-section > h2,
+.incoming-intelligence-section > p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.incoming-intelligence-card {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(96, 205, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(7, 23, 37, 0.84);
+}
+
+.incoming-intelligence-card p {
+  overflow-wrap: anywhere;
+  color: #9bb3c2;
+}
+
+.incoming-intelligence-card.is-contact {
+  border-color: rgba(225, 185, 91, 0.42);
+  background: rgba(53, 38, 11, 0.42);
+}
+
+.incoming-intelligence-card.is-source {
+  border-color: rgba(96, 205, 255, 0.35);
+}
+
+.incoming-intelligence-card.is-full,
+.mission-report-card.is-intelligence {
+  border-color: rgba(102, 230, 192, 0.34);
+  background: rgba(9, 42, 43, 0.68);
+}
