@@ -1,0 +1,44 @@
+name: PR120 typecheck fix
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.head_ref == 'agent/mission-intelligence-bot-gate'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Apply narrow TypeScript fixes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/simulation/bots/fleetMissionPlanner.ts')
+          text = path.read_text()
+          old = "    const targets = perception.ownPlanets\n      .filter((planet) => planet.id !== fleet.location.planetId)"
+          new = "    const originPlanetId = fleet.location.planetId;\n    const targets = perception.ownPlanets\n      .filter((planet) => planet.id !== originPlanetId)"
+          if old not in text:
+              raise SystemExit('fleet narrowing target not found')
+          path.write_text(text.replace(old, new))
+
+          path = Path('src/simulation/bots/perception.ts')
+          text = path.read_text()
+          old = '      visibility: planet.visibility,'
+          new = "      visibility: planet.visibility as BotPublicContactPerception['visibility'],"
+          if old not in text:
+              raise SystemExit('visibility target not found')
+          path.write_text(text.replace(old, new))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/simulation/bots/fleetMissionPlanner.ts src/simulation/bots/perception.ts
+          git commit -m 'Fix bot gate TypeScript narrowing'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
