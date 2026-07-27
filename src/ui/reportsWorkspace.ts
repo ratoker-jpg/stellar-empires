@@ -12,6 +12,7 @@ import {
 import type { SpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
 import type { ReportShellFilter } from './appShellRoute';
+import { createIncomingFlightsSection } from './intelligencePresentation';
 import { formatGameDuration } from './planetViewModel';
 
 export interface ReportsWorkspaceOptions {
@@ -52,6 +53,16 @@ function requireElement<T extends HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector);
   if (element === null) throw new Error(`Reports workspace element is missing: ${selector}`);
   return element;
+}
+
+function ensureIntelligenceTab(tabs: HTMLElement): void {
+  if (tabs.querySelector('[data-report-filter="intelligence"]') !== null) return;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.setAttribute('role', 'tab');
+  button.dataset.reportFilter = 'intelligence';
+  button.textContent = 'Разведка';
+  tabs.append(button);
 }
 
 function rewardText(reward: MissionReportReward): string {
@@ -179,6 +190,7 @@ function createReportCard(
 export function mountReportsWorkspace(options: ReportsWorkspaceOptions): ReportsWorkspace {
   const host = requireElement<HTMLElement>('#mission-reports-view');
   const tabs = requireElement<HTMLElement>('#reports-route-tabs');
+  ensureIntelligenceTab(tabs);
   let filter: ReportShellFilter = 'all';
   let active = false;
   let searchValue = '';
@@ -276,7 +288,9 @@ export function mountReportsWorkspace(options: ReportsWorkspaceOptions): Reports
     list.className = 'mission-reports-list';
     list.replaceChildren(...filtered.map((report) => createReportCard(state, report, options.navigateToCoordinate)));
     if (filtered.length === 0) list.textContent = 'По заданным фильтрам отчётов нет.';
-    host.replaceChildren(summary, controls, comparison, list);
+    const incoming = createIncomingFlightsSection(state, 'player');
+    incoming.hidden = filter !== 'all' && filter !== 'intelligence';
+    host.replaceChildren(summary, controls, incoming, comparison, list);
   };
 
   const onTabClick = (event: Event): void => {
