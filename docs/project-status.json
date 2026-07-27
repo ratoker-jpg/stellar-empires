@@ -1,18 +1,18 @@
 {
-  "statusVersion": 14,
+  "statusVersion": 15,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 110,
-  "lastMergeSha": "8e9e848b0725c52263ff7e310bc9d899a81554c4",
-  "verifiedMainBaseline": "merged PR #110 with clean-head CI, Browser E2E and Graphify",
-  "activePr": 111,
+  "lastMergedPr": 111,
+  "lastMergeSha": "recorded in GitHub PR #111 merge metadata",
+  "verifiedMainBaseline": "Audit PR #111 accepted on merge; runtime baseline remains merged PR #110",
+  "activePr": null,
   "nextPrAfterActive": 112,
-  "nextPrKind": "implementation-after-audit-merge",
-  "currentMilestone": "Audit the coherent full UI shell before any additional mechanics",
+  "nextPrKind": "implementation",
+  "currentMilestone": "Coherent full UI shell audited; UI-SHELL-RUNTIME-ROUTER is next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -27,7 +27,7 @@
     "batchId": "COHERENT-UI-SHELL-01",
     "complexity": "medium",
     "auditPr": 111,
-    "auditStatus": "active",
+    "auditStatus": "accepted",
     "implementationCount": 4,
     "implementationPrs": [
       112,
@@ -41,7 +41,7 @@
       "UI-SHELL-FLEET-OPERATIONS-WORKSPACES",
       "UI-SHELL-COMMAND-SYSTEM-GATE"
     ],
-    "status": "audit-active",
+    "status": "ready-for-implementation",
     "nextWorkItem": "UI-SHELL-RUNTIME-ROUTER",
     "archive": null
   },
@@ -116,9 +116,7 @@
     "Playwright browser E2E for navigation, reload, history, target prefill, duplicate mission prevention, viewports and runtime budgets",
     "audit-first autonomous delivery protocol and Graphify validation"
   ],
-  "activeDelivery": [
-    "Audit PR #111 documents COHERENT-UI-SHELL-01 only; no implementation begins before merge"
-  ],
+  "activeDelivery": [],
   "knownLimitations": [
     "runtime presentation composition is manually mounted from src/main.ts",
     "unrelated screens currently execute through planetScreen presentation state",
@@ -136,7 +134,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on the PR #110 clean head; Audit PR #111 must pass a fresh run",
+    "lastValidation": "passed on the Audit PR #111 clean head",
     "lastAuditGraph": {
       "nodes": 1913,
       "relationships": 6246,
@@ -174,5 +172,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged GitHub pull requests and actual main"
   ],
-  "nextAction": "Merge Audit PR #111 after CI and Graphify, then start only PR #112 from fresh main."
+  "nextAction": "Create PR #112 from fresh merged main and implement only UI-SHELL-RUNTIME-ROUTER."
 }
