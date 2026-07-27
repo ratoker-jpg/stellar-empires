@@ -1,0 +1,90 @@
+name: PR120 planner fix
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.head_ref == 'agent/mission-intelligence-bot-gate'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Prioritize one honest scout target
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/simulation/bots/fleetMissionPlanner.ts')
+          text = path.read_text()
+          old = """  for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'scout'))) {
+    const actual = realFleet(state, fleet);
+    if (actual === undefined) continue;
+    const targets = [...listMissionTargets(state, perception.empireId, actual, 'scout')].sort(
+      (left, right) =>
+        Number(left.visibility === 'current') - Number(right.visibility === 'current') ||
+        left.id.localeCompare(right.id),
+    );
+    for (const target of targets) {
+      const plan = tryMission(
+        state,
+        perception,
+        blockers,
+        fleet,
+        'scout',
+        target.id,
+        `Разведчик ${fleet.id} проверяет ${target.label}.`,
+      );
+      if (plan !== null) return { plan, blocker: null };
+    }
+  }
+"""
+          new = """  const fullCurrentTargetIds = new Set(
+    perception.foreignPlanets
+      .filter((planet) => planet.freshness === 'current' && planet.snapshot.level === 3)
+      .map((planet) => planet.planetId),
+  );
+  const scoutPriority = (targetId: string): number => {
+    const intelligence = perception.foreignPlanets.find((planet) => planet.planetId === targetId);
+    if (intelligence?.freshness === 'stale') return 0;
+    if (intelligence !== undefined && intelligence.snapshot.level < 3) return 1;
+    return 2;
+  };
+
+  for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'scout'))) {
+    const actual = realFleet(state, fleet);
+    if (actual === undefined) continue;
+    const target = [...listMissionTargets(state, perception.empireId, actual, 'scout')]
+      .filter((candidate) => !fullCurrentTargetIds.has(candidate.id))
+      .sort(
+        (left, right) =>
+          scoutPriority(left.id) - scoutPriority(right.id) || left.id.localeCompare(right.id),
+      )[0];
+    if (target === undefined) continue;
+    const plan = tryMission(
+      state,
+      perception,
+      blockers,
+      fleet,
+      'scout',
+      target.id,
+      `Разведчик ${fleet.id} проверяет ${target.label}.`,
+    );
+    if (plan !== null) return { plan, blocker: null };
+  }
+"""
+          if old not in text:
+              raise SystemExit('scout planner target missing')
+          path.write_text(text.replace(old, new))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/simulation/bots/fleetMissionPlanner.ts
+          git commit -m 'Prioritize honest scout targets before attack'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
