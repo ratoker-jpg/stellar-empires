@@ -1,11 +1,11 @@
-name: PR118 typecheck diagnostics
+name: PR118 test diagnostics
 
 on:
   pull_request:
     branches: [main]
 
 jobs:
-  capture-typecheck-output:
+  capture-test-output:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -17,17 +17,17 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Capture full typecheck output
+      - name: Capture full test output
         shell: bash
         run: |
           set +e
-          npm run typecheck > pr118-typecheck-output.txt 2>&1
+          npm run test > pr118-test-output.txt 2>&1
           status=$?
-          echo "exit_code=$status" >> pr118-typecheck-output.txt
+          echo "exit_code=$status" >> pr118-test-output.txt
           exit 0
       - name: Upload diagnostics
         uses: actions/upload-artifact@v4
         with:
-          name: pr118-typecheck-output
-          path: pr118-typecheck-output.txt
+          name: pr118-test-output
+          path: pr118-test-output.txt
           if-no-files-found: error
