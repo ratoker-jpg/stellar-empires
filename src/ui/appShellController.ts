@@ -98,6 +98,7 @@ export class AppShellController {
     }
     this.#unsubscribeEnvironment = environment.subscribe(() => this.syncFromUrl());
     this.activate(parsed.route, parsed.error);
+    this.observeNavigationInsertions();
   }
 
   public get snapshot(): AppShellSnapshot {
@@ -187,6 +188,15 @@ export class AppShellController {
       }
       rail.append(button);
     }
+  }
+
+  private observeNavigationInsertions(): void {
+    const rail = document.querySelector<HTMLElement>('.side-rail');
+    if (rail === null) return;
+    const observer = new MutationObserver(() => this.reconcileNavigationMetadata());
+    observer.observe(rail, { childList: true });
+    this.#cleanup.push(() => observer.disconnect());
+    this.reconcileNavigationMetadata();
   }
 
   private bindPlanetRouteSync(): void {
