@@ -9,10 +9,10 @@
   "lastMergedPr": 115,
   "lastMergeSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
   "verifiedMainBaseline": "post-PR #115 main; coherent UI shell completed",
-  "activePr": 116,
+  "activePr": null,
   "nextPrAfterActive": 117,
   "nextPrKind": "implementation",
-  "currentMilestone": "M4 ordinary missions and intelligence audit active",
+  "currentMilestone": "M4 ordinary missions and intelligence audit accepted",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -41,7 +41,7 @@
     "roadmapMilestone": "M4",
     "complexity": "medium",
     "auditPr": 116,
-    "auditStatus": "accepted-when-merged",
+    "auditStatus": "accepted",
     "baselineSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
     "implementationCount": 4,
     "implementationPrs": [117, 118, 119, 120],
@@ -52,7 +52,7 @@
       "INTELLIGENCE-REPORTS-PRESENTATION",
       "MISSION-INTELLIGENCE-BOT-GATE"
     ],
-    "status": "audit-active",
+    "status": "implementation-not-started",
     "nextWorkItem": "MISSION-RULES-REGISTRY",
     "archive": null
   },
@@ -108,14 +108,7 @@
     "persistent HUD, route-aware context, keyboard, compact and reduced-motion accessibility",
     "full-shell Browser E2E and Graphify validation"
   ],
-  "activeDelivery": [
-    {
-      "pr": 116,
-      "kind": "audit",
-      "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01",
-      "status": "draft"
-    }
-  ],
+  "activeDelivery": [],
   "knownLimitations": [
     "ordinary mission eligibility is duplicated until PR #117",
     "scout cooldown, probe loss and intelligence reports are not implemented until PR #118-#119",
@@ -171,5 +164,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged GitHub pull requests and actual main"
   ],
-  "nextAction": "Merge Audit PR #116 after clean checks, then create PR #117 from fresh post-#116 main and implement only MISSION-RULES-REGISTRY."
+  "nextAction": "Create PR #117 from fresh post-#116 main and implement only MISSION-RULES-REGISTRY."
 }
