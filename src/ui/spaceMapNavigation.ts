@@ -29,14 +29,6 @@ function requireElement<T extends Element>(selector: string): T {
   return element;
 }
 
-function showGalaxyView(): void {
-  requireElement<HTMLElement>('#galaxy-view').hidden = false;
-  requireElement<HTMLElement>('#planet-view').hidden = true;
-  requireElement<HTMLButtonElement>('#nav-galaxy').classList.add('is-active');
-  requireElement<HTMLButtonElement>('#nav-planet').classList.remove('is-active');
-  requireElement<HTMLElement>('.game-layout').classList.remove('is-planet-view');
-}
-
 function breadcrumbButton(
   label: string,
   route: SpaceMapRoute,
@@ -241,7 +233,6 @@ export function mountSpaceMapNavigation(
   const renderSnapshot = (snapshot: SpaceMapNavigationSnapshot): void => {
     const { route } = snapshot;
     const state = getState();
-    showGalaxyView();
     renderBreadcrumbs(route, navigation);
     const error = requireElement<HTMLElement>('#space-map-route-error');
     error.textContent = snapshot.error ?? '';
