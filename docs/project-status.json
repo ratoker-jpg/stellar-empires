@@ -1,61 +1,46 @@
 {
-  "statusVersion": 18,
+  "statusVersion": 19,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 114,
-  "lastMergeSha": "recorded in GitHub PR #114 merge metadata",
-  "verifiedMainBaseline": "PR #114 clean-head CI, Browser E2E and Graphify; Audit #111 remains active",
+  "lastMergedPr": 115,
+  "lastMergeSha": "recorded in GitHub PR #115 merge metadata",
+  "verifiedMainBaseline": "PR #115 clean-head CI, Browser E2E and Graphify; COHERENT-UI-SHELL-01 completed",
   "activePr": null,
-  "nextPrAfterActive": 115,
-  "nextPrKind": "implementation",
-  "currentMilestone": "Coherent full UI shell in progress; command, system and final batch gate are next",
+  "nextPrAfterActive": null,
+  "nextPrKind": "audit",
+  "currentMilestone": "Coherent full UI shell completed; a new Audit PR is required before further implementation",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
-  "currentAuditContracts": [
-    "docs/audits/contracts/coherent-ui-shell-01-prs.md",
-    "docs/audits/contracts/coherent-ui-shell-01-route-layout.md",
-    "docs/audits/evidence/coherent-ui-shell-01-graphify.md"
-  ],
+  "currentAuditContracts": [],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
-  "currentBatch": {
+  "lastCompletedBatch": {
     "batchId": "COHERENT-UI-SHELL-01",
     "complexity": "medium",
     "auditPr": 111,
-    "auditStatus": "accepted",
+    "auditStatus": "completed",
     "implementationCount": 4,
     "implementationPrs": [112, 113, 114, 115],
-    "completedImplementationPrs": [112, 113, 114],
+    "completedImplementationPrs": [112, 113, 114, 115],
     "workItems": [
       "UI-SHELL-RUNTIME-ROUTER",
       "UI-SHELL-DEVELOPMENT-WORKSPACES",
       "UI-SHELL-FLEET-OPERATIONS-WORKSPACES",
       "UI-SHELL-COMMAND-SYSTEM-GATE"
     ],
-    "status": "implementation-in-progress",
-    "nextWorkItem": "UI-SHELL-COMMAND-SYSTEM-GATE",
-    "archive": null
+    "status": "completed",
+    "nextWorkItem": null,
+    "archive": "docs/audits/completed/coherent-ui-shell-01.md",
+    "authorizedAuditArchive": "docs/audits/completed/coherent-ui-shell-01-authorized-audit.md",
+    "divergence": "none"
   },
-  "auditDecisions": {
-    "implementationCount": 4,
-    "schemaChange": false,
-    "newGameplayCommands": false,
-    "routeStateLocation": "url-history-not-game-state",
-    "applicationControllerRequired": true,
-    "staticNavigationRegistryRequired": true,
-    "primaryWorkspacePolicy": "one-active-workspace",
-    "topLevelModalOnlyScreensAllowed": false,
-    "spaceMapRoutePolicy": "delegate-existing-controller",
-    "allianceRouteIncluded": false,
-    "solarWarIncluded": false,
-    "frameworkMigrationIncluded": false,
-    "criticalUnknowns": 0
-  },
+  "currentBatch": null,
+  "auditDecisions": null,
   "scenarioPresets": {
     "test": { "populatedGalaxies": 2, "systemsPerGalaxy": 9 },
     "campaign": { "populatedGalaxies": 6, "systemsPerGalaxy": 27 },
@@ -92,22 +77,27 @@
     "intelligence-aware object details, explicit action gates and mission-composer target handoff",
     "report-to-map backlinks and semantic SVG route, fleet and mission overlays",
     "GameApplicationController-owned runtime state, accepted-command effects and active-colony presentation context",
-    "canonical Planet, Space, Research, Fleet, Operations and Reports shell routes",
-    "typed primary navigation registry with canonical metadata isolated from compatibility launchers",
+    "nine canonical primary shell route families with browser history, reload and invalid-route normalization",
+    "typed primary navigation registry with one entry for every implemented top-level domain",
     "routed Research, Production, Defence/Repair and Ship Upgrades workspaces",
     "routed Fleet composer, active missions, battles, intelligence, expeditions, objects, events, market, logistics and reports",
-    "persistent active-colony, coordinate and world-time HUD context",
+    "routed Command overview, Ranking, Admiral Doctrine, Fleet Doctrine and ship-upgrade launch point",
+    "routed System saves, import/export and presentation-only settings",
+    "persistent HUD with active colony, capacities, energy, population, hangar, queue, mission, report and save states",
+    "route-aware context panel constrained to already-authorized and redacted information",
+    "keyboard, heading-focus, compact-layout and reduced-motion shell accessibility",
     "application-driven routed workspace refresh without remounting",
-    "Playwright Browser E2E for route history, reload, checksum neutrality, explicit mission confirmation, backlinks and release viewports",
+    "Playwright Browser E2E for complete route history, reload, checksum neutrality, explicit mission confirmation, backlinks, accessibility and release viewports",
     "audit-first autonomous delivery protocol and Graphify validation"
   ],
   "activeDelivery": [],
   "knownLimitations": [
-    "Command, ranking, doctrines, saves/settings, final HUD/context cleanup and batch closure remain until PR #115",
-    "compatibility launchers for later command/system work still exist but do not own Fleet/Operations/Reports routes",
+    "ordinary mechanic parity and some destruction or espionage rules remain incomplete",
+    "deeper PvE/meta systems and complete honest bot parity remain incomplete",
     "complete solar-war attack, destruction, support and rebuilding mechanics are deferred",
     "alliances, Obelisks, Gates and final victory are not implemented",
-    "ordinary mechanic parity, PvE/meta depth, bot parity, balance and release hardening remain incomplete"
+    "complete phone/mobile layout is not delivered",
+    "balance, onboarding and release hardening remain incomplete"
   ],
   "graphify": {
     "package": "graphifyy",
@@ -117,13 +107,14 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on the PR #114 clean head",
+    "lastValidation": "passed on the PR #115 clean head",
     "lastAuditGraph": {
       "nodes": 1913,
       "relationships": 6246,
       "communities": 78,
       "extractedPercent": 100,
-      "inferredPercent": 0
+      "inferredPercent": 0,
+      "note": "accepted Audit #111 baseline; PR #115 final workflow passed"
     }
   },
   "sourceAssetIntake": {
@@ -147,13 +138,12 @@
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
-    "docs/audits/contracts/coherent-ui-shell-01-prs.md",
-    "docs/audits/contracts/coherent-ui-shell-01-route-layout.md",
-    "docs/audits/evidence/coherent-ui-shell-01-graphify.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/27-playable-game-roadmap-v5.md",
-    "latest merged GitHub pull requests and actual main"
+    "docs/audits/batch-history.md",
+    "latest merged GitHub pull requests and actual main",
+    "fresh Graphify evidence created by the next Audit PR"
   ],
-  "nextAction": "Create PR #115 from fresh post-#114 main and implement only UI-SHELL-COMMAND-SYSTEM-GATE."
+  "nextAction": "Create a new Audit PR from fresh post-#115 main before any implementation work."
 }
