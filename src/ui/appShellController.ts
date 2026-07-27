@@ -137,6 +137,25 @@ export class AppShellController {
     this.navigate({ family: 'space', hash }, historyMode);
   }
 
+  public reconcileNavigationMetadata(): void {
+    const definitionsByElement = new Map(
+      this.#registry.map((definition) => [definition.elementId, definition] as const),
+    );
+    for (const button of document.querySelectorAll<HTMLButtonElement>('.side-rail > .rail-button')) {
+      const definition = definitionsByElement.get(button.id);
+      if (definition === undefined) {
+        delete button.dataset.shellScreen;
+        delete button.dataset.shellScreenKind;
+        button.removeAttribute('aria-current');
+        button.classList.remove('is-active');
+        continue;
+      }
+      button.dataset.shellScreen = definition.id;
+      button.dataset.shellScreenKind = definition.kind;
+    }
+    this.updateNavigationState(this.#snapshot.route);
+  }
+
   public dispose(): void {
     this.#unsubscribeEnvironment();
     for (const cleanup of this.#cleanup.splice(0)) cleanup();
@@ -157,7 +176,9 @@ export class AppShellController {
       }
       const button = createNavigationButton(definition);
       if (definition.kind === 'route') {
-        const onClick = (): void => {
+        const onClick = (event: MouseEvent): void => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
           if (definition.routeFamily === 'planet') this.navigateToPlanet();
           else this.navigateToSpace();
         };
