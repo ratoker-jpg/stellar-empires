@@ -83,7 +83,7 @@ export function createOrdinaryMissionIntelligenceGateFixture(seedSource: string)
     buildings: target.buildings.filter(
       (building) => building.buildingId !== getFactionMechanicalRoles(target.factionId).buildings.sensorGrid,
     ),
-    inventory: { ships: {}, defenses: {} },
+    inventory: { ships: {}, defences: {} },
   };
   const scout: FleetState = {
     id: BOT_GATE_SCOUT_FLEET_ID,
@@ -103,7 +103,7 @@ export function createOrdinaryMissionIntelligenceGateFixture(seedSource: string)
     originPlanetId: origin.id,
     location: { type: 'planet', planetId: origin.id },
     status: 'stationed',
-    ships: { [roles.ships.fighter]: 20 },
+    ships: { [roles.ships.fighter]: 5 },
     cargo: ZERO_CARGO,
     speed: 1_000,
     cargoCapacity: 600,
