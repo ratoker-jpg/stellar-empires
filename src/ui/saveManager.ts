@@ -7,9 +7,16 @@ import {
 } from '../storage/SaveManager';
 
 export interface SaveManagerUiOptions {
-  readonly manager: SaveManager;
+  readonly manager?: SaveManager | undefined;
   readonly getState: () => GameState;
   readonly writeStatus: (message: string) => void;
+}
+
+export interface SaveManagerUiMount {
+  activate(): void;
+  deactivate(): void;
+  refresh(): void;
+  dispose(): void;
 }
 
 function formatWorldTime(seconds: number): string {
@@ -41,62 +48,29 @@ function createAction(label: string, action: () => Promise<void>): HTMLButtonEle
   button.textContent = label;
   button.addEventListener('click', () => {
     button.disabled = true;
-    void action().finally(() => {
-      button.disabled = false;
-    });
+    void action().finally(() => { button.disabled = false; });
   });
   return button;
 }
 
-export function mountSaveManager(options: SaveManagerUiOptions): void {
-  const navigationButton = document.querySelector<HTMLButtonElement>('[aria-label="Настройки"]');
-
-  if (navigationButton === null) {
-    return;
-  }
-
-  navigationButton.removeAttribute('disabled');
-  const dialog = document.createElement('dialog');
-  dialog.id = 'save-manager-dialog';
-  dialog.className = 'save-manager-dialog';
-  const header = document.createElement('header');
-  const headerText = document.createElement('div');
-  const eyebrow = document.createElement('p');
-  eyebrow.className = 'panel-label';
-  eyebrow.textContent = 'Локальная партия';
-  const title = document.createElement('h2');
-  title.textContent = 'Сохранения';
-  headerText.append(eyebrow, title);
-  const close = document.createElement('button');
-  close.type = 'button';
-  close.className = 'dialog-close';
-  close.textContent = '×';
-  close.setAttribute('aria-label', 'Закрыть сохранения');
-  close.addEventListener('click', () => dialog.close());
-  header.append(headerText, close);
-
-  const controls = document.createElement('section');
-  controls.className = 'save-manager-controls';
-  const slotInput = document.createElement('input');
-  slotInput.type = 'text';
-  slotInput.value = 'manual-1';
-  slotInput.maxLength = 48;
-  slotInput.setAttribute('aria-label', 'Название слота сохранения');
-  const saveButton = document.createElement('button');
-  saveButton.type = 'button';
-  saveButton.textContent = 'Сохранить текущую партию';
-  const importInput = document.createElement('input');
-  importInput.type = 'file';
-  importInput.accept = 'application/json,.json';
-  importInput.setAttribute('aria-label', 'Импорт сохранения JSON');
-  controls.append(slotInput, saveButton, importInput);
-
-  const message = document.createElement('p');
-  message.className = 'save-manager-message';
-  const list = document.createElement('div');
-  list.className = 'save-manager-list';
-  dialog.append(header, controls, message, list);
-  document.body.append(dialog);
+export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMount {
+  const host = document.querySelector<HTMLElement>('#system-saves-view');
+  if (host === null) throw new Error('System saves workspace is missing.');
+  let active = false;
+  host.innerHTML = `
+    <section class="save-manager-controls">
+      <label><span>Имя ручного слота</span><input type="text" value="manual-1" maxlength="48" aria-label="Название слота сохранения" /></label>
+      <button type="button" data-save-action="create">Сохранить текущую партию</button>
+      <label><span>Импорт JSON</span><input type="file" accept="application/json,.json" aria-label="Импорт сохранения JSON" /></label>
+    </section>
+    <p class="save-manager-message" role="status"></p>
+    <div class="save-manager-list"></div>
+  `;
+  const slotInput = host.querySelector<HTMLInputElement>('input[type="text"]')!;
+  const saveButton = host.querySelector<HTMLButtonElement>('[data-save-action="create"]')!;
+  const importInput = host.querySelector<HTMLInputElement>('input[type="file"]')!;
+  const message = host.querySelector<HTMLElement>('.save-manager-message')!;
+  const list = host.querySelector<HTMLElement>('.save-manager-list')!;
 
   const showMessage = (text: string, error = false): void => {
     message.textContent = text;
@@ -105,27 +79,33 @@ export function mountSaveManager(options: SaveManagerUiOptions): void {
   };
 
   const activateSlot = async (summary: SaveSlotSummary): Promise<void> => {
+    if (options.manager === undefined) return;
     const loaded = await options.manager.load(summary.slotId);
-
     if (loaded.status !== 'loaded') {
       showMessage(`Слот ${summary.slotId} не прошёл проверку`, true);
       return;
     }
-
     await options.manager.save(AUTOSAVE_SLOT_ID, loaded.save.state);
     showMessage(`Слот ${summary.slotId} активирован · перезапуск`);
     window.location.reload();
   };
 
   const render = async (): Promise<void> => {
+    if (!active) return;
     list.replaceChildren();
+    if (options.manager === undefined) {
+      saveButton.disabled = true;
+      importInput.disabled = true;
+      list.textContent = 'Локальное хранилище недоступно в текущем браузере.';
+      return;
+    }
+    saveButton.disabled = false;
+    importInput.disabled = false;
     const summaries = await options.manager.list();
-
     if (summaries.length === 0) {
       list.textContent = 'Сохранённых партий пока нет.';
       return;
     }
-
     for (const summary of summaries) {
       const row = document.createElement('article');
       row.className = `save-slot${summary.valid ? '' : ' is-invalid'}`;
@@ -139,85 +119,80 @@ export function mountSaveManager(options: SaveManagerUiOptions): void {
       details.append(name, meta);
       const actions = document.createElement('div');
       actions.className = 'save-slot-actions';
-
       if (summary.valid) {
         actions.append(
           createAction('Загрузить', () => activateSlot(summary)),
           createAction('Экспорт', async () => {
-            downloadJson(summary.slotId, await options.manager.export(summary.slotId));
+            downloadJson(summary.slotId, await options.manager!.export(summary.slotId));
             showMessage(`Слот ${summary.slotId} экспортирован`);
           }),
         );
       }
-
       if (!isReservedSlot(summary.slotId)) {
-        actions.append(
-          createAction('Удалить', async () => {
-            await options.manager.delete(summary.slotId);
-            showMessage(`Слот ${summary.slotId} удалён`);
-            await render();
-          }),
-        );
+        actions.append(createAction('Удалить', async () => {
+          await options.manager!.delete(summary.slotId);
+          showMessage(`Слот ${summary.slotId} удалён`);
+          await render();
+        }));
       }
-
       row.append(details, actions);
       list.append(row);
     }
   };
 
-  saveButton.addEventListener('click', () => {
+  const onSave = (): void => {
+    if (options.manager === undefined) return;
     const slotId = slotInput.value.trim();
-
     if (slotId.length === 0 || isReservedSlot(slotId)) {
       showMessage('Укажите отдельное имя ручного слота', true);
       return;
     }
-
     saveButton.disabled = true;
-    void options.manager
-      .save(slotId, options.getState())
+    void options.manager.save(slotId, options.getState())
       .then(async () => {
         showMessage(`Слот ${slotId} сохранён`);
         await render();
       })
-      .catch((error: unknown) => {
-        showMessage(error instanceof Error ? error.message : 'Ошибка сохранения', true);
-      })
-      .finally(() => {
-        saveButton.disabled = false;
-      });
-  });
+      .catch((error: unknown) => showMessage(error instanceof Error ? error.message : 'Ошибка сохранения', true))
+      .finally(() => { saveButton.disabled = false; });
+  };
 
-  importInput.addEventListener('change', () => {
+  const onImport = (): void => {
     const file = importInput.files?.[0];
-
-    if (file === undefined) {
-      return;
-    }
-
+    if (file === undefined || options.manager === undefined) return;
     const target = slotInput.value.trim();
     const targetSlotId = target.length > 0 && !isReservedSlot(target) ? target : undefined;
     importInput.disabled = true;
-    void file
-      .text()
-      .then((json) => options.manager.import(json, targetSlotId))
+    void file.text()
+      .then((json) => options.manager!.import(json, targetSlotId))
       .then(async (save) => {
         showMessage(`Импортирован слот ${save.slotId}`);
         await render();
       })
-      .catch((error: unknown) => {
-        showMessage(error instanceof Error ? error.message : 'Ошибка импорта', true);
-      })
+      .catch((error: unknown) => showMessage(error instanceof Error ? error.message : 'Ошибка импорта', true))
       .finally(() => {
         importInput.value = '';
         importInput.disabled = false;
       });
-  });
+  };
+  saveButton.addEventListener('click', onSave);
+  importInput.addEventListener('change', onImport);
 
-  navigationButton.addEventListener('click', () => {
-    dialog.showModal();
-    void render().catch((error: unknown) => {
-      showMessage(error instanceof Error ? error.message : 'Ошибка чтения сохранений', true);
-    });
-  });
+  return {
+    activate: () => {
+      active = true;
+      host.hidden = false;
+      void render().catch((error: unknown) => showMessage(error instanceof Error ? error.message : 'Ошибка чтения сохранений', true));
+    },
+    deactivate: () => {
+      active = false;
+      host.hidden = true;
+    },
+    refresh: () => { void render(); },
+    dispose: () => {
+      saveButton.removeEventListener('click', onSave);
+      importInput.removeEventListener('change', onImport);
+      host.replaceChildren();
+    },
+  };
 }

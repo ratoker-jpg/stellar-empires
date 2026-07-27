@@ -2,9 +2,13 @@ import '../styles/accessibilityRuntime.css';
 
 export type ViewportMode = 'desktop' | 'compact' | 'mobile';
 
-export function getViewportMode(width: number, height: number): ViewportMode {
+export function getViewportMode(
+  width: number,
+  height: number,
+  forceCompact = false,
+): ViewportMode {
   if (width < 900) return 'mobile';
-  if (width < 1380 || height < 760) return 'compact';
+  if (forceCompact || width < 1380 || height < 760) return 'compact';
   return 'desktop';
 }
 
@@ -61,18 +65,44 @@ function bindRailKeyboardNavigation(): () => void {
   const handler = (event: KeyboardEvent): void => {
     const target = event.target;
     if (!(target instanceof HTMLButtonElement) || !target.classList.contains('rail-button')) return;
-    const buttons = Array.from(
-      rail.querySelectorAll<HTMLButtonElement>('.rail-button:not(:disabled)'),
-    );
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      target.click();
+      return;
+    }
+    const buttons = Array.from(rail.querySelectorAll<HTMLButtonElement>('.rail-button:not(:disabled)'));
     const index = buttons.indexOf(target);
     if (index < 0) return;
     const nextIndex = getRovingNavigationIndex(index, event.key, buttons.length);
     if (nextIndex === undefined) return;
     event.preventDefault();
+    event.stopImmediatePropagation();
     buttons[nextIndex]?.focus();
   };
   rail.addEventListener('keydown', handler);
   return () => rail.removeEventListener('keydown', handler);
+}
+
+function bindTablistKeyboardNavigation(): () => void {
+  const handler = (event: KeyboardEvent): void => {
+    const target = event.target;
+    if (!(target instanceof HTMLButtonElement) || target.getAttribute('role') !== 'tab') return;
+    const tablist = target.closest<HTMLElement>('[role="tablist"]');
+    if (tablist === null) return;
+    const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]:not(:disabled)'));
+    const index = tabs.indexOf(target);
+    if (index < 0) return;
+    const nextIndex = getRovingNavigationIndex(index, event.key, tabs.length);
+    if (nextIndex === undefined) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const next = tabs[nextIndex];
+    next?.focus();
+    next?.click();
+  };
+  document.addEventListener('keydown', handler);
+  return () => document.removeEventListener('keydown', handler);
 }
 
 function bindDialogEscape(): () => void {
@@ -97,19 +127,29 @@ export function mountAccessibilityRuntime(): () => void {
     primary.tabIndex = -1;
   }
 
-  const updateViewportMode = (): void => {
+  const updatePresentationMode = (): void => {
+    const forceCompact = document.documentElement.dataset.uiDensity === 'compact';
     document.documentElement.dataset.viewportMode = getViewportMode(
       window.innerWidth,
       window.innerHeight,
+      forceCompact,
     );
+    const reduced = document.documentElement.dataset.motionPreference === 'reduce' ||
+      matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.documentElement.dataset.reducedMotion = String(reduced);
   };
   let resizeFrame = 0;
   const onResize = (): void => {
     cancelAnimationFrame(resizeFrame);
-    resizeFrame = requestAnimationFrame(updateViewportMode);
+    resizeFrame = requestAnimationFrame(updatePresentationMode);
   };
   window.addEventListener('resize', onResize, { passive: true });
-  updateViewportMode();
+  updatePresentationMode();
+  const preferenceObserver = new MutationObserver(updatePresentationMode);
+  preferenceObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-ui-density', 'data-motion-preference'],
+  });
 
   const status = document.querySelector<HTMLElement>('#app-status');
   const statusObserver = new MutationObserver(() => {
@@ -134,14 +174,17 @@ export function mountAccessibilityRuntime(): () => void {
   imageObserver.observe(document.body, { childList: true, subtree: true });
 
   const unbindRail = bindRailKeyboardNavigation();
+  const unbindTabs = bindTablistKeyboardNavigation();
   const unbindEscape = bindDialogEscape();
 
   return () => {
     cancelAnimationFrame(resizeFrame);
     window.removeEventListener('resize', onResize);
+    preferenceObserver.disconnect();
     statusObserver.disconnect();
     imageObserver.disconnect();
     unbindRail();
+    unbindTabs();
     unbindEscape();
   };
 }

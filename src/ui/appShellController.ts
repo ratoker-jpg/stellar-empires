@@ -3,11 +3,13 @@ import {
   parseAppShellRoute,
   serializeAppShellRoute,
   type AppShellRoute,
+  type CommandShellMode,
   type FleetShellMode,
   type OperationsShellMode,
   type PlanetDevelopmentSurface,
   type PlanetShellMode,
   type ReportShellFilter,
+  type SystemShellMode,
 } from './appShellRoute';
 import {
   SHELL_SCREEN_REGISTRY,
@@ -35,7 +37,10 @@ export interface AppShellControllerOptions {
   readonly activateResearch: () => void;
   readonly activateFleets: (mode: FleetShellMode) => void;
   readonly activateOperations: (mode: OperationsShellMode) => void;
+  readonly activateCommand: (mode: CommandShellMode) => void;
+  readonly activateRanking: () => void;
   readonly activateReports: (filter: ReportShellFilter) => void;
+  readonly activateSystem: (mode: SystemShellMode) => void;
   readonly writeStatus?: (message: string) => void;
   readonly registry?: readonly ShellScreenDefinition[];
 }
@@ -76,7 +81,29 @@ function createNavigationButton(definition: ShellScreenDefinition): HTMLButtonEl
   const label = document.createElement('small');
   label.textContent = definition.label;
   button.append(icon, label);
+  if (definition.badgeId !== undefined) {
+    const badge = document.createElement('span');
+    badge.id = definition.badgeId;
+    badge.className = 'rail-button__badge';
+    badge.hidden = true;
+    badge.setAttribute('aria-label', `${definition.label}: нет новых событий`);
+    button.append(badge);
+  }
   return button;
+}
+
+function routeWorkspaceSelector(route: AppShellRoute): string {
+  switch (route.family) {
+    case 'planet': return '#planet-view';
+    case 'space': return '#galaxy-view';
+    case 'research': return '#research-view';
+    case 'fleets': return '#fleets-view';
+    case 'operations': return '#operations-view';
+    case 'command': return '#command-view';
+    case 'ranking': return '#ranking-view';
+    case 'reports': return '#reports-view';
+    case 'system': return '#system-view';
+  }
 }
 
 export class AppShellController {
@@ -111,7 +138,6 @@ export class AppShellController {
     }
     this.#unsubscribeEnvironment = environment.subscribe(() => this.syncFromUrl());
     this.activate(parsed.route, parsed.error);
-    this.observeNavigationInsertions();
   }
 
   public get snapshot(): AppShellSnapshot {
@@ -170,11 +196,29 @@ export class AppShellController {
     this.navigate({ family: 'operations', mode }, historyMode);
   }
 
+  public navigateToCommand(
+    mode: CommandShellMode = 'overview',
+    historyMode: 'push' | 'replace' = 'push',
+  ): void {
+    this.navigate({ family: 'command', mode }, historyMode);
+  }
+
+  public navigateToRanking(historyMode: 'push' | 'replace' = 'push'): void {
+    this.navigate({ family: 'ranking' }, historyMode);
+  }
+
   public navigateToReports(
     filter: ReportShellFilter = 'all',
     historyMode: 'push' | 'replace' = 'push',
   ): void {
     this.navigate({ family: 'reports', filter }, historyMode);
+  }
+
+  public navigateToSystem(
+    mode: SystemShellMode = 'saves',
+    historyMode: 'push' | 'replace' = 'push',
+  ): void {
+    this.navigate({ family: 'system', mode }, historyMode);
   }
 
   public reconcileNavigationMetadata(): void {
@@ -183,13 +227,7 @@ export class AppShellController {
     );
     for (const button of document.querySelectorAll<HTMLButtonElement>('.side-rail > .rail-button')) {
       const definition = definitionsByElement.get(button.id);
-      if (definition === undefined) {
-        delete button.dataset.shellScreen;
-        delete button.dataset.shellScreenKind;
-        button.removeAttribute('aria-current');
-        button.classList.remove('is-active');
-        continue;
-      }
+      if (definition === undefined) continue;
       button.dataset.shellScreen = definition.id;
       button.dataset.shellScreenKind = definition.kind;
     }
@@ -215,33 +253,25 @@ export class AppShellController {
         utilityStarted = true;
       }
       const button = createNavigationButton(definition);
-      if (definition.kind === 'route') {
-        const onClick = (event: MouseEvent): void => {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          switch (definition.routeFamily) {
-            case 'planet': this.navigateToPlanet(); break;
-            case 'fleets': this.navigateToFleets(); break;
-            case 'space': this.navigateToSpace(); break;
-            case 'research': this.navigateToResearch(); break;
-            case 'operations': this.navigateToOperations(); break;
-            case 'reports': this.navigateToReports(); break;
-          }
-        };
-        button.addEventListener('click', onClick);
-        this.#cleanup.push(() => button.removeEventListener('click', onClick));
-      }
+      const onClick = (event: MouseEvent): void => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        switch (definition.routeFamily) {
+          case 'planet': this.navigateToPlanet(); break;
+          case 'fleets': this.navigateToFleets(); break;
+          case 'space': this.navigateToSpace(); break;
+          case 'research': this.navigateToResearch(); break;
+          case 'command': this.navigateToCommand(); break;
+          case 'ranking': this.navigateToRanking(); break;
+          case 'operations': this.navigateToOperations(); break;
+          case 'reports': this.navigateToReports(); break;
+          case 'system': this.navigateToSystem(); break;
+        }
+      };
+      button.addEventListener('click', onClick);
+      this.#cleanup.push(() => button.removeEventListener('click', onClick));
       rail.append(button);
     }
-  }
-
-  private observeNavigationInsertions(): void {
-    const rail = document.querySelector<HTMLElement>('.side-rail');
-    if (rail === null) return;
-    const observer = new MutationObserver(() => this.reconcileNavigationMetadata());
-    observer.observe(rail, { childList: true });
-    this.#cleanup.push(() => observer.disconnect());
-    this.reconcileNavigationMetadata();
   }
 
   private bindPlanetRouteSync(): void {
@@ -314,7 +344,10 @@ export class AppShellController {
         case 'research': this.#options.activateResearch(); break;
         case 'fleets': this.#options.activateFleets(route.mode); break;
         case 'operations': this.#options.activateOperations(route.mode); break;
+        case 'command': this.#options.activateCommand(route.mode); break;
+        case 'ranking': this.#options.activateRanking(); break;
         case 'reports': this.#options.activateReports(route.filter); break;
+        case 'system': this.#options.activateSystem(route.mode); break;
       }
       this.updateNavigationState(route);
       this.#snapshot = { route, error };
@@ -329,10 +362,15 @@ export class AppShellController {
       else delete document.documentElement.dataset.fleetRouteMode;
       if (route.family === 'operations') document.documentElement.dataset.operationsRouteMode = route.mode;
       else delete document.documentElement.dataset.operationsRouteMode;
+      if (route.family === 'command') document.documentElement.dataset.commandRouteMode = route.mode;
+      else delete document.documentElement.dataset.commandRouteMode;
       if (route.family === 'reports') document.documentElement.dataset.reportRouteFilter = route.filter;
       else delete document.documentElement.dataset.reportRouteFilter;
+      if (route.family === 'system') document.documentElement.dataset.systemRouteMode = route.mode;
+      else delete document.documentElement.dataset.systemRouteMode;
       if (error !== null) this.#options.writeStatus?.(error);
       this.emit();
+      this.focusWorkspaceHeading(route);
     } finally {
       this.#applyingRoute = false;
     }
@@ -342,11 +380,25 @@ export class AppShellController {
     for (const definition of this.#registry) {
       const button = document.querySelector<HTMLButtonElement>(`#${definition.elementId}`);
       if (button === null) continue;
-      const active = definition.kind === 'route' && definition.routeFamily === route.family;
+      const active = definition.routeFamily === route.family;
       button.classList.toggle('is-active', active);
+      button.tabIndex = active ? 0 : -1;
       if (active) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
     }
+  }
+
+  private focusWorkspaceHeading(route: AppShellRoute): void {
+    queueMicrotask(() => {
+      const workspace = document.querySelector<HTMLElement>(routeWorkspaceSelector(route));
+      if (workspace === null || workspace.hidden) return;
+      const heading = workspace.querySelector<HTMLElement>('[data-shell-heading], h1, h2');
+      if (heading === null) return;
+      if (!heading.hasAttribute('tabindex')) heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
+      document.querySelector<HTMLElement>('#accessibility-live-region')!.textContent =
+        `Открыт раздел ${heading.textContent?.trim() ?? route.family}`;
+    });
   }
 
   private emit(): void {

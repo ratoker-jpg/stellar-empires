@@ -1,9 +1,9 @@
 # AI Continuation Guide
 
-**Status:** `UI-SHELL-FLEET-OPERATIONS-WORKSPACES` completed by PR #114 on merge  
+**Status:** `COHERENT-UI-SHELL-01` completed by PR #115 on merge  
 **Updated:** 2026-07-27  
-**Audit:** #111 — `COHERENT-UI-SHELL-01`  
-**Next implementation:** #115 — `UI-SHELL-COMMAND-SYSTEM-GATE`
+**Last Audit:** #111 — completed and archived  
+**Next repository action:** new Audit PR
 
 ## Repository
 
@@ -17,78 +17,65 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/contracts/coherent-ui-shell-01-prs.md`
-6. `docs/audits/contracts/coherent-ui-shell-01-route-layout.md`
-7. `docs/audits/evidence/coherent-ui-shell-01-graphify.md`
-8. this document
-9. `docs/project-status.json`
-10. `docs/27-playable-game-roadmap-v5.md`
-11. latest merged pull requests and actual `main`
+5. this document
+6. `docs/project-status.json`
+7. `docs/27-playable-game-roadmap-v5.md`
+8. `docs/audits/batch-history.md`
+9. latest merged pull requests and actual `main`
+10. fresh Graphify evidence produced by the next Audit PR
 
 ## Completed product state
 
 - PR #101–#105 completed runtime integration of the mechanical catalog art;
 - PR #106–#110 completed schema-v14 Universe navigation, action gates and Browser E2E;
-- PR #111 accepted medium batch `COHERENT-UI-SHELL-01`;
-- PR #112 delivered the application controller, canonical Planet/Space shell routes and typed primary registry;
+- PR #111 authorized `COHERENT-UI-SHELL-01`;
+- PR #112 delivered `GameApplicationController`, canonical shell routing and typed navigation;
 - PR #113 delivered routed development workspaces and persistent active-colony context;
-- PR #114 delivered routed Fleet, Operations and Reports workspaces.
+- PR #114 delivered routed Fleet, Operations and Reports workspaces;
+- PR #115 delivered Command, Ranking, System, complete HUD/context, accessibility gate and batch archive.
 
-### PR #114 operations contract
+## Coherent shell result
 
-- Fleet routes are `#/fleets/<overview|compose|active|battles>`;
-- Operations routes are `#/operations/<overview|expeditions|objects|events|market|logistics>`;
-- Reports routes are `#/reports/<all|combat|expedition|object|event>`;
-- target handoff prefills the Fleet composer and does not send a mission before explicit confirmation;
-- intelligence continues to use the existing redacted selectors;
-- Market and Logistics continue through existing reducer commands;
-- Reports remain directly reachable and map backlinks restore exact Space coordinates;
-- routed workspaces refresh through application subscriptions;
-- legacy Fleet/Operations/Reports dialogs and runtime-created primary buttons are not mounted;
-- no save schema, gameplay command or balance value changed.
-
-## Accepted implementation chain
+Implemented primary route families:
 
 ```text
-#112 UI-SHELL-RUNTIME-ROUTER — completed
-→ #113 UI-SHELL-DEVELOPMENT-WORKSPACES — completed
-→ #114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES — completed by this merge
-→ #115 UI-SHELL-COMMAND-SYSTEM-GATE — next
+#/planet/<planet-id>/<overview|resource|industry|military>
+#/fleets/<overview|compose|active|battles>
+#/space/...
+#/research
+#/operations/<overview|expeditions|objects|events|market|logistics>
+#/command/<overview|doctrine|fleet-doctrine|upgrades>
+#/ranking
+#/reports/<all|combat|expedition|object|event>
+#/system/<saves|settings>
 ```
 
-## Scope for PR #115 only
+Core invariants:
 
-PR #115 completes the coherent shell batch:
-
-- route Command overview and Ranking;
-- route Command Doctrine and Fleet Doctrine;
-- route System/settings and Save Manager;
-- finish HUD warnings/badges and context ownership;
-- remove obsolete compatibility launchers and hidden runtime showcase surfaces where authorized;
-- run the full shell Browser E2E and Graphify gate;
-- archive Audit #111 and close `COHERENT-UI-SHELL-01` only after every acceptance condition passes.
-
-Do not include alliances, solar war, Obelisks, Gates, new mechanics, balance changes or a framework rewrite.
-
-## Batch invariants
-
-- no new gameplay mechanic, command, balance value or save field;
-- route state stays outside `GameState` and saves;
-- existing Space Map route controller remains authoritative for `#/space/...`;
-- one application controller owns runtime state/command notifications;
-- one typed registry owns canonical navigation metadata;
+- one application controller owns runtime state and accepted-transition notifications;
+- one typed registry owns all implemented primary navigation entries;
 - one primary workspace is active at a time;
-- player and bots continue using the same command validators;
-- no Alliance item before an alliance audit;
-- no solar-war/endgame work in this batch;
-- no copied Nemexia HTML, CSS, prose, branding or assets.
+- route state remains outside `GameState`, saves and checksums;
+- Space Map subroutes remain owned by `SpaceMapNavigationController`;
+- player and bots continue using the same simulation commands and validators;
+- target handoff does not dispatch Fleet missions before explicit confirmation;
+- production asset-review showcase surfaces and legacy primary modal ownership are absent;
+- keyboard navigation, heading focus, compact layout and reduced motion are covered by Browser E2E.
 
-## Known limitations outside PR #115
+## Archive
 
-- alliances, solar war, Obelisks, Gates and victory remain unaudited future work;
-- complete phone/mobile layout is not included;
-- ordinary mechanic parity, PvE/meta depth, balance and release hardening remain open.
+- completion record: `docs/audits/completed/coherent-ui-shell-01.md`;
+- exact accepted audit: `docs/audits/completed/coherent-ui-shell-01-authorized-audit.md`;
+- batch history: `docs/audits/batch-history.md`.
+
+## Known limitations
+
+- ordinary mechanic parity and some destruction/espionage rules remain incomplete;
+- deeper PvE/meta systems and complete honest bot parity remain open;
+- alliances, solar war, Obelisks, Gates and victory remain unaudited;
+- complete phone/mobile layout is not delivered;
+- balance, onboarding and release hardening remain open.
 
 ## Immediate route
 
-After PR #114 merges, create PR #115 from that exact fresh `main` and implement only `UI-SHELL-COMMAND-SYSTEM-GATE`. Do not start another unaudited batch in the same branch or PR.
+Do not start another implementation branch or PR. Create a new Audit PR from fresh post-#115 `main`, inspect the actual repository and roadmap, run fresh Graphify, choose one coherent batch and authorize its implementation count before any code changes.

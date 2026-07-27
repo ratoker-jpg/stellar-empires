@@ -19,8 +19,14 @@ export const OPERATIONS_SHELL_MODES = [
 ] as const;
 export type OperationsShellMode = (typeof OPERATIONS_SHELL_MODES)[number];
 
+export const COMMAND_SHELL_MODES = ['overview', 'doctrine', 'fleet-doctrine', 'upgrades'] as const;
+export type CommandShellMode = (typeof COMMAND_SHELL_MODES)[number];
+
 export const REPORT_SHELL_FILTERS = ['all', 'combat', 'expedition', 'object', 'event'] as const;
 export type ReportShellFilter = (typeof REPORT_SHELL_FILTERS)[number];
+
+export const SYSTEM_SHELL_MODES = ['saves', 'settings'] as const;
+export type SystemShellMode = (typeof SYSTEM_SHELL_MODES)[number];
 
 export type AppShellRoute =
   | {
@@ -45,8 +51,19 @@ export type AppShellRoute =
       readonly mode: OperationsShellMode;
     }
   | {
+      readonly family: 'command';
+      readonly mode: CommandShellMode;
+    }
+  | {
+      readonly family: 'ranking';
+    }
+  | {
       readonly family: 'reports';
       readonly filter: ReportShellFilter;
+    }
+  | {
+      readonly family: 'system';
+      readonly mode: SystemShellMode;
     };
 
 export interface ParsedAppShellRoute {
@@ -85,8 +102,16 @@ export function isOperationsShellMode(value: string | undefined): value is Opera
   return OPERATIONS_SHELL_MODES.includes(value as OperationsShellMode);
 }
 
+export function isCommandShellMode(value: string | undefined): value is CommandShellMode {
+  return COMMAND_SHELL_MODES.includes(value as CommandShellMode);
+}
+
 export function isReportShellFilter(value: string | undefined): value is ReportShellFilter {
   return REPORT_SHELL_FILTERS.includes(value as ReportShellFilter);
+}
+
+export function isSystemShellMode(value: string | undefined): value is SystemShellMode {
+  return SYSTEM_SHELL_MODES.includes(value as SystemShellMode);
 }
 
 export function normalizePlanetDevelopmentSurface(
@@ -109,7 +134,10 @@ export function serializeAppShellRoute(route: AppShellRoute): string {
   if (route.family === 'research') return '#/research';
   if (route.family === 'fleets') return `#/fleets/${route.mode}`;
   if (route.family === 'operations') return `#/operations/${route.mode}`;
+  if (route.family === 'command') return `#/command/${route.mode}`;
+  if (route.family === 'ranking') return '#/ranking';
   if (route.family === 'reports') return `#/reports/${route.filter}`;
+  if (route.family === 'system') return `#/system/${route.mode}`;
   const base = `#/planet/${encodeURIComponent(route.planetId)}/${route.mode}`;
   return route.surface === 'zone' ? base : `${base}?surface=${route.surface}`;
 }
@@ -135,6 +163,7 @@ export function parseAppShellRoute(
     };
   }
   if (normalized === '#/research') return parsedRoute({ family: 'research' });
+  if (normalized === '#/ranking') return parsedRoute({ family: 'ranking' });
 
   const [path = '', query = ''] = normalized.split('?', 2);
   const segments = path.replace(/^#\/?/, '').split('/').filter(Boolean);
@@ -158,6 +187,16 @@ export function parseAppShellRoute(
         : null,
     );
   }
+  if (segments[0] === 'command') {
+    const requested = segments[1];
+    const mode = isCommandShellMode(requested) ? requested : 'overview';
+    return parsedRoute(
+      { family: 'command', mode },
+      requested !== undefined && requested !== mode
+        ? 'Режим командования не распознан. Открыт обзор империи.'
+        : null,
+    );
+  }
   if (segments[0] === 'reports') {
     const requested = segments[1];
     const filter = isReportShellFilter(requested) ? requested : 'all';
@@ -165,6 +204,16 @@ export function parseAppShellRoute(
       { family: 'reports', filter },
       requested !== undefined && requested !== filter
         ? 'Фильтр отчётов не распознан. Открыт единый журнал.'
+        : null,
+    );
+  }
+  if (segments[0] === 'system') {
+    const requested = segments[1];
+    const mode = isSystemShellMode(requested) ? requested : 'saves';
+    return parsedRoute(
+      { family: 'system', mode },
+      requested !== undefined && requested !== mode
+        ? 'Раздел системы не распознан. Открыты сохранения.'
         : null,
     );
   }

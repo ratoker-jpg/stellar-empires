@@ -1,0 +1,383 @@
+.topbar {
+  grid-template-columns: minmax(205px, 0.55fr) minmax(610px, 1.8fr) minmax(255px, 0.75fr);
+}
+
+.resource-strip {
+  grid-template-columns: repeat(6, minmax(88px, 1fr));
+}
+
+.resource-chip {
+  grid-template-columns: 26px minmax(0, 1fr);
+  min-height: 64px;
+  padding: 7px;
+}
+
+.resource-chip img {
+  width: 24px;
+  height: 24px;
+}
+
+.resource-chip--pressure {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.resource-chip[data-warning-level="warning"] {
+  border-color: color-mix(in srgb, var(--amber-400) 58%, transparent);
+}
+
+.resource-chip[data-warning-level="danger"],
+.resource-chip[data-warning-level="critical"] {
+  border-color: color-mix(in srgb, var(--red-400) 72%, transparent);
+}
+
+.resource-chip[data-warning-level="warning"] em::before,
+.resource-chip[data-warning-level="danger"] em::before,
+.resource-chip[data-warning-level="critical"] em::before {
+  content: "⚠ ";
+}
+
+.topbar-status {
+  grid-template-columns: 42px minmax(0, 1fr) auto auto;
+  gap: 8px;
+}
+
+#hud-save-state {
+  display: block;
+  margin-top: 4px;
+  color: var(--se-text-muted);
+  font-size: 0.66rem;
+}
+
+#hud-save-state[data-save-phase="error"]::before {
+  content: "⚠ ";
+  color: var(--red-400);
+}
+
+.hud-activity-badges {
+  display: grid;
+  gap: 3px;
+}
+
+.hud-activity-badges span {
+  padding: 3px 6px;
+  border: 1px solid var(--se-border-subtle);
+  border-radius: 999px;
+  color: var(--se-text-secondary);
+  font-size: 0.62rem;
+  white-space: nowrap;
+}
+
+.rail-button {
+  position: relative;
+}
+
+.rail-button__badge {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  display: grid;
+  place-items: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 999px;
+  background: var(--red-400);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.rail-button__badge[hidden] {
+  display: none;
+}
+
+#shell-context-content {
+  display: grid;
+  gap: 10px;
+}
+
+.shell-context-card h2,
+.shell-context-card p {
+  margin: 5px 0 0;
+}
+
+.shell-context-card p:last-child {
+  color: var(--se-text-secondary);
+  line-height: 1.45;
+}
+
+.shell-context-metrics {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.shell-context-metrics div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--se-border-subtle);
+  border-radius: 8px;
+  background: var(--se-bg-card);
+}
+
+.shell-context-metrics dt {
+  color: var(--se-text-secondary);
+  font-size: 0.72rem;
+}
+
+.shell-context-metrics dd {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 750;
+  text-align: right;
+}
+
+.command-primary-view,
+.system-primary-view {
+  min-width: 0;
+  min-height: 620px;
+  max-height: calc(100vh - 184px);
+  overflow: auto;
+  color: var(--se-text-primary);
+  background:
+    radial-gradient(circle at 82% 0%, var(--se-accent-soft), transparent 32%),
+    linear-gradient(180deg, var(--se-bg-panel), var(--se-bg-void));
+}
+
+.command-route-header {
+  padding: 24px 26px 17px;
+  border-bottom: 1px solid var(--se-border-subtle);
+}
+
+.command-route-header h1,
+.command-route-header p {
+  margin: 0;
+}
+
+.command-route-header h1 {
+  margin-top: 5px;
+  font-size: clamp(1.45rem, 2vw, 2.05rem);
+}
+
+.command-route-header p:last-child {
+  margin-top: 7px;
+  color: var(--se-text-secondary);
+}
+
+.command-route-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  gap: 6px;
+  padding: 10px 22px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--se-border-subtle);
+  background: color-mix(in srgb, var(--se-bg-hud) 95%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.command-route-tabs button {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--se-border-subtle);
+  border-radius: 7px;
+  color: var(--se-text-secondary);
+  background: var(--se-bg-card);
+  cursor: pointer;
+}
+
+.command-route-tabs button[aria-selected="true"] {
+  border-color: var(--se-border-strong);
+  color: var(--se-text-primary);
+  background: var(--se-accent-soft);
+  box-shadow: inset 0 -2px var(--se-accent);
+}
+
+.command-route-content,
+.system-route-content {
+  display: grid;
+  gap: 14px;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 18px 22px 28px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.command-doctrine-dialog,
+.fleet-doctrine-dialog,
+.command-ranking-dialog,
+.save-manager-dialog {
+  width: auto;
+  max-width: none;
+  max-height: none;
+  color: inherit;
+  background: transparent;
+}
+
+.command-doctrine-dialog::backdrop,
+.fleet-doctrine-dialog::backdrop,
+.command-ranking-dialog::backdrop,
+.save-manager-dialog::backdrop {
+  display: none;
+}
+
+.command-progress,
+.command-doctrine-cards,
+.commander-ship-cards {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.command-doctrine-form,
+.flagship-form,
+.fleet-doctrine-form {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.command-upgrade-summary,
+.system-settings-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--se-border-subtle);
+  border-radius: 12px;
+  background: var(--se-bg-card);
+}
+
+.command-upgrade-summary h2,
+.command-upgrade-summary p,
+.system-settings-card h2,
+.system-settings-card p {
+  margin: 0;
+}
+
+.command-upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 8px;
+}
+
+.command-upgrade-grid article {
+  display: grid;
+  gap: 5px;
+  padding: 11px;
+  border: 1px solid var(--se-border-subtle);
+  border-radius: 8px;
+  background: var(--se-bg-panel);
+}
+
+.system-settings-card > label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 11px;
+  align-items: start;
+  padding: 13px;
+  border: 1px solid var(--se-border-subtle);
+  border-radius: 9px;
+  background: var(--se-bg-panel);
+}
+
+.system-settings-card > label input {
+  width: 19px;
+  height: 19px;
+}
+
+.system-settings-card > label span,
+.system-settings-card > label strong,
+.system-settings-card > label small {
+  display: block;
+}
+
+.system-settings-card > label small {
+  margin-top: 4px;
+  color: var(--se-text-secondary);
+}
+
+.save-manager-controls {
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+}
+
+.save-manager-controls label {
+  display: grid;
+  gap: 5px;
+  color: var(--se-text-secondary);
+  font-size: 0.72rem;
+}
+
+html[data-ui-density="compact"] .topbar,
+html[data-viewport-mode="compact"] .topbar {
+  min-height: 86px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+html[data-ui-density="compact"] .resource-chip,
+html[data-viewport-mode="compact"] .resource-chip {
+  min-height: 55px;
+  padding: 5px 6px;
+}
+
+html[data-ui-density="compact"] .command-route-content,
+html[data-ui-density="compact"] .system-route-content {
+  padding: 12px 15px 20px;
+}
+
+html[data-reduced-motion="true"] *,
+html[data-motion-preference="reduce"] * {
+  scroll-behavior: auto !important;
+  transition-duration: 0.001ms !important;
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+@media (max-width: 1360px) {
+  .topbar {
+    grid-template-columns: 190px minmax(570px, 1fr) 245px;
+  }
+
+  .resource-strip {
+    gap: 5px;
+  }
+
+  .resource-chip small,
+  .resource-chip em {
+    font-size: 0.56rem;
+  }
+
+  .resource-chip strong {
+    font-size: 0.72rem;
+  }
+
+  .hud-activity-badges {
+    display: none;
+  }
+
+  .topbar-status {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+  }
+}
+
+@media (max-height: 780px) {
+  .command-primary-view,
+  .system-primary-view {
+    min-height: calc(100vh - 174px);
+    max-height: calc(100vh - 174px);
+  }
+
+  .command-route-header {
+    padding-top: 15px;
+    padding-bottom: 11px;
+  }
+}

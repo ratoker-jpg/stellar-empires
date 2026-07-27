@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Stellar Empires — одиночная браузерная космическая стратегия с автономными бот-империями."
-    />
+    <meta name="description" content="Stellar Empires — одиночная браузерная космическая стратегия с автономными бот-империями." />
     <meta name="theme-color" content="#02050a" />
     <title>Stellar Empires</title>
   </head>
@@ -15,50 +12,28 @@
       <header class="topbar">
         <div class="brand-lockup">
           <img class="brand-logo" src="./assets/brand/logo-primary.svg" alt="Stellar Empires" />
-          <div class="brand-subtitle">
-            <span class="online-dot" aria-hidden="true"></span>
-            <span>Автономное командование</span>
-          </div>
+          <div class="brand-subtitle"><span class="online-dot" aria-hidden="true"></span><span>Автономное командование</span></div>
           <div class="hud-colony-context" aria-label="Активная колония и время мира">
-            <label>
-              <span>Колония</span>
-              <select id="hud-planet-selector" aria-label="Выбрать активную колонию в HUD"></select>
-            </label>
+            <label><span>Колония</span><select id="hud-planet-selector" aria-label="Выбрать активную колонию в HUD"></select></label>
             <div><small>Координаты</small><strong id="hud-active-coordinate">—</strong></div>
             <div><small>Время мира</small><strong id="hud-world-time">00:00:00</strong></div>
           </div>
         </div>
 
-        <div class="resource-strip" aria-label="Ресурсы активной колонии">
-          <div class="resource-chip">
-            <img src="./assets/icons/resource-metal.svg" alt="" />
-            <span><small>Металл</small><strong id="resource-metal-value">—</strong></span>
-            <em id="resource-metal-rate">—</em>
-          </div>
-          <div class="resource-chip">
-            <img src="./assets/icons/resource-crystal.svg" alt="" />
-            <span><small>Минералы</small><strong id="resource-crystal-value">—</strong></span>
-            <em id="resource-crystal-rate">—</em>
-          </div>
-          <div class="resource-chip">
-            <img src="./assets/icons/resource-gas.svg" alt="" />
-            <span><small>Газ</small><strong id="resource-gas-value">—</strong></span>
-            <em id="resource-gas-rate">—</em>
-          </div>
-          <div class="resource-chip">
-            <img src="./assets/icons/resource-energy.svg" alt="" />
-            <span><small>Энергия</small><strong id="resource-energy-value">—</strong></span>
-            <em id="resource-energy-state" class="stable">—</em>
-          </div>
+        <div class="resource-strip" aria-label="Ресурсы и ёмкости активной колонии">
+          <div class="resource-chip" id="hud-resource-metal"><img src="./assets/icons/resource-metal.svg" alt="" /><span><small>Металл</small><strong id="resource-metal-value">—</strong></span><em id="resource-metal-rate">—</em></div>
+          <div class="resource-chip" id="hud-resource-crystal"><img src="./assets/icons/resource-crystal.svg" alt="" /><span><small>Минералы</small><strong id="resource-crystal-value">—</strong></span><em id="resource-crystal-rate">—</em></div>
+          <div class="resource-chip" id="hud-resource-gas"><img src="./assets/icons/resource-gas.svg" alt="" /><span><small>Газ</small><strong id="resource-gas-value">—</strong></span><em id="resource-gas-rate">—</em></div>
+          <div class="resource-chip" id="hud-energy"><img src="./assets/icons/resource-energy.svg" alt="" /><span><small>Энергия</small><strong id="resource-energy-value">—</strong></span><em id="resource-energy-state">—</em></div>
+          <div class="resource-chip resource-chip--pressure" id="hud-population"><span><small>Население</small><strong id="hud-population-value">—</strong></span><em id="hud-population-state">—</em></div>
+          <div class="resource-chip resource-chip--pressure" id="hud-hangar"><span><small>Ангар</small><strong id="hud-hangar-value">—</strong></span><em id="hud-hangar-state">—</em></div>
         </div>
 
         <div class="topbar-status">
-          <div class="hud-emblem-socket" aria-hidden="true">
-            <img class="commander-emblem" src="./assets/factions/aegis/emblem.svg" alt="" />
-          </div>
-          <div>
-            <small>Сеть командования</small>
-            <strong id="app-status">Инициализация…</strong>
+          <div class="hud-emblem-socket" aria-hidden="true"><img class="commander-emblem" src="./assets/factions/aegis/emblem.svg" alt="" /></div>
+          <div><small>Сеть командования</small><strong id="app-status">Инициализация…</strong><span id="hud-save-state">Автосохранение: ожидание</span></div>
+          <div class="hud-activity-badges" aria-label="Активность империи">
+            <span id="hud-queue-badge">Очереди 0</span><span id="hud-mission-badge">Миссии 0</span><span id="hud-report-badge">Отчёты 0</span>
           </div>
           <span class="build-badge" id="build-version">v0.1.0</span>
         </div>
@@ -78,32 +53,13 @@
       </nav>
 
       <main class="game-layout">
-        <aside class="command-panel" aria-label="Контекстная панель">
+        <aside id="shell-context-panel" class="command-panel" aria-label="Контекст активного раздела">
           <section class="panel-block panel-block--hero">
             <p class="panel-label">Командный профиль</p>
-            <div class="commander-row">
-              <img class="commander-emblem context-emblem" src="./assets/factions/aegis/emblem.svg" alt="Эмблема Директората Эгида" />
-              <div><h2>Директорат «Эгида»</h2><p>Промышленная доктрина</p></div>
-            </div>
+            <div class="commander-row"><img class="commander-emblem context-emblem" src="./assets/factions/aegis/emblem.svg" alt="Эмблема Директората Эгида" /><div><h2>Директорат «Эгида»</h2><p>Промышленная доктрина</p></div></div>
           </section>
-          <section class="panel-block context-objective">
-            <div class="panel-heading">
-              <div><p class="panel-label">Текущий контур</p><h2>Многопланетная империя</h2></div>
-              <span class="status-pill">SOLO</span>
-            </div>
-            <p>Выберите раздел в верхней панели. Контекстные действия и состояние выбранного объекта отображаются здесь.</p>
-          </section>
-          <section class="panel-block metric-grid context-metrics">
-            <div><span>Системы</span><strong id="system-count">—</strong></div>
-            <div><span>Колонии</span><strong id="planet-count">—</strong></div>
-            <div><span>Режим</span><strong>Solo</strong></div>
-            <div><span>Симуляция</span><strong>Active</strong></div>
-          </section>
-          <section class="panel-block context-help">
-            <p class="panel-label">Структура управления</p>
-            <ol><li>Выберите раздел в верхнем HUD.</li><li>Настройте объект в контекстной панели.</li><li>Подтвердите основное действие золотой кнопкой.</li></ol>
-          </section>
-          <div class="runtime-showcase" hidden><div id="faction-showcase"></div><div id="aegis-asset-deck"></div></div>
+          <div id="shell-context-content"><section class="panel-block"><p class="panel-label">Маршрут</p><h2>Инициализация</h2><p>Контекст активного раздела появится после запуска.</p></section></div>
+          <div class="shell-compat-metrics" hidden><strong id="system-count">—</strong><strong id="planet-count">—</strong></div>
         </aside>
 
         <div class="view-stack">
@@ -111,12 +67,8 @@
             <div class="stage-chrome stage-chrome--top-left"></div><div class="stage-chrome stage-chrome--top-right"></div>
             <div id="space-map-navigation" class="space-map-navigation">
               <nav id="space-map-breadcrumbs" class="space-map-breadcrumbs" aria-label="Навигация по космической карте"></nav>
-              <div id="space-map-page-controls" class="space-map-page-controls" hidden>
-                <button id="space-map-page-previous" type="button" aria-label="Предыдущая страница систем">‹</button><span id="space-map-page-label">1 / 1</span><button id="space-map-page-next" type="button" aria-label="Следующая страница систем">›</button>
-              </div>
-              <form id="space-map-coordinate-form" class="space-map-coordinate-form" aria-label="Прямой переход по координатам">
-                <label>G <input id="space-map-galaxy-input" type="number" min="1" max="20" value="1" required /></label><label>S <input id="space-map-system-input" type="number" min="1" max="81" value="1" required /></label><label>P <input id="space-map-position-input" type="number" min="1" max="24" value="1" required /></label><button type="submit">Открыть</button>
-              </form>
+              <div id="space-map-page-controls" class="space-map-page-controls" hidden><button id="space-map-page-previous" type="button" aria-label="Предыдущая страница систем">‹</button><span id="space-map-page-label">1 / 1</span><button id="space-map-page-next" type="button" aria-label="Следующая страница систем">›</button></div>
+              <form id="space-map-coordinate-form" class="space-map-coordinate-form" aria-label="Прямой переход по координатам"><label>G <input id="space-map-galaxy-input" type="number" min="1" max="20" value="1" required /></label><label>S <input id="space-map-system-input" type="number" min="1" max="81" value="1" required /></label><label>P <input id="space-map-position-input" type="number" min="1" max="24" value="1" required /></label><button type="submit">Открыть</button></form>
               <p id="space-map-route-error" class="space-map-route-error" role="alert" hidden></p>
             </div>
             <div id="phaser-game"></div>
@@ -128,44 +80,44 @@
           <section id="research-view" class="development-primary-view research-screen-workspace" aria-label="Исследования" hidden></section>
 
           <section id="fleets-view" class="operations-primary-view" aria-label="Флоты и миссии" hidden>
-            <header class="operations-route-header"><div><p class="panel-label">Fleet Operations</p><h1>Флоты и миссии</h1><p>Формирование групп, выбор цели и контроль полётов.</p></div></header>
-            <nav id="fleet-route-tabs" class="operations-route-tabs" role="tablist" aria-label="Разделы флотов"><button type="button" role="tab" data-fleet-mode="overview">Обзор</button><button type="button" role="tab" data-fleet-mode="compose">Формирование</button><button type="button" role="tab" data-fleet-mode="active">Активные</button><button type="button" role="tab" data-fleet-mode="battles">Бои</button></nav>
-            <div id="fleet-workspace-host" class="operations-route-content"></div>
+            <header class="operations-route-header"><div><p class="panel-label">Fleet Operations</p><h1 data-shell-heading>Флоты и миссии</h1><p>Формирование групп, выбор цели и контроль полётов.</p></div></header>
+            <nav id="fleet-route-tabs" class="operations-route-tabs" role="tablist" aria-label="Разделы флотов"><button type="button" role="tab" data-fleet-mode="overview">Обзор</button><button type="button" role="tab" data-fleet-mode="compose">Формирование</button><button type="button" role="tab" data-fleet-mode="active">Активные</button><button type="button" role="tab" data-fleet-mode="battles">Бои</button></nav><div id="fleet-workspace-host" class="operations-route-content"></div>
           </section>
 
           <section id="operations-view" class="operations-primary-view" aria-label="Операционный центр" hidden>
-            <header class="operations-route-header"><div><p class="panel-label">Empire Operations</p><h1>Операционный центр</h1><p>Разведка, экспедиции, объекты, события, рынок и снабжение.</p></div></header>
-            <nav id="operations-route-tabs" class="operations-route-tabs" role="tablist" aria-label="Разделы операций"><button type="button" role="tab" data-operations-mode="overview">Сводка и разведка</button><button type="button" role="tab" data-operations-mode="expeditions">Экспедиции</button><button type="button" role="tab" data-operations-mode="objects">Объекты</button><button type="button" role="tab" data-operations-mode="events">События</button><button type="button" role="tab" data-operations-mode="market">Рынок</button><button type="button" role="tab" data-operations-mode="logistics">Логистика</button></nav>
-            <div id="operations-workspace-host" class="operations-route-content"></div>
+            <header class="operations-route-header"><div><p class="panel-label">Empire Operations</p><h1 data-shell-heading>Операционный центр</h1><p>Разведка, экспедиции, объекты, события, рынок и снабжение.</p></div></header>
+            <nav id="operations-route-tabs" class="operations-route-tabs" role="tablist" aria-label="Разделы операций"><button type="button" role="tab" data-operations-mode="overview">Сводка и разведка</button><button type="button" role="tab" data-operations-mode="expeditions">Экспедиции</button><button type="button" role="tab" data-operations-mode="objects">Объекты</button><button type="button" role="tab" data-operations-mode="events">События</button><button type="button" role="tab" data-operations-mode="market">Рынок</button><button type="button" role="tab" data-operations-mode="logistics">Логистика</button></nav><div id="operations-workspace-host" class="operations-route-content"></div>
           </section>
 
+          <section id="command-view" class="command-primary-view" aria-label="Командование" hidden>
+            <header class="command-route-header"><div><p class="panel-label">Strategic Command</p><h1 data-shell-heading>Командование империи</h1><p>Колонии, адмиральская доктрина, боевые формации и модернизации.</p></div></header>
+            <nav id="command-route-tabs" class="command-route-tabs" role="tablist" aria-label="Разделы командования"><button type="button" role="tab" data-command-mode="overview">Обзор</button><button type="button" role="tab" data-command-mode="doctrine">Адмирал</button><button type="button" role="tab" data-command-mode="fleet-doctrine">Доктрина флота</button><button type="button" role="tab" data-command-mode="upgrades">Модернизации</button></nav>
+            <section id="command-overview-view" class="command-route-content" hidden></section><section id="command-doctrine-view" class="command-route-content command-doctrine-dialog" hidden></section><section id="fleet-doctrine-view" class="command-route-content fleet-doctrine-dialog" hidden></section><section id="command-upgrades-view" class="command-route-content" hidden></section>
+          </section>
+
+          <section id="ranking-view" class="command-primary-view command-ranking-dialog" aria-label="Рейтинг империй" hidden><header class="command-route-header"><div><p class="panel-label">Strategic Command</p><h1 data-shell-heading>Командный профиль и рейтинг</h1><p>Сравнение империй из текущего состояния партии.</p></div></header><section id="ranking-profile-view" class="command-profile"></section><section id="ranking-list-view" class="command-ranking-list" aria-label="Локальный рейтинг империй"></section></section>
+
           <section id="reports-view" class="operations-primary-view" aria-label="Единые отчёты" hidden>
-            <header class="operations-route-header"><div><p class="panel-label">Operations Intelligence</p><h1>Единые отчёты</h1><p>Боевые, экспедиционные, объектные и системные результаты.</p></div></header>
-            <nav id="reports-route-tabs" class="operations-route-tabs" role="tablist" aria-label="Фильтры отчётов"><button type="button" role="tab" data-report-filter="all">Все</button><button type="button" role="tab" data-report-filter="combat">Бои</button><button type="button" role="tab" data-report-filter="expedition">Экспедиции</button><button type="button" role="tab" data-report-filter="object">Объекты</button><button type="button" role="tab" data-report-filter="event">События</button></nav>
-            <div id="mission-reports-view" class="operations-route-content"></div>
+            <header class="operations-route-header"><div><p class="panel-label">Operations Intelligence</p><h1 data-shell-heading>Единые отчёты</h1><p>Боевые, экспедиционные, объектные и системные результаты.</p></div></header>
+            <nav id="reports-route-tabs" class="operations-route-tabs" role="tablist" aria-label="Фильтры отчётов"><button type="button" role="tab" data-report-filter="all">Все</button><button type="button" role="tab" data-report-filter="combat">Бои</button><button type="button" role="tab" data-report-filter="expedition">Экспедиции</button><button type="button" role="tab" data-report-filter="object">Объекты</button><button type="button" role="tab" data-report-filter="event">События</button></nav><div id="mission-reports-view" class="operations-route-content"></div>
+          </section>
+
+          <section id="system-view" class="system-primary-view" aria-label="Система" hidden>
+            <header class="command-route-header"><div><p class="panel-label">Client System</p><h1 data-shell-heading>Система и сохранения</h1><p>Локальные слоты, импорт, экспорт и настройки интерфейса.</p></div></header>
+            <nav id="system-route-tabs" class="command-route-tabs" role="tablist" aria-label="Разделы системы"><button type="button" role="tab" data-system-mode="saves">Сохранения</button><button type="button" role="tab" data-system-mode="settings">Настройки</button></nav>
+            <section id="system-saves-view" class="system-route-content save-manager-dialog" hidden></section><section id="system-settings-view" class="system-route-content" hidden></section>
           </section>
 
           <section id="planet-view" class="planet-view" aria-label="Управление планетой" hidden>
-            <header class="planet-header">
-              <div class="planet-header__identity"><p id="planet-role-label" class="panel-label">Домашняя колония</p><div class="planet-title-row"><h1 id="planet-name">—</h1><span id="planet-coordinates" class="planet-coordinate-chip">—</span></div><p id="planet-specialization-label">Трёхзонная планетарная модель</p></div>
-              <div class="planet-header-controls"><label class="planet-selector-label"><span>Активная колония</span><select id="planet-selector" class="se-select" aria-label="Выбрать активную колонию"></select></label><div class="planet-clock"><small>Время мира</small><strong id="world-time">00:00:00</strong></div></div>
-            </header>
-            <div id="planet-mode-tabs" class="planet-mode-tabs" role="tablist" aria-label="Режим планетарного экрана">
-              <button class="planet-mode-tab" type="button" role="tab" data-planet-mode="overview" aria-selected="true"><span>Обзор</span><strong id="zone-overview-status">Колония</strong></button><button class="planet-mode-tab" type="button" role="tab" data-planet-mode="resource" aria-selected="false"><span>Ресурсная</span><strong id="zone-resource-fields">—</strong></button><button class="planet-mode-tab" type="button" role="tab" data-planet-mode="industry" aria-selected="false"><span>Промышленная</span><strong id="zone-industry-fields">—</strong></button><button class="planet-mode-tab" type="button" role="tab" data-planet-mode="military" aria-selected="false"><span>Военная</span><strong id="zone-military-fields">—</strong></button>
-            </div>
+            <header class="planet-header"><div class="planet-header__identity"><p id="planet-role-label" class="panel-label">Домашняя колония</p><div class="planet-title-row"><h1 id="planet-name" data-shell-heading>—</h1><span id="planet-coordinates" class="planet-coordinate-chip">—</span></div><p id="planet-specialization-label">Трёхзонная планетарная модель</p></div><div class="planet-header-controls"><label class="planet-selector-label"><span>Активная колония</span><select id="planet-selector" class="se-select" aria-label="Выбрать активную колонию"></select></label><div class="planet-clock"><small>Время мира</small><strong id="world-time">00:00:00</strong></div></div></header>
+            <div id="planet-mode-tabs" class="planet-mode-tabs" role="tablist" aria-label="Режим планетарного экрана"><button class="planet-mode-tab" type="button" role="tab" data-planet-mode="overview" aria-selected="true"><span>Обзор</span><strong id="zone-overview-status">Колония</strong></button><button class="planet-mode-tab" type="button" role="tab" data-planet-mode="resource" aria-selected="false"><span>Ресурсная</span><strong id="zone-resource-fields">—</strong></button><button class="planet-mode-tab" type="button" role="tab" data-planet-mode="industry" aria-selected="false"><span>Промышленная</span><strong id="zone-industry-fields">—</strong></button><button class="planet-mode-tab" type="button" role="tab" data-planet-mode="military" aria-selected="false"><span>Военная</span><strong id="zone-military-fields">—</strong></button></div>
             <div id="planet-development-tabs" class="planet-development-tabs" role="tablist" aria-label="Локальные экраны развития" hidden><button type="button" role="tab" data-development-surface="zone" aria-selected="true">Инфраструктура</button><button type="button" role="tab" data-development-surface="shipyard" aria-selected="false">Верфь</button><button type="button" role="tab" data-development-surface="defense" aria-selected="false">Оборона и ремонт</button><button type="button" role="tab" data-development-surface="upgrades" aria-selected="false">Модернизация</button></div>
-            <div id="planet-core-workspace">
-              <section class="planet-queue-bar" aria-label="Очередь строительства"><div class="planet-queue-heading"><p class="panel-label">Верхняя очередь</p><strong>Строительство колонии</strong></div><div id="planet-build-queue" class="planet-build-queue"></div><div class="planet-time-controls" aria-label="Управление временем"><button type="button" data-advance-seconds="60">+1 мин</button><button type="button" data-advance-seconds="600">+10 мин</button><button type="button" data-advance-seconds="3600">+1 час</button><button id="advance-next-event" class="se-button se-button--secondary" type="button">До события</button></div></section>
-              <div class="planet-workspace"><aside id="planet-context-panel" class="planet-context-panel" aria-label="Контекст планеты"></aside><main id="planet-stage" class="planet-stage"><section id="planet-overview-stage" class="planet-overview-stage" aria-label="Обзор колонии"></section><section id="planet-zone-stage" class="planet-zone-stage" aria-label="Зона планеты" hidden><header class="planet-zone-stage__header"><div><p id="planet-zone-kicker" class="panel-label">Инфраструктурный сектор</p><h2 id="planet-zone-title">—</h2></div><p id="planet-zone-description">—</p></header><div id="planet-building-grid" class="planet-building-grid" role="list"></div></section></main><aside class="planet-details-panel planet-operations" aria-label="Детали и действия"><section id="planet-details-card" class="operation-card planet-details-card"></section><section class="operation-card economy-report"><p class="panel-label">Экономический отчёт</p><dl><div><dt>Эффективность</dt><dd id="economy-efficiency">—</dd></div><div><dt>Энергогенерация</dt><dd id="economy-energy-produced">—</dd></div><div><dt>Энергопотребление</dt><dd id="economy-energy-consumed">—</dd></div></dl></section></aside></div>
-            </div>
+            <div id="planet-core-workspace"><section class="planet-queue-bar" aria-label="Очередь строительства"><div class="planet-queue-heading"><p class="panel-label">Верхняя очередь</p><strong>Строительство колонии</strong></div><div id="planet-build-queue" class="planet-build-queue"></div><div class="planet-time-controls" aria-label="Управление временем"><button type="button" data-advance-seconds="60">+1 мин</button><button type="button" data-advance-seconds="600">+10 мин</button><button type="button" data-advance-seconds="3600">+1 час</button><button id="advance-next-event" class="se-button se-button--secondary" type="button">До события</button></div></section><div class="planet-workspace"><aside id="planet-context-panel" class="planet-context-panel" aria-label="Контекст планеты"></aside><main id="planet-stage" class="planet-stage"><section id="planet-overview-stage" class="planet-overview-stage" aria-label="Обзор колонии"></section><section id="planet-zone-stage" class="planet-zone-stage" aria-label="Зона планеты" hidden><header class="planet-zone-stage__header"><div><p id="planet-zone-kicker" class="panel-label">Инфраструктурный сектор</p><h2 id="planet-zone-title">—</h2></div><p id="planet-zone-description">—</p></header><div id="planet-building-grid" class="planet-building-grid" role="list"></div></section></main><aside class="planet-details-panel planet-operations" aria-label="Детали и действия"><section id="planet-details-card" class="operation-card planet-details-card"></section><section class="operation-card economy-report"><p class="panel-label">Экономический отчёт</p><dl><div><dt>Эффективность</dt><dd id="economy-efficiency">—</dd></div><div><dt>Энергогенерация</dt><dd id="economy-energy-produced">—</dd></div><div><dt>Энергопотребление</dt><dd id="economy-energy-consumed">—</dd></div></dl></section></aside></div></div>
             <section id="ship-production-view" class="planet-development-surface production-workspace" aria-label="Производство кораблей" hidden></section><section id="defense-production-view" class="planet-development-surface production-workspace" aria-label="Оборона и ремонт" hidden></section><section id="ship-upgrades-view" class="planet-development-surface ship-upgrades-workspace" aria-label="Модернизация кораблей" hidden></section>
           </section>
         </div>
       </main>
     </div>
-
-    <dialog id="faction-preview-dialog" class="asset-dialog"><div class="asset-dialog__header"><div><p class="panel-label">Production art review</p><h2 id="faction-preview-title">Фракционный набор</h2></div><button id="faction-preview-close" class="dialog-close" type="button" aria-label="Закрыть">×</button></div><img id="faction-preview-image" alt="" /></dialog>
-    <dialog id="aegis-atlas-dialog" class="asset-dialog asset-dialog--atlas"><div class="asset-dialog__header"><div><p class="panel-label">Aegis P1 asset atlas</p><h2 id="aegis-atlas-title">Набор «Эгиды»</h2></div><button id="aegis-atlas-close" class="dialog-close" type="button" aria-label="Закрыть">×</button></div><img id="aegis-atlas-image" alt="" /></dialog>
     <noscript>Для запуска Stellar Empires требуется JavaScript.</noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>

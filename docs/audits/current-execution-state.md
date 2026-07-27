@@ -1,59 +1,59 @@
 # Current execution state
 
 **Updated:** 2026-07-27  
-**Safe to continue:** yes
+**Safe to continue:** yes — audit work only
 
 | Field | Current value |
 |---|---|
 | Protocol PR | #100 — audit-first autonomous delivery protocol — merged |
-| Current batch | `COHERENT-UI-SHELL-01` |
-| Audit PR | #111 — accepted and merged |
-| Completed implementation PRs | #112 `UI-SHELL-RUNTIME-ROUTER`; #113 `UI-SHELL-DEVELOPMENT-WORKSPACES`; #114 `UI-SHELL-FLEET-OPERATIONS-WORKSPACES` — completed by merge of this PR |
-| Active implementation PR | none after #114 merge |
-| Runtime baseline | post-#114 `main`; exact merge SHA is authoritative in GitHub metadata |
-| Complexity | medium |
-| Remaining authorized implementation PRs | #115 |
+| Current batch | none |
+| Last completed batch | `COHERENT-UI-SHELL-01` |
+| Audit PR | #111 — completed and archived |
+| Completed implementation PRs | #112 `UI-SHELL-RUNTIME-ROUTER`; #113 `UI-SHELL-DEVELOPMENT-WORKSPACES`; #114 `UI-SHELL-FLEET-OPERATIONS-WORKSPACES`; #115 `UI-SHELL-COMMAND-SYSTEM-GATE` — completed by merge of this PR |
+| Active implementation PR | none after #115 merge |
+| Runtime baseline | post-#115 `main`; exact merge SHA is authoritative in GitHub metadata |
+| Remaining authorized implementation PRs | none |
 | Active work item | none |
-| Last completed atomic action | routed Fleet, Operations and Reports workspaces with explicit mission confirmation and report backlinks |
-| Last successful validation | PR #114 asset audit, lint, TypeScript, full unit suite, production build, Browser E2E and Graphify |
-| Exact next action | create PR #115 from fresh post-#114 `main` and implement only `UI-SHELL-COMMAND-SYSTEM-GATE` |
+| Last completed atomic action | completed the nine-route shell, Command/System migration, persistent HUD/context, accessibility gate and Audit #111 archive |
+| Last successful validation | PR #115 asset audit, lint, TypeScript, full unit suite, production build, Browser E2E and Graphify |
+| Exact next action | create a new Audit PR from fresh post-#115 `main` before any implementation work |
 | Blockers | none |
 | Divergence | none |
 
-## Delivered by PR #114
+## Delivered by the completed batch
 
-- canonical Fleet routes are `#/fleets/<overview|compose|active|battles>`;
-- canonical Operations routes are `#/operations/<overview|expeditions|objects|events|market|logistics>`;
-- canonical Reports routes are `#/reports/<all|combat|expedition|object|event>`;
-- Fleet target handoff only prefills the composer; `SEND_FLEET` remains behind explicit confirmation;
-- Galaxy intelligence reuses the existing redacted selectors without widening hidden information;
-- Expeditions, Space Objects, World Events, Market and Logistics render in one Operations family;
-- Market and Logistics continue through existing reducer commands;
-- unified reports are directly routed and preserve exact map backlinks;
-- legacy Fleet/Operations/Reports dialogs and runtime-inserted primary buttons are no longer mounted;
-- state transitions refresh active routed workspaces through `GameApplicationController` subscriptions;
-- no gameplay command, balance value, save field or migration changed.
+- one `GameApplicationController` owns runtime state and accepted transition notifications;
+- one typed registry owns all implemented primary navigation routes;
+- one primary workspace is active at a time;
+- Planet, Fleets, Space, Research, Operations, Command, Ranking, Reports and System have canonical URL/history routes;
+- browser history and reload restore route state without changing the simulation checksum;
+- Research, Production, Defence/Repair, Ship Upgrades, Fleet missions, intelligence, PvE operations, Market, Logistics, Reports, Command doctrines, Ranking and Saves/Settings are routed workspaces;
+- Fleet target handoff remains presentation-only until explicit send confirmation;
+- persistent HUD includes active colony, coordinates, world time, resource capacities/rates, energy, population, hangar, queues, missions, reports and autosave state;
+- route-aware context uses only already-authorized and redacted information;
+- keyboard navigation, heading focus, compact layout and reduced motion are supported;
+- legacy primary modal ownership, dynamic primary buttons and production asset showcases were removed;
+- no gameplay command, balance value, schema field or migration changed.
 
-## Compatibility intentionally retained
-
-The following remain for PR #115 only:
-
-- Command overview, Ranking, Command Doctrine and Fleet Doctrine route migration;
-- Save Manager and System/settings workspace;
-- final HUD/context cleanup, runtime showcase removal, batch gate and audit archive.
-
-## Validation recorded for PR #114
+## Validation recorded for PR #115
 
 - asset pipeline check: passed;
 - lint: passed;
 - TypeScript: passed;
 - full unit suite: passed;
 - production build: passed;
-- Chromium Browser E2E: passed, including existing Planet/Space/Development coverage and new Fleet/Operations/Reports coverage;
-- route history, reload, checksum neutrality, target prefill, explicit confirmation, report backlinks and both release viewports: passed;
+- Chromium Browser E2E: passed, including the complete legacy suite and full-shell gate;
+- all nine primary routes, Command/System subroutes, history, reload and checksum-neutrality: passed;
+- keyboard isolation from the hidden canvas, focus transfer, compact and reduced-motion persistence: passed;
+- 1366×768 and 1920×1080 release viewports: passed;
 - fresh Graphify audit: passed;
-- generated Graphify output and Playwright reports: absent from the final diff.
+- temporary diagnostics, generated Graphify output and Playwright reports: absent from the final diff.
+
+## Archive
+
+- completion record: `docs/audits/completed/coherent-ui-shell-01.md`;
+- accepted source audit: `docs/audits/completed/coherent-ui-shell-01-authorized-audit.md`.
 
 ## Recovery rule
 
-After PR #114 merges, start #115 only from the exact latest `main`. Do not add alliances, solar war, Obelisks, Gates, balance changes, framework migration or another unaudited feature to #115.
+Do not create another implementation branch or PR from this state. The next repository action must be a new Audit PR that reads fresh `main`, current project status, roadmap, recent merges and fresh Graphify evidence before authorizing a coherent implementation batch.
