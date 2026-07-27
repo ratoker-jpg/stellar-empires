@@ -4,7 +4,7 @@ import type { BattleReport } from '../combat/types';
 import { resolveColonization } from '../colonization/colonization';
 import { enqueueEvent } from '../eventQueue';
 import { appendCommandHistory } from '../history/stateHistory';
-import { resolveScoutArrival } from '../intelligence/resolveScout';
+import { resolveScoutArrivalOutcome } from '../intelligence/resolveScout';
 import type { PlanetState } from '../planet/types';
 import type {
   CommandLogEntry,
@@ -284,8 +284,21 @@ export function applyFlightEvent(state: GameState, event: ScheduledGameEvent): G
   }
 
   if (fleet.mission.kind === 'scout') {
-    const observed = resolveScoutArrival(state, fleet, target, event.sequence);
-    return scheduleReturn(observed, fleet, target.id, duration);
+    const resolved = resolveScoutArrivalOutcome(
+      state,
+      fleet,
+      target,
+      event.sequence,
+    );
+    if (resolved.probeLost) {
+      return {
+        ...resolved.state,
+        fleets: resolved.state.fleets.filter(
+          (candidate) => candidate.id !== fleet.id,
+        ),
+      };
+    }
+    return scheduleReturn(resolved.state, fleet, target.id, duration);
   }
 
   if (fleet.mission.kind === 'attack') {
