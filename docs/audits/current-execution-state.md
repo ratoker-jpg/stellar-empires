@@ -12,9 +12,9 @@
 | Active work item | `UNIVERSE-NAVIGATION-VIEWS` |
 | Active implementation PR | #109 |
 | Base SHA | `430eb8d51f49c1846caad37d33668fad6c685201` |
-| Last completed atomic action | implemented URL/history navigation, exact three-level views and lazy texture leases |
-| Last successful validation | pending clean PR CI and Graphify on the final implementation head |
-| Exact next action | fix ordinary validation failures, merge #109 after CI and Graphify are green, then create #110 from fresh `main` |
+| Last completed atomic action | produced the clean #109 implementation head without bootstrap, diagnostic or Graphify output files |
+| Last successful validation | bootstrap head passed asset checks, lint, typecheck, tests, build and Graphify; clean-head rerun requested by this checkpoint commit |
+| Exact next action | merge #109 after clean-head CI and Graphify are green, then create #110 from fresh `main` |
 | Blockers | none |
 | Divergence | none |
 
@@ -24,7 +24,7 @@
 |---|---|
 | #107 Universe asset pipeline | merged |
 | #108 spatial model and schema v14 | merged |
-| #109 three-level navigation views | implementation complete; validation active |
+| #109 three-level navigation views | implementation complete; clean-head validation active |
 | #110 actions, E2E and batch closure | not started |
 
 ## Recovery rule
