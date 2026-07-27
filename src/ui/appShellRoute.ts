@@ -6,6 +6,22 @@ export type PlanetShellMode = (typeof PLANET_SHELL_MODES)[number];
 export const PLANET_DEVELOPMENT_SURFACES = ['zone', 'shipyard', 'defense', 'upgrades'] as const;
 export type PlanetDevelopmentSurface = (typeof PLANET_DEVELOPMENT_SURFACES)[number];
 
+export const FLEET_SHELL_MODES = ['overview', 'compose', 'active', 'battles'] as const;
+export type FleetShellMode = (typeof FLEET_SHELL_MODES)[number];
+
+export const OPERATIONS_SHELL_MODES = [
+  'overview',
+  'expeditions',
+  'objects',
+  'events',
+  'market',
+  'logistics',
+] as const;
+export type OperationsShellMode = (typeof OPERATIONS_SHELL_MODES)[number];
+
+export const REPORT_SHELL_FILTERS = ['all', 'combat', 'expedition', 'object', 'event'] as const;
+export type ReportShellFilter = (typeof REPORT_SHELL_FILTERS)[number];
+
 export type AppShellRoute =
   | {
       readonly family: 'planet';
@@ -19,6 +35,18 @@ export type AppShellRoute =
     }
   | {
       readonly family: 'research';
+    }
+  | {
+      readonly family: 'fleets';
+      readonly mode: FleetShellMode;
+    }
+  | {
+      readonly family: 'operations';
+      readonly mode: OperationsShellMode;
+    }
+  | {
+      readonly family: 'reports';
+      readonly filter: ReportShellFilter;
     };
 
 export interface ParsedAppShellRoute {
@@ -49,6 +77,18 @@ export function isPlanetDevelopmentSurface(
   return PLANET_DEVELOPMENT_SURFACES.includes(value as PlanetDevelopmentSurface);
 }
 
+export function isFleetShellMode(value: string | undefined): value is FleetShellMode {
+  return FLEET_SHELL_MODES.includes(value as FleetShellMode);
+}
+
+export function isOperationsShellMode(value: string | undefined): value is OperationsShellMode {
+  return OPERATIONS_SHELL_MODES.includes(value as OperationsShellMode);
+}
+
+export function isReportShellFilter(value: string | undefined): value is ReportShellFilter {
+  return REPORT_SHELL_FILTERS.includes(value as ReportShellFilter);
+}
+
 export function normalizePlanetDevelopmentSurface(
   mode: PlanetShellMode,
   requested: PlanetDevelopmentSurface | undefined,
@@ -67,8 +107,18 @@ export function isSpaceShellHash(hash: string): boolean {
 export function serializeAppShellRoute(route: AppShellRoute): string {
   if (route.family === 'space') return route.hash;
   if (route.family === 'research') return '#/research';
+  if (route.family === 'fleets') return `#/fleets/${route.mode}`;
+  if (route.family === 'operations') return `#/operations/${route.mode}`;
+  if (route.family === 'reports') return `#/reports/${route.filter}`;
   const base = `#/planet/${encodeURIComponent(route.planetId)}/${route.mode}`;
   return route.surface === 'zone' ? base : `${base}?surface=${route.surface}`;
+}
+
+function parsedRoute(
+  route: AppShellRoute,
+  error: string | null = null,
+): ParsedAppShellRoute {
+  return { route, canonicalHash: serializeAppShellRoute(route), error };
 }
 
 export function parseAppShellRoute(
@@ -84,8 +134,39 @@ export function parseAppShellRoute(
       error: null,
     };
   }
-  if (normalized === '#/research') {
-    return { route: { family: 'research' }, canonicalHash: '#/research', error: null };
+  if (normalized === '#/research') return parsedRoute({ family: 'research' });
+
+  const [path = '', query = ''] = normalized.split('?', 2);
+  const segments = path.replace(/^#\/?/, '').split('/').filter(Boolean);
+  if (segments[0] === 'fleets') {
+    const requested = segments[1];
+    const mode = isFleetShellMode(requested) ? requested : 'overview';
+    return parsedRoute(
+      { family: 'fleets', mode },
+      requested !== undefined && requested !== mode
+        ? 'Режим флотов не распознан. Открыт обзор флотов.'
+        : null,
+    );
+  }
+  if (segments[0] === 'operations') {
+    const requested = segments[1];
+    const mode = isOperationsShellMode(requested) ? requested : 'overview';
+    return parsedRoute(
+      { family: 'operations', mode },
+      requested !== undefined && requested !== mode
+        ? 'Режим операций не распознан. Открыта операционная сводка.'
+        : null,
+    );
+  }
+  if (segments[0] === 'reports') {
+    const requested = segments[1];
+    const filter = isReportShellFilter(requested) ? requested : 'all';
+    return parsedRoute(
+      { family: 'reports', filter },
+      requested !== undefined && requested !== filter
+        ? 'Фильтр отчётов не распознан. Открыт единый журнал.'
+        : null,
+    );
   }
 
   const fallbackPlanetId = getDefaultPlanetId(state, preferredPlanetId);
@@ -95,8 +176,6 @@ export function parseAppShellRoute(
     mode: 'overview',
     surface: 'zone',
   };
-  const [path = '', query = ''] = normalized.split('?', 2);
-  const segments = path.replace(/^#\/?/, '').split('/').filter(Boolean);
   if (segments.length !== 3 || segments[0] !== 'planet') {
     return {
       route: fallback,
