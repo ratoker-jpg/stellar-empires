@@ -1,9 +1,9 @@
 # AI Continuation Guide
 
-**Status:** PR #117 completes `MISSION-RULES-REGISTRY` on merge  
+**Status:** PR #118 completes `ESPIONAGE-COUNTERINTELLIGENCE` on merge  
 **Updated:** 2026-07-27  
 **Current batch:** `ORDINARY-MISSIONS-INTELLIGENCE-01` · Audit #116  
-**Next implementation after #117 merge:** #118 `ESPIONAGE-COUNTERINTELLIGENCE`
+**Next implementation after #118 merge:** #119 `INTELLIGENCE-REPORTS-PRESENTATION`
 
 ## Repository
 
@@ -31,54 +31,33 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - #106–#110: schema-v14 Universe navigation and action gate;
 - #111–#115: coherent nine-route application shell, persistent HUD/context and full Browser E2E;
 - #116: accepted `ORDINARY-MISSIONS-INTELLIGENCE-01`;
-- #117: shared ordinary mission rules, flight-slot enforcement, redacted Fleet targets and attack-intelligence precondition.
+- #117: shared ordinary mission rules, flight slots, redacted Fleet targets and attack-intelligence gate;
+- #118: deterministic scout composition, intelligence tiers, cooldown, detection, probe loss and defender alerts.
 
-## PR #117 result
+## PR #118 result
 
-`src/simulation/fleets/missionRules.ts` is the source of truth for existing ordinary missions:
+The existing `scout` mission now has a complete deterministic contract:
 
-```text
-transport
- deploy
- scout
- attack
- recycle
- colonize
-```
-
-The shared preflight returns stable availability codes, messages, route/fuel estimates, slot usage and a redacted target presentation. It is consumed by:
-
-- authoritative `sendFleet()` dispatch;
-- Fleet composer target enumeration and route preview;
-- bot fleet mission preflight.
-
-Core rules now active:
-
-- flight capacity is `max(1, 1 + researchEffects.flightSlots)`;
-- every non-stationed fleet consumes one slot;
-- attack requires current level-three intelligence;
-- unknown foreign contacts do not expose owner or faction through Fleet UI;
-- specialized Expedition and Space Object commands remain separate;
-- state schema remains v14.
+- exactly one scout-role ship and zero cargo;
+- observer strength uses existing sensor research plus the probe baseline;
+- counter-strength uses defender sensor research plus target sensor-grid level;
+- relative strength produces level-1 identity, level-2 economy/buildings or level-3 defense/fleet intelligence;
+- cooldown derives from saved observation history and opens on its exact boundary;
+- detection is seeded by game seed, event sequence, fleet ID and target ID;
+- detected probes preserve the observation, create a bounded defender alert, are removed and do not return;
+- undetected probes follow the existing return lifecycle;
+- schema remains v14 with no new persisted field or migration.
 
 ## Remaining accepted chain
 
 ```text
-#118 ESPIONAGE-COUNTERINTELLIGENCE
-→ #119 INTELLIGENCE-REPORTS-PRESENTATION
+#119 INTELLIGENCE-REPORTS-PRESENTATION
 → #120 MISSION-INTELLIGENCE-BOT-GATE
 ```
 
 ## Next work item
 
-PR #118 completes the existing scout mission contract without introducing a new command or mission kind:
-
-- exactly one scout-role ship and zero cargo;
-- deterministic observer-versus-defender intelligence tier;
-- derived cooldown from saved state;
-- deterministic detection and probe loss;
-- defender alert;
-- no new persisted field or migration.
+PR #119 may derive and route intelligence reports and incoming-flight presentation from existing observations, alerts and fleet state. It must preserve redaction and must not add persisted report state.
 
 ## Invariants
 
@@ -97,4 +76,4 @@ Planet destruction/recovery, economy/logistics redesign, pirate raid, Space Trip
 
 ## Immediate route
 
-After #117 merges, create only PR #118 from fresh post-#117 `main`. Do not start #119 and do not expand #118 beyond `ESPIONAGE-COUNTERINTELLIGENCE`.
+After #118 merges, create only PR #119 from fresh post-#118 `main`. Do not start #120 and do not expand #119 beyond `INTELLIGENCE-REPORTS-PRESENTATION`.

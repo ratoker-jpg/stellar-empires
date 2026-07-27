@@ -1,18 +1,18 @@
 {
-  "statusVersion": 21,
+  "statusVersion": 22,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 117,
-  "lastMergeSha": "669cca1510f242cb7069831420edd488af435d4d",
-  "verifiedMainBaseline": "PR #117 clean-head asset audit, lint, TypeScript, 372-test suite, production build, Browser E2E and Graphify",
+  "lastMergedPr": 118,
+  "lastMergeSha": "recorded in GitHub PR #118 merge metadata",
+  "verifiedMainBaseline": "PR #118 final clean-head asset audit, lint, TypeScript, 379-test suite, production build, Browser E2E and Graphify",
   "activePr": null,
-  "nextPrAfterActive": 118,
+  "nextPrAfterActive": 119,
   "nextPrKind": "implementation",
-  "currentMilestone": "M4 shared ordinary mission rules delivered; espionage and counter-intelligence next",
+  "currentMilestone": "M4 espionage and counter-intelligence delivered; intelligence reports presentation next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -45,7 +45,7 @@
     "baselineSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
     "implementationCount": 4,
     "implementationPrs": [117, 118, 119, 120],
-    "completedImplementationPrs": [117],
+    "completedImplementationPrs": [117, 118],
     "workItems": [
       "MISSION-RULES-REGISTRY",
       "ESPIONAGE-COUNTERINTELLIGENCE",
@@ -53,7 +53,7 @@
       "MISSION-INTELLIGENCE-BOT-GATE"
     ],
     "status": "in-progress",
-    "nextWorkItem": "ESPIONAGE-COUNTERINTELLIGENCE",
+    "nextWorkItem": "INTELLIGENCE-REPORTS-PRESENTATION",
     "archive": null
   },
   "auditDecisions": {
@@ -75,9 +75,9 @@
     "criticalUnknowns": 0
   },
   "scenarioPresets": {
-    "test": { "populatedGalaxies": 2, "systemsPerGalaxy": 9 },
-    "campaign": { "populatedGalaxies": 6, "systemsPerGalaxy": 27 },
-    "fidelity": { "populatedGalaxies": 15, "systemsPerGalaxy": 81 }
+    "test": {"populatedGalaxies": 2, "systemsPerGalaxy": 9},
+    "campaign": {"populatedGalaxies": 6, "systemsPerGalaxy": 27},
+    "fidelity": {"populatedGalaxies": 15, "systemsPerGalaxy": 81}
   },
   "batchSizing": {
     "heavy": [1, 2],
@@ -109,12 +109,12 @@
     "shared pure ordinary mission availability for reducer, Fleet UI and bots",
     "research-derived flight-slot enforcement and current level-three attack intelligence",
     "redacted Fleet mission targets without unknown owner or faction leakage",
+    "deterministic scout tiers, cooldown, detection, probe loss and defender alerts",
     "checksum-stable E2E app readiness without changing production bot scheduling",
     "full-shell Browser E2E and Graphify validation"
   ],
   "activeDelivery": [],
   "knownLimitations": [
-    "scout cooldown, exact one-probe composition, probe loss and defender-alert depth remain for PR #118",
     "routed intelligence reports and incoming-flight presentation remain for PR #119",
     "combined bot mission-intelligence gate remains for PR #120",
     "complete planet destruction and recovery remain unaudited",
@@ -131,7 +131,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on PR #117 clean head",
+    "lastValidation": "passed on PR #118 final clean head",
     "lastAuditGraph": {
       "nodes": 2130,
       "relationships": 6795,
@@ -169,5 +169,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged GitHub pull requests and actual main"
   ],
-  "nextAction": "Create PR #118 from fresh post-#117 main and implement only ESPIONAGE-COUNTERINTELLIGENCE."
+  "nextAction": "Create PR #119 from fresh post-#118 main and implement only INTELLIGENCE-REPORTS-PRESENTATION."
 }

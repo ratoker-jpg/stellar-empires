@@ -16,11 +16,15 @@ import {
   type GalaxyIntelVisibility,
 } from '../galaxy/intelligenceView';
 import { getEmpireIntelligence } from '../intelligence/intelligenceState';
-import type { FactionId } from '../planet/types';
+import { getScoutCooldownStatus } from '../intelligence/resolveScout';
+import type { FactionId, PlanetState } from '../planet/types';
 import type { SpaceCoordinate } from '../space/coordinates';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
-import { hasShipRole } from '../units/shipCapabilities';
+import {
+  getShipCountByRole,
+  hasShipRole,
+} from '../units/shipCapabilities';
 import {
   estimateFlight,
   estimateFlightToGalaxyPlanet,
@@ -58,6 +62,9 @@ export type MissionAvailabilityCode =
   | 'COLONY_LIMIT_REACHED'
   | 'FLEET_CARGO_OVER_CAPACITY'
   | 'SCOUT_SHIP_REQUIRED'
+  | 'SCOUT_FLEET_COMPOSITION_INVALID'
+  | 'SCOUT_CARGO_NOT_ALLOWED'
+  | 'SCOUT_COOLDOWN_ACTIVE'
   | 'ATTACK_SHIP_REQUIRED'
   | 'RECYCLER_SHIP_REQUIRED'
   | 'COLONY_SHIP_REQUIRED'
@@ -298,6 +305,13 @@ function cargoAmount(fleet: FleetState): number {
   return fleet.cargo.metal + fleet.cargo.crystal + fleet.cargo.gas;
 }
 
+function shipCount(fleet: FleetState): number {
+  return Object.values(fleet.ships).reduce(
+    (total, quantity) => total + Math.max(0, quantity),
+    0,
+  );
+}
+
 function getFleetSpeedBonus(state: GameState, fleet: FleetState): number {
   return getResearchEffectsForEmpire(state, fleet.empireId).fleetSpeedPercent +
     getCommanderFleetEffects(state, fleet).speedBonusPercent;
@@ -325,16 +339,32 @@ export function getMissionAvailability(
     return result('FLIGHT_ORIGIN_NOT_FOUND', 'Точка отправления не найдена.', slots);
   }
   if (origin.ownerEmpireId !== command.empireId) {
-    return result('FLIGHT_ORIGIN_NOT_OWNED', 'Флот должен отправляться с собственной колонии.', slots);
+    return result(
+      'FLIGHT_ORIGIN_NOT_OWNED',
+      'Флот должен отправляться с собственной колонии.',
+      slots,
+    );
   }
   if (slots.used >= slots.capacity) {
-    return result('FLIGHT_SLOT_LIMIT_REACHED', 'Все доступные слоты полётов заняты.', slots);
+    return result(
+      'FLIGHT_SLOT_LIMIT_REACHED',
+      'Все доступные слоты полётов заняты.',
+      slots,
+    );
   }
   if (!isOrdinaryMissionKind(command.mission)) {
-    return result('MISSION_KIND_UNSUPPORTED', 'Для этой операции используется отдельная команда.', slots);
+    return result(
+      'MISSION_KIND_UNSUPPORTED',
+      'Для этой операции используется отдельная команда.',
+      slots,
+    );
   }
   if (command.mission !== 'colonize' && origin.id === command.targetPlanetId) {
-    return result('FLEET_TARGET_IS_ORIGIN', 'Цель должна отличаться от точки отправления.', slots);
+    return result(
+      'FLEET_TARGET_IS_ORIGIN',
+      'Цель должна отличаться от точки отправления.',
+      slots,
+    );
   }
 
   const targetView = redactedTarget(
@@ -342,78 +372,193 @@ export function getMissionAvailability(
     command.empireId,
     command.targetPlanetId,
   );
+  let regularTarget: PlanetState | undefined;
 
   if (command.mission === 'colonize') {
     const target = findGalaxyPlanet(state.galaxy, command.targetPlanetId);
     if (target === undefined) {
-      return result('COLONIZATION_TARGET_NOT_FOUND', 'Позиция колонизации не найдена.', slots);
+      return result(
+        'COLONIZATION_TARGET_NOT_FOUND',
+        'Позиция колонизации не найдена.',
+        slots,
+      );
     }
     if (
       !isColonizableGalaxyPlanet(target.planet) ||
       state.planets.some((planet) => planet.galaxyPlanetId === command.targetPlanetId)
     ) {
-      return result('COLONIZATION_TARGET_UNAVAILABLE', 'Выбранная позиция недоступна для колонизации.', slots, targetView);
+      return result(
+        'COLONIZATION_TARGET_UNAVAILABLE',
+        'Выбранная позиция недоступна для колонизации.',
+        slots,
+        targetView,
+      );
     }
     if (getColonizationLevel(state, command.empireId) <= 0) {
-      return result('COLONIZATION_TECH_REQUIRED', 'Требуется технология колонизации первого уровня.', slots, targetView);
+      return result(
+        'COLONIZATION_TECH_REQUIRED',
+        'Требуется технология колонизации первого уровня.',
+        slots,
+        targetView,
+      );
     }
     if (
       getEmpireColonyCount(state, command.empireId) >=
       getColonyLimit(state, command.empireId)
     ) {
-      return result('COLONY_LIMIT_REACHED', 'Достигнут предел колоний империи.', slots, targetView);
+      return result(
+        'COLONY_LIMIT_REACHED',
+        'Достигнут предел колоний империи.',
+        slots,
+        targetView,
+      );
     }
     if (!hasShipRole(fleet.ships, 'colonizer')) {
-      return result('COLONY_SHIP_REQUIRED', 'Для колонизации требуется колонизатор.', slots, targetView);
+      return result(
+        'COLONY_SHIP_REQUIRED',
+        'Для колонизации требуется колонизатор.',
+        slots,
+        targetView,
+      );
     }
   } else {
-    const target = state.planets.find(
+    regularTarget = state.planets.find(
       (planet) => planet.id === command.targetPlanetId,
     );
-    if (target === undefined) {
-      return result('FLIGHT_PLANET_NOT_FOUND', 'Целевая планета не найдена.', slots, targetView);
+    if (regularTarget === undefined) {
+      return result(
+        'FLIGHT_PLANET_NOT_FOUND',
+        'Целевая планета не найдена.',
+        slots,
+        targetView,
+      );
     }
     if (
       (command.mission === 'transport' || command.mission === 'deploy') &&
-      target.ownerEmpireId !== command.empireId
+      regularTarget.ownerEmpireId !== command.empireId
     ) {
-      return result('MISSION_TARGET_NOT_OWNED', 'Транспорт и размещение доступны только между собственными колониями.', slots, targetView);
+      return result(
+        'MISSION_TARGET_NOT_OWNED',
+        'Транспорт и размещение доступны только между собственными колониями.',
+        slots,
+        targetView,
+      );
     }
-    if (command.mission === 'scout' && target.ownerEmpireId === command.empireId) {
-      return result('SCOUT_TARGET_OWNED', 'Собственную колонию не требуется разведывать.', slots, targetView);
+    if (
+      command.mission === 'scout' &&
+      regularTarget.ownerEmpireId === command.empireId
+    ) {
+      return result(
+        'SCOUT_TARGET_OWNED',
+        'Собственную колонию не требуется разведывать.',
+        slots,
+        targetView,
+      );
     }
-    if (command.mission === 'attack' && target.ownerEmpireId === command.empireId) {
-      return result('ATTACK_TARGET_OWNED', 'Нельзя атаковать собственную колонию.', slots, targetView);
+    if (
+      command.mission === 'attack' &&
+      regularTarget.ownerEmpireId === command.empireId
+    ) {
+      return result(
+        'ATTACK_TARGET_OWNED',
+        'Нельзя атаковать собственную колонию.',
+        slots,
+        targetView,
+      );
     }
     if (
       command.mission === 'recycle' &&
       !state.debrisFields.some(
         (field) =>
-          field.planetId === target.id &&
+          field.planetId === regularTarget?.id &&
           (field.metal > 0 || field.crystal > 0),
       )
     ) {
-      return result('DEBRIS_FIELD_NOT_FOUND', 'У цели нет доступного поля обломков.', slots, targetView);
+      return result(
+        'DEBRIS_FIELD_NOT_FOUND',
+        'У цели нет доступного поля обломков.',
+        slots,
+        targetView,
+      );
     }
   }
 
   if (cargoAmount(fleet) > fleet.cargoCapacity) {
-    return result('FLEET_CARGO_OVER_CAPACITY', 'Груз превышает вместимость флота.', slots, targetView);
+    return result(
+      'FLEET_CARGO_OVER_CAPACITY',
+      'Груз превышает вместимость флота.',
+      slots,
+      targetView,
+    );
   }
-  if (command.mission === 'scout' && !hasShipRole(fleet.ships, 'scout')) {
-    return result('SCOUT_SHIP_REQUIRED', 'Для разведки требуется разведывательный корабль.', slots, targetView);
+  if (command.mission === 'scout') {
+    const scoutCount = getShipCountByRole(fleet.ships, 'scout');
+    if (scoutCount === 0) {
+      return result(
+        'SCOUT_SHIP_REQUIRED',
+        'Для разведки требуется разведывательный корабль.',
+        slots,
+        targetView,
+      );
+    }
+    if (scoutCount !== 1 || shipCount(fleet) !== 1) {
+      return result(
+        'SCOUT_FLEET_COMPOSITION_INVALID',
+        'Разведывательная миссия выполняется ровно одним разведчиком.',
+        slots,
+        targetView,
+      );
+    }
+    if (cargoAmount(fleet) !== 0) {
+      return result(
+        'SCOUT_CARGO_NOT_ALLOWED',
+        'Разведывательный корабль должен отправляться без груза.',
+        slots,
+        targetView,
+      );
+    }
+    if (regularTarget !== undefined) {
+      const cooldown = getScoutCooldownStatus(
+        state,
+        command.empireId,
+        regularTarget,
+      );
+      if (!cooldown.allowed) {
+        return result(
+          'SCOUT_COOLDOWN_ACTIVE',
+          `Повторная разведка доступна через ${cooldown.remainingSeconds} сек.`,
+          slots,
+          targetView,
+        );
+      }
+    }
   }
   if (command.mission === 'attack' && !hasArmedShip(fleet)) {
-    return result('ATTACK_SHIP_REQUIRED', 'Для атаки нужен хотя бы один вооружённый корабль.', slots, targetView);
+    return result(
+      'ATTACK_SHIP_REQUIRED',
+      'Для атаки нужен хотя бы один вооружённый корабль.',
+      slots,
+      targetView,
+    );
   }
   if (command.mission === 'recycle' && !hasShipRole(fleet.ships, 'recycler')) {
-    return result('RECYCLER_SHIP_REQUIRED', 'Для переработки требуется переработчик.', slots, targetView);
+    return result(
+      'RECYCLER_SHIP_REQUIRED',
+      'Для переработки требуется переработчик.',
+      slots,
+      targetView,
+    );
   }
   if (
     command.mission === 'attack' &&
     !isCurrentFullObservation(state, command.empireId, command.targetPlanetId)
   ) {
-    return result('ATTACK_INTELLIGENCE_REQUIRED', 'Для атаки требуется актуальная разведка третьего уровня.', slots, targetView);
+    return result(
+      'ATTACK_INTELLIGENCE_REQUIRED',
+      'Для атаки требуется актуальная разведка третьего уровня.',
+      slots,
+      targetView,
+    );
   }
 
   let estimate: FlightEstimate;
@@ -435,7 +580,12 @@ export function getMissionAvailability(
           speedBonus,
         );
   } catch {
-    return result('FLIGHT_ROUTE_UNAVAILABLE', 'Маршрут до выбранной цели недоступен.', slots, targetView);
+    return result(
+      'FLIGHT_ROUTE_UNAVAILABLE',
+      'Маршрут до выбранной цели недоступен.',
+      slots,
+      targetView,
+    );
   }
 
   const fuelRequired = command.mission === 'colonize'

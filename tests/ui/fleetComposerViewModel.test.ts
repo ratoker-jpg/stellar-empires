@@ -62,7 +62,7 @@ function previewFleet(state: GameState): FleetState {
     originPlanetId: home.id,
     location: { type: 'planet', planetId: home.id },
     status: 'stationed',
-    ships: { 'ship.aegis.scout': 2 },
+    ships: { 'ship.aegis.scout': 1 },
     cargo: { metal: 0, crystal: 0, gas: 0 },
     speed: 14,
     cargoCapacity: 40,
