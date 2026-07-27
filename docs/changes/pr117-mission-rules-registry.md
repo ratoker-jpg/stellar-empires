@@ -12,7 +12,8 @@
 - routed authoritative `sendFleet()`, Fleet UI target/preview logic and bot preflight through the same selector;
 - requires current level-three intelligence for ordinary attacks;
 - removed raw unknown foreign owner/faction labels from the Fleet composer;
-- preserved separate Expedition and Space Object command ownership.
+- preserved separate Expedition and Space Object command ownership;
+- stabilized the E2E fixture bot schedule so `appReady` begins from a checksum-stable state without changing production bot scheduling.
 
 ## Persistence and mechanics boundary
 
@@ -32,14 +33,15 @@ Focused coverage was added for:
 - attack intelligence precondition;
 - deterministic route availability;
 - Fleet view-model parity;
-- existing deterministic combat and neutral-pirate attacks with valid level-three intelligence fixtures.
+- existing deterministic combat and neutral-pirate attacks with valid level-three intelligence fixtures;
+- E2E bot-schedule stabilization and preservation of later scheduled decisions.
 
 ## Validation
 
 - asset pipeline check: passed;
 - lint: passed;
 - TypeScript: passed;
-- full unit suite: 370/370 passed;
+- full unit suite: 372/372 passed;
 - production build: passed;
 - Chromium Browser E2E: passed;
 - Graphify: passed.
