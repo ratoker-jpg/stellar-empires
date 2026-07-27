@@ -1,0 +1,28 @@
+name: PR120 typecheck diagnostics
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  capture:
+    if: github.head_ref == 'agent/mission-intelligence-bot-gate'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Capture typecheck output
+        shell: bash
+        run: |
+          set +e
+          npm run typecheck > /tmp/pr120-typecheck.txt 2>&1
+          echo exit_code=$? >> /tmp/pr120-typecheck.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr120-typecheck
+          path: /tmp/pr120-typecheck.txt
