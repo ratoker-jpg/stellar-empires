@@ -319,9 +319,8 @@ export function getMissionAvailability(
     return result('FLEET_NOT_STATIONED', 'Флот не готов к отправке.', slots);
   }
 
-  const origin = state.planets.find(
-    (planet) => planet.id === fleet.location.planetId,
-  );
+  const originPlanetId = fleet.location.planetId;
+  const origin = state.planets.find((planet) => planet.id === originPlanetId);
   if (origin === undefined) {
     return result('FLIGHT_ORIGIN_NOT_FOUND', 'Точка отправления не найдена.', slots);
   }
