@@ -11,11 +11,13 @@ export interface GlobalHudOptions {
   readonly getActivePlanetId: () => string;
 }
 
-export interface GlobalHudMount {
+export interface GlobalHudController {
   refresh(): void;
   setAutoSaveStatus(status: AutoSaveStatus): void;
   dispose(): void;
 }
+
+export type GlobalHudMount = GlobalHudController | undefined;
 
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 
@@ -59,7 +61,7 @@ function renderBadge(id: string, label: string, value: number): void {
   badge.setAttribute('aria-label', `${label}: ${value}`);
 }
 
-export function mountGlobalHud(options: GlobalHudOptions): GlobalHudMount {
+export function mountGlobalHud(options: GlobalHudOptions): GlobalHudController {
   const selector = requireElement<HTMLSelectElement>('#hud-planet-selector');
   const coordinate = requireElement<HTMLElement>('#hud-active-coordinate');
   const worldTime = requireElement<HTMLElement>('#hud-world-time');
