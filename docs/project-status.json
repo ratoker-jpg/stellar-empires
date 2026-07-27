@@ -1,17 +1,17 @@
 {
-  "statusVersion": 11,
+  "statusVersion": 12,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 108,
-  "lastMergeSha": "430eb8d51f49c1846caad37d33668fad6c685201",
-  "verifiedMainBaseline": "430eb8d51f49c1846caad37d33668fad6c685201",
-  "activePr": 109,
-  "nextPrAfterActive": 110,
-  "nextPrKind": "implementation",
+  "lastMergedPr": 110,
+  "lastMergeSha": "assigned-by-pr-110-merge",
+  "verifiedMainBaseline": "PR #110 final gate",
+  "activePr": null,
+  "nextPrAfterActive": null,
+  "nextPrKind": "audit",
   "currentMilestone": "Universe asset runtime integration; spatial model remains next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -41,8 +41,8 @@
       "UNIVERSE-NAVIGATION-VIEWS",
       "UNIVERSE-ACTIONS-GATE"
     ],
-    "status": "implementation-active",
-    "nextWorkItem": "UNIVERSE-NAVIGATION-VIEWS"
+    "status": "completed",
+    "nextWorkItem": null
   },
   "auditDecisions": {
     "implementationCount": 4,
@@ -110,10 +110,7 @@
     "audit-first autonomous delivery protocol and Graphify from PR #100",
     "173 processed catalog runtime images with 217 complete mechanical bindings"
   ],
-  "activeDelivery": [
-    "PR #109 — URL/history-driven Universe, Galaxy and Solar-system views",
-    "map actions, report backlinks, browser E2E and batch closure in planned PR #110"
-  ],
+  "activeDelivery": [],
   "knownLimitations": [
     "the simulation remains a schema-v13 single-galaxy model until PR #108",
     "Universe, Galaxy and Solar-system runtime navigation is not implemented",
@@ -169,5 +166,6 @@
     "docs/26-universe-galaxy-solar-system-navigation-contract.md",
     "docs/25-solar-war-obelisks-gates-and-progression.md",
     "latest merged GitHub pull requests"
-  ]
+  ],
+  "nextAction": "Create a new Audit PR only."
 }

@@ -109,3 +109,8 @@ The batch is medium and contains four implementation PRs.
 ## Immediate route
 
 Validate and merge PR #107, then stop. PR #108 begins later from fresh `main`; do not start it inside #107.
+
+
+## Post-#110 continuation rule
+
+`UNIVERSE-NAVIGATION-01` is complete and archived. The next action is only a new Audit PR. Do not start another implementation PR from this guide.

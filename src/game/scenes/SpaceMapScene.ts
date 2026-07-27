@@ -149,6 +149,13 @@ export class SpaceMapScene extends Phaser.Scene {
         })
       : await lease.transition(route.level);
     if (transition.stale || epoch !== this.#renderEpoch) return;
+    document.documentElement.dataset.spaceMapTextureCount = String(transition.assets.length);
+    document.documentElement.dataset.spaceMapTextureBytes = String(
+      transition.assets.reduce((sum, asset) => sum + asset.bytes, 0),
+    );
+    document.documentElement.dataset.spaceMapDecodedBytes = String(
+      transition.assets.reduce((sum, asset) => sum + asset.decodedBytes, 0),
+    );
     this.renderRoute(route);
   }
 
@@ -162,6 +169,8 @@ export class SpaceMapScene extends Phaser.Scene {
     const duration = route.level === 'galaxy'
       ? getGalaxyPageTransitionMs(this.#state.universe.presetId, isReducedMotion())
       : isReducedMotion() ? 0 : 180;
+    document.documentElement.dataset.spaceMapLevel = route.level;
+    document.documentElement.dataset.spaceMapTransitionMs = String(duration);
     if (duration > 0) {
       layer.setAlpha(0);
       this.tweens.add({ targets: layer, alpha: 1, duration, ease: 'Sine.Out' });

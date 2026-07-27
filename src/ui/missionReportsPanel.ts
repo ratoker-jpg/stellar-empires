@@ -8,12 +8,15 @@ import {
   type MissionReportMode,
   type MissionReportReward,
   type UnifiedMissionReport,
+  resolveMissionReportCoordinate,
 } from '../simulation/reports/missionReports';
+import type { SpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
 import { formatGameDuration } from './planetViewModel';
 
 export interface MissionReportsPanelOptions {
   readonly getState: () => GameState;
+  readonly navigateToCoordinate?: (coordinate: SpaceCoordinate) => void;
 }
 
 const KIND_LABELS: Readonly<Record<MissionReportKind, string>> = {
@@ -180,7 +183,12 @@ function createCombatDetails(
   return details;
 }
 
-function createReportCard(report: UnifiedMissionReport): HTMLElement {
+function createReportCard(
+  state: GameState,
+  report: UnifiedMissionReport,
+  navigateToCoordinate: MissionReportsPanelOptions['navigateToCoordinate'],
+  closeDialog: () => void,
+): HTMLElement {
   const card = document.createElement('article');
   card.className = `mission-report-card is-${report.kind} is-${report.mode}`;
   const header = document.createElement('header');
@@ -207,6 +215,20 @@ function createReportCard(report: UnifiedMissionReport): HTMLElement {
   const balance = document.createElement('small');
   balance.textContent = `Время ${formatGameDuration(report.resolvedAt)} · угроза ${report.threatMultiplierPermille / 10}% · награда ${report.rewardMultiplierPermille / 10}%`;
   card.append(header, summary, target, rewards, losses, balance);
+  const coordinate = resolveMissionReportCoordinate(state, report);
+  const mapLink = document.createElement('button');
+  mapLink.type = 'button';
+  mapLink.textContent = 'На карту';
+  mapLink.dataset.reportMapLink = report.id;
+  mapLink.disabled = coordinate === undefined || navigateToCoordinate === undefined;
+  mapLink.title = mapLink.disabled ? 'Координаты отчёта недоступны.' : 'Открыть цель отчёта на карте.';
+  if (coordinate !== undefined && navigateToCoordinate !== undefined) {
+    mapLink.addEventListener('click', () => {
+      closeDialog();
+      navigateToCoordinate(coordinate);
+    });
+  }
+  card.append(mapLink);
   if ((report.combatBreakdown?.length ?? 0) > 0) {
     card.append(createCombatDetails(report.combatBreakdown ?? []));
   }
@@ -295,7 +317,9 @@ export function mountMissionReportsPanel(options: MissionReportsPanelOptions): v
       comparison.append(article);
     }
 
-    list.replaceChildren(...filtered.map(createReportCard));
+    list.replaceChildren(...filtered.map((report) =>
+      createReportCard(state, report, options.navigateToCoordinate, () => dialog.close()),
+    ));
     if (filtered.length === 0) list.textContent = 'По заданным фильтрам отчётов нет.';
   };
 

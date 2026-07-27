@@ -2,69 +2,46 @@ name: CI
 
 on:
   pull_request:
+  push:
+    branches:
+      - main
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
-  group: pr110-publish-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  publish-pr110:
-    if: github.head_ref == 'feat/110-universe-actions-gate'
-    name: Publish validated PR110 implementation
+  quality:
+    name: Asset audit, lint, typecheck, test and build
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 20
+
     steps:
-      - name: Checkout branch
+      - name: Checkout
         uses: actions/checkout@v6
-        with:
-          ref: feat/110-universe-actions-gate
-          fetch-depth: 1
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '22.12.0'
-      - name: Materialize package changes
-        run: |
-          npm install --no-audit --no-fund
-          npm install --save-dev @playwright/test --no-audit --no-fund
-          npm pkg set scripts.e2e="playwright test"
-      - name: Apply validated implementation
-        run: |
-          python3 scripts/automation/implement-pr110.py
-          python3 scripts/automation/patch-pr110-typecheck.py
-          python3 scripts/automation/patch-pr110-tests.py
-          python3 scripts/automation/patch-pr110-e2e.py
-      - name: Remove bootstrap and workflow payload
-        run: |
-          git fetch --depth=1 origin main
-          git checkout origin/main -- .github/workflows/ci.yml
-          rm -f .github/workflows/e2e.yml
-          rm -f scripts/automation/implement-pr110.py scripts/automation/patch-pr110-typecheck.py scripts/automation/patch-pr110-tests.py scripts/automation/patch-pr110-e2e.py
-          rm -f docs/audits/evidence/pr110-action-details.txt docs/audits/evidence/pr110-actions-map.txt docs/audits/evidence/pr110-e2e-failure.txt
-          rm -rf graphify-out playwright-report test-results
-      - name: Commit and push implementation
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          git config user.name "stellar-empires-automation"
-          git config user.email "actions@users.noreply.github.com"
-          git add -A
-          git commit -m "Gate Universe actions and close navigation batch" 2>&1 | tee /tmp/pr110-commit.log
-          commit_status=${PIPESTATUS[0]}
-          if [ "$commit_status" -ne 0 ]; then
-            { echo '### PR110 publish commit diagnostics'; echo '```text'; cat /tmp/pr110-commit.log; git status --short; echo '```'; } > /tmp/pr110-comment.md
-            gh pr comment 110 --body-file /tmp/pr110-comment.md || true
-            exit "$commit_status"
-          fi
-          git push origin HEAD:feat/110-universe-actions-gate 2>&1 | tee /tmp/pr110-push.log
-          push_status=${PIPESTATUS[0]}
-          if [ "$push_status" -ne 0 ]; then
-            { echo '### PR110 publish push diagnostics'; echo '```text'; cat /tmp/pr110-push.log; echo '```'; } > /tmp/pr110-comment.md
-            gh pr comment 110 --body-file /tmp/pr110-comment.md || true
-            exit "$push_status"
-          fi
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate asset pipeline
+        run: npm run assets:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build

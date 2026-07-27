@@ -154,7 +154,10 @@
               <p id="space-map-route-error" class="space-map-route-error" role="alert" hidden></p>
             </div>
             <div id="phaser-game"></div>
-            <p id="space-map-selection-details" class="space-map-selection-details">Выбери объект на карте.</p>
+            <svg id="space-map-overlay" class="space-map-overlay" viewBox="0 0 1280 720" aria-label="Маршруты и маркеры флотов" hidden>
+              <defs><marker id="space-map-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z"></path></marker></defs>
+            </svg>
+            <section id="space-map-selection-details" class="space-map-selection-details">Выбери объект на карте.</section>
             <div class="stage-footer">
               <span id="space-map-footer-level">universe</span>
               <span id="space-map-footer-coordinate" class="coordinate-readout">U</span>

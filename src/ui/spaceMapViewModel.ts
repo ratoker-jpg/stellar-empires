@@ -83,7 +83,7 @@ const UNIVERSE_SLOT_COORDINATES = [
 
 const GALAXY_VERTICAL_POSITIONS = [30, 50, 110, 160, 190, 260, 290, 310, 390] as const;
 
-const SOLAR_SLOT_COORDINATES = [
+export const SOLAR_SLOT_COORDINATES = [
   [23, 5], [160, -33], [296, -58], [433, -58], [554, -58], [690, -33],
   [827, 5], [316, 72], [534, 72], [-44, 139], [76, 139], [196, 139],
   [654, 139], [774, 139], [894, 139], [316, 208], [534, 208], [23, 275],

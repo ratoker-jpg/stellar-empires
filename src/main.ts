@@ -29,6 +29,11 @@ import {
   SpaceMapNavigationController,
 } from './navigation/spaceMapRoute';
 import { BotAutomationController } from './runtime/BotAutomationController';
+import {
+  E2E_RUNTIME_ENABLED,
+  prepareE2eState,
+  updateE2eRuntimeDiagnostics,
+} from './runtime/e2eScenario';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
 import {
@@ -94,8 +99,8 @@ async function createFreshGame(statusPrefix = 'Новая партия'): Promis
   readonly state: GameState;
   readonly status: string;
 }> {
-  const faction = await selectNewGameFaction();
-  const state = createInitialGameState('stellar-empires-m1', faction);
+  const faction = E2E_RUNTIME_ENABLED ? 'aegis' : await selectNewGameFaction();
+  const state = prepareE2eState(createInitialGameState('stellar-empires-m1', faction));
   return { state, status: `${statusPrefix} · ${faction.toUpperCase()} · seed ${state.seed}` };
 }
 async function bootstrap(): Promise<void> {
@@ -112,8 +117,8 @@ async function bootstrap(): Promise<void> {
   try {
     const restored = await loadAutosave(repository);
     if (restored.status === 'loaded') {
-      initialState = restored.state;
-      runtimeState = restored.state;
+      initialState = prepareE2eState(restored.state);
+      runtimeState = initialState;
       startupStatus = restored.source === 'snapshot'
         ? `Партия восстановлена из резерва · seed ${initialState.seed}`
         : `Партия восстановлена · seed ${initialState.seed}`;
@@ -146,10 +151,14 @@ async function bootstrap(): Promise<void> {
     () => runtimeState.universe,
   );
   const game = createGame('phaser-game', initialState, spaceMapNavigation);
+  const spaceMapUi = mountSpaceMapNavigation(spaceMapNavigation, () => runtimeState);
+  updateE2eRuntimeDiagnostics(runtimeState);
   renderAssetShowcases();
   mountPlanetScreen(initialState, setStatus, (state) => {
     runtimeState = state;
     updateGamePresentation(game, state);
+    spaceMapUi.refresh();
+    updateE2eRuntimeDiagnostics(state);
     autosave?.request(state);
     botAutomationRef.current?.request();
   });
@@ -174,15 +183,17 @@ async function bootstrap(): Promise<void> {
     getActivePlanetId: getPlanetScreenActivePlanetId,
     execute: applyPlanetScreenCommand,
   };
-  const unmountSpaceMapNavigation = mountSpaceMapNavigation(
-    spaceMapNavigation,
-    () => runtimeState,
-  );
   mountGalaxyIntelPanel({ getState: () => runtimeState });
   mountExpeditionPanel(commandBridge);
   mountSpaceObjectsPanel(commandBridge);
   mountWorldEventsPanel({ getState: () => runtimeState });
-  mountMissionReportsPanel({ getState: () => runtimeState });
+  mountMissionReportsPanel({
+    getState: () => runtimeState,
+    navigateToCoordinate: (coordinate) => {
+      spaceMapNavigation.navigate({ level: 'solar-system', ...coordinate });
+      spaceMapUi.refresh();
+    },
+  });
   mountPlanetDevelopmentControls(commandBridge);
   mountLogisticsRoutesPanel(commandBridge);
   mountMarketPanel(commandBridge);
@@ -212,7 +223,7 @@ async function bootstrap(): Promise<void> {
   window.addEventListener('pagehide', flushAutosave);
   window.addEventListener('beforeunload', () => {
     botAutomation.dispose();
-    unmountSpaceMapNavigation();
+    spaceMapUi.dispose();
     spaceMapNavigation.dispose();
   }, { once: true });
   document.addEventListener('visibilitychange', () => {

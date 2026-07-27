@@ -7,6 +7,10 @@ import {
 import type { GameCommand, GameState } from '../simulation/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
 import { formatGameDuration } from './planetViewModel';
+import {
+  SPACE_OBJECT_TARGET_EVENT,
+  type SpaceObjectTargetRequest,
+} from './spaceObjectTargetEvents';
 
 export interface SpaceObjectsPanelOptions {
   readonly getState: () => GameState;
@@ -128,6 +132,8 @@ export function mountSpaceObjectsPanel(options: SpaceObjectsPanelOptions): void 
     throw new Error('Space object panel containers are missing.');
   }
 
+  let pendingObjectId: string | null = null;
+
   const render = (): void => {
     const state = options.getState();
     const exoticMatter =
@@ -143,6 +149,10 @@ export function mountSpaceObjectsPanel(options: SpaceObjectsPanelOptions): void 
       option.textContent = `${KIND_LABELS[object.kind]} · ${object.systemId} · запас ${object.remainingYield}/${object.initialYield}`;
       objectSelect.append(option);
     }
+    if (pendingObjectId !== null && [...objectSelect.options].some((option) => option.value === pendingObjectId)) {
+      objectSelect.value = pendingObjectId;
+    }
+    objectSelect.dataset.testid = 'space-object-target';
     const fleetSelect = document.createElement('select');
     const preview = document.createElement('p');
     preview.className = 'space-object-preview';
@@ -292,8 +302,16 @@ export function mountSpaceObjectsPanel(options: SpaceObjectsPanelOptions): void 
     if (entries.length === 0) reports.append('Завершённых операций пока нет.');
   };
 
-  button.addEventListener('click', () => {
+  const open = (): void => {
     render();
-    dialog.showModal();
-  });
+    if (!dialog.open) dialog.showModal();
+  };
+  button.addEventListener('click', open);
+  window.addEventListener(
+    SPACE_OBJECT_TARGET_EVENT,
+    ((event: Event) => {
+      pendingObjectId = (event as CustomEvent<SpaceObjectTargetRequest>).detail.objectId;
+      open();
+    }) as EventListener,
+  );
 }
