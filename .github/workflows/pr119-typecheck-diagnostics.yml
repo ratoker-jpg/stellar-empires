@@ -1,0 +1,29 @@
+name: PR119 typecheck diagnostics
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  capture-typecheck-output:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Capture typecheck output
+        shell: bash
+        run: |
+          set +e
+          npm run typecheck > pr119-typecheck-output.txt 2>&1
+          status=$?
+          echo "exit_code=$status" >> pr119-typecheck-output.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr119-typecheck-output
+          path: pr119-typecheck-output.txt
+          if-no-files-found: error
