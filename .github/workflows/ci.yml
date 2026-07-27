@@ -47,12 +47,13 @@ jobs:
             gh pr comment 109 --body-file /tmp/pr109-comment.md || true
             exit "$status"
           fi
+          python3 scripts/automation/patch-pr109-lint.py
 
       - name: Remove temporary files
         run: |
           git fetch --depth=1 origin main
           git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/automation/implement-pr109.py
+          rm -f scripts/automation/implement-pr109.py scripts/automation/patch-pr109-lint.py
           rm -f docs/audits/evidence/pr109-navigation-map.txt
           rm -rf graphify-out
 
