@@ -14,6 +14,7 @@ import './styles/missionReports.css';
 import './styles/planet.css';
 import './styles/planetWorkspace.css';
 import './styles/planetDevelopment.css';
+import './styles/developmentWorkspace.css';
 import './styles/logistics.css';
 import './styles/market.css';
 import './styles/saveManager.css';
@@ -50,9 +51,15 @@ import {
   AppShellController,
   createBrowserAppShellEnvironment,
 } from './ui/appShellController';
+import type {
+  PlanetDevelopmentSurface,
+  PlanetShellMode,
+} from './ui/appShellRoute';
 import { mountCommandDoctrineScreen } from './ui/commandDoctrineScreen';
 import { mountCommandRankingScreen } from './ui/commandRankingScreen';
+import { mountDevelopmentHud } from './ui/developmentHud';
 import { mountDevelopmentPresentation } from './ui/developmentPresentation';
+import { mountDevelopmentWorkspaceRouter } from './ui/developmentWorkspaceRouter';
 import { mountEmpireOverview } from './ui/empireOverview';
 import { mountExpeditionPanel } from './ui/expeditionPanel';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
@@ -61,6 +68,7 @@ import { mountGalaxyIntelPanel } from './ui/galaxyIntelPanel';
 import { mountLogisticsRoutesPanel } from './ui/logisticsRoutesPanel';
 import { mountMarketPanel } from './ui/marketPanel';
 import { mountMissionReportsPanel } from './ui/missionReportsPanel';
+import { mountMissionScreen } from './ui/missionScreen';
 import { selectNewGameFaction } from './ui/newGameFactionPicker';
 import { mountOperationsWorkspace } from './ui/operationsWorkspace';
 import { mountPlanetDevelopmentControls } from './ui/planetDevelopmentControls';
@@ -70,7 +78,6 @@ import {
   mountPlanetScreen,
   selectPlanetScreenPlanet,
 } from './ui/planetScreen';
-import { mountMissionScreen } from './ui/missionScreen';
 import { mountProductionScreens } from './ui/productionScreen';
 import { mountResearchScreen } from './ui/researchScreen';
 import { mountSaveManager } from './ui/saveManager';
@@ -199,22 +206,77 @@ async function bootstrap(): Promise<void> {
   });
   application.selectActivePlanet(getPlanetScreenActivePlanetId(), false);
 
-  const activatePlanet = (planetId: string, mode: 'overview' | 'resource' | 'industry' | 'military'): void => {
+  const commandBridge = application.createCommandBridge();
+  const researchScreen = mountResearchScreen(commandBridge);
+  const productionScreens = mountProductionScreens(commandBridge);
+  const shipUpgradesScreen = mountShipUpgradesScreen(commandBridge);
+  const developmentControls = mountPlanetDevelopmentControls(commandBridge);
+  const developmentHud = mountDevelopmentHud({
+    getState: () => application.getState(),
+    getActivePlanetId: () => application.getActivePlanetId(),
+  });
+  const developmentPresentation = mountDevelopmentPresentation({
+    getState: () => application.getState(),
+    getActivePlanetId: () => application.getActivePlanetId(),
+  });
+
+  let appShellRef: AppShellController | undefined;
+  const developmentRouter = mountDevelopmentWorkspaceRouter({
+    getState: () => application.getState(),
+    getActivePlanetId: () => application.getActivePlanetId(),
+    navigateToResearch: () => appShellRef?.navigateToResearch(),
+    navigateToSurface: (mode, surface) => {
+      appShellRef?.navigateToPlanet(application.getActivePlanetId(), mode, surface);
+    },
+  });
+
+  const hidePrimaryViews = (): void => {
     requireElement<HTMLElement>('#galaxy-view').hidden = true;
+    requireElement<HTMLElement>('#planet-view').hidden = true;
+    requireElement<HTMLElement>('#research-view').hidden = true;
+  };
+  const deactivateDevelopmentScreens = (): void => {
+    researchScreen.deactivate();
+    productionScreens.deactivate();
+    shipUpgradesScreen.deactivate();
+  };
+  const activatePlanet = (
+    planetId: string,
+    mode: PlanetShellMode,
+    surface: PlanetDevelopmentSurface,
+  ): void => {
+    hidePrimaryViews();
+    researchScreen.deactivate();
     requireElement<HTMLElement>('#planet-view').hidden = false;
     requireElement<HTMLElement>('.game-layout').classList.add('is-planet-view');
     selectPlanetScreenPlanet(planetId, false);
     requireElement<HTMLButtonElement>(`[data-planet-mode="${mode}"]`).click();
+    productionScreens.deactivate();
+    shipUpgradesScreen.deactivate();
+    developmentRouter.activate(mode, surface);
+    if (surface === 'shipyard') productionScreens.activate('ship');
+    if (surface === 'defense') productionScreens.activate('defense');
+    if (surface === 'upgrades') shipUpgradesScreen.activate();
+    developmentPresentation.refresh();
   };
   const activateSpace = (): void => {
+    hidePrimaryViews();
+    deactivateDevelopmentScreens();
     requireElement<HTMLElement>('#galaxy-view').hidden = false;
-    requireElement<HTMLElement>('#planet-view').hidden = true;
     requireElement<HTMLElement>('.game-layout').classList.remove('is-planet-view');
     const parsed = parseSpaceMapRoute(
       window.location.hash,
       application.getState().universe,
     );
     spaceMapNavigation.navigate(parsed.route, 'replace');
+  };
+  const activateResearch = (): void => {
+    hidePrimaryViews();
+    productionScreens.deactivate();
+    shipUpgradesScreen.deactivate();
+    requireElement<HTMLElement>('.game-layout').classList.remove('is-planet-view');
+    researchScreen.activate();
+    developmentPresentation.refresh();
   };
 
   const appShell = new AppShellController(createBrowserAppShellEnvironment(), {
@@ -223,7 +285,19 @@ async function bootstrap(): Promise<void> {
     selectActivePlanet: (planetId) => application.selectActivePlanet(planetId, false),
     activatePlanet,
     activateSpace,
+    activateResearch,
     writeStatus: setStatus,
+  });
+  appShellRef = appShell;
+
+  const applicationSubscription = application.subscribe(() => {
+    developmentHud.refresh();
+    developmentControls.refresh();
+    researchScreen.refresh();
+    productionScreens.refresh();
+    shipUpgradesScreen.refresh();
+    developmentRouter.refresh();
+    developmentPresentation.refresh();
   });
 
   const botAutomation = new BotAutomationController({
@@ -244,7 +318,6 @@ async function bootstrap(): Promise<void> {
   });
   botAutomationRef.current = botAutomation;
 
-  const commandBridge = application.createCommandBridge();
   mountGalaxyIntelPanel({ getState: () => application.getState() });
   mountExpeditionPanel(commandBridge);
   mountSpaceObjectsPanel(commandBridge);
@@ -257,7 +330,6 @@ async function bootstrap(): Promise<void> {
       spaceMapUi.refresh();
     },
   });
-  mountPlanetDevelopmentControls(commandBridge);
   mountLogisticsRoutesPanel(commandBridge);
   mountMarketPanel(commandBridge);
   mountOperationsWorkspace({ getState: () => application.getState() });
@@ -268,15 +340,8 @@ async function bootstrap(): Promise<void> {
   });
   mountCommandRankingScreen({ getState: () => application.getState() });
   mountCommandDoctrineScreen(commandBridge);
-  mountResearchScreen(commandBridge);
-  mountProductionScreens(commandBridge);
   mountMissionScreen(commandBridge);
-  mountShipUpgradesScreen(commandBridge);
   mountFleetDoctrineScreen(commandBridge);
-  mountDevelopmentPresentation({
-    getState: () => application.getState(),
-    getActivePlanetId: () => application.getActivePlanetId(),
-  });
   mountAccessibilityRuntime();
 
   if (saveManager !== undefined) {
@@ -291,7 +356,15 @@ async function bootstrap(): Promise<void> {
   window.addEventListener('pagehide', flushAutosave);
   window.addEventListener('beforeunload', () => {
     botAutomation.dispose();
+    applicationSubscription();
     appShell.dispose();
+    developmentRouter.dispose();
+    developmentHud.dispose();
+    developmentControls.dispose();
+    developmentPresentation.dispose();
+    researchScreen.dispose();
+    productionScreens.dispose();
+    shipUpgradesScreen.dispose();
     application.dispose();
     spaceMapUi.dispose();
     spaceMapNavigation.dispose();
