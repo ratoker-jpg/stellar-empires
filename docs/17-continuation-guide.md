@@ -1,9 +1,9 @@
 # AI Continuation Guide
 
-**Status:** PR #119 completes `INTELLIGENCE-REPORTS-PRESENTATION` on merge  
+**Status:** PR #119 `INTELLIGENCE-REPORTS-PRESENTATION` merged · `e297f77f8e994f37402090a8d9d7c70e28ce099f`  
 **Updated:** 2026-07-27  
 **Current batch:** `ORDINARY-MISSIONS-INTELLIGENCE-01` · Audit #116  
-**Next implementation after #119 merge:** #120 `MISSION-INTELLIGENCE-BOT-GATE`
+**Next implementation:** #120 `MISSION-INTELLIGENCE-BOT-GATE`
 
 ## Repository
 
@@ -77,4 +77,4 @@ Planet destruction/recovery, economy/logistics redesign, pirate raid, Space Trip
 
 ## Immediate route
 
-After #119 merges, create only PR #120 from fresh post-#119 `main`. Do not begin any unaudited batch before #120 closes `ORDINARY-MISSIONS-INTELLIGENCE-01`.
+Create only PR #120 from fresh post-#119 `main`. Do not begin any unaudited batch before #120 closes `ORDINARY-MISSIONS-INTELLIGENCE-01`.
