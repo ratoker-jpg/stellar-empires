@@ -6,13 +6,13 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
     "lastMergedPr": 115,
-    "mergeSha": "recorded in GitHub PR #115 merge metadata",
+    "mergeSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
     "runtimeBaselinePr": 115,
-    "runtimeBaselineSha": "recorded in GitHub PR #115 merge metadata"
+    "runtimeBaselineSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c"
   },
   "activePr": null,
-  "nextPrAfterActive": null,
-  "nextPrKind": "audit",
+  "nextPrAfterActive": 117,
+  "nextPrKind": "implementation",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -45,16 +45,19 @@
       "status": "completed",
       "completedPrs": [112, 113, 114, 115],
       "nextPr": null,
-      "outcome": "One application controller, nine canonical route families, routed development/operations/command/system workspaces, persistent HUD/context and full browser/accessibility gate",
+      "outcome": "One application controller, nine canonical route families, routed workspaces, persistent HUD/context and full browser/accessibility gate",
       "archive": "docs/audits/completed/coherent-ui-shell-01.md"
     },
     {
       "id": "ordinary-mechanics-completion",
-      "auditPr": null,
-      "startPr": null,
-      "endPr": null,
-      "status": "not-audited",
-      "outcome": "Complete ordinary economy, mission, espionage, combat and destruction rules"
+      "auditPr": 116,
+      "startPr": 117,
+      "endPr": 120,
+      "status": "audit-accepted-on-this-pr",
+      "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01",
+      "completedPrs": [],
+      "nextPr": 117,
+      "outcome": "Shared ordinary mission rules, deterministic intelligence/counter-intelligence, redacted reports/UI and honest bot gate"
     },
     {
       "id": "pve-meta-and-bot-parity",
@@ -96,7 +99,12 @@
     { "number": 112, "kind": "implementation", "workItem": "UI-SHELL-RUNTIME-ROUTER", "title": "Build the shell runtime controller and router", "status": "merged", "mergeSha": "d949065839847bb64a88eb33e734d2a3dde799ab" },
     { "number": 113, "kind": "implementation", "workItem": "UI-SHELL-DEVELOPMENT-WORKSPACES", "title": "Route development workspaces", "status": "merged", "mergeSha": "e64485dd5a1603c8d06743de1610e0feee12e26d" },
     { "number": 114, "kind": "implementation", "workItem": "UI-SHELL-FLEET-OPERATIONS-WORKSPACES", "title": "Route fleet and operations workspaces", "status": "merged", "mergeSha": "a61fa2778f53c3ca2c6f19ef16b4645bf432732f" },
-    { "number": 115, "kind": "implementation", "workItem": "UI-SHELL-COMMAND-SYSTEM-GATE", "title": "Complete command, system and full-shell gate", "status": "merged-on-this-pr", "mergeSha": "recorded in GitHub PR #115 merge metadata" }
+    { "number": 115, "kind": "implementation", "workItem": "UI-SHELL-COMMAND-SYSTEM-GATE", "title": "Complete command, system and full-shell gate", "status": "merged", "mergeSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c" },
+    { "number": 116, "kind": "audit", "title": "Audit ordinary missions and intelligence", "status": "merged-on-this-pr", "mergeSha": "recorded in GitHub PR #116 merge metadata" },
+    { "number": 117, "kind": "implementation", "workItem": "MISSION-RULES-REGISTRY", "title": "Unify ordinary mission rules", "status": "planned" },
+    { "number": 118, "kind": "implementation", "workItem": "ESPIONAGE-COUNTERINTELLIGENCE", "title": "Complete espionage and counter-intelligence", "status": "planned" },
+    { "number": 119, "kind": "implementation", "workItem": "INTELLIGENCE-REPORTS-PRESENTATION", "title": "Route intelligence reports and redacted presentation", "status": "planned" },
+    { "number": 120, "kind": "implementation", "workItem": "MISSION-INTELLIGENCE-BOT-GATE", "title": "Gate mission intelligence bot parity", "status": "planned" }
   ],
-  "nextAction": "Create a new Audit PR from fresh post-#115 main before any implementation work."
+  "nextAction": "After Audit PR #116 merges, create PR #117 from fresh main and implement only MISSION-RULES-REGISTRY."
 }
