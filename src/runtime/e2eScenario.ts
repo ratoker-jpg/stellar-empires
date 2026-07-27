@@ -6,6 +6,7 @@ import type { GameState } from '../simulation/types';
 
 export const E2E_RUNTIME_ENABLED = import.meta.env.VITE_E2E === '1';
 export const E2E_FLEET_ID = 'fleet-e2e-player';
+export const E2E_INCOMING_FLEET_ID = 'fleet-e2e-incoming';
 export const E2E_REPORT_ID = 'report-e2e-map-backlink';
 const E2E_BOT_IDLE_SECONDS = 86_400;
 const E2E_SCOUT_COOLDOWN_CEILING_SECONDS = 7_200;
@@ -52,6 +53,24 @@ export function createE2eFixtureState(state: GameState): GameState {
     cargoCapacity: 100,
     mission: null,
   };
+  const incomingFleet: FleetState = {
+    id: E2E_INCOMING_FLEET_ID,
+    empireId: target.ownerEmpireId,
+    originPlanetId: target.id,
+    location: {
+      type: 'transit',
+      fromPlanetId: target.id,
+      toPlanetId: origin.id,
+      departedAt: fixtureElapsedSeconds,
+      arrivesAt: fixtureElapsedSeconds + 3_600,
+    },
+    status: 'outbound',
+    ships: { 'ship.aegis.fighter': 3 },
+    cargo: { metal: 321, crystal: 654, gas: 987 },
+    speed: 12,
+    cargoCapacity: 2_000,
+    mission: { kind: 'attack', targetPlanetId: origin.id },
+  };
   const observation: IntelObservation = {
     id: 'intel-e2e-target',
     observerEmpireId: 'player',
@@ -96,13 +115,14 @@ export function createE2eFixtureState(state: GameState): GameState {
     rewardMultiplierPermille: 1_000,
   };
   const stableBotDecisionAt = fixtureElapsedSeconds + E2E_BOT_IDLE_SECONDS;
+  const fleets = [...state.fleets];
+  if (!fleets.some((entry) => entry.id === E2E_FLEET_ID)) fleets.push(fleet);
+  if (!fleets.some((entry) => entry.id === E2E_INCOMING_FLEET_ID)) fleets.push(incomingFleet);
   return {
     ...state,
     clock: { ...state.clock, elapsedSeconds: fixtureElapsedSeconds },
     planets: state.planets.map((planet) => planet.id === origin.id ? originWithFuel : planet),
-    fleets: state.fleets.some((entry) => entry.id === E2E_FLEET_ID)
-      ? state.fleets
-      : [...state.fleets, fleet],
+    fleets,
     intelligence: state.intelligence.map((entry) =>
       entry.empireId !== 'player' || entry.observations.some((item) => item.id === observation.id)
         ? entry
