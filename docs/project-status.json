@@ -1,18 +1,18 @@
 {
-  "statusVersion": 22,
+  "statusVersion": 23,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 118,
-  "lastMergeSha": "46570544da064f839055afd3c10a387326452811",
-  "verifiedMainBaseline": "PR #118 final clean-head asset audit, lint, TypeScript, 379-test suite, production build, Browser E2E and Graphify",
+  "lastMergedPr": 119,
+  "lastMergeSha": "recorded in GitHub PR #119 merge metadata",
+  "verifiedMainBaseline": "PR #119 clean-head asset audit, lint, TypeScript, 384-test suite, production build, Browser E2E and Graphify",
   "activePr": null,
-  "nextPrAfterActive": 119,
+  "nextPrAfterActive": 120,
   "nextPrKind": "implementation",
-  "currentMilestone": "M4 espionage and counter-intelligence delivered; intelligence reports presentation next",
+  "currentMilestone": "M4 intelligence reports and redacted incoming-flight presentation delivered; combined bot gate next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -45,7 +45,7 @@
     "baselineSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
     "implementationCount": 4,
     "implementationPrs": [117, 118, 119, 120],
-    "completedImplementationPrs": [117, 118],
+    "completedImplementationPrs": [117, 118, 119],
     "workItems": [
       "MISSION-RULES-REGISTRY",
       "ESPIONAGE-COUNTERINTELLIGENCE",
@@ -53,7 +53,7 @@
       "MISSION-INTELLIGENCE-BOT-GATE"
     ],
     "status": "in-progress",
-    "nextWorkItem": "INTELLIGENCE-REPORTS-PRESENTATION",
+    "nextWorkItem": "MISSION-INTELLIGENCE-BOT-GATE",
     "archive": null
   },
   "auditDecisions": {
@@ -110,12 +110,13 @@
     "research-derived flight-slot enforcement and current level-three attack intelligence",
     "redacted Fleet mission targets without unknown owner or faction leakage",
     "deterministic scout tiers, cooldown, detection, probe loss and defender alerts",
+    "derived intelligence reports with exact coordinate backlinks",
+    "sensor-tiered incoming-flight presentation with cargo excluded",
     "checksum-stable E2E app readiness without changing production bot scheduling",
     "full-shell Browser E2E and Graphify validation"
   ],
   "activeDelivery": [],
   "knownLimitations": [
-    "routed intelligence reports and incoming-flight presentation remain for PR #119",
     "combined bot mission-intelligence gate remains for PR #120",
     "complete planet destruction and recovery remain unaudited",
     "multi-colony economy and logistics coherence remain a separate future audit",
@@ -131,7 +132,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on PR #118 final clean head",
+    "lastValidation": "passed on PR #119 clean head",
     "lastAuditGraph": {
       "nodes": 2130,
       "relationships": 6795,
@@ -167,7 +168,7 @@
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/27-playable-game-roadmap-v5.md",
-    "latest merged GitHub pull requests and actual main"
+    "latest merged pull requests and actual main"
   ],
-  "nextAction": "Create PR #119 from fresh post-#118 main and implement only INTELLIGENCE-REPORTS-PRESENTATION."
+  "nextAction": "After PR #119 merges, create PR #120 from fresh main and implement only MISSION-INTELLIGENCE-BOT-GATE."
 }
