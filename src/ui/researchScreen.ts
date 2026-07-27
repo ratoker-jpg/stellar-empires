@@ -20,6 +20,19 @@ export interface ResearchScreenOptions {
   readonly execute: (command: GameCommand, successMessage: string) => boolean;
 }
 
+export interface ResearchScreenMount {
+  activate(): void;
+  deactivate(): void;
+  refresh(): void;
+  dispose(): void;
+}
+
+export const RESEARCH_WORKSPACE_SELECTORS = {
+  host: '#research-view',
+  queue: '#research-screen-queue',
+  grid: '#research-screen-grid',
+} as const;
+
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 const CATEGORY_LABELS = {
   infrastructure: 'Инфраструктура',
@@ -34,6 +47,12 @@ const FACTION_NAMES = {
   synod: 'Синод',
   veyra: 'Вейра',
 } as const;
+
+function requireElement<T extends HTMLElement>(selector: string): T {
+  const element = document.querySelector<T>(selector);
+  if (element === null) throw new Error(`Research workspace element is missing: ${selector}`);
+  return element;
+}
 
 function canAffordResearch(
   state: GameState,
@@ -51,54 +70,43 @@ function canAffordResearch(
 
 function setTechnologyArtwork(element: HTMLElement, assetId: string): void {
   const asset = resolveCompleteMechanicalAsset(assetId).asset;
-  if (asset === undefined) return;
-  applyMechanicalAssetArtwork(element, asset);
+  if (asset !== undefined) applyMechanicalAssetArtwork(element, asset);
 }
 
-function createDialog(): HTMLDialogElement {
-  const existing = document.querySelector<HTMLDialogElement>('#research-screen-dialog');
-  if (existing !== null) return existing;
-
-  const dialog = document.createElement('dialog');
-  dialog.id = 'research-screen-dialog';
-  dialog.className = 'research-screen-dialog';
+function createWorkspace(host: HTMLElement): void {
+  if (host.querySelector(RESEARCH_WORKSPACE_SELECTORS.grid) !== null) return;
   const header = document.createElement('header');
   const text = document.createElement('div');
   const eyebrow = document.createElement('p');
   eyebrow.className = 'panel-label';
   eyebrow.textContent = 'Industry Zone · лаборатория';
-  const title = document.createElement('h2');
+  const title = document.createElement('h1');
   title.dataset.role = 'research-title';
+  title.tabIndex = -1;
   text.append(eyebrow, title);
-  const close = document.createElement('button');
-  close.type = 'button';
-  close.className = 'dialog-close';
-  close.textContent = '×';
-  close.setAttribute('aria-label', 'Закрыть исследования');
-  close.addEventListener('click', () => dialog.close());
-  header.append(text, close);
+  header.append(text);
   const summary = document.createElement('p');
   summary.className = 'research-screen-summary';
   const queue = document.createElement('section');
   queue.id = 'research-screen-queue';
   queue.className = 'research-screen-queue';
+  queue.dataset.testid = 'research-queue';
   const grid = document.createElement('div');
   grid.id = 'research-screen-grid';
   grid.className = 'research-screen-grid';
-  dialog.append(header, summary, queue, grid);
-  document.body.append(dialog);
-  return dialog;
+  grid.dataset.testid = 'research-grid';
+  host.append(header, summary, queue, grid);
 }
 
-export function mountResearchScreen(options: ResearchScreenOptions): void {
-  const dialog = createDialog();
-  const grid = dialog.querySelector<HTMLElement>('#research-screen-grid');
-  const queue = dialog.querySelector<HTMLElement>('#research-screen-queue');
-  const summary = dialog.querySelector<HTMLElement>('.research-screen-summary');
-  const title = dialog.querySelector<HTMLElement>('[data-role="research-title"]');
-  if (grid === null || queue === null || summary === null || title === null) {
-    throw new Error('Research screen containers are missing.');
-  }
+export function mountResearchScreen(options: ResearchScreenOptions): ResearchScreenMount {
+  const host = requireElement<HTMLElement>(RESEARCH_WORKSPACE_SELECTORS.host);
+  createWorkspace(host);
+  const grid = requireElement<HTMLElement>(RESEARCH_WORKSPACE_SELECTORS.grid);
+  const queue = requireElement<HTMLElement>(RESEARCH_WORKSPACE_SELECTORS.queue);
+  const summary = host.querySelector<HTMLElement>('.research-screen-summary');
+  const title = host.querySelector<HTMLElement>('[data-role="research-title"]');
+  if (summary === null || title === null) throw new Error('Research workspace containers are missing.');
+  let active = false;
 
   const render = (): void => {
     const state = options.getState();
@@ -115,19 +123,18 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
     title.textContent = `Исследования «${FACTION_NAMES[planet.factionId]}»`;
     summary.textContent = `${planet.name} финансирует глобальную очередь исследований. Ресурсы резервируются сразу, отмена возвращает 75% стоимости.`;
     queue.replaceChildren();
-    const active = research.queue[0];
-    if (active === undefined) {
+    const queued = research.queue[0];
+    if (queued === undefined) {
       queue.textContent = 'Исследовательская очередь свободна.';
+      queue.dataset.queueState = 'idle';
     } else {
-      const definition = getResearchDefinition(active.technologyId);
-      const duration = Math.max(1, active.completesAt - active.startedAt);
-      const elapsed = Math.max(
-        0,
-        Math.min(duration, state.clock.elapsedSeconds - active.startedAt),
-      );
-      const remaining = Math.max(0, active.completesAt - state.clock.elapsedSeconds);
+      queue.dataset.queueState = 'active';
+      const definition = getResearchDefinition(queued.technologyId);
+      const duration = Math.max(1, queued.completesAt - queued.startedAt);
+      const elapsed = Math.max(0, Math.min(duration, state.clock.elapsedSeconds - queued.startedAt));
+      const remaining = Math.max(0, queued.completesAt - state.clock.elapsedSeconds);
       const label = document.createElement('strong');
-      label.textContent = `${definition?.name ?? active.technologyId} · ур. ${active.targetLevel} · ${state.planets.find((candidate) => candidate.id === active.planetId)?.name ?? active.planetId}`;
+      label.textContent = `${definition?.name ?? queued.technologyId} · ур. ${queued.targetLevel} · ${state.planets.find((candidate) => candidate.id === queued.planetId)?.name ?? queued.planetId}`;
       const progress = document.createElement('div');
       progress.className = 'research-queue-progress';
       const bar = document.createElement('i');
@@ -137,16 +144,10 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
       cancel.type = 'button';
       cancel.textContent = `Отменить · осталось ${formatGameDuration(remaining)}`;
       cancel.addEventListener('click', () => {
-        if (
-          options.execute(
-            {
-              type: 'CANCEL_RESEARCH',
-              empireId: 'player',
-              queueItemId: active.id,
-            },
-            'Исследование отменено',
-          )
-        ) render();
+        options.execute(
+          { type: 'CANCEL_RESEARCH', empireId: 'player', queueItemId: queued.id },
+          'Исследование отменено',
+        );
       });
       queue.append(label, progress, cancel);
     }
@@ -175,7 +176,7 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
       const meta = document.createElement('div');
       meta.className = 'research-card-meta';
       meta.textContent = `${CATEGORY_LABELS[definition.category]} · ур. ${level}/${definition.maxLevel}`;
-      const cardTitle = document.createElement('h3');
+      const cardTitle = document.createElement('h2');
       cardTitle.textContent = definition.name;
       const description = document.createElement('p');
       description.textContent = definition.description;
@@ -199,17 +200,15 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
       button.disabled = !available;
       button.textContent = maxed ? 'Завершено' : `Исследовать уровень ${targetLevel}`;
       button.addEventListener('click', () => {
-        if (
-          options.execute(
-            {
-              type: 'QUEUE_RESEARCH',
-              empireId: 'player',
-              planetId: planet.id,
-              technologyId: definition.id,
-            },
-            `Исследование запущено · ${definition.name}`,
-          )
-        ) render();
+        options.execute(
+          {
+            type: 'QUEUE_RESEARCH',
+            empireId: 'player',
+            planetId: planet.id,
+            technologyId: definition.id,
+          },
+          `Исследование запущено · ${definition.name}`,
+        );
       });
       body.append(meta, cardTitle, description, costLine, requirements, button);
       card.append(art, body);
@@ -217,33 +216,23 @@ export function mountResearchScreen(options: ResearchScreenOptions): void {
     }
   };
 
-  const open = (): void => {
-    render();
-    dialog.showModal();
+  return {
+    activate: () => {
+      active = true;
+      host.hidden = false;
+      render();
+      title.focus({ preventScroll: true });
+    },
+    deactivate: () => {
+      active = false;
+      host.hidden = true;
+    },
+    refresh: () => {
+      if (active) render();
+    },
+    dispose: () => {
+      active = false;
+      host.replaceChildren();
+    },
   };
-
-  const scienceButton = document.querySelector<HTMLButtonElement>('[aria-label="Исследования"]');
-  scienceButton?.addEventListener(
-    'click',
-    (event) => {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      open();
-    },
-    { capture: true },
-  );
-
-  document.addEventListener(
-    'click',
-    (event) => {
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-      const gateway = target.closest<HTMLButtonElement>('.zone-gateway');
-      if (gateway?.querySelector('strong')?.textContent !== 'Исследования') return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      open();
-    },
-    { capture: true },
-  );
 }

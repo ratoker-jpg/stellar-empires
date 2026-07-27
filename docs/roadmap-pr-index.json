@@ -5,13 +5,13 @@
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 112,
-    "mergeSha": "recorded in GitHub PR #112 merge metadata",
-    "runtimeBaselinePr": 112,
-    "runtimeBaselineSha": "recorded in GitHub PR #112 merge metadata"
+    "lastMergedPr": 113,
+    "mergeSha": "recorded in GitHub PR #113 merge metadata",
+    "runtimeBaselinePr": 113,
+    "runtimeBaselineSha": "recorded in GitHub PR #113 merge metadata"
   },
   "activePr": null,
-  "nextPrAfterActive": 113,
+  "nextPrAfterActive": 114,
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -42,8 +42,8 @@
       "startPr": 112,
       "endPr": 115,
       "status": "implementation-in-progress",
-      "completedPrs": [112],
-      "nextPr": 113,
+      "completedPrs": [112, 113],
+      "nextPr": 114,
       "outcome": "Application controller, canonical shell routing, static navigation and routed primary workspaces"
     },
     {
@@ -166,15 +166,16 @@
       "kind": "implementation",
       "workItem": "UI-SHELL-RUNTIME-ROUTER",
       "title": "Build the shell runtime controller and router",
-      "status": "merged-on-this-pr",
-      "mergeSha": "recorded in GitHub PR #112 merge metadata"
+      "status": "merged",
+      "mergeSha": "d949065839847bb64a88eb33e734d2a3dde799ab"
     },
     {
       "number": 113,
       "kind": "implementation",
       "workItem": "UI-SHELL-DEVELOPMENT-WORKSPACES",
       "title": "Route development workspaces",
-      "status": "planned"
+      "status": "merged-on-this-pr",
+      "mergeSha": "recorded in GitHub PR #113 merge metadata"
     },
     {
       "number": 114,
@@ -191,5 +192,5 @@
       "status": "planned"
     }
   ],
-  "nextAction": "Create PR #113 from fresh post-#112 main and implement only UI-SHELL-DEVELOPMENT-WORKSPACES."
+  "nextAction": "Create PR #114 from fresh post-#113 main and implement only UI-SHELL-FLEET-OPERATIONS-WORKSPACES."
 }

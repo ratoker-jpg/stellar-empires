@@ -1,0 +1,129 @@
+.view-stack {
+  min-width: 0;
+  min-height: 620px;
+  overflow: hidden;
+}
+
+.development-primary-view,
+.planet-development-surface {
+  min-width: 0;
+  min-height: 620px;
+  max-height: calc(100vh - 116px);
+  overflow: auto;
+  color: #edf9ff;
+  background:
+    radial-gradient(circle at 78% 0%, rgb(71 199 241 / 10%), transparent 28%),
+    linear-gradient(150deg, rgba(5, 18, 30, 0.99), rgba(1, 6, 12, 0.99));
+}
+
+.development-primary-view > header,
+.planet-development-surface > header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 92px;
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid rgb(96 205 255 / 15%);
+  background: rgb(4 14 24 / 94%);
+  backdrop-filter: blur(14px);
+}
+
+.development-primary-view h1,
+.planet-development-surface h1 {
+  margin: 5px 0 0;
+  font-size: clamp(1.35rem, 2vw, 2rem);
+}
+
+.planet-development-tabs {
+  display: flex;
+  gap: 7px;
+  padding: 8px 18px;
+  overflow-x: auto;
+  border-bottom: 1px solid rgb(96 205 255 / 14%);
+  background: rgba(4, 14, 24, 0.92);
+}
+
+.planet-development-tabs button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgb(96 205 255 / 18%);
+  border-radius: 6px;
+  color: #829bab;
+  background: rgb(8 25 39 / 72%);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.planet-development-tabs button[aria-selected="true"] {
+  border-color: rgb(96 205 255 / 55%);
+  color: #dcf6ff;
+  background: rgb(22 67 91 / 72%);
+  box-shadow: inset 0 -2px #47c7f1;
+}
+
+.hud-colony-context {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.5fr) repeat(2, minmax(74px, 1fr));
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.hud-colony-context label,
+.hud-colony-context > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 5px 7px;
+  border: 1px solid rgb(71 199 241 / 12%);
+  border-radius: 5px;
+  background: rgb(3 13 22 / 62%);
+}
+
+.hud-colony-context span,
+.hud-colony-context small {
+  color: #66869a;
+  font-size: 0.52rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.hud-colony-context select {
+  min-width: 0;
+  border: 0;
+  color: #d9f3ff;
+  background: transparent;
+  font-size: 0.68rem;
+}
+
+.hud-colony-context strong {
+  overflow: hidden;
+  color: #c4e8f7;
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1420px) {
+  .hud-colony-context {
+    grid-template-columns: minmax(110px, 1fr) 1fr;
+  }
+
+  .hud-colony-context > div:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .development-primary-view,
+  .planet-development-surface {
+    min-height: 64vh;
+    max-height: none;
+  }
+
+  .hud-colony-context {
+    grid-template-columns: 1fr 1fr;
+  }
+}

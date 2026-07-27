@@ -1,4 +1,5 @@
 export type ShellScreenKind = 'route' | 'legacy';
+export type ShellRouteFamily = 'planet' | 'space' | 'research';
 
 export interface ShellScreenDefinition {
   readonly id: string;
@@ -9,7 +10,7 @@ export interface ShellScreenDefinition {
   readonly order: number;
   readonly utility: boolean;
   readonly kind: ShellScreenKind;
-  readonly routeFamily?: 'planet' | 'space';
+  readonly routeFamily?: ShellRouteFamily;
 }
 
 export const SHELL_SCREEN_REGISTRY: readonly ShellScreenDefinition[] = [
@@ -27,7 +28,7 @@ export const SHELL_SCREEN_REGISTRY: readonly ShellScreenDefinition[] = [
   },
   {
     id: 'research', elementId: 'nav-research', label: 'Наука', ariaLabel: 'Исследования', icon: '⌬',
-    order: 40, utility: false, kind: 'legacy',
+    order: 40, utility: false, kind: 'route', routeFamily: 'research',
   },
   {
     id: 'command', elementId: 'nav-empire', label: 'Командование', ariaLabel: 'Командование', icon: '▦',

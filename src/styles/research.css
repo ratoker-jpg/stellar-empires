@@ -1,29 +1,16 @@
-.research-screen-dialog {
-  width: min(1040px, calc(100vw - 30px));
-  max-height: calc(100vh - 30px);
-  padding: 0;
-  border: 1px solid rgba(96, 205, 255, 0.36);
-  border-radius: 12px;
+.research-screen-workspace {
   color: #eaf8ff;
-  background: linear-gradient(145deg, rgba(6, 18, 30, 0.99), rgba(2, 7, 14, 0.99));
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.76);
 }
 
-.research-screen-dialog::backdrop {
-  background: rgba(0, 4, 10, 0.82);
-  backdrop-filter: blur(5px);
+.research-screen-workspace > header {
+  background:
+    linear-gradient(90deg, rgb(4 14 24 / 96%), rgb(4 14 24 / 84%)),
+    var(--research-facility-art) center / cover no-repeat;
 }
 
-.research-screen-dialog > header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 22px 12px;
-  border-bottom: 1px solid rgba(96, 205, 255, 0.15);
-}
-
-.research-screen-dialog h2,
-.research-screen-dialog p {
+.research-screen-workspace h1,
+.research-screen-workspace h2,
+.research-screen-workspace p {
   margin: 0;
 }
 
@@ -86,8 +73,6 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  max-height: 610px;
-  overflow: auto;
   padding: 0 22px 22px;
 }
 
@@ -107,9 +92,7 @@
   box-shadow: inset 0 0 26px rgba(49, 171, 134, 0.08);
 }
 
-.research-card.is-locked {
-  opacity: 0.72;
-}
+.research-card.is-locked { opacity: 0.72; }
 
 .research-card-art {
   min-height: 170px;
@@ -125,10 +108,7 @@
   padding: 13px 14px 13px 0;
 }
 
-.research-card h3 {
-  margin: 0;
-  font-size: 1rem;
-}
+.research-card h2 { font-size: 1rem; }
 
 .research-card p {
   color: #9db0bd;
@@ -153,20 +133,10 @@
   font-size: 0.75rem;
 }
 
-.research-card.is-ready .research-card-requirements {
-  color: #69deb0;
-}
+.research-card.is-ready .research-card-requirements { color: #69deb0; }
 
 @media (max-width: 760px) {
-  .research-screen-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .research-card {
-    grid-template-columns: 92px minmax(0, 1fr);
-  }
-
-  .research-screen-queue {
-    grid-template-columns: 1fr;
-  }
+  .research-screen-grid { grid-template-columns: 1fr; }
+  .research-card { grid-template-columns: 92px minmax(0, 1fr); }
+  .research-screen-queue { grid-template-columns: 1fr; }
 }

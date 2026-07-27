@@ -1,9 +1,9 @@
 # AI Continuation Guide
 
-**Status:** `UI-SHELL-RUNTIME-ROUTER` completed by PR #112 on merge  
+**Status:** `UI-SHELL-DEVELOPMENT-WORKSPACES` completed by PR #113 on merge  
 **Updated:** 2026-07-27  
 **Audit:** #111 — `COHERENT-UI-SHELL-01`  
-**Next implementation:** #113 — `UI-SHELL-DEVELOPMENT-WORKSPACES`
+**Next implementation:** #114 — `UI-SHELL-FLEET-OPERATIONS-WORKSPACES`
 
 ## Repository
 
@@ -30,43 +30,44 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - PR #101–#105 completed runtime integration of the mechanical catalog art;
 - PR #106–#110 completed schema-v14 Universe navigation, action gates and Browser E2E;
 - PR #111 accepted medium batch `COHERENT-UI-SHELL-01`;
-- PR #112 delivered the application controller, canonical Planet/Space shell routes and typed primary registry.
+- PR #112 delivered the application controller, canonical Planet/Space shell routes and typed primary registry;
+- PR #113 delivered routed development workspaces and persistent active-colony context.
 
-### PR #112 runtime contract
+### PR #113 development contract
 
-- `GameApplicationController` owns current runtime state, active-colony presentation context and accepted-command effects;
-- non-Planet screens use its command bridge, not `planetScreen.ts`, for reducer execution;
-- canonical Planet routes are `#/planet/<planet-id>/<overview|resource|industry|military>`;
-- `SpaceMapNavigationController` remains authoritative for `#/space/...`;
-- one typed registry creates stable primary navigation controls;
-- canonical route clicks suppress obsolete competing handlers;
-- legacy cloned launchers cannot inherit canonical route metadata or active state;
-- route changes remain outside `GameState`, saves, command/event logs and checksum;
-- back/forward/reload and invalid-route normalization are covered by Browser E2E.
+- Research is the canonical `#/research` workspace;
+- Planet routes remain `#/planet/<planet-id>/<overview|resource|industry|military>`;
+- local Planet surfaces use checksum-neutral URL query state for shipyard, Defence/Repair and upgrades;
+- Industry and Military gateways open real workspaces even when requirements keep actions disabled;
+- Research, Production, repair and upgrade queues refresh through application subscriptions;
+- active colony, coordinates and world time remain visible outside Planet-only presentation;
+- all commands still use existing reducer validation;
+- no save schema, gameplay command or balance value changed.
 
 ## Accepted implementation chain
 
 ```text
-#112 UI-SHELL-RUNTIME-ROUTER — completed by this merge
-→ #113 UI-SHELL-DEVELOPMENT-WORKSPACES — next
-→ #114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES
+#112 UI-SHELL-RUNTIME-ROUTER — completed
+→ #113 UI-SHELL-DEVELOPMENT-WORKSPACES — completed by this merge
+→ #114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES — next
 → #115 UI-SHELL-COMMAND-SYSTEM-GATE
 ```
 
-## Scope for PR #113 only
+## Scope for PR #114 only
 
-PR #113 migrates the development family onto routed shell workspaces:
+PR #114 migrates the fleet and operations family onto routed shell workspaces:
 
-- Planet overview and Resource/Industry/Military zones;
-- Research catalog and queue;
-- ship and defence Production;
-- Defence/Repair entry points;
-- Ship Upgrades;
-- active-colony route restoration;
-- direct zone gateway navigation instead of placeholder dialogs;
-- controller subscriptions for queue/card refresh.
+- Fleet overview, composer, active missions and battles;
+- Galaxy intelligence;
+- Expeditions;
+- Space Objects;
+- World Events;
+- Market and Logistics;
+- Reports and map backlinks;
+- Operations summary;
+- preservation of explicit mission confirmation and first-click non-dispatch behavior.
 
-Do not include Fleet/Operations/Reports work from #114 or Command/System/HUD closure from #115.
+Do not include Command/System/HUD closure from #115.
 
 ## Batch invariants
 
@@ -82,9 +83,8 @@ Do not include Fleet/Operations/Reports work from #114 or Command/System/HUD clo
 - no framework rewrite;
 - no copied Nemexia HTML, CSS, prose, branding or assets.
 
-## Known limitations outside PR #113
+## Known limitations outside PR #114
 
-- Fleet, intelligence, expeditions, objects, events, market, logistics and reports remain for #114;
 - Command, ranking, doctrines, saves/settings, final HUD/context and batch closure remain for #115;
 - alliances, solar war, Obelisks, Gates and victory remain unaudited future work;
 - complete phone/mobile layout is not included;
@@ -92,4 +92,4 @@ Do not include Fleet/Operations/Reports work from #114 or Command/System/HUD clo
 
 ## Immediate route
 
-After PR #112 merges, create PR #113 from that exact fresh `main` and implement only `UI-SHELL-DEVELOPMENT-WORKSPACES`. Do not start #114 in the same branch or PR.
+After PR #113 merges, create PR #114 from that exact fresh `main` and implement only `UI-SHELL-FLEET-OPERATIONS-WORKSPACES`. Do not start #115 in the same branch or PR.
