@@ -1,14 +1,14 @@
 {
   "roadmapVersion": 5,
-  "updatedAt": "2026-07-27",
+  "updatedAt": "2026-07-28",
   "releaseTarget": "1.0",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
     "lastMergedPr": 120,
-    "mergeSha": "recorded in GitHub PR #120 merge metadata",
+    "mergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665",
     "runtimeBaselinePr": 120,
-    "runtimeBaselineSha": "recorded in GitHub PR #120 merge metadata"
+    "runtimeBaselineSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665"
   },
   "activePr": null,
   "nextPrAfterActive": 121,
@@ -246,7 +246,7 @@
       "workItem": "MISSION-INTELLIGENCE-BOT-GATE",
       "title": "Gate mission intelligence bot parity",
       "status": "merged",
-      "mergeSha": "recorded in GitHub PR #120 merge metadata"
+      "mergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665"
     }
   ],
   "nextAction": "Create a new Audit PR from fresh post-#120 main; implementation PR #121 is not authorized."
