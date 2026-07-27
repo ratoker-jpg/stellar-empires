@@ -1,165 +1,188 @@
 import {
   GALAXY_SYSTEMS_PER_PAGE,
-  getUniverseGalaxyDescriptor,
-} from '../simulation/universe/universeModel';
-import {
-  createSpaceMapOverlayViewModel,
-  routeCoordinate,
   routeForDirectCoordinate,
   routeForGalaxyPage,
   routeForParent,
-  selectionForRoute,
-  type SpaceMapSelectionDetail,
-} from './spaceMapViewModel';
-import {
-  SPACE_MAP_SELECTION_EVENT,
-  type SpaceMapSelectionEventDetail,
-} from '../game/spaceMapPresentationEvents';
-import type { GameState } from '../simulation/types';
-import {
-  SpaceMapNavigationController,
+  type SpaceMapNavigationController,
   type SpaceMapNavigationSnapshot,
   type SpaceMapRoute,
 } from '../navigation/spaceMapRoute';
+import type { GameState } from '../simulation/types';
+import { createSolarSystemViewModel } from './spaceMapViewModel';
+import {
+  SPACE_MAP_SELECTION_EVENT,
+  type SpaceMapSelectionDetail,
+} from '../game/spaceMapPresentationEvents';
+import { createSpaceMapObjectDetails, type SpaceMapAction } from './spaceMapActionGate';
 import { dispatchFleetMissionTarget } from './fleetMissionEvents';
 import { dispatchSpaceObjectTarget } from './spaceObjectTargetEvents';
+import { createSpaceMapOverlayViewModel } from './spaceMapOverlayViewModel';
 
 export interface SpaceMapNavigationMount {
   refresh(): void;
   dispose(): void;
 }
 
-function requireElement<T extends HTMLElement>(selector: string): T {
+function requireElement<T extends Element>(selector: string): T {
   const element = document.querySelector<T>(selector);
   if (element === null) throw new Error(`Required Space Map element not found: ${selector}`);
   return element;
 }
 
-function createSvgElement<K extends keyof SVGElementTagNameMap>(
-  tagName: K,
-): SVGElementTagNameMap[K] {
-  return document.createElementNS('http://www.w3.org/2000/svg', tagName);
-}
-
-function renderBreadcrumbs(
+function breadcrumbButton(
+  label: string,
   route: SpaceMapRoute,
   navigation: SpaceMapNavigationController,
-): void {
-  const host = requireElement<HTMLElement>('#space-map-breadcrumbs');
-  host.replaceChildren();
-  const items: Array<{ label: string; route: SpaceMapRoute }> = [
-    { label: 'Universe', route: { level: 'universe' } },
-  ];
-  if (route.level !== 'universe') {
-    items.push({
-      label: `Galaxy ${route.galaxy}`,
-      route: { level: 'galaxy', galaxy: route.galaxy, page: route.level === 'galaxy' ? route.page : 1 },
-    });
-  }
-  if (route.level === 'solar-system') {
-    items.push({
-      label: `Solar ${route.galaxy}:${route.solarSystem}:${route.position}`,
-      route,
-    });
-  }
-  for (const [index, item] of items.entries()) {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.textContent = item.label;
-    button.disabled = index === items.length - 1;
-    button.addEventListener('click', () => navigation.navigate(item.route));
-    host.append(button);
-  }
-}
-
-function actionButton(
-  id: string,
-  label: string,
-  disabled: boolean,
-  title: string,
-  onClick: () => void,
+  current: boolean,
 ): HTMLButtonElement {
   const button = document.createElement('button');
   button.type = 'button';
   button.textContent = label;
-  button.dataset.actionId = id;
-  button.disabled = disabled;
-  button.title = title;
-  button.addEventListener('click', onClick);
+  button.disabled = current;
+  button.setAttribute('aria-current', current ? 'page' : 'false');
+  button.addEventListener('click', () => navigation.navigate(route));
   return button;
 }
 
-function renderDetails(state: GameState, selection: SpaceMapSelectionDetail | null): void {
-  const host = requireElement<HTMLElement>('#space-map-selection-details');
-  host.replaceChildren();
-  delete host.dataset.intelQuality;
-  delete host.dataset.relation;
-  if (selection === null) {
-    host.textContent = 'Выбери объект на карте.';
-    return;
-  }
-  host.dataset.intelQuality = selection.intelligence.quality;
-  host.dataset.relation = selection.relation;
-  const title = document.createElement('strong');
-  title.textContent = selection.label;
-  const meta = document.createElement('p');
-  meta.textContent = selection.description;
-  host.append(title, meta);
-  const actions = document.createElement('div');
-  actions.className = 'space-map-selection-actions';
-  for (const action of selection.actions) {
-    actions.append(actionButton(
-      action.id,
-      action.label,
-      !action.enabled,
-      action.reason ?? action.label,
-      () => {
-        if (action.kind === 'fleet-mission' && action.target !== undefined) {
-          dispatchFleetMissionTarget({
-            targetId: action.target.id,
-            label: action.target.label,
-            mission: action.mission,
-            source: 'space-map',
-          });
-        }
-        if (action.kind === 'space-object' && action.objectId !== undefined) {
-          dispatchSpaceObjectTarget({ objectId: action.objectId, label: action.label });
-        }
+function renderBreadcrumbs(route: SpaceMapRoute, navigation: SpaceMapNavigationController): void {
+  const container = requireElement<HTMLElement>('#space-map-breadcrumbs');
+  const items: HTMLButtonElement[] = [
+    breadcrumbButton('Universe', { level: 'universe' }, navigation, route.level === 'universe'),
+  ];
+  if (route.level !== 'universe') {
+    items.push(breadcrumbButton(
+      `Galaxy ${route.galaxy}`,
+      {
+        level: 'galaxy',
+        galaxy: route.galaxy,
+        page: route.level === 'galaxy'
+          ? route.page
+          : Math.floor((route.solarSystem - 1) / GALAXY_SYSTEMS_PER_PAGE) + 1,
       },
+      navigation,
+      route.level === 'galaxy',
     ));
   }
-  host.append(actions);
-  if (selection.details.length > 0) {
-    const list = document.createElement('dl');
-    for (const detail of selection.details) {
-      const row = document.createElement('div');
-      const term = document.createElement('dt');
-      term.textContent = detail.label;
-      const value = document.createElement('dd');
-      value.textContent = detail.value;
-      row.append(term, value);
-      list.append(row);
-    }
-    host.append(list);
+  if (route.level === 'solar-system') {
+    items.push(breadcrumbButton(`Solar system ${route.solarSystem}`, route, navigation, true));
   }
+  container.replaceChildren();
+  items.forEach((item, index) => {
+    if (index > 0) {
+      const separator = document.createElement('span');
+      separator.textContent = '›';
+      separator.setAttribute('aria-hidden', 'true');
+      container.append(separator);
+    }
+    container.append(item);
+  });
+}
+
+function routeCoordinate(route: SpaceMapRoute): string {
+  if (route.level === 'universe') return 'U';
+  if (route.level === 'galaxy') return `G${route.galaxy} · PAGE ${route.page}`;
+  return `G${route.galaxy} · S${route.solarSystem} · P${route.position}`;
+}
+
+function selectionForRoute(state: GameState, route: SpaceMapRoute): SpaceMapSelectionDetail | null {
+  if (route.level !== 'solar-system') return null;
+  const view = createSolarSystemViewModel(state, route);
+  const slot = view.slots[route.position - 1];
+  return slot === undefined
+    ? null
+    : {
+        kind: 'position',
+        galaxy: slot.galaxy,
+        solarSystem: slot.solarSystem,
+        position: slot.position,
+        label: slot.label,
+        objectKind: slot.kind,
+      };
+}
+
+function renderActionButton(action: SpaceMapAction): HTMLElement {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'space-map-action-row';
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.textContent = action.label;
+  button.disabled = !action.enabled;
+  button.dataset.semanticId = `space-action-${action.id}`;
+  button.dataset.actionId = action.id;
+  if (action.disabledReason !== null) button.title = action.disabledReason;
+  if (action.enabled && action.kind === 'mission' && action.mission !== undefined && action.targetId !== undefined) {
+    button.addEventListener('click', () => dispatchFleetMissionTarget({
+      targetId: action.targetId ?? '',
+      label: action.label,
+      mission: action.mission ?? 'scout',
+      source: 'space-map',
+    }));
+  }
+  if (action.enabled && action.kind === 'space-object' && action.objectId !== undefined) {
+    button.addEventListener('click', () => dispatchSpaceObjectTarget({
+      objectId: action.objectId ?? '',
+      label: action.label,
+    }));
+  }
+  wrapper.append(button);
+  if (action.disabledReason !== null) {
+    const reason = document.createElement('small');
+    reason.textContent = action.disabledReason;
+    wrapper.append(reason);
+  }
+  return wrapper;
+}
+
+function renderDetails(state: GameState, selection: SpaceMapSelectionDetail | null): void {
+  const container = requireElement<HTMLElement>('#space-map-selection-details');
+  if (selection === null) {
+    container.textContent = 'Выбери объект на карте.';
+    return;
+  }
+  const details = createSpaceMapObjectDetails(state, selection);
+  container.replaceChildren();
+  container.dataset.objectState = details.state;
+  container.dataset.relation = details.relation;
+  container.dataset.intelQuality = details.intelQuality;
+  const header = document.createElement('header');
+  const title = document.createElement('strong');
+  title.textContent = details.label;
+  const coordinate = document.createElement('span');
+  coordinate.textContent = details.coordinate === null
+    ? `G${selection.galaxy} · S${selection.solarSystem} · SUN`
+    : `G${details.coordinate.galaxy} · S${details.coordinate.solarSystem} · P${details.coordinate.position}`;
+  header.append(title, coordinate);
+  const meta = document.createElement('div');
+  meta.className = 'space-map-detail-meta';
+  const values = [
+    ['Состояние', details.state],
+    ['Отношение', details.relation],
+    ['Разведка', details.intelQuality],
+    ...(details.intelAgeSeconds === null ? [] : [['Возраст данных', `${details.intelAgeSeconds} сек.`]]),
+    ...(details.ownerEmpireId === null ? [] : [['Владелец', details.ownerEmpireId]]),
+    ...(details.factionId === null ? [] : [['Фракция', details.factionId]]),
+    ...(details.allianceId === null ? [] : [['Альянс', details.allianceId]]),
+  ];
+  for (const [label, value] of values) {
+    const item = document.createElement('span');
+    item.innerHTML = `<small>${label}</small><b>${value}</b>`;
+    meta.append(item);
+  }
+  const actions = document.createElement('div');
+  actions.className = 'space-map-detail-actions';
+  actions.replaceChildren(...details.actions.map(renderActionButton));
+  container.append(header, meta, actions);
+}
+
+function createSvgElement<K extends keyof SVGElementTagNameMap>(
+  tag: K,
+): SVGElementTagNameMap[K] {
+  return document.createElementNS('http://www.w3.org/2000/svg', tag);
 }
 
 function renderOverlay(state: GameState, route: SpaceMapRoute): void {
   const overlay = requireElement<SVGSVGElement>('#space-map-overlay');
   overlay.replaceChildren();
-  const defs = createSvgElement('defs');
-  const marker = createSvgElement('marker');
-  marker.id = 'space-map-arrow';
-  marker.setAttribute('markerWidth', '8');
-  marker.setAttribute('markerHeight', '8');
-  marker.setAttribute('refX', '7');
-  marker.setAttribute('refY', '4');
-  marker.setAttribute('orient', 'auto');
-  const markerPath = createSvgElement('path');
-  markerPath.setAttribute('d', 'M0,0 L8,4 L0,8 z');
-  marker.append(markerPath);
-  defs.append(marker);
-  overlay.append(defs);
   if (route.level !== 'solar-system') {
     overlay.setAttribute('hidden', '');
     return;
@@ -180,18 +203,18 @@ function renderOverlay(state: GameState, route: SpaceMapRoute): void {
     group.append(line);
     overlay.append(group);
   }
-  for (const markerItem of model.markers) {
+  for (const marker of model.markers) {
     const group = createSvgElement('g');
-    group.id = markerItem.semanticId;
-    group.dataset.semanticId = markerItem.semanticId;
-    group.dataset.relation = markerItem.relation;
-    group.dataset.markerKind = markerItem.kind;
+    group.id = marker.semanticId;
+    group.dataset.semanticId = marker.semanticId;
+    group.dataset.relation = marker.relation;
+    group.dataset.markerKind = marker.kind;
     const circle = createSvgElement('circle');
-    circle.setAttribute('cx', String(markerItem.point.x));
-    circle.setAttribute('cy', String(markerItem.point.y));
-    circle.setAttribute('r', markerItem.kind === 'mission' ? '9' : '7');
+    circle.setAttribute('cx', String(marker.point.x));
+    circle.setAttribute('cy', String(marker.point.y));
+    circle.setAttribute('r', marker.kind === 'mission' ? '9' : '7');
     const title = createSvgElement('title');
-    title.textContent = markerItem.label;
+    title.textContent = marker.label;
     group.append(circle, title);
     overlay.append(group);
   }
@@ -217,7 +240,7 @@ export function mountSpaceMapNavigation(
     const pageControls = requireElement<HTMLElement>('#space-map-page-controls');
     pageControls.hidden = route.level !== 'galaxy';
     if (route.level === 'galaxy') {
-      const descriptor = getUniverseGalaxyDescriptor(state.universe, route.galaxy);
+      const descriptor = state.universe.galaxies.find((galaxy) => galaxy.slot === route.galaxy);
       const pageCount = descriptor === undefined ? 1 : Math.ceil(descriptor.systemCount / GALAXY_SYSTEMS_PER_PAGE);
       requireElement<HTMLButtonElement>('#space-map-page-previous').disabled = route.page <= 1;
       requireElement<HTMLButtonElement>('#space-map-page-next').disabled = route.page >= pageCount;
@@ -266,7 +289,7 @@ export function mountSpaceMapNavigation(
   form.addEventListener('submit', onSubmit);
   const onSelection = (event: Event): void => {
     if (!(event instanceof CustomEvent)) return;
-    latestSelection = (event as CustomEvent<SpaceMapSelectionEventDetail>).detail;
+    latestSelection = event.detail as SpaceMapSelectionDetail;
     renderSnapshot(navigation.snapshot);
   };
   window.addEventListener(SPACE_MAP_SELECTION_EVENT, onSelection);
