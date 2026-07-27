@@ -1,7 +1,7 @@
 # AI Continuation Guide
 
-**Status:** Audit #116 batch completed through PR #120  
-**Updated:** 2026-07-27  
+**Status:** PR #120 merged · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665` · Audit #116 batch completed  
+**Updated:** 2026-07-28  
 **Active implementation batch:** none  
 **Next repository action:** new Audit PR only
 
@@ -45,4 +45,4 @@ The six ordinary missions share one reducer/UI/bot availability contract. Flight
 
 ## Immediate route
 
-Create a new Audit PR from exact post-#120 `main`. Do not create implementation PR #121 until that audit is accepted.
+Create a new Audit PR from fresh post-#120 `main`. Do not create implementation PR #121 until that audit is accepted.
