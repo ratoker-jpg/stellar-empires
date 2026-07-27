@@ -64,33 +64,7 @@
         </div>
       </header>
 
-      <nav class="side-rail" aria-label="Основная навигация">
-        <button id="nav-planet" class="rail-button" type="button" aria-label="Планета">
-          <span class="rail-button__icon">◉</span><small>Планета</small>
-        </button>
-        <button class="rail-button" type="button" aria-label="Флот" disabled>
-          <span class="rail-button__icon">◆</span><small>Флоты</small>
-        </button>
-        <button id="nav-galaxy" class="rail-button is-active" type="button" aria-label="Галактика">
-          <span class="rail-button__icon">✦</span><small>Галактика</small>
-        </button>
-        <button class="rail-button" type="button" aria-label="Исследования" disabled>
-          <span class="rail-button__icon">⌬</span><small>Наука</small>
-        </button>
-        <button id="nav-empire" class="rail-button" type="button" aria-label="Командование">
-          <span class="rail-button__icon">▦</span><small>Командование</small>
-        </button>
-        <button id="nav-rating" class="rail-button" type="button" aria-label="Рейтинг" disabled>
-          <span class="rail-button__icon">△</span><small>Рейтинг</small>
-        </button>
-        <div class="rail-spacer"></div>
-        <button class="rail-button rail-button--utility" type="button" aria-label="Отчёты" disabled>
-          <span class="rail-button__icon">▤</span><small>Отчёты</small>
-        </button>
-        <button class="rail-button rail-button--utility" type="button" aria-label="Настройки" disabled>
-          <span class="rail-button__icon">⚙</span><small>Система</small>
-        </button>
-      </nav>
+      <nav class="side-rail" aria-label="Основная навигация"></nav>
 
       <main class="game-layout">
         <aside class="command-panel" aria-label="Контекстная панель">
@@ -175,6 +149,48 @@
 
           <section id="research-view" class="development-primary-view research-screen-workspace" aria-label="Исследования" hidden></section>
 
+          <section id="fleets-view" class="operations-primary-view" aria-label="Флоты и миссии" hidden>
+            <header class="operations-route-header">
+              <div><p class="panel-label">Fleet Operations</p><h1>Флоты и миссии</h1><p>Формирование групп, выбор цели и контроль полётов.</p></div>
+            </header>
+            <nav id="fleet-route-tabs" class="operations-route-tabs" role="tablist" aria-label="Разделы флотов">
+              <button type="button" role="tab" data-fleet-mode="overview">Обзор</button>
+              <button type="button" role="tab" data-fleet-mode="compose">Формирование</button>
+              <button type="button" role="tab" data-fleet-mode="active">Активные</button>
+              <button type="button" role="tab" data-fleet-mode="battles">Бои</button>
+            </nav>
+            <div id="fleet-workspace-host" class="operations-route-content"></div>
+          </section>
+
+          <section id="operations-view" class="operations-primary-view" aria-label="Операционный центр" hidden>
+            <header class="operations-route-header">
+              <div><p class="panel-label">Empire Operations</p><h1>Операционный центр</h1><p>Разведка, экспедиции, объекты, события, рынок и снабжение.</p></div>
+            </header>
+            <nav id="operations-route-tabs" class="operations-route-tabs" role="tablist" aria-label="Разделы операций">
+              <button type="button" role="tab" data-operations-mode="overview">Сводка и разведка</button>
+              <button type="button" role="tab" data-operations-mode="expeditions">Экспедиции</button>
+              <button type="button" role="tab" data-operations-mode="objects">Объекты</button>
+              <button type="button" role="tab" data-operations-mode="events">События</button>
+              <button type="button" role="tab" data-operations-mode="market">Рынок</button>
+              <button type="button" role="tab" data-operations-mode="logistics">Логистика</button>
+            </nav>
+            <div id="operations-workspace-host" class="operations-route-content"></div>
+          </section>
+
+          <section id="reports-view" class="operations-primary-view" aria-label="Единые отчёты" hidden>
+            <header class="operations-route-header">
+              <div><p class="panel-label">Operations Intelligence</p><h1>Единые отчёты</h1><p>Боевые, экспедиционные, объектные и системные результаты.</p></div>
+            </header>
+            <nav id="reports-route-tabs" class="operations-route-tabs" role="tablist" aria-label="Фильтры отчётов">
+              <button type="button" role="tab" data-report-filter="all">Все</button>
+              <button type="button" role="tab" data-report-filter="combat">Бои</button>
+              <button type="button" role="tab" data-report-filter="expedition">Экспедиции</button>
+              <button type="button" role="tab" data-report-filter="object">Объекты</button>
+              <button type="button" role="tab" data-report-filter="event">События</button>
+            </nav>
+            <div id="mission-reports-view" class="operations-route-content"></div>
+          </section>
+
           <section id="planet-view" class="planet-view" aria-label="Управление планетой" hidden>
             <header class="planet-header">
               <div class="planet-header__identity">
@@ -236,21 +252,16 @@
 
               <div class="planet-workspace">
                 <aside id="planet-context-panel" class="planet-context-panel" aria-label="Контекст планеты"></aside>
-
                 <main id="planet-stage" class="planet-stage">
                   <section id="planet-overview-stage" class="planet-overview-stage" aria-label="Обзор колонии"></section>
                   <section id="planet-zone-stage" class="planet-zone-stage" aria-label="Зона планеты" hidden>
                     <header class="planet-zone-stage__header">
-                      <div>
-                        <p id="planet-zone-kicker" class="panel-label">Инфраструктурный сектор</p>
-                        <h2 id="planet-zone-title">—</h2>
-                      </div>
+                      <div><p id="planet-zone-kicker" class="panel-label">Инфраструктурный сектор</p><h2 id="planet-zone-title">—</h2></div>
                       <p id="planet-zone-description">—</p>
                     </header>
                     <div id="planet-building-grid" class="planet-building-grid" role="list"></div>
                   </section>
                 </main>
-
                 <aside class="planet-details-panel planet-operations" aria-label="Детали и действия">
                   <section id="planet-details-card" class="operation-card planet-details-card"></section>
                   <section class="operation-card economy-report">
@@ -275,10 +286,7 @@
 
     <dialog id="faction-preview-dialog" class="asset-dialog">
       <div class="asset-dialog__header">
-        <div>
-          <p class="panel-label">Production art review</p>
-          <h2 id="faction-preview-title">Фракционный набор</h2>
-        </div>
+        <div><p class="panel-label">Production art review</p><h2 id="faction-preview-title">Фракционный набор</h2></div>
         <button id="faction-preview-close" class="dialog-close" type="button" aria-label="Закрыть">×</button>
       </div>
       <img id="faction-preview-image" alt="" />
@@ -286,10 +294,7 @@
 
     <dialog id="aegis-atlas-dialog" class="asset-dialog asset-dialog--atlas">
       <div class="asset-dialog__header">
-        <div>
-          <p class="panel-label">Aegis P1 asset atlas</p>
-          <h2 id="aegis-atlas-title">Набор «Эгиды»</h2>
-        </div>
+        <div><p class="panel-label">Aegis P1 asset atlas</p><h2 id="aegis-atlas-title">Набор «Эгиды»</h2></div>
         <button id="aegis-atlas-close" class="dialog-close" type="button" aria-label="Закрыть">×</button>
       </div>
       <img id="aegis-atlas-image" alt="" />
