@@ -1,37 +1,18 @@
 # Current execution state
 
 **Updated:** 2026-07-27  
-**Safe to continue:** yes — start PR #120 only from exact latest `main`
+**Safe to continue:** audit only
 
 | Field | Current value |
 |---|---|
-| Current batch | `ORDINARY-MISSIONS-INTELLIGENCE-01` |
-| Audit PR | #116 — accepted and merged |
-| Planned implementation PRs | #117–#120 |
-| Completed implementation PRs | #117 · `669cca1510f242cb7069831420edd488af435d4d`; #118 · `46570544da064f839055afd3c10a387326452811`; #119 · `e297f77f8e994f37402090a8d9d7c70e28ce099f` |
+| Last completed batch | `ORDINARY-MISSIONS-INTELLIGENCE-01` |
+| Audit PR | #116 · `3cdd4f106f163a57a564d8ac2b2ff3c38b5ebbe5` |
+| Completed implementation PRs | #117 · `669cca1510f242cb7069831420edd488af435d4d`; #118 · `46570544da064f839055afd3c10a387326452811`; #119 · `e297f77f8e994f37402090a8d9d7c70e28ce099f`; #120 · `recorded in GitHub PR #120 merge metadata` |
+| Validation | asset audit, lint, TypeScript, 392 tests, production build, Browser E2E and Graphify |
+| Persistence | schema v14; no migration or new persisted field |
 | Active implementation PR | none |
-| Last completed action | canonical intelligence reports, exact map backlinks, incoming-flight sensor tiers and redacted routed presentation |
-| Validation | PR #119 final clean-head asset audit, lint, TypeScript, 384 tests, production build, Browser E2E and Graphify passed |
-| Exact next action | create PR #120 from fresh post-#119 `main` and implement only `MISSION-INTELLIGENCE-BOT-GATE` |
-| Divergence | none; schema v14, command set, mission enum, save fields and authoritative reducers unchanged |
-
-## PR #119 result
-
-- `#/reports/intelligence` is canonical, reloadable and history-safe;
-- observer and defender reports derive from existing bounded observations and alerts;
-- exact report coordinates drive map backlinks without new persisted report state;
-- private bot observations do not appear in the player report view;
-- incoming contacts expose target and ETA below sensor strength 5, source at 5–9, and mission/composition at 10+;
-- current level-three intelligence on the source promotes incoming visibility to the highest tier;
-- incoming cargo is absent from the selector and presentation;
-- HUD and Fleet context surface incoming contact counts without changing `GameState`.
-
-## Remaining accepted sequence
-
-```text
-#120 MISSION-INTELLIGENCE-BOT-GATE
-```
+| Exact next action | create a new Audit PR from fresh post-#120 `main` |
 
 ## Recovery rule
 
-Do not start unaudited work. Create only #120 from the exact latest `main` and close the accepted batch through its combined mission/intelligence/bot gate.
+Do not create implementation PR #121 until a new audit is accepted and records the next implementation sequence. Completed audit: `docs/audits/completed/ordinary-missions-intelligence-01.md`.
