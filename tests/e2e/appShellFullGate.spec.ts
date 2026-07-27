@@ -76,7 +76,7 @@ test('complete primary shell routes are canonical and modal-free', async ({ page
 });
 
 test('keyboard navigation activates primary and local routes with heading focus', async ({ page }) => {
-  await page.goto('/?e2e=1#/planet/planet-player-1/overview');
+  await page.goto('/?e2e=1#/command/overview');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
 
   await page.locator('#nav-planet').focus();
@@ -101,8 +101,11 @@ test('keyboard navigation activates primary and local routes with heading focus'
 test('complete HUD and every primary route fit release viewports', async ({ page }) => {
   for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
     await page.setViewportSize(viewport);
+    await page.goto('/?e2e=1#/research');
+    await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+    const planetId = await page.locator('#hud-planet-selector').inputValue();
     for (const route of [
-      '#/planet/planet-player-1/overview',
+      `#/planet/${encodeURIComponent(planetId)}/overview`,
       '#/fleets/overview',
       '#/space/universe',
       '#/research',
