@@ -1,9 +1,9 @@
 # AI Continuation Guide
 
-**Status:** Audit PR #111 accepts `COHERENT-UI-SHELL-01` on merge  
+**Status:** `UI-SHELL-RUNTIME-ROUTER` completed by PR #112 on merge  
 **Updated:** 2026-07-27  
-**Runtime baseline:** merged PR #110, SHA `8e9e848b0725c52263ff7e310bc9d899a81554c4`  
-**Next implementation:** #112 — `UI-SHELL-RUNTIME-ROUTER`
+**Audit:** #111 — `COHERENT-UI-SHELL-01`  
+**Next implementation:** #113 — `UI-SHELL-DEVELOPMENT-WORKSPACES`
 
 ## Repository
 
@@ -28,43 +28,45 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 ## Completed product state
 
 - PR #101–#105 completed runtime integration of the mechanical catalog art;
-- PR #106 audited `UNIVERSE-NAVIGATION-01`;
-- PR #107 delivered the 90-source / 102-runtime Universe asset pipeline;
-- PR #108 delivered schema v14 and deterministic v13 → v14 migration;
-- PR #109 delivered Universe → Galaxy → Solar-system URL/history navigation;
-- PR #110 delivered intelligence-aware action gates, mission target handoff, report backlinks, semantic overlays and Browser E2E;
-- navigation remains checksum-neutral;
-- map selection never sends a mission without fleet/composition/speed/confirmation.
+- PR #106–#110 completed schema-v14 Universe navigation, action gates and Browser E2E;
+- PR #111 accepted medium batch `COHERENT-UI-SHELL-01`;
+- PR #112 delivered the application controller, canonical Planet/Space shell routes and typed primary registry.
 
-The completed Universe audit is archived at:
+### PR #112 runtime contract
+
+- `GameApplicationController` owns current runtime state, active-colony presentation context and accepted-command effects;
+- non-Planet screens use its command bridge, not `planetScreen.ts`, for reducer execution;
+- canonical Planet routes are `#/planet/<planet-id>/<overview|resource|industry|military>`;
+- `SpaceMapNavigationController` remains authoritative for `#/space/...`;
+- one typed registry creates stable primary navigation controls;
+- canonical route clicks suppress obsolete competing handlers;
+- legacy cloned launchers cannot inherit canonical route metadata or active state;
+- route changes remain outside `GameState`, saves, command/event logs and checksum;
+- back/forward/reload and invalid-route normalization are covered by Browser E2E.
+
+## Accepted implementation chain
 
 ```text
-docs/audits/completed/universe-navigation-01.md
-```
-
-## Accepted audited batch
-
-Audit PR #111 authorizes this exact sequence after it merges:
-
-```text
-#112 UI-SHELL-RUNTIME-ROUTER
-→ #113 UI-SHELL-DEVELOPMENT-WORKSPACES
+#112 UI-SHELL-RUNTIME-ROUTER — completed by this merge
+→ #113 UI-SHELL-DEVELOPMENT-WORKSPACES — next
 → #114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES
 → #115 UI-SHELL-COMMAND-SYSTEM-GATE
 ```
 
-### Why this batch is next
+## Scope for PR #113 only
 
-The game already has functional Planet, Research, Production, Fleet, Operations, Reports, Command and Save screens. They are not yet one coherent application:
+PR #113 migrates the development family onto routed shell workspaces:
 
-- `src/main.ts::bootstrap()` directly calls 26 UI mount/apply functions;
-- unrelated screens execute commands through `planetScreen.ts`;
-- at least sixteen top-level screens are modal dialogs;
-- eight modules insert navigation buttons at runtime;
-- several static primary nav buttons are disabled despite implemented screens;
-- only the Space Map has canonical browser routing/history.
+- Planet overview and Resource/Industry/Military zones;
+- Research catalog and queue;
+- ship and defence Production;
+- Defence/Repair entry points;
+- Ship Upgrades;
+- active-colony route restoration;
+- direct zone gateway navigation instead of placeholder dialogs;
+- controller subscriptions for queue/card refresh.
 
-Audit #111 fixes presentation composition before more mechanics are added.
+Do not include Fleet/Operations/Reports work from #114 or Command/System/HUD closure from #115.
 
 ## Batch invariants
 
@@ -72,24 +74,22 @@ Audit #111 fixes presentation composition before more mechanics are added.
 - route state stays outside `GameState` and saves;
 - existing Space Map route controller remains authoritative for `#/space/...`;
 - one application controller owns runtime state/command notifications;
-- one typed registry owns primary navigation;
+- one typed registry owns canonical navigation metadata;
 - one primary workspace is active at a time;
-- top-level domains are routed pages, not modal-only screens;
 - player and bots continue using the same command validators;
 - no Alliance item before an alliance audit;
 - no solar-war/endgame work in this batch;
-- no React/framework rewrite;
+- no framework rewrite;
 - no copied Nemexia HTML, CSS, prose, branding or assets.
 
-## Known limitations outside the batch
+## Known limitations outside PR #113
 
-- alliances and diplomacy are not implemented;
-- solar attack/support/destruction/rebuilding are not implemented;
-- Solar Crystals, Obelisks, Gates and final victory are not implemented;
-- ordinary mechanics/PvE depth and bot parity still need later audited batches;
-- balance and release hardening remain open;
-- complete phone/mobile layout is not included.
+- Fleet, intelligence, expeditions, objects, events, market, logistics and reports remain for #114;
+- Command, ranking, doctrines, saves/settings, final HUD/context and batch closure remain for #115;
+- alliances, solar war, Obelisks, Gates and victory remain unaudited future work;
+- complete phone/mobile layout is not included;
+- balance and release hardening remain open.
 
 ## Immediate route
 
-After Audit PR #111 merges, create PR #112 from that fresh `main` and implement only `UI-SHELL-RUNTIME-ROUTER`. Do not start #113 in the same branch or PR. If #111 is not merged, implementation remains forbidden.
+After PR #112 merges, create PR #113 from that exact fresh `main` and implement only `UI-SHELL-DEVELOPMENT-WORKSPACES`. Do not start #114 in the same branch or PR.
