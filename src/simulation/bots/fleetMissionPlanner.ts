@@ -1,7 +1,7 @@
 import { getFactionIdForEmpire } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { createFleet } from '../fleets/fleetCommands';
-import { sendFleet } from '../fleets/flightCommands';
+import { getMissionAvailability } from '../fleets/missionRules';
 import type { FleetMissionKind } from '../fleets/types';
 import { compareSpaceCoordinates } from '../space/coordinates';
 import type { GameCommand, GameState } from '../types';
@@ -91,7 +91,7 @@ function validSend(
   state: GameState,
   command: Extract<GameCommand, { readonly type: 'SEND_FLEET' }>,
 ): boolean {
-  return sendFleet(state, command).ok;
+  return getMissionAvailability(state, command).allowed;
 }
 
 function missionPlan(
