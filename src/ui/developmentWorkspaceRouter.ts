@@ -59,7 +59,7 @@ function createUpgradesGateway(options: DevelopmentWorkspaceRouterOptions): HTML
   const hint = document.createElement('span');
   hint.textContent = shipyardLevel > 0
     ? `Верфь ур. ${shipyardLevel} · улучшение вооружения, брони и грузовых систем`
-    : 'Требуется орбитальная верфь';
+    : 'Открыть каталог требований · требуется орбитальная верфь';
   button.append(label, hint);
   return button;
 }
@@ -130,9 +130,9 @@ export function mountDevelopmentWorkspaceRouter(
     const target = event.target;
     if (!(target instanceof Element)) return;
     const gateway = target.closest<HTMLButtonElement>('.zone-gateway');
-    if (gateway === null || !gateway.classList.contains('is-ready')) return;
+    if (gateway === null) return;
     const label = gateway.querySelector('strong')?.textContent;
-    if (label === 'Исследования') {
+    if (label === 'Исследовательский комплекс') {
       event.preventDefault();
       event.stopImmediatePropagation();
       options.navigateToResearch();
