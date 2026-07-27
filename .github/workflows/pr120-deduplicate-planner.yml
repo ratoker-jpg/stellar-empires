@@ -23,22 +23,14 @@ jobs:
           from pathlib import Path
           path = Path('src/simulation/bots/fleetMissionPlanner.ts')
           text = path.read_text()
-          block = """  const fullCurrentTargetIds = new Set(
-            perception.foreignPlanets
-              .filter((planet) => planet.freshness === 'current' && planet.snapshot.level === 3)
-              .map((planet) => planet.planetId),
-          );
-          const scoutPriority = (targetId: string): number => {
-            const intelligence = perception.foreignPlanets.find((planet) => planet.planetId === targetId);
-            if (intelligence?.freshness === 'stale') return 0;
-            if (intelligence !== undefined && intelligence.snapshot.level < 3) return 1;
-            return 2;
-          };
-          """
-          duplicate = block + "\n" + block
-          if duplicate not in text:
-              raise SystemExit('duplicate scout helper block not found')
-          path.write_text(text.replace(duplicate, block, 1))
+          marker = "  const fullCurrentTargetIds = new Set("
+          first = text.index(marker)
+          second = text.index(marker, first + len(marker))
+          scout_loop = text.index(
+              "  for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'scout'))) {",
+              second,
+          )
+          path.write_text(text[:second] + text[scout_loop:])
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
