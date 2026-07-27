@@ -13,9 +13,23 @@ describe('shell screen registry', () => {
       .toBe(SHELL_SCREEN_REGISTRY.length);
   });
 
-  it('contains Planet, Space and Research as canonical route families', () => {
+  it('contains every implemented primary route exactly once', () => {
     const routed = SHELL_SCREEN_REGISTRY.filter((entry) => entry.kind === 'route');
-    expect(routed.map((entry) => entry.routeFamily)).toEqual(['planet', 'space', 'research']);
+    expect(routed.map((entry) => entry.routeFamily)).toEqual([
+      'planet',
+      'fleets',
+      'space',
+      'research',
+      'operations',
+      'reports',
+    ]);
+    expect(new Set(routed.map((entry) => entry.routeFamily)).size).toBe(routed.length);
+  });
+
+  it('keeps later command and system work as compatibility entries', () => {
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'command')?.kind).toBe('legacy');
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'ranking')?.kind).toBe('legacy');
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'system')?.kind).toBe('legacy');
   });
 
   it('preserves accessible labels required by compatibility screens', () => {
@@ -23,6 +37,8 @@ describe('shell screen registry', () => {
       .toBe('Флот');
     expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'research')?.ariaLabel)
       .toBe('Исследования');
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'operations')?.ariaLabel)
+      .toBe('Операционный центр');
     expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'system')?.ariaLabel)
       .toBe('Настройки');
   });
