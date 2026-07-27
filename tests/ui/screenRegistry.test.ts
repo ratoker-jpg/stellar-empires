@@ -13,9 +13,9 @@ describe('shell screen registry', () => {
       .toBe(SHELL_SCREEN_REGISTRY.length);
   });
 
-  it('keeps Planet and Space as the first canonical route families', () => {
+  it('contains Planet, Space and Research as canonical route families', () => {
     const routed = SHELL_SCREEN_REGISTRY.filter((entry) => entry.kind === 'route');
-    expect(routed.map((entry) => entry.routeFamily)).toEqual(['planet', 'space']);
+    expect(routed.map((entry) => entry.routeFamily)).toEqual(['planet', 'space', 'research']);
   });
 
   it('preserves accessible labels required by compatibility screens', () => {
