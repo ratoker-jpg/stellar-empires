@@ -3,6 +3,10 @@ import type { BattleReport } from '../simulation/combat/types';
 import type { FleetState } from '../simulation/fleets/types';
 import type { IntelObservation } from '../simulation/intelligence/types';
 import type { GameState } from '../simulation/types';
+import {
+  runOrdinaryMissionIntelligenceGate,
+  type OrdinaryMissionIntelligenceGateResult,
+} from '../testing/e2eRuntime';
 
 export const E2E_RUNTIME_ENABLED = import.meta.env.VITE_E2E === '1';
 export const E2E_FLEET_ID = 'fleet-e2e-player';
@@ -10,6 +14,21 @@ export const E2E_INCOMING_FLEET_ID = 'fleet-e2e-incoming';
 export const E2E_REPORT_ID = 'report-e2e-map-backlink';
 const E2E_BOT_IDLE_SECONDS = 86_400;
 const E2E_SCOUT_COOLDOWN_CEILING_SECONDS = 7_200;
+
+let botGateResult: OrdinaryMissionIntelligenceGateResult | undefined;
+
+function getBotGateResult(): OrdinaryMissionIntelligenceGateResult {
+  if (botGateResult === undefined) {
+    const first = runOrdinaryMissionIntelligenceGate('e2e-ordinary-mission-intelligence');
+    const second = runOrdinaryMissionIntelligenceGate('e2e-ordinary-mission-intelligence');
+    if (JSON.stringify(first) !== JSON.stringify(second)) {
+      throw new Error('Ordinary mission intelligence gate is not deterministic.');
+    }
+    botGateResult = first;
+  }
+  return botGateResult;
+}
+
 
 function requireScenarioPlanets(state: GameState) {
   const origin = state.planets.find((planet) => planet.ownerEmpireId === 'player');
@@ -172,4 +191,11 @@ export function updateE2eRuntimeDiagnostics(state: GameState): void {
   document.documentElement.dataset.sendFleetCommandCount = String(
     state.commandLog.filter((entry) => entry.command.type === 'SEND_FLEET').length,
   );
+  const botGate = getBotGateResult();
+  document.documentElement.dataset.e2eBotGateScoutReason = botGate.scoutReasonCode;
+  document.documentElement.dataset.e2eBotGateAttackReason = botGate.attackReasonCode;
+  document.documentElement.dataset.e2eBotGateObservationLevel = String(botGate.observationLevel);
+  document.documentElement.dataset.e2eBotGateSchemaVersion = String(botGate.schemaVersion);
+  document.documentElement.dataset.e2eBotGateDeterministic = 'true';
+  document.documentElement.dataset.e2eBotGateChecksum = botGate.finalChecksum;
 }

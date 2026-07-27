@@ -6,6 +6,7 @@ import {
 } from '../../src/simulation/bots/scheduler';
 import type { BotProfile } from '../../src/simulation/bots/profiles';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
 import {
   createSaveEnvelope,
@@ -151,6 +152,63 @@ describe('autonomous bot scheduler', () => {
     expect(runBotScheduler(parsed.value.state)).toEqual(runBotScheduler(partiallyCaughtUp));
   });
 
+
+  it('records shared mission blockers as serializable scheduler diagnostics', () => {
+    let state = createInitialGameState('bot-scheduler-diagnostic');
+    const empireId = 'aegis-bot';
+    const origin = state.planets.find((planet) => planet.ownerEmpireId === empireId)!;
+    const roles = getFactionMechanicalRoles('aegis');
+    state = {
+      ...state,
+      planets: state.planets.map((planet) =>
+        planet.id === origin.id
+          ? {
+              ...planet,
+              inventory: { ships: {}, defenses: {} },
+              economy: {
+                ...planet.economy,
+                resources: {
+                  ...planet.economy.resources,
+                  gas: { ...planet.economy.resources.gas, amount: 0 },
+                },
+              },
+            }
+          : planet,
+      ),
+      fleets: [{
+        id: 'diagnostic-scout',
+        empireId,
+        originPlanetId: origin.id,
+        location: { type: 'planet' as const, planetId: origin.id },
+        status: 'stationed' as const,
+        ships: { [roles.ships.scout]: 1 },
+        cargo: { metal: 0, crystal: 0, gas: 0 },
+        speed: 1_000,
+        cargoCapacity: 100,
+        mission: null,
+      }],
+    };
+    const profile: BotProfile = {
+      id: 'test.blocked-explorer',
+      empireId,
+      personality: 'explorer',
+      difficulty: 'easy',
+      decisionIntervalSeconds: 900,
+      maxCommandsPerDecision: 1,
+    };
+    const result = runBotScheduler(state, [profile]);
+    expect(result.diagnostics).toEqual([{
+      empireId,
+      profileId: profile.id,
+      personality: 'explorer',
+      decidedAt: 0,
+      source: 'fleet',
+      reasonCode: 'mission-blocked-fuel',
+      availabilityCode: 'INSUFFICIENT_FLIGHT_FUEL',
+      explanation: expect.any(String),
+    }]);
+    expect(JSON.parse(JSON.stringify(result.diagnostics))).toEqual(result.diagnostics);
+  });
   it('does not change decisions when hidden player resources change', () => {
     const state = createInitialGameState('bot-scheduler-hidden');
     const before = runBotScheduler(state);

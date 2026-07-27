@@ -170,3 +170,44 @@ describe('bot perception and memory', () => {
     });
   });
 });
+
+it('exposes only redacted public contacts outside stored observations', () => {
+  const state = createInitialGameState('bot-public-contacts');
+  const playerPlanet = state.planets.find((planet) => planet.ownerEmpireId === 'player')!;
+  const before = createBotPerception(state, 'synod-bot');
+  const contact = before.publicContacts.find((candidate) => candidate.planetId === playerPlanet.id);
+  expect(contact).toMatchObject({
+    planetId: playerPlanet.id,
+    visibility: 'contact',
+  });
+  expect(contact).not.toHaveProperty('ownerEmpireId');
+  expect(contact).not.toHaveProperty('resources');
+  expect(contact).not.toHaveProperty('defenses');
+  expect(contact).not.toHaveProperty('ships');
+  expect(contact).not.toHaveProperty('cargo');
+
+  const hiddenChanged = {
+    ...state,
+    planets: state.planets.map((planet) =>
+      planet.id === playerPlanet.id
+        ? {
+            ...planet,
+            economy: {
+              ...planet.economy,
+              resources: {
+                ...planet.economy.resources,
+                metal: { ...planet.economy.resources.metal, amount: 88_888 },
+              },
+            },
+            inventory: {
+              ships: { 'ship.aegis.fighter': 999 },
+              defenses: { 'defense.aegis.rocket-turret': 999 },
+            },
+          }
+        : planet,
+    ),
+  };
+  expect(createBotPerception(hiddenChanged, 'synod-bot').publicContacts).toEqual(
+    before.publicContacts,
+  );
+});

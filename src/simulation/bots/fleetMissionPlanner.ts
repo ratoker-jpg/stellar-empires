@@ -1,9 +1,14 @@
 import { getFactionIdForEmpire } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { createFleet } from '../fleets/fleetCommands';
-import { getMissionAvailability } from '../fleets/missionRules';
-import type { FleetMissionKind } from '../fleets/types';
-import { compareSpaceCoordinates } from '../space/coordinates';
+import {
+  getMissionAvailability,
+  listMissionTargets,
+  type MissionAvailability,
+  type MissionAvailabilityCode,
+  type OrdinaryMissionKind,
+} from '../fleets/missionRules';
+import type { FleetMissionKind, FleetState } from '../fleets/types';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
 import type { ShipRole } from '../units/types';
@@ -17,6 +22,10 @@ export type BotFleetReasonCode =
   | 'mission-scout-selected'
   | 'mission-attack-selected'
   | 'mission-deploy-selected'
+  | 'mission-blocked-flight-slots'
+  | 'mission-blocked-scout-cooldown'
+  | 'mission-blocked-fuel'
+  | 'mission-blocked-intelligence'
   | 'fleet-busy'
   | 'fleet-unavailable'
   | 'mission-unavailable';
@@ -24,15 +33,28 @@ export type BotFleetReasonCode =
 export interface BotFleetMissionPlan {
   readonly empireId: string;
   readonly reasonCode: BotFleetReasonCode;
+  readonly availabilityCode: MissionAvailabilityCode | null;
   readonly explanation: string;
   readonly command: GameCommand | null;
 }
 
 type PerceivedFleet = BotPerception['ownFleets'][number];
 type ResourceId = 'metal' | 'crystal' | 'gas';
+type SendCommand = Extract<GameCommand, { readonly type: 'SEND_FLEET' }>;
+
+interface MissionBlocker {
+  readonly code: MissionAvailabilityCode;
+  readonly message: string;
+}
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
 const ZERO_CARGO = { metal: 0, crystal: 0, gas: 0 } as const;
+const BLOCKER_PRIORITY: readonly MissionAvailabilityCode[] = [
+  'FLIGHT_SLOT_LIMIT_REACHED',
+  'SCOUT_COOLDOWN_ACTIVE',
+  'INSUFFICIENT_FLIGHT_FUEL',
+  'ATTACK_INTELLIGENCE_REQUIRED',
+];
 
 function sumCargo(cargo: Readonly<Record<ResourceId, number>>): number {
   return RESOURCE_IDS.reduce((total, resourceId) => total + cargo[resourceId], 0);
@@ -78,186 +100,239 @@ function perceivedTargetPower(
   );
 }
 
+function realFleet(state: GameState, fleet: PerceivedFleet): FleetState | undefined {
+  return state.fleets.find(
+    (candidate) => candidate.id === fleet.id && candidate.empireId === fleet.empireId,
+  );
+}
+
 function sendCommand(
   empireId: string,
   fleetId: string,
   targetPlanetId: string,
   mission: FleetMissionKind,
-): Extract<GameCommand, { readonly type: 'SEND_FLEET' }> {
+): SendCommand {
   return { type: 'SEND_FLEET', empireId, fleetId, targetPlanetId, mission };
 }
 
-function validSend(
+function selectedPlan(
+  perception: BotPerception,
+  command: SendCommand,
+  mission: OrdinaryMissionKind,
+  explanation: string,
+): BotFleetMissionPlan {
+  return {
+    empireId: perception.empireId,
+    reasonCode: `mission-${mission}-selected` as BotFleetReasonCode,
+    availabilityCode: null,
+    explanation,
+    command,
+  };
+}
+
+function noteBlocker(
+  blockers: Map<MissionAvailabilityCode, MissionBlocker>,
+  availability: MissionAvailability,
+): void {
+  if (!BLOCKER_PRIORITY.includes(availability.code) || blockers.has(availability.code)) return;
+  blockers.set(availability.code, {
+    code: availability.code,
+    message: availability.message,
+  });
+}
+
+function tryMission(
   state: GameState,
-  command: Extract<GameCommand, { readonly type: 'SEND_FLEET' }>,
-): boolean {
-  return getMissionAvailability(state, command).allowed;
+  perception: BotPerception,
+  blockers: Map<MissionAvailabilityCode, MissionBlocker>,
+  fleet: PerceivedFleet,
+  mission: OrdinaryMissionKind,
+  targetPlanetId: string,
+  explanation: string,
+): BotFleetMissionPlan | null {
+  const command = sendCommand(perception.empireId, fleet.id, targetPlanetId, mission);
+  const availability = getMissionAvailability(state, command);
+  if (availability.allowed) return selectedPlan(perception, command, mission, explanation);
+  noteBlocker(blockers, availability);
+  return null;
 }
 
 function missionPlan(
   state: GameState,
   perception: BotPerception,
-): BotFleetMissionPlan | null {
+): { readonly plan: BotFleetMissionPlan | null; readonly blocker: MissionBlocker | null } {
   const fleets = perception.ownFleets
     .filter((fleet) => fleet.status === 'stationed' && fleet.location.type === 'planet')
     .sort((left, right) => left.id.localeCompare(right.id));
-  const ownIds = new Set(perception.ownPlanets.map((planet) => planet.id));
+  const blockers = new Map<MissionAvailabilityCode, MissionBlocker>();
 
   for (const fleet of fleets) {
-    if (fleet.location.type !== 'planet') continue;
-    const originPlanetId = fleet.location.planetId;
-
-    if (sumCargo(fleet.cargo) > 0) {
-      const resourceId = [...RESOURCE_IDS].sort(
-        (left, right) => fleet.cargo[right] - fleet.cargo[left] || left.localeCompare(right),
-      )[0];
-      if (resourceId !== undefined && fleet.cargo[resourceId] > 0) {
-        const targets = perception.ownPlanets
-          .filter((planet) => planet.id !== originPlanetId)
-          .sort(
-            (left, right) =>
-              left.resources[resourceId] - right.resources[resourceId] ||
-              left.id.localeCompare(right.id),
-          );
-        for (const target of targets) {
-          const command = sendCommand(perception.empireId, fleet.id, target.id, 'transport');
-          if (validSend(state, command)) {
-            return {
-              empireId: perception.empireId,
-              reasonCode: 'mission-transport-selected',
-              explanation: `Транспорт ${fleet.id} направлен на ${target.name} с ресурсом ${resourceId}.`,
-              command,
-            };
-          }
-        }
-      }
-    }
-
-    if (hasRole(fleet, 'recycler')) {
-      const debris = [...perception.ownDebrisFields].sort(
+    if (fleet.location.type !== 'planet' || sumCargo(fleet.cargo) <= 0) continue;
+    const resourceId = [...RESOURCE_IDS].sort(
+      (left, right) => fleet.cargo[right] - fleet.cargo[left] || left.localeCompare(right),
+    )[0];
+    if (resourceId === undefined || fleet.cargo[resourceId] <= 0) continue;
+    const targets = perception.ownPlanets
+      .filter((planet) => planet.id !== fleet.location.planetId)
+      .sort(
         (left, right) =>
-          right.metal + right.crystal - (left.metal + left.crystal) ||
-          left.planetId.localeCompare(right.planetId),
-      );
-      for (const target of debris) {
-        if (target.planetId === originPlanetId) continue;
-        const command = sendCommand(perception.empireId, fleet.id, target.planetId, 'recycle');
-        if (validSend(state, command)) {
-          return {
-            empireId: perception.empireId,
-            reasonCode: 'mission-recycle-selected',
-            explanation: `Переработчик ${fleet.id} направлен к обломкам ${target.planetId}.`,
-            command,
-          };
-        }
-      }
-    }
-
-    if (hasRole(fleet, 'colonizer')) {
-      const targets = state.galaxy.systems
-        .flatMap((system) => system.planets)
-        .filter((planet) => planet.biome !== 'gas')
-        .sort((left, right) =>
-          compareSpaceCoordinates(left.coordinate, right.coordinate) ||
+          left.resources[resourceId] - right.resources[resourceId] ||
           left.id.localeCompare(right.id),
-        );
-      for (const target of targets) {
-        const command = sendCommand(perception.empireId, fleet.id, target.id, 'colonize');
-        if (validSend(state, command)) {
-          return {
-            empireId: perception.empireId,
-            reasonCode: 'mission-colonize-selected',
-            explanation: `Колонизатор ${fleet.id} направлен к позиции ${target.id}.`,
-            command,
-          };
-        }
-      }
-    }
-
-    if (hasRole(fleet, 'scout')) {
-      const observed = [...perception.foreignPlanets]
-        .sort(
-          (left, right) =>
-            Number(left.freshness === 'current') - Number(right.freshness === 'current') ||
-            right.ageSeconds - left.ageSeconds ||
-            left.planetId.localeCompare(right.planetId),
-        )
-        .map((planet) => planet.planetId);
-      const publicTargets = perception.publicColonyIds.filter((planetId) => !ownIds.has(planetId));
-      for (const targetPlanetId of [...new Set([...observed, ...publicTargets])]) {
-        const command = sendCommand(perception.empireId, fleet.id, targetPlanetId, 'scout');
-        if (validSend(state, command)) {
-          return {
-            empireId: perception.empireId,
-            reasonCode: 'mission-scout-selected',
-            explanation: `Разведчик ${fleet.id} проверяет ${targetPlanetId}.`,
-            command,
-          };
-        }
-      }
-    }
-
-    if (isArmed(fleet)) {
-      const ownPower = shipPower(fleet.ships);
-      const targets = perception.foreignPlanets
-        .filter((planet) => planet.freshness === 'current')
-        .map((planet) => ({ planet, power: perceivedTargetPower(planet.snapshot) }))
-        .filter(
-          (candidate): candidate is {
-            readonly planet: BotPerception['foreignPlanets'][number];
-            readonly power: number;
-          } => candidate.power !== null,
-        )
-        .sort(
-          (left, right) =>
-            left.power - right.power || left.planet.planetId.localeCompare(right.planet.planetId),
-        );
-      for (const target of targets) {
-        if (ownPower * 10 < Math.max(1, target.power) * 12) continue;
-        const command = sendCommand(
-          perception.empireId,
-          fleet.id,
-          target.planet.planetId,
-          'attack',
-        );
-        if (validSend(state, command)) {
-          return {
-            empireId: perception.empireId,
-            reasonCode: 'mission-attack-selected',
-            explanation: `Флот ${fleet.id} атакует ${target.planet.planetId}: ${ownPower} против ${target.power}.`,
-            command,
-          };
-        }
-      }
-
-      const reinforcements = perception.ownPlanets
-        .filter((planet) => planet.id !== originPlanetId)
-        .map((planet) => ({
-          planet,
-          defense: Object.values(planet.defenses).reduce(
-            (total, quantity) => total + quantity,
-            0,
-          ),
-        }))
-        .sort(
-          (left, right) =>
-            left.defense - right.defense || left.planet.id.localeCompare(right.planet.id),
-        );
-      for (const target of reinforcements) {
-        const command = sendCommand(perception.empireId, fleet.id, target.planet.id, 'deploy');
-        if (validSend(state, command)) {
-          return {
-            empireId: perception.empireId,
-            reasonCode: 'mission-deploy-selected',
-            explanation: `Флот ${fleet.id} усиливает колонию ${target.planet.name}.`,
-            command,
-          };
-        }
-      }
+      );
+    for (const target of targets) {
+      const plan = tryMission(
+        state,
+        perception,
+        blockers,
+        fleet,
+        'transport',
+        target.id,
+        `Транспорт ${fleet.id} направлен на ${target.name} с ресурсом ${resourceId}.`,
+      );
+      if (plan !== null) return { plan, blocker: null };
     }
   }
 
-  return null;
+  for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'recycler'))) {
+    for (const target of [...perception.ownDebrisFields].sort(
+      (left, right) =>
+        right.metal + right.crystal - (left.metal + left.crystal) ||
+        left.planetId.localeCompare(right.planetId),
+    )) {
+      if (fleet.location.type !== 'planet' || target.planetId === fleet.location.planetId) continue;
+      const plan = tryMission(
+        state,
+        perception,
+        blockers,
+        fleet,
+        'recycle',
+        target.planetId,
+        `Переработчик ${fleet.id} направлен к обломкам ${target.planetId}.`,
+      );
+      if (plan !== null) return { plan, blocker: null };
+    }
+  }
+
+  for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'colonizer'))) {
+    const actual = realFleet(state, fleet);
+    if (actual === undefined) continue;
+    for (const target of listMissionTargets(state, perception.empireId, actual, 'colonize')) {
+      const plan = tryMission(
+        state,
+        perception,
+        blockers,
+        fleet,
+        'colonize',
+        target.id,
+        `Колонизатор ${fleet.id} направлен к позиции ${target.label}.`,
+      );
+      if (plan !== null) return { plan, blocker: null };
+    }
+  }
+
+  for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'scout'))) {
+    const actual = realFleet(state, fleet);
+    if (actual === undefined) continue;
+    const targets = [...listMissionTargets(state, perception.empireId, actual, 'scout')].sort(
+      (left, right) =>
+        Number(left.visibility === 'current') - Number(right.visibility === 'current') ||
+        left.id.localeCompare(right.id),
+    );
+    for (const target of targets) {
+      const plan = tryMission(
+        state,
+        perception,
+        blockers,
+        fleet,
+        'scout',
+        target.id,
+        `Разведчик ${fleet.id} проверяет ${target.label}.`,
+      );
+      if (plan !== null) return { plan, blocker: null };
+    }
+  }
+
+  for (const fleet of fleets.filter(isArmed)) {
+    const ownPower = shipPower(fleet.ships);
+    const targets = perception.foreignPlanets
+      .filter(
+        (planet) => planet.freshness === 'current' && planet.snapshot.level === 3,
+      )
+      .map((planet) => ({ planet, power: perceivedTargetPower(planet.snapshot) }))
+      .filter(
+        (candidate): candidate is {
+          readonly planet: BotPerception['foreignPlanets'][number];
+          readonly power: number;
+        } => candidate.power !== null,
+      )
+      .sort(
+        (left, right) =>
+          left.power - right.power || left.planet.planetId.localeCompare(right.planet.planetId),
+      );
+    for (const target of targets) {
+      if (ownPower * 10 < Math.max(1, target.power) * 12) continue;
+      const plan = tryMission(
+        state,
+        perception,
+        blockers,
+        fleet,
+        'attack',
+        target.planet.planetId,
+        `Флот ${fleet.id} атакует ${target.planet.planetId}: ${ownPower} против ${target.power}.`,
+      );
+      if (plan !== null) return { plan, blocker: null };
+    }
+
+    const knownFullIds = new Set(targets.map((target) => target.planet.planetId));
+    for (const contact of perception.publicContacts.filter(
+      (candidate) => !knownFullIds.has(candidate.planetId),
+    )) {
+      tryMission(
+        state,
+        perception,
+        blockers,
+        fleet,
+        'attack',
+        contact.planetId,
+        '',
+      );
+    }
+  }
+
+  for (const fleet of fleets.filter(isArmed)) {
+    const reinforcements = perception.ownPlanets
+      .filter(
+        (planet) => fleet.location.type === 'planet' && planet.id !== fleet.location.planetId,
+      )
+      .map((planet) => ({
+        planet,
+        defense: Object.values(planet.defenses).reduce(
+          (total, quantity) => total + quantity,
+          0,
+        ),
+      }))
+      .sort(
+        (left, right) =>
+          left.defense - right.defense || left.planet.id.localeCompare(right.planet.id),
+      );
+    for (const target of reinforcements) {
+      const plan = tryMission(
+        state,
+        perception,
+        blockers,
+        fleet,
+        'deploy',
+        target.planet.id,
+        `Флот ${fleet.id} усиливает колонию ${target.planet.name}.`,
+      );
+      if (plan !== null) return { plan, blocker: null };
+    }
+  }
+
+  const blocker = BLOCKER_PRIORITY
+    .map((code) => blockers.get(code))
+    .find((candidate) => candidate !== undefined) ?? null;
+  return { plan: null, blocker };
 }
 
 interface FleetCandidate {
@@ -274,6 +349,14 @@ function creationCandidates(
   const factionId = getFactionIdForEmpire(state, perception.empireId);
   const roles = getFactionMechanicalRoles(factionId);
   const candidates: FleetCandidate[] = [];
+
+  if (perception.publicContacts.length > 0 && (planet.ships[roles.ships.scout] ?? 0) > 0) {
+    candidates.push({
+      ships: { [roles.ships.scout]: 1 },
+      cargo: ZERO_CARGO,
+      explanation: `На ${planet.name} сформирован разведывательный флот.`,
+    });
+  }
 
   if (
     (perception.researchLevels[roles.research.colonization] ?? 0) > 0 &&
@@ -313,7 +396,7 @@ function creationCandidates(
     }
   }
 
-  if ((planet.ships[roles.ships.scout] ?? 0) > 0) {
+  if (perception.publicContacts.length === 0 && (planet.ships[roles.ships.scout] ?? 0) > 0) {
     candidates.push({
       ships: { [roles.ships.scout]: 1 },
       cargo: ZERO_CARGO,
@@ -366,6 +449,7 @@ function fleetCreationPlan(
         return {
           empireId: perception.empireId,
           reasonCode: 'fleet-created',
+          availabilityCode: null,
           explanation: candidate.explanation,
           command,
         };
@@ -375,21 +459,47 @@ function fleetCreationPlan(
   return null;
 }
 
+function blockedPlan(empireId: string, blocker: MissionBlocker): BotFleetMissionPlan {
+  const reasonCode: BotFleetReasonCode = blocker.code === 'FLIGHT_SLOT_LIMIT_REACHED'
+    ? 'mission-blocked-flight-slots'
+    : blocker.code === 'SCOUT_COOLDOWN_ACTIVE'
+      ? 'mission-blocked-scout-cooldown'
+      : blocker.code === 'INSUFFICIENT_FLIGHT_FUEL'
+        ? 'mission-blocked-fuel'
+        : 'mission-blocked-intelligence';
+  return {
+    empireId,
+    reasonCode,
+    availabilityCode: blocker.code,
+    explanation: blocker.message,
+    command: null,
+  };
+}
+
 export function planBotFleetMission(
   state: GameState,
   empireId: string,
 ): BotFleetMissionPlan {
   const perception = createBotPerception(state, empireId);
   const mission = missionPlan(state, perception);
-  if (mission !== null) return mission;
+  if (mission.plan !== null) return mission.plan;
+
+  if (
+    mission.blocker !== null &&
+    mission.blocker.code !== 'ATTACK_INTELLIGENCE_REQUIRED'
+  ) {
+    return blockedPlan(empireId, mission.blocker);
+  }
 
   const creation = fleetCreationPlan(state, perception);
   if (creation !== null) return creation;
+  if (mission.blocker !== null) return blockedPlan(empireId, mission.blocker);
 
   if (perception.ownFleets.some((fleet) => fleet.status !== 'stationed')) {
     return {
       empireId,
       reasonCode: 'fleet-busy',
+      availabilityCode: null,
       explanation: 'Флоты уже выполняют миссии, свободных кораблей для новой группы нет.',
       command: null,
     };
@@ -398,6 +508,7 @@ export function planBotFleetMission(
     return {
       empireId,
       reasonCode: 'mission-unavailable',
+      availabilityCode: null,
       explanation: 'Станционированные флоты не имеют честно подтверждённой допустимой цели.',
       command: null,
     };
@@ -405,6 +516,7 @@ export function planBotFleetMission(
   return {
     empireId,
     reasonCode: 'fleet-unavailable',
+    availabilityCode: null,
     explanation: 'Нет свободных кораблей для формирования флота.',
     command: null,
   };
