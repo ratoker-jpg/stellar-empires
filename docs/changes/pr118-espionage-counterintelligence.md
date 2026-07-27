@@ -14,14 +14,18 @@
 - detected probes still create the observer snapshot, create a bounded defender alert, are removed, and receive no return event;
 - undetected probes use the existing fleet-return lifecycle;
 - observation and alert retention limits remain unchanged;
+- the E2E scout fixture uses one legal probe after its deterministic cooldown boundary;
 - save/load remains schema v14 with no migration.
 
 ## Validation
 
-- asset pipeline, lint and TypeScript passed;
-- full unit suite: 378 tests passed on implementation head;
+- asset pipeline passed;
+- lint passed;
+- TypeScript passed;
+- full unit suite: 379 tests passed;
 - production build passed;
-- Browser E2E and Graphify are required on the final clean head.
+- Chromium Browser E2E passed on the legal scout fixture;
+- Graphify passed.
 
 ## Boundaries
 
