@@ -11,11 +11,13 @@ export interface ShellContextPanelOptions {
   readonly getActivePlanetId: () => string;
 }
 
-export interface ShellContextPanelMount {
+export interface ShellContextPanelController {
   refresh(snapshot: AppShellSnapshot): void;
   setAutoSaveStatus(status: AutoSaveStatus): void;
   dispose(): void;
 }
+
+export type ShellContextPanelMount = ShellContextPanelController | undefined;
 
 function requireHost(): HTMLElement {
   const host = document.querySelector<HTMLElement>('#shell-context-content');
@@ -52,7 +54,7 @@ function createMetrics(entries: readonly (readonly [string, string])[]): HTMLEle
   return grid;
 }
 
-export function mountShellContextPanel(options: ShellContextPanelOptions): ShellContextPanelMount {
+export function mountShellContextPanel(options: ShellContextPanelOptions): ShellContextPanelController {
   const host = requireHost();
   let savePhase: AutoSaveStatus['phase'] = 'idle';
 
