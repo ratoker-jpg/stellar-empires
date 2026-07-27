@@ -1,9 +1,9 @@
 # AI Continuation Guide
 
-**Status:** Audit PR #116 defines `ORDINARY-MISSIONS-INTELLIGENCE-01`  
+**Status:** Audit PR #116 accepted `ORDINARY-MISSIONS-INTELLIGENCE-01` on merge  
 **Updated:** 2026-07-27  
 **Last completed batch:** `COHERENT-UI-SHELL-01` · #111–#115  
-**Active Audit:** #116 — accepted when merged  
+**Accepted Audit:** #116 — merged by this PR  
 **Next implementation after audit merge:** #117 `MISSION-RULES-REGISTRY`
 
 ## Repository
@@ -83,4 +83,4 @@ Planet destruction/recovery, economy/logistics redesign, pirate raid, Space Trip
 
 ## Immediate route
 
-While #116 is open: finish and merge the documentation-only audit. After merge: create only PR #117 from fresh post-#116 `main`. Do not start #118 until #117 merges and do not add work outside `MISSION-RULES-REGISTRY`.
+After #116 merges: create only PR #117 from fresh post-#116 `main`. Do not start #118 until #117 merges and do not add work outside `MISSION-RULES-REGISTRY`.
