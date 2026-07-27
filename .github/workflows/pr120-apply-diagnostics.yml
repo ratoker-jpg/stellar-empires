@@ -1,0 +1,42 @@
+name: PR120 apply diagnostics
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  diagnose:
+    if: github.head_ref == 'agent/mission-intelligence-bot-gate'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Capture patch diagnostics
+        shell: bash
+        run: |
+          set +e
+          {
+            echo line-count
+            wc -l .github/workflows/pr120-apply-source.yml
+            echo payload-prefix
+            sed -n '25p' .github/workflows/pr120-apply-source.yml | cut -c1-40
+            sed -n '25p' .github/workflows/pr120-apply-source.yml | tr -d ' ' > /tmp/pr120.patch.gz.b64
+            echo payload-size
+            wc -c /tmp/pr120.patch.gz.b64
+            base64 -d /tmp/pr120.patch.gz.b64 | gzip -d > /tmp/pr120.patch
+            echo decode-status=$?
+            echo patch-size
+            wc -c /tmp/pr120.patch
+            sed -i 's#pr120base/#a/#g; s#pr120/#b/#g' /tmp/pr120.patch
+            git apply --check /tmp/pr120.patch
+            echo apply-check-status=$?
+            git apply /tmp/pr120.patch
+            echo apply-status=$?
+            git status --short | head -50
+          } > /tmp/pr120-apply-diagnostics.txt 2>&1
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr120-apply-diagnostics
+          path: /tmp/pr120-apply-diagnostics.txt
