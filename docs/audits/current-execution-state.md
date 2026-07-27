@@ -1,15 +1,15 @@
 # Current execution state
 
 **Updated:** 2026-07-27  
-**Safe to continue:** yes — after PR #118 merges, start PR #119 only
+**Safe to continue:** yes — start PR #119 only from exact latest `main`
 
 | Field | Current value |
 |---|---|
 | Current batch | `ORDINARY-MISSIONS-INTELLIGENCE-01` |
 | Audit PR | #116 — accepted and merged |
 | Planned implementation PRs | #117–#120 |
-| Completed implementation PRs | #117 merged; #118 completed on merge of this PR |
-| Active implementation PR | none after #118 merge |
+| Completed implementation PRs | #117 · `669cca1510f242cb7069831420edd488af435d4d`; #118 · `46570544da064f839055afd3c10a387326452811` |
+| Active implementation PR | none |
 | Last completed action | deterministic scout composition, intelligence tiers, cooldown, detection, probe loss, defender alert and normal undetected return |
 | Validation | final clean-head asset audit, lint, TypeScript, 379 tests, production build, Browser E2E and Graphify passed |
 | Exact next action | create PR #119 from fresh post-#118 `main` and implement only `INTELLIGENCE-REPORTS-PRESENTATION` |
@@ -34,4 +34,4 @@
 
 ## Recovery rule
 
-Do not start #120 or unaudited work. After #118 merges, create only #119 from the exact latest `main`.
+Do not start #120 or unaudited work. Create only #119 from the exact latest `main`.
