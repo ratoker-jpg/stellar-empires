@@ -130,9 +130,12 @@ export function sendFleet(
   }
 
   const fleet = state.fleets.find((candidate) => candidate.id === command.fleetId);
-  const origin = fleet?.location.type === 'planet'
-    ? state.planets.find((planet) => planet.id === fleet.location.planetId)
-    : undefined;
+  const originPlanetId = fleet?.location.type === 'planet'
+    ? fleet.location.planetId
+    : null;
+  const origin = originPlanetId === null
+    ? undefined
+    : state.planets.find((planet) => planet.id === originPlanetId);
   const estimate = availability.estimate;
   if (fleet === undefined || origin === undefined || estimate === null) {
     return {
