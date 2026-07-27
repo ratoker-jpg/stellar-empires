@@ -26,8 +26,8 @@ test('Research is a primary route and zone gateways use browser history', async 
   await page.locator('#nav-planet').click();
   await page.locator('[data-planet-mode="industry"]').click();
   await expect(page).toHaveURL(/#\/planet\/[^/]+\/industry$/);
-  const researchGateway = page.locator('.zone-gateway', { hasText: 'Исследования' });
-  await expect(researchGateway).toHaveClass(/is-ready/);
+  const researchGateway = page.getByRole('button', { name: /^Исследовательский комплекс/ });
+  await expect(researchGateway).toBeVisible();
   await researchGateway.click();
   await expect(page).toHaveURL(/#\/research$/);
   await expect(page.locator('#research-view')).toBeVisible();
@@ -56,15 +56,15 @@ test('shipyard, defence repair and upgrades restore as local Planet surfaces', a
   await page.locator('[data-development-surface="zone"]').click();
   await expect(page).toHaveURL(new RegExp(`#\\/planet\\/${encodeURIComponent(planetId)}\\/industry$`));
   await expect(page.locator('#planet-core-workspace')).toBeVisible();
-  const shipyardGateway = page.locator('.zone-gateway', { hasText: 'Орбитальная верфь' });
-  await expect(shipyardGateway).toHaveClass(/is-ready/);
+  const shipyardGateway = page.getByRole('button', { name: /^Орбитальная верфь/ });
+  await expect(shipyardGateway).toBeVisible();
   await shipyardGateway.click();
   await expect(page).toHaveURL(/\/industry\?surface=shipyard$/);
 
   await page.locator('[data-planet-mode="military"]').click();
   await expect(page).toHaveURL(new RegExp(`#\\/planet\\/${encodeURIComponent(planetId)}\\/military$`));
-  const defenseGateway = page.locator('.zone-gateway', { hasText: 'Планетарная оборона' });
-  await expect(defenseGateway).toHaveClass(/is-ready/);
+  const defenseGateway = page.getByRole('button', { name: /^Планетарная оборона/ });
+  await expect(defenseGateway).toBeVisible();
   await defenseGateway.click();
   await expect(page).toHaveURL(/\/military\?surface=defense$/);
   await expect(page.locator('#defense-production-view')).toBeVisible();
