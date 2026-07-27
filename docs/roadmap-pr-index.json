@@ -5,10 +5,12 @@
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 110,
-    "mergeSha": "8e9e848b0725c52263ff7e310bc9d899a81554c4"
+    "lastMergedPr": 111,
+    "mergeSha": "recorded in GitHub PR #111 merge metadata",
+    "runtimeBaselinePr": 110,
+    "runtimeBaselineSha": "8e9e848b0725c52263ff7e310bc9d899a81554c4"
   },
-  "activePr": 111,
+  "activePr": null,
   "nextPrAfterActive": 112,
   "phases": [
     {
@@ -39,7 +41,7 @@
       "auditPr": 111,
       "startPr": 112,
       "endPr": 115,
-      "status": "audit-active",
+      "status": "audit-accepted",
       "outcome": "Application controller, canonical shell routing, static navigation and routed primary workspaces"
     },
     {
@@ -154,7 +156,7 @@
       "number": 111,
       "kind": "audit",
       "title": "Audit the coherent game shell batch",
-      "status": "active"
+      "status": "accepted-on-merge"
     },
     {
       "number": 112,
@@ -185,5 +187,5 @@
       "status": "planned"
     }
   ],
-  "nextAction": "Merge Audit PR #111 before starting PR #112 from fresh main."
+  "nextAction": "Create PR #112 from fresh merged main and implement only UI-SHELL-RUNTIME-ROUTER."
 }
