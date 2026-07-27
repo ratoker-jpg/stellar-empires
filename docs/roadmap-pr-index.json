@@ -6,9 +6,9 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
     "lastMergedPr": 119,
-    "mergeSha": "recorded in GitHub PR #119 merge metadata",
+    "mergeSha": "e297f77f8e994f37402090a8d9d7c70e28ce099f",
     "runtimeBaselinePr": 119,
-    "runtimeBaselineSha": "recorded in GitHub PR #119 merge metadata"
+    "runtimeBaselineSha": "e297f77f8e994f37402090a8d9d7c70e28ce099f"
   },
   "activePr": null,
   "nextPrAfterActive": 120,
@@ -103,8 +103,8 @@
     {"number": 116, "kind": "audit", "title": "Audit ordinary missions and intelligence", "status": "merged", "mergeSha": "3cdd4f106f163a57a564d8ac2b2ff3c38b5ebbe5"},
     {"number": 117, "kind": "implementation", "workItem": "MISSION-RULES-REGISTRY", "title": "Unify ordinary mission rules", "status": "merged", "mergeSha": "669cca1510f242cb7069831420edd488af435d4d"},
     {"number": 118, "kind": "implementation", "workItem": "ESPIONAGE-COUNTERINTELLIGENCE", "title": "Complete espionage and counter-intelligence", "status": "merged", "mergeSha": "46570544da064f839055afd3c10a387326452811"},
-    {"number": 119, "kind": "implementation", "workItem": "INTELLIGENCE-REPORTS-PRESENTATION", "title": "Route intelligence reports and redacted presentation", "status": "merged-on-this-pr", "mergeSha": "recorded in GitHub PR #119 merge metadata"},
+    {"number": 119, "kind": "implementation", "workItem": "INTELLIGENCE-REPORTS-PRESENTATION", "title": "Route intelligence reports and redacted presentation", "status": "merged", "mergeSha": "e297f77f8e994f37402090a8d9d7c70e28ce099f"},
     {"number": 120, "kind": "implementation", "workItem": "MISSION-INTELLIGENCE-BOT-GATE", "title": "Gate mission intelligence bot parity", "status": "planned"}
   ],
-  "nextAction": "After PR #119 merges, create PR #120 from fresh main and implement only MISSION-INTELLIGENCE-BOT-GATE."
+  "nextAction": "Create PR #120 from fresh post-#119 main and implement only MISSION-INTELLIGENCE-BOT-GATE."
 }
