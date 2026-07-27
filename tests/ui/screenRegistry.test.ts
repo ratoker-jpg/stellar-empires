@@ -5,41 +5,42 @@ import {
 } from '../../src/ui/screenRegistry';
 
 describe('shell screen registry', () => {
-  it('contains unique stable ids, elements and order values', () => {
+  it('contains unique stable ids, elements, routes, badges and order values', () => {
     expect(validateScreenRegistry()).toEqual([]);
     expect(new Set(SHELL_SCREEN_REGISTRY.map((entry) => entry.id)).size)
       .toBe(SHELL_SCREEN_REGISTRY.length);
     expect(new Set(SHELL_SCREEN_REGISTRY.map((entry) => entry.elementId)).size)
       .toBe(SHELL_SCREEN_REGISTRY.length);
+    expect(new Set(SHELL_SCREEN_REGISTRY.map((entry) => entry.routeFamily)).size)
+      .toBe(SHELL_SCREEN_REGISTRY.length);
+    const badgeIds = SHELL_SCREEN_REGISTRY.flatMap((entry) =>
+      entry.badgeId === undefined ? [] : [entry.badgeId]);
+    expect(new Set(badgeIds).size).toBe(badgeIds.length);
   });
 
   it('contains every implemented primary route exactly once', () => {
-    const routed = SHELL_SCREEN_REGISTRY.filter((entry) => entry.kind === 'route');
-    expect(routed.map((entry) => entry.routeFamily)).toEqual([
+    expect(SHELL_SCREEN_REGISTRY.map((entry) => entry.routeFamily)).toEqual([
       'planet',
       'fleets',
       'space',
       'research',
+      'command',
+      'ranking',
       'operations',
       'reports',
+      'system',
     ]);
-    expect(new Set(routed.map((entry) => entry.routeFamily)).size).toBe(routed.length);
+    expect(SHELL_SCREEN_REGISTRY.every((entry) => entry.kind === 'route')).toBe(true);
   });
 
-  it('keeps later command and system work as compatibility entries', () => {
-    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'command')?.kind).toBe('legacy');
-    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'ranking')?.kind).toBe('legacy');
-    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'system')?.kind).toBe('legacy');
-  });
-
-  it('preserves accessible labels required by compatibility screens', () => {
-    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'fleets')?.ariaLabel)
-      .toBe('Флот');
-    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'research')?.ariaLabel)
-      .toBe('Исследования');
-    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'operations')?.ariaLabel)
-      .toBe('Операционный центр');
+  it('keeps all implemented primary items enabled and accessible', () => {
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'command')?.ariaLabel)
+      .toBe('Командование');
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'ranking')?.ariaLabel)
+      .toBe('Рейтинг');
     expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'system')?.ariaLabel)
       .toBe('Настройки');
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'fleets')?.ariaLabel)
+      .toBe('Флот');
   });
 });
