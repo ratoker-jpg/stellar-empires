@@ -141,7 +141,7 @@ export function createBotPerception(
         .flatMap((system) => system.planets)
         .find((candidate) => candidate.id === planet.galaxyPlanetId)!.coordinate,
       label: planet.displayName,
-      visibility: planet.visibility,
+      visibility: planet.visibility as BotPublicContactPerception['visibility'],
       observedAt: planet.observedAt,
       expiresAt: planet.expiresAt,
     }))

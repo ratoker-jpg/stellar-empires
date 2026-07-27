@@ -172,8 +172,9 @@ function missionPlan(
       (left, right) => fleet.cargo[right] - fleet.cargo[left] || left.localeCompare(right),
     )[0];
     if (resourceId === undefined || fleet.cargo[resourceId] <= 0) continue;
+    const originPlanetId = fleet.location.planetId;
     const targets = perception.ownPlanets
-      .filter((planet) => planet.id !== fleet.location.planetId)
+      .filter((planet) => planet.id !== originPlanetId)
       .sort(
         (left, right) =>
           left.resources[resourceId] - right.resources[resourceId] ||
