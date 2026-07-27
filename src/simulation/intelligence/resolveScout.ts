@@ -1,17 +1,26 @@
-import { retainNewest, STATE_HISTORY_LIMITS } from '../history/stateHistory';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import type { FleetState } from '../fleets/types';
+import { retainNewest, STATE_HISTORY_LIMITS } from '../history/stateHistory';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
 import type { GameState } from '../types';
-import { getShipCountByRole } from '../units/shipCapabilities';
-import { getEmpireIntelligence } from './intelligenceState';
+import {
+  getEmpireIntelligence,
+  getLatestObservationForTarget,
+} from './intelligenceState';
 import type {
   EmpireIntelligenceState,
   IntelPlanetSnapshot,
   IntelligenceAlert,
 } from './types';
+
+const MIN_SCOUT_COOLDOWN_SECONDS = 300;
+const MAX_SCOUT_COOLDOWN_SECONDS = 7_200;
+
+function clamp(minimum: number, maximum: number, value: number): number {
+  return Math.max(minimum, Math.min(maximum, value));
+}
 
 function hashText(value: string): number {
   let hash = 2_166_136_261;
@@ -33,6 +42,87 @@ function replaceIntelligence(
 
 function getSensorStrength(state: GameState, empireId: string): number {
   return getResearchEffectsForEmpire(state, empireId).sensorStrength;
+}
+
+export interface ScoutStrengthSummary {
+  readonly observerStrength: number;
+  readonly counterStrength: number;
+  readonly delta: number;
+  readonly level: 1 | 2 | 3;
+  readonly detectionChance: number;
+  readonly cooldownSeconds: number;
+}
+
+export interface ScoutCooldownStatus {
+  readonly allowed: boolean;
+  readonly cooldownSeconds: number;
+  readonly nextAllowedAt: number;
+  readonly remainingSeconds: number;
+}
+
+export interface ScoutResolution {
+  readonly state: GameState;
+  readonly detected: boolean;
+  readonly probeLost: boolean;
+  readonly level: 1 | 2 | 3;
+  readonly observerStrength: number;
+  readonly counterStrength: number;
+  readonly detectionChance: number;
+  readonly roll: number;
+}
+
+export function getScoutStrengthSummary(
+  state: GameState,
+  observerEmpireId: string,
+  target: PlanetState,
+): ScoutStrengthSummary {
+  const observerStrength = getSensorStrength(state, observerEmpireId) + 1;
+  const targetSensorGrid = getFactionMechanicalRoles(target.factionId).buildings.sensorGrid;
+  const counterStrength =
+    getSensorStrength(state, target.ownerEmpireId) +
+    getBuildingLevel(target.buildings, targetSensorGrid);
+  const delta = observerStrength - counterStrength;
+  const level: 1 | 2 | 3 = delta >= 3 ? 3 : delta >= 0 ? 2 : 1;
+  const detectionChance = clamp(
+    5,
+    90,
+    30 + counterStrength * 10 - observerStrength * 7,
+  );
+  const cooldownSeconds = clamp(
+    MIN_SCOUT_COOLDOWN_SECONDS,
+    MAX_SCOUT_COOLDOWN_SECONDS,
+    3_600 - observerStrength * 120 + counterStrength * 60,
+  );
+  return {
+    observerStrength,
+    counterStrength,
+    delta,
+    level,
+    detectionChance,
+    cooldownSeconds,
+  };
+}
+
+export function getScoutCooldownStatus(
+  state: GameState,
+  observerEmpireId: string,
+  target: PlanetState,
+): ScoutCooldownStatus {
+  const summary = getScoutStrengthSummary(state, observerEmpireId, target);
+  const intelligence = getEmpireIntelligence(state.intelligence, observerEmpireId);
+  const latest = intelligence === undefined
+    ? undefined
+    : getLatestObservationForTarget(intelligence, target.id);
+  const nextAllowedAt = latest === undefined
+    ? 0
+    : latest.observedAt + summary.cooldownSeconds;
+  const remainingSeconds = Math.max(0, nextAllowedAt - state.clock.elapsedSeconds);
+  return {
+    allowed: remainingSeconds === 0,
+    cooldownSeconds: summary.cooldownSeconds,
+    nextAllowedAt,
+    remainingSeconds,
+  };
 }
 
 function createSnapshot(
@@ -81,32 +171,31 @@ function createSnapshot(
   };
 }
 
-export function resolveScoutArrival(
+export function resolveScoutArrivalOutcome(
   state: GameState,
   fleet: FleetState,
   target: PlanetState,
   eventSequence: number,
-): GameState {
+): ScoutResolution {
+  const summary = getScoutStrengthSummary(state, fleet.empireId, target);
+  const roll = hashText(
+    `${state.seed}:${eventSequence}:${fleet.id}:${target.id}`,
+  ) % 100;
+  const detected = roll < summary.detectionChance;
   const observer = getEmpireIntelligence(state.intelligence, fleet.empireId);
-  if (observer === undefined) return state;
+  if (observer === undefined) {
+    return {
+      state,
+      detected,
+      probeLost: detected,
+      level: summary.level,
+      observerStrength: summary.observerStrength,
+      counterStrength: summary.counterStrength,
+      detectionChance: summary.detectionChance,
+      roll,
+    };
+  }
 
-  const scoutCount = getShipCountByRole(fleet.ships, 'scout');
-  const observerStrength = getSensorStrength(state, fleet.empireId) + scoutCount;
-  const targetSensorGrid = getFactionMechanicalRoles(target.factionId).buildings.sensorGrid;
-  const counterStrength =
-    getSensorStrength(state, target.ownerEmpireId) +
-    getBuildingLevel(target.buildings, targetSensorGrid);
-  const level = Math.max(
-    1,
-    Math.min(3, 1 + Math.floor(observerStrength / 2)),
-  ) as 1 | 2 | 3;
-  const detectionChance = Math.max(
-    5,
-    Math.min(90, 30 + counterStrength * 10 - observerStrength * 7),
-  );
-  const roll =
-    hashText(`${state.seed}:${eventSequence}:${fleet.id}:${target.id}`) % 100;
-  const detected = roll < detectionChance;
   const observedAt = state.clock.elapsedSeconds;
   const observation = {
     id: `intel-${eventSequence}-${fleet.id}`,
@@ -114,9 +203,9 @@ export function resolveScoutArrival(
     targetPlanetId: target.id,
     coordinate: target.coordinate,
     observedAt,
-    expiresAt: observedAt + (level + 1) * 86_400,
+    expiresAt: observedAt + (summary.level + 1) * 86_400,
     detected,
-    snapshot: createSnapshot(state, target, level),
+    snapshot: createSnapshot(state, target, summary.level),
   } as const;
   let intelligence = replaceIntelligence(state.intelligence, {
     ...observer,
@@ -135,9 +224,9 @@ export function resolveScoutArrival(
     const defender = getEmpireIntelligence(intelligence, target.ownerEmpireId);
     if (defender !== undefined) {
       const confidence: IntelligenceAlert['confidence'] =
-        counterStrength >= observerStrength + 2
+        summary.counterStrength >= summary.observerStrength + 2
           ? 'high'
-          : counterStrength >= observerStrength
+          : summary.counterStrength >= summary.observerStrength
             ? 'medium'
             : 'low';
       const alert: IntelligenceAlert = {
@@ -159,5 +248,23 @@ export function resolveScoutArrival(
     }
   }
 
-  return { ...state, intelligence };
+  return {
+    state: { ...state, intelligence },
+    detected,
+    probeLost: detected,
+    level: summary.level,
+    observerStrength: summary.observerStrength,
+    counterStrength: summary.counterStrength,
+    detectionChance: summary.detectionChance,
+    roll,
+  };
+}
+
+export function resolveScoutArrival(
+  state: GameState,
+  fleet: FleetState,
+  target: PlanetState,
+  eventSequence: number,
+): GameState {
+  return resolveScoutArrivalOutcome(state, fleet, target, eventSequence).state;
 }
