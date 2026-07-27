@@ -1,7 +1,7 @@
 # Current execution state
 
 **Updated:** 2026-07-27  
-**Safe to continue:** yes — after PR #117 merges, start PR #118 only
+**Safe to continue:** yes — start PR #118 only from exact latest `main`
 
 | Field | Current value |
 |---|---|
@@ -11,9 +11,10 @@
 | Audit baseline | post-#115 `main` · `da1b3c943107ab13a003d5eb9bb084a229bdb51c` |
 | Complexity | medium |
 | Planned implementation PRs | #117–#120 |
-| Completed implementation PRs | #117 `MISSION-RULES-REGISTRY` — completed by merge of this PR |
-| Active implementation PR | none after #117 merge |
-| Active work item | none after #117 merge |
+| Completed implementation PRs | #117 `MISSION-RULES-REGISTRY` · `669cca1510f242cb7069831420edd488af435d4d` |
+| Active implementation PR | none |
+| Active work item | none |
+| Runtime baseline | post-#117 `main`; merge SHA `669cca1510f242cb7069831420edd488af435d4d` plus documentation-only metadata commits |
 | Last completed atomic action | unified ordinary mission availability across reducer dispatch, Fleet UI and bot preflight; activated flight slots, current level-three attack intelligence and redacted mission target labels; stabilized E2E app readiness against the asynchronous bot scheduler |
 | Last successful validation | PR #117 clean-head asset audit, lint, TypeScript, 372-test suite, production build, Browser E2E and Graphify |
 | Exact next action | create PR #118 from fresh post-#117 `main` and implement only `ESPIONAGE-COUNTERINTELLIGENCE` |
@@ -57,4 +58,4 @@ The accepted batch still excludes planet destruction/recovery, pirate raid, Spac
 
 ## Recovery rule
 
-Do not start #119 or any unaudited implementation. After PR #117 merges, create only `ESPIONAGE-COUNTERINTELLIGENCE` from the exact latest `main` and follow Audit #116 contracts.
+Do not start #119 or any unaudited implementation. Create only `ESPIONAGE-COUNTERINTELLIGENCE` from the exact latest `main` and follow Audit #116 contracts.
