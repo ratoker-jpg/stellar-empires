@@ -1,9 +1,10 @@
 # AI Continuation Guide
 
-**Status:** `COHERENT-UI-SHELL-01` completed by PR #115 on merge  
+**Status:** Audit PR #116 accepted `ORDINARY-MISSIONS-INTELLIGENCE-01` on merge  
 **Updated:** 2026-07-27  
-**Last Audit:** #111 — completed and archived  
-**Next repository action:** new Audit PR
+**Last completed batch:** `COHERENT-UI-SHELL-01` · #111–#115  
+**Accepted Audit:** #116 — merged by this PR  
+**Next implementation after audit merge:** #117 `MISSION-RULES-REGISTRY`
 
 ## Repository
 
@@ -17,65 +18,69 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. this document
-6. `docs/project-status.json`
-7. `docs/27-playable-game-roadmap-v5.md`
-8. `docs/audits/batch-history.md`
-9. latest merged pull requests and actual `main`
-10. fresh Graphify evidence produced by the next Audit PR
+5. `docs/audits/contracts/ordinary-missions-intelligence-01-prs.md`
+6. `docs/audits/contracts/ordinary-missions-intelligence-01-rules.md`
+7. `docs/audits/evidence/ordinary-missions-intelligence-01-graphify.md`
+8. this document
+9. `docs/project-status.json`
+10. `docs/27-playable-game-roadmap-v5.md`
+11. latest merged pull requests and actual `main`
 
 ## Completed product state
 
-- PR #101–#105 completed runtime integration of the mechanical catalog art;
-- PR #106–#110 completed schema-v14 Universe navigation, action gates and Browser E2E;
-- PR #111 authorized `COHERENT-UI-SHELL-01`;
-- PR #112 delivered `GameApplicationController`, canonical shell routing and typed navigation;
-- PR #113 delivered routed development workspaces and persistent active-colony context;
-- PR #114 delivered routed Fleet, Operations and Reports workspaces;
-- PR #115 delivered Command, Ranking, System, complete HUD/context, accessibility gate and batch archive.
+- #101–#105: catalog runtime art;
+- #106–#110: schema-v14 Universe navigation and action gate;
+- #111–#115: one coherent nine-route application shell, persistent HUD/context and full Browser E2E.
 
-## Coherent shell result
+## Current audited problem
 
-Implemented primary route families:
+The ordinary mission loop is implemented but inconsistent across consumers:
+
+- `sendFleet()` owns command checks;
+- Fleet UI separately enumerates missions and raw targets;
+- bot planner separately chooses/validates missions;
+- flight-slot research is not enforced;
+- scout intelligence has no cooldown/probe-loss/report route;
+- Fleet composer can show foreign owner IDs that Space intelligence correctly redacts.
+
+## Accepted implementation chain
 
 ```text
-#/planet/<planet-id>/<overview|resource|industry|military>
-#/fleets/<overview|compose|active|battles>
-#/space/...
-#/research
-#/operations/<overview|expeditions|objects|events|market|logistics>
-#/command/<overview|doctrine|fleet-doctrine|upgrades>
-#/ranking
-#/reports/<all|combat|expedition|object|event>
-#/system/<saves|settings>
+#116 Audit ORDINARY-MISSIONS-INTELLIGENCE-01
+→ #117 MISSION-RULES-REGISTRY
+→ #118 ESPIONAGE-COUNTERINTELLIGENCE
+→ #119 INTELLIGENCE-REPORTS-PRESENTATION
+→ #120 MISSION-INTELLIGENCE-BOT-GATE
 ```
 
-Core invariants:
+## Batch outcome
 
-- one application controller owns runtime state and accepted-transition notifications;
-- one typed registry owns all implemented primary navigation entries;
-- one primary workspace is active at a time;
-- route state remains outside `GameState`, saves and checksums;
-- Space Map subroutes remain owned by `SpaceMapNavigationController`;
-- player and bots continue using the same simulation commands and validators;
-- target handoff does not dispatch Fleet missions before explicit confirmation;
-- production asset-review showcase surfaces and legacy primary modal ownership are absent;
-- keyboard navigation, heading focus, compact layout and reduced motion are covered by Browser E2E.
+After #120:
 
-## Archive
+- six existing ordinary missions share one availability/reason contract;
+- flight slots are enforced using the existing research effect;
+- attack requires current full intelligence;
+- scouting has deterministic tier, cooldown, detection and probe loss;
+- incoming fleets and intelligence reports are redacted and routed;
+- bots use the same allowed information and mission rules;
+- save schema remains v14.
 
-- completion record: `docs/audits/completed/coherent-ui-shell-01.md`;
-- exact accepted audit: `docs/audits/completed/coherent-ui-shell-01-authorized-audit.md`;
-- batch history: `docs/audits/batch-history.md`.
+## Invariants
 
-## Known limitations
+- no new mission enum values or command family;
+- no schema migration;
+- reducer remains authoritative;
+- player and bots use shared selectors/validators;
+- specialized Expedition and Space Object commands remain separate;
+- route/report filters remain outside `GameState`;
+- reports derive from bounded observations/alerts;
+- no hidden foreign owner/composition data;
+- every implementation PR starts from fresh merged `main`.
 
-- ordinary mechanic parity and some destruction/espionage rules remain incomplete;
-- deeper PvE/meta systems and complete honest bot parity remain open;
-- alliances, solar war, Obelisks, Gates and victory remain unaudited;
-- complete phone/mobile layout is not delivered;
-- balance, onboarding and release hardening remain open.
+## Explicit exclusions
+
+Planet destruction/recovery, economy/logistics redesign, pirate raid, Space Trip, alliances, solar war, Obelisks, Gates, victory, broad balance and mobile redesign remain for later audits.
 
 ## Immediate route
 
-Do not start another implementation branch or PR. Create a new Audit PR from fresh post-#115 `main`, inspect the actual repository and roadmap, run fresh Graphify, choose one coherent batch and authorize its implementation count before any code changes.
+After #116 merges: create only PR #117 from fresh post-#116 `main`. Do not start #118 until #117 merges and do not add work outside `MISSION-RULES-REGISTRY`.
