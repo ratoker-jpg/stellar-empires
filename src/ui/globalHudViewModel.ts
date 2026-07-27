@@ -1,4 +1,5 @@
 import type { ResourceId } from '../simulation/economy/types';
+import { createIncomingFlightContacts } from '../simulation/intelligence/incomingFlights';
 import { createUnifiedMissionReports } from '../simulation/reports/missionReports';
 import type { GameState } from '../simulation/types';
 import {
@@ -43,6 +44,7 @@ export interface GlobalHudViewModel {
   readonly hangar: HudCapacityViewModel;
   readonly queueCount: number;
   readonly activeMissionCount: number;
+  readonly incomingContactCount: number;
   readonly reportCount: number;
 }
 
@@ -79,6 +81,13 @@ function createCapacity(used: number, capacity: number): HudCapacityViewModel {
     level,
     label: warningLevelLabel(level),
   };
+}
+
+function isReportVisibleToPlayer(
+  report: ReturnType<typeof createUnifiedMissionReports>[number],
+): boolean {
+  if (report.kind === 'intelligence') return report.primaryEmpireId === 'player';
+  return report.primaryEmpireId === 'player' || report.secondaryEmpireId === 'player';
 }
 
 export function createGlobalHudViewModel(
@@ -138,8 +147,7 @@ export function createGlobalHudViewModel(
     activeMissionCount: state.fleets.filter(
       (fleet) => fleet.empireId === 'player' && fleet.status !== 'stationed',
     ).length,
-    reportCount: createUnifiedMissionReports(state).filter(
-      (report) => report.primaryEmpireId === 'player' || report.secondaryEmpireId === 'player',
-    ).length,
+    incomingContactCount: createIncomingFlightContacts(state, 'player').length,
+    reportCount: createUnifiedMissionReports(state).filter(isReportVisibleToPlayer).length,
   };
 }
