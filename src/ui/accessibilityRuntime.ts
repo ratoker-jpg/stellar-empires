@@ -65,12 +65,19 @@ function bindRailKeyboardNavigation(): () => void {
   const handler = (event: KeyboardEvent): void => {
     const target = event.target;
     if (!(target instanceof HTMLButtonElement) || !target.classList.contains('rail-button')) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      target.click();
+      return;
+    }
     const buttons = Array.from(rail.querySelectorAll<HTMLButtonElement>('.rail-button:not(:disabled)'));
     const index = buttons.indexOf(target);
     if (index < 0) return;
     const nextIndex = getRovingNavigationIndex(index, event.key, buttons.length);
     if (nextIndex === undefined) return;
     event.preventDefault();
+    event.stopImmediatePropagation();
     buttons[nextIndex]?.focus();
   };
   rail.addEventListener('keydown', handler);
@@ -89,6 +96,7 @@ function bindTablistKeyboardNavigation(): () => void {
     const nextIndex = getRovingNavigationIndex(index, event.key, tabs.length);
     if (nextIndex === undefined) return;
     event.preventDefault();
+    event.stopImmediatePropagation();
     const next = tabs[nextIndex];
     next?.focus();
     next?.click();
