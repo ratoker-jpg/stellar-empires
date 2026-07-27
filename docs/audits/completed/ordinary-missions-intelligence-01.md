@@ -13,7 +13,7 @@
 | #117 | `MISSION-RULES-REGISTRY` | `669cca1510f242cb7069831420edd488af435d4d` |
 | #118 | `ESPIONAGE-COUNTERINTELLIGENCE` | `46570544da064f839055afd3c10a387326452811` |
 | #119 | `INTELLIGENCE-REPORTS-PRESENTATION` | `e297f77f8e994f37402090a8d9d7c70e28ce099f` |
-| #120 | `MISSION-INTELLIGENCE-BOT-GATE` | `recorded in GitHub PR #120 merge metadata` |
+| #120 | `MISSION-INTELLIGENCE-BOT-GATE` | `c59a2dd7afdc31fc250d2ec21364f655d6a4e665` |
 
 ## Completed contract
 
@@ -36,7 +36,7 @@ Schema remains v14. No migration, new command family, new mission enum value, hi
 
 ## Final validation
 
-PR #120 final code head passed asset audit, lint, TypeScript, 392 tests, production build, Browser E2E and Graphify. Exact merge metadata is recorded after squash merge.
+Final PR head `dec823e52f55436f6708bfa74aca4996b18c16a7` passed asset audit, lint, TypeScript, 392 tests, production build, Browser E2E and Graphify. PR #120 was squash-merged as `c59a2dd7afdc31fc250d2ec21364f655d6a4e665`.
 
 ## Next action
 
