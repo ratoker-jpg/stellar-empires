@@ -243,6 +243,18 @@ function missionPlan(
     return 2;
   };
 
+  const fullCurrentTargetIds = new Set(
+    perception.foreignPlanets
+      .filter((planet) => planet.freshness === 'current' && planet.snapshot.level === 3)
+      .map((planet) => planet.planetId),
+  );
+  const scoutPriority = (targetId: string): number => {
+    const intelligence = perception.foreignPlanets.find((planet) => planet.planetId === targetId);
+    if (intelligence?.freshness === 'stale') return 0;
+    if (intelligence !== undefined && intelligence.snapshot.level < 3) return 1;
+    return 2;
+  };
+
   for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'scout'))) {
     const actual = realFleet(state, fleet);
     if (actual === undefined) continue;
