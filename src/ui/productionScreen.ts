@@ -32,6 +32,18 @@ export interface ProductionScreenOptions {
   readonly execute: (command: GameCommand, successMessage: string) => boolean;
 }
 
+export interface ProductionScreensMount {
+  activate(kind: UnitKind): void;
+  deactivate(): void;
+  refresh(): void;
+  dispose(): void;
+}
+
+export const PRODUCTION_WORKSPACE_SELECTORS = {
+  ship: '#ship-production-view',
+  defense: '#defense-production-view',
+} as const;
+
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 
 function setUnitArtwork(element: HTMLElement, definition: UnitDefinition): void {
@@ -41,8 +53,7 @@ function setUnitArtwork(element: HTMLElement, definition: UnitDefinition): void 
     return;
   }
   const fallback = getFactionMechanicalAsset(definition.assetId);
-  if (fallback === undefined) return;
-  applyMechanicalAssetArtwork(element, fallback);
+  if (fallback !== undefined) applyMechanicalAssetArtwork(element, fallback);
 }
 
 function canAfford(
@@ -63,50 +74,44 @@ function formatCost(cost: { readonly metal: number; readonly crystal: number; re
   return `M ${NUMBER_FORMAT.format(cost.metal)} · C ${NUMBER_FORMAT.format(cost.crystal)} · G ${NUMBER_FORMAT.format(cost.gas)}`;
 }
 
-function createProductionDialog(kind: UnitKind): HTMLDialogElement {
-  const id = `${kind}-production-dialog`;
-  const existing = document.querySelector<HTMLDialogElement>(`#${id}`);
-  if (existing !== null) return existing;
+function requireElement<T extends HTMLElement>(selector: string): T {
+  const element = document.querySelector<T>(selector);
+  if (element === null) throw new Error(`Production workspace element is missing: ${selector}`);
+  return element;
+}
 
-  const dialog = document.createElement('dialog');
-  dialog.id = id;
-  dialog.className = 'production-dialog';
+function createProductionWorkspace(host: HTMLElement, kind: UnitKind): void {
+  if (host.querySelector(`.production-grid[data-kind="${kind}"]`) !== null) return;
   const header = document.createElement('header');
   const text = document.createElement('div');
   const eyebrow = document.createElement('p');
   eyebrow.className = 'panel-label';
   eyebrow.textContent = kind === 'ship' ? 'Industry Zone' : 'Military Zone';
-  const title = document.createElement('h2');
+  const title = document.createElement('h1');
+  title.tabIndex = -1;
   title.textContent = kind === 'ship' ? 'Орбитальная верфь' : 'Планетарная оборона';
   text.append(eyebrow, title);
-  const close = document.createElement('button');
-  close.type = 'button';
-  close.className = 'dialog-close';
-  close.textContent = '×';
-  close.setAttribute('aria-label', 'Закрыть производство');
-  close.addEventListener('click', () => dialog.close());
-  header.append(text, close);
+  header.append(text);
   const summary = document.createElement('p');
   summary.className = 'production-summary';
-  dialog.append(header, summary);
-
+  host.append(header, summary);
   if (kind === 'defense') {
     const overview = document.createElement('section');
     overview.className = 'defense-overview';
     const repairQueue = document.createElement('section');
     repairQueue.className = 'production-queue defense-repair-queue';
-    dialog.append(overview, repairQueue);
+    repairQueue.dataset.testid = 'defense-repair-queue';
+    host.append(overview, repairQueue);
   }
-
   const queue = document.createElement('section');
   queue.className = 'production-queue';
   queue.dataset.kind = kind;
+  queue.dataset.testid = `${kind}-production-queue`;
   const grid = document.createElement('div');
   grid.className = 'production-grid';
   grid.dataset.kind = kind;
-  dialog.append(queue, grid);
-  document.body.append(dialog);
-  return dialog;
+  grid.dataset.testid = `${kind}-production-grid`;
+  host.append(queue, grid);
 }
 
 function renderProgressQueue(
@@ -137,11 +142,14 @@ function renderProgressQueue(
   container.append(label, progress, cancel);
 }
 
-export function mountProductionScreens(options: ProductionScreenOptions): void {
-  const dialogs = {
-    ship: createProductionDialog('ship'),
-    defense: createProductionDialog('defense'),
+export function mountProductionScreens(options: ProductionScreenOptions): ProductionScreensMount {
+  const hosts = {
+    ship: requireElement<HTMLElement>(PRODUCTION_WORKSPACE_SELECTORS.ship),
+    defense: requireElement<HTMLElement>(PRODUCTION_WORKSPACE_SELECTORS.defense),
   } as const;
+  createProductionWorkspace(hosts.ship, 'ship');
+  createProductionWorkspace(hosts.defense, 'defense');
+  let activeKind: UnitKind | undefined;
 
   const render = (kind: UnitKind): void => {
     const state = options.getState();
@@ -149,17 +157,11 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
       (candidate) => candidate.id === options.getActivePlanetId(),
     );
     const research = getEmpireResearch(state.research, 'player');
-    const dialog = dialogs[kind];
-    const summary = dialog.querySelector<HTMLElement>('.production-summary');
-    const queueContainer = dialog.querySelector<HTMLElement>(`.production-queue[data-kind="${kind}"]`);
-    const grid = dialog.querySelector<HTMLElement>(`.production-grid[data-kind="${kind}"]`);
-    if (
-      planet === undefined ||
-      research === undefined ||
-      summary === null ||
-      queueContainer === null ||
-      grid === null
-    ) return;
+    const host = hosts[kind];
+    const summary = host.querySelector<HTMLElement>('.production-summary');
+    const queueContainer = host.querySelector<HTMLElement>(`.production-queue[data-kind="${kind}"]`);
+    const grid = host.querySelector<HTMLElement>(`.production-grid[data-kind="${kind}"]`);
+    if (planet === undefined || research === undefined || summary === null || queueContainer === null || grid === null) return;
 
     const defenseGridCapacity = getDefenseGridCapacity(planet);
     const defenseGridUsed = getDefenseGridUsed(planet);
@@ -169,8 +171,8 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
       : `${planet.name} · оборонная сеть ${defenseGridUsed}/${defenseGridCapacity}. Активные, повреждённые и заказанные установки занимают общий лимит.`;
 
     if (kind === 'defense') {
-      const overview = dialog.querySelector<HTMLElement>('.defense-overview');
-      const repairQueueContainer = dialog.querySelector<HTMLElement>('.defense-repair-queue');
+      const overview = host.querySelector<HTMLElement>('.defense-overview');
+      const repairQueueContainer = host.querySelector<HTMLElement>('.defense-repair-queue');
       if (overview !== null) {
         const activeCount = Object.values(planet.inventory.defenses).reduce((total, count) => total + count, 0);
         const damagedCount = Object.values(planet.defense.damaged).reduce((total, count) => total + count, 0);
@@ -186,7 +188,9 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
         const repair = planet.defense.repairQueue[0];
         if (repair === undefined) {
           repairQueueContainer.textContent = 'Ремонтный контур свободен.';
+          repairQueueContainer.dataset.queueState = 'idle';
         } else {
+          repairQueueContainer.dataset.queueState = 'active';
           renderProgressQueue(repairQueueContainer, {
             label: `Ремонт · ${repair.unitId} × ${repair.quantity}`,
             startedAt: repair.startedAt,
@@ -194,17 +198,15 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
             now: state.clock.elapsedSeconds,
             cancelLabel: 'Отменить ремонт',
             onCancel: () => {
-              if (
-                options.execute(
-                  {
-                    type: 'CANCEL_DEFENSE_REPAIR',
-                    empireId: 'player',
-                    planetId: planet.id,
-                    queueItemId: repair.id,
-                  },
-                  'Ремонт отменён',
-                )
-              ) render(kind);
+              options.execute(
+                {
+                  type: 'CANCEL_DEFENSE_REPAIR',
+                  empireId: 'player',
+                  planetId: planet.id,
+                  queueItemId: repair.id,
+                },
+                'Ремонт отменён',
+              );
             },
           });
         }
@@ -212,29 +214,29 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
     }
 
     const queueKey = kind === 'ship' ? 'shipyard' : 'defense';
-    const active = planet.productionQueues[queueKey][0];
+    const queued = planet.productionQueues[queueKey][0];
     queueContainer.replaceChildren();
-    if (active === undefined) {
+    if (queued === undefined) {
       queueContainer.textContent = `${kind === 'ship' ? 'Верфь' : 'Оборонная линия'} ${planet.name} свободна.`;
+      queueContainer.dataset.queueState = 'idle';
     } else {
+      queueContainer.dataset.queueState = 'active';
       renderProgressQueue(queueContainer, {
-        label: `${active.unitId} × ${active.quantity}`,
-        startedAt: active.startedAt,
-        completesAt: active.completesAt,
+        label: `${queued.unitId} × ${queued.quantity}`,
+        startedAt: queued.startedAt,
+        completesAt: queued.completesAt,
         now: state.clock.elapsedSeconds,
         cancelLabel: 'Отменить',
         onCancel: () => {
-          if (
-            options.execute(
-              {
-                type: 'CANCEL_UNIT_BATCH',
-                empireId: 'player',
-                planetId: planet.id,
-                queueItemId: active.id,
-              },
-              'Производство отменено',
-            )
-          ) render(kind);
+          options.execute(
+            {
+              type: 'CANCEL_UNIT_BATCH',
+              empireId: 'player',
+              planetId: planet.id,
+              queueItemId: queued.id,
+            },
+            'Производство отменено',
+          );
         },
       });
     }
@@ -257,7 +259,7 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
       meta.textContent = kind === 'defense'
         ? `${definition.role} · активно ${activeCount} · повреждено ${damagedAvailable} · сеть ${definition.defenseGridCost}`
         : `${definition.role} · в наличии ${activeCount} · ${planet.name}`;
-      const title = document.createElement('h3');
+      const title = document.createElement('h2');
       title.textContent = definition.name;
       const description = document.createElement('p');
       description.textContent = definition.description;
@@ -280,45 +282,33 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
         const cost = calculateUnitBatchCost(definition, amount);
         const missing = findMissingUnitRequirements(definition, planet, research);
         const populationRequired = definition.populationCost * amount;
-        const populationAvailable =
-          planet.economy.population.capacity -
-          planet.economy.population.used -
-          getUnitPopulationUsed(planet) -
-          getReservedPopulation(planet);
+        const populationAvailable = planet.economy.population.capacity -
+          planet.economy.population.used - getUnitPopulationUsed(planet) - getReservedPopulation(planet);
         const hangarRequired = definition.hangarCost * amount;
-        const hangarAvailable =
-          getHangarCapacity(planet) - getHangarUsed(planet) - getReservedHangar(planet);
+        const hangarAvailable = getHangarCapacity(planet) - getHangarUsed(planet) - getReservedHangar(planet);
         const defenseGridRequired = definition.defenseGridCost * amount;
         const queueFree = planet.productionQueues[queueKey].length === 0;
         const affordable = canAfford(state, planet.id, cost);
-        const capacityOk =
-          populationRequired <= populationAvailable &&
-          (kind === 'ship'
-            ? hangarRequired <= hangarAvailable
-            : defenseGridRequired <= defenseGridAvailable);
+        const capacityOk = populationRequired <= populationAvailable &&
+          (kind === 'ship' ? hangarRequired <= hangarAvailable : defenseGridRequired <= defenseGridAvailable);
         action.disabled = !(missing.length === 0 && queueFree && affordable && capacityOk);
         const time = calculateUnitBatchSeconds(definition, amount, planet);
-        const capacityMessage = kind === 'defense'
-          ? ` · сеть ${defenseGridRequired}/${defenseGridAvailable}`
-          : '';
+        const capacityMessage = kind === 'defense' ? ` · сеть ${defenseGridRequired}/${defenseGridAvailable}` : '';
         status.textContent = `${formatCost(cost)} · ${formatGameDuration(time)}${capacityMessage}${missing.length > 0 ? ` · требования: ${missing.map((item) => `${item.id} ${item.currentLevel}/${item.requiredLevel}`).join(', ')}` : !queueFree ? ' · очередь занята' : !affordable ? ' · недостаточно ресурсов' : !capacityOk ? ' · не хватает вместимости' : ''}`;
       };
-
       quantity.addEventListener('change', refreshAvailability);
       action.addEventListener('click', () => {
         const amount = Math.max(1, Math.min(100, Math.floor(Number(quantity.value) || 1)));
-        if (
-          options.execute(
-            {
-              type: 'QUEUE_UNIT_BATCH',
-              empireId: 'player',
-              planetId: planet.id,
-              unitId: definition.id,
-              quantity: amount,
-            },
-            `Производство запущено · ${definition.name} × ${amount}`,
-          )
-        ) render(kind);
+        options.execute(
+          {
+            type: 'QUEUE_UNIT_BATCH',
+            empireId: 'player',
+            planetId: planet.id,
+            unitId: definition.id,
+            quantity: amount,
+          },
+          `Производство запущено · ${definition.name} × ${amount}`,
+        );
       });
       refreshAvailability();
       body.append(meta, title, description, quantity, status, action);
@@ -340,12 +330,8 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
         repairAction.type = 'button';
         repairAction.className = 'production-action';
         repairAction.textContent = 'Запустить ремонт';
-
         const refreshRepairAvailability = (): void => {
-          const repairAmount = Math.max(
-            1,
-            Math.min(Math.max(1, damagedAvailable), Math.floor(Number(repairQuantity.value) || 1)),
-          );
+          const repairAmount = Math.max(1, Math.min(Math.max(1, damagedAvailable), Math.floor(Number(repairQuantity.value) || 1)));
           repairQuantity.value = String(repairAmount);
           const repairCost = calculateDefenseRepairCost(definition, repairAmount);
           const repairSeconds = calculateDefenseRepairSeconds(definition, repairAmount);
@@ -358,56 +344,47 @@ export function mountProductionScreens(options: ProductionScreenOptions): void {
         };
         repairQuantity.addEventListener('change', refreshRepairAvailability);
         repairAction.addEventListener('click', () => {
-          const repairAmount = Math.max(
-            1,
-            Math.min(Math.max(1, damagedAvailable), Math.floor(Number(repairQuantity.value) || 1)),
+          const repairAmount = Math.max(1, Math.min(Math.max(1, damagedAvailable), Math.floor(Number(repairQuantity.value) || 1)));
+          options.execute(
+            {
+              type: 'QUEUE_DEFENSE_REPAIR',
+              empireId: 'player',
+              planetId: planet.id,
+              unitId: definition.id,
+              quantity: repairAmount,
+            },
+            `Ремонт запущен · ${definition.name} × ${repairAmount}`,
           );
-          if (
-            options.execute(
-              {
-                type: 'QUEUE_DEFENSE_REPAIR',
-                empireId: 'player',
-                planetId: planet.id,
-                unitId: definition.id,
-                quantity: repairAmount,
-              },
-              `Ремонт запущен · ${definition.name} × ${repairAmount}`,
-            )
-          ) render(kind);
         });
         refreshRepairAvailability();
         repairSection.append(repairTitle, repairQuantity, repairStatus, repairAction);
         body.append(repairSection);
       }
-
       card.append(art, body);
       grid.append(card);
     }
   };
 
-  const open = (kind: UnitKind): void => {
-    render(kind);
-    dialogs[kind].showModal();
-  };
-
-  document.addEventListener(
-    'click',
-    (event) => {
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-      const gateway = target.closest<HTMLButtonElement>('.zone-gateway');
-      const label = gateway?.querySelector('strong')?.textContent;
-      const kind =
-        label === 'Орбитальная верфь'
-          ? 'ship'
-          : label === 'Планетарная оборона'
-            ? 'defense'
-            : undefined;
-      if (kind === undefined) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      open(kind);
+  return {
+    activate: (kind) => {
+      activeKind = kind;
+      hosts.ship.hidden = kind !== 'ship';
+      hosts.defense.hidden = kind !== 'defense';
+      render(kind);
+      hosts[kind].querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
     },
-    { capture: true },
-  );
+    deactivate: () => {
+      activeKind = undefined;
+      hosts.ship.hidden = true;
+      hosts.defense.hidden = true;
+    },
+    refresh: () => {
+      if (activeKind !== undefined) render(activeKind);
+    },
+    dispose: () => {
+      activeKind = undefined;
+      hosts.ship.replaceChildren();
+      hosts.defense.replaceChildren();
+    },
+  };
 }
