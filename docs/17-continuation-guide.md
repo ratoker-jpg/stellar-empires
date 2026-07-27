@@ -1,14 +1,14 @@
 # AI Continuation Guide
 
-**Status:** `UNIVERSE-NAVIGATION-01` completed by PR #110  
+**Status:** Audit PR #111 defines `COHERENT-UI-SHELL-01`  
 **Updated:** 2026-07-27  
-**Verified baseline:** PR #110 final clean-head CI, Browser E2E and Graphify gate
+**Verified baseline:** merged PR #110, SHA `8e9e848b0725c52263ff7e310bc9d899a81554c4`
 
 ## Repository
 
 `ratoker-jpg/stellar-empires` · default branch `main` · GitHub Pages deployment.
 
-GitHub history and the current `main` always override stale prose, prior chat memory and abandoned branches.
+GitHub history and current `main` override stale prose, prior chat memory and abandoned branches.
 
 ## Required startup reading
 
@@ -16,58 +16,78 @@ GitHub history and the current `main` always override stale prose, prior chat me
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. this document
-6. `docs/project-status.json`
-7. `docs/27-playable-game-roadmap-v5.md`
-8. latest merged pull requests and actual `main`
+5. `docs/audits/contracts/coherent-ui-shell-01-prs.md`
+6. `docs/audits/contracts/coherent-ui-shell-01-route-layout.md`
+7. `docs/audits/evidence/coherent-ui-shell-01-graphify.md`
+8. this document
+9. `docs/project-status.json`
+10. `docs/27-playable-game-roadmap-v5.md`
+11. latest merged pull requests and actual `main`
 
-The completed Universe audit and contracts remain historical evidence under:
+## Completed product state
 
-- `docs/audits/completed/universe-navigation-01.md`;
-- `docs/audits/contracts/universe-navigation-01-prs.md`;
-- `docs/audits/contracts/universe-navigation-01-data-assets.md`;
-- `docs/audits/evidence/universe-navigation-01-graphify.md`.
+- PR #101–#105 completed runtime integration of the mechanical catalog art;
+- PR #106 audited `UNIVERSE-NAVIGATION-01`;
+- PR #107 delivered the 90-source / 102-runtime Universe asset pipeline;
+- PR #108 delivered schema v14 and deterministic v13 → v14 migration;
+- PR #109 delivered Universe → Galaxy → Solar-system URL/history navigation;
+- PR #110 delivered intelligence-aware action gates, mission target handoff, report backlinks, semantic overlays and Browser E2E;
+- navigation remains checksum-neutral;
+- map selection never sends a mission without fleet/composition/speed/confirmation.
 
-## Current authoritative state
-
-- PR #106 accepted the medium four-PR batch `UNIVERSE-NAVIGATION-01`;
-- PR #107 moved 90 Universe source PNGs behind the source/runtime boundary and generated 102 lazy WebP textures;
-- PR #108 delivered schema v14, deterministic v13 → v14 migration, 20 Universe slots, shared coordinates and exactly 24 materialized positions per system;
-- PR #109 delivered URL/history-backed Universe → Galaxy → Solar-system navigation, exact geometry, keyboard parity, reduced motion and texture lifecycle management;
-- PR #110 delivered intelligence-aware details and action gates, existing mission-composer handoff, report backlinks, semantic SVG overlays and browser E2E;
-- navigation does not change the `GameState` checksum;
-- map selection never dispatches a mission directly;
-- Sun Attack and Sun Support remain disabled until a later audited solar-war batch.
-
-## Completed implementation chain
+The completed Universe audit is archived at:
 
 ```text
-#107 UNIVERSE-ASSET-PIPELINE
-→ #108 UNIVERSE-SPATIAL-MODEL
-→ #109 UNIVERSE-NAVIGATION-VIEWS
-→ #110 UNIVERSE-ACTIONS-GATE
+docs/audits/completed/universe-navigation-01.md
 ```
 
-The accepted audit is archived in `docs/audits/completed/universe-navigation-01.md` and the completed sequence is recorded in `docs/audits/batch-history.md`.
+## Active audited batch
 
-## Remaining limitations
+```text
+#111 Audit COHERENT-UI-SHELL-01
+→ #112 UI-SHELL-RUNTIME-ROUTER
+→ #113 UI-SHELL-DEVELOPMENT-WORKSPACES
+→ #114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES
+→ #115 UI-SHELL-COMMAND-SYSTEM-GATE
+```
 
-- complete solar-war combat, sun destruction and rebuilding are not implemented;
-- alliances, Obelisks, Gates and final victory remain outside the completed batch;
-- broader mechanic parity, balance tuning, release hardening and the remaining Stage C shell still require future audited batches.
+### Why this batch is next
 
-## Invariants
+The game already has functional Planet, Research, Production, Fleet, Operations, Reports, Command and Save screens. They are not yet one coherent application:
 
-- every new implementation batch requires a newly accepted Audit PR;
-- no `Math.random()` or system clock in simulation decisions;
-- UI route state stays outside canonical simulation state;
-- simulation remains independent from DOM and Phaser;
-- bots and player use the same coordinates, selectors, commands and validators;
-- hidden intelligence is removed from view models, not hidden only through CSS;
-- map clicks never dispatch a mission immediately;
-- Universe runtime art resolves through manifests and lazy groups, never direct source imports;
-- project-specific `docs/25-*` rules remain authoritative for future solar-war work.
+- `src/main.ts::bootstrap()` directly calls 26 UI mount/apply functions;
+- unrelated screens execute commands through `planetScreen.ts`;
+- at least sixteen top-level screens are modal dialogs;
+- eight modules insert navigation buttons at runtime;
+- several static primary nav buttons are disabled despite implemented screens;
+- only the Space Map has canonical browser routing/history.
+
+Audit #111 fixes presentation composition before more mechanics are added.
+
+## Batch invariants
+
+- no new gameplay mechanic, command, balance value or save field;
+- route state stays outside `GameState` and saves;
+- existing Space Map route controller remains authoritative for `#/space/...`;
+- one application controller owns runtime state/command notifications;
+- one typed registry owns primary navigation;
+- one primary workspace is active at a time;
+- top-level domains are routed pages, not modal-only screens;
+- player and bots continue using the same command validators;
+- no Alliance item before an alliance audit;
+- no solar-war/endgame work in this batch;
+- no React/framework rewrite;
+- no copied Nemexia HTML, CSS, prose, branding or assets.
+
+## Known limitations outside the batch
+
+- alliances and diplomacy are not implemented;
+- solar attack/support/destruction/rebuilding are not implemented;
+- Solar Crystals, Obelisks, Gates and final victory are not implemented;
+- ordinary mechanics/PvE depth and bot parity still need later audited batches;
+- balance and release hardening remain open;
+- complete phone/mobile layout is not included.
 
 ## Immediate route
 
-Stop implementation work after PR #110 merges. The only permitted next step is a new Audit PR. Do not begin solar-war, alliances, Obelisks, Gates or another roadmap implementation from this guide.
+Audit PR #111 must merge before implementation begins. After it merges, create PR #112 from fresh `main` and implement only `UI-SHELL-RUNTIME-ROUTER`. Do not start #113 in the same branch or PR.
