@@ -1,58 +1,63 @@
 {
-  "statusVersion": 13,
+  "statusVersion": 15,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 110,
-  "lastMergeSha": "recorded in GitHub PR #110 merge metadata",
-  "verifiedMainBaseline": "PR #110 final clean-head CI, Browser E2E and Graphify gate",
+  "lastMergedPr": 111,
+  "lastMergeSha": "recorded in GitHub PR #111 merge metadata",
+  "verifiedMainBaseline": "Audit PR #111 accepted on merge; runtime baseline remains merged PR #110",
   "activePr": null,
-  "nextPrAfterActive": null,
-  "nextPrKind": "audit",
-  "currentMilestone": "Universe navigation batch complete; the next implementation requires a new Audit PR",
+  "nextPrAfterActive": 112,
+  "nextPrKind": "implementation",
+  "currentMilestone": "Coherent full UI shell audited; UI-SHELL-RUNTIME-ROUTER is next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
-  "currentAuditContracts": [],
+  "currentAuditContracts": [
+    "docs/audits/contracts/coherent-ui-shell-01-prs.md",
+    "docs/audits/contracts/coherent-ui-shell-01-route-layout.md",
+    "docs/audits/evidence/coherent-ui-shell-01-graphify.md"
+  ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "currentBatch": {
-    "batchId": "UNIVERSE-NAVIGATION-01",
+    "batchId": "COHERENT-UI-SHELL-01",
     "complexity": "medium",
-    "auditPr": 106,
-    "auditStatus": "archived",
+    "auditPr": 111,
+    "auditStatus": "accepted",
     "implementationCount": 4,
     "implementationPrs": [
-      107,
-      108,
-      109,
-      110
+      112,
+      113,
+      114,
+      115
     ],
     "workItems": [
-      "UNIVERSE-ASSET-PIPELINE",
-      "UNIVERSE-SPATIAL-MODEL",
-      "UNIVERSE-NAVIGATION-VIEWS",
-      "UNIVERSE-ACTIONS-GATE"
+      "UI-SHELL-RUNTIME-ROUTER",
+      "UI-SHELL-DEVELOPMENT-WORKSPACES",
+      "UI-SHELL-FLEET-OPERATIONS-WORKSPACES",
+      "UI-SHELL-COMMAND-SYSTEM-GATE"
     ],
-    "status": "completed",
-    "nextWorkItem": null,
-    "archive": "docs/audits/completed/universe-navigation-01.md"
+    "status": "ready-for-implementation",
+    "nextWorkItem": "UI-SHELL-RUNTIME-ROUTER",
+    "archive": null
   },
   "auditDecisions": {
     "implementationCount": 4,
-    "schemaTarget": 14,
-    "navigationStateLocation": "url-history-not-game-state",
-    "universeSlots": 20,
-    "positionsPerSystem": 24,
-    "runtimeSourceFiles": 90,
-    "runtimeTextureCount": 102,
-    "decodedBytesWorstCase": 29458432,
-    "runtimeTransferBudgetBytes": 16777216,
-    "atlasPolicy": "individual-webp-no-atlas",
-    "solarWarMechanicsIncluded": false,
+    "schemaChange": false,
+    "newGameplayCommands": false,
+    "routeStateLocation": "url-history-not-game-state",
+    "applicationControllerRequired": true,
+    "staticNavigationRegistryRequired": true,
+    "primaryWorkspacePolicy": "one-active-workspace",
+    "topLevelModalOnlyScreensAllowed": false,
+    "spaceMapRoutePolicy": "delegate-existing-controller",
+    "allianceRouteIncluded": false,
+    "solarWarIncluded": false,
+    "frameworkMigrationIncluded": false,
     "criticalUnknowns": 0
   },
   "scenarioPresets": {
@@ -113,10 +118,13 @@
   ],
   "activeDelivery": [],
   "knownLimitations": [
-    "complete solar-war attack, destruction, support and rebuilding mechanics are intentionally deferred",
+    "runtime presentation composition is manually mounted from src/main.ts",
+    "unrelated screens currently execute through planetScreen presentation state",
+    "many implemented primary screens are modal-only or launched by runtime-inserted navigation buttons",
+    "only Space Map has canonical application URL/history restoration",
+    "complete solar-war attack, destruction, support and rebuilding mechanics are deferred",
     "alliances, Obelisks, Gates and final victory are not implemented",
-    "the remaining Stage C interface shell is incomplete",
-    "ordinary mechanic parity, PvE and meta depth, balance tuning and release hardening remain incomplete"
+    "ordinary mechanic parity, PvE/meta depth, bot parity, balance and release hardening remain incomplete"
   ],
   "graphify": {
     "package": "graphifyy",
@@ -126,11 +134,11 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on the PR #110 clean head",
+    "lastValidation": "passed on the Audit PR #111 clean head",
     "lastAuditGraph": {
-      "nodes": 1666,
-      "relationships": 5531,
-      "communities": 74,
+      "nodes": 1913,
+      "relationships": 6246,
+      "communities": 78,
       "extractedPercent": 100,
       "inferredPercent": 0
     }
@@ -156,10 +164,13 @@
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
+    "docs/audits/contracts/coherent-ui-shell-01-prs.md",
+    "docs/audits/contracts/coherent-ui-shell-01-route-layout.md",
+    "docs/audits/evidence/coherent-ui-shell-01-graphify.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged GitHub pull requests and actual main"
   ],
-  "nextAction": "Create a new Audit PR only."
+  "nextAction": "Create PR #112 from fresh merged main and implement only UI-SHELL-RUNTIME-ROUTER."
 }
