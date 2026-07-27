@@ -1,8 +1,9 @@
 # AI Continuation Guide
 
-**Status:** Audit PR #111 defines `COHERENT-UI-SHELL-01`  
+**Status:** Audit PR #111 accepts `COHERENT-UI-SHELL-01` on merge  
 **Updated:** 2026-07-27  
-**Verified baseline:** merged PR #110, SHA `8e9e848b0725c52263ff7e310bc9d899a81554c4`
+**Runtime baseline:** merged PR #110, SHA `8e9e848b0725c52263ff7e310bc9d899a81554c4`  
+**Next implementation:** #112 — `UI-SHELL-RUNTIME-ROUTER`
 
 ## Repository
 
@@ -41,11 +42,12 @@ The completed Universe audit is archived at:
 docs/audits/completed/universe-navigation-01.md
 ```
 
-## Active audited batch
+## Accepted audited batch
+
+Audit PR #111 authorizes this exact sequence after it merges:
 
 ```text
-#111 Audit COHERENT-UI-SHELL-01
-→ #112 UI-SHELL-RUNTIME-ROUTER
+#112 UI-SHELL-RUNTIME-ROUTER
 → #113 UI-SHELL-DEVELOPMENT-WORKSPACES
 → #114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES
 → #115 UI-SHELL-COMMAND-SYSTEM-GATE
@@ -90,4 +92,4 @@ Audit #111 fixes presentation composition before more mechanics are added.
 
 ## Immediate route
 
-Audit PR #111 must merge before implementation begins. After it merges, create PR #112 from fresh `main` and implement only `UI-SHELL-RUNTIME-ROUTER`. Do not start #113 in the same branch or PR.
+After Audit PR #111 merges, create PR #112 from that fresh `main` and implement only `UI-SHELL-RUNTIME-ROUTER`. Do not start #113 in the same branch or PR. If #111 is not merged, implementation remains forbidden.
