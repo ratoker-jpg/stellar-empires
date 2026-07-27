@@ -231,26 +231,38 @@ function missionPlan(
     }
   }
 
+  const fullCurrentTargetIds = new Set(
+    perception.foreignPlanets
+      .filter((planet) => planet.freshness === 'current' && planet.snapshot.level === 3)
+      .map((planet) => planet.planetId),
+  );
+  const scoutPriority = (targetId: string): number => {
+    const intelligence = perception.foreignPlanets.find((planet) => planet.planetId === targetId);
+    if (intelligence?.freshness === 'stale') return 0;
+    if (intelligence !== undefined && intelligence.snapshot.level < 3) return 1;
+    return 2;
+  };
+
   for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'scout'))) {
     const actual = realFleet(state, fleet);
     if (actual === undefined) continue;
-    const targets = [...listMissionTargets(state, perception.empireId, actual, 'scout')].sort(
-      (left, right) =>
-        Number(left.visibility === 'current') - Number(right.visibility === 'current') ||
-        left.id.localeCompare(right.id),
+    const target = [...listMissionTargets(state, perception.empireId, actual, 'scout')]
+      .filter((candidate) => !fullCurrentTargetIds.has(candidate.id))
+      .sort(
+        (left, right) =>
+          scoutPriority(left.id) - scoutPriority(right.id) || left.id.localeCompare(right.id),
+      )[0];
+    if (target === undefined) continue;
+    const plan = tryMission(
+      state,
+      perception,
+      blockers,
+      fleet,
+      'scout',
+      target.id,
+      `Разведчик ${fleet.id} проверяет ${target.label}.`,
     );
-    for (const target of targets) {
-      const plan = tryMission(
-        state,
-        perception,
-        blockers,
-        fleet,
-        'scout',
-        target.id,
-        `Разведчик ${fleet.id} проверяет ${target.label}.`,
-      );
-      if (plan !== null) return { plan, blocker: null };
-    }
+    if (plan !== null) return { plan, blocker: null };
   }
 
   for (const fleet of fleets.filter(isArmed)) {
