@@ -21,4 +21,4 @@ No new command, mission kind, persisted field, schema migration or balance table
 
 ## Validation
 
-Source head `787fdfb2b72b2b976828aa0c3e0a1e7e71b0ec80` passed asset audit, lint, TypeScript, 392 unit tests, production build, Chromium Browser E2E and Graphify.
+Final code head `5eb70955a971c5ecb4c0b8b418885128faaa5477` passed asset audit, lint, TypeScript, 392 unit tests, production build, Chromium Browser E2E and Graphify. Subsequent commits in PR #120 are documentation-only finalization and do not change runtime code.
