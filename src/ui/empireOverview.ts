@@ -7,6 +7,13 @@ export interface EmpireOverviewOptions {
   readonly selectPlanet: (planetId: string) => void;
 }
 
+export interface EmpireOverviewMount {
+  activate(): void;
+  deactivate(): void;
+  refresh(): void;
+  dispose(): void;
+}
+
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 
 function resourceLine(
@@ -26,66 +33,33 @@ function resourceLine(
   return item;
 }
 
-export function mountEmpireOverview(options: EmpireOverviewOptions): void {
-  const dialog = document.createElement('dialog');
-  dialog.id = 'empire-overview-dialog';
-  dialog.className = 'empire-overview-dialog';
-  const header = document.createElement('header');
-  const heading = document.createElement('div');
-  const eyebrow = document.createElement('p');
-  eyebrow.className = 'panel-label';
-  eyebrow.textContent = 'Strategic Command · empire';
-  const title = document.createElement('h2');
-  title.textContent = 'Обзор империи';
-  heading.append(eyebrow, title);
-  const close = document.createElement('button');
-  close.type = 'button';
-  close.className = 'dialog-close';
-  close.textContent = '×';
-  close.setAttribute('aria-label', 'Закрыть обзор империи');
-  close.addEventListener('click', () => dialog.close());
-  header.append(heading, close);
-  const content = document.createElement('div');
-  content.className = 'empire-overview-content';
-  dialog.append(header, content);
-  document.body.append(dialog);
+export function mountEmpireOverview(options: EmpireOverviewOptions): EmpireOverviewMount {
+  const host = document.querySelector<HTMLElement>('#command-overview-view');
+  if (host === null) throw new Error('Empire overview workspace is missing.');
+  let active = false;
 
   const render = (): void => {
+    if (!active) return;
     const state = options.getState();
     const view = createEmpireOverviewViewModel(state, 'player');
     const activePlanetId = options.getActivePlanetId();
-    content.replaceChildren();
+    host.replaceChildren();
 
     const summary = document.createElement('section');
     summary.className = 'empire-overview-summary';
-    const summaryTitle = document.createElement('h3');
+    const summaryTitle = document.createElement('h2');
     summaryTitle.textContent = `Колонии ${view.colonyCount}/${view.colonyLimit}`;
     const fleetStatus = document.createElement('p');
     fleetStatus.textContent = `Флоты ${view.totalFleetCount} · активные миссии ${view.activeFleetCount}`;
     const resourceGrid = document.createElement('div');
     resourceGrid.className = 'empire-resource-grid';
     resourceGrid.append(
-      resourceLine(
-        'Металл',
-        view.resources.metal.amount,
-        view.resources.metal.capacity,
-        view.resources.metal.productionPerHour,
-      ),
-      resourceLine(
-        'Кристалл',
-        view.resources.crystal.amount,
-        view.resources.crystal.capacity,
-        view.resources.crystal.productionPerHour,
-      ),
-      resourceLine(
-        'Газ',
-        view.resources.gas.amount,
-        view.resources.gas.capacity,
-        view.resources.gas.productionPerHour,
-      ),
+      resourceLine('Металл', view.resources.metal.amount, view.resources.metal.capacity, view.resources.metal.productionPerHour),
+      resourceLine('Минералы', view.resources.crystal.amount, view.resources.crystal.capacity, view.resources.crystal.productionPerHour),
+      resourceLine('Газ', view.resources.gas.amount, view.resources.gas.capacity, view.resources.gas.productionPerHour),
     );
     summary.append(summaryTitle, fleetStatus, resourceGrid);
-    content.append(summary);
+    host.append(summary);
 
     const colonies = document.createElement('section');
     colonies.className = 'empire-colony-grid';
@@ -106,27 +80,26 @@ export function mountEmpireOverview(options: EmpireOverviewOptions): void {
       operations.textContent = `Эффективность ${colony.efficiencyPermille / 10}% · очереди ${colony.buildingQueueCount + colony.shipQueueCount + colony.defenseQueueCount} · флоты ${colony.stationedFleetCount} · вылеты ${colony.activeMissionCount}`;
       const open = document.createElement('button');
       open.type = 'button';
-      open.textContent = colony.id === activePlanetId
-        ? 'Активная колония'
-        : 'Открыть колонию';
+      open.textContent = colony.id === activePlanetId ? 'Активная колония' : 'Открыть колонию';
       open.disabled = colony.id === activePlanetId;
-      open.addEventListener('click', () => {
-        options.selectPlanet(colony.id);
-        dialog.close();
-      });
+      open.addEventListener('click', () => options.selectPlanet(colony.id));
       card.append(cardHeader, resources, production, operations, open);
       colonies.append(card);
     }
-    content.append(colonies);
+    host.append(colonies);
   };
 
-  const open = (): void => {
-    render();
-    dialog.showModal();
+  return {
+    activate: () => {
+      active = true;
+      host.hidden = false;
+      render();
+    },
+    deactivate: () => {
+      active = false;
+      host.hidden = true;
+    },
+    refresh: render,
+    dispose: () => host.replaceChildren(),
   };
-
-  document.querySelector<HTMLButtonElement>('#nav-empire')?.addEventListener(
-    'click',
-    open,
-  );
 }
