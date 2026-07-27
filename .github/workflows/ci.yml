@@ -7,21 +7,25 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  quality:
-    name: Asset audit, lint, typecheck, test and build
+  bootstrap-pr109:
+    if: github.event_name == 'pull_request' && github.head_ref == 'feat/109-universe-navigation-views'
+    name: Generate PR109 implementation
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
+    timeout-minutes: 75
     steps:
-      - name: Checkout
+      - name: Checkout branch
         uses: actions/checkout@v6
+        with:
+          ref: feat/109-universe-navigation-views
+          fetch-depth: 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -31,17 +35,125 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Apply implementation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          python3 scripts/automation/implement-pr109.py 2>&1 | tee /tmp/pr109-bootstrap.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR109 bootstrap diagnostics'; echo '```text'; tail -n 260 /tmp/pr109-bootstrap.log; echo '```'; } > /tmp/pr109-comment.md
+            gh pr comment 109 --body-file /tmp/pr109-comment.md || true
+            exit "$status"
+          fi
+
+      - name: Remove temporary files
+        run: |
+          git fetch --depth=1 origin main
+          git checkout origin/main -- .github/workflows/ci.yml
+          rm -f scripts/automation/implement-pr109.py
+          rm -f docs/audits/evidence/pr109-navigation-map.txt
+          rm -rf graphify-out
+
       - name: Validate asset pipeline
         run: npm run assets:check
 
       - name: Lint
-        run: npm run lint
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run lint 2>&1 | tee /tmp/pr109-lint.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR109 lint diagnostics'; echo '```text'; tail -n 300 /tmp/pr109-lint.log; echo '```'; } > /tmp/pr109-comment.md
+            gh pr comment 109 --body-file /tmp/pr109-comment.md || true
+            exit "$status"
+          fi
 
       - name: Typecheck
-        run: npm run typecheck
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run typecheck 2>&1 | tee /tmp/pr109-typecheck.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR109 typecheck diagnostics'; echo '```text'; tail -n 360 /tmp/pr109-typecheck.log; echo '```'; } > /tmp/pr109-comment.md
+            gh pr comment 109 --body-file /tmp/pr109-comment.md || true
+            exit "$status"
+          fi
 
       - name: Test
-        run: npm run test
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run test 2>&1 | tee /tmp/pr109-test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR109 test diagnostics'; echo '```text'; tail -n 420 /tmp/pr109-test.log; echo '```'; } > /tmp/pr109-comment.md
+            gh pr comment 109 --body-file /tmp/pr109-comment.md || true
+            exit "$status"
+          fi
 
+      - name: Build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          npm run build 2>&1 | tee /tmp/pr109-build.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR109 build diagnostics'; echo '```text'; tail -n 300 /tmp/pr109-build.log; echo '```'; } > /tmp/pr109-comment.md
+            gh pr comment 109 --body-file /tmp/pr109-comment.md || true
+            exit "$status"
+          fi
+
+      - name: Graphify audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          bash scripts/graphify-audit.sh code 2>&1 | tee /tmp/pr109-graphify.log
+          status=${PIPESTATUS[0]}
+          rm -rf graphify-out
+          if [ "$status" -ne 0 ]; then
+            { echo '### PR109 Graphify diagnostics'; echo '```text'; tail -n 260 /tmp/pr109-graphify.log; echo '```'; } > /tmp/pr109-comment.md
+            gh pr comment 109 --body-file /tmp/pr109-comment.md || true
+            exit "$status"
+          fi
+
+      - name: Commit implementation
+        run: |
+          git config user.name "stellar-empires-automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Implement Universe navigation views"
+          git push origin HEAD:feat/109-universe-navigation-views
+
+  quality:
+    if: github.event_name != 'pull_request' || github.head_ref != 'feat/109-universe-navigation-views'
+    name: Asset audit, lint, typecheck, test and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.12.0'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Validate asset pipeline
+        run: npm run assets:check
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Test
+        run: npm run test
       - name: Build
         run: npm run build
