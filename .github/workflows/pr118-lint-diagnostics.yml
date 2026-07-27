@@ -1,0 +1,29 @@
+name: PR118 lint diagnostics
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  capture-lint-output:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Capture lint output
+        shell: bash
+        run: |
+          set +e
+          npm run lint > pr118-lint-output.txt 2>&1
+          status=$?
+          echo "exit_code=$status" >> pr118-lint-output.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr118-lint-output
+          path: pr118-lint-output.txt
+          if-no-files-found: error
