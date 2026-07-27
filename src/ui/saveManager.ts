@@ -7,7 +7,7 @@ import {
 } from '../storage/SaveManager';
 
 export interface SaveManagerUiOptions {
-  readonly manager?: SaveManager;
+  readonly manager?: SaveManager | undefined;
   readonly getState: () => GameState;
   readonly writeStatus: (message: string) => void;
 }
