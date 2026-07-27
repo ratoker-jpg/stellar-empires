@@ -32,6 +32,13 @@ export function getResearchEffectsForEmpire(
       );
 }
 
+export function getFleetSlotCapacity(
+  state: Pick<GameState, 'planets' | 'research'>,
+  empireId: string,
+): number {
+  return Math.max(1, 1 + getResearchEffectsForEmpire(state, empireId).flightSlots);
+}
+
 export function getEnergyOutputByEmpire(
   state: Pick<GameState, 'planets' | 'research'>,
 ): Readonly<Record<string, number>> {

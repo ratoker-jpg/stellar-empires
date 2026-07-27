@@ -7,6 +7,7 @@ import type { GameState } from '../simulation/types';
 export const E2E_RUNTIME_ENABLED = import.meta.env.VITE_E2E === '1';
 export const E2E_FLEET_ID = 'fleet-e2e-player';
 export const E2E_REPORT_ID = 'report-e2e-map-backlink';
+const E2E_BOT_IDLE_SECONDS = 86_400;
 
 function requireScenarioPlanets(state: GameState) {
   const origin = state.planets.find((planet) => planet.ownerEmpireId === 'player');
@@ -93,6 +94,7 @@ export function createE2eFixtureState(state: GameState): GameState {
     rewardMultiplierPermille: 1_000,
   };
   const playerIntel = state.intelligence.find((entry) => entry.empireId === 'player');
+  const stableBotDecisionAt = state.clock.elapsedSeconds + E2E_BOT_IDLE_SECONDS;
   return {
     ...state,
     planets: state.planets.map((planet) => planet.id === origin.id ? originWithFuel : planet),
@@ -119,6 +121,16 @@ export function createE2eFixtureState(state: GameState): GameState {
             executedAt: state.clock.elapsedSeconds,
           },
         ],
+    botAutomation: {
+      nextDecisionAtByEmpire: Object.fromEntries(
+        Object.entries(state.botAutomation.nextDecisionAtByEmpire).map(
+          ([empireId, nextDecisionAt]) => [
+            empireId,
+            Math.max(nextDecisionAt, stableBotDecisionAt),
+          ],
+        ),
+      ),
+    },
     ...(playerIntel === undefined ? {} : {}),
   };
 }

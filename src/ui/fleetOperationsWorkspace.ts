@@ -2,9 +2,12 @@ import { getFleetShipArtUrl } from '../assets/galaxyFleetRuntimeAssets';
 import {
   getColonyLimit,
   getEmpireColonyCount,
-  isColonizableGalaxyPlanet,
 } from '../simulation/colonization/colonization';
 import type { ResourceCost } from '../simulation/economy/types';
+import {
+  getMissionTargetLabel,
+  type OrdinaryMissionKind,
+} from '../simulation/fleets/missionRules';
 import type { FleetMissionKind, FleetState } from '../simulation/fleets/types';
 import type { FactionId } from '../simulation/planet/types';
 import type { GameCommand, GameState } from '../simulation/types';
@@ -13,6 +16,7 @@ import { hasShipRole } from '../simulation/units/shipCapabilities';
 import type { FleetShellMode } from './appShellRoute';
 import {
   createFleetComposerViewModel,
+  createFleetMissionTargets,
   createFleetRoutePreview,
 } from './fleetComposerViewModel';
 import {
@@ -69,7 +73,7 @@ function totalUnits(units: Readonly<Record<string, number>>): number {
   return Object.values(units).reduce((total, count) => total + count, 0);
 }
 
-function readMissionKind(value: string): FleetMissionKind {
+function readMissionKind(value: string): OrdinaryMissionKind {
   switch (value) {
     case 'deploy':
     case 'scout':
@@ -113,53 +117,12 @@ function getFleetFaction(state: GameState, fleet: FleetState): FactionId {
     ?? getPlayerFaction(state);
 }
 
-function getTargetName(state: GameState, targetId: string): string {
-  const colony = state.planets.find(
-    (planet) => planet.id === targetId || planet.galaxyPlanetId === targetId,
-  );
-  if (colony !== undefined) return colony.name;
-  for (const system of state.galaxy.systems) {
-    const planet = system.planets.find((candidate) => candidate.id === targetId);
-    if (planet !== undefined) return `${system.name} · орбита ${planet.position}`;
-  }
-  return targetId;
-}
-
-function getColonizationTargets(state: GameState) {
-  return state.galaxy.systems.flatMap((system) =>
-    system.planets
-      .filter(
-        (planet) =>
-          isColonizableGalaxyPlanet(planet) &&
-          !state.planets.some((colony) => colony.galaxyPlanetId === planet.id),
-      )
-      .map((planet) => ({ system, planet })),
-  );
-}
-
-function getRegularTargets(
+function getTargetName(
   state: GameState,
-  fleet: FleetState,
-  mission: FleetMissionKind,
-) {
-  if (fleet.location.type !== 'planet') return [];
-  const originId = fleet.location.planetId;
-  if (mission === 'recycle') {
-    const debrisPlanetIds = new Set(
-      state.debrisFields
-        .filter((field) => field.metal > 0 || field.crystal > 0)
-        .map((field) => field.planetId),
-    );
-    return state.planets.filter(
-      (planet) => planet.id !== originId && debrisPlanetIds.has(planet.id),
-    );
-  }
-  if (mission === 'transport' || mission === 'deploy') {
-    return state.planets.filter(
-      (planet) => planet.id !== originId && planet.ownerEmpireId === fleet.empireId,
-    );
-  }
-  return state.planets.filter((planet) => planet.id !== originId);
+  targetId: string,
+  empireId = 'player',
+): string {
+  return getMissionTargetLabel(state, empireId, targetId);
 }
 
 function createMetric(labelText: string, valueText: string, detail = ''): HTMLElement {
@@ -204,7 +167,7 @@ function renderFleetCard(state: GameState, fleet: FleetState): HTMLElement {
   if (fleet.location.type === 'transit') {
     const route = document.createElement('p');
     route.className = 'mission-route-preview';
-    route.textContent = `${fleet.mission === null ? 'Перелёт' : missionLabel(fleet.mission.kind)} · ${getTargetName(state, fleet.location.toPlanetId)} · осталось ${formatGameDuration(Math.max(0, fleet.location.arrivesAt - state.clock.elapsedSeconds))}`;
+    route.textContent = `${fleet.mission === null ? 'Перелёт' : missionLabel(fleet.mission.kind)} · ${getTargetName(state, fleet.location.toPlanetId, fleet.empireId)} · осталось ${formatGameDuration(Math.max(0, fleet.location.arrivesAt - state.clock.elapsedSeconds))}`;
     body.append(route);
   }
   card.append(visual, body);
@@ -368,7 +331,6 @@ export function mountFleetOperationsWorkspace(
       notice.textContent = `Цель с карты: ${pendingTarget.label} · ${missionLabel(pendingTarget.mission)}`;
       section.append(notice);
     }
-    const colonizationTargets = getColonizationTargets(state);
     const fleets = state.fleets.filter(
       (fleet) => fleet.empireId === 'player' && fleet.status === 'stationed' && fleet.location.type === 'planet',
     );
@@ -405,6 +367,11 @@ export function mountFleetOperationsWorkspace(
       send.dataset.testid = `mission-send-${fleet.id}`;
       send.textContent = 'Подтвердить отправку';
       const refreshPreview = (): void => {
+        if (target.value.length === 0) {
+          preview.textContent = 'Для выбранной миссии нет доступных целей.';
+          send.disabled = true;
+          return;
+        }
         const route = createFleetRoutePreview(
           options.getState(),
           fleet,
@@ -416,26 +383,31 @@ export function mountFleetOperationsWorkspace(
           send.disabled = true;
           return;
         }
-        preview.textContent = `Дистанция ${route.distance} · ${formatGameDuration(route.durationSeconds)} · резерв газа ${route.reservedFuel}/${route.originGas}`;
-        send.disabled = !route.hasEnoughFuel;
+        const slots = `слоты ${route.slotUsed}/${route.slotCapacity}`;
+        preview.textContent = route.allowed
+          ? `Дистанция ${route.distance} · ${formatGameDuration(route.durationSeconds)} · резерв газа ${route.reservedFuel}/${route.originGas} · ${slots}`
+          : `${route.message} · ${slots}`;
+        send.disabled = !route.allowed;
       };
       const renderTargets = (): void => {
         target.replaceChildren();
         const missionKind = readMissionKind(mission.value);
-        if (missionKind === 'colonize') {
-          for (const candidate of colonizationTargets) {
-            const option = document.createElement('option');
-            option.value = candidate.planet.id;
-            option.textContent = `${candidate.system.name} · позиция ${candidate.planet.position}`;
-            target.append(option);
-          }
-        } else {
-          for (const planet of getRegularTargets(options.getState(), fleet, missionKind)) {
-            const option = document.createElement('option');
-            option.value = planet.id;
-            option.textContent = `${planet.name} · ${planet.ownerEmpireId}`;
-            target.append(option);
-          }
+        const candidates = createFleetMissionTargets(
+          options.getState(),
+          fleet,
+          missionKind,
+        );
+        for (const candidate of candidates) {
+          const option = document.createElement('option');
+          option.value = candidate.id;
+          option.textContent = candidate.label;
+          target.append(option);
+        }
+        if (candidates.length === 0) {
+          const empty = document.createElement('option');
+          empty.value = '';
+          empty.textContent = 'Нет доступных целей';
+          target.append(empty);
         }
         if (pendingTarget !== null && [...target.options].some((option) => option.value === pendingTarget?.targetId)) {
           target.value = pendingTarget.targetId;

@@ -59,6 +59,56 @@ function addPlayerFleet(
   };
 }
 
+function addFullPlayerObservation(
+  state: GameState,
+  targetId: string,
+): GameState {
+  const target = state.planets.find((planet) => planet.id === targetId);
+  if (target === undefined) throw new Error('Pirate target missing.');
+  return {
+    ...state,
+    intelligence: state.intelligence.map((entry) =>
+      entry.empireId === 'player'
+        ? {
+            ...entry,
+            observations: [
+              ...entry.observations,
+              {
+                id: `pirate-intel-${target.id}`,
+                observerEmpireId: 'player',
+                targetPlanetId: target.id,
+                coordinate: target.coordinate,
+                observedAt: state.clock.elapsedSeconds,
+                expiresAt: state.clock.elapsedSeconds + 86_400,
+                detected: false,
+                snapshot: {
+                  planetId: target.id,
+                  coordinate: target.coordinate,
+                  name: target.name,
+                  ownerEmpireId: target.ownerEmpireId,
+                  factionId: target.factionId,
+                  level: 3,
+                  resources: {
+                    metal: target.economy.resources.metal.amount,
+                    crystal: target.economy.resources.crystal.amount,
+                    gas: target.economy.resources.gas.amount,
+                    energyProduced: target.economy.energy.produced,
+                    energyConsumed: target.economy.energy.consumed,
+                  },
+                  buildings: Object.fromEntries(
+                    target.buildings.map((building) => [building.buildingId, building.level]),
+                  ),
+                  defenses: { ...target.inventory.defenses },
+                  stationedFleets: [],
+                },
+              },
+            ],
+          }
+        : entry,
+    ),
+  };
+}
+
 describe('neutral pirate bases', () => {
   it('generates deterministic occupied non-gas positions for new games', () => {
     const first = createInitialGameState('neutral-pirates');
@@ -125,13 +175,14 @@ describe('neutral pirate bases', () => {
     expect(observation?.snapshot.ownerEmpireId).toBe(PIRATE_EMPIRE_ID);
   });
 
-  it('accepts a pirate base as a normal attack target', () => {
-    const state = addPlayerFleet(
+  it('accepts a fully scouted pirate base as a normal attack target', () => {
+    const withFleet = addPlayerFleet(
       createInitialGameState('neutral-pirate-attack'),
       'player-pirate-strike',
       { 'ship.aegis.fighter': 3 },
     );
-    const target = state.planets.find(isPiratePlanet)!;
+    const target = withFleet.planets.find(isPiratePlanet)!;
+    const state = addFullPlayerObservation(withFleet, target.id);
     const sent = executeCommand(state, {
       type: 'SEND_FLEET',
       empireId: 'player',

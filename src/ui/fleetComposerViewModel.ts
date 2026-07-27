@@ -1,15 +1,17 @@
 import type { ResourceCost } from '../simulation/economy/types';
-import { getCommanderFleetEffects } from '../simulation/command/commanderShips';
-import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
+import {
+  getMissionAvailability,
+  isOrdinaryMissionKind,
+  listMissionTargets,
+  type MissionAvailabilityCode,
+  type OrdinaryMissionKind,
+  type RedactedMissionTarget,
+} from '../simulation/fleets/missionRules';
 import {
   calculateFleetComposition,
   getCargoAmount,
   validateShipComposition,
 } from '../simulation/fleets/fleetCalculations';
-import {
-  estimateFlight,
-  estimateFlightToGalaxyPlanet,
-} from '../simulation/fleets/flightCalculations';
 import type { FleetMissionKind, FleetState } from '../simulation/fleets/types';
 import type { GameState } from '../simulation/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
@@ -36,12 +38,18 @@ export interface FleetComposerViewModel {
 }
 
 export interface FleetRoutePreview {
+  readonly allowed: boolean;
+  readonly code: MissionAvailabilityCode;
+  readonly message: string;
   readonly distance: number;
   readonly durationSeconds: number;
   readonly oneWayFuel: number;
   readonly reservedFuel: number;
   readonly originGas: number;
   readonly hasEnoughFuel: boolean;
+  readonly slotCapacity: number;
+  readonly slotUsed: number;
+  readonly target: RedactedMissionTarget | null;
 }
 
 function normalizeCount(value: number): number {
@@ -126,9 +134,12 @@ export function createFleetComposerViewModel(
   };
 }
 
-function getFleetSpeedBonus(state: GameState, fleet: FleetState): number {
-  return getResearchEffectsForEmpire(state, fleet.empireId).fleetSpeedPercent +
-    getCommanderFleetEffects(state, fleet).speedBonusPercent;
+export function createFleetMissionTargets(
+  state: GameState,
+  fleet: FleetState,
+  mission: OrdinaryMissionKind,
+): readonly RedactedMissionTarget[] {
+  return listMissionTargets(state, fleet.empireId, fleet, mission);
 }
 
 export function createFleetRoutePreview(
@@ -137,45 +148,26 @@ export function createFleetRoutePreview(
   mission: FleetMissionKind,
   targetPlanetId: string,
 ): FleetRoutePreview | undefined {
-  const location = fleet.location;
-  if (fleet.status !== 'stationed' || location.type !== 'planet') {
-    return undefined;
-  }
-  const origin = state.planets.find(
-    (planet) => planet.id === location.planetId,
-  );
-  if (origin === undefined) return undefined;
-
-  let estimate;
-  try {
-    estimate = mission === 'colonize'
-      ? estimateFlightToGalaxyPlanet(
-          state.galaxy,
-          state.planets,
-          fleet,
-          targetPlanetId,
-          getFleetSpeedBonus(state, fleet),
-        )
-      : estimateFlight(
-          state.galaxy,
-          state.planets,
-          fleet,
-          targetPlanetId,
-          getFleetSpeedBonus(state, fleet),
-        );
-  } catch {
-    return undefined;
-  }
-
-  const reservedFuel =
-    mission === 'colonize' ? estimate.fuelCost : estimate.fuelCost * 2;
-  const originGas = origin.economy.resources.gas.amount;
+  if (!isOrdinaryMissionKind(mission)) return undefined;
+  const availability = getMissionAvailability(state, {
+    type: 'SEND_FLEET',
+    empireId: fleet.empireId,
+    fleetId: fleet.id,
+    targetPlanetId,
+    mission,
+  });
   return {
-    distance: estimate.distance,
-    durationSeconds: estimate.durationSeconds,
-    oneWayFuel: estimate.fuelCost,
-    reservedFuel,
-    originGas,
-    hasEnoughFuel: originGas >= reservedFuel,
+    allowed: availability.allowed,
+    code: availability.code,
+    message: availability.message,
+    distance: availability.estimate?.distance ?? 0,
+    durationSeconds: availability.estimate?.durationSeconds ?? 0,
+    oneWayFuel: availability.estimate?.fuelCost ?? 0,
+    reservedFuel: availability.fuelRequired,
+    originGas: availability.originGas,
+    hasEnoughFuel: availability.code !== 'INSUFFICIENT_FLIGHT_FUEL',
+    slotCapacity: availability.slotCapacity,
+    slotUsed: availability.slotUsed,
+    target: availability.target,
   };
 }

@@ -1,18 +1,18 @@
 {
-  "statusVersion": 20,
+  "statusVersion": 21,
   "updatedAt": "2026-07-27",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 116,
-  "lastMergeSha": "3cdd4f106f163a57a564d8ac2b2ff3c38b5ebbe5",
-  "verifiedMainBaseline": "Audit PR #116 clean-head CI, Browser E2E and Graphify; runtime remains post-PR #115",
+  "lastMergedPr": 117,
+  "lastMergeSha": "recorded in GitHub PR #117 merge metadata",
+  "verifiedMainBaseline": "PR #117 clean-head asset audit, lint, TypeScript, 372-test suite, production build, Browser E2E and Graphify",
   "activePr": null,
-  "nextPrAfterActive": 117,
+  "nextPrAfterActive": 118,
   "nextPrKind": "implementation",
-  "currentMilestone": "M4 ordinary missions and intelligence audit accepted",
+  "currentMilestone": "M4 shared ordinary mission rules delivered; espionage and counter-intelligence next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -29,18 +29,8 @@
     "auditPr": 111,
     "auditStatus": "completed",
     "implementationCount": 4,
-    "implementationPrs": [
-      112,
-      113,
-      114,
-      115
-    ],
-    "completedImplementationPrs": [
-      112,
-      113,
-      114,
-      115
-    ],
+    "implementationPrs": [112, 113, 114, 115],
+    "completedImplementationPrs": [112, 113, 114, 115],
     "status": "completed",
     "archive": "docs/audits/completed/coherent-ui-shell-01.md",
     "authorizedAuditArchive": "docs/audits/completed/coherent-ui-shell-01-authorized-audit.md",
@@ -54,21 +44,16 @@
     "auditStatus": "accepted",
     "baselineSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
     "implementationCount": 4,
-    "implementationPrs": [
-      117,
-      118,
-      119,
-      120
-    ],
-    "completedImplementationPrs": [],
+    "implementationPrs": [117, 118, 119, 120],
+    "completedImplementationPrs": [117],
     "workItems": [
       "MISSION-RULES-REGISTRY",
       "ESPIONAGE-COUNTERINTELLIGENCE",
       "INTELLIGENCE-REPORTS-PRESENTATION",
       "MISSION-INTELLIGENCE-BOT-GATE"
     ],
-    "status": "implementation-not-started",
-    "nextWorkItem": "MISSION-RULES-REGISTRY",
+    "status": "in-progress",
+    "nextWorkItem": "ESPIONAGE-COUNTERINTELLIGENCE",
     "archive": null
   },
   "auditDecisions": {
@@ -76,18 +61,8 @@
     "schemaChange": false,
     "newGameplayCommands": false,
     "newMissionKinds": false,
-    "ordinaryMissionKinds": [
-      "transport",
-      "deploy",
-      "scout",
-      "attack",
-      "recycle",
-      "colonize"
-    ],
-    "specializedMissionOwnershipPreserved": [
-      "expedition",
-      "space-object"
-    ],
+    "ordinaryMissionKinds": ["transport", "deploy", "scout", "attack", "recycle", "colonize"],
+    "specializedMissionOwnershipPreserved": ["expedition", "space-object"],
     "sharedMissionRulesRequired": true,
     "flightSlotsActivatedFromExistingResearch": true,
     "attackRequiresCurrentLevelThreeIntelligence": true,
@@ -100,32 +75,14 @@
     "criticalUnknowns": 0
   },
   "scenarioPresets": {
-    "test": {
-      "populatedGalaxies": 2,
-      "systemsPerGalaxy": 9
-    },
-    "campaign": {
-      "populatedGalaxies": 6,
-      "systemsPerGalaxy": 27
-    },
-    "fidelity": {
-      "populatedGalaxies": 15,
-      "systemsPerGalaxy": 81
-    }
+    "test": { "populatedGalaxies": 2, "systemsPerGalaxy": 9 },
+    "campaign": { "populatedGalaxies": 6, "systemsPerGalaxy": 27 },
+    "fidelity": { "populatedGalaxies": 15, "systemsPerGalaxy": 81 }
   },
   "batchSizing": {
-    "heavy": [
-      1,
-      2
-    ],
-    "medium": [
-      4,
-      4
-    ],
-    "light": [
-      6,
-      6
-    ]
+    "heavy": [1, 2],
+    "medium": [4, 4],
+    "light": [6, 6]
   },
   "deliveredCatalogs": {
     "buildingsPerFaction": 24,
@@ -149,12 +106,17 @@
     "GameApplicationController and nine canonical primary route families",
     "routed development, fleet, operations, command, reports and system workspaces",
     "persistent HUD, route-aware context, keyboard, compact and reduced-motion accessibility",
+    "shared pure ordinary mission availability for reducer, Fleet UI and bots",
+    "research-derived flight-slot enforcement and current level-three attack intelligence",
+    "redacted Fleet mission targets without unknown owner or faction leakage",
+    "checksum-stable E2E app readiness without changing production bot scheduling",
     "full-shell Browser E2E and Graphify validation"
   ],
   "activeDelivery": [],
   "knownLimitations": [
-    "ordinary mission eligibility is duplicated until PR #117",
-    "scout cooldown, probe loss and intelligence reports are not implemented until PR #118-#119",
+    "scout cooldown, exact one-probe composition, probe loss and defender-alert depth remain for PR #118",
+    "routed intelligence reports and incoming-flight presentation remain for PR #119",
+    "combined bot mission-intelligence gate remains for PR #120",
     "complete planet destruction and recovery remain unaudited",
     "multi-colony economy and logistics coherence remain a separate future audit",
     "deeper PvE/meta systems and complete bot parity remain incomplete",
@@ -169,7 +131,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on Audit PR #116 head",
+    "lastValidation": "passed on PR #117 clean head",
     "lastAuditGraph": {
       "nodes": 2130,
       "relationships": 6795,
@@ -207,5 +169,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged GitHub pull requests and actual main"
   ],
-  "nextAction": "Create PR #117 from fresh post-#116 main and implement only MISSION-RULES-REGISTRY."
+  "nextAction": "Create PR #118 from fresh post-#117 main and implement only ESPIONAGE-COUNTERINTELLIGENCE."
 }

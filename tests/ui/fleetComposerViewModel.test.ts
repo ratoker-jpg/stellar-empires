@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import type { FleetState } from '../../src/simulation/fleets/types';
 import type { GameState } from '../../src/simulation/types';
 import {
   createFleetComposerViewModel,
+  createFleetMissionTargets,
   createFleetRoutePreview,
 } from '../../src/ui/fleetComposerViewModel';
 
@@ -47,6 +49,24 @@ function prepareState(): GameState {
           }
         : planet,
     ),
+  };
+}
+
+function previewFleet(state: GameState): FleetState {
+  const home = state.planets.find(
+    (planet) => planet.ownerEmpireId === 'player',
+  )!;
+  return {
+    id: 'preview-fleet',
+    empireId: 'player',
+    originPlanetId: home.id,
+    location: { type: 'planet', planetId: home.id },
+    status: 'stationed',
+    ships: { 'ship.aegis.scout': 2 },
+    cargo: { metal: 0, crystal: 0, gas: 0 },
+    speed: 14,
+    cargoCapacity: 40,
+    mission: null,
   };
 }
 
@@ -98,24 +118,11 @@ describe('fleet composer view model', () => {
     );
   });
 
-  it('creates deterministic route previews with round-trip fuel', () => {
-    const state = prepareState();
-    const home = state.planets.find(
-      (planet) => planet.ownerEmpireId === 'player',
-    )!;
-    const target = state.planets.find((planet) => planet.id !== home.id)!;
-    const fleet = {
-      id: 'preview-fleet',
-      empireId: 'player',
-      originPlanetId: home.id,
-      location: { type: 'planet' as const, planetId: home.id },
-      status: 'stationed' as const,
-      ships: { 'ship.aegis.scout': 2 },
-      cargo: { metal: 0, crystal: 0, gas: 0 },
-      speed: 14,
-      cargoCapacity: 40,
-      mission: null,
-    };
+  it('creates deterministic route previews from the shared mission rule', () => {
+    const base = prepareState();
+    const fleet = previewFleet(base);
+    const state = { ...base, fleets: [fleet] };
+    const target = state.planets.find((planet) => planet.ownerEmpireId !== 'player')!;
     const first = createFleetRoutePreview(
       state,
       fleet,
@@ -129,7 +136,25 @@ describe('fleet composer view model', () => {
       target.id,
     );
     expect(first).toEqual(second);
+    expect(first).toMatchObject({
+      allowed: true,
+      code: 'MISSION_READY',
+      slotUsed: 0,
+    });
     expect(first?.reservedFuel).toBe((first?.oneWayFuel ?? 0) * 2);
     expect(first?.hasEnoughFuel).toBe(true);
+  });
+
+  it('builds redacted scout target labels without raw foreign owner IDs', () => {
+    const base = prepareState();
+    const fleet = previewFleet(base);
+    const state = { ...base, fleets: [fleet] };
+    const targets = createFleetMissionTargets(state, fleet, 'scout');
+    const contact = targets.find((target) => target.visibility === 'contact');
+
+    expect(contact).toBeDefined();
+    expect(contact?.knownOwnerEmpireId).toBeNull();
+    expect(contact?.label).toContain('неизвестный контакт');
+    expect(state.empires.some((empireId) => contact?.label.includes(empireId))).toBe(false);
   });
 });

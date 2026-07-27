@@ -28,43 +28,90 @@ function prepareAttackState(seed: string): GameState {
   const target = state.planets.find((planet) => planet.ownerEmpireId !== 'player');
   if (origin === undefined || target === undefined) throw new Error('Combat test planets missing.');
 
+  const planets = state.planets.map((planet) => {
+    if (planet.id === origin.id) {
+      return {
+        ...planet,
+        inventory: {
+          ...planet.inventory,
+          ships: {
+            'ship.aegis.fighter': 12,
+            'ship.aegis.frigate': 4,
+          },
+        },
+        economy: {
+          ...planet.economy,
+          resources: {
+            ...planet.economy.resources,
+            gas: {
+              ...planet.economy.resources.gas,
+              amount: 100_000,
+              capacity: 100_000,
+            },
+          },
+        },
+      };
+    }
+    if (planet.id === target.id) {
+      return {
+        ...planet,
+        inventory: {
+          ...planet.inventory,
+          defenses: { 'defense.aegis.gun-battery': 3 },
+        },
+      };
+    }
+    return planet;
+  });
+  const preparedTarget = planets.find((planet) => planet.id === target.id)!;
+
   return {
     ...state,
-    planets: state.planets.map((planet) => {
-      if (planet.id === origin.id) {
-        return {
-          ...planet,
-          inventory: {
-            ...planet.inventory,
-            ships: {
-              'ship.aegis.fighter': 12,
-              'ship.aegis.frigate': 4,
-            },
-          },
-          economy: {
-            ...planet.economy,
-            resources: {
-              ...planet.economy.resources,
-              gas: {
-                ...planet.economy.resources.gas,
-                amount: 100_000,
-                capacity: 100_000,
+    planets,
+    intelligence: state.intelligence.map((entry) =>
+      entry.empireId === 'player'
+        ? {
+            ...entry,
+            observations: [
+              ...entry.observations,
+              {
+                id: `combat-intel-${target.id}`,
+                observerEmpireId: 'player',
+                targetPlanetId: target.id,
+                coordinate: target.coordinate,
+                observedAt: state.clock.elapsedSeconds,
+                expiresAt: state.clock.elapsedSeconds + 86_400,
+                detected: false,
+                snapshot: {
+                  planetId: preparedTarget.id,
+                  coordinate: preparedTarget.coordinate,
+                  name: preparedTarget.name,
+                  ownerEmpireId: preparedTarget.ownerEmpireId,
+                  factionId: preparedTarget.factionId,
+                  level: 3,
+                  resources: {
+                    metal: preparedTarget.economy.resources.metal.amount,
+                    crystal: preparedTarget.economy.resources.crystal.amount,
+                    gas: preparedTarget.economy.resources.gas.amount,
+                    energyProduced: preparedTarget.economy.energy.produced,
+                    energyConsumed: preparedTarget.economy.energy.consumed,
+                  },
+                  buildings: Object.fromEntries(
+                    preparedTarget.buildings.map((building) => [building.buildingId, building.level]),
+                  ),
+                  defenses: { ...preparedTarget.inventory.defenses },
+                  stationedFleets: [
+                    {
+                      fleetId: 'defender-fleet',
+                      ships: { 'ship.aegis.fighter': 3 },
+                    },
+                  ],
+                },
               },
-            },
-          },
-        };
-      }
-      if (planet.id === target.id) {
-        return {
-          ...planet,
-          inventory: {
-            ...planet.inventory,
-            defenses: { 'defense.aegis.gun-battery': 3 },
-          },
-        };
-      }
-      return planet;
-    }),
+            ],
+          }
+        : entry,
+    ),
     fleets: [
       {
         id: 'defender-fleet',
