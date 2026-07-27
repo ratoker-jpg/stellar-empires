@@ -31,7 +31,7 @@ describe('E2E scenario fixture', () => {
           Object.keys(state.botAutomation.nextDecisionAtByEmpire).map(
             (empireId) => [empireId, later],
           ),
-        },
+        ),
       },
     };
 
