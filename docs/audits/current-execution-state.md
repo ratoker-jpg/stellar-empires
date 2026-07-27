@@ -14,8 +14,8 @@
 | Completed implementation PRs | #117 `MISSION-RULES-REGISTRY` — completed by merge of this PR |
 | Active implementation PR | none after #117 merge |
 | Active work item | none after #117 merge |
-| Last completed atomic action | unified ordinary mission availability across reducer dispatch, Fleet UI and bot preflight; activated flight slots, current level-three attack intelligence and redacted mission target labels |
-| Last successful validation | PR #117 clean-head asset audit, lint, TypeScript, 370-test suite, production build, Browser E2E and Graphify |
+| Last completed atomic action | unified ordinary mission availability across reducer dispatch, Fleet UI and bot preflight; activated flight slots, current level-three attack intelligence and redacted mission target labels; stabilized E2E app readiness against the asynchronous bot scheduler |
+| Last successful validation | PR #117 clean-head asset audit, lint, TypeScript, 372-test suite, production build, Browser E2E and Graphify |
 | Exact next action | create PR #118 from fresh post-#117 `main` and implement only `ESPIONAGE-COUNTERINTELLIGENCE` |
 | Blockers | none |
 | Divergence | none; schema remains v14 and no command or mission kind was added |
@@ -29,6 +29,7 @@
 - attack requires current level-three intelligence;
 - Fleet composer target labels use the redacted Galaxy intelligence model and do not expose unknown owner/faction IDs;
 - specialized Expedition and Space Object command ownership remains unchanged;
+- E2E fixture decisions are deferred before `appReady`, preventing asynchronous bot-cursor checksum drift while leaving production scheduling unchanged;
 - no save field, migration, balance table, asset or framework changed.
 
 ## Remaining accepted sequence
@@ -44,7 +45,7 @@
 - asset pipeline check: passed;
 - lint: passed;
 - TypeScript: passed;
-- full unit suite: 370 tests passed;
+- full unit suite: 372 tests passed;
 - production build: passed;
 - Chromium Browser E2E: passed;
 - Graphify: passed;
