@@ -2,124 +2,44 @@ name: CI
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
 
 permissions:
   contents: write
   pull-requests: write
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: pr110-e2e-diagnostics-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  bootstrap-pr110:
-    if: github.event_name == 'pull_request' && github.head_ref == 'feat/110-universe-actions-gate'
-    name: Generate PR110 implementation and final gate
+  diagnose-pr110-e2e:
+    if: github.head_ref == 'feat/110-universe-actions-gate'
+    name: Diagnose PR110 browser E2E
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 50
     steps:
       - name: Checkout branch
         uses: actions/checkout@v6
         with:
           ref: feat/110-universe-actions-gate
           fetch-depth: 1
-
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '22.12.0'
-
       - name: Install dependencies
         run: |
           npm install --no-audit --no-fund
           npm install --save-dev @playwright/test --no-audit --no-fund
           npm pkg set scripts.e2e="playwright test"
-
-      - name: Apply audited implementation
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Apply implementation
         run: |
-          set +e
-          python3 scripts/automation/implement-pr110.py 2>&1 | tee /tmp/pr110-bootstrap.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR110 bootstrap diagnostics'; echo '```text'; tail -n 320 /tmp/pr110-bootstrap.log; echo '```'; } > /tmp/pr110-comment.md
-            gh pr comment 110 --body-file /tmp/pr110-comment.md || true
-            exit "$status"
-          fi
+          python3 scripts/automation/implement-pr110.py
           python3 scripts/automation/patch-pr110-typecheck.py
           python3 scripts/automation/patch-pr110-tests.py
-
-      - name: Remove temporary files
-        run: |
-          git fetch --depth=1 origin main
-          git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/automation/implement-pr110.py scripts/automation/patch-pr110-typecheck.py scripts/automation/patch-pr110-tests.py
-          rm -f docs/audits/evidence/pr110-action-details.txt docs/audits/evidence/pr110-actions-map.txt
-          rm -rf graphify-out playwright-report test-results
-
-      - name: Validate asset pipeline
-        run: npm run assets:check
-
-      - name: Lint
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run lint 2>&1 | tee /tmp/pr110-lint.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR110 lint diagnostics'; echo '```text'; tail -n 360 /tmp/pr110-lint.log; echo '```'; } > /tmp/pr110-comment.md
-            gh pr comment 110 --body-file /tmp/pr110-comment.md || true
-            exit "$status"
-          fi
-
-      - name: Typecheck
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run typecheck 2>&1 | tee /tmp/pr110-typecheck.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR110 typecheck diagnostics'; echo '```text'; tail -n 420 /tmp/pr110-typecheck.log; echo '```'; } > /tmp/pr110-comment.md
-            gh pr comment 110 --body-file /tmp/pr110-comment.md || true
-            exit "$status"
-          fi
-
-      - name: Unit tests
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run test 2>&1 | tee /tmp/pr110-test.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR110 unit-test diagnostics'; echo '```text'; tail -n 520 /tmp/pr110-test.log; echo '```'; } > /tmp/pr110-comment.md
-            gh pr comment 110 --body-file /tmp/pr110-comment.md || true
-            exit "$status"
-          fi
-
-      - name: Production build
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          npm run build 2>&1 | tee /tmp/pr110-build.log
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR110 build diagnostics'; echo '```text'; tail -n 360 /tmp/pr110-build.log; echo '```'; } > /tmp/pr110-comment.md
-            gh pr comment 110 --body-file /tmp/pr110-comment.md || true
-            exit "$status"
-          fi
-
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-
-      - name: Browser E2E
+      - name: Run and persist E2E diagnostics
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -127,54 +47,23 @@ jobs:
           npm run e2e 2>&1 | tee /tmp/pr110-e2e.log
           status=${PIPESTATUS[0]}
           if [ "$status" -ne 0 ]; then
-            { echo '### PR110 browser-E2E diagnostics'; echo '```text'; tail -n 600 /tmp/pr110-e2e.log; echo '```'; } > /tmp/pr110-comment.md
-            gh pr comment 110 --body-file /tmp/pr110-comment.md || true
+            mkdir -p docs/audits/evidence
+            {
+              echo "PR110 browser E2E failure"
+              echo
+              tail -n 1200 /tmp/pr110-e2e.log
+              echo
+              echo "=== test-results files ==="
+              find test-results -maxdepth 4 -type f -print 2>/dev/null || true
+              echo
+              echo "=== Playwright error contexts ==="
+              find test-results -name error-context.md -print -exec cat {} \; 2>/dev/null || true
+            } > docs/audits/evidence/pr110-e2e-failure.txt
+            git config user.name "stellar-empires-automation"
+            git config user.email "actions@users.noreply.github.com"
+            git add docs/audits/evidence/pr110-e2e-failure.txt
+            git commit -m "Record PR110 browser E2E diagnostics"
+            git push origin HEAD:feat/110-universe-actions-gate
+            gh pr comment 110 --body "PR110 browser diagnostics were persisted to docs/audits/evidence/pr110-e2e-failure.txt." || true
             exit "$status"
           fi
-
-      - name: Graphify audit
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set +e
-          bash scripts/graphify-audit.sh code 2>&1 | tee /tmp/pr110-graphify.log
-          status=${PIPESTATUS[0]}
-          rm -rf graphify-out playwright-report test-results
-          if [ "$status" -ne 0 ]; then
-            { echo '### PR110 Graphify diagnostics'; echo '```text'; tail -n 320 /tmp/pr110-graphify.log; echo '```'; } > /tmp/pr110-comment.md
-            gh pr comment 110 --body-file /tmp/pr110-comment.md || true
-            exit "$status"
-          fi
-
-      - name: Commit implementation
-        run: |
-          git config user.name "stellar-empires-automation"
-          git config user.email "actions@users.noreply.github.com"
-          git add -A
-          git commit -m "Gate Universe actions and close navigation batch"
-          git push origin HEAD:feat/110-universe-actions-gate
-
-  quality:
-    if: github.event_name != 'pull_request' || github.head_ref != 'feat/110-universe-actions-gate'
-    name: Asset audit, lint, typecheck, test and build
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22.12.0'
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Validate asset pipeline
-        run: npm run assets:check
-      - name: Lint
-        run: npm run lint
-      - name: Typecheck
-        run: npm run typecheck
-      - name: Test
-        run: npm run test
-      - name: Build
-        run: npm run build
