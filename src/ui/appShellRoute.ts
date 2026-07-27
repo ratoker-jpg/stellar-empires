@@ -22,7 +22,14 @@ export type OperationsShellMode = (typeof OPERATIONS_SHELL_MODES)[number];
 export const COMMAND_SHELL_MODES = ['overview', 'doctrine', 'fleet-doctrine', 'upgrades'] as const;
 export type CommandShellMode = (typeof COMMAND_SHELL_MODES)[number];
 
-export const REPORT_SHELL_FILTERS = ['all', 'combat', 'expedition', 'object', 'event'] as const;
+export const REPORT_SHELL_FILTERS = [
+  'all',
+  'combat',
+  'expedition',
+  'object',
+  'event',
+  'intelligence',
+] as const;
 export type ReportShellFilter = (typeof REPORT_SHELL_FILTERS)[number];
 
 export const SYSTEM_SHELL_MODES = ['saves', 'settings'] as const;
