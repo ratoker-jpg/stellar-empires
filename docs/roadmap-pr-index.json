@@ -6,9 +6,9 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
     "lastMergedPr": 117,
-    "mergeSha": "recorded in GitHub PR #117 merge metadata",
+    "mergeSha": "669cca1510f242cb7069831420edd488af435d4d",
     "runtimeBaselinePr": 117,
-    "runtimeBaselineSha": "recorded in GitHub PR #117 merge metadata"
+    "runtimeBaselineSha": "669cca1510f242cb7069831420edd488af435d4d"
   },
   "activePr": null,
   "nextPrAfterActive": 118,
@@ -101,10 +101,10 @@
     { "number": 114, "kind": "implementation", "workItem": "UI-SHELL-FLEET-OPERATIONS-WORKSPACES", "title": "Route fleet and operations workspaces", "status": "merged", "mergeSha": "a61fa2778f53c3ca2c6f19ef16b4645bf432732f" },
     { "number": 115, "kind": "implementation", "workItem": "UI-SHELL-COMMAND-SYSTEM-GATE", "title": "Complete command, system and full-shell gate", "status": "merged", "mergeSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c" },
     { "number": 116, "kind": "audit", "title": "Audit ordinary missions and intelligence", "status": "merged", "mergeSha": "3cdd4f106f163a57a564d8ac2b2ff3c38b5ebbe5" },
-    { "number": 117, "kind": "implementation", "workItem": "MISSION-RULES-REGISTRY", "title": "Unify ordinary mission rules", "status": "merged-on-this-pr", "mergeSha": "recorded in GitHub PR #117 merge metadata" },
+    { "number": 117, "kind": "implementation", "workItem": "MISSION-RULES-REGISTRY", "title": "Unify ordinary mission rules", "status": "merged", "mergeSha": "669cca1510f242cb7069831420edd488af435d4d" },
     { "number": 118, "kind": "implementation", "workItem": "ESPIONAGE-COUNTERINTELLIGENCE", "title": "Complete espionage and counter-intelligence", "status": "planned" },
     { "number": 119, "kind": "implementation", "workItem": "INTELLIGENCE-REPORTS-PRESENTATION", "title": "Route intelligence reports and redacted presentation", "status": "planned" },
     { "number": 120, "kind": "implementation", "workItem": "MISSION-INTELLIGENCE-BOT-GATE", "title": "Gate mission intelligence bot parity", "status": "planned" }
   ],
-  "nextAction": "After PR #117 merges, create PR #118 from fresh main and implement only ESPIONAGE-COUNTERINTELLIGENCE."
+  "nextAction": "Create PR #118 from fresh main and implement only ESPIONAGE-COUNTERINTELLIGENCE."
 }
