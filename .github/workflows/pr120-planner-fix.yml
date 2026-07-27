@@ -21,64 +21,11 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import base64
+          old = base64.b64decode('ICBmb3IgKGNvbnN0IGZsZWV0IG9mIGZsZWV0cy5maWx0ZXIoKGNhbmRpZGF0ZSkgPT4gaGFzUm9sZShjYW5kaWRhdGUsICdzY291dCcpKSkgewogICAgY29uc3QgYWN0dWFsID0gcmVhbEZsZWV0KHN0YXRlLCBmbGVldCk7CiAgICBpZiAoYWN0dWFsID09PSB1bmRlZmluZWQpIGNvbnRpbnVlOwogICAgY29uc3QgdGFyZ2V0cyA9IFsuLi5saXN0TWlzc2lvblRhcmdldHMoc3RhdGUsIHBlcmNlcHRpb24uZW1waXJlSWQsIGFjdHVhbCwgJ3Njb3V0JyldLnNvcnQoCiAgICAgIChsZWZ0LCByaWdodCkgPT4KICAgICAgICBOdW1iZXIobGVmdC52aXNpYmlsaXR5ID09PSAnY3VycmVudCcpIC0gTnVtYmVyKHJpZ2h0LnZpc2liaWxpdHkgPT09ICdjdXJyZW50JykgfHwKICAgICAgICBsZWZ0LmlkLmxvY2FsZUNvbXBhcmUocmlnaHQuaWQpLAogICAgKTsKICAgIGZvciAoY29uc3QgdGFyZ2V0IG9mIHRhcmdldHMpIHsKICAgICAgY29uc3QgcGxhbiA9IHRyeU1pc3Npb24oCiAgICAgICAgc3RhdGUsCiAgICAgICAgcGVyY2VwdGlvbiwKICAgICAgICBibG9ja2VycywKICAgICAgICBmbGVldCwKICAgICAgICAnc2NvdXQnLAogICAgICAgIHRhcmdldC5pZCwKICAgICAgICBg0KDQsNC30LLQtdC00YfQuNC6ICR7ZmxlZXQuaWR9INC/0YDQvtCy0LXRgNGP0LXRgiAke3RhcmdldC5sYWJlbH0uYCwKICAgICAgKTsKICAgICAgaWYgKHBsYW4gIT09IG51bGwpIHJldHVybiB7IHBsYW4sIGJsb2NrZXI6IG51bGwgfTsKICAgIH0KICB9').decode()
+          new = base64.b64decode('ICBjb25zdCBmdWxsQ3VycmVudFRhcmdldElkcyA9IG5ldyBTZXQoCiAgICBwZXJjZXB0aW9uLmZvcmVpZ25QbGFuZXRzCiAgICAgIC5maWx0ZXIoKHBsYW5ldCkgPT4gcGxhbmV0LmZyZXNobmVzcyA9PT0gJ2N1cnJlbnQnICYmIHBsYW5ldC5zbmFwc2hvdC5sZXZlbCA9PT0gMykKICAgICAgLm1hcCgocGxhbmV0KSA9PiBwbGFuZXQucGxhbmV0SWQpLAogICk7CiAgY29uc3Qgc2NvdXRQcmlvcml0eSA9ICh0YXJnZXRJZDogc3RyaW5nKTogbnVtYmVyID0+IHsKICAgIGNvbnN0IGludGVsbGlnZW5jZSA9IHBlcmNlcHRpb24uZm9yZWlnblBsYW5ldHMuZmluZCgocGxhbmV0KSA9PiBwbGFuZXQucGxhbmV0SWQgPT09IHRhcmdldElkKTsKICAgIGlmIChpbnRlbGxpZ2VuY2U/LmZyZXNobmVzcyA9PT0gJ3N0YWxlJykgcmV0dXJuIDA7CiAgICBpZiAoaW50ZWxsaWdlbmNlICE9PSB1bmRlZmluZWQgJiYgaW50ZWxsaWdlbmNlLnNuYXBzaG90LmxldmVsIDwgMykgcmV0dXJuIDE7CiAgICByZXR1cm4gMjsKICB9OwoKICBmb3IgKGNvbnN0IGZsZWV0IG9mIGZsZWV0cy5maWx0ZXIoKGNhbmRpZGF0ZSkgPT4gaGFzUm9sZShjYW5kaWRhdGUsICdzY291dCcpKSkgewogICAgY29uc3QgYWN0dWFsID0gcmVhbEZsZWV0KHN0YXRlLCBmbGVldCk7CiAgICBpZiAoYWN0dWFsID09PSB1bmRlZmluZWQpIGNvbnRpbnVlOwogICAgY29uc3QgdGFyZ2V0ID0gWy4uLmxpc3RNaXNzaW9uVGFyZ2V0cyhzdGF0ZSwgcGVyY2VwdGlvbi5lbXBpcmVJZCwgYWN0dWFsLCAnc2NvdXQnKV0KICAgICAgLmZpbHRlcigoY2FuZGlkYXRlKSA9PiAhZnVsbEN1cnJlbnRUYXJnZXRJZHMuaGFzKGNhbmRpZGF0ZS5pZCkpCiAgICAgIC5zb3J0KAogICAgICAgIChsZWZ0LCByaWdodCkgPT4KICAgICAgICAgIHNjb3V0UHJpb3JpdHkobGVmdC5pZCkgLSBzY291dFByaW9yaXR5KHJpZ2h0LmlkKSB8fCBsZWZ0LmlkLmxvY2FsZUNvbXBhcmUocmlnaHQuaWQpLAogICAgICApWzBdOwogICAgaWYgKHRhcmdldCA9PT0gdW5kZWZpbmVkKSBjb250aW51ZTsKICAgIGNvbnN0IHBsYW4gPSB0cnlNaXNzaW9uKAogICAgICBzdGF0ZSwKICAgICAgcGVyY2VwdGlvbiwKICAgICAgYmxvY2tlcnMsCiAgICAgIGZsZWV0LAogICAgICAnc2NvdXQnLAogICAgICB0YXJnZXQuaWQsCiAgICAgIGDQoNCw0LfQstC10LTRh9C40LogJHtmbGVldC5pZH0g0L/RgNC+0LLQtdGA0Y/QtdGCICR7dGFyZ2V0LmxhYmVsfS5gLAogICAgKTsKICAgIGlmIChwbGFuICE9PSBudWxsKSByZXR1cm4geyBwbGFuLCBibG9ja2VyOiBudWxsIH07CiAgfQ==').decode()
           path = Path('src/simulation/bots/fleetMissionPlanner.ts')
           text = path.read_text()
-          old = """  for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'scout'))) {
-    const actual = realFleet(state, fleet);
-    if (actual === undefined) continue;
-    const targets = [...listMissionTargets(state, perception.empireId, actual, 'scout')].sort(
-      (left, right) =>
-        Number(left.visibility === 'current') - Number(right.visibility === 'current') ||
-        left.id.localeCompare(right.id),
-    );
-    for (const target of targets) {
-      const plan = tryMission(
-        state,
-        perception,
-        blockers,
-        fleet,
-        'scout',
-        target.id,
-        `Разведчик ${fleet.id} проверяет ${target.label}.`,
-      );
-      if (plan !== null) return { plan, blocker: null };
-    }
-  }
-"""
-          new = """  const fullCurrentTargetIds = new Set(
-    perception.foreignPlanets
-      .filter((planet) => planet.freshness === 'current' && planet.snapshot.level === 3)
-      .map((planet) => planet.planetId),
-  );
-  const scoutPriority = (targetId: string): number => {
-    const intelligence = perception.foreignPlanets.find((planet) => planet.planetId === targetId);
-    if (intelligence?.freshness === 'stale') return 0;
-    if (intelligence !== undefined && intelligence.snapshot.level < 3) return 1;
-    return 2;
-  };
-
-  for (const fleet of fleets.filter((candidate) => hasRole(candidate, 'scout'))) {
-    const actual = realFleet(state, fleet);
-    if (actual === undefined) continue;
-    const target = [...listMissionTargets(state, perception.empireId, actual, 'scout')]
-      .filter((candidate) => !fullCurrentTargetIds.has(candidate.id))
-      .sort(
-        (left, right) =>
-          scoutPriority(left.id) - scoutPriority(right.id) || left.id.localeCompare(right.id),
-      )[0];
-    if (target === undefined) continue;
-    const plan = tryMission(
-      state,
-      perception,
-      blockers,
-      fleet,
-      'scout',
-      target.id,
-      `Разведчик ${fleet.id} проверяет ${target.label}.`,
-    );
-    if (plan !== null) return { plan, blocker: null };
-  }
-"""
           if old not in text:
               raise SystemExit('scout planner target missing')
           path.write_text(text.replace(old, new))
