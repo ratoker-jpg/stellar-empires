@@ -6,9 +6,9 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 115,
-  "lastMergeSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
-  "verifiedMainBaseline": "post-PR #115 main; coherent UI shell completed",
+  "lastMergedPr": 116,
+  "lastMergeSha": "3cdd4f106f163a57a564d8ac2b2ff3c38b5ebbe5",
+  "verifiedMainBaseline": "Audit PR #116 clean-head CI, Browser E2E and Graphify; runtime remains post-PR #115",
   "activePr": null,
   "nextPrAfterActive": 117,
   "nextPrKind": "implementation",
@@ -29,8 +29,18 @@
     "auditPr": 111,
     "auditStatus": "completed",
     "implementationCount": 4,
-    "implementationPrs": [112, 113, 114, 115],
-    "completedImplementationPrs": [112, 113, 114, 115],
+    "implementationPrs": [
+      112,
+      113,
+      114,
+      115
+    ],
+    "completedImplementationPrs": [
+      112,
+      113,
+      114,
+      115
+    ],
     "status": "completed",
     "archive": "docs/audits/completed/coherent-ui-shell-01.md",
     "authorizedAuditArchive": "docs/audits/completed/coherent-ui-shell-01-authorized-audit.md",
@@ -44,7 +54,12 @@
     "auditStatus": "accepted",
     "baselineSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
     "implementationCount": 4,
-    "implementationPrs": [117, 118, 119, 120],
+    "implementationPrs": [
+      117,
+      118,
+      119,
+      120
+    ],
     "completedImplementationPrs": [],
     "workItems": [
       "MISSION-RULES-REGISTRY",
@@ -61,8 +76,18 @@
     "schemaChange": false,
     "newGameplayCommands": false,
     "newMissionKinds": false,
-    "ordinaryMissionKinds": ["transport", "deploy", "scout", "attack", "recycle", "colonize"],
-    "specializedMissionOwnershipPreserved": ["expedition", "space-object"],
+    "ordinaryMissionKinds": [
+      "transport",
+      "deploy",
+      "scout",
+      "attack",
+      "recycle",
+      "colonize"
+    ],
+    "specializedMissionOwnershipPreserved": [
+      "expedition",
+      "space-object"
+    ],
     "sharedMissionRulesRequired": true,
     "flightSlotsActivatedFromExistingResearch": true,
     "attackRequiresCurrentLevelThreeIntelligence": true,
@@ -75,14 +100,32 @@
     "criticalUnknowns": 0
   },
   "scenarioPresets": {
-    "test": { "populatedGalaxies": 2, "systemsPerGalaxy": 9 },
-    "campaign": { "populatedGalaxies": 6, "systemsPerGalaxy": 27 },
-    "fidelity": { "populatedGalaxies": 15, "systemsPerGalaxy": 81 }
+    "test": {
+      "populatedGalaxies": 2,
+      "systemsPerGalaxy": 9
+    },
+    "campaign": {
+      "populatedGalaxies": 6,
+      "systemsPerGalaxy": 27
+    },
+    "fidelity": {
+      "populatedGalaxies": 15,
+      "systemsPerGalaxy": 81
+    }
   },
   "batchSizing": {
-    "heavy": [1, 2],
-    "medium": [4, 4],
-    "light": [6, 6]
+    "heavy": [
+      1,
+      2
+    ],
+    "medium": [
+      4,
+      4
+    ],
+    "light": [
+      6,
+      6
+    ]
   },
   "deliveredCatalogs": {
     "buildingsPerFaction": 24,
