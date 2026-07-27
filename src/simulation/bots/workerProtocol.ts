@@ -1,5 +1,8 @@
 import type { GameState } from '../types';
-import type { BotSchedulerAuditEntry } from './scheduler';
+import type {
+  BotSchedulerAuditEntry,
+  BotSchedulerDiagnosticEntry,
+} from './scheduler';
 
 export interface RunBotSchedulerRequest {
   readonly type: 'RUN_BOT_SCHEDULER';
@@ -14,6 +17,7 @@ export interface RunBotSchedulerSuccess {
   readonly baseStateChecksum: string;
   readonly state: GameState;
   readonly audit: readonly BotSchedulerAuditEntry[];
+  readonly diagnostics: readonly BotSchedulerDiagnosticEntry[];
   readonly processedDecisions: number;
   readonly hasMoreDueDecisions: boolean;
 }

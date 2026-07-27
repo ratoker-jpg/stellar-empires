@@ -4,6 +4,7 @@ import {
   planBotFleetMission,
 } from '../../src/simulation/bots/fleetMissionPlanner';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
 import type { GameState } from '../../src/simulation/types';
 
@@ -30,6 +31,43 @@ function fillGas(state: GameState, empireId: string): GameState {
         : planet,
     ),
   };
+}
+
+function isolatedScoutState(seed: string): {
+  readonly state: GameState;
+  readonly empireId: string;
+  readonly originId: string;
+  readonly targetId: string;
+  readonly scoutId: string;
+} {
+  let state = fillGas(createInitialGameState(seed), 'aegis-bot');
+  const empireId = 'aegis-bot';
+  const origin = state.planets.find((planet) => planet.ownerEmpireId === empireId)!;
+  const target = state.planets.find((planet) => planet.ownerEmpireId === 'player')!;
+  const roles = getFactionMechanicalRoles('aegis');
+  const scoutId = `${seed}-scout`;
+  state = {
+    ...state,
+    planets: state.planets.map((planet) =>
+      planet.id === origin.id
+        ? { ...planet, inventory: { ships: {}, defenses: {} } }
+        : planet,
+    ),
+    fleets: [{
+      id: scoutId,
+      empireId,
+      originPlanetId: origin.id,
+      location: { type: 'planet' as const, planetId: origin.id },
+      status: 'stationed' as const,
+      ships: { [roles.ships.scout]: 1 },
+      cargo: ZERO_CARGO,
+      speed: 1_000,
+      cargoCapacity: 100,
+      mission: null,
+    }],
+    pendingEvents: [],
+  };
+  return { state, empireId, originId: origin.id, targetId: target.id, scoutId };
 }
 
 describe('bot fleet and mission planner', () => {
@@ -300,6 +338,125 @@ describe('bot fleet and mission planner', () => {
     });
   });
 
+
+  it('reports missing full intelligence instead of planning a blind attack', () => {
+    let state = fillGas(createInitialGameState('bot-blocked-intelligence'), 'aegis-bot');
+    const empireId = 'aegis-bot';
+    const origin = state.planets.find((planet) => planet.ownerEmpireId === empireId)!;
+    const roles = getFactionMechanicalRoles('aegis');
+    state = {
+      ...state,
+      planets: state.planets.map((planet) =>
+        planet.id === origin.id
+          ? { ...planet, inventory: { ships: {}, defenses: {} } }
+          : planet,
+      ),
+      fleets: [{
+        id: 'blind-strike',
+        empireId,
+        originPlanetId: origin.id,
+        location: { type: 'planet' as const, planetId: origin.id },
+        status: 'stationed' as const,
+        ships: { [roles.ships.fighter]: 5 },
+        cargo: ZERO_CARGO,
+        speed: 1_000,
+        cargoCapacity: 100,
+        mission: null,
+      }],
+    };
+
+    expect(planBotFleetMission(state, empireId)).toMatchObject({
+      reasonCode: 'mission-blocked-intelligence',
+      availabilityCode: 'ATTACK_INTELLIGENCE_REQUIRED',
+      command: null,
+    });
+  });
+
+  it('surfaces the exact shared flight-slot blocker', () => {
+    const fixture = isolatedScoutState('bot-blocked-slots');
+    const active = {
+      ...fixture.state.fleets[0]!,
+      id: 'active-slot',
+      status: 'returning' as const,
+      location: {
+        type: 'transit' as const,
+        fromPlanetId: fixture.originId,
+        toPlanetId: fixture.targetId,
+        departedAt: 0,
+        arrivesAt: 1_000,
+      },
+      mission: { kind: 'scout' as const, targetPlanetId: fixture.targetId },
+    };
+    const state = { ...fixture.state, fleets: [...fixture.state.fleets, active] };
+    expect(planBotFleetMission(state, fixture.empireId)).toMatchObject({
+      reasonCode: 'mission-blocked-flight-slots',
+      availabilityCode: 'FLIGHT_SLOT_LIMIT_REACHED',
+      command: null,
+    });
+  });
+
+  it('surfaces the exact scout cooldown blocker', () => {
+    const fixture = isolatedScoutState('bot-blocked-cooldown');
+    const target = fixture.state.planets.find((planet) => planet.id === fixture.targetId)!;
+    const state = {
+      ...fixture.state,
+      intelligence: fixture.state.intelligence.map((entry) =>
+        entry.empireId === fixture.empireId
+          ? {
+              ...entry,
+              observations: [{
+                id: 'recent-observation',
+                observerEmpireId: fixture.empireId,
+                targetPlanetId: target.id,
+                coordinate: target.coordinate,
+                observedAt: fixture.state.clock.elapsedSeconds,
+                expiresAt: fixture.state.clock.elapsedSeconds + 86_400,
+                detected: false,
+                snapshot: {
+                  planetId: target.id,
+                  coordinate: target.coordinate,
+                  name: target.name,
+                  ownerEmpireId: target.ownerEmpireId,
+                  factionId: target.factionId,
+                  level: 1 as const,
+                },
+              }],
+            }
+          : entry,
+      ),
+    };
+    expect(planBotFleetMission(state, fixture.empireId)).toMatchObject({
+      reasonCode: 'mission-blocked-scout-cooldown',
+      availabilityCode: 'SCOUT_COOLDOWN_ACTIVE',
+      command: null,
+    });
+  });
+
+  it('surfaces the exact insufficient-fuel blocker', () => {
+    const fixture = isolatedScoutState('bot-blocked-fuel');
+    const state = {
+      ...fixture.state,
+      planets: fixture.state.planets.map((planet) =>
+        planet.id === fixture.originId
+          ? {
+              ...planet,
+              economy: {
+                ...planet.economy,
+                resources: {
+                  ...planet.economy.resources,
+                  gas: { ...planet.economy.resources.gas, amount: 0 },
+                },
+              },
+            }
+          : planet,
+      ),
+    };
+    expect(planBotFleetMission(state, fixture.empireId)).toMatchObject({
+      reasonCode: 'mission-blocked-fuel',
+      availabilityCode: 'INSUFFICIENT_FLIGHT_FUEL',
+      command: null,
+    });
+  });
   it('is deterministic for all bot empires', () => {
     const state = createInitialGameState('bot-fleet-determinism');
     expect(planAllBotFleetMissions(state)).toEqual(planAllBotFleetMissions(state));

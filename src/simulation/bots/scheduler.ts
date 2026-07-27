@@ -1,7 +1,12 @@
+import type { MissionAvailabilityCode } from '../fleets/missionRules';
 import { executeCommand } from '../reducer';
 import type { GameCommand, GameState } from '../types';
 import { planBotEconomy } from './economyPlanner';
-import { planBotFleetMission } from './fleetMissionPlanner';
+import {
+  planBotFleetMission,
+  type BotFleetReasonCode,
+  type BotFleetMissionPlan,
+} from './fleetMissionPlanner';
 import {
   DEFAULT_BOT_PROFILES,
   type BotPersonality,
@@ -24,9 +29,21 @@ export interface BotSchedulerAuditEntry {
   readonly rejectionCode: string | null;
 }
 
+export interface BotSchedulerDiagnosticEntry {
+  readonly empireId: string;
+  readonly profileId: string;
+  readonly personality: BotPersonality;
+  readonly decidedAt: number;
+  readonly source: 'fleet';
+  readonly reasonCode: BotFleetReasonCode;
+  readonly availabilityCode: MissionAvailabilityCode;
+  readonly explanation: string;
+}
+
 export interface BotSchedulerResult {
   readonly state: GameState;
   readonly audit: readonly BotSchedulerAuditEntry[];
+  readonly diagnostics: readonly BotSchedulerDiagnosticEntry[];
   readonly processedDecisions: number;
   readonly hasMoreDueDecisions: boolean;
 }
@@ -41,10 +58,15 @@ interface DueProfile {
   readonly nextDecisionAt: number;
 }
 
+interface PlannerCandidates {
+  readonly candidates: readonly CommandCandidate[];
+  readonly fleet: BotFleetMissionPlan;
+}
+
 function candidatesForPersonality(
   state: GameState,
   profile: BotProfile,
-): readonly CommandCandidate[] {
+): PlannerCandidates {
   const economy = planBotEconomy(state, profile.empireId);
   const science = planBotResearchAndProduction(state, profile.empireId);
   const fleet = planBotFleetMission(state, profile.empireId);
@@ -72,24 +94,57 @@ function candidatesForPersonality(
       { source: 'economy', command: economy.command },
     ],
   };
-  return candidates[profile.personality];
+  return { candidates: candidates[profile.personality], fleet };
 }
 
 function isSameCommand(left: GameCommand, right: GameCommand): boolean {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+function diagnosticForBlockedFleet(
+  profile: BotProfile,
+  decidedAt: number,
+  fleet: BotFleetMissionPlan,
+): BotSchedulerDiagnosticEntry | null {
+  if (
+    !fleet.reasonCode.startsWith('mission-blocked-') ||
+    fleet.availabilityCode === null
+  ) {
+    return null;
+  }
+  return {
+    empireId: profile.empireId,
+    profileId: profile.id,
+    personality: profile.personality,
+    decidedAt,
+    source: 'fleet',
+    reasonCode: fleet.reasonCode,
+    availabilityCode: fleet.availabilityCode,
+    explanation: fleet.explanation,
+  };
+}
+
 function runProfileDecision(
   state: GameState,
   profile: BotProfile,
   decidedAt: number,
-): { readonly state: GameState; readonly audit: readonly BotSchedulerAuditEntry[] } {
+): {
+  readonly state: GameState;
+  readonly audit: readonly BotSchedulerAuditEntry[];
+  readonly diagnostics: readonly BotSchedulerDiagnosticEntry[];
+} {
   let working = state;
   const audit: BotSchedulerAuditEntry[] = [];
+  const diagnostics: BotSchedulerDiagnosticEntry[] = [];
   const attempted: GameCommand[] = [];
 
+  const initial = candidatesForPersonality(working, profile);
+  const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, initial.fleet);
+  if (diagnostic !== null) diagnostics.push(diagnostic);
+
   for (let index = 0; index < profile.maxCommandsPerDecision; index += 1) {
-    const candidate = candidatesForPersonality(working, profile).find(
+    const planning = index === 0 ? initial : candidatesForPersonality(working, profile);
+    const candidate = planning.candidates.find(
       (item) =>
         item.command !== null &&
         !attempted.some((command) =>
@@ -112,7 +167,7 @@ function runProfileDecision(
     if (result.ok) working = result.value;
   }
 
-  return { state: working, audit };
+  return { state: working, audit, diagnostics };
 }
 
 function getNextDueProfile(
@@ -162,6 +217,7 @@ export function runBotScheduler(
 
   let working = state;
   const audit: BotSchedulerAuditEntry[] = [];
+  const diagnostics: BotSchedulerDiagnosticEntry[] = [];
   let processedDecisions = 0;
 
   while (processedDecisions < maxDecisions) {
@@ -171,12 +227,14 @@ export function runBotScheduler(
     const decision = runProfileDecision(working, due.profile, due.nextDecisionAt);
     working = decision.state;
     audit.push(...decision.audit);
+    diagnostics.push(...decision.diagnostics);
     processedDecisions += 1;
   }
 
   return {
     state: working,
     audit,
+    diagnostics,
     processedDecisions,
     hasMoreDueDecisions: getNextDueProfile(working, profiles) !== undefined,
   };

@@ -1,3 +1,4 @@
+import { createGalaxyIntelligenceView } from '../galaxy/intelligenceView';
 import { getEmpireIntelligence } from '../intelligence/intelligenceState';
 import type {
   IntelPlanetSnapshot,
@@ -40,11 +41,22 @@ export interface BotForeignPlanetPerception {
   readonly freshness: 'current' | 'stale';
 }
 
+export interface BotPublicContactPerception {
+  readonly planetId: string;
+  readonly galaxyPlanetId: string;
+  readonly coordinate: SpaceCoordinate;
+  readonly label: string;
+  readonly visibility: 'contact' | 'current' | 'stale';
+  readonly observedAt: number | null;
+  readonly expiresAt: number | null;
+}
+
 export interface BotPerception {
   readonly empireId: string;
   readonly perceivedAt: number;
   readonly ownPlanets: readonly BotOwnPlanetPerception[];
   readonly foreignPlanets: readonly BotForeignPlanetPerception[];
+  readonly publicContacts: readonly BotPublicContactPerception[];
   readonly publicColonyIds: readonly string[];
   readonly ownDebrisFields: readonly {
     readonly planetId: string;
@@ -57,6 +69,8 @@ export interface BotPerception {
   readonly marketReserves: GameState['market']['reserves'];
   readonly ownFleets: readonly {
     readonly id: string;
+    readonly empireId: string;
+    readonly originPlanetId: string;
     readonly status: GameState['fleets'][number]['status'];
     readonly location: GameState['fleets'][number]['location'];
     readonly ships: Readonly<Record<string, number>>;
@@ -113,6 +127,30 @@ export function createBotPerception(
       .filter((planet) => planet.ownerEmpireId === empireId)
       .map((planet) => planet.id),
   );
+  const publicContacts = createGalaxyIntelligenceView(state, empireId)
+    .filter(
+      (planet) =>
+        planet.colonyId !== null &&
+        planet.visibility !== 'owned' &&
+        planet.visibility !== 'unclaimed',
+    )
+    .map((planet): BotPublicContactPerception => ({
+      planetId: planet.colonyId!,
+      galaxyPlanetId: planet.galaxyPlanetId,
+      coordinate: state.galaxy.systems
+        .flatMap((system) => system.planets)
+        .find((candidate) => candidate.id === planet.galaxyPlanetId)!.coordinate,
+      label: planet.displayName,
+      visibility: planet.visibility as BotPublicContactPerception['visibility'],
+      observedAt: planet.observedAt,
+      expiresAt: planet.expiresAt,
+    }))
+    .sort((left, right) =>
+      left.coordinate.galaxy - right.coordinate.galaxy ||
+      left.coordinate.solarSystem - right.coordinate.solarSystem ||
+      left.coordinate.position - right.coordinate.position ||
+      left.planetId.localeCompare(right.planetId),
+    );
 
   return {
     empireId,
@@ -133,7 +171,8 @@ export function createBotPerception(
           observation.expiresAt > state.clock.elapsedSeconds ? 'current' : 'stale',
       };
     }),
-    publicColonyIds: state.planets.map((planet) => planet.id).sort(),
+    publicContacts,
+    publicColonyIds: publicContacts.map((contact) => contact.planetId),
     ownDebrisFields: state.debrisFields
       .filter((field) => ownPlanetIds.has(field.planetId))
       .map((field) => ({
@@ -150,6 +189,8 @@ export function createBotPerception(
       .filter((fleet) => fleet.empireId === empireId)
       .map((fleet) => ({
         id: fleet.id,
+        empireId: fleet.empireId,
+        originPlanetId: fleet.originPlanetId,
         status: fleet.status,
         location: { ...fleet.location },
         ships: { ...fleet.ships },

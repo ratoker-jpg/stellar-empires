@@ -15,6 +15,7 @@ export function handleBotSchedulerRequest(
       baseStateChecksum: request.baseStateChecksum,
       state: result.state,
       audit: result.audit,
+      diagnostics: result.diagnostics,
       processedDecisions: result.processedDecisions,
       hasMoreDueDecisions: result.hasMoreDueDecisions,
     };
