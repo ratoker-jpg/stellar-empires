@@ -15,6 +15,11 @@ export interface PlanetDevelopmentControlsBridge {
   readonly execute: (command: GameCommand, successMessage: string) => boolean;
 }
 
+export interface PlanetDevelopmentControlsMount {
+  refresh(): void;
+  dispose(): void;
+}
+
 function createSelect<T extends string>(
   values: readonly T[],
   selected: T,
@@ -33,19 +38,23 @@ function createSelect<T extends string>(
 
 export function mountPlanetDevelopmentControls(
   bridge: PlanetDevelopmentControlsBridge,
-): void {
+): PlanetDevelopmentControlsMount {
   const host = document.querySelector<HTMLElement>('.planet-operations');
-  if (host === null) return;
+  if (host === null) return { refresh: () => undefined, dispose: () => undefined };
 
-  const section = document.createElement('section');
+  const existing = document.querySelector<HTMLElement>('#planet-development-card');
+  const section = existing ?? document.createElement('section');
   section.className = 'operation-card planet-development-card';
   section.id = 'planet-development-card';
-  host.prepend(section);
+  if (existing === null) host.prepend(section);
 
   const render = (): void => {
     const planetId = bridge.getActivePlanetId();
     const planet = bridge.getState().planets.find((candidate) => candidate.id === planetId);
-    if (planet === undefined) return;
+    if (planet === undefined) {
+      section.textContent = 'Данные развития колонии недоступны.';
+      return;
+    }
 
     const eyebrow = document.createElement('p');
     eyebrow.className = 'panel-label';
@@ -73,7 +82,6 @@ export function mountPlanetDevelopmentControls(
         `Специализация изменена · ${PLANET_SPECIALIZATIONS[specializationId].name}`,
       );
       if (!changed) specializationSelect.value = planet.specializationId;
-      render();
     });
     specializationLabel.append(specializationSelect);
 
@@ -102,7 +110,6 @@ export function mountPlanetDevelopmentControls(
         `Шаблон изменён · ${PLANET_DEVELOPMENT_TEMPLATES[developmentTemplateId].name}`,
       );
       if (!changed) templateSelect.value = planet.developmentTemplateId;
-      render();
     });
     templateLabel.append(templateSelect);
 
@@ -132,6 +139,9 @@ export function mountPlanetDevelopmentControls(
     );
   };
 
-  document.querySelector<HTMLSelectElement>('#planet-selector')?.addEventListener('change', render);
   render();
+  return {
+    refresh: render,
+    dispose: () => section.remove(),
+  };
 }
