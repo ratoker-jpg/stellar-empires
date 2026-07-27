@@ -40,7 +40,7 @@ test('Planet and Space routes restore through URL, history and reload', async ({
 test('the typed registry exposes stable primary controls and keyboard order', async ({ page }) => {
   await page.goto('/?e2e=1#/space/universe');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
-  const ids = await page.locator('.side-rail > .rail-button').evaluateAll((buttons) =>
+  const ids = await page.locator('.side-rail > [data-shell-screen]').evaluateAll((buttons) =>
     buttons.map((button) => button.id),
   );
   expect(ids.slice(0, 6)).toEqual([
