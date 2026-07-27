@@ -708,3 +708,11 @@ This document is complete only when:
 - all mission/status/endgame semantics remain readable without relying only on colour;
 - CI enforces dimensions, alpha, checksums and asset budgets;
 - no semantically incorrect compatibility fallback remains.
+
+
+## Universe navigation package — completed in #107–#110
+
+- 102 Universe runtime textures are bound and budget-gated.
+- Universe, Galaxy and Solar-system views use lazy texture groups.
+- Route/fleet/mission overlays use CSS/SVG and stable semantic IDs; no extra raster assets are required.
+- Supplied Sun Attack and Sun Support markers are registered, but both actions remain disabled until the future solar-war batch.

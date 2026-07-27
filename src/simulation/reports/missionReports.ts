@@ -6,6 +6,7 @@ import type {
 import type { BattleRoundReport } from '../combat/types';
 import type { ResourceCost } from '../economy/types';
 import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
+import { parsePlanetCoordinate, type SpaceCoordinate } from '../space/coordinates';
 import type { GameState } from '../types';
 
 export type MissionReportKind = 'battle' | 'expedition' | 'space-object' | 'world-event';
@@ -84,6 +85,22 @@ export interface EmpirePvePvpComparison {
   readonly pvpWins: number;
   readonly reward: MissionReportReward;
   readonly losses: number;
+}
+
+
+export function resolveMissionReportCoordinate(
+  state: GameState,
+  report: Pick<UnifiedMissionReport, 'targetId'>,
+): SpaceCoordinate | undefined {
+  const planet = state.planets.find(
+    (candidate) => candidate.id === report.targetId || candidate.galaxyPlanetId === report.targetId,
+  );
+  if (planet !== undefined) return planet.coordinate;
+  const object = state.spaceObjects.find((candidate) => candidate.id === report.targetId);
+  if (object?.coordinate !== undefined) return object.coordinate;
+  const debris = state.debrisFields.find((candidate) => candidate.id === report.targetId);
+  if (debris?.coordinate !== undefined) return debris.coordinate;
+  return parsePlanetCoordinate(report.targetId);
 }
 
 const ZERO_REWARD: MissionReportReward = {

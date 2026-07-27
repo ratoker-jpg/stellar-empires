@@ -5,7 +5,7 @@ This file is append-only for completed batches. An active row may be updated unt
 | Batch ID | Complexity | Audit PR | Implementation PRs | Outcome | Archived audit |
 |---|---|---:|---|---|---|
 | `ASSET-RUNTIME-INTEGRATION-01` | Medium | #101 · `2eb5d4996bb24cb7fa48305bb010e48a1263c465` | #102 · `43471d9ab2a6527e3337f1e73e507d85e2d8e094`; #103 · `b47ec8df9abc58d1ce455e3bf6ee1279d2e0d9d0`; #104 · `ba207dac57d3f6bf66559d074cf38abf54cdc12c`; #105 · `af6954564531caa81c3dd83f924e3696ad984165` | completed; 217 IDs / 173 runtime images; no mechanics or persistence divergence | `docs/audits/completed/asset-runtime-integration-01.md` |
-| `UNIVERSE-NAVIGATION-01` | Medium | #106 · pending merge | planned #107–#110 | audit accepted on merge; implementation not started | archived by final #110 |
+| `UNIVERSE-NAVIGATION-01` | Medium | #106 · `3bafad74907a92633f5c31c3d30bd96268c3dafb` | #107 · `398a6074b8d7d62d00aa6beabc064a88b2565ca4`; #108 · `430eb8d51f49c1846caad37d33668fad6c685201`; #109 · `04d2e872e380fa9f5f303e424a548c209afbaa14`; #110 · this closing PR | completed on merge of #110; 90 source PNGs / 102 lazy runtime textures; schema v14; Universe → Galaxy → Solar system navigation; intelligence-aware action gate and browser E2E | `docs/audits/completed/universe-navigation-01.md` |
 
 ## Recording rules
 

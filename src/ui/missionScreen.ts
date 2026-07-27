@@ -177,6 +177,7 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
   const dialog = document.createElement('dialog');
   dialog.id = 'mission-screen-dialog';
   dialog.className = 'mission-screen-dialog';
+  dialog.dataset.testid = 'mission-composer';
   const header = document.createElement('header');
   const heading = document.createElement('div');
   const eyebrow = document.createElement('p');
@@ -221,6 +222,7 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
     if (pendingTarget !== null) {
       const targetNotice = document.createElement('div');
       targetNotice.className = 'mission-target-notice';
+      targetNotice.dataset.testid = 'mission-target-notice';
       targetNotice.textContent = `Цель с карты: ${pendingTarget.label} · ${missionLabel(pendingTarget.mission)}`;
       overview.append(targetNotice);
     }
@@ -434,6 +436,7 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
       actions.className = 'mission-actions';
       if (fleet.status === 'stationed' && fleet.location.type === 'planet') {
         const mission = document.createElement('select');
+        mission.dataset.testid = `mission-kind-${fleet.id}`;
         for (const missionKind of ['transport', 'deploy', 'scout', 'attack', 'recycle'] as const) {
           const option = document.createElement('option');
           option.value = missionKind;
@@ -454,11 +457,13 @@ export function mountMissionScreen(options: MissionScreenOptions): void {
         }
 
         const target = document.createElement('select');
+        target.dataset.testid = `mission-target-${fleet.id}`;
         const preview = document.createElement('p');
         preview.className = 'mission-route-preview';
         const send = document.createElement('button');
         send.type = 'button';
         send.className = 'mission-primary-action';
+        send.dataset.testid = `mission-send-${fleet.id}`;
         send.textContent = 'Отправить';
 
         const refreshPreview = (): void => {

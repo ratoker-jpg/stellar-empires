@@ -7,6 +7,7 @@ export interface FleetMissionTargetRequest {
   readonly targetId: string;
   readonly label: string;
   readonly mission: FleetMissionKind;
+  readonly source?: 'space-map' | 'galaxy-intel';
 }
 
 export function inferMissionForGalaxyTarget(
