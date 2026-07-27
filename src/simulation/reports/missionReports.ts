@@ -9,12 +9,14 @@ import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
 import { parsePlanetCoordinate, type SpaceCoordinate } from '../space/coordinates';
 import type { GameState } from '../types';
 
-export type MissionReportKind =
+export type BuiltInMissionReportKind =
   | 'battle'
   | 'expedition'
   | 'space-object'
-  | 'world-event'
-  | 'intelligence';
+  | 'world-event';
+export type MissionReportKind =
+  | BuiltInMissionReportKind
+  | (string & Record<never, never>);
 export type MissionReportMode = 'pve' | 'pvp' | 'system';
 export type MissionReportOutcome = 'success' | 'failure' | 'draw' | 'completed' | 'recovered';
 export type MissionCombatSide = 'attacker' | 'defender';
@@ -54,7 +56,7 @@ export interface UnifiedMissionReport {
   readonly title: string;
   readonly summary: string;
   readonly targetId: string;
-  readonly coordinate?: SpaceCoordinate;
+  readonly coordinate?: SpaceCoordinate | undefined;
   readonly primaryEmpireId: string | null;
   readonly secondaryEmpireId: string | null;
   readonly outcome: MissionReportOutcome;
