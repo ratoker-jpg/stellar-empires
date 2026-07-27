@@ -26,9 +26,11 @@ jobs:
           text = path.read_text()
           old = '    ships: { [roles.ships.fighter]: 20 },'
           new = '    ships: { [roles.ships.fighter]: 5 },'
-          if old not in text:
+          if old in text:
+              text = text.replace(old, new)
+          elif new not in text:
               raise SystemExit('strike fixture target missing')
-          path.write_text(text.replace(old, new))
+          path.write_text(text)
 
           path = Path('tests/simulation/botFleetMissionPlanner.test.ts')
           text = path.read_text()
@@ -44,10 +46,13 @@ jobs:
           ? { ...planet, inventory: { ships: {}, defenses: {} } }
           : planet,
       ),"""
-          if old not in text:
+          if old in text:
+              text = text.replace(old, new)
+          elif new not in text:
               raise SystemExit('cooldown fixture target missing')
-          path.write_text(text.replace(old, new))
+          path.write_text(text)
           PY
+          if git diff --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src/testing/e2eRuntime.ts tests/simulation/botFleetMissionPlanner.test.ts
