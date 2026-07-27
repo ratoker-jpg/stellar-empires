@@ -1,0 +1,30 @@
+name: PR120 focused source export
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  export-source:
+    if: github.head_ref == 'agent/mission-intelligence-bot-gate'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr120-focused-source
+          path: |
+            src
+            tests
+            docs/audits
+            docs/17-continuation-guide.md
+            docs/project-status.json
+            docs/roadmap-pr-index.json
+            package.json
+            package-lock.json
+            tsconfig.json
+            vite.config.ts
+            vitest.config.ts
+            playwright.config.ts
+          include-hidden-files: true
+          if-no-files-found: warn
