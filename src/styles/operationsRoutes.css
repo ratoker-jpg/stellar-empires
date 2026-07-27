@@ -1,0 +1,398 @@
+.operations-primary-view {
+  min-width: 0;
+  min-height: 620px;
+  max-height: calc(100vh - 116px);
+  overflow: auto;
+  color: #eaf7ff;
+  background:
+    radial-gradient(circle at 80% 0%, rgba(50, 139, 183, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(6, 18, 30, 0.98), rgba(2, 7, 14, 0.99));
+}
+
+.operations-route-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 24px 26px 16px;
+  border-bottom: 1px solid rgba(96, 205, 255, 0.15);
+}
+
+.operations-route-header h1,
+.operations-route-header p,
+.operations-route-content h2,
+.operations-route-content h3,
+.operations-route-content p {
+  margin: 0;
+}
+
+.operations-route-header h1 {
+  margin-top: 5px;
+  font-size: clamp(1.4rem, 2vw, 2rem);
+}
+
+.operations-route-header > div > p:last-child {
+  margin-top: 7px;
+  color: #8ea8b8;
+}
+
+.operations-route-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  gap: 6px;
+  padding: 10px 22px;
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(96, 205, 255, 0.14);
+  background: rgba(3, 11, 19, 0.96);
+  backdrop-filter: blur(14px);
+}
+
+.operations-route-tabs button {
+  flex: 0 0 auto;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid rgba(96, 205, 255, 0.18);
+  border-radius: 7px;
+  color: #8aa5b6;
+  background: rgba(7, 24, 38, 0.75);
+  cursor: pointer;
+}
+
+.operations-route-tabs button[aria-selected="true"] {
+  border-color: rgba(96, 205, 255, 0.55);
+  color: #dff7ff;
+  background: rgba(21, 65, 92, 0.92);
+  box-shadow: inset 0 -2px #47c7f1;
+}
+
+.operations-route-content {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 18px 22px 28px;
+}
+
+.operations-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.operations-summary article {
+  display: grid;
+  gap: 4px;
+  min-height: 78px;
+  padding: 12px;
+  border: 1px solid rgba(96, 205, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(7, 21, 34, 0.72);
+}
+
+.operations-summary span,
+.operations-summary small {
+  color: #7894a7;
+  font-size: 0.72rem;
+}
+
+.operations-summary strong {
+  font-size: 1.2rem;
+}
+
+.operations-launchers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 9px;
+}
+
+.operations-launcher {
+  display: grid;
+  gap: 5px;
+  min-height: 82px;
+  padding: 13px;
+  border: 1px solid rgba(96, 205, 255, 0.18);
+  border-radius: 8px;
+  color: #eaf7ff;
+  background: linear-gradient(145deg, rgba(15, 43, 63, 0.8), rgba(5, 16, 27, 0.9));
+  text-align: left;
+  cursor: pointer;
+}
+
+.operations-launcher small {
+  color: #8ba4b5;
+  line-height: 1.4;
+}
+
+.mission-workspace {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(420px, 1.6fr);
+  gap: 14px;
+  min-width: 0;
+}
+
+.mission-create,
+.mission-fleet-list,
+.mission-battles,
+.expedition-launch,
+.expedition-active,
+.expedition-reports,
+.space-objects-launch,
+.space-objects-grid,
+.world-events-status,
+.world-events-active,
+.world-events-history,
+.operations-embedded-panel,
+.galaxy-intel-workspace,
+.mission-reports-summary,
+.mission-reports-controls,
+.mission-reports-comparison,
+.mission-reports-list {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid rgba(96, 205, 255, 0.15);
+  border-radius: 9px;
+  background: rgba(5, 17, 29, 0.78);
+}
+
+.mission-create,
+.mission-fleet-list,
+.mission-battles,
+.expedition-launch,
+.expedition-active,
+.expedition-reports,
+.space-objects-launch,
+.world-events-active,
+.world-events-history,
+.operations-embedded-panel,
+.galaxy-intel-workspace,
+.mission-reports-list {
+  display: grid;
+  gap: 11px;
+}
+
+.mission-ship-grid,
+.mission-cargo-grid,
+.space-objects-grid,
+.galaxy-intel-results,
+.mission-reports-comparison {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 9px;
+  min-width: 0;
+}
+
+.mission-ship-option,
+.mission-fleet-card,
+.expedition-active article,
+.expedition-reports article,
+.space-object-card,
+.world-event-card,
+.galaxy-intel-card,
+.mission-report-card,
+.mission-reports-comparison article,
+.logistics-list article {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(96, 205, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(7, 23, 37, 0.78);
+}
+
+.mission-fleet-card {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.mission-fleet-card__visual {
+  position: relative;
+  min-height: 92px;
+  overflow: hidden;
+  border-radius: 7px;
+  background: rgba(2, 8, 15, 0.8);
+}
+
+.mission-fleet-card__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mission-fleet-card__visual span {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: rgba(2, 8, 15, 0.86);
+  font-size: 0.68rem;
+}
+
+.mission-fleet-card__body,
+.mission-actions,
+.logistics-list article {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mission-actions {
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+}
+
+.mission-actions .mission-route-preview {
+  grid-column: 1 / -1;
+}
+
+.operations-route-content input,
+.operations-route-content select,
+.operations-route-content button {
+  min-height: 36px;
+  border: 1px solid rgba(96, 205, 255, 0.24);
+  border-radius: 6px;
+  color: inherit;
+  background: rgba(5, 20, 32, 0.94);
+}
+
+.operations-route-content input,
+.operations-route-content select {
+  min-width: 0;
+  padding: 0 9px;
+}
+
+.operations-route-content button {
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.operations-route-content button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.mission-target-notice {
+  padding: 10px 12px;
+  border: 1px solid rgba(225, 185, 91, 0.35);
+  border-radius: 7px;
+  color: #f0cf83;
+  background: rgba(54, 39, 10, 0.48);
+}
+
+.galaxy-intel-controls,
+.mission-reports-controls,
+.market-form,
+.logistics-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  align-items: end;
+}
+
+.galaxy-intel-control,
+.mission-report-control {
+  display: grid;
+  gap: 5px;
+  color: #83a0b2;
+  font-size: 0.72rem;
+}
+
+.galaxy-intel-card,
+.mission-report-card {
+  display: grid;
+  gap: 7px;
+}
+
+.galaxy-intel-card.is-contact,
+.galaxy-intel-card.is-stale {
+  border-color: rgba(225, 185, 91, 0.28);
+}
+
+.mission-report-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mission-report-card > header > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.mission-report-card > header span {
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(35, 79, 101, 0.54);
+  font-size: 0.65rem;
+}
+
+.mission-report-card details {
+  max-width: 100%;
+  overflow: auto;
+}
+
+.mission-report-card table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+
+.mission-report-card th,
+.mission-report-card td {
+  padding: 6px;
+  border: 1px solid rgba(96, 205, 255, 0.12);
+  text-align: left;
+}
+
+.market-reserves,
+.market-history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.market-reserves span,
+.market-history span {
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(18, 46, 65, 0.7);
+}
+
+.logistics-list {
+  display: grid;
+  gap: 8px;
+}
+
+@media (max-width: 1120px) {
+  .operations-primary-view {
+    max-height: none;
+  }
+
+  .mission-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .operations-route-header,
+  .operations-route-content {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .operations-route-tabs {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .mission-fleet-card {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-actions {
+    grid-template-columns: 1fr;
+  }
+}
