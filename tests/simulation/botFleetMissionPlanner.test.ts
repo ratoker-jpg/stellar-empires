@@ -112,7 +112,7 @@ describe('bot fleet and mission planner', () => {
             }
           : entry,
       ),
-      clock: { ...state.clock, elapsedSeconds: 100 },
+      clock: { ...state.clock, elapsedSeconds: 10_000 },
     };
 
     const before = planBotFleetMission(state, empireId);
