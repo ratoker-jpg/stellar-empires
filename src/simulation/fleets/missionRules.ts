@@ -6,7 +6,10 @@ import {
   getEmpireColonyCount,
   isColonizableGalaxyPlanet,
 } from '../colonization/colonization';
-import { getFleetSlotCapacity } from '../factions/factionResearchEffects';
+import {
+  getFleetSlotCapacity,
+  getResearchEffectsForEmpire,
+} from '../factions/factionResearchEffects';
 import {
   createGalaxyIntelligenceView,
   type GalaxyIntelPlanet,
@@ -296,16 +299,8 @@ function cargoAmount(fleet: FleetState): number {
 }
 
 function getFleetSpeedBonus(state: GameState, fleet: FleetState): number {
-  return getCommanderFleetEffects(state, fleet).speedBonusPercent +
-    getFleetSlotIndependentSpeedBonus(state, fleet.empireId);
-}
-
-function getFleetSlotIndependentSpeedBonus(
-  state: GameState,
-  empireId: string,
-): number {
-  const capacityEffects = getFleetSlotCapacity.effects(state, empireId);
-  return capacityEffects.fleetSpeedPercent;
+  return getResearchEffectsForEmpire(state, fleet.empireId).fleetSpeedPercent +
+    getCommanderFleetEffects(state, fleet).speedBonusPercent;
 }
 
 export function getMissionAvailability(
