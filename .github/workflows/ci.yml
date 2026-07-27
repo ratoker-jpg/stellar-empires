@@ -35,7 +35,23 @@ jobs:
         run: npm run assets:check
 
       - name: Lint
-        run: npm run lint
+        shell: bash
+        run: |
+          set +e
+          npm run lint 2>&1 | tee lint-output.txt
+          status=${PIPESTATUS[0]}
+          echo "lint_status=$status" >> "$GITHUB_ENV"
+          exit 0
+
+      - name: Upload lint diagnostics
+        uses: actions/upload-artifact@v6
+        with:
+          name: lint-diagnostics
+          path: lint-output.txt
+
+      - name: Fail on lint errors
+        if: env.lint_status != '0'
+        run: exit 1
 
       - name: Typecheck
         run: npm run typecheck
