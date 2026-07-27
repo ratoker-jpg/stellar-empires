@@ -220,13 +220,13 @@ async function bootstrap(): Promise<void> {
     getActivePlanetId: () => application.getActivePlanetId(),
   });
 
-  let appShellRef: AppShellController | undefined;
+  const appShellRef: { current?: AppShellController } = {};
   const developmentRouter = mountDevelopmentWorkspaceRouter({
     getState: () => application.getState(),
     getActivePlanetId: () => application.getActivePlanetId(),
-    navigateToResearch: () => appShellRef?.navigateToResearch(),
+    navigateToResearch: () => appShellRef.current?.navigateToResearch(),
     navigateToSurface: (mode, surface) => {
-      appShellRef?.navigateToPlanet(application.getActivePlanetId(), mode, surface);
+      appShellRef.current?.navigateToPlanet(application.getActivePlanetId(), mode, surface);
     },
   });
 
@@ -288,7 +288,7 @@ async function bootstrap(): Promise<void> {
     activateResearch,
     writeStatus: setStatus,
   });
-  appShellRef = appShell;
+  appShellRef.current = appShell;
 
   const applicationSubscription = application.subscribe(() => {
     developmentHud.refresh();
