@@ -94,6 +94,7 @@ test('keyboard navigation activates primary and local routes with heading focus'
   await page.keyboard.press('ArrowRight');
   await expect(page).toHaveURL(/#\/command\/doctrine$/);
   await expect(page.locator('[data-command-mode="doctrine"]')).toHaveAttribute('aria-selected', 'true');
+  await page.locator('[data-command-mode="doctrine"]').focus();
   await page.keyboard.press('End');
   await expect(page).toHaveURL(/#\/command\/upgrades$/);
 });
