@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** navigation batch completed; Audit PR #130 is the only next action  
+**Status:** Audit PR #130 active; no runtime implementation before merge  
 **Updated:** 2026-07-28  
 **Runtime baseline:** PR #129 `NAV-USABILITY-GATE` · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
-**Last merged PR:** #129 `NAV-USABILITY-GATE` · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
-**Last completed batch:** `NAVIGATION-USABILITY-01`  
-**Next authorized action:** Audit #130 `LOCAL-CAMPAIGN-TIME-PACING-01`
+**Audit baseline:** synchronized `main` · `45bd3297d402fd96691a26c60e47bd39a420f174`  
+**Active batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
+**Next authorized implementation after audit acceptance:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE`
 
 ## Repository
 
@@ -18,13 +18,17 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 1. `AGENTS.md`
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
-4. `docs/audits/completed/navigation-usability-01.md`
-5. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
-6. this document
-7. `docs/project-status.json`
-8. `docs/roadmap-pr-index.json`
-9. `docs/27-playable-game-roadmap-v5.md`
-10. latest merged pull requests and actual `main`
+4. `docs/audits/current-batch-audit.md`
+5. `docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md`
+6. `docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md`
+7. `docs/audits/contracts/local-campaign-time-pacing-01-prs.md`
+8. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
+9. `docs/23-bot-simulation-time-contract.md`
+10. this document
+11. `docs/project-status.json`
+12. `docs/roadmap-pr-index.json`
+13. `docs/27-playable-game-roadmap-v5.md`
+14. latest merged pull requests and actual `main`
 
 ## Delivered product state
 
@@ -34,80 +38,89 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - #116–#120: ordinary mission/intelligence/bot parity gate;
 - #121–#123: demolition, whole-planet destruction and recovery;
 - #124: canonical local-campaign world-speed/offline-progression product contract;
-- #125: accepted navigation/usability audit;
-- #126: grouped player-centered primary navigation;
-- #127: typed route, colony, breadcrumb and return context;
-- #128: reload-safe prepared Fleet targets and reversible Space/Report flows;
-- #129: measured navigation task-flow closure, real browser colony switching and release-viewport gate.
+- #125–#129: completed navigation/usability repair.
 
-## Completed navigation outcome
+Navigation batch archive: `docs/audits/completed/navigation-usability-01.md`.
 
-The game exposes a player-centered hierarchy:
+## Current verified time/persistence state
 
-```text
-Игра
-  Планета · Вселенная · Флоты · Операции
-Развитие
-  Наука · Командование
-Данные
-  Отчёты · Рейтинг
-Система
-  Настройки
-```
+- `GameState` remains schema v14;
+- save format remains v2;
+- new game selects only faction;
+- open-session world time advances only through manual Planet buttons;
+- no real-time ticker or offline bootstrap exists;
+- `ADVANCE_TIME` already processes ordinary events, economy, logistics and world events chronologically;
+- bot decision cursors are persisted and bounded;
+- overdue bots currently plan against the final post-jump state;
+- `SaveEnvelope.savedAt` is not a protected catch-up cursor;
+- report/history retention is insufficient as the sole long-catch-up summary source.
 
-Navigation presentation state remains outside `GameState`, saves, replay and checksums. Primary activation restores the latest valid subroute. Shared breadcrumbs, active-colony context and typed return destinations preserve player intent.
+## Audit #130 decision
 
-Space/intelligence targets open Fleet compose with target and mission preparation. The preparation survives valid reload, validates against visible current candidates, retains its exact Space origin and clears after cancel or explicit send. `SEND_FLEET` is never automatic. Report → exact map coordinate → report is reversible through the shared return action and browser history.
-
-Final #129 validation on head `fe35972451fc94eecb6fd80f4aace98171d005df`:
-
-- CI `30384172381` — passed;
-- Browser E2E `30384173409` — passed;
-- Graphify `30384172385` — passed;
-- three P1 closure findings fixed and all review threads resolved.
-
-Archive: `docs/audits/completed/navigation-usability-01.md`.
-
-## Canonical campaign direction
-
-Stellar Empires remains a local single-player PvE browser campaign:
-
-- no continuously running server is required for Release 1.0;
-- campaign creation selects an immutable world-speed preset;
-- normal runtime fast-forward controls are excluded;
-- deterministic offline catch-up uses the selected speed;
-- bots and ordinary world rules continue through catch-up;
-- progression should converge toward a roughly one-day active campaign.
-
-This direction is authoritative in `docs/25a-local-campaign-world-speed-and-offline-progression.md` but is not implemented yet.
-
-## Exact next route
+Complexity is **heavy**, with two sequential implementation PRs:
 
 ```text
-fresh current main
-→ create Audit PR #130 LOCAL-CAMPAIGN-TIME-PACING-01
-→ inspect campaign setup, schema/persistence, elapsed-time trust, bounded catch-up, bots and pacing
-→ resolve all critical unknowns
-→ merge the audit contract
-→ only then start the authorized implementation PR sequence
+#131 CAMPAIGN-SETTINGS-PERSISTENCE
+→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE
 ```
 
-Audit #130 must not implement world-speed state, offline elapsed-time processing, save migration, timing balance, diplomacy, alliance or endgame runtime. It may change documentation, status entrypoints and project-scoped analysis evidence only.
+### #131
 
-## Known limitations
+- schema v15 immutable `CampaignSettings`;
+- scenario and world-speed selection before creation;
+- save format v3 `CampaignRuntimeMetadata` outside GameState;
+- envelope integrity and legacy x1 migration;
+- replay initial settings;
+- import/export/snapshot/recovery cursor correctness;
+- no live ticker or catch-up yet.
 
-- world-speed settings and deterministic offline catch-up are not implemented;
-- campaign progression is not yet compressed or balanced for a one-day match;
-- multi-colony economy/logistics coherence requires a later audit;
-- deeper PvE/meta systems and complete bot parity remain incomplete;
-- alliances, solar war, Obelisks, Gates and final victory/defeat are not implemented;
-- phone/mobile layout, onboarding and release hardening remain incomplete.
+### #132
+
+- one chronological orchestrator for active and offline time;
+- bot decision boundaries interleaved with existing event/logistics/world boundaries;
+- bounded resumable catch-up and checkpoints;
+- active real-time clock and fractional carry;
+- structured redacted return summary;
+- remove normal manual fast-forward controls;
+- one-day/seven-day, fake-clock Browser E2E and release gates;
+- archive and batch closure.
+
+## Important architecture decisions
+
+- old saves migrate to x1, not recommended x2;
+- campaign settings are deterministic state and checksum input;
+- wall-clock runtime cursor remains outside GameState;
+- `savedAt` remains display/audit metadata;
+- active and offline paths must use one orchestrator;
+- no elapsed duration may be silently truncated;
+- huge intervals yield through resumable operation chunks;
+- final caught-up state saves before interactive mount/summary;
+- summary is accumulated during processing and redacted by ordinary visibility rules;
+- the old bot controller cannot remain a competing time owner.
+
+## Explicit split from balance
+
+Audit #130 does **not** authorize numeric progression compression. Exact level caps, costs, durations, unlock timing and a measured one-day campaign belong to a later `CAMPAIGN-PROGRESSION-BALANCE-01` audit after #132 delivers the clock/headless foundation.
+
+## Immediate route
+
+```text
+complete Audit #130
+→ pass CI, Graphify and review
+→ merge audit
+→ create #131 from fresh merged main
+```
+
+Do not edit runtime, schema, save format or UI time controls in Audit #130.
 
 ## Preserved invariants
 
-- schema v14 remains authoritative until an accepted audit explicitly authorizes migration;
-- navigation/task context stays outside `GameState`, saves and checksums;
-- intelligence redaction remains authoritative;
-- explicit fleet-send confirmation remains mandatory;
-- no continuous server requirement for Release 1.0;
-- no runtime campaign-time implementation before Audit #130 acceptance.
+- deterministic shared commands and validators;
+- existing event ordering unless the accepted same-time clock contract explicitly defines integration;
+- intelligence redaction;
+- explicit fleet-send confirmation;
+- IndexedDB autosave, snapshots, slots and recovery;
+- completed route/colony/return navigation;
+- local campaign, no required server for Release 1.0;
+- no diplomacy/alliance/endgame implementation in #131–#132;
+- no progression rebalance in #131–#132.

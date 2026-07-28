@@ -1,34 +1,53 @@
 # Current execution state
 
 **Updated:** 2026-07-28  
-**Safe to continue:** Audit PR #130 only
+**Safe to continue:** Audit PR #130 only; no runtime implementation before audit merge
 
 | Field | Current value |
 |---|---|
 | Last merged PR | #129 `NAV-USABILITY-GATE` · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa` |
-| Runtime baseline | PR #129 · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa` |
-| Completed audit batch | #125 `NAVIGATION-USABILITY-01` |
-| Completed implementation PRs | #126 · `2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1`; #127 · `2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418`; #128 · `051c46736dbb92a7fb5061243d458eb3faabecfe`; #129 · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa` |
-| Archive | `docs/audits/completed/navigation-usability-01.md` |
-| Validation | CI `30384172381`, Browser E2E `30384173409`, Graphify `30384172385` — passed |
-| Review | three P1 closure findings fixed: canonical status synchronization, both release viewports and real browser colony switching; all threads resolved |
-| Persistence | schema v14; navigation and task context remain outside GameState, saves, replay and simulation checksums |
-| Command boundary | no automatic `SEND_FLEET`; explicit confirmation remains mandatory |
-| Divergence | none |
-| Exact next action | create Audit PR #130 `LOCAL-CAMPAIGN-TIME-PACING-01` from fresh merged `main`; inspect and plan only; do not implement runtime before audit acceptance |
+| Verified runtime baseline | exact synchronized `main` · `45bd3297d402fd96691a26c60e47bd39a420f174` |
+| Last completed batch | `NAVIGATION-USABILITY-01` · #126–#129 |
+| Active audit PR | #130 `LOCAL-CAMPAIGN-TIME-PACING-01` |
+| Audit baseline | `45bd3297d402fd96691a26c60e47bd39a420f174` |
+| Complexity decision | heavy |
+| Proposed implementation sequence | #131 `CAMPAIGN-SETTINGS-PERSISTENCE` → #132 `CAMPAIGN-CLOCK-OFFLINE-GATE` |
+| Runtime schema | v14 until #131 is authorized and merged |
+| Save format | v2 until #131 is authorized and merged |
+| Current scope | campaign settings/schema/persistence contract, chronological active/offline clock, bot interleaving, bounded catch-up, return summary and gates |
+| Explicitly deferred | numeric progression compression and one-day balance; diplomacy/alliance/endgame runtime; server mode |
+| Exact next action | complete review/validation and merge Audit #130; then create implementation PR #131 only from fresh merged `main` |
 
-## Completed sequence
+## Audit documents
 
 ```text
-#125 NAVIGATION-USABILITY-01 audit
-→ #126 NAV-IA-PRIMARY-SHELL — merged
-→ #127 NAV-CONTEXT-ROUTE-MODEL — merged
-→ #128 NAV-CROSS-DOMAIN-FLOWS — merged
-→ #129 NAV-USABILITY-GATE — merged
+docs/audits/current-batch-audit.md
+docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md
+docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md
+docs/audits/contracts/local-campaign-time-pacing-01-prs.md
 ```
 
-## Next audit boundary
+## Accepted decision shape
 
-Audit #130 must inspect campaign creation settings, immutable world-speed persistence, trusted elapsed-time input, deterministic bounded offline catch-up, bot/diplomacy/endgame catch-up parity, return summary, progression compression and headless campaign-duration balance.
+```text
+#130 LOCAL-CAMPAIGN-TIME-PACING-01 — Audit only
+→ #131 CAMPAIGN-SETTINGS-PERSISTENCE
+→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE
+→ later separate CAMPAIGN-PROGRESSION-BALANCE-01 audit
+```
 
-Do not add world-speed state, offline elapsed-time processing, schema migration, balance changes or campaign runtime in advance of the accepted Audit #130 contract.
+## Critical verified findings
+
+- open-session world time currently advances only through manual Planet fast-forward controls;
+- the new-game flow selects only faction;
+- schema v14 has no immutable campaign settings;
+- save format v2 has no protected runtime cursor;
+- `ADVANCE_TIME` chronologically processes existing non-bot domains;
+- bot cursors are persisted and bounded, but overdue planning currently sees the final post-jump state;
+- a complete long catch-up summary cannot be reconstructed from bounded histories alone.
+
+## Recovery rule
+
+Preserve deterministic shared commands, event ordering, schema-v14 compatibility until an authorized migration, IndexedDB recovery, autosave snapshots, intelligence redaction, explicit fleet-send confirmation and the completed navigation model.
+
+Audit #130 may change documentation, audit evidence, status entrypoints and project-scoped audit tooling only. It must not add campaign settings to runtime, change schema/save format, start a clock, process offline time, remove time controls or rebalance progression.
