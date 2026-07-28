@@ -27,7 +27,7 @@ async function targetCoordinate(page: Page): Promise<{ galaxy: number; system: n
   }));
 }
 
-test('new game → map target → routed composer → routed report backlink → reload/history', async ({ page }) => {
+test('new game → map target → reload-safe composer → report backlink → history', async ({ page }) => {
   await page.goto('/?e2e=1#/space/universe');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await waitForLevel(page, 'universe');
@@ -57,13 +57,24 @@ test('new game → map target → routed composer → routed report backlink →
   await expect(page.locator('[data-testid="mission-target-notice"]')).toBeVisible();
   const targetId = await page.locator('html').getAttribute('data-e2e-target-id');
   await expect(page.locator('[data-testid="mission-target-fleet-e2e-player"]')).toHaveValue(targetId ?? '');
+  await expect(page.locator('[data-shell-return="space"]')).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-send-fleet-command-count', '0');
+
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/fleets\/compose$/);
+  await expect(page.locator('[data-testid="mission-target-notice"]')).toBeVisible();
+  await expect(page.locator('[data-testid="mission-target-fleet-e2e-player"]')).toHaveValue(targetId ?? '');
+  await expect(page.locator('[data-clear-prepared-target]')).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-send-fleet-command-count', '0');
+
   await page.locator('[data-testid="mission-send-fleet-e2e-player"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-send-fleet-command-count', '1');
+  await expect(page.locator('[data-testid="mission-target-notice"]')).toHaveCount(0);
 
   await page.locator('#nav-galaxy').click();
-  await expect(page).toHaveURL(/#\/space\/universe$/);
-  await waitForLevel(page, 'universe');
+  await expect(page).toHaveURL(new RegExp(`#\\/space\\/solar\\/${target.galaxy}\\/${target.system}\\/${target.position}$`));
+  await waitForLevel(page, 'solar-system');
   await expect(page.locator('#app-status')).toContainText(/Сохранено|Флот отправлен/);
 
   await page.locator('#nav-reports').click();
@@ -73,17 +84,20 @@ test('new game → map target → routed composer → routed report backlink →
   await page.locator('[data-report-map-link="report-e2e-map-backlink"]').click();
   await expect(page).toHaveURL(new RegExp(`#\\/space\\/solar\\/${target.galaxy}\\/${target.system}\\/${target.position}$`));
   await waitForLevel(page, 'solar-system');
-  await page.goBack();
+  await expect(page.locator('[data-shell-return="reports"]')).toBeVisible();
+  await page.locator('[data-shell-return="reports"]').click();
   await expect(page).toHaveURL(/#\/reports\/all$/);
   await expect(page.locator('#reports-view')).toBeVisible();
-  await page.goForward();
+  await page.goBack();
   await expect(page).toHaveURL(new RegExp(`#\\/space\\/solar\\/${target.galaxy}\\/${target.system}\\/${target.position}$`));
+  await page.goForward();
+  await expect(page).toHaveURL(/#\/reports\/all$/);
 
   await page.waitForTimeout(1_000);
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page.locator('html')).toHaveAttribute('data-send-fleet-command-count', '1');
-  await expect(page).toHaveURL(new RegExp(`#\\/space\\/solar\\/${target.galaxy}\\/${target.system}\\/${target.position}$`));
+  await expect(page).toHaveURL(/#\/reports\/all$/);
 
   const network = await page.evaluate(() => {
     const entries = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
@@ -104,11 +118,11 @@ test('new game → map target → routed composer → routed report backlink →
     const layout = await page.evaluate(() => ({
       scrollWidth: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
-      canvas: document.querySelector('#phaser-game canvas')?.getBoundingClientRect().toJSON(),
+      activeWorkspace: document.querySelector('#reports-view:not([hidden])')?.getBoundingClientRect().toJSON(),
     }));
     expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
-    expect(layout.canvas?.width ?? 0).toBeGreaterThan(0);
-    expect(layout.canvas?.height ?? 0).toBeGreaterThan(0);
+    expect(layout.activeWorkspace?.width ?? 0).toBeGreaterThan(0);
+    expect(layout.activeWorkspace?.height ?? 0).toBeGreaterThan(0);
   }
 });
 
