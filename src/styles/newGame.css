@@ -45,6 +45,46 @@
   line-height: 1.55;
 }
 
+.new-game-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 920px;
+  margin: 0 auto 18px;
+  padding: 14px;
+  border: 1px solid rgb(114 174 208 / 18%);
+  border-radius: 12px;
+  background: rgb(5 17 28 / 78%);
+}
+
+.new-game-setting {
+  display: grid;
+  gap: 7px;
+  color: #9bb0bc;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.new-game-setting__select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgb(114 174 208 / 28%);
+  border-radius: 8px;
+  color: var(--ice-100);
+  background: #07131f;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.new-game-setting__select:focus-visible {
+  border-color: var(--cyan-400);
+  outline: 2px solid color-mix(in srgb, var(--cyan-400) 28%, transparent);
+  outline-offset: 2px;
+}
+
 .new-game-faction-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -172,6 +212,10 @@
     width: calc(100vw - 12px);
     max-height: calc(100vh - 12px);
     padding: 15px;
+  }
+
+  .new-game-settings {
+    grid-template-columns: 1fr;
   }
 
   .new-game-faction {
