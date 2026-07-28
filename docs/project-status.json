@@ -1,5 +1,5 @@
 {
-  "statusVersion": 30,
+  "statusVersion": 31,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -7,8 +7,8 @@
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
   "lastMergedPr": 123,
-  "lastMergeSha": "recorded in GitHub PR #123 merge metadata",
-  "verifiedMainBaseline": "PR #123 PLANET-DESTRUCTION-RECOVERY-GATE; exact final head and workflow runs recorded in GitHub PR #123 metadata; exact squash merge SHA recorded on main after merge",
+  "lastMergeSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30",
+  "verifiedMainBaseline": "PR #123 PLANET-DESTRUCTION-RECOVERY-GATE squash-merged as aa1dc67ed874c75aa69af30ce9ced58169793c30; final head 32e5b4aa0bd7d478022420f2c64b9369b56b7055 passed CI, Browser E2E, Graphify and automated review",
   "activePr": null,
   "nextPrAfterActive": 124,
   "nextPrKind": "audit",
@@ -32,7 +32,7 @@
     "completedImplementationPrs": [122, 123],
     "implementationMergeShas": {
       "122": "be0caff4fbf06384cdf5d370dbc2da80d4081152",
-      "123": "recorded in GitHub PR #123 merge metadata"
+      "123": "aa1dc67ed874c75aa69af30ce9ced58169793c30"
     },
     "workItems": [
       "PLANET-DEMOLITION-CONTRACT",
@@ -55,7 +55,7 @@
     "completedImplementationPrs": [122, 123],
     "implementationMergeShas": {
       "122": "be0caff4fbf06384cdf5d370dbc2da80d4081152",
-      "123": "recorded in GitHub PR #123 merge metadata"
+      "123": "aa1dc67ed874c75aa69af30ce9ced58169793c30"
     },
     "workItems": [
       "PLANET-DEMOLITION-CONTRACT",
@@ -124,12 +124,12 @@
     "faction and weapon-scaled deterministic building demolition with defence and Commander modifiers",
     "no-refund demolished-building queue cleanup, zone/economy reconciliation and routed report evidence",
     "capped deterministic whole-planet destruction with final-colony protection and report evidence",
-    "atomic destroyed-colony reference recovery, special-mission live returns, debris recycling and fresh recolonization"
+    "atomic destroyed-colony reference recovery, repeatable special-mission live returns, debris recycling, fresh recolonization and outbound recycler retargeting"
   ],
   "activeDelivery": [
     {"pr": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
     {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "merged", "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152"},
-    {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "merged", "mergeSha": "recorded in GitHub PR #123 merge metadata"}
+    {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "merged", "mergeSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30"}
   ],
   "knownLimitations": [
     "multi-colony economy and logistics coherence remain a separate future audit",
@@ -145,10 +145,10 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #123 final validation recorded in GitHub PR metadata",
+    "lastValidation": "PR #123 final head 32e5b4aa0bd7d478022420f2c64b9369b56b7055 passed Graphify",
     "lastAuditGraph": {
-      "workflowRun": "recorded in GitHub PR #123 metadata",
-      "headSha": "recorded in GitHub PR #123 metadata"
+      "workflowRun": "30355631705",
+      "headSha": "32e5b4aa0bd7d478022420f2c64b9369b56b7055"
     }
   },
   "sourceAssetIntake": {
