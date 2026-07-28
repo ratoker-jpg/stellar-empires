@@ -112,6 +112,17 @@ export function isPendingCatchUpMetadata(value: unknown): value is PendingCatchU
     isCampaignCatchUpSummary(value.accumulatedSummary);
 }
 
+function isConsistentPendingCatchUp(
+  lastActiveAtReal: string,
+  pendingCatchUp: PendingCatchUpMetadata,
+): boolean {
+  const cursorMilliseconds = Date.parse(lastActiveAtReal);
+  const targetMilliseconds = Date.parse(pendingCatchUp.targetAtReal);
+  return targetMilliseconds >= cursorMilliseconds &&
+    pendingCatchUp.remainingRealDurationMilliseconds ===
+      targetMilliseconds - cursorMilliseconds;
+}
+
 export function isCampaignRuntimeMetadata(value: unknown): value is CampaignRuntimeMetadata {
   if (!isRecord(value) ||
     !isCanonicalRealTimestamp(value.lastActiveAtReal) ||
@@ -119,8 +130,11 @@ export function isCampaignRuntimeMetadata(value: unknown): value is CampaignRunt
     !isNonNegativeFinite(value.lastCatchUpGameDurationSeconds)) {
     return false;
   }
-  if (value.pendingCatchUp !== undefined && !isPendingCatchUpMetadata(value.pendingCatchUp)) {
-    return false;
+  if (value.pendingCatchUp !== undefined) {
+    if (!isPendingCatchUpMetadata(value.pendingCatchUp) ||
+      !isConsistentPendingCatchUp(value.lastActiveAtReal, value.pendingCatchUp)) {
+      return false;
+    }
   }
   return value.pendingReturnSummary === undefined ||
     isCampaignCatchUpSummary(value.pendingReturnSummary);
@@ -138,11 +152,6 @@ export function createCampaignRuntimeMetadata(
 
 export function prepareActiveSaveRuntimeMetadata(
   current: CampaignRuntimeMetadata,
-  acceptedAtReal: string,
 ): CampaignRuntimeMetadata {
-  if (current.pendingCatchUp !== undefined) return current;
-  return {
-    ...current,
-    lastActiveAtReal: normalizeRealTimestamp(acceptedAtReal),
-  };
+  return current;
 }
