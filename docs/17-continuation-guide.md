@@ -1,10 +1,10 @@
 # AI Continuation Guide
 
-**Status:** PR #122 merged · `be0caff4fbf06384cdf5d370dbc2da80d4081152`  
+**Status:** PR #123 merged · exact SHA recorded in GitHub merge metadata  
 **Updated:** 2026-07-28  
-**Runtime baseline:** PR #122 · `be0caff4fbf06384cdf5d370dbc2da80d4081152`  
-**Active batch:** `PLANET-DEMOLITION-DESTRUCTION-01`  
-**Next implementation:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE`
+**Runtime baseline:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE`  
+**Last completed batch:** `PLANET-DEMOLITION-DESTRUCTION-01`  
+**Next authorized work:** Audit PR #124 only
 
 ## Repository
 
@@ -17,16 +17,13 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 1. `AGENTS.md`
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
-4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/contracts/planet-demolition-destruction-01-prs.md`
-6. `docs/audits/contracts/planet-demolition-destruction-01-rules.md`
-7. `docs/audits/evidence/planet-demolition-destruction-01-graphify.md`
-8. `docs/changes/pr122-planet-demolition-contract.md`
-9. this document
-10. `docs/project-status.json`
-11. `docs/roadmap-pr-index.json`
-12. `docs/27-playable-game-roadmap-v5.md`
-13. latest merged pull requests and actual `main`
+4. `docs/audits/completed/planet-demolition-destruction-01.md`
+5. `docs/changes/pr123-planet-destruction-recovery-gate.md`
+6. this document
+7. `docs/project-status.json`
+8. `docs/roadmap-pr-index.json`
+9. `docs/27-playable-game-roadmap-v5.md`
+10. latest merged pull requests and actual `main`
 
 ## Completed product state
 
@@ -34,48 +31,40 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - #106–#110: schema-v14 Universe navigation/action gate;
 - #111–#115: coherent routed shell;
 - #116–#120: ordinary mission/intelligence/bot parity gate;
-- #121: accepted heavy planet demolition/destruction audit;
-- #122: deterministic building demolition contract.
+- #121: heavy planet demolition/destruction audit;
+- #122: deterministic building demolition contract;
+- #123: whole-planet destruction and recovery closure gate.
 
-## Delivered by PR #122
+## Delivered destructive attack branch
+
+The existing ordinary `attack` mission now supports:
 
 - faction-specific siege profiles and weapon-level scaling;
-- deterministic demolition points, thresholds, selection and independent rolls;
-- surviving defence-population reduction;
-- Annihilator demolition removed from generic combat damage and applied to building rolls;
-- one-level building damage with endgame structures excluded;
-- matching building queue/event cancellation without refund;
-- zone and economy recalculation;
-- additive `BattleReport.demolition` evidence;
-- routed report-card details with exact basis-point precision;
-- focused simulation/presentation tests and full CI/Browser/Graphify gate.
+- deterministic building demolition with Annihilator roll bonus;
+- deterministic whole-planet chance with defence, defender destroyer and Polias reductions;
+- 30% cap and final-colony protection;
+- atomic colony removal and active-reference cleanup;
+- deterministic nearest-colony fleet rehome;
+- ordinary return rebuilding without duplicate events;
+- immutable special-mission historical origin plus additive live `returnPlanetId`;
+- reward-safe expedition and space-object resolution;
+- debris recycling at released coordinates and fresh recolonization;
+- exact report evidence and map backlinks after active-colony deletion;
+- schema-v14 save/load, integration and Browser E2E closure.
 
-Exact merge: `be0caff4fbf06384cdf5d370dbc2da80d4081152`.
-
-## PR #123 only
-
-Create fresh PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` for:
-
-- whole-planet destruction chance, reductions and final-colony guard;
-- atomic live-reference cleanup;
-- ordinary fleet and pending expedition/space-object return recovery;
-- immutable historical origin plus additive live `returnPlanetId`;
-- debris re-keying and recycling at released coordinates;
-- normal recolonization;
-- reports, bots, save/load, headless and Browser E2E closure gate;
-- batch archive and exact metadata closure.
+The completed audit is archived at `docs/audits/completed/planet-demolition-destruction-01.md`.
 
 ## Invariants
 
-- existing ordinary `attack` only;
-- schema v14 retained unless an actual incompatibility is proven;
-- reducer/combat remains authoritative;
+- ordinary `attack` remains the only destructive mission;
+- schema v14 remains authoritative;
+- reducer/combat and deterministic hashes remain authoritative;
 - no hidden target state for UI or bots;
 - no refunds or extra destruction loot;
-- final colony protected;
-- solar/endgame and economy/logistics redesign excluded;
-- no implementation after #123 is authorized without a new audit.
+- an empire's final active colony is protected;
+- historical reports and coordinates remain immutable evidence;
+- solar/endgame and economy/logistics redesign remain excluded.
 
 ## Immediate route
 
-Create PR #123 from fresh current `main`. Implement only `PLANET-DESTRUCTION-RECOVERY-GATE`, close/archive the batch after all checks and review pass, then stop for the next Audit PR.
+Create a fresh Audit PR #124 from current `main`. Do not open or implement another gameplay PR until that audit establishes the next bounded batch, exact baseline, contracts and validation gates.
