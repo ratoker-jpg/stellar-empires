@@ -5,6 +5,7 @@
 **Audit PR:** #125 · `a13f017d79d5dce5fde954e9f6e1419a2182d78e`  
 **Accepted baseline:** `cdd112c544ce8d37af17e938867d4588bedcf152`  
 **Implementation PRs:** #126–#129  
+**Final implementation merge:** `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
 **Schema:** v14 retained  
 **Divergence:** none
 
@@ -15,7 +16,7 @@
 | #126 | `NAV-IA-PRIMARY-SHELL` | player-centered gameplay/development/information/system hierarchy; Operations promoted; Space labelled `Вселенная`; merge `2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1` |
 | #127 | `NAV-CONTEXT-ROUTE-MODEL` | campaign-scoped session route memory, active-colony context, localized breadcrumbs, typed return destination and stale-context normalization; merge `2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418` |
 | #128 | `NAV-CROSS-DOMAIN-FLOWS` | reload-safe prepared Fleet target, explicit source return, exact Report/Space backlinks, invalid-target fallback and explicit send boundary; merge `051c46736dbb92a7fb5061243d458eb3faabecfe` |
-| #129 | `NAV-USABILITY-GATE` | measured task budgets, no-dead-end/legacy-launcher gate, keyboard/history/reload/reduced-motion/release-viewport validation and batch closure; exact merge recorded in canonical status after merge |
+| #129 | `NAV-USABILITY-GATE` | measured task budgets, no-dead-end/legacy-launcher gate, real browser colony switching, keyboard/history/reload/reduced-motion/release-viewport validation and batch closure; merge `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa` |
 
 ## Final player outcome
 
@@ -33,11 +34,12 @@ The closure gate verifies:
 - another family → latest valid Operations subroute in one primary activation;
 - Space target → prefilled Fleet composer while `SEND_FLEET` remains explicit;
 - report → exact Space coordinate and one-action return;
-- equivalent Planet task retention when switching between valid player colonies;
+- equivalent Planet task retention when switching between valid player colonies through the visible HUD selector;
 - all primary destinations reachable without obsolete competing dialogs or launchers;
 - checksum neutrality across navigation, history and reload;
 - keyboard, reduced motion, Back/Forward and reload parity;
-- no horizontal overflow at 1366×768 and 1920×1080.
+- no horizontal overflow at 1366×768 and 1920×1080;
+- accepted task budgets execute at both release viewports.
 
 ## Storage and simulation boundaries
 
@@ -47,10 +49,16 @@ No gameplay command, mission kind, formula, bot policy, save schema or simulatio
 
 ## Validation
 
-Each implementation PR passed asset validation, lint, strict TypeScript, full tests, production build, Chromium Browser E2E and Graphify before merge. Exact final #129 run IDs and merge SHA are recorded in `docs/project-status.json` and `docs/audits/current-execution-state.md` after merge.
+Final PR #129 head `fe35972451fc94eecb6fd80f4aace98171d005df` passed:
+
+- CI `30384172381`;
+- Chromium Browser E2E `30384173409`;
+- Graphify `30384172385`.
+
+Three P1 closure findings were fixed before merge: canonical status synchronization, full task-budget execution at both release viewports and browser-level colony switching. All review threads were resolved.
 
 ## Next ordered audit
 
-After this batch closes, the only authorized next repository action is Audit PR #130 `LOCAL-CAMPAIGN-TIME-PACING-01`.
+The only authorized next repository action is Audit PR #130 `LOCAL-CAMPAIGN-TIME-PACING-01`.
 
 That audit must inspect campaign setup, immutable world-speed persistence, trusted elapsed time, bounded deterministic offline catch-up, bot/diplomacy/endgame catch-up parity, return summary, progression compression and headless campaign-duration balance. It must not implement those systems before the audit is accepted.
