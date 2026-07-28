@@ -37,21 +37,29 @@ test('Planet and Space routes restore through URL, history and reload', async ({
   await expect(page.locator('html')).toHaveAttribute('data-state-checksum', initialChecksum ?? '');
 });
 
-test('the typed registry exposes stable primary controls and keyboard order', async ({ page }) => {
+test('the typed registry exposes grouped primary controls and visible keyboard order', async ({ page }) => {
   await page.goto('/?e2e=1#/space/universe');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
-  const ids = await page.locator('.side-rail > [data-shell-screen]').evaluateAll((buttons) =>
+  const ids = await page.locator('.side-rail [data-shell-screen]').evaluateAll((buttons) =>
     buttons.map((button) => button.id),
   );
-  expect(ids.slice(0, 6)).toEqual([
+  expect(ids).toEqual([
     'nav-planet',
-    'nav-fleet',
     'nav-galaxy',
+    'nav-fleet',
+    'nav-operations',
     'nav-research',
     'nav-empire',
+    'nav-reports',
     'nav-rating',
+    'nav-system',
   ]);
+  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'gameplay');
   await page.locator('#nav-galaxy').focus();
   await page.keyboard.press('ArrowLeft');
+  await expect(page.locator('#nav-planet')).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('#nav-galaxy')).toBeFocused();
+  await page.keyboard.press('ArrowRight');
   await expect(page.locator('#nav-fleet')).toBeFocused();
 });
