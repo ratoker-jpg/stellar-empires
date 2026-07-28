@@ -6,87 +6,95 @@
 
 ## Graph baseline
 
-The final clean PR #120 graph covered the runtime baseline immediately before post-merge metadata-only commits:
+The final PR #120 runtime graph recorded:
 
 - nodes: 2,130;
 - relationships: 6,795;
 - communities: 103;
 - extracted: 100%;
-- inferred: 0%;
-- ambiguous: 0%;
+- inferred/ambiguous: 0%;
 - workflow run: `30311719069`.
 
-Post-PR #120 commits through `818aba011199dd5a96518f859ed35de671be892f` changed authoritative documentation/status metadata only. Audit PR #121 still requires a fresh Graphify run on its final documentation head before merge.
+Post-#120 commits to the audit baseline changed status/documentation only. Audit #121 requires a fresh final-head Graphify run.
 
 ## Direct source inspection
 
 | Surface | Verified paths | Finding |
 |---|---|---|
-| attack arrival | `src/simulation/fleets/flightCommands.ts` | existing `attack` arrival calls one resolver, emits one report and returns surviving attacker |
-| combat | `src/simulation/combat/resolveAttackMission.ts`, `resolveBattle.ts`, combat types | battle/recovery/plunder/debris exist; no building or planet destruction |
-| ship capability | unit types and complete ship catalog | all factions expose a planet-destroyer class; generic ability does not encode faction-specific canonical tables |
-| Commander effects | `src/simulation/command/commanderShips.ts` | Annihilator and Polias basis points exist; demolition is currently converted into generic weapon bonus |
-| planet state | planet types, progression, zones | active colony owns buildings/queues/economy/inventory/defence; removal requires zone/queue cleanup |
-| colonization | `src/simulation/colonization/colonization.ts` | unowned galaxy position can create a fresh colony through existing rules |
-| fleets | fleet types, flight commands, mission rules | origin/location/mission/event references can point at a removed planet |
-| logistics | `src/simulation/logistics/routes.ts` | route endpoints are planet IDs; missing endpoints currently keep retrying |
-| intelligence | intelligence types/state/selectors | observations/alerts are bounded snapshots with coordinates and may remain historical |
-| world events | `src/simulation/pve/worldEvents.ts` | active planet-target events and pending end events require cancellation |
-| reports | combat report and `src/simulation/reports/missionReports.ts` | optional fields can extend reports; exact coordinate must be persisted before target removal |
-| persistence | `src/storage/saveFormat.ts`, schema-v14 migration chain | active planet count is variable; no tombstone required; additive optional report data can remain schema v14 |
-| runtime navigation | `GameApplicationController`, app shell, main bootstrap | active planet already normalizes to a surviving player colony after state changes |
-| bots | perception, fleet mission planner, scheduler/worker | ordinary attack and current level-three intelligence are shared; no bot-only command required |
-| canonical design | `docs/25-solar-war-obelisks-gates-and-progression.md` | exact demolition thresholds, level-10 faction values, reductions, cap and last-colony protection are recorded |
+| attack arrival | `src/simulation/fleets/flightCommands.ts` | existing `attack` calls one resolver, emits one report and returns survivors |
+| combat | `resolveAttackMission.ts`, battle/combat types | battle/recovery/plunder/debris exist; no siege/planet removal |
+| ship capability | unit types/catalog | all factions expose planet-destroyer hulls; canonical faction tables are not encoded |
+| Commander effects | `commanderShips.ts` | Annihilator/Polias bps exist; demolition is currently a generic weapon bonus |
+| planet/colonization | planet types/progression/zones, `colonization.ts` | active colony can be removed; unowned position can create a fresh colony |
+| ordinary fleets | fleet types, flight commands, mission rules | origin/location/mission/events may point at removed planet |
+| expeditions | `src/simulation/pve/expeditions.ts` | pending report embeds `originPlanetId`; resolver stations survivor/credits reward there; missing origin drops normal reward |
+| space-object missions | `src/simulation/pve/spaceObjects.ts` | pending report embeds `originPlanetId`; resolver stations survivor/credits normal reward there while applying object/strategic effects |
+| logistics | `logistics/routes.ts` | missing endpoints currently keep retrying |
+| intelligence | intelligence types/state/selectors | bounded snapshots with coordinates can remain historical |
+| world events | `pve/worldEvents.ts` | planet-target events/end events need cancellation |
+| reports | combat/unified reports | additive optional evidence works; coordinate must persist before removal |
+| persistence | `storage/saveFormat.ts`, schema-v14 chain | active planet count variable; additive optional report metadata can stay v14 |
+| runtime navigation | application controller/shell | active planet normalizes to surviving colony |
+| bots | perception/planner/scheduler | shared attack and level-three intelligence; no bot-only command needed |
+| canonical design | `docs/25-solar-war-obelisks-gates-and-progression.md` | thresholds, values, reductions, cap and final-colony protection recorded |
 
 ## Dependency flow
 
 ```text
 SEND_FLEET attack
-→ mission availability / level-three intelligence
+→ availability / intelligence
 → FLEET_ARRIVE
 → resolveAttackMission
-→ resolveBattle + recovery + plunder + debris
-→ [new] resolvePlanetDemolition
-→ [new] resolvePlanetDestruction
-→ [new] reconcileDestroyedPlanet
-→ BattleReport event
-→ unified reports / Space backlink / HUD-context refresh
+→ battle + recovery + plunder + debris
+→ [new] demolition
+→ [new] destruction
+→ [new] destroyed-planet reconciliation
+├─ ordinary fleet return reconciliation
+├─ EXPEDITION_RESOLVE live return override
+└─ SPACE_OBJECT_MISSION_RESOLVE live return override
+→ BattleReport / reports / map / HUD
 → save/checksum/replay
 ```
 
-## High-risk references to verify after implementation
+## High-risk references
 
 ```text
 PlanetState.id
 ├─ fleet origin/location/mission
 ├─ pending completion/arrival/return events
-├─ research and ship-upgrade queues
+├─ expedition report origin and live return
+├─ space-object report origin and live return
+├─ research/upgrade queues
 ├─ logistics routes
 ├─ active world events
-├─ debris target identity
-├─ intelligence snapshots
-├─ battle/unified reports
-├─ commander flagship through removed fleets
+├─ debris identity
+├─ intelligence/report snapshots
+├─ flagship through removed fleet
 └─ active Planet route/context
 ```
 
-Historical logs, reports and intelligence snapshots are intentionally exempt from live-reference deletion when they contain coordinates and are not treated as active targets.
+Historical origin evidence remains immutable. Live special-mission return destination must be separate optional metadata.
+
+## Review finding resolved by contract
+
+The initial Audit #121 contract rehomed `FleetState.originPlanetId` but did not explicitly reconcile `EXPEDITION_RESOLVE` and `SPACE_OBJECT_MISSION_RESOLVE` report origins. Direct inspection showed both handlers would station survivors at the deleted origin; expedition and ordinary space-object resources could be lost.
+
+The amended contract now requires:
+
+- immutable historical `originPlanetId`;
+- additive optional `returnPlanetId`;
+- live destination `returnPlanetId ?? originPlanetId`;
+- reward/fleet resolution at the live destination;
+- preservation of space-object depletion/control/cooldown/strategic effects;
+- focused destroyed-origin tests and save/load coverage.
 
 ## Search conclusions
 
-- no existing planet-demolition resolver;
-- no existing whole-colony removal boundary;
-- no separate demolition mission kind is needed;
-- no schema-v15 state is required for ordinary colony destruction;
-- PR #82 already delivered deterministic persisted bot timing, so this audit must not duplicate that work;
-- economy/logistics redesign remains separate; only invalid route cleanup belongs here;
-- solar/system destruction is structurally different and remains excluded.
+- no existing siege or colony-removal boundary;
+- no new mission kind or schema-v15 collection required;
+- PR #82 bot timing is already delivered and not duplicated;
+- economy/logistics redesign and solar/endgame work remain separate.
 
 ## Graphify finalization
 
-Before Audit PR #121 merges, update this section with the final workflow run and verify:
-
-- install/build succeeds;
-- generated graph output validates;
-- no generated outputs enter the diff;
-- direct inspection still matches the final documentation contract.
+Final audit head must pass Graphify, CI and Browser E2E; generated graph/Playwright outputs must remain absent from the diff. Record the exact final head/run after the last contract change.
