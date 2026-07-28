@@ -80,10 +80,11 @@ export function createColonyPlanet(
   location: GalaxyPlanetLocation,
   empireId: string,
   factionId: FactionId = 'aegis',
+  colonyId = `colony-${location.planet.id}`,
 ): PlanetState {
   const buildings = getStartingBuildingsForFaction(factionId);
   return {
-    id: `colony-${location.planet.id}`,
+    id: colonyId,
     galaxyPlanetId: location.planet.id,
     systemId: location.system.id,
     position: location.planet.position,
@@ -190,7 +191,12 @@ export function resolveColonization(
   }
 
   const factionId = getFactionIdForEmpire(state, fleet.empireId);
-  const baseColony = createColonyPlanet(location, fleet.empireId, factionId);
+  const baseColony = createColonyPlanet(
+    location,
+    fleet.empireId,
+    factionId,
+    `colony-${location.planet.id}-${state.nextEventSequence}`,
+  );
   const unloaded = unloadCargo(baseColony, fleet.cargo);
   const ships = { ...fleet.ships };
   const colonyShipCount = ships[colonyShipId] ?? 0;
@@ -210,11 +216,59 @@ export function resolveColonization(
         }
       : undefined;
 
-  const fleets = survivingFleet === undefined
+  const fleetsAfterColonization = survivingFleet === undefined
     ? state.fleets.filter((candidate) => candidate.id !== fleet.id)
     : state.fleets.map((candidate) =>
         candidate.id === fleet.id ? survivingFleet : candidate,
       );
+  const retargetedRecyclerFleetIds = new Set<string>();
+  const fleets = fleetsAfterColonization.map((candidate) => {
+    if (
+      candidate.mission?.kind !== 'recycle' ||
+      candidate.mission.targetPlanetId !== galaxyPlanetId
+    ) {
+      return candidate;
+    }
+    retargetedRecyclerFleetIds.add(candidate.id);
+    return {
+      ...candidate,
+      mission: {
+        ...candidate.mission,
+        targetPlanetId: unloaded.colony.id,
+      },
+      location: candidate.location.type === 'transit'
+        ? {
+            ...candidate.location,
+            toPlanetId: candidate.location.toPlanetId === galaxyPlanetId
+              ? unloaded.colony.id
+              : candidate.location.toPlanetId,
+          }
+        : candidate.location,
+    };
+  });
+  const pendingEvents = state.pendingEvents.map((event) =>
+    event.payload.type === 'FLEET_ARRIVE' &&
+    event.payload.targetPlanetId === galaxyPlanetId &&
+    retargetedRecyclerFleetIds.has(event.payload.fleetId)
+      ? {
+          ...event,
+          payload: {
+            ...event.payload,
+            targetPlanetId: unloaded.colony.id,
+          },
+        }
+      : event,
+  );
+  const debrisFields = state.debrisFields.map((field) =>
+    field.planetId === galaxyPlanetId
+      ? {
+          ...field,
+          id: `debris-${unloaded.colony.id}`,
+          planetId: unloaded.colony.id,
+          coordinate: field.coordinate ?? unloaded.colony.coordinate,
+        }
+      : field,
+  );
 
   return {
     colony: unloaded.colony,
@@ -228,6 +282,8 @@ export function resolveColonization(
       ),
       planets: [...state.planets, unloaded.colony],
       fleets,
+      pendingEvents,
+      debrisFields,
     },
   };
 }

@@ -14,6 +14,11 @@ import type { GameState } from '../simulation/types';
 import type { ReportShellFilter } from './appShellRoute';
 import { createIncomingFlightsSection } from './intelligencePresentation';
 import { formatGameDuration } from './planetViewModel';
+import {
+  createPlanetDemolitionDetails,
+  findPlanetDemolitionReport,
+  findPlanetSiegeCoordinate,
+} from './planetDemolitionReport';
 
 export interface ReportsWorkspaceOptions {
   readonly getState: () => GameState;
@@ -140,7 +145,8 @@ function createReportCard(
   balance.textContent = report.kind === 'intelligence'
     ? `Время ${formatGameDuration(report.resolvedAt)} · данные получены из журнала разведки`
     : `Время ${formatGameDuration(report.resolvedAt)} · угроза ${report.threatMultiplierPermille / 10}% · награда ${report.rewardMultiplierPermille / 10}%`;
-  const coordinate = resolveMissionReportCoordinate(state, report);
+  const coordinate = resolveMissionReportCoordinate(state, report) ??
+    findPlanetSiegeCoordinate(state, report.id);
   const mapLink = document.createElement('button');
   mapLink.type = 'button';
   mapLink.textContent = 'На карту';
@@ -184,6 +190,8 @@ function createReportCard(
     details.append(detailsSummary, table);
     card.append(details);
   }
+  const siege = findPlanetDemolitionReport(state, report.id);
+  if (siege !== undefined) card.append(createPlanetDemolitionDetails(siege));
   return card;
 }
 

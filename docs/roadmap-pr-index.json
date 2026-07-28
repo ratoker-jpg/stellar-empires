@@ -5,20 +5,20 @@
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 122,
-    "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152",
-    "runtimeBaselinePr": 122,
-    "runtimeBaselineSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152",
+    "lastMergedPr": 123,
+    "mergeSha": "recorded in GitHub PR #123 merge metadata",
+    "runtimeBaselinePr": 123,
+    "runtimeBaselineSha": "recorded in GitHub PR #123 merge metadata",
     "auditBaselineSha": "818aba011199dd5a96518f859ed35de671be892f"
   },
   "activePr": null,
-  "nextPrAfterActive": 123,
-  "nextPrKind": "implementation",
+  "nextPrAfterActive": 124,
+  "nextPrKind": "audit",
   "phases": [
     {"id": "delivered-foundation-and-catalogs", "startPr": 1, "endPr": 100, "status": "completed", "outcome": "Deterministic PvE foundation, complete mechanical catalogs, canonical roadmap and audit-first delivery protocol"},
     {"id": "catalog-runtime-integration", "auditPr": 101, "startPr": 102, "endPr": 105, "status": "completed", "outcome": "217 mechanical IDs resolve through 173 generated runtime images"},
     {"id": "universe-navigation", "auditPr": 106, "startPr": 107, "endPr": 110, "status": "completed", "outcome": "Schema v14, Universe navigation, action gate and Browser E2E"},
-    {"id": "coherent-ui-shell", "auditPr": 111, "startPr": 112, "endPr": 115, "status": "completed", "completedPrs": [112, 113, 114, 115], "nextPr": null, "outcome": "One application controller, nine canonical routes and browser/accessibility gate", "archive": "docs/audits/completed/coherent-ui-shell-01.md"},
+    {"id": "coherent-ui-shell", "auditPr": 111, "startPr": 112, "endPr": 115, "status": "completed", "completedPrs": [112, 113, 114, 115], "nextPr": null, "outcome": "One application controller, nine routes and browser/accessibility gate", "archive": "docs/audits/completed/coherent-ui-shell-01.md"},
     {"id": "ordinary-missions-intelligence", "auditPr": 116, "startPr": 117, "endPr": 120, "status": "completed", "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01", "completedPrs": [117, 118, 119, 120], "nextPr": null, "outcome": "Shared ordinary mission rules, deterministic intelligence, redacted reports and honest bot gate", "archive": "docs/audits/completed/ordinary-missions-intelligence-01.md"},
     {
       "id": "planet-demolition-destruction",
@@ -26,12 +26,12 @@
       "auditMergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9",
       "startPr": 122,
       "endPr": 123,
-      "status": "implementation-active",
+      "status": "completed",
       "batchId": "PLANET-DEMOLITION-DESTRUCTION-01",
-      "completedPrs": [122],
+      "completedPrs": [122, 123],
       "activePr": null,
-      "nextPr": 123,
-      "outcome": "Ordinary attack demolition delivered; safe colony destruction including special-mission returns, released-coordinate recovery and full gate remain in #123",
+      "nextPr": null,
+      "outcome": "Deterministic building demolition, capped whole-planet destruction, final-colony protection, atomic live-reference recovery, special-mission returns, released-coordinate debris/recolonization and full Browser E2E gate",
       "archive": "docs/audits/completed/planet-demolition-destruction-01.md"
     },
     {"id": "multi-colony-economy-logistics", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Coherent multi-colony economy, logistics and bot planning"},
@@ -62,7 +62,7 @@
     {"number": 120, "kind": "implementation", "workItem": "MISSION-INTELLIGENCE-BOT-GATE", "title": "Gate mission intelligence bot parity", "status": "merged", "mergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665"},
     {"number": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "title": "Audit planet demolition and destruction", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
     {"number": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "title": "Implement deterministic planet demolition", "status": "merged", "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152"},
-    {"number": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "title": "Complete planet destruction and recovery gate", "status": "next", "mergeSha": null}
+    {"number": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "title": "Complete planet destruction and recovery gate", "status": "merged", "mergeSha": "recorded in GitHub PR #123 merge metadata"}
   ],
-  "nextAction": "Create PR #123 from fresh current main and complete PLANET-DESTRUCTION-RECOVERY-GATE only."
+  "nextAction": "Create fresh Audit PR #124 from current main; do not start implementation before that audit is accepted."
 }

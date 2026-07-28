@@ -1,0 +1,387 @@
+import { updateGalaxyPlanetOwner } from '../colonization/colonization';
+import type { DebrisField } from '../combat/debris';
+import type { FleetState } from '../fleets/types';
+import '../pve/specialMissionReturn';
+import { calculateCoordinateDistance } from '../space/coordinates';
+import type { GameState, ScheduledGameEvent } from '../types';
+import type { PlanetState } from './types';
+
+export interface DestroyedPlanetReconciliation {
+  readonly state: GameState;
+  readonly destroyedPlanet: PlanetState;
+  readonly fallbackPlanetId: string;
+  readonly removedFleetIds: readonly string[];
+}
+
+function selectFallbackPlanet(
+  planets: readonly PlanetState[],
+  empireId: string,
+  excludedPlanet: PlanetState,
+): PlanetState | undefined {
+  return planets
+    .filter(
+      (planet) =>
+        planet.ownerEmpireId === empireId && planet.id !== excludedPlanet.id,
+    )
+    .sort(
+      (left, right) =>
+        calculateCoordinateDistance(excludedPlanet.coordinate, left.coordinate) -
+          calculateCoordinateDistance(excludedPlanet.coordinate, right.coordinate) ||
+        left.id.localeCompare(right.id),
+    )[0];
+}
+
+function eventReferencesQueue(
+  event: ScheduledGameEvent,
+  researchQueueIds: ReadonlySet<string>,
+  upgradeQueueIds: ReadonlySet<string>,
+  targetPlanetId: string,
+): boolean {
+  const payload = event.payload;
+  if (
+    (payload.type === 'BUILDING_COMPLETE' ||
+      payload.type === 'UNIT_PRODUCTION_COMPLETE' ||
+      payload.type === 'DEFENSE_REPAIR_COMPLETE') &&
+    payload.planetId === targetPlanetId
+  ) {
+    return true;
+  }
+  if (
+    payload.type === 'RESEARCH_COMPLETE' &&
+    researchQueueIds.has(payload.queueItemId)
+  ) {
+    return true;
+  }
+  return payload.type === 'SHIP_UPGRADE_COMPLETE' &&
+    upgradeQueueIds.has(payload.queueItemId);
+}
+
+function mergeRekeyedDebris(
+  fields: readonly DebrisField[],
+  destroyedPlanet: PlanetState,
+): readonly DebrisField[] {
+  const byPlanetId = new Map<string, DebrisField>();
+  for (const field of fields) {
+    const planetId = field.planetId === destroyedPlanet.id
+      ? destroyedPlanet.galaxyPlanetId
+      : field.planetId;
+    const existing = byPlanetId.get(planetId);
+    if (existing === undefined) {
+      byPlanetId.set(planetId, {
+        ...field,
+        id: `debris-${planetId}`,
+        planetId,
+        ...(field.coordinate === undefined && field.planetId === destroyedPlanet.id
+          ? { coordinate: destroyedPlanet.coordinate }
+          : {}),
+      });
+      continue;
+    }
+    byPlanetId.set(planetId, {
+      ...existing,
+      metal: existing.metal + field.metal,
+      crystal: existing.crystal + field.crystal,
+      createdAt: Math.max(existing.createdAt, field.createdAt),
+      coordinate: existing.coordinate ?? field.coordinate ?? destroyedPlanet.coordinate,
+    });
+  }
+  return [...byPlanetId.values()].sort(
+    (left, right) => left.planetId.localeCompare(right.planetId),
+  );
+}
+
+function isSpecialMission(fleet: FleetState): boolean {
+  return fleet.mission?.kind === 'expedition' ||
+    fleet.mission?.kind === 'space-object';
+}
+
+function createReturnEvent(
+  sequence: number,
+  fleetId: string,
+  originPlanetId: string,
+  executeAt: number,
+): ScheduledGameEvent {
+  return {
+    id: `event-${sequence}`,
+    executeAt,
+    sequence,
+    payload: { type: 'FLEET_RETURN', fleetId, originPlanetId },
+  };
+}
+
+export function reconcileDestroyedPlanet(
+  state: GameState,
+  targetPlanetId: string,
+): DestroyedPlanetReconciliation {
+  const destroyedPlanet = state.planets.find(
+    (planet) => planet.id === targetPlanetId,
+  );
+  if (destroyedPlanet === undefined) {
+    throw new Error(`Destroyed planet ${targetPlanetId} was not found.`);
+  }
+  const ownerFallback = selectFallbackPlanet(
+    state.planets,
+    destroyedPlanet.ownerEmpireId,
+    destroyedPlanet,
+  );
+  if (ownerFallback === undefined) {
+    throw new Error('Planet destruction requires a surviving owner colony.');
+  }
+
+  const researchQueueIds = new Set(
+    state.research.flatMap((entry) =>
+      entry.queue
+        .filter((item) => item.planetId === destroyedPlanet.id)
+        .map((item) => item.id),
+    ),
+  );
+  const upgradeQueueIds = new Set(
+    state.shipUpgrades.flatMap((entry) =>
+      entry.queue
+        .filter((item) => item.planetId === destroyedPlanet.id)
+        .map((item) => item.id),
+    ),
+  );
+  const cancelledWorldEventIds = new Set(
+    state.worldEvents.active
+      .filter(
+        (event) =>
+          event.targetType === 'planet' &&
+          (event.targetId === destroyedPlanet.id ||
+            event.targetId === destroyedPlanet.galaxyPlanetId),
+      )
+      .map((event) => event.id),
+  );
+
+  const removedFleetIds = new Set<string>();
+  const rebuiltFlightEventFleetIds = new Set<string>();
+  const returnEvents: ScheduledGameEvent[] = [];
+  let nextEventSequence = state.nextEventSequence;
+  const fleets: FleetState[] = [];
+
+  for (const fleet of state.fleets) {
+    if (
+      fleet.location.type === 'planet' &&
+      fleet.location.planetId === destroyedPlanet.id
+    ) {
+      removedFleetIds.add(fleet.id);
+      continue;
+    }
+
+    const fallback = fleet.originPlanetId === destroyedPlanet.id
+      ? selectFallbackPlanet(state.planets, fleet.empireId, destroyedPlanet)
+      : state.planets.find((planet) => planet.id === fleet.originPlanetId);
+    const originPlanetId = fallback?.id ?? fleet.originPlanetId;
+    const baseFleet: FleetState = {
+      ...fleet,
+      originPlanetId,
+      location: fleet.location.type === 'transit'
+        ? {
+            ...fleet.location,
+            fromPlanetId: fleet.location.fromPlanetId === destroyedPlanet.id
+              ? originPlanetId
+              : fleet.location.fromPlanetId,
+            toPlanetId: fleet.location.toPlanetId === destroyedPlanet.id &&
+                isSpecialMission(fleet)
+              ? originPlanetId
+              : fleet.location.toPlanetId,
+          }
+        : fleet.location,
+    };
+
+    if (isSpecialMission(baseFleet)) {
+      fleets.push(baseFleet);
+      continue;
+    }
+
+    const targetsDestroyedPlanet =
+      baseFleet.mission?.targetPlanetId === destroyedPlanet.id ||
+      (baseFleet.location.type === 'transit' &&
+        baseFleet.location.toPlanetId === destroyedPlanet.id);
+    const returningToDestroyedPlanet =
+      baseFleet.status === 'returning' &&
+      (fleet.originPlanetId === destroyedPlanet.id ||
+        (fleet.location.type === 'transit' &&
+          fleet.location.toPlanetId === destroyedPlanet.id));
+
+    if (targetsDestroyedPlanet || returningToDestroyedPlanet) {
+      const liveOrigin = state.planets.find(
+        (planet) => planet.id === originPlanetId,
+      ) ?? selectFallbackPlanet(state.planets, fleet.empireId, destroyedPlanet);
+      if (liveOrigin === undefined) {
+        throw new Error(`Fleet ${fleet.id} has no live return colony.`);
+      }
+      const returnSeconds = baseFleet.location.type !== 'transit'
+        ? 1
+        : baseFleet.status === 'returning'
+          ? Math.max(
+              1,
+              baseFleet.location.arrivesAt - state.clock.elapsedSeconds,
+            )
+          : Math.max(
+              1,
+              state.clock.elapsedSeconds - baseFleet.location.departedAt,
+            );
+      const arrivesAt = state.clock.elapsedSeconds + returnSeconds;
+      fleets.push({
+        ...baseFleet,
+        originPlanetId: liveOrigin.id,
+        status: 'returning',
+        mission: null,
+        location: {
+          type: 'transit',
+          fromPlanetId: liveOrigin.id,
+          toPlanetId: liveOrigin.id,
+          departedAt: state.clock.elapsedSeconds,
+          arrivesAt,
+        },
+      });
+      returnEvents.push(
+        createReturnEvent(
+          nextEventSequence,
+          fleet.id,
+          liveOrigin.id,
+          arrivesAt,
+        ),
+      );
+      nextEventSequence += 1;
+      rebuiltFlightEventFleetIds.add(fleet.id);
+      continue;
+    }
+
+    // An origin-only rehome keeps the existing arrival event. The event remains
+    // valid because it targets another live planet, and the rehomed origin is
+    // used later when the mission schedules its return.
+    fleets.push(baseFleet);
+  }
+
+  let pendingEvents = state.pendingEvents.filter((event) => {
+    if (
+      eventReferencesQueue(
+        event,
+        researchQueueIds,
+        upgradeQueueIds,
+        destroyedPlanet.id,
+      )
+    ) {
+      return false;
+    }
+    const payload = event.payload;
+    if (
+      payload.type === 'WORLD_EVENT_END' &&
+      cancelledWorldEventIds.has(payload.instanceId)
+    ) {
+      return false;
+    }
+    if (
+      (payload.type === 'FLEET_ARRIVE' || payload.type === 'FLEET_RETURN') &&
+      (removedFleetIds.has(payload.fleetId) ||
+        rebuiltFlightEventFleetIds.has(payload.fleetId) ||
+        (payload.type === 'FLEET_ARRIVE' &&
+          payload.targetPlanetId === destroyedPlanet.id) ||
+        (payload.type === 'FLEET_RETURN' &&
+          payload.originPlanetId === destroyedPlanet.id))
+    ) {
+      return false;
+    }
+    return true;
+  });
+
+  pendingEvents = pendingEvents.map((event) => {
+    const payload = event.payload;
+    if (payload.type === 'EXPEDITION_RESOLVE') {
+      const returnPlanetId = payload.report.returnPlanetId ??
+        payload.report.originPlanetId;
+      if (returnPlanetId !== destroyedPlanet.id) return event;
+      const fallback = selectFallbackPlanet(
+        state.planets,
+        payload.report.empireId,
+        destroyedPlanet,
+      );
+      if (fallback === undefined) {
+        throw new Error(`Expedition ${payload.report.id} has no live return colony.`);
+      }
+      return {
+        ...event,
+        payload: {
+          type: 'EXPEDITION_RESOLVE' as const,
+          report: { ...payload.report, returnPlanetId: fallback.id },
+        },
+      };
+    }
+    if (payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
+      const returnPlanetId = payload.report.returnPlanetId ??
+        payload.report.originPlanetId;
+      if (returnPlanetId !== destroyedPlanet.id) return event;
+      const fallback = selectFallbackPlanet(
+        state.planets,
+        payload.report.empireId,
+        destroyedPlanet,
+      );
+      if (fallback === undefined) {
+        throw new Error(`Space-object mission ${payload.report.id} has no live return colony.`);
+      }
+      return {
+        ...event,
+        payload: {
+          type: 'SPACE_OBJECT_MISSION_RESOLVE' as const,
+          report: { ...payload.report, returnPlanetId: fallback.id },
+        },
+      };
+    }
+    return event;
+  });
+  pendingEvents = [...pendingEvents, ...returnEvents].sort(
+    (left, right) =>
+      left.executeAt - right.executeAt || left.sequence - right.sequence,
+  );
+
+  const survivingFleetIds = new Set(fleets.map((fleet) => fleet.id));
+  const nextState: GameState = {
+    ...state,
+    galaxy: updateGalaxyPlanetOwner(
+      state.galaxy,
+      destroyedPlanet.galaxyPlanetId,
+      null,
+    ),
+    planets: state.planets.filter((planet) => planet.id !== destroyedPlanet.id),
+    research: state.research.map((entry) => ({
+      ...entry,
+      queue: entry.queue.filter((item) => item.planetId !== destroyedPlanet.id),
+    })),
+    shipUpgrades: state.shipUpgrades.map((entry) => ({
+      ...entry,
+      queue: entry.queue.filter((item) => item.planetId !== destroyedPlanet.id),
+    })),
+    fleets,
+    commanders: state.commanders.map((entry) => ({
+      ...entry,
+      flagshipFleetId:
+        entry.flagshipFleetId !== null &&
+        !survivingFleetIds.has(entry.flagshipFleetId)
+          ? null
+          : entry.flagshipFleetId,
+    })),
+    debrisFields: mergeRekeyedDebris(state.debrisFields, destroyedPlanet),
+    logisticsRoutes: state.logisticsRoutes.filter(
+      (route) =>
+        route.originPlanetId !== destroyedPlanet.id &&
+        route.targetPlanetId !== destroyedPlanet.id,
+    ),
+    worldEvents: {
+      ...state.worldEvents,
+      active: state.worldEvents.active.filter(
+        (event) => !cancelledWorldEventIds.has(event.id),
+      ),
+    },
+    nextEventSequence,
+    pendingEvents,
+  };
+
+  return {
+    state: nextState,
+    destroyedPlanet,
+    fallbackPlanetId: ownerFallback.id,
+    removedFleetIds: [...removedFleetIds].sort(),
+  };
+}

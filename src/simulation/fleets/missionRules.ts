@@ -373,6 +373,14 @@ export function getMissionAvailability(
     command.targetPlanetId,
   );
   let regularTarget: PlanetState | undefined;
+  const releasedDebrisTarget =
+    command.mission === 'recycle' &&
+    state.debrisFields.some(
+      (field) =>
+        field.planetId === command.targetPlanetId &&
+        (field.metal > 0 || field.crystal > 0),
+    ) &&
+    findGalaxyPlanet(state.galaxy, command.targetPlanetId) !== undefined;
 
   if (command.mission === 'colonize') {
     const target = findGalaxyPlanet(state.galaxy, command.targetPlanetId);
@@ -425,7 +433,7 @@ export function getMissionAvailability(
     regularTarget = state.planets.find(
       (planet) => planet.id === command.targetPlanetId,
     );
-    if (regularTarget === undefined) {
+    if (regularTarget === undefined && !releasedDebrisTarget) {
       return result(
         'FLIGHT_PLANET_NOT_FOUND',
         'Целевая планета не найдена.',
@@ -434,6 +442,7 @@ export function getMissionAvailability(
       );
     }
     if (
+      regularTarget !== undefined &&
       (command.mission === 'transport' || command.mission === 'deploy') &&
       regularTarget.ownerEmpireId !== command.empireId
     ) {
@@ -445,6 +454,7 @@ export function getMissionAvailability(
       );
     }
     if (
+      regularTarget !== undefined &&
       command.mission === 'scout' &&
       regularTarget.ownerEmpireId === command.empireId
     ) {
@@ -456,6 +466,7 @@ export function getMissionAvailability(
       );
     }
     if (
+      regularTarget !== undefined &&
       command.mission === 'attack' &&
       regularTarget.ownerEmpireId === command.empireId
     ) {
@@ -470,7 +481,7 @@ export function getMissionAvailability(
       command.mission === 'recycle' &&
       !state.debrisFields.some(
         (field) =>
-          field.planetId === regularTarget?.id &&
+          field.planetId === command.targetPlanetId &&
           (field.metal > 0 || field.crystal > 0),
       )
     ) {
@@ -564,7 +575,7 @@ export function getMissionAvailability(
   let estimate: FlightEstimate;
   try {
     const speedBonus = getFleetSpeedBonus(state, fleet);
-    estimate = command.mission === 'colonize'
+    estimate = command.mission === 'colonize' || releasedDebrisTarget
       ? estimateFlightToGalaxyPlanet(
           state.galaxy,
           state.planets,

@@ -45,11 +45,12 @@ import {
   recallFleetWithExpeditionSupport,
   sendFleetWithExpeditionGuard,
 } from './pve/expeditionFleetCommands';
-import { applyExpeditionEvent, startExpedition } from './pve/expeditions';
+import { startExpedition } from './pve/expeditions';
 import {
-  applySpaceObjectMissionEvent,
-  startSpaceObjectMission,
-} from './pve/spaceObjects';
+  applyExpeditionEventWithReturn,
+  applySpaceObjectMissionEventWithReturn,
+} from './pve/specialMissionReturn';
+import { startSpaceObjectMission } from './pve/spaceObjects';
 import {
   applyWorldEventEvent,
   getNextWorldEventEvaluationAt,
@@ -293,10 +294,10 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
     return applyWorldEventEvent(state, event);
   }
   if (event.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
-    return applySpaceObjectMissionEvent(state, event);
+    return applySpaceObjectMissionEventWithReturn(state, event);
   }
   if (event.payload.type === 'EXPEDITION_RESOLVE') {
-    return applyExpeditionEvent(state, event);
+    return applyExpeditionEventWithReturn(state, event);
   }
   if (event.payload.type === 'FLEET_ARRIVE' || event.payload.type === 'FLEET_RETURN') {
     return applyFlightEvent(state, event);
