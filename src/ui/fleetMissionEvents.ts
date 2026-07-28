@@ -120,6 +120,7 @@ function installPreparedTargetBridge(): void {
   if (typeof document === 'undefined' || typeof MutationObserver === 'undefined') return;
   let preparedNoticeWasVisible = false;
   let clearControl: HTMLButtonElement | null = null;
+  let unloading = false;
 
   const ensureClearControl = (): HTMLButtonElement | null => {
     if (clearControl?.isConnected === true) return clearControl;
@@ -144,6 +145,7 @@ function installPreparedTargetBridge(): void {
 
   const renderInvalidWarning = (message: string): void => {
     queueMicrotask(() => {
+      if (unloading) return;
       const host = document.querySelector<HTMLElement>('#fleet-workspace-host');
       if (host === null || host.querySelector('.mission-target-invalid') !== null) return;
       const warning = document.createElement('p');
@@ -220,6 +222,7 @@ function installPreparedTargetBridge(): void {
   };
 
   const reconcile = (): void => {
+    if (unloading) return;
     const control = ensureClearControl();
     if (document.documentElement.dataset.appReady !== 'true') {
       if (control !== null) control.hidden = true;
@@ -269,6 +272,12 @@ function installPreparedTargetBridge(): void {
     childList: true,
     subtree: true,
   });
+  const stopForDocumentExit = (): void => {
+    unloading = true;
+    observer.disconnect();
+  };
+  window.addEventListener('pagehide', stopForDocumentExit, { once: true });
+  window.addEventListener('beforeunload', stopForDocumentExit, { once: true });
   queueMicrotask(reconcile);
 }
 
