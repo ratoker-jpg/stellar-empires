@@ -332,12 +332,13 @@ export function applyFlightEvent(state: GameState, event: ScheduledGameEvent): G
     }
     const battle = resolveAttackMission(state, fleet, target, event.sequence);
     const withReport = enqueueBattleReport(battle.state, battle.report);
-    const returnFromId = battle.report.destruction?.planetDestroyed === true
-      ? target.galaxyPlanetId
-      : target.id;
-    return battle.attackerFleet === undefined
-      ? withReport
-      : scheduleReturn(withReport, battle.attackerFleet, returnFromId, duration);
+    if (
+      battle.attackerFleet === undefined ||
+      battle.report.destruction?.planetDestroyed === true
+    ) {
+      return withReport;
+    }
+    return scheduleReturn(withReport, battle.attackerFleet, target.id, duration);
   }
 
   if (fleet.mission.kind === 'recycle') {
