@@ -106,19 +106,46 @@ export function dispatchFleetMissionTarget(detail: FleetMissionTargetRequest): v
 function installPreparedTargetBridge(): void {
   if (typeof document === 'undefined' || typeof MutationObserver === 'undefined') return;
   let deliveredTargetId: string | null = null;
+  let preparedNoticeWasVisible = false;
+  let clearControl: HTMLButtonElement | null = null;
+
+  const ensureClearControl = (): HTMLButtonElement | null => {
+    if (clearControl?.isConnected === true) return clearControl;
+    const tabs = document.querySelector<HTMLElement>('#fleet-route-tabs');
+    if (tabs === null) return null;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'prepared-target-clear';
+    button.dataset.clearPreparedTarget = 'true';
+    button.textContent = 'Сбросить подготовленную цель';
+    button.hidden = true;
+    button.addEventListener('click', () => {
+      clearPreparedFleetMissionTarget();
+      deliveredTargetId = null;
+      preparedNoticeWasVisible = false;
+      button.hidden = true;
+      emitPreparedTarget(null);
+    });
+    tabs.insertAdjacentElement('afterend', button);
+    clearControl = button;
+    return button;
+  };
 
   const reconcile = (): void => {
+    const control = ensureClearControl();
     const route = document.documentElement.dataset.shellRoute ?? '';
     const prepared = readPreparedFleetMissionTarget();
     if (!route.startsWith('#/fleets/compose') || prepared === null) {
+      if (control !== null) control.hidden = true;
       deliveredTargetId = null;
+      preparedNoticeWasVisible = false;
       return;
     }
 
     if (deliveredTargetId !== prepared.targetId) {
       deliveredTargetId = prepared.targetId;
       emitPreparedTarget(prepared);
-      queueMicrotask(reconcile);
+      window.setTimeout(reconcile, 0);
       return;
     }
 
@@ -132,6 +159,8 @@ function installPreparedTargetBridge(): void {
     if (targetSelectors.length > 0 && !targetExists) {
       clearPreparedFleetMissionTarget();
       deliveredTargetId = null;
+      preparedNoticeWasVisible = false;
+      if (control !== null) control.hidden = true;
       emitPreparedTarget(null);
       queueMicrotask(() => {
         const host = document.querySelector<HTMLElement>('#fleet-workspace-host');
@@ -145,24 +174,22 @@ function installPreparedTargetBridge(): void {
       return;
     }
 
-    if (notice === null && targetSelectors.length > 0) {
-      clearPreparedFleetMissionTarget();
-      deliveredTargetId = null;
+    if (notice !== null) {
+      preparedNoticeWasVisible = true;
+      if (control !== null) control.hidden = false;
       return;
     }
 
-    if (notice !== null && notice.querySelector('[data-clear-prepared-target]') === null) {
-      const clear = document.createElement('button');
-      clear.type = 'button';
-      clear.dataset.clearPreparedTarget = 'true';
-      clear.textContent = 'Сбросить цель';
-      clear.addEventListener('click', () => {
-        clearPreparedFleetMissionTarget();
-        deliveredTargetId = null;
-        emitPreparedTarget(null);
-      });
-      notice.append(' ', clear);
+    if (preparedNoticeWasVisible) {
+      clearPreparedFleetMissionTarget();
+      deliveredTargetId = null;
+      preparedNoticeWasVisible = false;
+      if (control !== null) control.hidden = true;
+      emitPreparedTarget(null);
+      return;
     }
+
+    if (control !== null) control.hidden = true;
   };
 
   const observer = new MutationObserver(reconcile);
