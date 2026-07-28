@@ -8,7 +8,7 @@ import { createCampaignRuntimeMetadata } from '../../src/storage/runtimeMetadata
 import { createSaveEnvelope } from '../../src/storage/saveFormat';
 
 describe('runtime autosave', () => {
-  it('coalesces pending changes and stores the latest state and cursor', async () => {
+  it('coalesces pending changes while preserving the last processed real-time cursor', async () => {
     const repository = new InMemorySaveRepository();
     const initial = createInitialGameState('autosave-coalesce');
     const advanced = executeCommand(initial, { type: 'ADVANCE_TIME', seconds: 600 });
@@ -16,10 +16,11 @@ describe('runtime autosave', () => {
     if (!advanced.ok) return;
 
     const statuses: string[] = [];
+    const runtimeMetadata = createCampaignRuntimeMetadata('2026-07-18T23:00:00.000Z');
     const controller = new AutoSaveController(repository, {
       delayMs: 60_000,
       now: () => '2026-07-19T00:00:00.000Z',
-      runtimeMetadata: createCampaignRuntimeMetadata('2026-07-18T23:00:00.000Z'),
+      runtimeMetadata,
       onStatus: (status) => statuses.push(status.phase),
     });
     controller.request(initial);
@@ -29,8 +30,8 @@ describe('runtime autosave', () => {
     const stored = await repository.get('autosave');
     expect(stored?.state.clock.elapsedSeconds).toBe(600);
     expect(stored?.savedAt).toBe('2026-07-19T00:00:00.000Z');
-    expect(stored?.runtimeMetadata.lastActiveAtReal).toBe('2026-07-19T00:00:00.000Z');
-    expect(controller.getRuntimeMetadata()).toEqual(stored?.runtimeMetadata);
+    expect(stored?.runtimeMetadata).toEqual(runtimeMetadata);
+    expect(controller.getRuntimeMetadata()).toEqual(runtimeMetadata);
     expect(statuses).toEqual(['pending', 'pending', 'saving', 'saved']);
   });
 
