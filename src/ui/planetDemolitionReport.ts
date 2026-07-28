@@ -1,5 +1,13 @@
-import type { PlanetDemolitionReport } from '../simulation/combat/types';
+import type {
+  PlanetDemolitionReport,
+  PlanetDestructionReport,
+} from '../simulation/combat/types';
 import type { GameState } from '../simulation/types';
+
+export interface PlanetSiegeEvidence {
+  readonly demolition?: PlanetDemolitionReport;
+  readonly destruction?: PlanetDestructionReport;
+}
 
 export interface PlanetDemolitionRollViewModel {
   readonly buildingId: string;
@@ -20,11 +28,20 @@ export interface PlanetDemolitionViewModel {
 export function findPlanetDemolitionReport(
   state: GameState,
   reportId: string,
-): PlanetDemolitionReport | undefined {
+): PlanetSiegeEvidence | undefined {
   for (const entry of state.eventLog) {
     const payload = entry.event.payload;
     if (payload.type === 'BATTLE_REPORT' && payload.report.id === reportId) {
-      return payload.report.demolition;
+      if (
+        payload.report.demolition === undefined &&
+        payload.report.destruction === undefined
+      ) {
+        return undefined;
+      }
+      return {
+        demolition: payload.report.demolition,
+        destruction: payload.report.destruction,
+      };
     }
   }
   return undefined;
@@ -64,55 +81,98 @@ export function createPlanetDemolitionViewModel(
   };
 }
 
+function appendDestructionEvidence(
+  details: HTMLDetailsElement,
+  report: PlanetDestructionReport,
+): void {
+  const heading = document.createElement('h4');
+  heading.textContent = report.planetDestroyed
+    ? 'Планета уничтожена'
+    : report.blockedReason === null
+      ? 'Планета выдержала бросок'
+      : `Уничтожение заблокировано: ${report.blockedReason}`;
+  const chance = document.createElement('p');
+  chance.textContent = [
+    `сырой шанс ${percent(report.rawChanceBasisPoints)}`,
+    `оборона −${percent(report.defenseReductionBasisPoints)}`,
+    `разрушители защиты −${percent(report.defenderPlanetDestroyerReductionBasisPoints)}`,
+    `Polias −${percent(report.poliasReductionBasisPoints)}`,
+    `итог ${percent(report.finalChanceBasisPoints)}`,
+    `бросок ${report.rollBasisPoints}`,
+  ].join(' · ');
+  details.append(heading, chance);
+
+  if (report.attackerContributions.length > 0) {
+    const list = document.createElement('ul');
+    for (const contribution of report.attackerContributions) {
+      const item = document.createElement('li');
+      item.textContent = `${contribution.unitId} × ${contribution.count} · оружие ${contribution.weaponLevel} · ${percent(contribution.chanceBasisPointsPerShip)}/корабль · всего ${percent(contribution.totalChanceBasisPoints)}`;
+      list.append(item);
+    }
+    details.append(list);
+  }
+}
+
 export function createPlanetDemolitionDetails(
-  report: PlanetDemolitionReport,
+  evidence: PlanetSiegeEvidence,
 ): HTMLDetailsElement {
-  const model = createPlanetDemolitionViewModel(report);
   const details = document.createElement('details');
   details.className = 'mission-demolition-details';
   const summary = document.createElement('summary');
-  summary.textContent = model.summary;
-  const overview = document.createElement('p');
-  overview.textContent = model.overview;
-  details.append(summary, overview);
+  const demolished = evidence.demolition?.rolls.filter((roll) => roll.demolished).length ?? 0;
+  summary.textContent = evidence.destruction?.planetDestroyed === true
+    ? `Осада планеты · уничтожена · снято уровней ${demolished}`
+    : `Осада планеты · снято уровней ${demolished}`;
+  details.append(summary);
 
-  if (model.contributions.length > 0) {
-    const contributions = document.createElement('ul');
-    for (const contribution of model.contributions) {
-      const item = document.createElement('li');
-      item.textContent = contribution;
-      contributions.append(item);
-    }
-    details.append(contributions);
-  }
+  if (evidence.demolition !== undefined) {
+    const model = createPlanetDemolitionViewModel(evidence.demolition);
+    const overview = document.createElement('p');
+    overview.textContent = model.overview;
+    details.append(overview);
 
-  if (model.rolls.length > 0) {
-    const table = document.createElement('table');
-    table.innerHTML = '<thead><tr><th>Здание</th><th>Уровень</th><th>Шанс</th><th>Бросок</th><th>Результат</th></tr></thead>';
-    const body = document.createElement('tbody');
-    for (const roll of model.rolls) {
-      const row = document.createElement('tr');
-      for (const value of [
-        roll.buildingId,
-        roll.level,
-        roll.chance,
-        roll.roll,
-        roll.result,
-      ]) {
-        const cell = document.createElement('td');
-        cell.textContent = value;
-        row.append(cell);
+    if (model.contributions.length > 0) {
+      const contributions = document.createElement('ul');
+      for (const contribution of model.contributions) {
+        const item = document.createElement('li');
+        item.textContent = contribution;
+        contributions.append(item);
       }
-      body.append(row);
+      details.append(contributions);
     }
-    table.append(body);
-    details.append(table);
+
+    if (model.rolls.length > 0) {
+      const table = document.createElement('table');
+      table.innerHTML = '<thead><tr><th>Здание</th><th>Уровень</th><th>Шанс</th><th>Бросок</th><th>Результат</th></tr></thead>';
+      const body = document.createElement('tbody');
+      for (const roll of model.rolls) {
+        const row = document.createElement('tr');
+        for (const value of [
+          roll.buildingId,
+          roll.level,
+          roll.chance,
+          roll.roll,
+          roll.result,
+        ]) {
+          const cell = document.createElement('td');
+          cell.textContent = value;
+          row.append(cell);
+        }
+        body.append(row);
+      }
+      table.append(body);
+      details.append(table);
+    }
+
+    if (model.cancelledQueues !== null) {
+      const cancelled = document.createElement('small');
+      cancelled.textContent = model.cancelledQueues;
+      details.append(cancelled);
+    }
   }
 
-  if (model.cancelledQueues !== null) {
-    const cancelled = document.createElement('small');
-    cancelled.textContent = model.cancelledQueues;
-    details.append(cancelled);
+  if (evidence.destruction !== undefined) {
+    appendDestructionEvidence(details, evidence.destruction);
   }
   return details;
 }
