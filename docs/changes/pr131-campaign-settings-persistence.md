@@ -3,6 +3,8 @@
 **Work item:** `CAMPAIGN-SETTINGS-PERSISTENCE`  
 **Audit:** #130 `LOCAL-CAMPAIGN-TIME-PACING-01`  
 **Baseline:** `1503c7d37fafc623bee4654ed460c92aa55a7b2f`  
+**Final head:** `5e1c27c6a6d635982d446649e00ff329f49923cb`  
+**Merge:** `257e3effaab4e34285d00db64b6676fda364fcfd`  
 **Date:** 2026-07-29
 
 ## Delivered scope
@@ -102,4 +104,11 @@ Focused coverage includes:
 - existing faction alias, world-event, intelligence and history reconciliation;
 - campaign setup option registry.
 
-Required final gates: assets, lint, strict TypeScript, complete Vitest suite, production build, Browser E2E, Graphify and clean automated review.
+Final gates:
+
+- CI `30405640769` — passed;
+- Browser E2E `30405640704` — passed;
+- Graphify `30405640711` — passed;
+- Codex review P1/P2 findings fixed and resolved;
+- final re-review returned 👍;
+- merged as `257e3effaab4e34285d00db64b6676fda364fcfd`.
