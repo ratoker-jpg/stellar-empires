@@ -1,0 +1,10 @@
+docs/25a-local-campaign-world-speed-and-offline-progression.md
+docs/changes/pr124-local-campaign-world-speed-contract.md
+docs/audits/evidence/local-campaign-world-speed-contract-01.md
+docs/audits/evidence/local-campaign-world-speed-contract-01.json
+docs/handoffs/2026-07-28-local-campaign-contract-handoff.md
+docs/17-continuation-guide.md
+docs/27-playable-game-roadmap-v5.md
+docs/audits/current-execution-state.md
+docs/project-status.json
+docs/roadmap-pr-index.json
