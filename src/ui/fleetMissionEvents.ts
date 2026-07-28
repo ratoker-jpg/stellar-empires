@@ -145,6 +145,11 @@ function installPreparedTargetBridge(): void {
     if (deliveredTargetId !== prepared.targetId) {
       deliveredTargetId = prepared.targetId;
       emitPreparedTarget(prepared);
+      const restoredNotice = document.querySelector<HTMLElement>(
+        '[data-testid="mission-target-notice"]',
+      );
+      preparedNoticeWasVisible = restoredNotice !== null;
+      if (control !== null) control.hidden = restoredNotice === null;
       window.setTimeout(reconcile, 0);
       return;
     }
