@@ -280,6 +280,31 @@ export function applyFlightEvent(state: GameState, event: ScheduledGameEvent): G
 
   const target = state.planets.find((planet) => planet.id === payload.targetPlanetId);
   if (target === undefined) {
+    if (
+      fleet.mission.kind === 'recycle' &&
+      state.debrisFields.some(
+        (field) =>
+          field.planetId === payload.targetPlanetId &&
+          (field.metal > 0 || field.crystal > 0),
+      )
+    ) {
+      const recycled = collectDebris(
+        state.debrisFields,
+        payload.targetPlanetId,
+        fleet,
+      );
+      const withCollection: GameState = {
+        ...state,
+        debrisFields: recycled.fields,
+        fleets: replaceFleet(state.fleets, recycled.fleet),
+      };
+      return scheduleReturn(
+        withCollection,
+        recycled.fleet,
+        payload.targetPlanetId,
+        duration,
+      );
+    }
     return scheduleReturn(state, fleet, payload.targetPlanetId, duration);
   }
 
