@@ -1,18 +1,19 @@
 # Stellar Empires — canonical roadmap to a complete playable game v5
 
 **Status:** active canonical product roadmap  
-**Updated:** 2026-07-27  
-**Verified baseline:** merged PR #110, SHA `8e9e848b0725c52263ff7e310bc9d899a81554c4`  
-**Active Audit PR:** #111 — `COHERENT-UI-SHELL-01`  
+**Updated:** 2026-07-28  
+**Verified runtime baseline:** merged PR #120 · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665`  
+**Verified audit baseline:** post-#120 `main` · `818aba011199dd5a96518f859ed35de671be892f`  
+**Active Audit PR:** #121 — `PLANET-DEMOLITION-DESTRUCTION-01`  
 **Release target:** complete offline PvE browser strategy with autonomous bot empires
 
 ---
 
 ## 1. Purpose
 
-This roadmap defines the path from the current technically strong prototype to a coherent, fully playable game.
+This roadmap defines the path from the current deterministic prototype to a coherent, fully playable game.
 
-The target is not merely to add more mechanics. The target is a complete product loop:
+The target loop is:
 
 ```text
 choose faction
@@ -22,6 +23,7 @@ choose faction
 → build civilian and military fleets
 → explore Universe / Galaxy / Solar systems
 → spy, transport, colonize, recycle, raid and fight
+→ damage or destroy rival colonies
 → compete with autonomous bot empires
 → join, create or oppose alliances
 → fight over suns and Solar Crystals
@@ -30,9 +32,9 @@ choose faction
 → show a deterministic final-round result
 ```
 
-Confirmed Nemexia references define expected systemic depth, information architecture and historical user flows. They do not authorize copying third-party HTML, CSS, prose, branding or visual assets. Stellar Empires keeps original art, terminology, implementation and configurable balance.
+Confirmed Nemexia references define systemic depth and historical flows only. They do not authorize copying third-party HTML, CSS, prose, branding or visual assets. Stellar Empires keeps original art, terminology, implementation and configurable balance.
 
-Project-specific rules for suns, Solar Crystals, Obelisks, Supreme Galactic Gates and victory remain authoritative in:
+Project-specific endgame rules remain authoritative in:
 
 ```text
 docs/25-solar-war-obelisks-gates-and-progression.md
@@ -47,14 +49,13 @@ When documents conflict, use this order:
 1. current merged code and tests on `main`;
 2. accepted current Audit PR and its contracts;
 3. this roadmap and its release gates;
-4. `docs/25-solar-war-obelisks-gates-and-progression.md` for endgame;
-5. `docs/26-universe-galaxy-solar-system-navigation-contract.md` for completed spatial navigation evidence;
-6. `docs/research/nemexia-final-complete-game-concept-2026-07-26.md` for confirmed mechanics;
-7. `docs/research/nemexia-navigation-and-ui-reference-2026-07-26.md` for confirmed information architecture;
-8. `docs/20-full-project-audit.md` for architectural and stabilization risks;
-9. older roadmaps and handoffs only as historical background.
+4. `docs/25-solar-war-obelisks-gates-and-progression.md` for demolition baselines and later endgame;
+5. `docs/26-universe-galaxy-solar-system-navigation-contract.md` for completed spatial navigation;
+6. current status and roadmap indexes;
+7. research/reference documents;
+8. older audits, roadmaps and handoffs as historical background only.
 
-GitHub history overrides stale future PR numbers. Exact delivery sequencing is recorded in:
+Exact delivery sequencing is recorded in:
 
 ```text
 docs/roadmap-pr-index.json
@@ -64,40 +65,36 @@ docs/audits/current-execution-state.md
 
 ---
 
-## 3. Delivered baseline after PR #110
+## 3. Delivered baseline through PR #120
 
 ### 3.1. Simulation and persistence
 
-Delivered:
-
 - Phaser + TypeScript + Vite client;
 - deterministic simulation, commands, events, replay and checksum;
-- schema v14 save model;
-- deterministic v13 → v14 migration;
-- IndexedDB autosave, save slots, import/export, snapshots and recovery;
-- separate presentation layer from simulation logic;
-- player and bots using the same command validation paths;
-- bounded bot timing/history improvements;
-- headless catalog and production-path validation.
+- schema v14 save model and deterministic migration chain;
+- IndexedDB autosave, slots, import/export, snapshots and recovery;
+- bounded commands/events/reports/intelligence/world-event history;
+- presentation separated from simulation logic;
+- player and bots using shared command validation;
+- serialized deterministic bot decision cursors and bounded catch-up;
+- headless and production-path validation.
 
 ### 3.2. World, economy and operations
 
-Delivered at prototype or functional depth:
-
-- seeded compact Universe with 20 slots;
-- test, campaign and fidelity topology presets;
+- seeded Universe with 20 slots and test/campaign/fidelity presets;
 - multi-colony state and three planet zones;
-- resources, energy, storage, population/hangar and stability systems;
-- construction, research, unit, defence, repair and ship-upgrade queues;
+- resources, energy, storage, population/hangar and stability;
+- building, research, unit, defence, repair and ship-upgrade queues;
 - logistics and market foundations;
-- fleets, missions, combat, plunder, debris and reports;
+- fleets, all six ordinary missions, combat, plunder, debris and reports;
 - colonization, recycling, expeditions and space objects;
-- pirates/Renegade-style PvE foundations and world events;
-- planetary defence damage, recovery and repair;
+- pirate/PvE foundations and world events;
+- planetary defence damage/recovery/repair;
 - formations, target priorities, ship upgrades and class abilities;
-- Admiral progression and Commander Ship framework.
+- Admiral progression and Commander Ships;
+- deterministic espionage/counter-intelligence and incoming-flight visibility.
 
-### 3.3. Complete mechanical catalogs
+### 3.3. Complete mechanical catalogs and art
 
 | Category | Aegis | Synod | Veyra | Shared |
 |---|---:|---:|---:|---:|
@@ -109,58 +106,53 @@ Delivered at prototype or functional depth:
 
 All 217 complete mechanical IDs resolve through 173 generated catalog runtime images.
 
-### 3.4. Navigable Universe
+### 3.4. Navigable application
 
-PR #106–#110 completed `UNIVERSE-NAVIGATION-01`:
+- schema-v14 canonical coordinates;
+- 20 Universe slots and 24 positions/system;
+- Universe → Galaxy → Solar-system URL/history navigation;
+- intelligence-aware details and explicit action availability;
+- target handoff into the Fleet composer;
+- report-to-map backlinks and semantic overlays;
+- one application controller and nine canonical primary route families;
+- routed development, fleet, operations, command, reports and system workspaces;
+- persistent HUD and route-aware context;
+- keyboard/reduced-motion parity and release viewport Browser E2E.
 
-- 90 source PNGs preserved behind the source/runtime boundary;
-- 102 typed lazy-loaded WebP runtime textures;
-- schema v14 canonical coordinates;
-- 20 Universe slots and exactly 24 materialized positions per system;
-- URL/history-backed Universe → Galaxy → Solar-system navigation;
-- exact audited geometry;
-- keyboard and reduced-motion parity;
-- intelligence-aware object details and explicit action availability;
-- target handoff into the existing mission composer;
-- report-to-map backlinks;
-- semantic SVG route, fleet and mission overlays;
-- Browser E2E for reload, history, target prefill, duplicate mission prevention, viewports and runtime budgets.
+### 3.5. Ordinary mission/intelligence contract
 
-Navigation does not alter the `GameState` checksum. Map selection never dispatches a mission without fleet/composition/speed selection and confirmation.
+PR #116–#120 completed:
 
-### 3.5. Current presentation limitation
-
-The project contains many functional screens, but they are not yet one coherent application shell:
-
-- `src/main.ts` manually mounts many independent UI modules;
-- unrelated screens execute accepted commands through Planet presentation state;
-- many primary domains exist only as top-level modal dialogs;
-- feature modules insert navigation buttons dynamically;
-- several implemented screens still correspond to disabled static HUD items;
-- only Space Map has canonical application routing/history.
-
-This is the next accepted product gap.
+- one reducer/UI/bot ordinary mission availability contract;
+- research-derived flight-slot enforcement;
+- redacted targets and current level-three attack intelligence;
+- deterministic scout tiers, cooldown, detection, probe loss and defender alerts;
+- derived intelligence reports with exact backlinks;
+- sensor-tiered incoming-flight presentation without cargo leakage;
+- bot perception restricted to owned/public/own-intelligence state;
+- stable planner blocker diagnostics;
+- scout → save/load → attack integration and Browser E2E gate.
 
 ---
 
 ## 4. Release 1.0 definition
 
-Release 1.0 is complete only when every gate below is true.
+Release 1.0 is complete only when all gates below are true.
 
 ### 4.1. Player loop
 
 A new player can, without developer tools:
 
-- choose any of three factions;
-- understand the global header and navigation;
-- develop a viable economy;
-- unlock the complete catalog without dependency dead ends;
-- manage several planets;
+- choose any faction;
+- understand the shell and global HUD;
+- develop a viable multi-colony economy;
+- unlock the complete catalog without dead ends;
 - navigate Universe, galaxies and systems;
 - launch every supported mission from valid targets;
 - inspect intelligence and reports;
 - fight fleets and planetary defence;
-- use Admiral and Commander Ships;
+- use planet-destroyer and Commander mechanics;
+- lose/recover secondary colonies safely;
 - interact with PvE objects and economic services;
 - join/create an alliance or remain solo;
 - complete an alliance or solo victory route;
@@ -172,27 +164,27 @@ Bots must use the same systems without hidden resources, hidden information or b
 
 At least one full headless match must complete from new game to victory with:
 
-- all three factions represented;
-- economy and research progression;
-- colonization;
+- all three factions;
+- economy/research progression;
+- colonization and secondary-colony loss/recovery;
 - espionage;
-- normal and PvE combat;
+- normal/PvE combat;
 - alliance choices;
 - sun war;
 - final victory.
 
 ### 4.3. Product quality
 
-- no core catalog card uses an incorrect fallback image;
-- no primary navigation route is a dead end;
-- all destructive actions require confirmation and history;
+- no core catalog card uses an incorrect fallback;
+- no primary route is a dead end;
+- destructive actions have confirmation/history where player-triggered;
 - all state changes are deterministic and serializable;
-- save size and event/history growth remain inside explicit budgets;
-- desktop paths are fully usable at 1366×768 and 1920×1080;
-- keyboard navigation and reduced-motion modes work;
+- save size and state-history growth stay within budgets;
+- desktop paths work at 1366×768 and 1920×1080;
+- keyboard and reduced motion work;
 - GitHub Pages build is reproducible;
-- Browser E2E covers the main loop and one victory path;
-- a long-session/headless test validates save/load reproducibility and bounded growth.
+- Browser E2E covers the main loop and a victory path;
+- long-session/headless testing proves reproducibility and bounded growth.
 
 ---
 
@@ -204,119 +196,128 @@ Exact future PR numbers are assigned only by accepted Audit PRs.
 |---|---|---|
 | M1 — Production assets connected | completed | Audit #101; implementation #102–#105 |
 | M2 — Navigable Universe | completed | Audit #106; implementation #107–#110 |
-| M3 — Coherent full UI shell | audit active | Audit #111; planned implementation #112–#115 |
-| M4 — Ordinary mechanics complete | not audited | economy, missions, espionage, combat and destruction coherence |
-| M5 — Full PvE and meta systems | not audited | Renegades, Arena, Admiral meta and economic services |
-| M6 — Autonomous bot parity | not audited | bots use all ordinary and meta systems honestly |
+| M3 — Coherent full UI shell | completed | Audit #111; implementation #112–#115 |
+| M4a — Ordinary missions and intelligence | completed | Audit #116; implementation #117–#120 |
+| M4b — Planet demolition/destruction/recovery | audit active | Audit #121; planned #122–#123 |
+| M4c — Multi-colony economy/logistics coherence | not audited | separate future audit |
+| M5 — Full PvE and meta systems | not audited | PvE depth, Arena, Admiral meta and services |
+| M6 — Autonomous bot parity | not audited | bots use every ordinary/meta system honestly |
 | M7 — Complete endgame | not audited | alliances, solar war, Obelisks, Gates and victory |
 | M8 — Release candidate quality | not audited | balance, performance, onboarding, QA and Pages release |
 
 ---
 
-## 6. Active audited milestone — M3 coherent full UI shell
+## 6. Active audited milestone — M4b planet demolition and destruction
 
-Audit PR #111 defines medium batch `COHERENT-UI-SHELL-01`:
+Audit PR #121 defines heavy batch `PLANET-DEMOLITION-DESTRUCTION-01`:
 
 ```text
-#112 UI-SHELL-RUNTIME-ROUTER
-→ #113 UI-SHELL-DEVELOPMENT-WORKSPACES
-→ #114 UI-SHELL-FLEET-OPERATIONS-WORKSPACES
-→ #115 UI-SHELL-COMMAND-SYSTEM-GATE
+#122 PLANET-DEMOLITION-CONTRACT
+→ #123 PLANET-DESTRUCTION-RECOVERY-GATE
 ```
 
-### M3 outcome
+### #122 outcome
 
-- one application/runtime controller owns current state and accepted-command notifications;
-- one canonical URL/history shell route owns primary workspaces;
-- one typed registry owns navigation order and availability;
-- Planet, Research, Production, Fleets, Space, Operations, Command, Ranking, Reports and System have obvious routed surfaces;
-- one primary workspace is active at a time;
-- dialogs are retained only for transient or confirmation flows;
-- global HUD shows active colony, time, capacities, rates, energy/population pressure, warnings, queues and save state;
-- route-aware context never leaks hidden intelligence;
-- back/forward/reload, keyboard, reduced motion and both release viewports pass Browser E2E.
+- faction-specific planet-destroyer profiles;
+- weapon-upgrade scaling;
+- canonical demolition point thresholds;
+- deterministic building selection/rolls;
+- defence population reduction;
+- Annihilator building-roll bonus rather than generic combat damage;
+- one-level damage, zone reconciliation and no-refund queue cancellation;
+- extended battle reports and routed presentation.
 
-### M3 exclusions
+### #123 outcome
 
-- no new gameplay commands;
-- no schema change;
-- no alliance route;
-- no solar-war or endgame mechanics;
-- no framework migration;
-- no complete mobile-phone redesign;
-- no copied historical UI.
+- canonical whole-planet destruction chance;
+- defence, defending planet-destroyer and Polias reductions;
+- 30% cap and final-colony protection;
+- atomic cleanup/rehome of fleets, queues, events, routes, world events and flagship references;
+- historical intelligence/report retention with exact coordinates;
+- debris recycling at released positions;
+- ordinary recolonization and active-colony fallback;
+- bot, save/load, headless and Browser E2E gate;
+- batch archive/closure.
+
+### M4b exclusions
+
+- no new mission or command;
+- no schema migration/tombstone collection;
+- no final-colony destruction or empire elimination;
+- no extra destruction loot;
+- no economy/logistics redesign;
+- no Sun Attack/system collapse;
+- no alliances, crystals, Obelisks, Gates or victory;
+- no copied historical UI/assets.
 
 Detailed acceptance criteria are authoritative in:
 
 ```text
 docs/audits/current-batch-audit.md
-docs/audits/contracts/coherent-ui-shell-01-prs.md
-docs/audits/contracts/coherent-ui-shell-01-route-layout.md
+docs/audits/contracts/planet-demolition-destruction-01-prs.md
+docs/audits/contracts/planet-demolition-destruction-01-rules.md
 ```
 
 ---
 
 ## 7. Remaining milestone intent
 
-### M4 — Ordinary mechanics complete
+### M4c — Multi-colony economy/logistics coherence
 
-A later audit must reconcile and close ordinary-system gaps, including:
+A separate audit must close:
 
-- complete mission coverage and explicit disabled reasons;
-- espionage depth and counter-intelligence;
-- fleet/planet destruction and recovery rules;
-- economy and logistics coherence across several colonies;
-- report/history completeness;
-- deterministic headless progression through the ordinary loop.
-
-This milestone must not be silently folded into M3.
+- meaningful specialization and inter-colony dependencies;
+- logistics route lifecycle, capacity and failure handling;
+- market/economic-service coherence;
+- player and bot economic planning across several colonies;
+- long-run economic sustainability and reportability.
 
 ### M5 — Full PvE and meta systems
 
-A later audit covers the coherent family of:
+A later audit covers:
 
-- Renegade/PvE encounters and rewards;
-- Arena or equivalent repeatable competition;
+- deeper Renegade/PvE encounters and rewards;
+- Arena/equivalent repeatable competition;
 - Admiral and Commander meta depth;
-- auctions/bank/economic-service equivalents that fit a non-monetized offline game;
+- non-monetized auctions/bank/economic-service equivalents;
 - world-event cadence and strategic-object depth.
 
 Historical Premium/Credits/Platinum mechanics are not automatically transferred.
 
 ### M6 — Autonomous bot parity
 
-Bots must use the same commands, coordinates, intelligence limits and economic constraints as the player across every delivered ordinary/meta domain.
+Bots must use the same commands, coordinates, intelligence and economic constraints as the player across every delivered ordinary/meta domain.
 
-The milestone requires:
+Required:
 
-- full headless progression tests;
-- no hidden resources or bot-only state mutation;
+- full headless progression;
+- no hidden resources or bot-only mutation;
 - deterministic decisions and bounded catch-up;
 - save/load parity;
-- observable reason codes for failed plans.
+- observable failure reason codes.
 
 ### M7 — Complete endgame
 
-Separate audits must define and implement:
+Separate audits define and implement:
 
 - alliances and diplomacy;
-- project-specific solar attack/support/destruction/rebuilding;
+- solar attack/support/destruction/rebuilding;
 - Solar Crystals and Obelisks;
 - Supreme Galactic Gates;
 - alliance and solo victory;
-- deterministic final-round result and defeat behavior.
+- deterministic result/defeat behavior.
 
 `docs/25-solar-war-obelisks-gates-and-progression.md` remains authoritative.
 
 ### M8 — Release candidate quality
 
-Final release audits cover:
+Final audits cover:
 
 - onboarding and first-session guidance;
 - economy/combat/endgame balance runs;
-- long-session performance and state growth;
+- long-session performance/state growth;
 - save corruption/recovery drills;
-- accessibility and visual consistency;
+- accessibility/visual consistency;
 - complete Browser E2E and one victory path;
 - reproducible GitHub Pages release;
 - release notes and known limitations.
@@ -325,30 +326,22 @@ Final release audits cover:
 
 ## 8. Delivery rules for every implementation PR
 
-1. Start from fresh `main` after the previous dependency PR merges.
+1. Start from fresh `main` after the previous dependency merges.
 2. Begin only from an accepted Audit PR and stable work-item ID.
 3. Do not combine unrelated roadmap rows.
 4. Keep simulation independent from DOM/Phaser.
-5. Use the same commands and validators for player and bots.
-6. Add migration fixtures for incompatible state changes.
-7. Resolve visuals through stable IDs and manifests.
-8. Never directly bind UI components to source-library paths.
-9. Add focused unit/integration tests and update the headless/browser harness.
-10. Run asset checks, lint, typecheck, full tests, production build, Browser E2E and Graphify.
-11. Update project status, execution state and continuation instructions.
-12. Register procedural art or CSS placeholders in:
-
-```text
-docs/asset-prompts/master-runtime-asset-backlog.md
-```
-
-A placeholder is explicit debt with a stable ID, target dimensions and generation prompt, not undocumented temporary art.
+5. Use the same commands/validators for player and bots.
+6. Add migration fixtures only for incompatible state changes.
+7. Resolve visuals through stable IDs/manifests.
+8. Never bind runtime UI to source-library paths.
+9. Add focused unit/integration tests and update headless/browser gates.
+10. Run asset checks, lint, TypeScript, full tests, build, Browser E2E and Graphify.
+11. Update status, execution and continuation entrypoints.
+12. Register procedural-art/CSS placeholders in the asset backlog.
 
 ---
 
 ## 9. Audit-first sequencing
-
-The required loop is:
 
 ```text
 fresh main
@@ -358,4 +351,4 @@ fresh main
 → next Audit PR
 ```
 
-The audit determines whether a package is heavy, medium or light. Future milestone descriptions in this roadmap do not authorize implementation by themselves.
+No implementation work may start from stale chat memory, abandoned branches or an unmerged audit.
