@@ -1,21 +1,22 @@
 {
-  "statusVersion": 33,
+  "statusVersion": 34,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 124,
-  "lastMergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152",
-  "verifiedMainBaseline": "PR #124 LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT squash-merged as cdd112c544ce8d37af17e938867d4588bedcf152 after CI, Browser E2E and Graphify passed; runtime remains PR #123",
+  "lastMergedPr": 125,
+  "lastMergeSha": "a13f017d79d5dce5fde954e9f6e1419a2182d78e",
+  "verifiedMainBaseline": "Audit PR #125 NAVIGATION-USABILITY-01 squash-merged as a13f017d79d5dce5fde954e9f6e1419a2182d78e after CI 30363687162, Browser E2E 30363686476 and Graphify 30363686266 passed; runtime remains PR #123",
   "runtimeBaselinePr": 123,
   "runtimeBaselineSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30",
-  "activePr": 125,
-  "activePrKind": "audit",
-  "activeWorkItem": "NAVIGATION-USABILITY-01",
+  "activePr": null,
+  "activePrKind": null,
+  "activeWorkItem": null,
   "nextPrAfterActive": 126,
   "nextPrKind": "implementation",
+  "nextWorkItem": "NAV-IA-PRIMARY-SHELL",
   "currentMilestone": "M3b navigation and usability repair",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -58,7 +59,8 @@
     "roadmapMilestone": "M3b",
     "complexity": "medium",
     "auditPr": 125,
-    "auditStatus": "active",
+    "auditStatus": "accepted",
+    "auditMergeSha": "a13f017d79d5dce5fde954e9f6e1419a2182d78e",
     "baselineSha": "cdd112c544ce8d37af17e938867d4588bedcf152",
     "implementationCount": 4,
     "plannedImplementationPrs": [126, 127, 128, 129],
@@ -70,7 +72,9 @@
       "NAV-CROSS-DOMAIN-FLOWS",
       "NAV-USABILITY-GATE"
     ],
-    "status": "audit-active",
+    "status": "implementation-pending",
+    "nextPr": 126,
+    "nextWorkItem": "NAV-IA-PRIMARY-SHELL",
     "divergence": "none"
   },
   "productDecisions": {
@@ -135,14 +139,15 @@
     "persistent HUD, route-aware context, keyboard, compact and reduced-motion accessibility",
     "shared ordinary mission rules, deterministic intelligence and honest bot mission gate",
     "deterministic demolition and whole-planet destruction with final-colony protection and atomic recovery",
-    "canonical local-campaign world-speed and offline-progression product contract"
+    "canonical local-campaign world-speed and offline-progression product contract",
+    "accepted navigation/usability repair contract and four-PR implementation plan"
   ],
   "activeDelivery": [
     {"pr": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
     {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "merged", "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152"},
     {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "merged", "mergeSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30"},
     {"pr": 124, "kind": "documentation", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "status": "merged", "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152"},
-    {"pr": 125, "kind": "audit", "batchId": "NAVIGATION-USABILITY-01", "status": "active"}
+    {"pr": 125, "kind": "audit", "batchId": "NAVIGATION-USABILITY-01", "status": "merged", "mergeSha": "a13f017d79d5dce5fde954e9f6e1419a2182d78e"}
   ],
   "knownLimitations": [
     "current shell routing is technically coherent but player task-flow usability is not yet repaired",
@@ -161,10 +166,10 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #124 final head passed Graphify run 30362252525",
+    "lastValidation": "Audit PR #125 final head passed Graphify run 30363686266",
     "lastAuditGraph": {
-      "workflowRun": "30362252525",
-      "headSha": "c1816d4d7aa1d0479244f37733c94ea59d11c7ff"
+      "workflowRun": "30363686266",
+      "headSha": "f7d2eee2725667425eea98f201b6de5f4c4ce4d8"
     }
   },
   "sourceAssetIntake": {
@@ -186,6 +191,7 @@
     "docs/audits/contracts/navigation-usability-01-route-context.md",
     "docs/audits/evidence/navigation-usability-01-code-and-flow.md",
     "docs/changes/pr125-navigation-usability-audit.md",
+    "docs/handoffs/2026-07-28-navigation-usability-audit-handoff.md",
     "docs/25a-local-campaign-world-speed-and-offline-progression.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
@@ -193,5 +199,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Merge Audit PR #125 after validation, then create implementation PR #126 NAV-IA-PRIMARY-SHELL from fresh merged main."
+  "nextAction": "Create implementation PR #126 NAV-IA-PRIMARY-SHELL from fresh merged main and implement only the accepted primary navigation information architecture."
 }
