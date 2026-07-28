@@ -10,14 +10,14 @@
     "mergeSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa",
     "runtimeBaselinePr": 129,
     "runtimeBaselineSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa",
-    "auditBaselineSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"
+    "auditBaselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174"
   },
-  "activePr": null,
-  "activePrKind": null,
-  "activeBatchId": null,
-  "nextPr": 130,
-  "nextPrKind": "audit",
-  "nextWorkItem": "LOCAL-CAMPAIGN-TIME-PACING-01",
+  "activePr": 130,
+  "activePrKind": "audit",
+  "activeBatchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
+  "nextPr": 131,
+  "nextPrKind": "implementation",
+  "nextWorkItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
   "phases": [
     {"id": "delivered-foundation-and-catalogs", "startPr": 1, "endPr": 100, "status": "completed", "outcome": "Deterministic PvE foundation, complete mechanical catalogs, canonical roadmap and audit-first delivery protocol"},
     {"id": "catalog-runtime-integration", "auditPr": 101, "startPr": 102, "endPr": 105, "status": "completed", "outcome": "217 mechanical IDs resolve through 173 generated runtime images"},
@@ -27,20 +27,18 @@
     {"id": "planet-demolition-destruction", "auditPr": 121, "startPr": 122, "endPr": 123, "status": "completed", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "completedPrs": [122, 123], "outcome": "Deterministic demolition, capped whole-planet destruction, final-colony protection and atomic recovery", "archive": "docs/audits/completed/planet-demolition-destruction-01.md"},
     {"id": "local-campaign-product-contract", "documentationPr": 124, "status": "completed", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152", "outcome": "Local campaign, immutable world speed, deterministic offline progression and compressed campaign direction"},
     {"id": "navigation-usability-repair", "auditPr": 125, "auditMergeSha": "a13f017d79d5dce5fde954e9f6e1419a2182d78e", "startPr": 126, "endPr": 129, "status": "completed", "batchId": "NAVIGATION-USABILITY-01", "completedPrs": [126, 127, 128, 129], "implementationMergeShas": {"126": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1", "127": "2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418", "128": "051c46736dbb92a7fb5061243d458eb3faabecfe", "129": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"}, "archive": "docs/audits/completed/navigation-usability-01.md", "outcome": "Player-centered hierarchy, typed context, reversible cross-domain flows and measured release-viewport task gate"},
-    {"id": "local-campaign-time-pacing", "auditPr": 130, "startPr": null, "endPr": null, "status": "next-audit", "outcome": "Campaign settings, immutable world speed, bounded offline catch-up, return summary and progression pacing contract"},
+    {"id": "local-campaign-time-pacing", "auditPr": 130, "startPr": 131, "endPr": 132, "status": "audit-active", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "complexity": "heavy", "plannedPrs": [131, 132], "workItems": ["CAMPAIGN-SETTINGS-PERSISTENCE", "CAMPAIGN-CLOCK-OFFLINE-GATE"], "outcome": "Immutable campaign settings, safe runtime metadata, chronological active/offline clock, bounded catch-up and return summary"},
+    {"id": "campaign-progression-balance", "auditPr": null, "startPr": null, "endPr": null, "status": "blocked-until-132", "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01", "outcome": "Exact level/cost/duration compression and measured one-day campaign balance using the delivered clock foundation"},
     {"id": "multi-colony-economy-logistics", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Coherent multi-colony economy, logistics and bot planning under compressed timing"},
     {"id": "pve-meta-and-bot-parity", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "PvE/meta depth and honest autonomous bot parity"},
     {"id": "alliances-and-endgame", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Alliances, solar war, Obelisks, Gates and complete victory/defeat"},
     {"id": "release-candidate", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Balance, campaign duration, performance, onboarding, QA and reproducible Pages release"}
   ],
   "planned": [
-    {"number": 124, "kind": "documentation", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "status": "merged", "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152"},
-    {"number": 125, "kind": "audit", "batchId": "NAVIGATION-USABILITY-01", "title": "Audit navigation and usability repair", "status": "merged", "mergeSha": "a13f017d79d5dce5fde954e9f6e1419a2182d78e"},
-    {"number": 126, "kind": "implementation", "workItem": "NAV-IA-PRIMARY-SHELL", "title": "Rebuild the primary navigation hierarchy", "status": "merged", "mergeSha": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1"},
-    {"number": 127, "kind": "implementation", "workItem": "NAV-CONTEXT-ROUTE-MODEL", "title": "Preserve route, colony and return context", "status": "merged", "mergeSha": "2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418"},
-    {"number": 128, "kind": "implementation", "workItem": "NAV-CROSS-DOMAIN-FLOWS", "title": "Connect direct reversible player flows", "status": "merged", "mergeSha": "051c46736dbb92a7fb5061243d458eb3faabecfe"},
     {"number": 129, "kind": "implementation", "workItem": "NAV-USABILITY-GATE", "title": "Gate navigation task usability", "status": "merged", "mergeSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"},
-    {"number": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "title": "Audit local campaign time and pacing", "status": "next"}
+    {"number": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "title": "Audit local campaign time and offline progression", "status": "active", "baselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174"},
+    {"number": 131, "kind": "implementation", "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE", "title": "Persist immutable campaign settings", "status": "blocked-until-130"},
+    {"number": 132, "kind": "implementation", "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE", "title": "Run active and offline campaign time", "status": "blocked-until-131"}
   ],
-  "nextAction": "Create Audit PR #130 LOCAL-CAMPAIGN-TIME-PACING-01 from fresh merged main; do not implement runtime before audit acceptance."
+  "nextAction": "Complete and merge Audit PR #130; then create PR #131 CAMPAIGN-SETTINGS-PERSISTENCE from fresh merged main."
 }
