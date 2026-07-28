@@ -211,10 +211,18 @@ export function reconcileDestroyedPlanet(
       if (liveOrigin === undefined) {
         throw new Error(`Fleet ${fleet.id} has no live return colony.`);
       }
-      const remainingSeconds = fleet.location.type === 'transit'
-        ? Math.max(1, fleet.location.arrivesAt - state.clock.elapsedSeconds)
-        : 1;
-      const arrivesAt = state.clock.elapsedSeconds + remainingSeconds;
+      const returnSeconds = baseFleet.location.type !== 'transit'
+        ? 1
+        : baseFleet.status === 'returning'
+          ? Math.max(
+              1,
+              baseFleet.location.arrivesAt - state.clock.elapsedSeconds,
+            )
+          : Math.max(
+              1,
+              state.clock.elapsedSeconds - baseFleet.location.departedAt,
+            );
+      const arrivesAt = state.clock.elapsedSeconds + returnSeconds;
       fleets.push({
         ...baseFleet,
         originPlanetId: liveOrigin.id,
