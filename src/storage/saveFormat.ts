@@ -1,7 +1,11 @@
 import { normalizeBotAutomationState } from '../simulation/bots/state';
+import {
+  isCampaignSettings,
+  normalizeRealTimestamp,
+} from '../simulation/campaign/settings';
 import { createStateChecksum } from '../simulation/checksum';
-import { STATE_HISTORY_LIMITS } from '../simulation/history/stateHistory';
 import { COMMAND_MAX_LEVEL, isCommandDoctrineId } from '../simulation/command/commandDoctrine';
+import { STATE_HISTORY_LIMITS } from '../simulation/history/stateHistory';
 import {
   isPlanetDevelopmentTemplateId,
   isPlanetSpecializationId,
@@ -10,9 +14,15 @@ import { PLANET_ZONE_IDS } from '../simulation/planet/zones';
 import { isSpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
 import { isUniverseModel } from '../simulation/universe/model';
-import { migrateGameStateV14 } from './migrateGameStateV14';
+import { migrateGameStateV15 } from './migrateGameStateV15';
+import {
+  createCampaignRuntimeMetadata,
+  isCampaignRuntimeMetadata,
+  isCanonicalRealTimestamp,
+} from './runtimeMetadata';
 import {
   SAVE_FORMAT_VERSION,
+  type CampaignRuntimeMetadata,
   type SaveEnvelope,
   type SaveParseResult,
 } from './types';
@@ -34,7 +44,9 @@ function isResourceCost(value: unknown): boolean {
     isNonNegativeInteger(value.crystal) && isNonNegativeInteger(value.gas);
 }
 function isStateShell(value: unknown): value is Record<string, unknown> {
-  return isRecord(value) && [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].includes(value.schemaVersion as number) &&
+  return isRecord(value) &&
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      .includes(value.schemaVersion as number) &&
     typeof value.seed === 'number' && Number.isInteger(value.seed) && isRecord(value.clock) &&
     typeof value.clock.startedAt === 'string' && isNonNegativeInteger(value.clock.elapsedSeconds) &&
     Array.isArray(value.empires) && value.empires.every((item) => typeof item === 'string') &&
@@ -134,7 +146,8 @@ function isObservation(value: unknown): boolean {
 function isIntelligenceAlert(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.empireId === 'string' &&
     (value.sourceEmpireId === null || typeof value.sourceEmpireId === 'string') && typeof value.targetPlanetId === 'string' &&
-    isSpaceCoordinate(value.coordinate) && isNonNegativeInteger(value.detectedAt) && (value.confidence === 'low' || value.confidence === 'medium' || value.confidence === 'high');
+    isSpaceCoordinate(value.coordinate) && isNonNegativeInteger(value.detectedAt) &&
+    (value.confidence === 'low' || value.confidence === 'medium' || value.confidence === 'high');
 }
 function isIntelligenceState(value: unknown): boolean {
   return isRecord(value) && typeof value.empireId === 'string' && Array.isArray(value.observations) &&
@@ -145,7 +158,8 @@ function isIntelligenceState(value: unknown): boolean {
 }
 function isDebrisField(value: unknown): boolean {
   return isRecord(value) && typeof value.id === 'string' && typeof value.planetId === 'string' &&
-    isSpaceCoordinate(value.coordinate) && isNonNegativeInteger(value.metal) && isNonNegativeInteger(value.crystal) && isNonNegativeInteger(value.createdAt) &&
+    isSpaceCoordinate(value.coordinate) && isNonNegativeInteger(value.metal) &&
+    isNonNegativeInteger(value.crystal) && isNonNegativeInteger(value.createdAt) &&
     (value.metal > 0 || value.crystal > 0);
 }
 function isLogisticsResult(value: unknown): boolean {
@@ -227,7 +241,9 @@ function isBotAutomationState(
     normalizeBotAutomationState(value, validEmpireIds, elapsedSeconds) !== undefined;
 }
 function isGameState(value: unknown): value is GameState {
-  return isStateShell(value) && value.schemaVersion === 14 && isUniverseModel(value.universe) &&
+  return isStateShell(value) && value.schemaVersion === 15 &&
+    isCampaignSettings(value.campaignSettings) && isUniverseModel(value.universe) &&
+    value.campaignSettings.scenarioPreset === value.universe.presetId &&
     Array.isArray(value.commandLog) && value.commandLog.length <= STATE_HISTORY_LIMITS.commands &&
     Array.isArray(value.eventLog) && value.eventLog.length <= STATE_HISTORY_LIMITS.executedEvents &&
     Array.isArray(value.empires) &&
@@ -247,24 +263,113 @@ function isGameState(value: unknown): value is GameState {
     isBotAutomationState(value.botAutomation, value.empires, value.clock.elapsedSeconds);
 }
 
-export function createSaveEnvelope(slotId: string, state: GameState, savedAt: string): SaveEnvelope {
-  if (slotId.trim().length === 0) throw new Error('Save slot id must not be empty.');
-  return { formatVersion: SAVE_FORMAT_VERSION, slotId, savedAt, checksum: createStateChecksum(state), state };
+export function createSaveChecksum(
+  save: Pick<SaveEnvelope, 'formatVersion' | 'slotId' | 'savedAt' | 'runtimeMetadata' | 'state'>,
+): string {
+  return createStateChecksum({
+    formatVersion: save.formatVersion,
+    slotId: save.slotId,
+    savedAt: save.savedAt,
+    runtimeMetadata: save.runtimeMetadata,
+    state: save.state,
+  });
 }
-export function serializeSave(save: SaveEnvelope): string { return JSON.stringify(save); }
+
+export function createSaveEnvelope(
+  slotId: string,
+  state: GameState,
+  savedAt: string,
+  runtimeMetadata: CampaignRuntimeMetadata = createCampaignRuntimeMetadata(savedAt),
+): SaveEnvelope {
+  if (slotId.trim().length === 0) throw new Error('Save slot id must not be empty.');
+  const canonicalSavedAt = normalizeRealTimestamp(savedAt);
+  if (!isCampaignRuntimeMetadata(runtimeMetadata)) {
+    throw new Error('Campaign runtime metadata is invalid.');
+  }
+  const envelope = {
+    formatVersion: SAVE_FORMAT_VERSION,
+    slotId,
+    savedAt: canonicalSavedAt,
+    runtimeMetadata,
+    state,
+  } as const;
+  return { ...envelope, checksum: createSaveChecksum(envelope) };
+}
+
+export function serializeSave(save: SaveEnvelope): string {
+  return JSON.stringify(save);
+}
+
 export function parseSaveJson(json: string): SaveParseResult {
   let parsed: unknown;
-  try { parsed = JSON.parse(json) as unknown; } catch (error: unknown) {
-    return { ok: false, code: 'INVALID_JSON', message: 'Save data is not valid JSON.', details: error instanceof Error ? error.message : error };
+  try {
+    parsed = JSON.parse(json) as unknown;
+  } catch (error: unknown) {
+    return {
+      ok: false,
+      code: 'INVALID_JSON',
+      message: 'Save data is not valid JSON.',
+      details: error instanceof Error ? error.message : error,
+    };
   }
-  if (!isRecord(parsed) || (parsed.formatVersion !== 1 && parsed.formatVersion !== SAVE_FORMAT_VERSION) ||
-    typeof parsed.slotId !== 'string' || parsed.slotId.trim().length === 0 || typeof parsed.savedAt !== 'string' ||
-    typeof parsed.checksum !== 'string' || !isStateShell(parsed.state)) {
-    return { ok: false, code: 'INVALID_SAVE_SHAPE', message: 'Save data is missing required fields or contains invalid values.' };
+  if (!isRecord(parsed) || ![1, 2, SAVE_FORMAT_VERSION].includes(parsed.formatVersion as number) ||
+    typeof parsed.slotId !== 'string' || parsed.slotId.trim().length === 0 ||
+    typeof parsed.savedAt !== 'string' || typeof parsed.checksum !== 'string' ||
+    !isStateShell(parsed.state)) {
+    return {
+      ok: false,
+      code: 'INVALID_SAVE_SHAPE',
+      message: 'Save data is missing required fields or contains invalid values.',
+    };
   }
-  const actualChecksum = createStateChecksum(parsed.state);
-  if (actualChecksum !== parsed.checksum) return { ok: false, code: 'CHECKSUM_MISMATCH', message: 'Save data checksum does not match its state.' };
-  const state = migrateGameStateV14(parsed.state);
-  if (!isGameState(state)) return { ok: false, code: 'SAVE_MIGRATION_FAILED', message: 'Save data could not be migrated to the current schema.' };
-  return { ok: true, value: { formatVersion: SAVE_FORMAT_VERSION, slotId: parsed.slotId, savedAt: parsed.savedAt, checksum: createStateChecksum(state), state } };
+  if (!isCanonicalRealTimestamp(parsed.savedAt)) {
+    return {
+      ok: false,
+      code: 'INVALID_SAVE_TIMESTAMP',
+      message: 'Save timestamp is invalid or non-canonical.',
+    };
+  }
+
+  let runtimeMetadata: CampaignRuntimeMetadata;
+  let actualChecksum: string;
+  if (parsed.formatVersion === SAVE_FORMAT_VERSION) {
+    if (!isCampaignRuntimeMetadata(parsed.runtimeMetadata)) {
+      return {
+        ok: false,
+        code: 'INVALID_RUNTIME_METADATA',
+        message: 'Campaign runtime metadata is invalid.',
+      };
+    }
+    runtimeMetadata = parsed.runtimeMetadata;
+    actualChecksum = createSaveChecksum({
+      formatVersion: SAVE_FORMAT_VERSION,
+      slotId: parsed.slotId,
+      savedAt: parsed.savedAt,
+      runtimeMetadata,
+      state: parsed.state as unknown as GameState,
+    });
+  } else {
+    runtimeMetadata = createCampaignRuntimeMetadata(parsed.savedAt);
+    actualChecksum = createStateChecksum(parsed.state);
+  }
+
+  if (actualChecksum !== parsed.checksum) {
+    return {
+      ok: false,
+      code: 'CHECKSUM_MISMATCH',
+      message: 'Save data checksum does not match its state or runtime metadata.',
+    };
+  }
+  const state = migrateGameStateV15(parsed.state, parsed.savedAt);
+  if (!isGameState(state)) {
+    return {
+      ok: false,
+      code: 'SAVE_MIGRATION_FAILED',
+      message: 'Save data could not be migrated to the current schema.',
+    };
+  }
+  return {
+    ok: true,
+    value: createSaveEnvelope(parsed.slotId, state, parsed.savedAt, runtimeMetadata),
+  };
 }
