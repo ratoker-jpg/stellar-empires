@@ -39,8 +39,19 @@ interface CampaignRuntimeMetadata {
   lastActiveAtReal: string;
   lastCatchUpRealDurationSeconds: number;
   lastCatchUpGameDurationSeconds: number;
+  pendingCatchUp?: CampaignCatchUpContinuation;
+  pendingReturnSummary?: CampaignReturnSummary;
+}
+
+interface CampaignCatchUpContinuation {
+  targetAtReal: string;
+  remainingRealDurationMilliseconds: number;
+  gameTimeFractionNumerator: number;
+  accumulatedSummary: CampaignReturnSummary;
 }
 ```
+
+The exact field names may change, but the persisted semantics may not.
 
 Rules:
 
@@ -48,11 +59,15 @@ Rules:
 - metadata has its own integrity input through an envelope checksum covering state plus runtime metadata and stable envelope format fields;
 - runtime metadata is not part of simulation replay or `GameState` checksum;
 - `savedAt` remains display/audit metadata and is not overloaded as the catch-up cursor;
-- autosave updates `lastActiveAtReal` from the injected real-time source when the accepted state/checkpoint is committed;
-- manual saves clone the current runtime cursor rather than inventing independent elapsed time;
+- a durable checkpoint advances `lastActiveAtReal` only by the real-time duration actually represented by the checkpointed simulation state;
+- the injected current time is never written as the processed cursor while work before that instant remains unprocessed;
+- long catch-up persists its target, remaining duration, fractional carry and accumulated summary in `pendingCatchUp`;
+- a reload resumes an existing `pendingCatchUp` before calculating any newer interval since its target;
+- manual saves clone the current runtime cursor and pending continuation rather than inventing independent elapsed time;
 - export/import preserves runtime metadata after validation;
 - snapshot preserves source runtime metadata;
-- recovery from snapshot preserves the snapshot cursor and must not erase offline duration by stamping recovery time before catch-up;
+- recovery from snapshot preserves the snapshot cursor/continuation and must not erase offline duration by stamping recovery time before catch-up;
+- `pendingReturnSummary` survives save/reload until explicit player acknowledgement;
 - malformed timestamps, non-finite durations or inconsistent metadata reject or visibly normalize under stable reason codes.
 
 ## 2. Legacy migration
@@ -62,12 +77,14 @@ Schema v1–v14 saves migrate to schema v15 with:
 - `scenarioPreset` inferred from `state.universe.presetId`, or existing migration topology inference;
 - `worldSpeed: 1` to preserve all historical real-time expectations;
 - `offlineProgression: true`;
-- `createdAtReal` derived from the valid legacy clock start when possible, otherwise the envelope's validated `savedAt`.
+- `createdAtReal` from the envelope's validated `savedAt` because v14 `state.clock.startedAt` is a hard-coded simulation epoch and is not evidence of real campaign creation time.
 
 Save format v1–v2 envelopes migrate to v3 with runtime metadata:
 
 - `lastActiveAtReal` from validated legacy `savedAt`;
 - zero last-catch-up durations;
+- no pending catch-up;
+- no pending return summary;
 - explicit migration tests for primary autosave, snapshot, manual slot, import and recovery.
 
 Migration may not silently choose x2 for old saves. Existing campaigns retain x1 semantics.
@@ -87,12 +104,14 @@ Production uses `Date.now`. Unit, integration and Browser E2E use deterministic 
 Validation policy:
 
 - timestamps must parse to finite UTC milliseconds;
-- clock rollback or equal time produces zero offline duration plus a visible diagnostic;
-- sub-second real duration is retained in a runtime accumulator until it yields whole simulation seconds;
+- clock rollback or equal time produces zero new offline duration plus a visible diagnostic;
+- sub-second real duration is retained in fixed-point continuation data until it yields whole simulation seconds;
 - no elapsed interval is silently discarded;
 - very large forward jumps are processed through bounded resumable chunks and an explicit progress screen;
-- catch-up completion or a durable checkpoint updates runtime metadata atomically with the accepted simulation state;
-- a crash/reload during catch-up resumes from the last durable state/cursor without double-processing completed game time.
+- catch-up start durably records the target/continuation before processing can yield;
+- each checkpoint atomically stores the accepted simulation state, processed real-time cursor, remaining target and accumulated summary;
+- a crash/reload during catch-up resumes from the last durable state/continuation without double-processing completed game time;
+- after a pending target is fully drained, any additional real time elapsed since that target is calculated as a new interval.
 
 The local browser cannot make the user's system clock tamper-proof. “Trusted” means validated, monotonic relative to the stored accepted cursor and handled without hidden truncation. Anti-cheat/server authority is outside Release 1.0.
 
@@ -104,7 +123,7 @@ The only player-facing world-speed effect is:
 wholeGameSeconds = floor(realSeconds × worldSpeed + carriedFraction)
 ```
 
-The implementation must use integer/fixed-point arithmetic and carry fractional remainder outside canonical simulation state or in deterministic runtime continuation data.
+The implementation must use integer/fixed-point arithmetic and persist fractional remainder in integrity-protected runtime continuation data whenever it crosses a durable boundary.
 
 The same mapping drives:
 
@@ -180,7 +199,7 @@ Requirements:
 - accepted transitions refresh UI and autosave through the existing application boundary;
 - autosave is not requested per animation frame;
 - autosave/coalescing cadence is explicitly tested;
-- hidden/pagehide state writes the latest accepted checkpoint/cursor best-effort;
+- hidden/pagehide state writes the latest accepted processed cursor/checkpoint best-effort, never an unprocessed current timestamp;
 - the normal UI no longer exposes +1m/+10m/+1h/Until event controls;
 - deterministic acceleration remains available only in E2E/headless/developer APIs.
 
@@ -190,13 +209,17 @@ Restore order must become:
 
 ```text
 load and validate save envelope
-→ compute validated real duration
-→ map to game duration using immutable world speed
-→ if zero, mount normally
+→ if pending catch-up exists, restore its target/remaining work/summary
+→ otherwise compute validated real duration from last processed cursor to injected now
+→ persist a catch-up target/continuation before long processing begins
+→ map duration using immutable world speed
+→ if zero and no pending summary, mount normally
 → otherwise run/resume bounded catch-up before normal interactive mount
-→ durably save final caught-up state and runtime cursor
+→ checkpoint processed cursor + remaining target + summary at safe boundaries
+→ on completion persist final state, final cursor and pendingReturnSummary atomically
 → mount application
-→ show structured return summary
+→ show pending structured return summary
+→ clear pendingReturnSummary only after explicit acknowledgement is durably saved
 ```
 
 The player must not interact with stale pre-catch-up state.
@@ -254,10 +277,13 @@ result
 Rules:
 
 - summary is derived during orchestration, not reconstructed only from final logs;
+- the accumulated summary is part of integrity-protected `pendingCatchUp` while processing;
+- after completion it moves atomically to integrity-protected `pendingReturnSummary` with the final state/cursor;
+- `pendingReturnSummary` remains available across crash, reload, import/export, snapshot and recovery until the player explicitly acknowledges it;
+- acknowledgement clears only the pending presentation record and does not mutate canonical simulation history;
 - ordinary detailed reports remain accessible and are linked from summary groups;
 - summary must not reveal hidden enemy decisions or intelligence beyond ordinary player-visible rules;
-- summary is presentation/runtime output and need not become permanent `GameState` unless later endgame contracts require persisted result evidence;
-- final caught-up state is saved before summary is presented.
+- summary remains outside deterministic `GameState` unless later endgame contracts require persisted result evidence.
 
 Systems not yet implemented (diplomacy, alliances, Gates, final result) receive typed extension points only. This batch may not implement those mechanics.
 
@@ -267,9 +293,13 @@ Catch-up uses bounded operation budgets, not a fixed game-time truncation.
 
 - no required event or decision may be skipped;
 - processing may yield between chunks;
-- continuation state must be serializable or reconstructable from the durably saved simulation state plus target/cursor metadata;
+- before processing, the integrity-protected envelope records the catch-up target;
+- each checkpoint advances `lastActiveAtReal` only by processed real duration;
+- each checkpoint stores remaining duration, fractional carry and accumulated summary;
+- continuation state must be serializable or reconstructable from the durably saved simulation state plus protected target/cursor metadata;
 - checkpoints must occur at deterministic safe boundaries;
 - reloading after a checkpoint must not repeat completed events, logistics transfers or bot decisions;
+- completion atomically removes `pendingCatchUp` and creates `pendingReturnSummary`;
 - a catch-up error leaves the last valid save recoverable and displays a stable reason code;
 - autosave snapshot protection remains active.
 
@@ -295,9 +325,12 @@ Required deterministic gates:
 - bot decision interleaving changes the world at the scheduled boundary, not final target time;
 - event/logistics/world-event/bot same-time order is stable and documented;
 - one-day and seven-day catch-up complete without skipped work;
-- save/reload during partial catch-up resumes without duplication;
-- old v14 save migrates to x1 and catches up correctly;
-- import/export/snapshot/recovery preserve runtime cursor semantics;
+- save/reload during partial catch-up resumes remaining work without duplication or loss;
+- checkpoint cursor reflects processed time, not catch-up target time;
+- additional time elapsed during a long catch-up is processed after the original target;
+- old v14 save migrates to x1 and uses envelope time for real creation/cursor metadata;
+- import/export/snapshot/recovery preserve runtime cursor, pending continuation and pending summary semantics;
+- crash after catch-up completion but before summary acknowledgement still shows the summary on reload;
 - no hidden-intelligence leak in summary;
 - no normal player fast-forward control;
 - Browser E2E uses fake real time, never long real waits;
