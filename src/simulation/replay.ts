@@ -28,10 +28,12 @@ export function replayCommands(
   const seedSource = typeof source === 'string' ? source : source.seedSource;
   const configuration: InitialGameConfiguration | undefined = typeof source === 'string'
     ? undefined
-    : {
-        playerFaction: source.faction,
-        campaignSettings: source.campaignSettings,
-      };
+    : source.faction === undefined
+      ? { campaignSettings: source.campaignSettings }
+      : {
+          playerFaction: source.faction,
+          campaignSettings: source.campaignSettings,
+        };
   let state = configuration === undefined
     ? createInitialGameState(seedSource)
     : createInitialGameState(seedSource, configuration);
