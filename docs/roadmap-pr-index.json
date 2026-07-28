@@ -5,13 +5,13 @@
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 121,
-    "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9",
-    "runtimeBaselinePr": 120,
-    "runtimeBaselineSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665",
+    "lastMergedPr": 122,
+    "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152",
+    "runtimeBaselinePr": 122,
+    "runtimeBaselineSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152",
     "auditBaselineSha": "818aba011199dd5a96518f859ed35de671be892f"
   },
-  "activePr": 122,
+  "activePr": null,
   "nextPrAfterActive": 123,
   "nextPrKind": "implementation",
   "phases": [
@@ -28,10 +28,10 @@
       "endPr": 123,
       "status": "implementation-active",
       "batchId": "PLANET-DEMOLITION-DESTRUCTION-01",
-      "completedPrs": [],
-      "activePr": 122,
+      "completedPrs": [122],
+      "activePr": null,
       "nextPr": 123,
-      "outcome": "Ordinary attack demolition, safe colony destruction including special-mission returns, released-coordinate recovery and full gate",
+      "outcome": "Ordinary attack demolition delivered; safe colony destruction including special-mission returns, released-coordinate recovery and full gate remain in #123",
       "archive": "docs/audits/completed/planet-demolition-destruction-01.md"
     },
     {"id": "multi-colony-economy-logistics", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Coherent multi-colony economy, logistics and bot planning"},
@@ -61,8 +61,8 @@
     {"number": 119, "kind": "implementation", "workItem": "INTELLIGENCE-REPORTS-PRESENTATION", "title": "Route intelligence reports and redacted presentation", "status": "merged", "mergeSha": "e297f77f8e994f37402090a8d9d7c70e28ce099f"},
     {"number": 120, "kind": "implementation", "workItem": "MISSION-INTELLIGENCE-BOT-GATE", "title": "Gate mission intelligence bot parity", "status": "merged", "mergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665"},
     {"number": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "title": "Audit planet demolition and destruction", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
-    {"number": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "title": "Implement deterministic planet demolition", "status": "draft-active", "mergeSha": null},
-    {"number": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "title": "Complete planet destruction and recovery gate", "status": "blocked-until-pr122-merge", "mergeSha": null}
+    {"number": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "title": "Implement deterministic planet demolition", "status": "merged", "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152"},
+    {"number": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "title": "Complete planet destruction and recovery gate", "status": "next", "mergeSha": null}
   ],
-  "nextAction": "Finish checks and review on active PR #122; do not start PR #123 before #122 merges."
+  "nextAction": "Create PR #123 from fresh current main and complete PLANET-DESTRUCTION-RECOVERY-GATE only."
 }
