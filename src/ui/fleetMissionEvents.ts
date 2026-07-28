@@ -4,8 +4,6 @@ import type { GalaxyIntelVisibility } from '../simulation/galaxy/intelligenceVie
 export const FLEET_MISSION_TARGET_EVENT = 'stellar:fleet-mission-target';
 
 const PREPARED_TARGET_STORAGE_KEY = 'stellar-empires:prepared-fleet-target:v1';
-const RESTORE_RETRY_DELAY_MS = 50;
-const RESTORE_RETRY_LIMIT = 40;
 
 export interface FleetMissionTargetRequest {
   readonly targetId: string;
@@ -94,6 +92,19 @@ export function inferMissionForGalaxyTarget(
   return 'scout';
 }
 
+function missionLabel(mission: FleetMissionKind): string {
+  switch (mission) {
+    case 'deploy': return 'Размещение';
+    case 'scout': return 'Разведка';
+    case 'attack': return 'Атака';
+    case 'recycle': return 'Переработка';
+    case 'colonize': return 'Колонизация';
+    case 'expedition': return 'Экспедиция';
+    case 'space-object': return 'Стратегический объект';
+    case 'transport': return 'Транспорт';
+  }
+}
+
 function emitPreparedTarget(detail: PreparedFleetMissionTarget | null): void {
   window.dispatchEvent(
     new CustomEvent<PreparedFleetMissionTarget | null>(FLEET_MISSION_TARGET_EVENT, { detail }),
@@ -107,24 +118,8 @@ export function dispatchFleetMissionTarget(detail: FleetMissionTargetRequest): v
 
 function installPreparedTargetBridge(): void {
   if (typeof document === 'undefined' || typeof MutationObserver === 'undefined') return;
-  let deliveredTargetId: string | null = null;
   let preparedNoticeWasVisible = false;
-  let restoreAttempts = 0;
-  let restoreTimer: number | null = null;
   let clearControl: HTMLButtonElement | null = null;
-
-  const cancelRestoreTimer = (): void => {
-    if (restoreTimer === null) return;
-    window.clearTimeout(restoreTimer);
-    restoreTimer = null;
-  };
-
-  const resetDelivery = (): void => {
-    cancelRestoreTimer();
-    deliveredTargetId = null;
-    preparedNoticeWasVisible = false;
-    restoreAttempts = 0;
-  };
 
   const ensureClearControl = (): HTMLButtonElement | null => {
     if (clearControl?.isConnected === true) return clearControl;
@@ -138,8 +133,8 @@ function installPreparedTargetBridge(): void {
     button.hidden = true;
     button.addEventListener('click', () => {
       clearPreparedFleetMissionTarget();
+      preparedNoticeWasVisible = false;
       button.hidden = true;
-      resetDelivery();
       emitPreparedTarget(null);
     });
     tabs.insertAdjacentElement('afterend', button);
@@ -159,8 +154,72 @@ function installPreparedTargetBridge(): void {
     });
   };
 
+  const clearInvalidPreparation = (control: HTMLButtonElement | null, message: string): void => {
+    clearPreparedFleetMissionTarget();
+    preparedNoticeWasVisible = false;
+    if (control !== null) control.hidden = true;
+    emitPreparedTarget(null);
+    renderInvalidWarning(message);
+  };
+
+  const hydrateComposer = (
+    prepared: PreparedFleetMissionTarget,
+    control: HTMLButtonElement | null,
+  ): boolean => {
+    const missionSelects = Array.from(
+      document.querySelectorAll<HTMLSelectElement>('[data-testid^="mission-kind-"]'),
+    );
+    if (missionSelects.length === 0) return false;
+
+    let targetMatched = false;
+    for (const missionSelect of missionSelects) {
+      if (!Array.from(missionSelect.options).some((option) => option.value === prepared.mission)) {
+        continue;
+      }
+      missionSelect.value = prepared.mission;
+      missionSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+      const fleetId = missionSelect.dataset.testid?.replace(/^mission-kind-/, '');
+      const targetSelect = Array.from(
+        document.querySelectorAll<HTMLSelectElement>('[data-testid^="mission-target-"]'),
+      ).find((select) => select.dataset.testid === `mission-target-${fleetId}`);
+      if (
+        targetSelect === undefined ||
+        !Array.from(targetSelect.options).some((option) => option.value === prepared.targetId)
+      ) {
+        continue;
+      }
+      targetSelect.value = prepared.targetId;
+      targetSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      targetMatched = true;
+    }
+
+    if (!targetMatched) {
+      clearInvalidPreparation(
+        control,
+        'Подготовленная цель больше недоступна. Выбери новую цель.',
+      );
+      return false;
+    }
+
+    const host = document.querySelector<HTMLElement>('#fleet-workspace-host');
+    const missionSection = Array.from(
+      host?.querySelectorAll<HTMLElement>('.mission-fleet-list') ?? [],
+    ).find((section) => section.querySelector('h2')?.textContent === 'Подготовить миссию');
+    const heading = missionSection?.querySelector('h2');
+    if (missionSection === undefined || heading === null || heading === undefined) return false;
+
+    const notice = document.createElement('div');
+    notice.className = 'mission-target-notice';
+    notice.dataset.testid = 'mission-target-notice';
+    notice.textContent = `Цель с карты: ${prepared.label} · ${missionLabel(prepared.mission)}`;
+    heading.insertAdjacentElement('afterend', notice);
+    preparedNoticeWasVisible = true;
+    if (control !== null) control.hidden = false;
+    return true;
+  };
+
   const reconcile = (): void => {
-    restoreTimer = null;
     const control = ensureClearControl();
     if (document.documentElement.dataset.appReady !== 'true') {
       if (control !== null) control.hidden = true;
@@ -171,61 +230,36 @@ function installPreparedTargetBridge(): void {
     const prepared = readPreparedFleetMissionTarget();
     if (!route.startsWith('#/fleets/compose') || prepared === null) {
       if (control !== null) control.hidden = true;
-      resetDelivery();
-      return;
-    }
-
-    if (deliveredTargetId !== prepared.targetId) {
-      cancelRestoreTimer();
-      deliveredTargetId = prepared.targetId;
       preparedNoticeWasVisible = false;
-      restoreAttempts = 0;
+      return;
     }
 
     const notice = document.querySelector<HTMLElement>('[data-testid="mission-target-notice"]');
     if (notice === null) {
       if (preparedNoticeWasVisible) {
         clearPreparedFleetMissionTarget();
+        preparedNoticeWasVisible = false;
         if (control !== null) control.hidden = true;
-        resetDelivery();
         emitPreparedTarget(null);
         return;
       }
-
-      if (restoreAttempts < RESTORE_RETRY_LIMIT) {
-        restoreAttempts += 1;
-        emitPreparedTarget(prepared);
-        if (restoreTimer === null) {
-          restoreTimer = window.setTimeout(reconcile, RESTORE_RETRY_DELAY_MS);
-        }
-        return;
-      }
-
-      clearPreparedFleetMissionTarget();
-      if (control !== null) control.hidden = true;
-      resetDelivery();
-      emitPreparedTarget(null);
-      renderInvalidWarning('Подготовленную цель не удалось восстановить. Выбери цель заново.');
+      hydrateComposer(prepared, control);
       return;
     }
 
-    cancelRestoreTimer();
     preparedNoticeWasVisible = true;
-    restoreAttempts = 0;
     if (control !== null) control.hidden = false;
-
     const targetSelectors = Array.from(
       document.querySelectorAll<HTMLSelectElement>('[data-testid^="mission-target-"]'),
     );
     const targetExists = targetSelectors.some((select) =>
       Array.from(select.options).some((option) => option.value === prepared.targetId));
-    if (targetSelectors.length === 0 || targetExists) return;
-
-    clearPreparedFleetMissionTarget();
-    if (control !== null) control.hidden = true;
-    resetDelivery();
-    emitPreparedTarget(null);
-    renderInvalidWarning('Подготовленная цель больше недоступна. Выбери новую цель.');
+    if (targetSelectors.length > 0 && !targetExists) {
+      clearInvalidPreparation(
+        control,
+        'Подготовленная цель больше недоступна. Выбери новую цель.',
+      );
+    }
   };
 
   const observer = new MutationObserver(reconcile);
