@@ -314,7 +314,27 @@ describe('destroyed planet reconciliation', () => {
       cargoCapacity: 10_000,
       mission: null,
     };
-    const state = { ...reconciled, fleets: [...reconciled.fleets, fleet] };
+    const originWithFuel = {
+      ...fixture.attackerPlanet,
+      economy: {
+        ...fixture.attackerPlanet.economy,
+        resources: {
+          ...fixture.attackerPlanet.economy.resources,
+          gas: {
+            ...fixture.attackerPlanet.economy.resources.gas,
+            amount: 1_000_000,
+            capacity: 1_000_000,
+          },
+        },
+      },
+    };
+    const state = {
+      ...reconciled,
+      planets: reconciled.planets.map((planet) =>
+        planet.id === originWithFuel.id ? originWithFuel : planet,
+      ),
+      fleets: [...reconciled.fleets, fleet],
+    };
     const availability = getMissionAvailability(state, {
       type: 'SEND_FLEET',
       empireId: 'player',
@@ -322,7 +342,7 @@ describe('destroyed planet reconciliation', () => {
       mission: 'recycle',
       targetPlanetId: fixture.target.galaxyPlanetId,
     });
-    expect(availability.allowed).toBe(true);
+    expect(availability).toMatchObject({ allowed: true, code: 'MISSION_READY' });
   });
 });
 
