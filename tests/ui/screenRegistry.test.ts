@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  SHELL_NAVIGATION_GROUPS,
   SHELL_SCREEN_REGISTRY,
   validateScreenRegistry,
 } from '../../src/ui/screenRegistry';
@@ -18,22 +19,42 @@ describe('shell screen registry', () => {
     expect(new Set(badgeIds).size).toBe(badgeIds.length);
   });
 
-  it('contains every implemented primary route exactly once', () => {
+  it('orders every route through the player-centered hierarchy', () => {
+    expect(SHELL_NAVIGATION_GROUPS.map((group) => group.id)).toEqual([
+      'gameplay',
+      'development',
+      'information',
+      'utility',
+    ]);
     expect(SHELL_SCREEN_REGISTRY.map((entry) => entry.routeFamily)).toEqual([
       'planet',
-      'fleets',
       'space',
+      'fleets',
+      'operations',
       'research',
       'command',
-      'ranking',
-      'operations',
       'reports',
+      'ranking',
       'system',
     ]);
     expect(SHELL_SCREEN_REGISTRY.every((entry) => entry.kind === 'route')).toBe(true);
   });
 
-  it('keeps all implemented primary items enabled and accessible', () => {
+  it('promotes operations and reduces low-frequency route competition', () => {
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'operations')?.group)
+      .toBe('gameplay');
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'space')).toMatchObject({
+      label: 'Вселенная',
+      ariaLabel: 'Вселенная и галактики',
+      group: 'gameplay',
+    });
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'ranking')?.group)
+      .toBe('information');
+    expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'system')?.group)
+      .toBe('utility');
+  });
+
+  it('keeps all implemented destinations accessible', () => {
     expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'command')?.ariaLabel)
       .toBe('Командование');
     expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'ranking')?.ariaLabel)
@@ -41,6 +62,6 @@ describe('shell screen registry', () => {
     expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'system')?.ariaLabel)
       .toBe('Настройки');
     expect(SHELL_SCREEN_REGISTRY.find((entry) => entry.id === 'fleets')?.ariaLabel)
-      .toBe('Флот');
+      .toBe('Флоты');
   });
 });
