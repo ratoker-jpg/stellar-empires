@@ -212,6 +212,7 @@ export class AppShellController {
   }
 
   public get snapshot(): AppShellSnapshot {
+    this.reconcileState();
     return this.#snapshot;
   }
 
@@ -304,9 +305,10 @@ export class AppShellController {
   public reconcileState(): void {
     if (this.#applyingRoute) return;
     const state = this.#options.getState();
+    const previousActivePlanetId = this.#options.getActivePlanetId();
     const activePlanetId = this.#navigationContext.restoreActivePlanet(state);
     this.#options.selectActivePlanet(activePlanetId);
-    this.#navigationContext.reconcile(state);
+    const contextChanges = this.#navigationContext.reconcile(state);
     const normalized = normalizeShellRoute(
       serializeAppShellRoute(this.#snapshot.route),
       this.#snapshot.route.family,
@@ -320,8 +322,17 @@ export class AppShellController {
       this.navigate(normalized.route, 'replace', normalized.message, normalized.code);
       return;
     }
-    this.#snapshot = this.createSnapshot(this.#snapshot.route, null, null);
+    if (previousActivePlanetId === activePlanetId && contextChanges.length === 0) return;
+    const firstChange = contextChanges[0];
+    this.#snapshot = this.createSnapshot(
+      this.#snapshot.route,
+      firstChange?.message ?? null,
+      firstChange?.code ?? null,
+    );
     this.renderBreadcrumbs(this.#snapshot);
+    if (firstChange?.message !== null && firstChange?.message !== undefined) {
+      this.#options.writeStatus?.(firstChange.message);
+    }
     this.emit();
   }
 
@@ -410,12 +421,13 @@ export class AppShellController {
     host.append(trail);
 
     if (snapshot.returnRoute !== null) {
+      const returnRoute = snapshot.returnRoute;
       const returnButton = document.createElement('button');
       returnButton.type = 'button';
       returnButton.className = 'shell-breadcrumbs__return';
-      returnButton.dataset.shellReturn = snapshot.returnRoute.family;
-      returnButton.textContent = `Вернуться: ${getShellRouteDisplayName(snapshot.returnRoute, this.#options.getState())}`;
-      returnButton.addEventListener('click', () => this.navigate(snapshot.returnRoute as AppShellRoute));
+      returnButton.dataset.shellReturn = returnRoute.family;
+      returnButton.textContent = `Вернуться: ${getShellRouteDisplayName(returnRoute, this.#options.getState())}`;
+      returnButton.addEventListener('click', () => this.navigate(returnRoute));
       host.append(returnButton);
     }
   }
