@@ -10,6 +10,7 @@ import {
   serializeAppShellRoute,
   type AppShellRoute,
 } from './appShellRoute';
+import { createPlayerCommandProfile } from './commandRanking';
 import type { ShellRouteFamily } from './screenRegistry';
 
 export type ShellNavigationNormalizationCode =
@@ -127,6 +128,12 @@ function firstPlayerPlanetId(state: GameState): string {
   const id = playerPlanetIds(state)[0];
   if (id === undefined) throw new Error('Player planet is missing from navigation context.');
   return id;
+}
+
+function currentExplicitSpaceHash(): string | null {
+  if (typeof window === 'undefined') return null;
+  const hash = window.location.hash.trim();
+  return hash === '#/space' || hash.startsWith('#/space/') ? hash : null;
 }
 
 export function createMemoryShellNavigationStore(
@@ -335,6 +342,14 @@ export class ShellNavigationContextModel {
     family: ShellRouteFamily,
     state: GameState,
   ): NormalizedShellRoute {
+    const explicitSpaceHash = family === 'space' ? currentExplicitSpaceHash() : null;
+    if (explicitSpaceHash !== null) {
+      const explicit = normalizeShellRoute(explicitSpaceHash, 'space', state, this.#activePlanetId);
+      this.#lastRoutes.set('space', explicit.route);
+      this.persist();
+      return explicit;
+    }
+
     const remembered = this.#lastRoutes.get(family);
     if (remembered === undefined) {
       return {
@@ -542,7 +557,7 @@ export function getShellRouteDisplayName(route: AppShellRoute, state: GameState)
     case 'fleets': return `Флоты · ${FLEET_MODE_LABELS[route.mode]}`;
     case 'operations': return `Операции · ${OPERATIONS_MODE_LABELS[route.mode]}`;
     case 'command': return `Командование · ${COMMAND_MODE_LABELS[route.mode]}`;
-    case 'ranking': return 'Рейтинг';
+    case 'ranking': return `Рейтинг · Место #${createPlayerCommandProfile(state).rank}`;
     case 'reports': return `Отчёты · ${REPORT_FILTER_LABELS[route.filter]}`;
     case 'system': return `Система · ${SYSTEM_MODE_LABELS[route.mode]}`;
   }
