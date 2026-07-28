@@ -33,6 +33,7 @@ function normalizedPreparedTarget(
   const selectedPlanet = typeof document === 'undefined'
     ? undefined
     : document.querySelector<HTMLSelectElement>('#hud-planet-selector')?.value;
+  const sourcePlanetId = detail.sourcePlanetId ?? selectedPlanet;
   return {
     version: 1,
     targetId: detail.targetId,
@@ -40,9 +41,7 @@ function normalizedPreparedTarget(
     mission: detail.mission,
     ...(detail.source === undefined ? {} : { source: detail.source }),
     sourceRouteHash: detail.sourceRouteHash ?? currentHash,
-    ...(detail.sourcePlanetId ?? selectedPlanet) === undefined
-      ? {}
-      : { sourcePlanetId: detail.sourcePlanetId ?? selectedPlanet },
+    ...(sourcePlanetId === undefined ? {} : { sourcePlanetId }),
   };
 }
 
