@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** implementation PR #131 active; #132 remains blocked  
+**Status:** PR #131 merged; PR #132 is the only next implementation  
 **Updated:** 2026-07-29  
-**Last merged PR:** #130 audit · `2379fa7a30974381349433e4f0e0ba43d15f1511`  
-**Active implementation baseline:** `1503c7d37fafc623bee4654ed460c92aa55a7b2f`  
+**Last merged PR:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE` · `257e3effaab4e34285d00db64b6676fda364fcfd`  
+**Runtime baseline:** schema v15 / save format v3  
 **Active batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
-**Active work item:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE`
+**Next work item:** #132 `CAMPAIGN-CLOCK-OFFLINE-GATE`
 
 ## Repository
 
@@ -33,15 +33,16 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 ## Delivered through merged `main`
 
 - #101–#105: complete catalog runtime art;
-- #106–#110: schema-v14 Universe navigation/action gate;
+- #106–#110: Universe navigation/action gate;
 - #111–#115: routed application shell;
 - #116–#120: ordinary mission/intelligence/bot parity gate;
 - #121–#123: demolition, whole-planet destruction and recovery;
 - #124: local campaign product contract;
 - #125–#129: navigation/usability repair;
-- #130: accepted local campaign time/persistence architecture.
+- #130: accepted local campaign time/persistence architecture;
+- #131: immutable campaign settings and cursor-safe persistence foundation.
 
-## Active #131 implementation
+## Current schema and persistence
 
 ### Deterministic state
 
@@ -53,62 +54,62 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 - canonical real creation timestamp;
 - old state-creation and replay overloads remain deterministic x1.
 
-### Persistence
+### Save format v3
 
-- save format v3;
-- runtime cursor/continuation/summary metadata outside `GameState`;
+- runtime cursor/continuation/summary metadata remains outside `GameState`;
 - checksum covers stable envelope fields, runtime metadata and state;
 - v1/v2 envelopes and state v1–v14 migrate to x1;
 - real creation/cursor time comes from validated envelope `savedAt`;
-- current v15 loads still execute reconciliation for aliases, schedules and bounded histories;
-- autosave/manual/import/export/snapshot/recovery preserve cursor semantics.
+- current v15 loads execute reconciliation for aliases, schedules and bounded histories;
+- autosave/manual/import/export/snapshot/recovery preserve cursor semantics;
+- ordinary saves preserve `lastActiveAtReal` until time is actually processed;
+- `pendingCatchUp` requires exact target/cursor/remainder consistency.
 
 ### Player setup
 
 - one campaign-creation transaction selects faction, topology and immutable speed;
 - x2 is the recommended UI preset;
-- System / Saves exposes immutable campaign identity and accepted cursor;
-- no settings mutation after creation.
+- System / Saves exposes immutable campaign identity and processed cursor;
+- settings cannot be changed after creation.
 
-### Verification already established on code head
+## PR #131 validation
 
-- assets, lint and strict TypeScript;
-- complete Vitest suite;
-- production build;
-- Graphify;
-- Browser E2E required again on final documentation head.
+- CI `30405640769`;
+- Browser E2E `30405640704`;
+- Graphify `30405640711`;
+- Codex P1/P2 findings fixed and resolved;
+- final re-review returned 👍;
+- merge `257e3effaab4e34285d00db64b6676fda364fcfd`.
 
-## Explicit exclusions from #131
+## #132 exact scope
 
-- no active wall-clock ticker;
-- no offline elapsed-time processing;
-- no chronological bot integration;
-- no removal of normal time controls;
-- no progression balance changes;
-- no diplomacy, alliances or endgame.
-
-## #132 reserved scope
-
-Only after #131 merges:
+Create only from fresh current `main`:
 
 - one chronological active/offline orchestrator;
 - event/logistics/world-event/bot boundaries;
 - fixed-point speed mapping and fractional carry;
-- active clock;
+- active open-session clock;
 - bounded resumable offline catch-up;
 - processed-cursor checkpoints;
+- pending target/remainder and accumulated summary persistence;
 - pending return summary until acknowledgement;
 - removal of player fast-forward controls;
 - one-day/seven-day, Browser E2E and performance gates;
-- batch archive and closure.
+- audit archive and batch closure.
+
+## Explicit exclusions from #132
+
+- no numeric progression rebalance;
+- no diplomacy, alliances or endgame implementation;
+- no server-authoritative/online shared world;
+- no broad mobile/framework redesign.
 
 ## Immediate route
 
 ```text
-finish #131 final documentation
-→ pass CI, Browser E2E and Graphify on final head
-→ resolve all P0/P1 review findings
-→ mark ready and merge #131
-→ synchronize exact merge SHA on main
-→ only then create #132 from fresh main
+verify fresh current main
+→ create PR #132 CAMPAIGN-CLOCK-OFFLINE-GATE
+→ implement only the accepted clock/catch-up contract
+→ pass CI, Browser E2E, Graphify and clean review
+→ merge #132 and close/archive the batch
 ```
