@@ -80,10 +80,11 @@ export function createColonyPlanet(
   location: GalaxyPlanetLocation,
   empireId: string,
   factionId: FactionId = 'aegis',
+  colonyId = `colony-${location.planet.id}`,
 ): PlanetState {
   const buildings = getStartingBuildingsForFaction(factionId);
   return {
-    id: `colony-${location.planet.id}`,
+    id: colonyId,
     galaxyPlanetId: location.planet.id,
     systemId: location.system.id,
     position: location.planet.position,
@@ -190,7 +191,12 @@ export function resolveColonization(
   }
 
   const factionId = getFactionIdForEmpire(state, fleet.empireId);
-  const baseColony = createColonyPlanet(location, fleet.empireId, factionId);
+  const baseColony = createColonyPlanet(
+    location,
+    fleet.empireId,
+    factionId,
+    `colony-${location.planet.id}-${state.nextEventSequence}`,
+  );
   const unloaded = unloadCargo(baseColony, fleet.cargo);
   const ships = { ...fleet.ships };
   const colonyShipCount = ships[colonyShipId] ?? 0;
