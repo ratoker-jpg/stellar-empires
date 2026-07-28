@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** PR #126 merged; implementation PR #127 is next  
+**Status:** PR #127 merged; implementation PR #128 is next  
 **Updated:** 2026-07-28  
-**Runtime baseline:** PR #126 `NAV-IA-PRIMARY-SHELL` · `2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1`  
-**Last merged PR:** #126 `NAV-IA-PRIMARY-SHELL` · `2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1`  
+**Runtime baseline:** PR #127 `NAV-CONTEXT-ROUTE-MODEL` · `2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418`  
+**Last merged PR:** #127 `NAV-CONTEXT-ROUTE-MODEL` · `2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418`  
 **Active batch:** `NAVIGATION-USABILITY-01`  
-**Next authorized implementation:** #127 `NAV-CONTEXT-ROUTE-MODEL`
+**Next authorized implementation:** #128 `NAV-CROSS-DOMAIN-FLOWS`
 
 ## Repository
 
@@ -23,7 +23,7 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 6. `docs/audits/contracts/navigation-usability-01-route-context.md`
 7. `docs/audits/evidence/navigation-usability-01-code-and-flow.md`
 8. `docs/audits/evidence/navigation-usability-01-pr126-scope.md`
-9. `docs/changes/pr126-nav-ia-primary-shell.md`
+9. `docs/changes/pr127-nav-context-route-model.md`
 10. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
 11. this document
 12. `docs/project-status.json`
@@ -40,86 +40,67 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - #121–#123: demolition, whole-planet destruction and recovery;
 - #124: canonical local-campaign world-speed/offline-progression product contract;
 - #125: accepted navigation/usability audit and four-PR implementation plan;
-- #126: player-centered primary navigation hierarchy.
+- #126: grouped player-centered primary navigation;
+- #127: typed route, colony, breadcrumb and return context.
 
-## Delivered primary navigation
+## Delivered navigation context
 
-PR #126 replaces the flat technical rail with four player-facing groups:
+PR #127 adds campaign-scoped browser session presentation memory without changing `GameState` or saves:
 
-```text
-Игра
-  Планета · Вселенная · Флоты · Операции
-Развитие
-  Наука · Командование
-Данные
-  Отчёты · Рейтинг
-Система
-  Настройки
-```
+- latest valid subroute per family;
+- active-colony restoration across colony-sensitive workspaces;
+- localized shared breadcrumbs;
+- a distinct typed return destination;
+- safe visible normalization for stale colony, local-surface and family-mode context;
+- explicit Space coordinates take priority over older family memory;
+- colony context is committed before synchronous application selection;
+- direct URLs, Back/Forward and reload remain canonical;
+- simulation checksum remains unchanged.
 
-The implementation:
+Validation on final head `e31961876578499945dbe2ffb0b435d7ffbad4e4`:
 
-- promotes Operations to core gameplay;
-- labels the complete Space hierarchy as `Вселенная`;
-- reduces Ranking/System competition with normal turn-to-turn actions;
-- exposes active navigation group metadata and accessible labels;
-- preserves every route-family ID and URL;
-- preserves keyboard navigation and simulation checksum neutrality;
-- keeps HUD activity chips informational while route badges remain on destinations.
-
-Validation on final head `b9e11d18fb83da9b6395c8980859b36790bc2f7a`:
-
-- CI `30368968637` — passed;
-- Browser E2E `30368968648` — passed;
-- Graphify `30368970159` — passed;
-- one P1 stale flat-navigation E2E expectation was fixed and its review thread resolved.
+- CI `30373287448` — passed;
+- Browser E2E `30373287849` — passed;
+- Graphify `30373287422` — passed;
+- both P1 review threads were fixed and resolved.
 
 ## Canonical campaign direction
 
-Stellar Empires remains a local single-player PvE browser campaign:
-
-- no continuously running server is required for Release 1.0;
-- campaign creation will eventually select an immutable world-speed preset;
-- no normal runtime fast-forward controls;
-- deterministic offline catch-up uses the same selected speed;
-- bots may act and another side may win while the browser is closed;
-- progression will later be compressed toward a roughly one-day active campaign.
-
-This direction remains documented but intentionally blocked from implementation until navigation batch closure.
+Stellar Empires remains a local single-player PvE browser campaign. World speed, deterministic offline catch-up and compressed one-day pacing are documented but remain blocked until navigation batch closure.
 
 ## Authorized implementation sequence
 
 ```text
 #126 NAV-IA-PRIMARY-SHELL — merged
-→ #127 NAV-CONTEXT-ROUTE-MODEL
+→ #127 NAV-CONTEXT-ROUTE-MODEL — merged
 → #128 NAV-CROSS-DOMAIN-FLOWS
 → #129 NAV-USABILITY-GATE
 ```
 
-### #127 scope
+### #128 scope
 
-- remember the last valid subroute per route family;
-- add common breadcrumbs and an explicit return destination;
-- preserve active-colony context across colony-sensitive workspaces;
-- normalize stale route/context data visibly and safely;
-- keep navigation state outside `GameState`, saves and simulation checksums;
-- preserve grouped navigation from #126.
+- Planet zone → Research/Shipyard/Defence/Upgrades → originating colony/zone;
+- Space/intelligence target → Fleet compose with target/mission preparation → source context;
+- Report → exact Space coordinate → same report/filter;
+- Operations overview/activity → exact operation mode → source;
+- colony switch retains equivalent valid colony-sensitive task;
+- prepared context must be typed, reversible and reload-safe where valid;
+- explicit fleet-send confirmation remains mandatory;
+- no automatic gameplay command.
 
 ### Preserved invariants
 
 - schema v14 remains authoritative;
-- no new gameplay command, mission, formula or bot policy;
-- explicit fleet-send confirmation and intelligence redaction remain authoritative;
-- final-colony protection and destructive-attack recovery remain unchanged;
-- no world speed, offline catch-up, balance, alliance or endgame implementation in #127–#129.
+- navigation/task context stays outside `GameState`, saves and checksums;
+- intelligence redaction remains authoritative;
+- no new mission, mechanic, formula or bot policy;
+- no world speed, offline catch-up, balance, alliance or endgame implementation in #128–#129.
 
 ## Immediate route
 
-1. Create #127 from fresh current `main`.
-2. Implement only `NAV-CONTEXT-ROUTE-MODEL`.
+1. Create #128 from fresh current `main`.
+2. Implement only `NAV-CROSS-DOMAIN-FLOWS`.
 3. Run assets, lint, TypeScript, full tests, build, Browser E2E and Graphify.
 4. Merge only after review is clean.
-5. Continue sequentially through #129.
+5. Complete #129 as the final navigation gate.
 6. After #129 closure, create Audit #130 `LOCAL-CAMPAIGN-TIME-PACING-01`.
-
-Do not begin #128 before #127 merges and do not begin Audit #130 before #129 closes.
