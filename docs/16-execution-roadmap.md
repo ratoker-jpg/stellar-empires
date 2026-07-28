@@ -1,9 +1,9 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** PR #131 active; #132 blocked until merge  
+**Status:** PR #131 merged; PR #132 is next  
 **Updated:** 2026-07-29  
-**Last merged PR:** #130 · `2379fa7a30974381349433e4f0e0ba43d15f1511`  
-**Active implementation baseline:** `1503c7d37fafc623bee4654ed460c92aa55a7b2f`  
+**Last merged PR:** #131 · `257e3effaab4e34285d00db64b6676fda364fcfd`  
+**Runtime baseline:** schema v15 / save format v3  
 **Release target:** 1.0 local PvE browser campaign
 
 ## Authoritative files
@@ -23,47 +23,46 @@ docs/roadmap-pr-index.json
 ## Delivered merged state
 
 - #101–#105: catalog runtime art;
-- #106–#110: schema-v14 Universe navigation/action gate;
+- #106–#110: Universe navigation/action gate;
 - #111–#115: coherent application shell;
 - #116–#120: ordinary mission/intelligence/bot parity gate;
 - #121–#123: planet demolition, destruction and atomic recovery;
 - #124: local campaign/world-speed/offline-progression product contract;
 - #125–#129: player-centered navigation and measured usability closure;
-- #130: accepted settings, persistence and chronological clock architecture.
+- #130: accepted settings, persistence and chronological clock architecture;
+- #131: schema-v15 campaign identity and save-format-v3 persistence foundation.
 
-## Active #131 delivery
+## Current runtime foundation
 
-The active branch now provides:
-
-- schema v15 immutable checksummed campaign settings;
+- immutable checksummed campaign settings;
 - faction/scenario/x1-x2-x5-x10 setup before state creation;
-- save format v3 protected runtime metadata;
-- pending catch-up and pending return-summary persistence shapes;
-- v1–v14 state and v1/v2 envelope migration to x1 using validated envelope time;
+- protected runtime cursor, continuation and pending-summary metadata;
+- state v1–v14 and envelope v1/v2 migration to x1 using validated envelope time;
 - explicit replay initial configuration;
 - autosave/manual/import/export/snapshot/recovery cursor integrity;
-- immutable campaign identity in System / Saves;
-- no active clock or offline processing yet.
+- ordinary saves preserve processed time;
+- pending target/remainder pairs require exact cursor consistency;
+- immutable campaign identity in System / Saves.
 
 ## Remaining campaign-time gap
 
 Until #132 merges:
 
-- world speed does not yet drive elapsed time;
+- world speed does not drive real elapsed time;
 - open-session progression still uses manual controls;
 - offline elapsed time is not processed;
 - bot decisions are not chronologically interleaved with other time boundaries;
-- no catch-up progress or return-summary presentation runs;
+- catch-up progress and return-summary presentation do not run;
 - manual fast-forward controls remain.
 
 ## Accepted sequence
 
 ```text
-#131 CAMPAIGN-SETTINGS-PERSISTENCE — active
-→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — blocked until #131 merges
+#131 CAMPAIGN-SETTINGS-PERSISTENCE — merged
+→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — next
 ```
 
-### #132 reserved scope
+### #132 exact scope
 
 - shared chronological active/offline orchestrator;
 - event/logistics/world-event/bot decision boundaries;
@@ -73,7 +72,8 @@ Until #132 merges:
 - active runtime clock;
 - durable return summary until acknowledgement;
 - removal of normal fast-forward controls;
-- deterministic/browser/performance closure gate.
+- deterministic/browser/performance closure gate;
+- batch archive and closure.
 
 ## Deferred ordered work
 
@@ -89,9 +89,9 @@ Still later:
 ## Non-negotiable rules
 
 - fresh current `main` is the only valid baseline;
-- finish #131 before starting #132;
-- no numeric progression rebalance in #131–#132;
-- campaign settings are immutable deterministic state;
+- create only #132 next;
+- no numeric progression rebalance in #132;
+- campaign settings remain immutable deterministic state;
 - wall-clock cursor/continuation remain outside `GameState` but integrity protected;
 - checkpoint cursor represents processed time only;
 - no elapsed time is silently skipped;
