@@ -1,77 +1,69 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Audit PR #121 defines the next M4 implementation batch  
+**Status:** Audit #121 accepted; implementation #122 is next  
 **Updated:** 2026-07-28  
-**Runtime baseline:** merged PR #120 · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665`  
-**Audit baseline:** post-#120 `main` · `818aba011199dd5a96518f859ed35de671be892f`  
+**Last merged PR:** #121 · `2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9`  
+**Runtime baseline:** PR #120 · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665`  
 **Release target:** 1.0
 
-## Authoritative roadmap
+## Authoritative files
 
 ```text
 docs/27-playable-game-roadmap-v5.md
-```
-
-The active audit-first implementation contract is:
-
-```text
 docs/audits/current-batch-audit.md
+docs/audits/current-execution-state.md
 docs/audits/contracts/planet-demolition-destruction-01-prs.md
 docs/audits/contracts/planet-demolition-destruction-01-rules.md
-docs/audits/evidence/planet-demolition-destruction-01-graphify.md
-```
-
-The machine-readable sequence is:
-
-```text
 docs/roadmap-pr-index.json
 ```
 
-## Reconciled delivered state
+## Delivered state
 
-- #101–#105 completed catalog runtime-art integration;
-- #106–#110 completed schema-v14 Universe navigation and action gates;
-- #111–#115 completed the coherent full UI shell;
-- #116–#120 completed shared ordinary mission rules, espionage/counter-intelligence, routed reports and honest bot mission parity.
+- #101–#105: catalog runtime art;
+- #106–#110: schema-v14 Universe navigation/action gate;
+- #111–#115: coherent application shell;
+- #116–#120: ordinary mission/intelligence/bot parity gate;
+- #121: accepted heavy planet demolition/destruction audit.
 
-## Current audited sequence
-
-Audit PR #121 defines heavy batch `PLANET-DEMOLITION-DESTRUCTION-01`:
+## Accepted sequence
 
 ```text
-#121 Audit PLANET-DEMOLITION-DESTRUCTION-01
-→ #122 PLANET-DEMOLITION-CONTRACT
+#122 PLANET-DEMOLITION-CONTRACT
 → #123 PLANET-DESTRUCTION-RECOVERY-GATE
 ```
 
-Implementation must not begin before #121 merges. PR #123 must start only from fresh post-#122 `main`.
+### #122 scope
 
-## Why planet destruction is next
+- faction-specific siege profiles and weapon-level scaling;
+- deterministic demolition points, thresholds, selection and rolls;
+- Annihilator building-roll bonus instead of generic combat damage;
+- one-level building reduction, zone reconciliation and no-refund affected upgrade cancellation;
+- battle report and routed presentation;
+- no planet removal/reference cleanup.
 
-- the ordinary attack/intelligence loop is now complete;
-- all three factions already have planet-destroyer hulls and Commander effects;
-- canonical demolition/destruction formulas are recorded in `docs/25-solar-war-obelisks-gates-and-progression.md`;
-- runtime combat currently has no building demolition or colony removal;
-- Audit #116 explicitly required a separate heavy audit because safe removal crosses fleets, queues, events, routes, reports, bots and persistence;
-- completing this batch closes the destructive/recovery branch still listed under M4.
+### #123 scope
 
-## Work intentionally deferred
+- whole-planet chance/reductions/cap/final-colony guard;
+- atomic cleanup/rehome of all live references;
+- ordinary and pending expedition/space-object returns;
+- immutable historical origin plus additive live return destination;
+- debris/recolonization, reports, bots, save/load and closure gate.
 
-- multi-colony economy/logistics redesign beyond deleting invalid endpoints;
-- Sun Attack, Sun Support and system collapse/regeneration;
-- alliances, Solar Crystals, Obelisks, Gates and victory;
-- final-colony destruction or empire elimination;
-- new mission kinds, broad balance, mobile redesign or framework migration.
+## Deferred
+
+- multi-colony economy/logistics redesign;
+- solar/system destruction;
+- alliances, crystals, Obelisks, Gates and victory;
+- final-colony destruction;
+- broad balance/mobile/framework work.
 
 ## Non-negotiable rules
 
-- every implementation PR starts from fresh `main`;
-- existing ordinary `attack` remains the only entry point;
-- reducer/combat validation remains authoritative;
-- same state/sequence produces identical siege rolls and cleanup;
-- the final colony cannot be destroyed;
-- historical reports/intelligence keep coordinates without becoming active targets;
-- no hidden foreign state reaches UI or bot planning;
-- schema remains v14 unless a material audit divergence is recorded;
-- lint, typecheck, full tests, production build, Browser E2E and Graphify are mandatory;
-- `docs/25-solar-war-obelisks-gates-and-progression.md` remains authoritative for later endgame work.
+- #122 starts from fresh current `main`;
+- existing ordinary `attack` only;
+- schema v14 retained;
+- reducer/combat authoritative;
+- deterministic results and no hidden bot/UI target data;
+- no refunds or extra destruction loot;
+- #123 starts only after #122 merges;
+- all repository, Browser E2E and Graphify gates mandatory.
