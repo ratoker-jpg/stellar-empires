@@ -1,18 +1,21 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** PR #123 closure gate complete; Audit PR #124 is next  
+**Status:** Audit PR #130 active; implementation PR #131 is blocked until audit acceptance  
 **Updated:** 2026-07-28  
-**Last merged PR:** #123 · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
-**Runtime baseline:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
-**Release target:** 1.0
+**Last merged PR:** #129 · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
+**Verified baseline:** `45bd3297d402fd96691a26c60e47bd39a420f174`  
+**Release target:** 1.0 local PvE browser campaign
 
 ## Authoritative files
 
 ```text
 docs/27-playable-game-roadmap-v5.md
+docs/25a-local-campaign-world-speed-and-offline-progression.md
 docs/audits/current-execution-state.md
-docs/audits/completed/planet-demolition-destruction-01.md
-docs/changes/pr123-planet-destruction-recovery-gate.md
+docs/audits/current-batch-audit.md
+docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md
+docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md
+docs/audits/contracts/local-campaign-time-pacing-01-prs.md
 docs/project-status.json
 docs/roadmap-pr-index.json
 ```
@@ -23,57 +26,71 @@ docs/roadmap-pr-index.json
 - #106–#110: schema-v14 Universe navigation/action gate;
 - #111–#115: coherent application shell;
 - #116–#120: ordinary mission/intelligence/bot parity gate;
-- #121: accepted heavy planet demolition/destruction audit;
-- #122: deterministic building demolition contract;
-- #123: whole-planet destruction and atomic recovery closure gate.
+- #121–#123: planet demolition, destruction and atomic recovery;
+- #124: local campaign/world-speed/offline-progression product contract;
+- #125–#129: player-centered navigation, typed context, reversible flows and measured usability closure.
 
-## Completed sequence
+## Current gap
+
+The game has canonical simulation time but not a canonical campaign clock:
+
+- no immutable world speed;
+- no campaign setup beyond faction;
+- no open-session real-time progression;
+- no offline catch-up;
+- no protected runtime cursor;
+- bot overdue decisions are not chronologically interleaved;
+- manual player fast-forward controls remain;
+- no catch-up progress or return summary.
+
+## Audit #130 decision
+
+`LOCAL-CAMPAIGN-TIME-PACING-01` is a heavy two-PR batch:
 
 ```text
-#122 PLANET-DEMOLITION-CONTRACT
-→ #123 PLANET-DESTRUCTION-RECOVERY-GATE
-→ batch archived
+#130 Audit only
+→ #131 CAMPAIGN-SETTINGS-PERSISTENCE
+→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE
 ```
 
-### Delivered demolition
+### #131
 
-- faction-specific siege profiles and weapon-level scaling;
-- deterministic demolition points, thresholds, selection and rolls;
-- Annihilator building-roll bonus instead of generic combat damage;
-- one-level building reduction, zone reconciliation and no-refund affected upgrade cancellation;
-- battle report and routed presentation.
+- schema v15 campaign settings;
+- save format v3 runtime metadata;
+- faction/scenario/speed campaign setup;
+- legacy x1 migration;
+- replay and save/recovery integrity;
+- no active clock yet.
 
-### Delivered destruction and recovery
+### #132
 
-- whole-planet chance, reductions, 30% cap and final-colony guard;
-- atomic cleanup/rehome of all live references;
-- ordinary and repeated pending expedition/space-object returns;
-- immutable historical origin plus additive live return destination;
-- elapsed/remaining travel-time preservation during rebuilt returns;
-- assigned defending flagship Polias protection;
-- debris recycling before and after recolonization;
-- fresh colony identity and outbound recycler retargeting;
-- reports, save/load and Browser E2E closure.
+- shared chronological active/offline orchestrator;
+- bot decision boundaries;
+- bounded resumable catch-up;
+- active runtime clock;
+- return summary;
+- removal of normal fast-forward controls;
+- complete deterministic/browser/performance gate.
 
-## Next authorized route
+## Deferred ordered work
 
-Create a fresh **Audit PR #124** from exact current `main`. The audit must select and bound the next roadmap batch, record the baseline SHA, define implementation PR count/contracts and establish CI, Browser E2E, Graphify and review gates before any new implementation starts.
+After #132, a separate `CAMPAIGN-PROGRESSION-BALANCE-01` audit determines exact progression compression and one-day campaign balance. It must use measured headless runs from the delivered clock foundation.
 
-## Deferred until audited
+Still later:
 
-- multi-colony economy/logistics redesign;
-- deeper PvE/meta and bot parity;
-- solar/system destruction;
-- alliances, crystals, Obelisks, Gates and victory;
-- final-colony destruction and empire elimination;
-- broad balance/mobile/framework/release work.
+- multi-colony economy/logistics coherence;
+- deeper PvE/meta and complete bot parity;
+- alliances, solar war, Obelisks, Gates and victory/defeat;
+- release balance, onboarding, mobile and hardening.
 
 ## Non-negotiable rules
 
 - fresh current `main` is the only valid baseline;
-- no implementation PR before an accepted Audit #124;
-- schema v14 retained unless an audit proves a migration is required;
-- reducer/combat remains authoritative;
-- deterministic results and no hidden bot/UI target data;
-- no refunds or extra destruction loot;
+- no implementation before Audit #130 merges;
+- no numeric progression rebalance in #131–#132;
+- campaign settings are immutable deterministic state;
+- wall-clock cursor remains outside GameState;
+- no elapsed time is silently skipped;
+- player and bots use ordinary commands and visibility rules;
+- no continuously running server is required for Release 1.0;
 - all repository, Browser E2E, Graphify and automated review gates remain mandatory.
