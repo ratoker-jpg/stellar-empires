@@ -6,9 +6,9 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
     "lastMergedPr": 123,
-    "mergeSha": "recorded in GitHub PR #123 merge metadata",
+    "mergeSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30",
     "runtimeBaselinePr": 123,
-    "runtimeBaselineSha": "recorded in GitHub PR #123 merge metadata",
+    "runtimeBaselineSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30",
     "auditBaselineSha": "818aba011199dd5a96518f859ed35de671be892f"
   },
   "activePr": null,
@@ -31,7 +31,7 @@
       "completedPrs": [122, 123],
       "activePr": null,
       "nextPr": null,
-      "outcome": "Deterministic building demolition, capped whole-planet destruction, final-colony protection, atomic live-reference recovery, special-mission returns, released-coordinate debris/recolonization and full Browser E2E gate",
+      "outcome": "Deterministic building demolition, capped whole-planet destruction, final-colony protection, atomic live-reference recovery, repeatable special-mission returns, released-coordinate debris/recolonization, recycler retargeting and full Browser E2E gate",
       "archive": "docs/audits/completed/planet-demolition-destruction-01.md"
     },
     {"id": "multi-colony-economy-logistics", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Coherent multi-colony economy, logistics and bot planning"},
@@ -62,7 +62,7 @@
     {"number": 120, "kind": "implementation", "workItem": "MISSION-INTELLIGENCE-BOT-GATE", "title": "Gate mission intelligence bot parity", "status": "merged", "mergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665"},
     {"number": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "title": "Audit planet demolition and destruction", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
     {"number": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "title": "Implement deterministic planet demolition", "status": "merged", "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152"},
-    {"number": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "title": "Complete planet destruction and recovery gate", "status": "merged", "mergeSha": "recorded in GitHub PR #123 merge metadata"}
+    {"number": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "title": "Complete planet destruction and recovery gate", "status": "merged", "mergeSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30"}
   ],
   "nextAction": "Create fresh Audit PR #124 from current main; do not start implementation before that audit is accepted."
 }
