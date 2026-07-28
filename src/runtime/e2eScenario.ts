@@ -29,7 +29,6 @@ function getBotGateResult(): OrdinaryMissionIntelligenceGateResult {
   return botGateResult;
 }
 
-
 function requireScenarioPlanets(state: GameState) {
   const origin = state.planets.find((planet) => planet.ownerEmpireId === 'player');
   const target = state.planets.find((planet) => planet.ownerEmpireId === 'pirate-neutral')
@@ -121,14 +120,38 @@ export function createE2eFixtureState(state: GameState): GameState {
     seed: state.seed,
     resolvedAt: fixtureElapsedSeconds,
     targetPlanetId: target.id,
+    targetGalaxyPlanetId: target.galaxyPlanetId,
+    targetCoordinate: target.coordinate,
     attackerEmpireId: 'player',
     defenderEmpireId: target.ownerEmpireId ?? 'pirate-neutral',
     winner: 'attacker',
     rounds: [],
-    attackerInitial: { 'ship.aegis.fighter': 3 },
+    attackerInitial: { 'ship.aegis.death-star': 1 },
     defenderInitial: { 'ship.aegis.fighter': 1 },
-    attackerRemaining: { 'ship.aegis.fighter': 3 },
+    attackerRemaining: { 'ship.aegis.death-star': 1 },
     defenderRemaining: {},
+    destruction: {
+      attackerContributions: [
+        {
+          unitId: 'ship.aegis.death-star',
+          factionId: 'aegis',
+          count: 1,
+          weaponLevel: 10,
+          chanceBasisPointsPerShip: 300,
+          totalChanceBasisPoints: 300,
+        },
+      ],
+      defenderContributions: [],
+      defensePopulation: 0,
+      rawChanceBasisPoints: 300,
+      defenseReductionBasisPoints: 0,
+      defenderPlanetDestroyerReductionBasisPoints: 0,
+      poliasReductionBasisPoints: 0,
+      finalChanceBasisPoints: 300,
+      rollBasisPoints: 125,
+      blockedReason: null,
+      planetDestroyed: true,
+    },
     mode: 'pve',
     threatMultiplierPermille: 1_000,
     rewardMultiplierPermille: 1_000,
