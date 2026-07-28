@@ -13,6 +13,10 @@ import {
 import type { SpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
 import { formatGameDuration } from './planetViewModel';
+import {
+  createPlanetDemolitionDetails,
+  findPlanetDemolitionReport,
+} from './planetDemolitionReport';
 
 export interface MissionReportsPanelOptions {
   readonly getState: () => GameState;
@@ -231,6 +235,10 @@ function createReportCard(
   card.append(mapLink);
   if ((report.combatBreakdown?.length ?? 0) > 0) {
     card.append(createCombatDetails(report.combatBreakdown ?? []));
+  }
+  const demolition = findPlanetDemolitionReport(state, report.id);
+  if (demolition !== undefined) {
+    card.append(createPlanetDemolitionDetails(demolition));
   }
   return card;
 }
