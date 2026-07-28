@@ -1,5 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 
+const RELEASE_VIEWPORTS = [
+  { width: 1366, height: 768 },
+  { width: 1920, height: 1080 },
+] as const;
+
 const PRIMARY_WORKSPACES = [
   ['nav-planet', 'planet', '#planet-view'],
   ['nav-galaxy', 'space', '#galaxy-view'],
@@ -55,6 +60,80 @@ async function expectReleaseLayout(page: Page, activeWorkspace: string): Promise
   expect(layout.workspaceHeight).toBeGreaterThan(0);
 }
 
+async function runAcceptedTaskBudgets(page: Page): Promise<void> {
+  await page.goto('/?e2e=1#/planet/missing/overview');
+  await expectReady(page);
+  const checksum = await page.locator('html').getAttribute('data-state-checksum');
+  const planetId = await page.locator('#hud-planet-selector').inputValue();
+
+  // Active colony → Research: two purposeful actions.
+  await page.locator('[data-planet-mode="industry"]').click();
+  await page.getByRole('button', { name: /^Исследовательский комплекс/ }).click();
+  await expect(page).toHaveURL(/#\/research$/);
+  await expect(page.locator('#research-view')).toBeVisible();
+  await expect(page.locator('[data-shell-return="planet"]')).toBeVisible();
+  await expectReleaseLayout(page, '#research-view');
+
+  // One return action restores the exact originating colony and zone.
+  await page.locator('[data-shell-return="planet"]').click();
+  await expect(page).toHaveURL(new RegExp(`#\\/planet\\/${encodeURIComponent(planetId)}\\/industry$`));
+
+  // Exact local development destinations require one gateway action from their relevant zone.
+  await page.getByRole('button', { name: /^Орбитальная верфь/ }).click();
+  await expect(page).toHaveURL(/\/industry\?surface=shipyard$/);
+  await expect(page.locator('#ship-production-view')).toBeVisible();
+  await expectReleaseLayout(page, '#planet-view');
+
+  await page.locator('[data-development-surface="zone"]').click();
+  await page.getByRole('button', { name: /^Модернизация кораблей/ }).click();
+  await expect(page).toHaveURL(/\/industry\?surface=upgrades$/);
+  await expect(page.locator('#ship-upgrades-view')).toBeVisible();
+  await expectReleaseLayout(page, '#planet-view');
+
+  await page.locator('[data-planet-mode="military"]').click();
+  await page.getByRole('button', { name: /^Планетарная оборона/ }).click();
+  await expect(page).toHaveURL(/\/military\?surface=defense$/);
+  await expect(page.locator('#defense-production-view')).toBeVisible();
+  await expectReleaseLayout(page, '#planet-view');
+
+  // One visible selector action keeps the equivalent local task on another valid colony.
+  const planetIds = await page.locator('#hud-planet-selector option').evaluateAll(
+    (options) => options.map((option) => (option as HTMLOptionElement).value),
+  );
+  expect(planetIds.length).toBeGreaterThanOrEqual(2);
+  const sourcePlanetId = await page.locator('#hud-planet-selector').inputValue();
+  const targetPlanetId = planetIds.find((candidate) => candidate !== sourcePlanetId);
+  expect(targetPlanetId).toBeDefined();
+  await page.goto(
+    `/?e2e=1#/planet/${encodeURIComponent(sourcePlanetId)}/industry?surface=shipyard`,
+  );
+  await expectReady(page);
+  await expect(page.locator('#ship-production-view')).toBeVisible();
+  await page.locator('#hud-planet-selector').selectOption(targetPlanetId!);
+  await expect(page).toHaveURL(
+    new RegExp(`#\\/planet\\/${encodeURIComponent(targetPlanetId!)}\\/industry\\?surface=shipyard$`),
+  );
+  await expect(page.locator('#ship-production-view')).toBeVisible();
+  await expectReleaseLayout(page, '#planet-view');
+
+  // Operations overview → exact operation mode: one action.
+  await page.goto('/?e2e=1#/operations/overview');
+  await expectReady(page);
+  await page.getByRole('button', { name: /^Логистика/ }).click();
+  await expect(page).toHaveURL(/#\/operations\/logistics$/);
+  await expectReleaseLayout(page, '#operations-view');
+
+  // Returning to the latest valid subroute costs one primary activation.
+  await page.locator('#nav-reports').click();
+  await expect(page).toHaveURL(/#\/reports\/all$/);
+  await page.locator('#nav-operations').click();
+  await expect(page).toHaveURL(/#\/operations\/logistics$/);
+  await expect(page.locator('[data-operations-mode="logistics"]')).toHaveAttribute('aria-selected', 'true');
+  await expectReleaseLayout(page, '#operations-view');
+
+  await expectChecksum(page, checksum);
+}
+
 test('every primary destination is reachable without a competing legacy launcher', async ({ page }) => {
   await page.goto('/?e2e=1#/planet/missing/overview');
   await expectReady(page);
@@ -74,56 +153,16 @@ test('every primary destination is reachable without a competing legacy launcher
   }
 });
 
-test('accepted task budgets stay direct, reversible and checksum-neutral', async ({ page }) => {
-  await page.goto('/?e2e=1#/planet/missing/overview');
-  await expectReady(page);
-  const checksum = await page.locator('html').getAttribute('data-state-checksum');
-  const planetId = await page.locator('#hud-planet-selector').inputValue();
-
-  // Active colony → Research: two purposeful actions.
-  await page.locator('[data-planet-mode="industry"]').click();
-  await page.getByRole('button', { name: /^Исследовательский комплекс/ }).click();
-  await expect(page).toHaveURL(/#\/research$/);
-  await expect(page.locator('#research-view')).toBeVisible();
-  await expect(page.locator('[data-shell-return="planet"]')).toBeVisible();
-
-  // One return action restores the exact originating colony and zone.
-  await page.locator('[data-shell-return="planet"]').click();
-  await expect(page).toHaveURL(new RegExp(`#\\/planet\\/${encodeURIComponent(planetId)}\\/industry$`));
-
-  // Exact local development destinations require one gateway action from their relevant zone.
-  await page.getByRole('button', { name: /^Орбитальная верфь/ }).click();
-  await expect(page).toHaveURL(/\/industry\?surface=shipyard$/);
-  await expect(page.locator('#ship-production-view')).toBeVisible();
-
-  await page.locator('[data-development-surface="zone"]').click();
-  await page.getByRole('button', { name: /^Модернизация кораблей/ }).click();
-  await expect(page).toHaveURL(/\/industry\?surface=upgrades$/);
-  await expect(page.locator('#ship-upgrades-view')).toBeVisible();
-
-  await page.locator('[data-planet-mode="military"]').click();
-  await page.getByRole('button', { name: /^Планетарная оборона/ }).click();
-  await expect(page).toHaveURL(/\/military\?surface=defense$/);
-  await expect(page.locator('#defense-production-view')).toBeVisible();
-
-  // Operations overview → exact operation mode: one action.
-  await page.locator('#nav-operations').click();
-  await expect(page).toHaveURL(/#\/operations\/overview$/);
-  await page.getByRole('button', { name: /^Логистика/ }).click();
-  await expect(page).toHaveURL(/#\/operations\/logistics$/);
-
-  // Returning to the latest valid subroute costs one primary activation.
-  await page.locator('#nav-reports').click();
-  await expect(page).toHaveURL(/#\/reports\/all$/);
-  await page.locator('#nav-operations').click();
-  await expect(page).toHaveURL(/#\/operations\/logistics$/);
-  await expect(page.locator('[data-operations-mode="logistics"]')).toHaveAttribute('aria-selected', 'true');
-
-  await expectChecksum(page, checksum);
+test('accepted task budgets pass at both release viewports', async ({ page }) => {
+  for (const viewport of RELEASE_VIEWPORTS) {
+    await page.setViewportSize(viewport);
+    await runAcceptedTaskBudgets(page);
+  }
 });
 
-test('keyboard, history, reload, reduced motion and release viewports remain equivalent', async ({ page }) => {
+test('keyboard, history, reload and reduced motion remain equivalent', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize(RELEASE_VIEWPORTS[0]);
   await page.goto('/?e2e=1#/operations/market');
   await expectReady(page);
   const checksum = await page.locator('html').getAttribute('data-state-checksum');
@@ -146,7 +185,7 @@ test('keyboard, history, reload, reduced motion and release viewports remain equ
   await expect(page).toHaveURL(/#\/fleets\/overview$/);
   await expectChecksum(page, checksum);
 
-  for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
+  for (const viewport of RELEASE_VIEWPORTS) {
     await page.setViewportSize(viewport);
     await expectReleaseLayout(page, '#fleets-view');
   }
