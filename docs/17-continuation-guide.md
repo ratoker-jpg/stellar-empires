@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** Audit PR #125 active after merged documentation PR #124  
+**Status:** Audit PR #125 merged; implementation PR #126 is next  
 **Updated:** 2026-07-28  
 **Runtime baseline:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
-**Last merged PR:** #124 `LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT` · `cdd112c544ce8d37af17e938867d4588bedcf152`  
+**Last merged PR:** Audit #125 `NAVIGATION-USABILITY-01` · `a13f017d79d5dce5fde954e9f6e1419a2182d78e`  
 **Active batch:** `NAVIGATION-USABILITY-01`  
-**Next authorized implementation after audit merge:** #126 `NAV-IA-PRIMARY-SHELL`
+**Next authorized implementation:** #126 `NAV-IA-PRIMARY-SHELL`
 
 ## Repository
 
@@ -23,13 +23,14 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 6. `docs/audits/contracts/navigation-usability-01-route-context.md`
 7. `docs/audits/evidence/navigation-usability-01-code-and-flow.md`
 8. `docs/changes/pr125-navigation-usability-audit.md`
-9. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
-10. `docs/audits/completed/planet-demolition-destruction-01.md`
-11. this document
-12. `docs/project-status.json`
-13. `docs/roadmap-pr-index.json`
-14. `docs/27-playable-game-roadmap-v5.md`
-15. latest merged pull requests and actual `main`
+9. `docs/handoffs/2026-07-28-navigation-usability-audit-handoff.md`
+10. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
+11. `docs/audits/completed/planet-demolition-destruction-01.md`
+12. this document
+13. `docs/project-status.json`
+14. `docs/roadmap-pr-index.json`
+15. `docs/27-playable-game-roadmap-v5.md`
+16. latest merged pull requests and actual `main`
 
 ## Delivered product state
 
@@ -38,7 +39,8 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - #111–#115: technically coherent routed shell;
 - #116–#120: ordinary mission/intelligence/bot parity gate;
 - #121–#123: demolition, whole-planet destruction and recovery;
-- #124: canonical local-campaign world-speed/offline-progression product contract.
+- #124: canonical local-campaign world-speed/offline-progression product contract;
+- #125: accepted navigation/usability audit and four-PR implementation plan.
 
 ## Canonical campaign direction
 
@@ -52,11 +54,11 @@ Stellar Empires is primarily a local single-player PvE browser campaign:
 - another empire/alliance may win while the player is away;
 - progression will later be compressed toward a roughly one-day active campaign.
 
-This direction is authoritative in `docs/25a-local-campaign-world-speed-and-offline-progression.md`, but Audit #125 does not authorize its runtime implementation.
+This direction is authoritative in `docs/25a-local-campaign-world-speed-and-offline-progression.md`. Audit #125 intentionally keeps its runtime implementation blocked until navigation closure.
 
 ## Why navigation is first
 
-Current code has canonical routes and keyboard/history coverage, but the audit verified usability gaps:
+Audit #125 verified:
 
 - nine top-level technical domains have similar weight;
 - Operations is incorrectly rendered as utility;
@@ -81,7 +83,8 @@ Current code has canonical routes and keyboard/history coverage, but the audit v
 - promote Operations to core gameplay;
 - label Space for the complete Universe hierarchy;
 - reduce Ranking/System competition with core actions;
-- preserve current route-family IDs, keyboard behavior and checksum neutrality.
+- preserve current route-family IDs, keyboard behavior and checksum neutrality;
+- update the visible shell and focused navigation tests only.
 
 ### Preserved invariants
 
@@ -94,10 +97,11 @@ Current code has canonical routes and keyboard/history coverage, but the audit v
 
 ## Immediate route
 
-1. Merge Audit PR #125 after documentation diff, CI, Browser E2E, Graphify and review pass.
-2. Create #126 from fresh merged `main`.
-3. Implement only `NAV-IA-PRIMARY-SHELL`.
-4. Continue sequentially through #129, each from fresh merged `main`.
-5. After #129 closure, create Audit #130 `LOCAL-CAMPAIGN-TIME-PACING-01`.
+1. Create #126 from fresh merged `main`.
+2. Implement only `NAV-IA-PRIMARY-SHELL`.
+3. Run assets, lint, TypeScript, full tests, build, Browser E2E and Graphify.
+4. Merge only after review is clean.
+5. Continue sequentially through #129, each from fresh merged `main`.
+6. After #129 closure, create Audit #130 `LOCAL-CAMPAIGN-TIME-PACING-01`.
 
 Do not begin #127 before #126 merges and do not begin Audit #130 before #129 closes.
