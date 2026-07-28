@@ -2,6 +2,7 @@ import type {
   PlanetDemolitionReport,
   PlanetDestructionReport,
 } from '../simulation/combat/types';
+import type { SpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
 
 export interface PlanetSiegeEvidence {
@@ -25,23 +26,36 @@ export interface PlanetDemolitionViewModel {
   readonly cancelledQueues: string | null;
 }
 
+function findBattleReport(state: GameState, reportId: string) {
+  for (const entry of state.eventLog) {
+    const payload = entry.event.payload;
+    if (payload.type === 'BATTLE_REPORT' && payload.report.id === reportId) {
+      return payload.report;
+    }
+  }
+  return undefined;
+}
+
 export function findPlanetDemolitionReport(
   state: GameState,
   reportId: string,
 ): PlanetSiegeEvidence | undefined {
-  for (const entry of state.eventLog) {
-    const payload = entry.event.payload;
-    if (payload.type === 'BATTLE_REPORT' && payload.report.id === reportId) {
-      const demolition = payload.report.demolition;
-      const destruction = payload.report.destruction;
-      if (demolition === undefined && destruction === undefined) return undefined;
-      return {
-        ...(demolition === undefined ? {} : { demolition }),
-        ...(destruction === undefined ? {} : { destruction }),
-      };
-    }
-  }
-  return undefined;
+  const report = findBattleReport(state, reportId);
+  if (report === undefined) return undefined;
+  const demolition = report.demolition;
+  const destruction = report.destruction;
+  if (demolition === undefined && destruction === undefined) return undefined;
+  return {
+    ...(demolition === undefined ? {} : { demolition }),
+    ...(destruction === undefined ? {} : { destruction }),
+  };
+}
+
+export function findPlanetSiegeCoordinate(
+  state: GameState,
+  reportId: string,
+): SpaceCoordinate | undefined {
+  return findBattleReport(state, reportId)?.targetCoordinate;
 }
 
 function percent(basisPoints: number): string {
