@@ -31,7 +31,9 @@ export function findPlanetDemolitionReport(
 }
 
 function percent(basisPoints: number): string {
-  return `${(basisPoints / 100).toFixed(0)}%`;
+  const value = basisPoints / 100;
+  const precision = Number.isInteger(value) ? 0 : basisPoints % 10 === 0 ? 1 : 2;
+  return `${value.toFixed(precision)}%`;
 }
 
 export function createPlanetDemolitionViewModel(
