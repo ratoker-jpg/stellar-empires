@@ -1,24 +1,26 @@
 # Current execution state
 
 **Updated:** 2026-07-28  
-**Safe to continue:** audit finalization only
+**Safe to continue:** implementation #122 only
 
 | Field | Current value |
 |---|---|
-| Last completed batch | `ORDINARY-MISSIONS-INTELLIGENCE-01` |
-| Last merged runtime PR | #120 · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665` |
-| Active Audit PR | #121 · `PLANET-DEMOLITION-DESTRUCTION-01` |
-| Audit baseline | exact `main` · `818aba011199dd5a96518f859ed35de671be892f` |
+| Last merged PR | Audit #121 · `2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9` |
+| Runtime baseline | PR #120 · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665` |
+| Active batch | `PLANET-DEMOLITION-DESTRUCTION-01` |
+| Accepted audit baseline | `818aba011199dd5a96518f859ed35de671be892f` |
+| Accepted audit head | `5523fa0437b3e838b337a53f58fa5978733827cd` |
 | Complexity | heavy |
-| Authorized implementation sequence after audit merge | #122 `PLANET-DEMOLITION-CONTRACT` → #123 `PLANET-DESTRUCTION-RECOVERY-GATE` |
+| Authorized chain | #122 `PLANET-DEMOLITION-CONTRACT` → #123 `PLANET-DESTRUCTION-RECOVERY-GATE` |
+| Completed implementation PRs | none |
 | Active implementation PR | none |
-| Persistence decision | schema v14 retained; no migration/tombstone collection |
-| Last completed atomic action | inspected combat, planet, fleet, queue, logistics, intelligence, world-event, report, persistence, UI and bot reference surfaces; wrote audit/contracts/evidence |
-| Validation | pending final Audit #121 CI, Browser E2E and Graphify |
+| Persistence | schema v14; no migration or tombstone collection |
+| Validation | CI `30333447008`, Browser E2E `30333446989`, Graphify `30333446959` — passed |
+| Review | P1 special-mission return finding incorporated; all threads resolved |
 | Blockers | none |
 | Divergence | none |
-| Exact next action | finalize status documents, open Audit PR #121, pass all gates and squash merge it |
+| Exact next action | create PR #122 from fresh current `main` and implement only `PLANET-DEMOLITION-CONTRACT` |
 
 ## Recovery rule
 
-Do not create implementation PR #122 until Audit PR #121 is merged. After Audit #121 merges, create #122 from that exact fresh `main` and implement only `PLANET-DEMOLITION-CONTRACT`. Do not begin #123 in the same branch or PR.
+Do not implement whole-planet removal in #122. PR #123 starts only after #122 merges and owns destruction, live-reference reconciliation, special-mission return destinations, debris/recolonization and the combined closure gate.
