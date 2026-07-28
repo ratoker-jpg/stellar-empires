@@ -2,10 +2,10 @@
 
 **Status:** active canonical product roadmap  
 **Updated:** 2026-07-28  
-**Last merged PR:** #124 · `cdd112c544ce8d37af17e938867d4588bedcf152`  
+**Last merged PR:** Audit #125 · `a13f017d79d5dce5fde954e9f6e1419a2182d78e`  
 **Runtime baseline:** #123 · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
-**Active audit:** #125 `NAVIGATION-USABILITY-01`  
-**Next implementation after audit merge:** #126 `NAV-IA-PRIMARY-SHELL`  
+**Accepted batch:** `NAVIGATION-USABILITY-01`  
+**Next implementation:** #126 `NAV-IA-PRIMARY-SHELL`  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -57,7 +57,7 @@ docs/audits/current-batch-audit.md
 docs/audits/current-execution-state.md
 ```
 
-## 3. Delivered baseline through PR #124
+## 3. Delivered baseline through Audit #125
 
 ### Simulation and persistence
 
@@ -90,6 +90,10 @@ docs/audits/current-execution-state.md
 ### Canonical product contract
 
 PR #124 records the local browser campaign, immutable world speed, deterministic offline continuation, bot activity while closed and compressed one-day campaign direction. It changes no runtime or balance.
+
+### Accepted navigation audit
+
+Audit #125 accepted four sequential implementation PRs for player-centered information architecture, typed route/context memory, reversible cross-domain flows and a measured usability gate.
 
 ## 4. Verified navigation gap
 
@@ -149,7 +153,7 @@ Bots use the same commands, resources, timing and intelligence limits. At least 
 | M1 — Production assets | completed | Audit #101; #102–#105 |
 | M2 — Navigable Universe | completed | Audit #106; #107–#110 |
 | M3 — Coherent UI shell | technically completed | Audit #111; #112–#115 |
-| M3b — Navigation/usability repair | audit active | Audit #125; planned #126–#129 |
+| M3b — Navigation/usability repair | implementation pending | Audit #125 merged; #126–#129 accepted |
 | M4a — Ordinary missions/intelligence | completed | Audit #116; #117–#120 |
 | M4b — Planet demolition/destruction/recovery | completed | Audit #121; #122–#123 |
 | M4c — Local campaign time/pacing transition | blocked until #129 | Audit #130 next |
@@ -262,4 +266,4 @@ Onboarding, balance runs, campaign-duration targets, long-session/catch-up perfo
 
 ## 11. Immediate action
 
-Merge Audit PR #125 after validation. Then create PR #126 from fresh merged `main` and implement only `NAV-IA-PRIMARY-SHELL`.
+Create PR #126 from fresh merged `main` and implement only `NAV-IA-PRIMARY-SHELL`.
