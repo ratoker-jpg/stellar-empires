@@ -133,6 +133,11 @@ function installPreparedTargetBridge(): void {
 
   const reconcile = (): void => {
     const control = ensureClearControl();
+    if (document.documentElement.dataset.appReady !== 'true') {
+      if (control !== null) control.hidden = true;
+      return;
+    }
+
     const route = document.documentElement.dataset.shellRoute ?? '';
     const prepared = readPreparedFleetMissionTarget();
     if (!route.startsWith('#/fleets/compose') || prepared === null) {
@@ -200,7 +205,7 @@ function installPreparedTargetBridge(): void {
   const observer = new MutationObserver(reconcile);
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ['data-shell-route'],
+    attributeFilter: ['data-shell-route', 'data-app-ready'],
     childList: true,
     subtree: true,
   });
