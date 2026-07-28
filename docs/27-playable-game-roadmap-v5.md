@@ -1,11 +1,12 @@
 # Stellar Empires — canonical roadmap to a complete playable game v5
 
 **Status:** active canonical product roadmap  
-**Updated:** 2026-07-28  
+**Updated:** 2026-07-29  
 **Last merged PR:** #130 audit · `2379fa7a30974381349433e4f0e0ba43d15f1511`  
-**Runtime baseline:** PR #129 · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
+**Active implementation:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE`  
+**Active baseline:** `1503c7d37fafc623bee4654ed460c92aa55a7b2f`  
 **Accepted batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
-**Next implementation:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE`  
+**Next after merge:** #132 `CAMPAIGN-CLOCK-OFFLINE-GATE`  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -29,7 +30,8 @@ Canonical contracts:
 
 - endgame: `docs/25-solar-war-obelisks-gates-and-progression.md`;
 - local campaign/world speed/offline progression: `docs/25a-local-campaign-world-speed-and-offline-progression.md`;
-- accepted implementation contract: `docs/audits/current-batch-audit.md`.
+- accepted implementation contract: `docs/audits/current-batch-audit.md`;
+- active implementation record: `docs/changes/pr131-campaign-settings-persistence.md`.
 
 The local campaign requires:
 
@@ -44,18 +46,19 @@ The local campaign requires:
 
 1. current merged code/tests on `main`;
 2. accepted audit and contracts;
-3. `docs/audits/current-execution-state.md`;
-4. `docs/project-status.json` and `docs/roadmap-pr-index.json`;
-5. this roadmap;
-6. canonical product/endgame contracts;
-7. older audits and handoffs as history only.
+3. active PR code and change document while implementation is open;
+4. `docs/audits/current-execution-state.md`;
+5. `docs/project-status.json` and `docs/roadmap-pr-index.json`;
+6. this roadmap;
+7. canonical product/endgame contracts;
+8. older audits and handoffs as history only.
 
-## 3. Delivered baseline through PR #130
+## 3. Delivered merged baseline through PR #130
 
 ### Simulation and persistence
 
 - deterministic command/event/replay/checksum model;
-- schema v14 and migration chain;
+- schema v14 and migration chain on merged `main`;
 - IndexedDB autosave, manual slots, import/export, snapshots and recovery;
 - bounded command/event histories;
 - serialized deterministic bot decision cursors;
@@ -87,7 +90,7 @@ The local campaign requires:
 
 ### Accepted campaign-time architecture
 
-Audit #130 is merged. It authorizes:
+Audit #130 authorizes:
 
 - schema v15 immutable campaign settings;
 - save format v3 protected runtime metadata;
@@ -106,59 +109,40 @@ Audit validation:
 - Graphify `30389103322`;
 - merge `2379fa7a30974381349433e4f0e0ba43d15f1511`.
 
-## 4. Current runtime gap
+## 4. Active PR #131 delivery
 
-The accepted architecture is not implemented yet.
+The implementation branch now delivers the settings and persistence half of the accepted batch.
 
-Current runtime still has:
-
-- faction-only new-game setup;
-- schema v14;
-- save format v2;
-- no immutable world speed;
-- no protected processed real-time cursor or continuation;
-- no open-session real-time ticker;
-- no offline bootstrap catch-up;
-- overdue bots evaluated against the final post-jump state;
-- normal manual Planet fast-forward controls;
-- no catch-up progress surface or durable return summary.
-
-## 5. Active implementation sequence
-
-```text
-#131 CAMPAIGN-SETTINGS-PERSISTENCE — next and only authorized PR
-→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — blocked until #131 merges
-→ separate CAMPAIGN-PROGRESSION-BALANCE-01 audit
-```
-
-## 6. PR #131 — CAMPAIGN-SETTINGS-PERSISTENCE
-
-### Purpose
-
-Establish immutable campaign identity and a safe persistence contract before activating real/offline time.
-
-### Required deterministic state
+### Deterministic campaign identity
 
 ```text
 CampaignSettings
   scenarioPreset: test | campaign | fidelity
   worldSpeed: 1 | 2 | 5 | 10
   offlineProgression: true
-  createdAtReal: validated ISO timestamp
+  createdAtReal: canonical ISO timestamp
 ```
 
-Rules:
-
-- selected before initial state generation;
-- included in schema-v15 `GameState` and checksum;
-- immutable after creation;
+- schema v15 stores settings in `GameState` and checksum;
+- settings are immutable after creation;
 - scenario selects the existing topology preset;
-- speed maps real seconds to canonical game seconds only;
-- no economy, combat, reward or duration formula is divided by speed.
+- normal setup supplies a real creation timestamp;
+- legacy state/replay overloads stay deterministic x1;
+- no economy, combat, reward or duration formula is changed by world speed in #131.
 
-### Required persistence
+### Campaign creation
 
-Save format v3 must integrity-protect runtime metadata outside `GameState`:
+One accessible setup transaction selects:
+
+- faction: Aegis, Synod or Veyra;
+- scenario: compact, campaign or fidelity;
+- fixed speed: x1, x2, x5 or x10;
+- x2 is presented as the recommended preset;
+- offline progression is visibly fixed on.
+
+### Save format v3
+
+Runtime metadata remains outside deterministic `GameState` but is integrity-protected with the envelope:
 
 ```text
 lastActiveAtReal
@@ -174,29 +158,52 @@ pendingReturnSummary?
 
 #131 defines, validates, migrates and preserves these shapes but does not execute catch-up.
 
-Required migration rules:
+Persistence semantics:
 
-- old saves use world speed x1;
+- v3 checksum covers stable envelope fields, runtime metadata and state;
+- manual save, autosave, import/export, snapshot and recovery preserve cursor and continuation metadata;
+- pending catch-up prevents normal autosave from stamping unprocessed target time;
+- recovery may update display `savedAt` while preserving the accepted runtime cursor;
+- System / Saves displays immutable scenario, speed, creation time and last activity.
+
+### Migration and replay
+
+- state v1–v14 migrates to v15;
+- save format v1–v2 migrates to v3;
+- old saves receive world speed x1;
 - scenario derives from existing topology;
-- real creation/cursor time derives from validated envelope `savedAt`;
-- the fixed v14 simulation epoch is never treated as real creation time;
-- manual save, autosave, import/export, snapshot and recovery preserve processed cursor and pending metadata semantics.
-
-### #131 player-visible outcome
-
-- new campaign setup selects faction, scenario and fixed speed in one accessible transaction;
-- immutable campaign identity is visible in System/Save presentation;
-- migrated saves load safely at x1;
-- no active clock or offline catch-up starts yet.
+- creation/cursor time derives from validated envelope `savedAt`;
+- fixed v14 simulation epoch is never treated as real creation time;
+- v15 loads still execute alias, world-event schedule and bounded-history reconciliation;
+- replay accepts explicit seed, faction and campaign settings while retaining the legacy x1 overload.
 
 ### #131 exclusions
 
 - no active ticker;
-- no elapsed-time processing;
+- no elapsed-time catch-up;
 - no chronological bot refactor;
 - no removal of manual time controls yet;
 - no progression cost/duration/level rebalance;
 - no diplomacy/alliance/endgame runtime.
+
+## 5. Remaining campaign-time gap
+
+Until #132 merges:
+
+- world speed is persisted but does not drive real elapsed time;
+- open-session progression still depends on manual Planet time controls;
+- offline elapsed time is not processed;
+- overdue bots are still evaluated against the final post-jump state;
+- no catch-up progress surface is mounted;
+- pending summary types exist, but no return-summary presentation runs.
+
+## 6. Active implementation sequence
+
+```text
+#131 CAMPAIGN-SETTINGS-PERSISTENCE — active; final validation/review
+→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — blocked until #131 merges
+→ separate CAMPAIGN-PROGRESSION-BALANCE-01 audit
+```
 
 ## 7. PR #132 — CAMPAIGN-CLOCK-OFFLINE-GATE
 
@@ -265,7 +272,7 @@ Bots must use the same commands, resources, timing and intelligence limits. At l
 | M3b — Navigation/usability repair | completed | Audit #125; #126–#129 |
 | M4a — Ordinary missions/intelligence | completed | Audit #116; #117–#120 |
 | M4b — Planet demolition/destruction/recovery | completed | Audit #121; #122–#123 |
-| M4c — Local campaign time foundation | audit accepted | #130; #131 next; #132 blocked |
+| M4c — Local campaign time foundation | implementation active | #130 accepted; #131 active; #132 blocked |
 | M4d — Campaign progression balance | blocked until #132 | separate audit |
 | M5 — Multi-colony economy/logistics coherence | not audited | sustainability and bot planning |
 | M6 — Full PvE/meta systems | not audited | PvE depth, Arena, Admiral meta, services |
@@ -276,8 +283,7 @@ Bots must use the same commands, resources, timing and intelligence limits. At l
 ## 11. Key invariants
 
 - current `main` is the only valid baseline;
-- #131 only is authorized now;
-- #132 cannot start before #131 merges;
+- finish #131 before starting #132;
 - campaign settings are immutable deterministic state;
 - wall-clock cursor/continuation remain outside `GameState` but integrity protected;
 - old saves migrate to x1;
@@ -291,4 +297,4 @@ Bots must use the same commands, resources, timing and intelligence limits. At l
 
 ## 12. Immediate action
 
-Create implementation PR #131 `CAMPAIGN-SETTINGS-PERSISTENCE` from fresh current `main`. Implement only the accepted settings/schema/persistence scope and pass assets, lint, strict TypeScript, full tests, build, Browser E2E, Graphify and clean review before merge.
+Complete CI, Browser E2E, Graphify and automated review on the final PR #131 head. Merge only after all P0/P1 findings are resolved, synchronize the exact merge SHA on `main`, and only then create #132 from fresh `main`.
