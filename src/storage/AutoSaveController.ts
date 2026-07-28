@@ -98,7 +98,6 @@ export class AutoSaveController {
       createCampaignRuntimeMetadata(savedAt);
     const nextRuntimeMetadata = prepareActiveSaveRuntimeMetadata(
       currentRuntimeMetadata,
-      savedAt,
     );
     const envelope = createSaveEnvelope(
       this.#slotId,
