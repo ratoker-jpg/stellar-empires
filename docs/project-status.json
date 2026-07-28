@@ -1,18 +1,18 @@
 {
-  "statusVersion": 28,
+  "statusVersion": 29,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 121,
-  "lastMergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9",
-  "verifiedMainBaseline": "Audit #121 squash merge 2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9; accepted audit head 5523fa0437b3e838b337a53f58fa5978733827cd passed CI, Browser E2E and Graphify",
-  "activePr": 122,
+  "lastMergedPr": 122,
+  "lastMergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152",
+  "verifiedMainBaseline": "PR #122 squash merge be0caff4fbf06384cdf5d370dbc2da80d4081152; final PR head 61d7bd880317598613cf80c787d521c604adf1a7 passed asset audit, lint, TypeScript, full tests, production build, Browser E2E and Graphify",
+  "activePr": null,
   "nextPrAfterActive": 123,
   "nextPrKind": "implementation",
-  "currentMilestone": "M4 planet demolition implementation active; destruction and released-coordinate recovery remain blocked until PR #122 merges",
+  "currentMilestone": "M4 deterministic planet demolition delivered; planet destruction and released-coordinate recovery next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -53,7 +53,10 @@
     "baselineSha": "818aba011199dd5a96518f859ed35de671be892f",
     "implementationCount": 2,
     "plannedImplementationPrs": [122, 123],
-    "completedImplementationPrs": [],
+    "completedImplementationPrs": [122],
+    "implementationMergeShas": {
+      "122": "be0caff4fbf06384cdf5d370dbc2da80d4081152"
+    },
     "workItems": [
       "PLANET-DEMOLITION-CONTRACT",
       "PLANET-DESTRUCTION-RECOVERY-GATE"
@@ -117,15 +120,17 @@
     "sensor-tiered incoming-flight presentation with cargo excluded",
     "bot perception restricted to owned state, public redacted contacts and own intelligence memory",
     "stable bot mission blocker diagnostics for flight slots, scout cooldown, fuel and intelligence",
-    "deterministic scout to schema-v14 save/load to attack integration and Browser E2E gate"
+    "deterministic scout to schema-v14 save/load to attack integration and Browser E2E gate",
+    "faction and weapon-scaled deterministic building demolition with defence and Commander modifiers",
+    "no-refund demolished-building queue cleanup, zone/economy reconciliation and routed report evidence"
   ],
   "activeDelivery": [
     {"pr": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
-    {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "draft-active", "branch": "agent/planet-demolition-contract"},
-    {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "blocked-until-pr122-merge"}
+    {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "merged", "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152"},
+    {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "next"}
   ],
   "knownLimitations": [
-    "planet demolition is active in PR #122; whole-planet destruction/recovery remains unimplemented until PR #123",
+    "deterministic building demolition is delivered; whole-planet destruction and recovery remain unimplemented until PR #123",
     "multi-colony economy and logistics coherence remain a separate future audit",
     "deeper PvE/meta systems and complete bot parity remain incomplete",
     "alliances, solar war, Obelisks, Gates and final victory are not implemented",
@@ -139,10 +144,10 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "accepted Audit #121 head passed; PR #122 final-head validation pending",
+    "lastValidation": "passed on PR #122 final head 61d7bd880317598613cf80c787d521c604adf1a7",
     "lastAuditGraph": {
-      "workflowRun": 30333446959,
-      "headSha": "5523fa0437b3e838b337a53f58fa5978733827cd"
+      "workflowRun": 30344313098,
+      "headSha": "61d7bd880317598613cf80c787d521c604adf1a7"
     }
   },
   "sourceAssetIntake": {
@@ -170,5 +175,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Finish validation and automated review of PR #122; merge only PLANET-DEMOLITION-CONTRACT."
+  "nextAction": "Create PR #123 from fresh current main and implement only PLANET-DESTRUCTION-RECOVERY-GATE."
 }
