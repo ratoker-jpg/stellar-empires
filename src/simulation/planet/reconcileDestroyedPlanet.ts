@@ -154,7 +154,7 @@ export function reconcileDestroyedPlanet(
   );
 
   const removedFleetIds = new Set<string>();
-  const transformedFleetIds = new Set<string>();
+  const rebuiltFlightEventFleetIds = new Set<string>();
   const returnEvents: ScheduledGameEvent[] = [];
   let nextEventSequence = state.nextEventSequence;
   const fleets: FleetState[] = [];
@@ -191,9 +191,6 @@ export function reconcileDestroyedPlanet(
 
     if (isSpecialMission(baseFleet)) {
       fleets.push(baseFleet);
-      if (baseFleet.originPlanetId !== fleet.originPlanetId) {
-        transformedFleetIds.add(fleet.id);
-      }
       continue;
     }
 
@@ -240,14 +237,14 @@ export function reconcileDestroyedPlanet(
         ),
       );
       nextEventSequence += 1;
-      transformedFleetIds.add(fleet.id);
+      rebuiltFlightEventFleetIds.add(fleet.id);
       continue;
     }
 
+    // An origin-only rehome keeps the existing arrival event. The event remains
+    // valid because it targets another live planet, and the rehomed origin is
+    // used later when the mission schedules its return.
     fleets.push(baseFleet);
-    if (baseFleet.originPlanetId !== fleet.originPlanetId) {
-      transformedFleetIds.add(fleet.id);
-    }
   }
 
   let pendingEvents = state.pendingEvents.filter((event) => {
@@ -271,7 +268,7 @@ export function reconcileDestroyedPlanet(
     if (
       (payload.type === 'FLEET_ARRIVE' || payload.type === 'FLEET_RETURN') &&
       (removedFleetIds.has(payload.fleetId) ||
-        transformedFleetIds.has(payload.fleetId) ||
+        rebuiltFlightEventFleetIds.has(payload.fleetId) ||
         (payload.type === 'FLEET_ARRIVE' &&
           payload.targetPlanetId === destroyedPlanet.id) ||
         (payload.type === 'FLEET_RETURN' &&
