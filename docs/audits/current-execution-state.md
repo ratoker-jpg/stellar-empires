@@ -1,56 +1,63 @@
 # Current execution state
 
 **Updated:** 2026-07-29  
-**Safe to continue:** finish and merge implementation PR #131 only
+**Safe to continue:** create and execute implementation PR #132 only from fresh current `main`
 
 | Field | Current value |
 |---|---|
-| Last merged PR | #130 `LOCAL-CAMPAIGN-TIME-PACING-01` audit · `2379fa7a30974381349433e4f0e0ba43d15f1511` |
-| Runtime baseline before active PR | PR #129 `NAV-USABILITY-GATE` · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa` |
+| Last merged PR | #131 `CAMPAIGN-SETTINGS-PERSISTENCE` · `257e3effaab4e34285d00db64b6676fda364fcfd` |
+| Runtime baseline | schema v15 / save format v3 · PR #131 |
 | Accepted audit | #130 `LOCAL-CAMPAIGN-TIME-PACING-01` |
-| Active implementation | #131 `CAMPAIGN-SETTINGS-PERSISTENCE` |
-| Implementation baseline | clean current `main` · `1503c7d37fafc623bee4654ed460c92aa55a7b2f` |
+| Completed implementation | #131 `CAMPAIGN-SETTINGS-PERSISTENCE` |
+| Next implementation | #132 `CAMPAIGN-CLOCK-OFFLINE-GATE` |
 | Complexity | heavy |
-| Authorized sequence | #131 → #132 |
-| Active-branch runtime schema | v15 |
-| Active-branch save format | v3 |
-| Exact next action | complete #131 validation/review and merge; do not start #132 before merge |
+| Batch progress | 1 / 2 implementation PRs merged |
+| Exact next action | create #132 from fresh current `main`; do not start balance or later work |
 
-## Accepted contract
+## Accepted sequence
 
 ```text
 #130 LOCAL-CAMPAIGN-TIME-PACING-01 — merged audit
-→ #131 CAMPAIGN-SETTINGS-PERSISTENCE — active
-→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — blocked until #131 merges
+→ #131 CAMPAIGN-SETTINGS-PERSISTENCE — merged
+→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — next
 → later CAMPAIGN-PROGRESSION-BALANCE-01 audit
 ```
 
-## #131 delivered on the active branch
+## Delivered by #131
 
 - immutable checksummed schema-v15 `CampaignSettings`;
 - faction, scenario and x1/x2/x5/x10 speed selection before state creation;
-- one accessible campaign setup transaction;
+- accessible one-transaction campaign setup;
 - save format v3 runtime metadata and full envelope integrity;
 - protected pending catch-up and pending return-summary persistence shapes;
 - schema v1–v14 and save format v1–v2 migration to x1;
-- migrated real creation/cursor time from validated envelope `savedAt`;
+- real creation/cursor time from validated envelope `savedAt`;
 - explicit replay initial configuration with legacy x1 overload;
 - autosave/manual/import/export/snapshot/recovery cursor preservation;
-- immutable campaign details in System / Saves;
-- no live ticker, offline processing or manual-control removal.
+- ordinary saves preserve the processed cursor until time is actually processed;
+- pending target/remainder pairs require exact cursor consistency;
+- immutable campaign details in System / Saves.
 
-## Current validation
+## Final #131 validation
 
-Code head before final documentation passed:
+- CI `30405640769` — passed;
+- Browser E2E `30405640704` — passed;
+- Graphify `30405640711` — passed;
+- Codex P1/P2 findings fixed, threads resolved and re-review returned 👍;
+- merge `257e3effaab4e34285d00db64b6676fda364fcfd`.
 
-- assets, lint, strict TypeScript, complete Vitest suite and production build;
-- Graphify;
-- existing Browser E2E in progress/pending final documentation head.
+## Remaining #132 scope
 
-Final merge still requires all checks on the final head and no unresolved P0/P1 review findings.
+- one chronological active/offline campaign-time orchestrator;
+- fixed-point speed mapping and fractional carry;
+- event/logistics/world-event/bot boundary integration;
+- active open-session clock;
+- bounded resumable offline catch-up;
+- processed-cursor checkpoints and durable pending summary;
+- removal of normal player fast-forward controls;
+- one-day/seven-day, Browser E2E and performance closure gates;
+- batch archive and status closure.
 
 ## Recovery rule
 
-Preserve deterministic shared commands, event ordering, migration reconciliation, IndexedDB autosave/snapshots/recovery, intelligence redaction, explicit fleet-send confirmation and the completed navigation model.
-
-PR #131 must not start the active clock, process offline elapsed time, refactor chronological bot execution, remove normal fast-forward controls, change progression numbers or implement diplomacy/endgame.
+Preserve deterministic shared commands, migration reconciliation, IndexedDB autosave/snapshots/recovery, intelligence redaction, explicit fleet-send confirmation and the completed navigation model. PR #132 may not rebalance progression or implement diplomacy/endgame/server authority.
