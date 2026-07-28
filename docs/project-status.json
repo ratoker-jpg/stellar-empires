@@ -1,5 +1,5 @@
 {
-  "statusVersion": 39,
+  "statusVersion": 40,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -28,6 +28,8 @@
   ],
   "currentAuditEvidence": [
     "docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md",
+    "docs/audits/evidence/local-campaign-time-pacing-01-source-map.md",
+    "docs/audits/evidence/local-campaign-time-pacing-01-graphify.md",
     "docs/23-bot-simulation-time-contract.md",
     "docs/25a-local-campaign-world-speed-and-offline-progression.md"
   ],
@@ -104,8 +106,12 @@
     "campaignSettingsInGameState": true,
     "runtimeMetadataOutsideGameState": true,
     "legacyWorldSpeed": 1,
+    "legacyCreatedAtSource": "validated-envelope-savedAt",
     "sharedActiveOfflineOrchestrator": true,
     "botDecisionBoundaryRequired": true,
+    "processedCursorCheckpointRequired": true,
+    "protectedPendingCatchUpRequired": true,
+    "pendingReturnSummaryUntilAcknowledged": true,
     "silentElapsedTimeTruncationAllowed": false,
     "normalFastForwardControlsAllowed": false,
     "summaryAccumulatedDuringCatchUp": true,
@@ -170,8 +176,16 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #129 final head fe35972451fc94eecb6fd80f4aace98171d005df passed Graphify run 30384172385",
-    "currentAuditGraph": "pending PR #130 workflow"
+    "lastValidation": "Audit #130 head 0ccefbd3d9b852111bf67a8c4ad9e5daafbd49df passed Graphify run 30388085969",
+    "currentAuditGraph": {
+      "workflowRun": "30388085969",
+      "headSha": "0ccefbd3d9b852111bf67a8c4ad9e5daafbd49df",
+      "codeFiles": 334,
+      "nodes": 2372,
+      "edges": 7703,
+      "communities": 109,
+      "evidence": "docs/audits/evidence/local-campaign-time-pacing-01-graphify.md"
+    }
   },
   "sourceAssetIntake": {
     "universePack": {
@@ -189,6 +203,8 @@
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
     "docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md",
+    "docs/audits/evidence/local-campaign-time-pacing-01-source-map.md",
+    "docs/audits/evidence/local-campaign-time-pacing-01-graphify.md",
     "docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md",
     "docs/audits/contracts/local-campaign-time-pacing-01-prs.md",
     "docs/25a-local-campaign-world-speed-and-offline-progression.md",
