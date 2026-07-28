@@ -64,9 +64,8 @@ function createSecondaryPlayerPlanet(state: GameState, origin: GameState['planet
     name: 'Вторая колония E2E',
     buildQueue: [],
     productionQueues: {
-      ship: [],
+      shipyard: [],
       defense: [],
-      defenseRepair: [],
     },
   };
 }
