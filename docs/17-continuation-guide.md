@@ -1,10 +1,11 @@
 # AI Continuation Guide
 
-**Status:** PR #123 merged · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
+**Status:** documentation PR #124 active after runtime PR #123  
 **Updated:** 2026-07-28  
 **Runtime baseline:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
 **Last completed batch:** `PLANET-DEMOLITION-DESTRUCTION-01`  
-**Next authorized work:** Audit PR #124 only
+**Active work:** #124 `LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT`  
+**Next authorized work after merge:** Audit PR #125 only
 
 ## Repository
 
@@ -17,13 +18,14 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 1. `AGENTS.md`
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
-4. `docs/audits/completed/planet-demolition-destruction-01.md`
-5. `docs/changes/pr123-planet-destruction-recovery-gate.md`
-6. this document
-7. `docs/project-status.json`
-8. `docs/roadmap-pr-index.json`
-9. `docs/27-playable-game-roadmap-v5.md`
-10. latest merged pull requests and actual `main`
+4. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
+5. `docs/audits/completed/planet-demolition-destruction-01.md`
+6. `docs/changes/pr124-local-campaign-world-speed-contract.md`
+7. this document
+8. `docs/project-status.json`
+9. `docs/roadmap-pr-index.json`
+10. `docs/27-playable-game-roadmap-v5.md`
+11. latest merged pull requests and actual `main`
 
 ## Completed product state
 
@@ -35,37 +37,39 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - #122: deterministic building demolition contract;
 - #123: whole-planet destruction and recovery closure gate.
 
-## Delivered destructive attack branch
+The destructive attack branch is archived at `docs/audits/completed/planet-demolition-destruction-01.md`.
 
-The existing ordinary `attack` mission now supports:
+## Canonical campaign direction
 
-- faction-specific siege profiles and weapon-level scaling;
-- deterministic building demolition with Annihilator roll bonus;
-- deterministic whole-planet chance with defence, defender destroyer and assigned-flagship Polias reductions;
-- 30% cap and final-colony protection;
-- atomic colony removal and active-reference cleanup;
-- deterministic nearest-colony fleet rehome;
-- ordinary return rebuilding without duplicate events and with preserved travel time;
-- immutable special-mission historical origin plus repeatable live `returnPlanetId` rehome;
-- reward-safe expedition and space-object resolution;
-- debris recycling at released coordinates and after fresh recolonization;
-- outbound recycler retargeting when recolonization changes the live colony ID;
-- exact report evidence and map backlinks after active-colony deletion;
-- schema-v14 save/load, integration and Browser E2E closure.
+PR #124 records, without runtime implementation, that Stellar Empires is primarily a local single-player PvE browser campaign:
 
-The completed audit is archived at `docs/audits/completed/planet-demolition-destruction-01.md`.
+- no continuously running server is required for Release 1.0;
+- new-game setup will eventually include an immutable world-speed preset;
+- world speed accelerates canonical simulation time uniformly rather than acting as an in-session fast-forward control;
+- the same selected speed applies during deterministic offline catch-up;
+- bots may build, scout, attack, form alliances and advance the endgame while the browser is closed, using ordinary commands and validators;
+- another empire or alliance may reach the canonical victory condition while the player is away;
+- the complete strategic cycle should be compressible into roughly one active day, with exact caps/timing requiring a later balance audit.
 
-## Invariants
+The authoritative addendum is `docs/25a-local-campaign-world-speed-and-offline-progression.md`. Existing solar war, crystals, Obelisks, Gates, victory, demolition and destruction rules remain unchanged.
 
+## Preserved invariants
+
+- schema v14 remains the runtime baseline until an accepted audit authorizes change;
 - ordinary `attack` remains the only destructive mission;
-- schema v14 remains authoritative;
 - reducer/combat and deterministic hashes remain authoritative;
+- player and bots use the same command/validation paths;
 - no hidden target state for UI or bots;
-- no refunds or extra destruction loot;
-- an empire's final active colony is protected;
+- an empire's final active colony is protected under the ordinary destruction contract;
 - historical reports and coordinates remain immutable evidence;
-- solar/endgame and economy/logistics redesign remain excluded.
+- PR #124 authorizes no runtime or balance implementation.
 
 ## Immediate route
 
-Create a fresh Audit PR #124 from current `main`. Do not open or implement another gameplay PR until that audit establishes the next bounded batch, exact baseline, contracts and validation gates.
+1. Merge documentation PR #124 after documentation diff and checks are clean.
+2. Create Audit PR #125 from fresh merged `main`.
+3. Audit #125 must rebaseline the roadmap against the local-campaign contract and inspect actual player task flows.
+4. The first authorized implementation batch must repair navigation/usability.
+5. After that batch closes, create a separate audit for campaign settings, world speed, offline catch-up and progression compression.
+
+Do not combine navigation implementation with save-schema/time-model/balance changes in one batch.
