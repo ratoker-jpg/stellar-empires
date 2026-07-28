@@ -51,13 +51,15 @@ The v3 checksum covers stable envelope fields, runtime metadata and state. Tampe
 
 ### Persistence semantics
 
-- autosave tracks and exposes the accepted runtime cursor;
-- pending catch-up metadata prevents a normal save from stamping an unprocessed target time;
+- ordinary #131 autosaves preserve the last processed real-time cursor unchanged, because no wall-clock interval is processed before #132;
+- display/audit `savedAt` may move forward independently from the processed cursor;
+- pending catch-up target and remainder are accepted only when `remainingRealDurationMilliseconds` exactly equals `targetAtReal - lastActiveAtReal`;
+- a target before the processed cursor is rejected as invalid metadata;
 - manual slots clone the current campaign cursor;
 - import/export preserves runtime metadata;
 - snapshots preserve the source cursor and timestamp semantics;
 - recovery may update display `savedAt`, but preserves the snapshot runtime cursor;
-- Save Manager displays scenario, speed, campaign creation and last accepted activity.
+- Save Manager displays scenario, speed, campaign creation and last processed activity.
 
 ### Migration
 
@@ -94,7 +96,8 @@ Focused coverage includes:
 - schema v1–v14 and format v1–v2 migration;
 - envelope-time x1 migration;
 - state and runtime-metadata tamper rejection;
-- autosave cursor and pending-catch-up preservation;
+- ordinary autosave processed-cursor preservation;
+- exact pending target/cursor/remainder consistency;
 - manual save/import/export/snapshot/recovery metadata semantics;
 - existing faction alias, world-event, intelligence and history reconciliation;
 - campaign setup option registry.
