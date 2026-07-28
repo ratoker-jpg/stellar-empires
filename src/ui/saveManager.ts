@@ -1,3 +1,4 @@
+import { formatWorldSpeed } from '../simulation/campaign/settings';
 import type { GameState } from '../simulation/types';
 import { AUTOSAVE_SLOT_ID } from '../storage/AutoSaveController';
 import {
@@ -5,10 +6,12 @@ import {
   type SaveManager,
   type SaveSlotSummary,
 } from '../storage/SaveManager';
+import type { CampaignRuntimeMetadata } from '../storage/types';
 
 export interface SaveManagerUiOptions {
   readonly manager?: SaveManager | undefined;
   readonly getState: () => GameState;
+  readonly getRuntimeMetadata?: () => CampaignRuntimeMetadata | undefined;
   readonly writeStatus: (message: string) => void;
 }
 
@@ -58,6 +61,7 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
   if (host === null) throw new Error('System saves workspace is missing.');
   let active = false;
   host.innerHTML = `
+    <section class="save-manager-campaign" aria-label="Настройки текущей кампании"></section>
     <section class="save-manager-controls">
       <label><span>Имя ручного слота</span><input type="text" value="manual-1" maxlength="48" aria-label="Название слота сохранения" /></label>
       <button type="button" data-save-action="create">Сохранить текущую партию</button>
@@ -66,6 +70,7 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
     <p class="save-manager-message" role="status"></p>
     <div class="save-manager-list"></div>
   `;
+  const campaign = host.querySelector<HTMLElement>('.save-manager-campaign')!;
   const slotInput = host.querySelector<HTMLInputElement>('input[type="text"]')!;
   const saveButton = host.querySelector<HTMLButtonElement>('[data-save-action="create"]')!;
   const importInput = host.querySelector<HTMLInputElement>('input[type="file"]')!;
@@ -78,6 +83,17 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
     options.writeStatus(text);
   };
 
+  const renderCampaign = (): void => {
+    const settings = options.getState().campaignSettings;
+    campaign.innerHTML = `
+      <div><span>Сценарий</span><strong>${settings.scenarioPreset}</strong></div>
+      <div><span>Скорость мира</span><strong>${formatWorldSpeed(settings.worldSpeed)}</strong></div>
+      <div><span>Офлайн-прогрессия</span><strong>Включена</strong></div>
+      <div><span>Создана</span><strong>${settings.createdAtReal}</strong></div>
+      <p>Настройки входят в checksum партии и не изменяются после создания.</p>
+    `;
+  };
+
   const activateSlot = async (summary: SaveSlotSummary): Promise<void> => {
     if (options.manager === undefined) return;
     const loaded = await options.manager.load(summary.slotId);
@@ -85,13 +101,18 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
       showMessage(`Слот ${summary.slotId} не прошёл проверку`, true);
       return;
     }
-    await options.manager.save(AUTOSAVE_SLOT_ID, loaded.save.state);
+    await options.manager.save(
+      AUTOSAVE_SLOT_ID,
+      loaded.save.state,
+      loaded.save.runtimeMetadata,
+    );
     showMessage(`Слот ${summary.slotId} активирован · перезапуск`);
     window.location.reload();
   };
 
   const render = async (): Promise<void> => {
     if (!active) return;
+    renderCampaign();
     list.replaceChildren();
     if (options.manager === undefined) {
       saveButton.disabled = true;
@@ -114,9 +135,13 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
       name.textContent = summary.slotId;
       const meta = document.createElement('span');
       meta.textContent = summary.valid
-        ? `${summary.savedAt} · ${formatWorldTime(summary.elapsedSeconds)}`
+        ? `${summary.savedAt} · ${summary.scenarioPreset ?? 'campaign'} · x${summary.worldSpeed ?? 1} · ${formatWorldTime(summary.elapsedSeconds)}`
         : `${summary.savedAt} · ${summary.errorCode ?? 'INVALID'}`;
-      details.append(name, meta);
+      const cursor = document.createElement('small');
+      cursor.textContent = summary.valid && summary.lastActiveAtReal !== undefined
+        ? `Последняя активность: ${summary.lastActiveAtReal}`
+        : '';
+      details.append(name, meta, cursor);
       const actions = document.createElement('div');
       actions.className = 'save-slot-actions';
       if (summary.valid) {
@@ -148,7 +173,11 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
       return;
     }
     saveButton.disabled = true;
-    void options.manager.save(slotId, options.getState())
+    void options.manager.save(
+      slotId,
+      options.getState(),
+      options.getRuntimeMetadata?.(),
+    )
       .then(async () => {
         showMessage(`Слот ${slotId} сохранён`);
         await render();

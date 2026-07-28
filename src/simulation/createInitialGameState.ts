@@ -1,4 +1,8 @@
 import { createInitialBotAutomationState } from './bots/state';
+import {
+  createCampaignSettings,
+  type CampaignSettings,
+} from './campaign/settings';
 import { createInitialCommandStates } from './command/commandDoctrine';
 import { createInitialIntelligenceStates } from './intelligence/intelligenceState';
 import { createInitialMarketState } from './market/market';
@@ -20,22 +24,44 @@ import {
 } from './universe/model';
 import { createInitialShipUpgradeStates } from './upgrades/shipUpgrades';
 
+export interface InitialGameConfiguration {
+  readonly playerFaction?: FactionId;
+  readonly campaignSettings?: CampaignSettings;
+}
+
 export function createInitialGameState(
   seedSource: string,
-  playerFaction: FactionId = 'aegis',
-  topologyPreset: UniverseTopologyPresetId = 'campaign',
+  playerFaction?: FactionId,
+  topologyPreset?: UniverseTopologyPresetId,
+): GameState;
+export function createInitialGameState(
+  seedSource: string,
+  configuration?: InitialGameConfiguration,
+): GameState;
+export function createInitialGameState(
+  seedSource: string,
+  factionOrConfiguration: FactionId | InitialGameConfiguration = 'aegis',
+  legacyTopologyPreset: UniverseTopologyPresetId = 'campaign',
 ): GameState {
+  const legacySignature = typeof factionOrConfiguration === 'string';
+  const playerFaction = legacySignature
+    ? factionOrConfiguration
+    : (factionOrConfiguration.playerFaction ?? 'aegis');
+  const campaignSettings = legacySignature
+    ? createCampaignSettings({ scenarioPreset: legacyTopologyPreset })
+    : createCampaignSettings(factionOrConfiguration.campaignSettings);
   const seed = normalizeSeed(seedSource);
-  const universe = createUniverseModel(seed, topologyPreset);
+  const universe = createUniverseModel(seed, campaignSettings.scenarioPreset);
   const galaxy = materializeGalaxy(universe, 1);
   const empires = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'] as const;
   const colonies = createInitialPlanetStates(galaxy, playerFaction);
   const neutralForces = createInitialNeutralForces(galaxy, seed);
   return {
-    schemaVersion: 14,
+    schemaVersion: 15,
     seed,
+    campaignSettings,
     clock: {
-      startedAt: '2026-07-18T00:00:00.000Z',
+      startedAt: campaignSettings.createdAtReal,
       elapsedSeconds: 0,
     },
     empires,

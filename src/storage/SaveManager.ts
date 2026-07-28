@@ -1,6 +1,12 @@
+import type { WorldSpeed } from '../simulation/campaign/settings';
 import type { GameState } from '../simulation/types';
 import { createSaveEnvelope, parseSaveJson, serializeSave } from './saveFormat';
-import type { SaveEnvelope, SaveRepository } from './types';
+import { createCampaignRuntimeMetadata } from './runtimeMetadata';
+import type {
+  CampaignRuntimeMetadata,
+  SaveEnvelope,
+  SaveRepository,
+} from './types';
 
 export const AUTOSAVE_SNAPSHOT_SLOT_ID = 'autosave.snapshot' as const;
 
@@ -9,6 +15,9 @@ export interface SaveSlotSummary {
   readonly savedAt: string;
   readonly checksum: string;
   readonly elapsedSeconds: number;
+  readonly scenarioPreset?: GameState['campaignSettings']['scenarioPreset'];
+  readonly worldSpeed?: WorldSpeed;
+  readonly lastActiveAtReal?: string;
   readonly valid: boolean;
   readonly errorCode?: string;
 }
@@ -38,7 +47,6 @@ export interface SaveManagerOptions {
 
 function validateStoredSave(stored: SaveEnvelope): LoadManagedSaveResult {
   const parsed = parseSaveJson(JSON.stringify(stored));
-
   if (!parsed.ok) {
     return {
       status: 'invalid',
@@ -47,7 +55,6 @@ function validateStoredSave(stored: SaveEnvelope): LoadManagedSaveResult {
       message: parsed.message,
     };
   }
-
   return { status: 'loaded', save: parsed.value };
 }
 
@@ -60,25 +67,29 @@ export class SaveManager {
     this.#now = options.now ?? (() => new Date().toISOString());
   }
 
-  async save(slotId: string, state: GameState): Promise<SaveEnvelope> {
-    const save = createSaveEnvelope(slotId, state, this.#now());
+  async save(
+    slotId: string,
+    state: GameState,
+    runtimeMetadata?: CampaignRuntimeMetadata,
+  ): Promise<SaveEnvelope> {
+    const savedAt = this.#now();
+    const save = createSaveEnvelope(
+      slotId,
+      state,
+      savedAt,
+      runtimeMetadata ?? createCampaignRuntimeMetadata(savedAt),
+    );
     await this.#repository.put(save);
     return save;
   }
 
   async load(slotId: string): Promise<LoadManagedSaveResult> {
     const stored = await this.#repository.get(slotId);
-
-    if (stored === undefined) {
-      return { status: 'missing', slotId };
-    }
-
+    if (stored === undefined) return { status: 'missing', slotId };
     const result = validateStoredSave(stored);
-
     if (result.status === 'loaded' && result.save !== stored) {
       await this.#repository.put(result.save);
     }
-
     return result;
   }
 
@@ -86,7 +97,6 @@ export class SaveManager {
     const stored = await this.#repository.list();
     const summaries = stored.map((save): SaveSlotSummary => {
       const result = validateStoredSave(save);
-
       if (result.status !== 'loaded') {
         return {
           slotId: save.slotId,
@@ -97,16 +107,17 @@ export class SaveManager {
           errorCode: result.status === 'invalid' ? result.code : 'MISSING_SAVE',
         };
       }
-
       return {
         slotId: result.save.slotId,
         savedAt: result.save.savedAt,
         checksum: result.save.checksum,
         elapsedSeconds: result.save.state.clock.elapsedSeconds,
+        scenarioPreset: result.save.state.campaignSettings.scenarioPreset,
+        worldSpeed: result.save.state.campaignSettings.worldSpeed,
+        lastActiveAtReal: result.save.runtimeMetadata.lastActiveAtReal,
         valid: true,
       };
     });
-
     return summaries.sort((left, right) => {
       const byTime = right.savedAt.localeCompare(left.savedAt);
       return byTime === 0 ? left.slotId.localeCompare(right.slotId) : byTime;
@@ -119,23 +130,22 @@ export class SaveManager {
 
   async export(slotId: string): Promise<string> {
     const result = await this.load(slotId);
-
     if (result.status !== 'loaded') {
       throw new Error(`Cannot export save slot ${slotId}: ${result.status}.`);
     }
-
     return serializeSave(result.save);
   }
 
   async import(json: string, targetSlotId?: string): Promise<SaveEnvelope> {
     const parsed = parseSaveJson(json);
-
-    if (!parsed.ok) {
-      throw new Error(`${parsed.code}: ${parsed.message}`);
-    }
-
+    if (!parsed.ok) throw new Error(`${parsed.code}: ${parsed.message}`);
     const slotId = targetSlotId?.trim() || parsed.value.slotId;
-    const imported = createSaveEnvelope(slotId, parsed.value.state, this.#now());
+    const imported = createSaveEnvelope(
+      slotId,
+      parsed.value.state,
+      this.#now(),
+      parsed.value.runtimeMetadata,
+    );
     await this.#repository.put(imported);
     return imported;
   }
@@ -145,15 +155,12 @@ export class SaveManager {
     snapshotSlotId: string = AUTOSAVE_SNAPSHOT_SLOT_ID,
   ): Promise<SaveEnvelope | undefined> {
     const source = await this.load(sourceSlotId);
-
-    if (source.status !== 'loaded') {
-      return undefined;
-    }
-
+    if (source.status !== 'loaded') return undefined;
     const snapshot = createSaveEnvelope(
       snapshotSlotId,
       source.save.state,
       source.save.savedAt,
+      source.save.runtimeMetadata,
     );
     await this.#repository.put(snapshot);
     return snapshot;
@@ -164,24 +171,16 @@ export class SaveManager {
     snapshotSlotId: string = AUTOSAVE_SNAPSHOT_SLOT_ID,
   ): Promise<RecoveryResult> {
     const primary = await this.load(primarySlotId);
-
-    if (primary.status === 'loaded') {
-      return { status: 'primary', save: primary.save };
-    }
-
+    if (primary.status === 'loaded') return { status: 'primary', save: primary.save };
     const snapshot = await this.load(snapshotSlotId);
-
-    if (snapshot.status !== 'loaded') {
-      return { status: 'failed', primary, snapshot };
-    }
-
+    if (snapshot.status !== 'loaded') return { status: 'failed', primary, snapshot };
     const recovered = createSaveEnvelope(
       primarySlotId,
       snapshot.save.state,
       this.#now(),
+      snapshot.save.runtimeMetadata,
     );
     await this.#repository.put(recovered);
-
     return { status: 'recovered', save: recovered, snapshot: snapshot.save };
   }
 }

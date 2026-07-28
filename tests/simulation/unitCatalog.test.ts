@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { getFactionMechanicalCatalog } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import { getFactionMechanicalCatalog } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 import { AEGIS_RESEARCH_CATALOG } from '../../src/simulation/research/catalog';
 import { AEGIS_UNIT_CATALOG } from '../../src/simulation/units/catalog';
 import { getHangarCapacity, getHangarUsed } from '../../src/simulation/units/inventory';
@@ -26,7 +26,8 @@ describe('unit catalog and inventory', () => {
     const managedPlanets = state.planets.filter((planet) =>
       state.empires.includes(planet.ownerEmpireId),
     );
-    expect(state.schemaVersion).toBe(14);
+    expect(state.schemaVersion).toBe(15);
+    expect(state.campaignSettings.worldSpeed).toBe(1);
     expect(state.fleets).toEqual([]);
     expect(state.debrisFields).toEqual([]);
     expect(state.logisticsRoutes).toEqual([]);

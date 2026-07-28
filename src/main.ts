@@ -41,6 +41,11 @@ import {
   prepareE2eState,
   updateE2eRuntimeDiagnostics,
 } from './runtime/e2eScenario';
+import {
+  createCampaignSettings,
+  DEFAULT_CAMPAIGN_CREATED_AT_REAL,
+  formatWorldSpeed,
+} from './simulation/campaign/settings';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
 import {
@@ -49,7 +54,9 @@ import {
 } from './storage/AutoSaveController';
 import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
+import { createCampaignRuntimeMetadata } from './storage/runtimeMetadata';
 import { SaveManager } from './storage/SaveManager';
+import type { CampaignRuntimeMetadata } from './storage/types';
 import { mountAccessibilityRuntime } from './ui/accessibilityRuntime';
 import {
   AppShellController,
@@ -72,7 +79,7 @@ import { mountEmpireOverview } from './ui/empireOverview';
 import { applyFactionShellIdentity } from './ui/factionShellIdentity';
 import { mountFleetOperationsWorkspace } from './ui/fleetOperationsWorkspace';
 import { mountGlobalHud, type GlobalHudMount } from './ui/globalHud';
-import { selectNewGameFaction } from './ui/newGameFactionPicker';
+import { selectNewGameCampaign } from './ui/newGameFactionPicker';
 import { mountOperationsWorkspace } from './ui/operationsWorkspace';
 import { mountPlanetDevelopmentControls } from './ui/planetDevelopmentControls';
 import {
@@ -124,11 +131,30 @@ function writeAutoSaveStatus(status: AutoSaveStatus): void {
 
 async function createFreshGame(statusPrefix = 'Новая партия'): Promise<{
   readonly state: GameState;
+  readonly runtimeMetadata: CampaignRuntimeMetadata;
   readonly status: string;
 }> {
-  const faction = E2E_RUNTIME_ENABLED ? 'aegis' : await selectNewGameFaction();
-  const state = prepareE2eState(createInitialGameState('stellar-empires-m1', faction));
-  return { state, status: `${statusPrefix} · ${faction.toUpperCase()} · seed ${state.seed}` };
+  const selection = E2E_RUNTIME_ENABLED
+    ? {
+        faction: 'aegis' as const,
+        campaignSettings: createCampaignSettings({
+          scenarioPreset: 'campaign',
+          worldSpeed: 1,
+          createdAtReal: DEFAULT_CAMPAIGN_CREATED_AT_REAL,
+        }),
+      }
+    : await selectNewGameCampaign();
+  const state = prepareE2eState(createInitialGameState('stellar-empires-m1', {
+    playerFaction: selection.faction,
+    campaignSettings: selection.campaignSettings,
+  }));
+  return {
+    state,
+    runtimeMetadata: createCampaignRuntimeMetadata(
+      selection.campaignSettings.createdAtReal,
+    ),
+    status: `${statusPrefix} · ${selection.faction.toUpperCase()} · ${formatWorldSpeed(selection.campaignSettings.worldSpeed)} · seed ${state.seed}`,
+  };
 }
 
 async function bootstrap(): Promise<void> {
@@ -136,6 +162,7 @@ async function bootstrap(): Promise<void> {
   const systemCount = requireElement<HTMLElement>('#system-count');
   const repository = new IndexedDbSaveRepository();
   let initialState: GameState;
+  let initialRuntimeMetadata: CampaignRuntimeMetadata;
   let startupStatus: string;
   let autosave: AutoSaveController | undefined;
   let saveManager: SaveManager | undefined;
@@ -144,9 +171,11 @@ async function bootstrap(): Promise<void> {
     const restored = await loadAutosave(repository);
     if (restored.status === 'loaded') {
       initialState = prepareE2eState(restored.state);
+      initialRuntimeMetadata = restored.runtimeMetadata;
+      const speed = formatWorldSpeed(initialState.campaignSettings.worldSpeed);
       startupStatus = restored.source === 'snapshot'
-        ? `Партия восстановлена из резерва · seed ${initialState.seed}`
-        : `Партия восстановлена · seed ${initialState.seed}`;
+        ? `Партия восстановлена из резерва · ${speed} · seed ${initialState.seed}`
+        : `Партия восстановлена · ${speed} · seed ${initialState.seed}`;
     } else {
       if (restored.status === 'invalid') {
         console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
@@ -155,14 +184,19 @@ async function bootstrap(): Promise<void> {
         restored.status === 'invalid' ? 'Сохранения повреждены · новая партия' : 'Новая партия',
       );
       initialState = fresh.state;
+      initialRuntimeMetadata = fresh.runtimeMetadata;
       startupStatus = fresh.status;
     }
     saveManager = new SaveManager(repository);
-    autosave = new AutoSaveController(repository, { onStatus: writeAutoSaveStatus });
+    autosave = new AutoSaveController(repository, {
+      runtimeMetadata: initialRuntimeMetadata,
+      onStatus: writeAutoSaveStatus,
+    });
   } catch (error: unknown) {
     console.error('[stellar-empires] persistence unavailable', error);
     const fresh = await createFreshGame('Локальное хранилище недоступно · новая партия');
     initialState = fresh.state;
+    initialRuntimeMetadata = fresh.runtimeMetadata;
     startupStatus = fresh.status;
   }
 
@@ -284,6 +318,7 @@ async function bootstrap(): Promise<void> {
   const saveWorkspace = mountSaveManager({
     manager: saveManager,
     getState: () => application.getState(),
+    getRuntimeMetadata: () => autosave?.getRuntimeMetadata() ?? initialRuntimeMetadata,
     writeStatus: setStatus,
   });
   const systemWorkspace = mountSystemWorkspace({

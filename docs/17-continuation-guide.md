@@ -1,17 +1,17 @@
 # AI Continuation Guide
 
-**Status:** Audit #130 accepted; implementation PR #131 is next  
-**Updated:** 2026-07-28  
-**Last merged PR:** #130 `LOCAL-CAMPAIGN-TIME-PACING-01` audit · `2379fa7a30974381349433e4f0e0ba43d15f1511`  
-**Runtime baseline:** PR #129 `NAV-USABILITY-GATE` · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
+**Status:** implementation PR #131 active; #132 remains blocked  
+**Updated:** 2026-07-29  
+**Last merged PR:** #130 audit · `2379fa7a30974381349433e4f0e0ba43d15f1511`  
+**Active implementation baseline:** `1503c7d37fafc623bee4654ed460c92aa55a7b2f`  
 **Active batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
-**Next authorized implementation:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE`
+**Active work item:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE`
 
 ## Repository
 
 `ratoker-jpg/stellar-empires` · default branch `main` · GitHub Pages deployment.
 
-Current GitHub history and `main` override stale prose, prior chat memory and abandoned branches.
+Current GitHub history and actual `main` override stale prose, prior chat memory and abandoned branches.
 
 ## Required startup reading
 
@@ -21,127 +21,94 @@ Current GitHub history and `main` override stale prose, prior chat memory and ab
 4. `docs/audits/current-batch-audit.md`
 5. `docs/audits/contracts/local-campaign-time-pacing-01-prs.md`
 6. `docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md`
-7. `docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md`
-8. `docs/audits/evidence/local-campaign-time-pacing-01-graphify.md`
-9. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
-10. `docs/23-bot-simulation-time-contract.md`
-11. this document
-12. `docs/project-status.json`
-13. `docs/roadmap-pr-index.json`
-14. `docs/27-playable-game-roadmap-v5.md`
-15. latest merged PRs and actual `main`
+7. `docs/changes/pr131-campaign-settings-persistence.md`
+8. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
+9. `docs/23-bot-simulation-time-contract.md`
+10. this document
+11. `docs/project-status.json`
+12. `docs/roadmap-pr-index.json`
+13. `docs/27-playable-game-roadmap-v5.md`
+14. latest merged PRs and actual `main`
 
-## Delivered product state
+## Delivered through merged `main`
 
 - #101–#105: complete catalog runtime art;
 - #106–#110: schema-v14 Universe navigation/action gate;
 - #111–#115: routed application shell;
 - #116–#120: ordinary mission/intelligence/bot parity gate;
 - #121–#123: demolition, whole-planet destruction and recovery;
-- #124: canonical local-campaign world-speed/offline-progression product contract;
-- #125–#129: completed navigation/usability repair;
-- #130: accepted local campaign settings, persistence and chronological clock architecture.
+- #124: local campaign product contract;
+- #125–#129: navigation/usability repair;
+- #130: accepted local campaign time/persistence architecture.
 
-## Audit #130 validation
-
-Final audit head `d276a8db16af534ec915f877a76a8c419986f793` passed:
-
-- CI `30389103445`;
-- Browser E2E `30389103358`;
-- Graphify `30389103322`.
-
-Audit merge: `2379fa7a30974381349433e4f0e0ba43d15f1511`.
-
-Four review findings were fixed:
-
-- checkpoints store processed real-time cursor, not unprocessed target `now`;
-- fresh Graphify evidence is recorded in-repository;
-- legacy real creation time comes from validated envelope `savedAt`;
-- completed return summary persists until explicit acknowledgement.
-
-## Accepted implementation sequence
-
-```text
-#131 CAMPAIGN-SETTINGS-PERSISTENCE — next
-→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — blocked until #131 merges
-→ later CAMPAIGN-PROGRESSION-BALANCE-01 audit
-```
-
-## #131 exact scope
+## Active #131 implementation
 
 ### Deterministic state
 
-- schema v15;
-- immutable `CampaignSettings`;
-- `scenarioPreset: test | campaign | fidelity`;
-- `worldSpeed: 1 | 2 | 5 | 10`;
-- `offlineProgression: true`;
-- validated `createdAtReal`;
-- settings included in checksum and replay initial configuration.
+- `GameState` schema v15;
+- immutable checksummed `CampaignSettings`;
+- scenario `test | campaign | fidelity`;
+- world speed `1 | 2 | 5 | 10`;
+- offline progression fixed true;
+- canonical real creation timestamp;
+- old state-creation and replay overloads remain deterministic x1.
 
 ### Persistence
 
 - save format v3;
-- integrity-protected runtime metadata outside `GameState`;
-- processed `lastActiveAtReal` cursor;
-- protected optional `pendingCatchUp` shape;
-- protected optional `pendingReturnSummary` shape;
-- autosave/manual/import/export/snapshot/recovery preserve runtime metadata semantics;
-- v1/v2 envelopes and state v1–v14 migrate safely;
-- legacy campaigns receive x1;
-- legacy real creation/cursor time comes from validated envelope `savedAt`, not the fixed v14 simulation epoch.
+- runtime cursor/continuation/summary metadata outside `GameState`;
+- checksum covers stable envelope fields, runtime metadata and state;
+- v1/v2 envelopes and state v1–v14 migrate to x1;
+- real creation/cursor time comes from validated envelope `savedAt`;
+- current v15 loads still execute reconciliation for aliases, schedules and bounded histories;
+- autosave/manual/import/export/snapshot/recovery preserve cursor semantics.
 
 ### Player setup
 
-- replace faction-only start with one accessible transaction selecting faction, scenario and fixed speed;
-- show immutable campaign identity in System/Save presentation;
-- no runtime mutation of settings.
+- one campaign-creation transaction selects faction, topology and immutable speed;
+- x2 is the recommended UI preset;
+- System / Saves exposes immutable campaign identity and accepted cursor;
+- no settings mutation after creation.
 
-### Explicit exclusions from #131
+### Verification already established on code head
 
-- no active real-time ticker;
+- assets, lint and strict TypeScript;
+- complete Vitest suite;
+- production build;
+- Graphify;
+- Browser E2E required again on final documentation head.
+
+## Explicit exclusions from #131
+
+- no active wall-clock ticker;
 - no offline elapsed-time processing;
-- no chronological bot refactor;
-- no removal of normal time controls yet;
-- no progression cost/duration/level rebalance;
+- no chronological bot integration;
+- no removal of normal time controls;
+- no progression balance changes;
 - no diplomacy, alliances or endgame.
 
 ## #132 reserved scope
 
-After #131 merges, #132 may implement:
+Only after #131 merges:
 
-- one active/offline chronological orchestrator;
-- event/logistics/world-event/bot decision boundaries;
-- fixed-point speed mapping;
+- one chronological active/offline orchestrator;
+- event/logistics/world-event/bot boundaries;
+- fixed-point speed mapping and fractional carry;
 - active clock;
-- bounded resumable catch-up;
+- bounded resumable offline catch-up;
 - processed-cursor checkpoints;
-- persisted pending summary until acknowledgement;
-- removal of normal manual fast-forward controls;
-- one-day/seven-day deterministic, Browser E2E and performance gates.
-
-Do not begin #132 before #131 merges.
-
-## Preserved invariants
-
-- local browser campaign; no required server for Release 1.0;
-- player and bots use ordinary commands and visibility rules;
-- no elapsed time may be silently skipped;
-- intelligence redaction remains authoritative;
-- explicit fleet-send confirmation remains mandatory;
-- IndexedDB slots, autosave, snapshot and recovery remain recoverable;
-- completed navigation route/colony/return context remains stable;
-- progression compression requires a separate later audit.
+- pending return summary until acknowledgement;
+- removal of player fast-forward controls;
+- one-day/seven-day, Browser E2E and performance gates;
+- batch archive and closure.
 
 ## Immediate route
 
 ```text
-fresh current main
-→ create branch for #131
-→ implement only CAMPAIGN-SETTINGS-PERSISTENCE
-→ run assets, lint, TypeScript, tests, build, Browser E2E and Graphify
+finish #131 final documentation
+→ pass CI, Browser E2E and Graphify on final head
 → resolve all P0/P1 review findings
-→ merge #131
-→ synchronize status
-→ only then start #132
+→ mark ready and merge #131
+→ synchronize exact merge SHA on main
+→ only then create #132 from fresh main
 ```

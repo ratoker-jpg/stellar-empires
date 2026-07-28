@@ -15,7 +15,10 @@ import type {
 } from '../simulation/upgrades/types';
 import type { GameState } from '../simulation/types';
 
-export type LegacyGameStateV13 = Omit<GameState, 'schemaVersion' | 'universe'> & {
+export type LegacyGameStateV13 = Omit<
+  GameState,
+  'schemaVersion' | 'universe' | 'campaignSettings'
+> & {
   readonly schemaVersion: 13;
 };
 import { migrateGameState } from './migrateGameState';
