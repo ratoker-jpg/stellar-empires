@@ -32,6 +32,7 @@ import {
   type DebrisAmount,
 } from './debris';
 import { getPlanetaryDefenseTargetPriority } from './defenseAbilities';
+import { resolvePlanetDemolition } from './planetDemolition';
 import { resolveBattle } from './resolveBattle';
 import type { BattleReport } from './types';
 
@@ -42,19 +43,14 @@ function getCombatEffects(
   fleetId: string | undefined,
   commander: CommanderFleetEffects,
   opponentCommander: CommanderFleetEffects,
-  installationsPresent: boolean,
 ) {
   const effects = getResearchEffectsForEmpire(state, empireId);
   const command = getCommandCombatEffects(state.commanders, empireId, fleetId);
-  const demolitionBonus = installationsPresent && commander.demolitionBasisPoints > 0
-    ? Math.max(1, Math.ceil(commander.demolitionBasisPoints / 100))
-    : 0;
   return {
     weaponBonusPercent:
       effects.weaponStrengthPercent +
       command.weaponBonusPercent +
-      commander.weaponBonusPercent +
-      demolitionBonus -
+      commander.weaponBonusPercent -
       opponentCommander.enemyWeaponPenaltyPercent,
     armorBonusPercent:
       effects.armorStrengthPercent +
@@ -248,7 +244,6 @@ export function resolveAttackMission(
         attackerFleet.id,
         attackerCommander,
         defenderCommander,
-        Object.keys(target.inventory.defenses).length > 0,
       ),
     },
     {
@@ -263,7 +258,6 @@ export function resolveAttackMission(
         defenderDoctrine?.id,
         defenderCommander,
         attackerCommander,
-        false,
       ),
     },
   );
@@ -336,6 +330,19 @@ export function resolveAttackMission(
     }
   }
 
+  const demolition = resolvePlanetDemolition({
+    state,
+    attackerEmpireId: attackerFleet.empireId,
+    attackerFleetId: attackerFleet.id,
+    attackerRemaining: attackerAfterCommanderRecovery,
+    target: updatedTarget,
+    activeDefenses,
+    winner: resolution.winner,
+    eventSequence,
+    commanderBonusBasisPoints: attackerCommander.demolitionBasisPoints,
+  });
+  updatedTarget = demolition.planet;
+
   fleets = updatedAttacker === undefined
     ? fleets.filter((fleet) => fleet.id !== attackerFleet.id)
     : fleets.map((fleet) =>
@@ -383,6 +390,7 @@ export function resolveAttackMission(
     defensesRecovered,
     debrisCreated,
     plunderedCargo,
+    demolition: demolition.report,
     mode: isPve ? 'pve' : 'pvp',
     threatMultiplierPermille,
     rewardMultiplierPermille,
@@ -400,6 +408,7 @@ export function resolveAttackMission(
       ),
       fleets,
       debrisFields,
+      pendingEvents: demolition.pendingEvents,
       commanders: awardBattleCommandExperience(state.commanders, report),
     },
     report,
