@@ -2,6 +2,8 @@
 
 **Batch:** `PLANET-DEMOLITION-DESTRUCTION-01`  
 **Audit:** #121 · `2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9`  
+**Squash merge:** `be0caff4fbf06384cdf5d370dbc2da80d4081152`  
+**Validated head:** `61d7bd880317598613cf80c787d521c604adf1a7`  
 **Scope:** deterministic post-combat building demolition only
 
 ## Delivered
@@ -17,7 +19,7 @@
 - no-refund cancellation of matching building queue items and completion events;
 - zone and economy recalculation after structural damage;
 - additive demolition evidence inside `BattleReport`;
-- routed report-card details for contributions, points, chance, rolls and cancelled queues;
+- routed report-card details for contributions, points, exact basis-point chance, rolls and cancelled queues;
 - focused simulation and presentation tests.
 
 ## Explicit exclusions
@@ -33,15 +35,16 @@ PR #122 does not implement:
 - schema change, new command or new mission kind;
 - solar war, alliances or endgame.
 
-These remain owned by PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` after #122 merges.
+These remain owned by PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE`.
 
-## Validation surface
+## Review resolution
 
-- all demolition threshold boundaries including `>1000` select-all behavior;
-- Aegis/Synod/Veyra profiles and weapon levels 0/1/5/10;
-- attacker win/draw eligibility and defender-win block;
-- deterministic target selection and independent rolls;
-- endgame-building exclusion;
-- one-level removal, zone/economy reconciliation and no-refund queue/event cancellation;
-- battle report evidence and routed presentation view-model;
-- repository CI, Browser E2E and Graphify.
+Automated review found one P2: fractional basis-point probabilities were rounded to whole percentages in the report UI. The formatter now preserves `20.5%`/`20.05%` precision as required, with a regression test for an odd Annihilator level. The thread was resolved before merge.
+
+## Validation
+
+- CI `30344313117` — asset audit, lint, TypeScript, full tests and production build;
+- Browser E2E `30344317677`;
+- Graphify `30344313098`;
+- all review threads resolved;
+- no generated outputs or #123 implementation entered the diff.
