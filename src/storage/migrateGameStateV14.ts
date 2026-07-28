@@ -21,6 +21,10 @@ import {
   type LegacyGameStateV13,
 } from './migrateGameStateV13';
 
+export type LegacyGameStateV14 = Omit<GameState, 'schemaVersion' | 'campaignSettings'> & {
+  readonly schemaVersion: 14;
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -138,7 +142,7 @@ function migrateLegacyShell(value: unknown): LegacyGameStateV13 | undefined {
   return migrateGameStateV13(source);
 }
 
-export function migrateGameStateV14(value: unknown): GameState | undefined {
+export function migrateGameStateV14(value: unknown): LegacyGameStateV14 | undefined {
   const legacy = migrateLegacyShell(value);
   if (legacy === undefined) return undefined;
   const universe = sourceUniverse(value, legacy);
