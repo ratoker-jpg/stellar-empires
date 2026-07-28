@@ -117,7 +117,7 @@ export interface BattleReport {
   readonly defensesRecovered?: Readonly<Record<string, number>>;
   readonly debrisCreated?: DebrisAmount;
   readonly plunderedCargo?: ResourceCost;
-  readonly demolition?: PlanetDemolitionReport;
+  readonly demolition?: PlanetDemolitionReport | undefined;
   readonly mode?: BattleMode;
   readonly threatMultiplierPermille?: number;
   readonly rewardMultiplierPermille?: number;
