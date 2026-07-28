@@ -58,4 +58,22 @@ describe('planet demolition report presentation', () => {
       cancelledQueues: 'Очереди отменены без возврата: build-42',
     });
   });
+
+  it('preserves basis-point precision for odd Annihilator levels', () => {
+    const report: PlanetDemolitionReport = {
+      ...REPORT,
+      baseChanceBasisPoints: 2_000,
+      commanderBonusBasisPoints: 50,
+      finalChanceBasisPoints: 2_050,
+      rolls: [
+        {
+          ...REPORT.rolls[0]!,
+          chanceBasisPoints: 2_050,
+        },
+      ],
+    };
+    const model = createPlanetDemolitionViewModel(report);
+    expect(model.overview).toContain('шанс 20% + командир 0.5% = 20.5%');
+    expect(model.rolls[0]?.chance).toBe('20.5%');
+  });
 });
