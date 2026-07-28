@@ -1,9 +1,9 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Audit PR #130 active; implementation PR #131 is blocked until audit acceptance  
+**Status:** Audit #130 accepted; PR #131 is the only next implementation  
 **Updated:** 2026-07-28  
-**Last merged PR:** #129 · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
-**Verified baseline:** `45bd3297d402fd96691a26c60e47bd39a420f174`  
+**Last merged PR:** #130 · `2379fa7a30974381349433e4f0e0ba43d15f1511`  
+**Runtime baseline:** #129 · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
 **Release target:** 1.0 local PvE browser campaign
 
 ## Authoritative files
@@ -13,7 +13,6 @@ docs/27-playable-game-roadmap-v5.md
 docs/25a-local-campaign-world-speed-and-offline-progression.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
-docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md
 docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md
 docs/audits/contracts/local-campaign-time-pacing-01-prs.md
 docs/project-status.json
@@ -28,53 +27,56 @@ docs/roadmap-pr-index.json
 - #116–#120: ordinary mission/intelligence/bot parity gate;
 - #121–#123: planet demolition, destruction and atomic recovery;
 - #124: local campaign/world-speed/offline-progression product contract;
-- #125–#129: player-centered navigation, typed context, reversible flows and measured usability closure.
+- #125–#129: player-centered navigation, typed context, reversible flows and measured usability closure;
+- #130: accepted campaign settings, persistence and chronological clock architecture.
 
-## Current gap
+## Current runtime gap
 
-The game has canonical simulation time but not a canonical campaign clock:
+The game still has canonical simulation time but not a playable campaign clock:
 
-- no immutable world speed;
+- no immutable campaign settings;
 - no campaign setup beyond faction;
+- schema remains v14;
+- save format remains v2;
+- no protected runtime cursor/continuation;
 - no open-session real-time progression;
 - no offline catch-up;
-- no protected runtime cursor;
-- bot overdue decisions are not chronologically interleaved;
+- overdue bot decisions are not chronologically interleaved;
 - manual player fast-forward controls remain;
-- no catch-up progress or return summary.
+- no catch-up progress or durable return summary.
 
-## Audit #130 decision
-
-`LOCAL-CAMPAIGN-TIME-PACING-01` is a heavy two-PR batch:
+## Accepted batch
 
 ```text
-#130 Audit only
-→ #131 CAMPAIGN-SETTINGS-PERSISTENCE
-→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE
+#131 CAMPAIGN-SETTINGS-PERSISTENCE — next
+→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — blocked until #131 merges
 ```
 
 ### #131
 
-- schema v15 campaign settings;
-- save format v3 runtime metadata;
-- faction/scenario/speed campaign setup;
-- legacy x1 migration;
-- replay and save/recovery integrity;
+- schema v15 immutable campaign settings;
+- faction/scenario/x1-x2-x5-x10 setup;
+- save format v3 protected runtime metadata;
+- pending catch-up and pending summary persistence shapes;
+- legacy x1 migration using validated envelope time;
+- explicit replay initial configuration;
+- import/export/snapshot/recovery integrity;
 - no active clock yet.
 
 ### #132
 
 - shared chronological active/offline orchestrator;
 - bot decision boundaries;
+- processed-cursor checkpoints;
 - bounded resumable catch-up;
 - active runtime clock;
-- return summary;
+- durable return summary until acknowledgement;
 - removal of normal fast-forward controls;
-- complete deterministic/browser/performance gate.
+- deterministic/browser/performance closure gate.
 
 ## Deferred ordered work
 
-After #132, a separate `CAMPAIGN-PROGRESSION-BALANCE-01` audit determines exact progression compression and one-day campaign balance. It must use measured headless runs from the delivered clock foundation.
+After #132, a separate `CAMPAIGN-PROGRESSION-BALANCE-01` audit determines exact progression compression and measured one-day campaign balance using the delivered clock/headless foundation.
 
 Still later:
 
@@ -86,11 +88,14 @@ Still later:
 ## Non-negotiable rules
 
 - fresh current `main` is the only valid baseline;
-- no implementation before Audit #130 merges;
+- #131 only is authorized now;
+- #132 cannot start before #131 merges;
 - no numeric progression rebalance in #131–#132;
 - campaign settings are immutable deterministic state;
-- wall-clock cursor remains outside GameState;
+- wall-clock cursor/continuation remain outside `GameState` but integrity protected;
+- checkpoint cursor represents processed time only;
 - no elapsed time is silently skipped;
+- pending summary survives until acknowledgement;
 - player and bots use ordinary commands and visibility rules;
 - no continuously running server is required for Release 1.0;
 - all repository, Browser E2E, Graphify and automated review gates remain mandatory.
