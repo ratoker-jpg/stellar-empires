@@ -12,6 +12,7 @@ export const E2E_RUNTIME_ENABLED = import.meta.env.VITE_E2E === '1';
 export const E2E_FLEET_ID = 'fleet-e2e-player';
 export const E2E_INCOMING_FLEET_ID = 'fleet-e2e-incoming';
 export const E2E_REPORT_ID = 'report-e2e-map-backlink';
+export const E2E_SECONDARY_PLANET_ID = 'planet-e2e-secondary';
 const E2E_BOT_IDLE_SECONDS = 86_400;
 const E2E_SCOUT_COOLDOWN_CEILING_SECONDS = 7_200;
 
@@ -30,13 +31,43 @@ function getBotGateResult(): OrdinaryMissionIntelligenceGateResult {
 }
 
 function requireScenarioPlanets(state: GameState) {
-  const origin = state.planets.find((planet) => planet.ownerEmpireId === 'player');
+  const origin = state.planets.find(
+    (planet) => planet.ownerEmpireId === 'player' && planet.id !== E2E_SECONDARY_PLANET_ID,
+  ) ?? state.planets.find((planet) => planet.ownerEmpireId === 'player');
   const target = state.planets.find((planet) => planet.ownerEmpireId === 'pirate-neutral')
     ?? state.planets.find((planet) => planet.ownerEmpireId !== 'player');
   if (origin === undefined || target === undefined) {
     throw new Error('E2E scenario requires one player colony and one foreign colony.');
   }
   return { origin, target };
+}
+
+function createSecondaryPlayerPlanet(state: GameState, origin: GameState['planets'][number]) {
+  const existing = state.planets.find((planet) => planet.id === E2E_SECONDARY_PLANET_ID);
+  if (existing !== undefined) return existing;
+
+  const occupied = new Set(state.planets.map((planet) => planet.galaxyPlanetId));
+  const freeSlot = state.galaxy.systems
+    .flatMap((system) => system.planets.map((planet) => ({ system, planet })))
+    .find(({ planet }) => !occupied.has(planet.id));
+  if (freeSlot === undefined) {
+    throw new Error('E2E scenario requires one free galaxy position for a secondary player colony.');
+  }
+
+  return {
+    ...origin,
+    id: E2E_SECONDARY_PLANET_ID,
+    galaxyPlanetId: freeSlot.planet.id,
+    systemId: freeSlot.system.id,
+    position: freeSlot.planet.position,
+    coordinate: freeSlot.planet.coordinate,
+    name: 'Вторая колония E2E',
+    buildQueue: [],
+    productionQueues: {
+      shipyard: [],
+      defense: [],
+    },
+  };
 }
 
 export function createE2eFixtureState(state: GameState): GameState {
@@ -59,6 +90,7 @@ export function createE2eFixtureState(state: GameState): GameState {
       },
     },
   };
+  const secondaryPlayerPlanet = createSecondaryPlayerPlanet(state, originWithFuel);
   const fleet: FleetState = {
     id: E2E_FLEET_ID,
     empireId: 'player',
@@ -160,10 +192,14 @@ export function createE2eFixtureState(state: GameState): GameState {
   const fleets = [...state.fleets];
   if (!fleets.some((entry) => entry.id === E2E_FLEET_ID)) fleets.push(fleet);
   if (!fleets.some((entry) => entry.id === E2E_INCOMING_FLEET_ID)) fleets.push(incomingFleet);
+  const planetsWithFuel = state.planets.map((planet) => planet.id === origin.id ? originWithFuel : planet);
+  const planets = planetsWithFuel.some((planet) => planet.id === E2E_SECONDARY_PLANET_ID)
+    ? planetsWithFuel
+    : [...planetsWithFuel, secondaryPlayerPlanet];
   return {
     ...state,
     clock: { ...state.clock, elapsedSeconds: fixtureElapsedSeconds },
-    planets: state.planets.map((planet) => planet.id === origin.id ? originWithFuel : planet),
+    planets,
     fleets,
     intelligence: state.intelligence.map((entry) =>
       entry.empireId !== 'player' || entry.observations.some((item) => item.id === observation.id)
@@ -210,6 +246,7 @@ export function updateE2eRuntimeDiagnostics(state: GameState): void {
   document.documentElement.dataset.e2eTargetGalaxy = String(target.coordinate.galaxy);
   document.documentElement.dataset.e2eTargetSystem = String(target.coordinate.solarSystem);
   document.documentElement.dataset.e2eTargetPosition = String(target.coordinate.position);
+  document.documentElement.dataset.e2eSecondaryPlanetId = E2E_SECONDARY_PLANET_ID;
   document.documentElement.dataset.stateChecksum = createStateChecksum(state);
   document.documentElement.dataset.sendFleetCommandCount = String(
     state.commandLog.filter((entry) => entry.command.type === 'SEND_FLEET').length,
