@@ -2,8 +2,8 @@
 
 **Status:** PR #123 closure gate complete; Audit PR #124 is next  
 **Updated:** 2026-07-28  
-**Last merged PR:** #123 · exact squash SHA recorded in GitHub merge metadata  
-**Runtime baseline:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE`  
+**Last merged PR:** #123 · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
+**Runtime baseline:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
 **Release target:** 1.0
 
 ## Authoritative files
@@ -47,11 +47,13 @@ docs/roadmap-pr-index.json
 
 - whole-planet chance, reductions, 30% cap and final-colony guard;
 - atomic cleanup/rehome of all live references;
-- ordinary and pending expedition/space-object returns;
+- ordinary and repeated pending expedition/space-object returns;
 - immutable historical origin plus additive live return destination;
 - elapsed/remaining travel-time preservation during rebuilt returns;
+- assigned defending flagship Polias protection;
 - debris recycling before and after recolonization;
-- fresh colony identity, reports, save/load and Browser E2E closure.
+- fresh colony identity and outbound recycler retargeting;
+- reports, save/load and Browser E2E closure.
 
 ## Next authorized route
 
