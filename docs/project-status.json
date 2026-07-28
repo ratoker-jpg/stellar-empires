@@ -1,5 +1,5 @@
 {
-  "statusVersion": 25,
+  "statusVersion": 26,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -8,15 +8,19 @@
   "releaseTarget": "1.0",
   "lastMergedPr": 120,
   "lastMergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665",
-  "verifiedMainBaseline": "PR #120 squash merge c59a2dd7afdc31fc250d2ec21364f655d6a4e665; final PR head dec823e52f55436f6708bfa74aca4996b18c16a7 passed asset audit, lint, TypeScript, 392-test suite, production build, Browser E2E and Graphify",
-  "activePr": null,
-  "nextPrAfterActive": 121,
-  "nextPrKind": "audit",
-  "currentMilestone": "M4 ordinary missions and intelligence batch completed; next work requires a new audit",
+  "verifiedMainBaseline": "post-PR #120 main 818aba011199dd5a96518f859ed35de671be892f; runtime PR #120 final head dec823e52f55436f6708bfa74aca4996b18c16a7 passed asset audit, lint, TypeScript, 392-test suite, production build, Browser E2E and Graphify",
+  "activePr": 121,
+  "nextPrAfterActive": 122,
+  "nextPrKind": "implementation",
+  "currentMilestone": "M4 planet demolition, destruction and released-coordinate recovery audit",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
-  "currentAuditContracts": [],
+  "currentAuditContracts": [
+    "docs/audits/contracts/planet-demolition-destruction-01-prs.md",
+    "docs/audits/contracts/planet-demolition-destruction-01-rules.md",
+    "docs/audits/evidence/planet-demolition-destruction-01-graphify.md"
+  ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
@@ -27,18 +31,8 @@
     "auditStatus": "completed",
     "baselineSha": "da1b3c943107ab13a003d5eb9bb084a229bdb51c",
     "implementationCount": 4,
-    "implementationPrs": [
-      117,
-      118,
-      119,
-      120
-    ],
-    "completedImplementationPrs": [
-      117,
-      118,
-      119,
-      120
-    ],
+    "implementationPrs": [117, 118, 119, 120],
+    "completedImplementationPrs": [117, 118, 119, 120],
     "workItems": [
       "MISSION-RULES-REGISTRY",
       "ESPIONAGE-COUNTERINTELLIGENCE",
@@ -49,63 +43,47 @@
     "archive": "docs/audits/completed/ordinary-missions-intelligence-01.md",
     "divergence": "none"
   },
-  "currentBatch": null,
+  "currentBatch": {
+    "batchId": "PLANET-DEMOLITION-DESTRUCTION-01",
+    "roadmapMilestone": "M4",
+    "complexity": "heavy",
+    "auditPr": 121,
+    "auditStatus": "in-progress",
+    "baselineSha": "818aba011199dd5a96518f859ed35de671be892f",
+    "implementationCount": 2,
+    "plannedImplementationPrs": [122, 123],
+    "completedImplementationPrs": [],
+    "workItems": [
+      "PLANET-DEMOLITION-CONTRACT",
+      "PLANET-DESTRUCTION-RECOVERY-GATE"
+    ],
+    "status": "audit-in-progress",
+    "archive": "docs/audits/completed/planet-demolition-destruction-01.md",
+    "divergence": "none"
+  },
   "auditDecisions": {
-    "implementationCount": 4,
+    "implementationCount": 2,
     "schemaChange": false,
     "newGameplayCommands": false,
     "newMissionKinds": false,
-    "ordinaryMissionKinds": [
-      "transport",
-      "deploy",
-      "scout",
-      "attack",
-      "recycle",
-      "colonize"
-    ],
-    "specializedMissionOwnershipPreserved": [
-      "expedition",
-      "space-object"
-    ],
-    "sharedMissionRulesRequired": true,
-    "flightSlotsActivatedFromExistingResearch": true,
-    "attackRequiresCurrentLevelThreeIntelligence": true,
-    "intelligenceReportsDerivedNotPersisted": true,
-    "hiddenInformationPolicy": "redacted-target-model-for-player-and-bots",
-    "planetDestructionIncluded": false,
-    "economyLogisticsRedesignIncluded": false,
+    "attackMissionExtended": true,
+    "demolitionOnAttackerWinOrDraw": true,
+    "destructionOnAttackerWinOnly": true,
+    "lastColonyProtected": true,
+    "immediateNormalRecolonization": true,
+    "additionalDestructionLoot": false,
+    "endgameBuildingsDemolitionEligible": false,
     "alliancesIncluded": false,
     "solarWarIncluded": false,
+    "economyLogisticsRedesignIncluded": false,
     "criticalUnknowns": 0
   },
   "scenarioPresets": {
-    "test": {
-      "populatedGalaxies": 2,
-      "systemsPerGalaxy": 9
-    },
-    "campaign": {
-      "populatedGalaxies": 6,
-      "systemsPerGalaxy": 27
-    },
-    "fidelity": {
-      "populatedGalaxies": 15,
-      "systemsPerGalaxy": 81
-    }
+    "test": {"populatedGalaxies": 2, "systemsPerGalaxy": 9},
+    "campaign": {"populatedGalaxies": 6, "systemsPerGalaxy": 27},
+    "fidelity": {"populatedGalaxies": 15, "systemsPerGalaxy": 81}
   },
-  "batchSizing": {
-    "heavy": [
-      1,
-      2
-    ],
-    "medium": [
-      4,
-      4
-    ],
-    "light": [
-      6,
-      6
-    ]
-  },
+  "batchSizing": {"heavy": [1, 2], "medium": [4, 4], "light": [6, 6]},
   "deliveredCatalogs": {
     "buildingsPerFaction": 24,
     "technologiesPerFaction": 22,
@@ -134,15 +112,17 @@
     "deterministic scout tiers, cooldown, detection, probe loss and defender alerts",
     "derived intelligence reports with exact coordinate backlinks",
     "sensor-tiered incoming-flight presentation with cargo excluded",
-    "checksum-stable E2E app readiness without changing production bot scheduling",
-    "full-shell Browser E2E and Graphify validation",
     "bot perception restricted to owned state, public redacted contacts and own intelligence memory",
     "stable bot mission blocker diagnostics for flight slots, scout cooldown, fuel and intelligence",
     "deterministic scout to schema-v14 save/load to attack integration and Browser E2E gate"
   ],
-  "activeDelivery": [],
+  "activeDelivery": [
+    {"pr": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "in-progress"},
+    {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "blocked-until-audit-merge"},
+    {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "blocked-until-pr122-merge"}
+  ],
   "knownLimitations": [
-    "complete planet destruction and recovery remain unaudited",
+    "planet demolition/destruction is audited but not implemented until PRs #122–#123",
     "multi-colony economy and logistics coherence remain a separate future audit",
     "deeper PvE/meta systems and complete bot parity remain incomplete",
     "alliances, solar war, Obelisks, Gates and final victory are not implemented",
@@ -156,7 +136,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on PR #120 final head dec823e52f55436f6708bfa74aca4996b18c16a7",
+    "lastValidation": "passed on PR #120 final head dec823e52f55436f6708bfa74aca4996b18c16a7; Audit #121 final run pending",
     "lastAuditGraph": {
       "nodes": 2130,
       "relationships": 6795,
@@ -175,23 +155,21 @@
       "runtimePath": "public/assets/generated/universe",
       "runtimeTextures": 102
     },
-    "catalogArt": {
-      "files": 174,
-      "runtimeAssetsPlanned": 173,
-      "status": "runtime-integrated-complete"
-    }
+    "catalogArt": {"files": 174, "runtimeAssetsPlanned": 173, "status": "runtime-integrated-complete"}
   },
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
-    "docs/audits/completed/ordinary-missions-intelligence-01.md",
+    "docs/audits/contracts/planet-demolition-destruction-01-prs.md",
+    "docs/audits/contracts/planet-demolition-destruction-01-rules.md",
+    "docs/audits/evidence/planet-demolition-destruction-01-graphify.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Create a new Audit PR from fresh post-#120 main. Do not create implementation PR #121 without an accepted audit."
+  "nextAction": "Finalize and merge Audit PR #121. After merge, create PR #122 from fresh main and implement only PLANET-DEMOLITION-CONTRACT."
 }
