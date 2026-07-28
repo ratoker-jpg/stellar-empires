@@ -1,5 +1,6 @@
 import type { ResourceCost } from '../economy/types';
 import type { FactionId } from '../planet/types';
+import type { SpaceCoordinate } from '../space/coordinates';
 import type {
   ProtectionType,
   TargetSize,
@@ -95,11 +96,42 @@ export interface PlanetDemolitionReport {
   readonly cancelledQueueItemIds: readonly string[];
 }
 
+export interface PlanetDestructionContributionReport {
+  readonly unitId: string;
+  readonly factionId: FactionId;
+  readonly count: number;
+  readonly weaponLevel: number;
+  readonly chanceBasisPointsPerShip: number;
+  readonly totalChanceBasisPoints: number;
+}
+
+export type PlanetDestructionBlockedReason =
+  | 'NO_SURVIVING_PLANET_DESTROYER'
+  | 'BATTLE_RESULT_INELIGIBLE'
+  | 'LAST_COLONY_PROTECTED'
+  | 'ZERO_FINAL_CHANCE';
+
+export interface PlanetDestructionReport {
+  readonly attackerContributions: readonly PlanetDestructionContributionReport[];
+  readonly defenderContributions: readonly PlanetDestructionContributionReport[];
+  readonly defensePopulation: number;
+  readonly rawChanceBasisPoints: number;
+  readonly defenseReductionBasisPoints: number;
+  readonly defenderPlanetDestroyerReductionBasisPoints: number;
+  readonly poliasReductionBasisPoints: number;
+  readonly finalChanceBasisPoints: number;
+  readonly rollBasisPoints: number;
+  readonly blockedReason: PlanetDestructionBlockedReason | null;
+  readonly planetDestroyed: boolean;
+}
+
 export interface BattleReport {
   readonly id: string;
   readonly seed: number;
   readonly resolvedAt: number;
   readonly targetPlanetId: string;
+  readonly targetGalaxyPlanetId?: string;
+  readonly targetCoordinate?: SpaceCoordinate;
   readonly attackerEmpireId: string;
   readonly defenderEmpireId: string;
   readonly winner: BattleWinner;
@@ -118,6 +150,7 @@ export interface BattleReport {
   readonly debrisCreated?: DebrisAmount;
   readonly plunderedCargo?: ResourceCost;
   readonly demolition?: PlanetDemolitionReport | undefined;
+  readonly destruction?: PlanetDestructionReport | undefined;
   readonly mode?: BattleMode;
   readonly threatMultiplierPermille?: number;
   readonly rewardMultiplierPermille?: number;
