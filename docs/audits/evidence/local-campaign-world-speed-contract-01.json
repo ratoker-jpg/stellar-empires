@@ -1,0 +1,14 @@
+{
+  "contractId": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT",
+  "status": "documentation-only",
+  "runtimeChanged": false,
+  "schemaChanged": false,
+  "commandsChanged": false,
+  "balanceChanged": false,
+  "serverRequired": false,
+  "worldSpeedImmutable": true,
+  "offlineProgression": true,
+  "offlineBotsContinue": true,
+  "navigationFirst": true,
+  "nextAuditPr": 125
+}
