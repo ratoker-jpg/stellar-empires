@@ -1,19 +1,19 @@
 {
-  "statusVersion": 42,
+  "statusVersion": 43,
   "updatedAt": "2026-07-29",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 130,
-  "lastMergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511",
-  "verifiedMainBaseline": "Audit PR #130 LOCAL-CAMPAIGN-TIME-PACING-01 merged as 2379fa7a30974381349433e4f0e0ba43d15f1511; implementation PR #131 started from clean main 1503c7d37fafc623bee4654ed460c92aa55a7b2f and is the only active repository action",
-  "runtimeBaselinePr": 129,
-  "runtimeBaselineSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa",
-  "activePr": 131,
-  "activePrKind": "implementation",
-  "activeWorkItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
+  "lastMergedPr": 131,
+  "lastMergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd",
+  "verifiedMainBaseline": "PR #131 CAMPAIGN-SETTINGS-PERSISTENCE merged as 257e3effaab4e34285d00db64b6676fda364fcfd after CI, Browser E2E, Graphify and clean Codex re-review; schema v15 and save format v3 are now the merged runtime baseline",
+  "runtimeBaselinePr": 131,
+  "runtimeBaselineSha": "257e3effaab4e34285d00db64b6676fda364fcfd",
+  "activePr": null,
+  "activePrKind": null,
+  "activeWorkItem": null,
   "nextPrAfterActive": 132,
   "nextPrKind": "implementation",
   "nextWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
@@ -34,7 +34,7 @@
     "docs/25a-local-campaign-world-speed-and-offline-progression.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "activeChangeDocument": "docs/changes/pr131-campaign-settings-persistence.md",
+  "lastChangeDocument": "docs/changes/pr131-campaign-settings-persistence.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
     "batchId": "NAVIGATION-USABILITY-01",
@@ -74,32 +74,34 @@
     "baselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174",
     "implementationCount": 2,
     "plannedImplementationPrs": [131, 132],
-    "completedImplementationPrs": [],
-    "implementationMergeShas": {},
+    "completedImplementationPrs": [131],
+    "implementationMergeShas": {
+      "131": "257e3effaab4e34285d00db64b6676fda364fcfd"
+    },
     "workItems": [
       "CAMPAIGN-SETTINGS-PERSISTENCE",
       "CAMPAIGN-CLOCK-OFFLINE-GATE"
     ],
-    "status": "implementation-active",
-    "activePr": 131,
-    "activeWorkItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
-    "activeBaselineSha": "1503c7d37fafc623bee4654ed460c92aa55a7b2f",
+    "status": "implementation-next",
+    "activePr": null,
     "nextPr": 132,
     "nextWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
     "divergence": "none"
   },
   "activeImplementationState": {
-    "targetSchema": 15,
-    "targetSaveFormat": 3,
+    "stateSchema": 15,
+    "saveFormat": 3,
     "campaignSettingsImplemented": true,
     "campaignSetupImplemented": true,
     "runtimeMetadataImplemented": true,
     "legacyMigrationImplemented": true,
     "explicitReplaySettingsImplemented": true,
+    "processedCursorIntegrityImplemented": true,
+    "pendingCatchUpConsistencyImplemented": true,
     "activeClockImplemented": false,
     "offlineCatchUpImplemented": false,
     "manualFastForwardRemoved": false,
-    "status": "validation-and-review"
+    "status": "pr131-merged"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -154,36 +156,31 @@
     "catalogRuntimeTextures": 173
   },
   "deliveredDomains": [
-    "deterministic schema-v14 simulation, event queue, replay and checksum on merged main",
-    "IndexedDB persistence, slots, import/export, recovery and migrations on merged main",
+    "deterministic schema-v15 simulation with immutable campaign identity",
+    "save format v3 with integrity-protected runtime cursor, continuation and pending summary metadata",
+    "campaign setup for faction, topology and immutable x1/x2/x5/x10 speed",
+    "schema v1-v14 and save format v1-v2 migration to x1 using validated envelope time",
+    "IndexedDB autosave, manual slots, import/export, snapshots and recovery",
     "multi-colony economy, research, production, fleets, combat and reports",
     "ordinary missions, debris, defence repair, logistics, markets and PvE foundations",
-    "honest autonomous bots using the same command layer and coordinate selectors as the player",
+    "honest autonomous bots using shared commands and visibility rules",
     "serialized bounded bot decision cursors and worker scheduling",
-    "formations, priorities, ship upgrades, command doctrine and Commander Ships",
     "complete mechanical catalogs and processed runtime art",
     "20-slot Universe with Universe to Galaxy to Solar-system navigation",
-    "intelligence-aware action availability and target handoff",
-    "GameApplicationController and nine canonical route families",
-    "routed development, fleet, operations, command, reports and system workspaces",
-    "persistent HUD, route-aware context, keyboard, compact and reduced-motion accessibility",
-    "shared ordinary mission rules, deterministic intelligence and honest bot mission gate",
-    "deterministic demolition and whole-planet destruction with final-colony protection and atomic recovery",
-    "canonical local-campaign world-speed and offline-progression product contract",
-    "completed player-centered navigation and measured task gate",
-    "accepted local-campaign settings, persistence and chronological clock architecture contract"
+    "completed routed shell, player-centered navigation and measured task gate",
+    "accepted chronological active/offline campaign-time architecture"
   ],
   "activeDelivery": [
-    {"pr": 129, "kind": "implementation", "workItem": "NAV-USABILITY-GATE", "status": "merged", "mergeSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"},
     {"pr": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "status": "merged", "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"},
-    {"pr": 131, "kind": "implementation", "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE", "status": "active", "baselineSha": "1503c7d37fafc623bee4654ed460c92aa55a7b2f"}
+    {"pr": 131, "kind": "implementation", "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE", "status": "merged", "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd"},
+    {"pr": 132, "kind": "implementation", "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE", "status": "next"}
   ],
   "knownLimitations": [
-    "merged main still uses schema v14 and save format v2 until PR #131 merges",
-    "open-session simulation advances only through manual fast-forward controls",
-    "immutable world speed exists on the active PR branch but does not drive elapsed time until PR #132",
+    "world speed is persisted but does not yet drive real elapsed time",
+    "open-session simulation still advances through manual fast-forward controls",
     "deterministic offline catch-up is not implemented",
     "current overdue bot decisions are evaluated against the final post-jump state",
+    "catch-up progress and return-summary presentation are not implemented",
     "campaign progression is not yet compressed or balanced for a one-day match",
     "multi-colony economy and logistics coherence remain a later audit",
     "deeper PvE/meta systems and complete bot parity remain incomplete",
@@ -198,7 +195,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #131 code head 57ee0e02bfe067f9a48e17c88a3de4b9d6b8d29c passed Graphify run 30403138021; final documentation head validation required",
+    "lastValidation": "PR #131 final head 5e1c27c6a6d635982d446649e00ff329f49923cb passed Graphify run 30405640711",
     "lastAuditGraph": {
       "workflowRun": "30389103322",
       "headSha": "d276a8db16af534ec915f877a76a8c419986f793",
@@ -209,24 +206,11 @@
       "evidence": "docs/audits/evidence/local-campaign-time-pacing-01-graphify.md"
     }
   },
-  "sourceAssetIntake": {
-    "universePack": {
-      "files": 90,
-      "status": "runtime-integrated-complete",
-      "currentPath": "assets/source/universe-navigation",
-      "runtimePath": "public/assets/generated/universe",
-      "runtimeTextures": 102
-    },
-    "catalogArt": {"files": 174, "runtimeAssetsPlanned": 173, "status": "runtime-integrated-complete"}
-  },
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
-    "docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md",
-    "docs/audits/evidence/local-campaign-time-pacing-01-source-map.md",
-    "docs/audits/evidence/local-campaign-time-pacing-01-graphify.md",
     "docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md",
     "docs/audits/contracts/local-campaign-time-pacing-01-prs.md",
     "docs/changes/pr131-campaign-settings-persistence.md",
@@ -238,5 +222,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Complete CI, Browser E2E, Graphify and automated review on the final PR #131 head; merge #131; synchronize its exact merge SHA; only then create #132 CAMPAIGN-CLOCK-OFFLINE-GATE from fresh main."
+  "nextAction": "Create implementation PR #132 CAMPAIGN-CLOCK-OFFLINE-GATE only from fresh current main; do not start progression balance or later roadmap work."
 }
