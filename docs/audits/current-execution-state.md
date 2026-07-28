@@ -1,22 +1,23 @@
 # Current execution state
 
 **Updated:** 2026-07-28  
-**Safe to continue:** Audit PR #125, then implementation PR #126 only after audit merge
+**Safe to continue:** implementation PR #126 only
 
 | Field | Current value |
 |---|---|
-| Last merged PR | #124 `LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT` · `cdd112c544ce8d37af17e938867d4588bedcf152` |
+| Last merged PR | Audit #125 `NAVIGATION-USABILITY-01` · `a13f017d79d5dce5fde954e9f6e1419a2182d78e` |
 | Runtime baseline | PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` · `aa1dc67ed874c75aa69af30ce9ced58169793c30` |
-| Canonical product contract | local PvE browser campaign, immutable world speed at creation, deterministic offline continuation, compressed one-day campaign direction |
-| Active audit | #125 `NAVIGATION-USABILITY-01` |
+| Canonical product contract | PR #124 · local PvE browser campaign, immutable world speed at creation, deterministic offline continuation, compressed one-day campaign direction |
+| Accepted audit | #125 `NAVIGATION-USABILITY-01` |
 | Audit baseline | exact post-#124 `main` · `cdd112c544ce8d37af17e938867d4588bedcf152` |
+| Audit merge | `a13f017d79d5dce5fde954e9f6e1419a2182d78e` |
+| Validation | CI `30363687162`, Browser E2E `30363686476`, Graphify `30363686266` — passed |
 | Complexity | medium |
-| Authorized implementation PRs after audit merge | #126, #127, #128, #129 |
-| First work item | #126 `NAV-IA-PRIMARY-SHELL` |
+| Authorized implementation PRs | #126, #127, #128, #129 |
+| Current work item | #126 `NAV-IA-PRIMARY-SHELL` |
 | Active implementation PR | none |
 | Persistence | schema v14; navigation context remains outside saves and checksums |
-| Runtime/mechanics in Audit #125 | none |
-| Exact next action | merge Audit #125 after documentation diff, CI, Browser E2E, Graphify and review; then create #126 from fresh merged `main` |
+| Exact next action | create #126 from fresh merged `main` and implement only `NAV-IA-PRIMARY-SHELL` |
 
 ## Accepted sequence
 
