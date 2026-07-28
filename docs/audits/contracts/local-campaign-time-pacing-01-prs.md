@@ -22,7 +22,7 @@ Create the immutable campaign identity and safe persistence format required befo
 
 ### Player-visible outcome
 
-The new-game flow selects faction, scenario and fixed world speed before state creation. Existing campaigns migrate safely to x1. Save slots, autosave, snapshot recovery and import/export preserve the campaign and runtime cursor without starting catch-up yet.
+The new-game flow selects faction, scenario and fixed world speed before state creation. Existing campaigns migrate safely to x1. Save slots, autosave, snapshot recovery and import/export preserve the campaign, processed real-time cursor, pending continuation and pending return summary without starting catch-up yet.
 
 ### Expected paths
 
@@ -66,21 +66,23 @@ Tests:
 4. Map scenario preset to existing topology preset.
 5. Add replay initial configuration.
 6. Bump save format to v3 and add validated runtime metadata plus envelope integrity.
-7. Implement v14→v15 and envelope v1/v2→v3 migration.
-8. Preserve runtime cursor semantics through manual save, autosave, import/export, snapshot and recovery.
-9. Replace faction-only setup with one accessible campaign setup transaction.
-10. Show immutable campaign settings in save/system presentation.
-11. Do not advance real or game time automatically in this PR.
+7. Define protected optional `pendingCatchUp` and `pendingReturnSummary` persistence shapes without executing them yet.
+8. Implement v14→v15 and envelope v1/v2→v3 migration.
+9. Use validated legacy envelope `savedAt` for migrated `createdAtReal` and `lastActiveAtReal`; never use the hard-coded v14 simulation epoch as a real creation date.
+10. Preserve processed cursor, continuation and pending-summary semantics through manual save, autosave, import/export, snapshot and recovery.
+11. Replace faction-only setup with one accessible campaign setup transaction.
+12. Show immutable campaign settings in save/system presentation.
+13. Do not advance real or game time automatically in this PR.
 
 ### Acceptance gate
 
 - all four speed presets round-trip through state/checksum/save;
 - topology preset and faction round-trip;
 - settings cannot change through runtime/UI after creation;
-- old saves migrate to x1 with deterministic settings;
-- malformed runtime metadata is rejected or safely normalized with stable codes;
-- import/export preserves source runtime cursor;
-- snapshot/recovery does not erase offline duration;
+- old saves migrate to x1 with deterministic settings and envelope-derived creation time;
+- malformed runtime metadata/continuation/summary is rejected or safely normalized with stable codes;
+- import/export preserves source processed cursor, pending continuation and pending summary;
+- snapshot/recovery does not erase offline duration or pending work;
 - replay with explicit settings reproduces checksum;
 - no catch-up or live ticker has been activated;
 - schema v15 migration fixtures cover supported legacy versions;
@@ -92,14 +94,15 @@ Tests:
 - accidental catch-up on import/recovery before cursor policy is ready;
 - hidden default campaign settings in replay or tests;
 - old saves incorrectly receiving x2 instead of x1;
+- fabricated migrated creation time from the old fixed simulation epoch;
 - UI permitting post-creation mutation.
 
 ### Explicit non-goals
 
 - active ticker;
-- offline catch-up;
+- offline catch-up execution;
 - bot chronological refactor;
-- return summary;
+- generation/display of a real return summary;
 - progression rebalance.
 
 ## #132 — `CAMPAIGN-CLOCK-OFFLINE-GATE`
@@ -110,7 +113,7 @@ Deliver one chronological, bounded campaign-time engine shared by open-session p
 
 ### Player-visible outcome
 
-A campaign advances automatically at its immutable speed while open. Closing and reopening processes the exact elapsed world time, including honest bot actions, before interaction. The player sees progress and a structured return summary. Normal fast-forward buttons are absent.
+A campaign advances automatically at its immutable speed while open. Closing and reopening processes the exact elapsed world time, including honest bot actions, before interaction. The player sees progress and a structured return summary that survives reload until acknowledged. Normal fast-forward buttons are absent.
 
 ### Expected paths
 
@@ -143,7 +146,7 @@ Tests and tooling:
 - bot chronological interleave tests;
 - persistence interruption/resume tests;
 - one-day and seven-day headless catch-up gates;
-- Browser E2E with fake real time for active tick, close/reload, progress, summary and no duplicate processing;
+- Browser E2E with fake real time for active tick, close/reload, progress, summary acknowledgement and no duplicate processing;
 - release viewport, keyboard and reduced-motion checks;
 - performance diagnostics recorded in the PR change document.
 
@@ -155,11 +158,15 @@ Tests and tooling:
 4. Prove chunk/budget partition equivalence.
 5. Add active real-time clock with fractional carry and coalesced transitions.
 6. Add offline bootstrap catch-up with resumable bounded chunks.
-7. Add safe checkpoint/autosave behavior and crash-resume test.
-8. Accumulate redacted structured summary during catch-up.
-9. Persist caught-up state/cursor before normal mount and summary presentation.
-10. Remove player fast-forward controls; retain E2E/headless acceleration through explicit APIs only.
-11. Close the batch, archive audit, update history/status/continuation and identify the next audit.
+7. Persist target/continuation before processing can yield.
+8. Advance durable `lastActiveAtReal` only by processed real duration at each checkpoint.
+9. Persist remaining target, fractional carry and accumulated summary at every safe checkpoint.
+10. Resume pending target before calculating newer elapsed time; process time elapsed during catch-up afterward.
+11. Accumulate redacted structured summary during catch-up.
+12. Atomically persist final state/cursor and `pendingReturnSummary` before normal mount.
+13. Keep the summary across reload until explicit acknowledged clearing is durably saved.
+14. Remove player fast-forward controls; retain E2E/headless acceleration through explicit APIs only.
+15. Close the batch, archive audit, update history/status/continuation and identify the next audit.
 
 ### Acceptance gate
 
@@ -170,11 +177,14 @@ Tests and tooling:
 - bot commands can influence later events inside the same interval;
 - same-time order is stable across save/load and worker boundaries;
 - one-day and seven-day catch-up drain without skipped work;
-- partial checkpoint reload resumes without duplicates;
-- malformed/rollback clock produces zero elapsed with visible reason;
+- partial checkpoint reload resumes without duplicates or lost remaining time;
+- checkpoint cursor equals processed time, not target/current time;
+- time elapsed while a long catch-up runs is processed after its original target;
+- malformed/rollback clock produces zero new elapsed with visible reason;
 - huge forward interval is processed fully through progress chunks, never silently truncated;
 - summary covers required visible domains without hidden information;
-- final state saves before summary interaction;
+- crash/reload after final catch-up save but before acknowledgement still presents the summary;
+- final state, cursor and pending summary save before interaction;
 - no normal fast-forward controls remain;
 - autosave writes are bounded/coalesced rather than per frame;
 - both release viewports, keyboard and reduced motion pass;
@@ -184,8 +194,10 @@ Tests and tooling:
 
 - double ownership between the old bot controller and the new clock engine;
 - same-time order changing combat/logistics outcomes;
+- checkpointing target `now` instead of processed cursor and losing remaining work;
 - non-idempotent checkpoints causing duplicated commands/events;
 - UI mounting before catch-up final state;
+- summary loss before acknowledgement;
 - long catch-up blocking the browser;
 - summary leaking enemy plans;
 - excessive autosave writes from active ticks.
