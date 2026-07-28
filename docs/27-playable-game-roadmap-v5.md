@@ -2,15 +2,16 @@
 
 **Status:** active canonical product roadmap  
 **Updated:** 2026-07-28  
-**Last merged runtime PR:** #123 · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
-**Active documentation:** #124 `LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT`  
-**Next authorized work after #124:** Audit PR #125 only  
+**Last merged PR:** #124 · `cdd112c544ce8d37af17e938867d4588bedcf152`  
+**Runtime baseline:** #123 · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
+**Active audit:** #125 `NAVIGATION-USABILITY-01`  
+**Next implementation after audit merge:** #126 `NAV-IA-PRIMARY-SHELL`  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
 
 ```text
-choose faction and campaign settings
+choose faction and immutable campaign settings
 → develop economy and infrastructure
 → research and build fleets
 → explore Universe / Galaxy / Solar systems
@@ -22,16 +23,21 @@ choose faction and campaign settings
 → reach deterministic alliance or solo victory, or lose when another side wins
 ```
 
-Nemexia references define systemic depth only. Stellar Empires keeps original terminology, assets, UI and implementation. Endgame rules remain authoritative in `docs/25-solar-war-obelisks-gates-and-progression.md`.
+Nemexia references define systemic depth only. Stellar Empires keeps original terminology, assets, UI and implementation.
 
-The campaign-runtime addendum is authoritative in `docs/25a-local-campaign-world-speed-and-offline-progression.md`:
+Canonical contracts:
 
-- local browser campaign, no required continuously running server;
-- immutable world-speed preset chosen when the campaign is created;
+- endgame: `docs/25-solar-war-obelisks-gates-and-progression.md`;
+- local campaign/world speed/offline progression: `docs/25a-local-campaign-world-speed-and-offline-progression.md`.
+
+The local campaign contract requires:
+
+- no continuously running game server for Release 1.0;
+- immutable world-speed preset chosen when the campaign starts;
 - no normal in-session speed controls;
-- deterministic offline catch-up at the same world speed;
+- deterministic offline catch-up at the same selected speed;
 - bots, attacks, diplomacy, alliances and endgame continue through ordinary rules while closed;
-- target complete campaign length of roughly one active day after later progression compression and balance work.
+- progression later compressed toward a complete roughly one-day active campaign.
 
 ## 2. Source-of-truth hierarchy
 
@@ -43,7 +49,7 @@ The campaign-runtime addendum is authoritative in `docs/25a-local-campaign-world
 6. research references;
 7. older audits/handoffs as history only.
 
-Exact current sequencing:
+Exact execution sequencing:
 
 ```text
 docs/roadmap-pr-index.json
@@ -51,13 +57,13 @@ docs/audits/current-batch-audit.md
 docs/audits/current-execution-state.md
 ```
 
-## 3. Delivered baseline through PR #123
+## 3. Delivered baseline through PR #124
 
 ### Simulation and persistence
 
 - deterministic command/event/replay/checksum model;
 - schema v14 and migration chain;
-- IndexedDB slots, autosave, import/export and recovery;
+- IndexedDB autosave, slots, import/export and recovery;
 - bounded histories and serialized deterministic bot timing;
 - player and bots share validation/command paths.
 
@@ -81,11 +87,27 @@ docs/audits/current-execution-state.md
 - one application controller and nine canonical route families;
 - persistent HUD/context, keyboard, reduced motion and release-view Browser E2E.
 
-### Known UX gap
+### Canonical product contract
 
-The routed shell is technically coherent but not yet proven usable as a complete player workflow. Navigation hierarchy, colony/context continuity, cross-domain actions, backtracking and common task length require a dedicated audit before more systems are layered onto the interface.
+PR #124 records the local browser campaign, immutable world speed, deterministic offline continuation, bot activity while closed and compressed one-day campaign direction. It changes no runtime or balance.
 
-## 4. Release 1.0 definition
+## 4. Verified navigation gap
+
+The shell is technically routed but not yet proven convenient for complete player tasks.
+
+Audit #125 verified:
+
+- nine top-level route families compete with similar visual weight;
+- Operations is classified as utility despite owning frequent gameplay;
+- top-level family buttons normally reset to generic overview/default routes;
+- only Planet encodes colony context while other workspaces consume the implicit active colony;
+- Space has breadcrumbs but the wider application lacks shared hierarchy and return context;
+- target handoff can depend on in-memory events/local workspace state;
+- existing E2E proves route existence, history, keyboard and layout, not task length or context retention.
+
+Navigation repair precedes campaign settings/time work so later systems are added to an understandable application.
+
+## 5. Release 1.0 definition
 
 ### Player loop
 
@@ -95,7 +117,7 @@ A player can:
 - choose immutable campaign settings and understand their effect;
 - build a viable multi-colony economy;
 - unlock the complete catalog;
-- navigate and launch every supported mission;
+- navigate and launch every supported mission without dead ends;
 - inspect intelligence/reports and return to the relevant context;
 - fight fleets/defence and use Commander/planet-destroyer mechanics;
 - safely lose and recolonize secondary colonies;
@@ -106,12 +128,12 @@ A player can:
 
 ### Bot loop
 
-Bots must use the same commands, resources, timing and intelligence limits. At least one headless match must reach victory with all factions, economy/research, colonization/loss/recovery, espionage, ordinary/PvE combat, alliances, solar war and final victory. The same result must remain valid through save/load and offline catch-up.
+Bots use the same commands, resources, timing and intelligence limits. At least one headless match must reach victory with all factions, economy/research, colonization/loss/recovery, espionage, ordinary/PvE combat, alliances, solar war and final victory. The result remains valid through save/load and offline catch-up.
 
 ### Product quality
 
 - no incorrect core asset fallback;
-- no dead primary route or dead-end task flow;
+- no dead primary/local route or dead-end task flow;
 - deterministic/serializable destructive and offline actions with history;
 - bounded save/history/catch-up behavior;
 - 1366×768 and 1920×1080 desktop usability;
@@ -120,77 +142,101 @@ Bots must use the same commands, resources, timing and intelligence limits. At l
 - complete Browser E2E, victory/defeat path and long-session gate;
 - balanced standard campaign capable of completing in roughly one active day.
 
-## 5. Milestone map
+## 6. Milestone map
 
 | Milestone | Status | Delivery |
 |---|---|---|
 | M1 — Production assets | completed | Audit #101; #102–#105 |
 | M2 — Navigable Universe | completed | Audit #106; #107–#110 |
 | M3 — Coherent UI shell | technically completed | Audit #111; #112–#115 |
-| M3b — Navigation/usability repair | next audit | Audit #125 after docs #124 |
+| M3b — Navigation/usability repair | audit active | Audit #125; planned #126–#129 |
 | M4a — Ordinary missions/intelligence | completed | Audit #116; #117–#120 |
 | M4b — Planet demolition/destruction/recovery | completed | Audit #121; #122–#123 |
-| M4c — Local campaign time/pacing transition | not audited | world speed, offline catch-up, compressed progression |
+| M4c — Local campaign time/pacing transition | blocked until #129 | Audit #130 next |
 | M5 — Multi-colony economy/logistics coherence | not audited | economy/logistics sustainability and bot planning |
 | M6 — Full PvE/meta systems | not audited | PvE depth, Arena, Admiral meta, services |
 | M7 — Autonomous bot parity | not audited | honest full-domain bot loop and catch-up parity |
 | M8 — Complete endgame | not audited | alliances, solar war, Obelisks, Gates, victory/defeat |
 | M9 — Release candidate | not audited | balance, onboarding, QA, performance, release |
 
-## 6. Immediate ordered route
+## 7. Active accepted batch — NAVIGATION-USABILITY-01
 
-### PR #124 — canonical product contract
+```text
+#126 NAV-IA-PRIMARY-SHELL
+→ #127 NAV-CONTEXT-ROUTE-MODEL
+→ #128 NAV-CROSS-DOMAIN-FLOWS
+→ #129 NAV-USABILITY-GATE
+```
 
-Documentation only:
+### #126 — primary information architecture
 
-- local browser campaign;
-- immutable world-speed setting;
-- deterministic offline continuation;
-- bots and endgame remain active while closed;
-- compressed one-day campaign direction;
-- no runtime or balance implementation.
+- group core gameplay, information/history and utility destinations;
+- promote Operations to core gameplay;
+- represent the complete Universe scope in the Space label;
+- reduce low-frequency Ranking/System competition with core actions;
+- preserve route IDs, accessibility and keyboard order.
 
-### Audit PR #125 — navigation/usability first
+### #127 — route and context model
 
-The audit must:
+- remember last valid subroute per family;
+- add common breadcrumbs and return destination;
+- preserve active colony across colony-sensitive workspaces;
+- normalize stale context explicitly;
+- keep all navigation state outside `GameState`, saves and checksums.
 
-- reconcile the live Pages build, route registry, shell controller, workspace modules and Browser E2E;
-- map common player tasks and count route changes, clicks, context loss and dead ends;
-- verify active-colony continuity, report/map/fleet handoffs and browser back/reload behavior;
-- rebaseline this roadmap against the local-campaign contract;
-- authorize only a bounded navigation implementation batch;
-- name the later separate audit for campaign time/pacing transition.
+### #128 — direct reversible flows
 
-### After navigation closure
+- Planet → Research/Shipyard/Defence/Upgrades → origin;
+- Space/intelligence target → Fleet compose → origin;
+- Report → exact map coordinate → same report/filter;
+- Operations overview/activity → exact operation mode;
+- colony switch retains equivalent valid task.
 
-Create a separate audit for:
+### #129 — usability gate
 
-- persisted campaign settings;
-- immutable world-speed semantics;
-- trusted elapsed-time input and deterministic offline catch-up;
+- action/transition budgets for common player tasks;
+- no dead end or unexplained context reset;
+- Back/Forward, reload, keyboard, reduced motion and release viewports;
+- obsolete competing launcher cleanup;
+- audit archive and batch closure.
+
+### Explicit exclusions
+
+No world-speed state, offline catch-up, schema migration, progression balance, gameplay commands, bot strategy, alliances, endgame implementation, framework rewrite or complete mobile redesign.
+
+## 8. Next ordered audit
+
+After #129 closes:
+
+```text
+#130 Audit LOCAL-CAMPAIGN-TIME-PACING-01
+```
+
+It must inspect and plan:
+
+- campaign setup and persisted immutable world speed;
+- trusted elapsed-time input;
+- deterministic bounded offline catch-up;
 - bot/diplomacy/endgame catch-up parity;
-- return summary;
-- progression compression, exact level caps and campaign-duration balance.
+- return summary and offline victory/defeat presentation;
+- progression compression and exact level caps;
+- headless campaign-duration balance.
 
-Do not combine these simulation/persistence/balance changes with the navigation implementation batch.
+It must not begin before navigation closure.
 
-## 7. Remaining product families
-
-### Local campaign time and pacing
-
-World-speed settings, offline catch-up, campaign-result handling and progression compression. Exact values require current-code audit, save-schema decision, deterministic chunking tests and headless duration runs.
+## 9. Remaining product families
 
 ### Multi-colony economy/logistics
 
-Specialization, logistics lifecycle/capacity/failures, market coherence, honest bot economic planning and long-run sustainability under compressed campaign timing.
+Specialization, logistics lifecycle/capacity/failures, market coherence, honest bot economic planning and sustainability under compressed timing.
 
 ### PvE and meta
 
-Deeper PvE encounters/rewards, repeatable competition, Admiral/Commander meta, non-monetized economic services and world-event depth.
+Deeper encounters/rewards, repeatable competition, Admiral/Commander meta, non-monetized services and world-event depth.
 
 ### Bot parity
 
-Full headless progression, no hidden resources/bot-only mutation, deterministic bounded catch-up, save/load parity and observable failure reasons.
+Full headless progression, no hidden resources/bot-only mutation, deterministic catch-up, save/load parity and observable failure reasons.
 
 ### Endgame
 
@@ -200,7 +246,7 @@ Alliances/diplomacy, solar attack/support/destruction/rebuilding, Solar Crystals
 
 Onboarding, balance runs, campaign-duration targets, long-session/catch-up performance, recovery drills, accessibility/visual consistency, complete E2E and reproducible release.
 
-## 8. Delivery rules
+## 10. Delivery rules
 
 1. Start every implementation from fresh merged `main`.
 2. Use an accepted audit and stable work-item ID.
@@ -212,8 +258,8 @@ Onboarding, balance runs, campaign-duration targets, long-session/catch-up perfo
 8. Add focused unit/integration/headless/browser coverage.
 9. Run assets, lint, TypeScript, full tests, build, Browser E2E and Graphify.
 10. Update status/execution/continuation documents.
-11. Navigation implementation must close before the campaign time/pacing audit begins.
+11. Complete #126 → #129 sequentially before Audit #130.
 
-## 9. Immediate action
+## 11. Immediate action
 
-Complete and merge documentation PR #124. Then create Audit PR #125 from fresh merged `main`. No runtime implementation begins before Audit #125 is accepted.
+Merge Audit PR #125 after validation. Then create PR #126 from fresh merged `main` and implement only `NAV-IA-PRIMARY-SHELL`.

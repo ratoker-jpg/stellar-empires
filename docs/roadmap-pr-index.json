@@ -6,17 +6,17 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 123,
-    "mergeSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30",
+    "lastMergedPr": 124,
+    "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152",
     "runtimeBaselinePr": 123,
     "runtimeBaselineSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30",
-    "postMergeMetadataSha": "8b23ad357a94542ffd45a93d4d707f6b83171dd6"
+    "auditBaselineSha": "cdd112c544ce8d37af17e938867d4588bedcf152"
   },
-  "activePr": 124,
-  "activePrKind": "documentation",
-  "activeWorkItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT",
-  "nextPrAfterActive": 125,
-  "nextPrKind": "audit",
+  "activePr": 125,
+  "activePrKind": "audit",
+  "activeBatchId": "NAVIGATION-USABILITY-01",
+  "nextPrAfterActive": 126,
+  "nextPrKind": "implementation",
   "phases": [
     {"id": "delivered-foundation-and-catalogs", "startPr": 1, "endPr": 100, "status": "completed", "outcome": "Deterministic PvE foundation, complete mechanical catalogs, canonical roadmap and audit-first delivery protocol"},
     {"id": "catalog-runtime-integration", "auditPr": 101, "startPr": 102, "endPr": 105, "status": "completed", "outcome": "217 mechanical IDs resolve through 173 generated runtime images"},
@@ -24,9 +24,9 @@
     {"id": "coherent-ui-shell", "auditPr": 111, "startPr": 112, "endPr": 115, "status": "completed-technical", "completedPrs": [112, 113, 114, 115], "outcome": "One application controller, nine routes and browser/accessibility gate", "archive": "docs/audits/completed/coherent-ui-shell-01.md"},
     {"id": "ordinary-missions-intelligence", "auditPr": 116, "startPr": 117, "endPr": 120, "status": "completed", "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01", "completedPrs": [117, 118, 119, 120], "outcome": "Shared ordinary mission rules, deterministic intelligence, redacted reports and honest bot gate", "archive": "docs/audits/completed/ordinary-missions-intelligence-01.md"},
     {"id": "planet-demolition-destruction", "auditPr": 121, "startPr": 122, "endPr": 123, "status": "completed", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "completedPrs": [122, 123], "outcome": "Deterministic demolition, capped whole-planet destruction, final-colony protection and atomic recovery", "archive": "docs/audits/completed/planet-demolition-destruction-01.md"},
-    {"id": "local-campaign-product-contract", "documentationPr": 124, "status": "active", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "outcome": "Local campaign, immutable world speed, deterministic offline progression and compressed campaign direction"},
-    {"id": "navigation-usability-repair", "auditPr": 125, "startPr": null, "endPr": null, "status": "next-audit", "outcome": "Player-centered navigation hierarchy, context continuity and task-flow gate"},
-    {"id": "local-campaign-time-pacing", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Campaign settings, world speed, offline catch-up, return summary and progression compression"},
+    {"id": "local-campaign-product-contract", "documentationPr": 124, "status": "completed", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152", "outcome": "Local campaign, immutable world speed, deterministic offline progression and compressed campaign direction"},
+    {"id": "navigation-usability-repair", "auditPr": 125, "startPr": 126, "endPr": 129, "status": "audit-active", "batchId": "NAVIGATION-USABILITY-01", "completedPrs": [], "nextPr": 126, "outcome": "Player-centered navigation hierarchy, typed context, direct cross-domain flows and task-flow gate"},
+    {"id": "local-campaign-time-pacing", "auditPr": 130, "startPr": null, "endPr": null, "status": "blocked-until-129", "outcome": "Campaign settings, world speed, offline catch-up, return summary and progression compression"},
     {"id": "multi-colony-economy-logistics", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Coherent multi-colony economy, logistics and bot planning under compressed timing"},
     {"id": "pve-meta-and-bot-parity", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "PvE/meta depth and honest autonomous bot parity"},
     {"id": "alliances-and-endgame", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Alliances, solar war, Obelisks, Gates and complete victory/defeat"},
@@ -56,8 +56,13 @@
     {"number": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "merged"},
     {"number": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "merged"},
     {"number": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "merged"},
-    {"number": 124, "kind": "documentation", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "status": "active"},
-    {"number": 125, "kind": "audit", "batchId": "NAVIGATION-USABILITY-01", "title": "Audit navigation and usability repair", "status": "planned"}
+    {"number": 124, "kind": "documentation", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "status": "merged", "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152"},
+    {"number": 125, "kind": "audit", "batchId": "NAVIGATION-USABILITY-01", "title": "Audit navigation and usability repair", "status": "active"},
+    {"number": 126, "kind": "implementation", "workItem": "NAV-IA-PRIMARY-SHELL", "title": "Rebuild the primary navigation hierarchy", "status": "planned"},
+    {"number": 127, "kind": "implementation", "workItem": "NAV-CONTEXT-ROUTE-MODEL", "title": "Preserve route, colony and return context", "status": "planned"},
+    {"number": 128, "kind": "implementation", "workItem": "NAV-CROSS-DOMAIN-FLOWS", "title": "Connect direct reversible player flows", "status": "planned"},
+    {"number": 129, "kind": "implementation", "workItem": "NAV-USABILITY-GATE", "title": "Gate navigation task usability", "status": "planned"},
+    {"number": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "title": "Audit local campaign time and pacing", "status": "blocked-until-129"}
   ],
-  "nextAction": "Merge documentation PR #124, then create Audit PR #125 from fresh main. No runtime implementation before Audit #125 is accepted."
+  "nextAction": "Merge Audit PR #125, then create PR #126 NAV-IA-PRIMARY-SHELL from fresh merged main."
 }

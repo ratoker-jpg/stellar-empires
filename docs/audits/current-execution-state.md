@@ -1,23 +1,34 @@
 # Current execution state
 
 **Updated:** 2026-07-28  
-**Safe to continue:** documentation PR #124, then Audit PR #125 only
+**Safe to continue:** Audit PR #125, then implementation PR #126 only after audit merge
 
 | Field | Current value |
 |---|---|
-| Last merged runtime PR | #123 `PLANET-DESTRUCTION-RECOVERY-GATE` · `aa1dc67ed874c75aa69af30ce9ced58169793c30` |
-| Runtime baseline | PR #123 · `aa1dc67ed874c75aa69af30ce9ced58169793c30` |
-| Completed batch | `PLANET-DEMOLITION-DESTRUCTION-01` |
-| Active documentation PR | #124 `LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT` |
+| Last merged PR | #124 `LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT` · `cdd112c544ce8d37af17e938867d4588bedcf152` |
+| Runtime baseline | PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` · `aa1dc67ed874c75aa69af30ce9ced58169793c30` |
+| Canonical product contract | local PvE browser campaign, immutable world speed at creation, deterministic offline continuation, compressed one-day campaign direction |
+| Active audit | #125 `NAVIGATION-USABILITY-01` |
+| Audit baseline | exact post-#124 `main` · `cdd112c544ce8d37af17e938867d4588bedcf152` |
+| Complexity | medium |
+| Authorized implementation PRs after audit merge | #126, #127, #128, #129 |
+| First work item | #126 `NAV-IA-PRIMARY-SHELL` |
 | Active implementation PR | none |
-| Persistence | schema v14; no migration in PR #124 |
-| Product decision | local PvE browser campaign; immutable world-speed preset at campaign creation; deterministic offline catch-up; bots/alliances/endgame continue through ordinary simulation rules; compressed one-day campaign direction |
-| Validation boundary | PR #124 is documentation/status only; no runtime, balance, schema or command change |
-| Divergence | owner explicitly inserted a product-contract PR before the previously expected next audit; implementation remains blocked |
-| Exact next action | merge documentation PR #124 after diff/check review, then create fresh Audit PR #125 from merged `main` |
+| Persistence | schema v14; navigation context remains outside saves and checksums |
+| Runtime/mechanics in Audit #125 | none |
+| Exact next action | merge Audit #125 after documentation diff, CI, Browser E2E, Graphify and review; then create #126 from fresh merged `main` |
+
+## Accepted sequence
+
+```text
+#126 NAV-IA-PRIMARY-SHELL
+→ #127 NAV-CONTEXT-ROUTE-MODEL
+→ #128 NAV-CROSS-DOMAIN-FLOWS
+→ #129 NAV-USABILITY-GATE
+```
 
 ## Recovery rule
 
-The destructive ordinary-attack branch remains complete and archived at `docs/audits/completed/planet-demolition-destruction-01.md`. Preserve schema v14, final-colony protection, historical report coordinates and special-mission historical `originPlanetId`.
+Preserve all runtime behavior delivered through PR #123 and the product decision recorded by PR #124. Audit #125 authorizes navigation/presentation work only. Do not add campaign settings, world speed, offline catch-up, schema migration, progression compression, alliances or endgame in #126–#129.
 
-PR #124 records the canonical campaign-runtime direction in `docs/25a-local-campaign-world-speed-and-offline-progression.md`. It authorizes no implementation. Audit PR #125 must rebaseline the roadmap around this decision, audit navigation/usability first and authorize only a bounded navigation implementation batch. Campaign settings, offline catch-up and progression compression require a later separate audit after navigation closure.
+After #129 closes, the next repository action must be Audit #130 `LOCAL-CAMPAIGN-TIME-PACING-01`.

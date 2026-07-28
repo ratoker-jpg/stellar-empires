@@ -1,30 +1,38 @@
 {
-  "statusVersion": 32,
+  "statusVersion": 33,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 123,
-  "lastMergeSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30",
-  "verifiedMainBaseline": "PR #123 PLANET-DESTRUCTION-RECOVERY-GATE squash-merged as aa1dc67ed874c75aa69af30ce9ced58169793c30; post-merge metadata main was 8b23ad357a94542ffd45a93d4d707f6b83171dd6",
-  "activePr": 124,
-  "activePrKind": "documentation",
-  "activeWorkItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT",
-  "nextPrAfterActive": 125,
-  "nextPrKind": "audit",
-  "currentMilestone": "canonical local-campaign runtime and pacing decision before navigation audit",
+  "lastMergedPr": 124,
+  "lastMergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152",
+  "verifiedMainBaseline": "PR #124 LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT squash-merged as cdd112c544ce8d37af17e938867d4588bedcf152 after CI, Browser E2E and Graphify passed; runtime remains PR #123",
+  "runtimeBaselinePr": 123,
+  "runtimeBaselineSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30",
+  "activePr": 125,
+  "activePrKind": "audit",
+  "activeWorkItem": "NAVIGATION-USABILITY-01",
+  "nextPrAfterActive": 126,
+  "nextPrKind": "implementation",
+  "currentMilestone": "M3b navigation and usability repair",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
-  "currentAudit": null,
-  "currentAuditContracts": [],
+  "currentAudit": "docs/audits/current-batch-audit.md",
+  "currentAuditContracts": [
+    "docs/audits/contracts/navigation-usability-01-prs.md",
+    "docs/audits/contracts/navigation-usability-01-route-context.md"
+  ],
+  "currentAuditEvidence": [
+    "docs/audits/evidence/navigation-usability-01-code-and-flow.md"
+  ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
     "batchId": "PLANET-DEMOLITION-DESTRUCTION-01",
-    "roadmapMilestone": "M4",
+    "roadmapMilestone": "M4b",
     "complexity": "heavy",
     "auditPr": 121,
     "auditStatus": "completed",
@@ -45,7 +53,26 @@
     "archive": "docs/audits/completed/planet-demolition-destruction-01.md",
     "divergence": "none"
   },
-  "currentBatch": null,
+  "currentBatch": {
+    "batchId": "NAVIGATION-USABILITY-01",
+    "roadmapMilestone": "M3b",
+    "complexity": "medium",
+    "auditPr": 125,
+    "auditStatus": "active",
+    "baselineSha": "cdd112c544ce8d37af17e938867d4588bedcf152",
+    "implementationCount": 4,
+    "plannedImplementationPrs": [126, 127, 128, 129],
+    "completedImplementationPrs": [],
+    "implementationMergeShas": {},
+    "workItems": [
+      "NAV-IA-PRIMARY-SHELL",
+      "NAV-CONTEXT-ROUTE-MODEL",
+      "NAV-CROSS-DOMAIN-FLOWS",
+      "NAV-USABILITY-GATE"
+    ],
+    "status": "audit-active",
+    "divergence": "none"
+  },
   "productDecisions": {
     "localBrowserCampaign": true,
     "requiredContinuousServer": false,
@@ -62,11 +89,20 @@
     "navigationFirst": true
   },
   "auditDecisions": {
-    "implementationCount": 0,
+    "implementationCount": 4,
     "schemaChange": false,
     "newGameplayCommands": false,
     "newMissionKinds": false,
-    "runtimeImplementationAuthorized": false,
+    "routeFamilyIdsPreserved": true,
+    "navigationStateOutsideGameState": true,
+    "lastRouteMemoryRequired": true,
+    "sharedBreadcrumbsRequired": true,
+    "typedCrossDomainContextRequired": true,
+    "explicitFleetConfirmationPreserved": true,
+    "operationsIsCoreGameplay": true,
+    "taskFlowBudgetsRequired": true,
+    "worldSpeedIncluded": false,
+    "offlineCatchUpIncluded": false,
     "criticalUnknowns": 0
   },
   "scenarioPresets": {
@@ -93,29 +129,29 @@
     "formations, priorities, ship upgrades, command doctrine and Commander Ships",
     "complete mechanical catalogs and processed runtime art",
     "20-slot Universe with Universe to Galaxy to Solar-system navigation",
-    "intelligence-aware Space details, target handoff and report backlinks",
-    "GameApplicationController and nine canonical primary route families",
+    "intelligence-aware action availability and target handoff",
+    "GameApplicationController and nine canonical route families",
     "routed development, fleet, operations, command, reports and system workspaces",
     "persistent HUD, route-aware context, keyboard, compact and reduced-motion accessibility",
-    "shared pure ordinary mission availability for reducer, Fleet UI and bots",
-    "deterministic scout tiers, reports and honest bot mission gate",
-    "faction and weapon-scaled deterministic demolition and whole-planet destruction",
-    "atomic destroyed-colony reference recovery, final-colony protection, debris recycling and fresh recolonization"
+    "shared ordinary mission rules, deterministic intelligence and honest bot mission gate",
+    "deterministic demolition and whole-planet destruction with final-colony protection and atomic recovery",
+    "canonical local-campaign world-speed and offline-progression product contract"
   ],
   "activeDelivery": [
     {"pr": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
     {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "merged", "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152"},
     {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "merged", "mergeSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30"},
-    {"pr": 124, "kind": "documentation", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "status": "active"}
+    {"pr": 124, "kind": "documentation", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "status": "merged", "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152"},
+    {"pr": 125, "kind": "audit", "batchId": "NAVIGATION-USABILITY-01", "status": "active"}
   ],
   "knownLimitations": [
-    "navigation and task-flow usability remain poor despite the technically coherent routed shell",
+    "current shell routing is technically coherent but player task-flow usability is not yet repaired",
     "world-speed settings and deterministic offline catch-up are documented but not implemented",
-    "campaign progression is still tuned as a long browser strategy and has not been compressed for a one-day match",
-    "multi-colony economy and logistics coherence remain a separate future audit",
+    "campaign progression has not been compressed or balanced for a one-day match",
+    "multi-colony economy and logistics coherence remain a later audit",
     "deeper PvE/meta systems and complete bot parity remain incomplete",
-    "alliances, solar war, Obelisks, Gates and final victory are not implemented",
-    "complete phone/mobile layout, balance, onboarding and release hardening remain incomplete"
+    "alliances, solar war, Obelisks, Gates and final victory/defeat are not implemented",
+    "complete phone/mobile layout, onboarding and release hardening remain incomplete"
   ],
   "graphify": {
     "package": "graphifyy",
@@ -125,10 +161,10 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #123 final head 32e5b4aa0bd7d478022420f2c64b9369b56b7055 passed Graphify",
+    "lastValidation": "PR #124 final head passed Graphify run 30362252525",
     "lastAuditGraph": {
-      "workflowRun": "30355631705",
-      "headSha": "32e5b4aa0bd7d478022420f2c64b9369b56b7055"
+      "workflowRun": "30362252525",
+      "headSha": "c1816d4d7aa1d0479244f37733c94ea59d11c7ff"
     }
   },
   "sourceAssetIntake": {
@@ -145,14 +181,17 @@
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
+    "docs/audits/current-batch-audit.md",
+    "docs/audits/contracts/navigation-usability-01-prs.md",
+    "docs/audits/contracts/navigation-usability-01-route-context.md",
+    "docs/audits/evidence/navigation-usability-01-code-and-flow.md",
+    "docs/changes/pr125-navigation-usability-audit.md",
     "docs/25a-local-campaign-world-speed-and-offline-progression.md",
-    "docs/audits/completed/planet-demolition-destruction-01.md",
-    "docs/changes/pr124-local-campaign-world-speed-contract.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Merge documentation PR #124 after validation, then create Audit PR #125 from fresh main. The audit must rebaseline the roadmap, audit navigation/usability first and authorize no campaign-speed implementation yet."
+  "nextAction": "Merge Audit PR #125 after validation, then create implementation PR #126 NAV-IA-PRIMARY-SHELL from fresh merged main."
 }
