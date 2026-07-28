@@ -5,106 +5,38 @@
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 120,
-    "mergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665",
+    "lastMergedPr": 121,
+    "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9",
     "runtimeBaselinePr": 120,
     "runtimeBaselineSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665",
     "auditBaselineSha": "818aba011199dd5a96518f859ed35de671be892f"
   },
-  "activePr": 121,
+  "activePr": null,
   "nextPrAfterActive": 122,
   "nextPrKind": "implementation",
   "phases": [
-    {
-      "id": "delivered-foundation-and-catalogs",
-      "startPr": 1,
-      "endPr": 100,
-      "status": "completed",
-      "outcome": "Deterministic PvE foundation, complete mechanical catalogs, canonical roadmap and audit-first delivery protocol"
-    },
-    {
-      "id": "catalog-runtime-integration",
-      "auditPr": 101,
-      "startPr": 102,
-      "endPr": 105,
-      "status": "completed",
-      "outcome": "217 mechanical IDs resolve through 173 generated runtime images"
-    },
-    {
-      "id": "universe-navigation",
-      "auditPr": 106,
-      "startPr": 107,
-      "endPr": 110,
-      "status": "completed",
-      "outcome": "Schema v14, 102 Universe textures, three-level spatial navigation, action gate and Browser E2E"
-    },
-    {
-      "id": "coherent-ui-shell",
-      "auditPr": 111,
-      "startPr": 112,
-      "endPr": 115,
-      "status": "completed",
-      "completedPrs": [112, 113, 114, 115],
-      "nextPr": null,
-      "outcome": "One application controller, nine canonical primary routes, routed workspaces, persistent HUD/context and full browser/accessibility gate",
-      "archive": "docs/audits/completed/coherent-ui-shell-01.md"
-    },
-    {
-      "id": "ordinary-missions-intelligence",
-      "auditPr": 116,
-      "startPr": 117,
-      "endPr": 120,
-      "status": "completed",
-      "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01",
-      "completedPrs": [117, 118, 119, 120],
-      "nextPr": null,
-      "outcome": "Shared ordinary mission rules, deterministic intelligence/counter-intelligence, redacted reports/UI and honest bot gate",
-      "archive": "docs/audits/completed/ordinary-missions-intelligence-01.md"
-    },
+    {"id": "delivered-foundation-and-catalogs", "startPr": 1, "endPr": 100, "status": "completed", "outcome": "Deterministic PvE foundation, complete mechanical catalogs, canonical roadmap and audit-first delivery protocol"},
+    {"id": "catalog-runtime-integration", "auditPr": 101, "startPr": 102, "endPr": 105, "status": "completed", "outcome": "217 mechanical IDs resolve through 173 generated runtime images"},
+    {"id": "universe-navigation", "auditPr": 106, "startPr": 107, "endPr": 110, "status": "completed", "outcome": "Schema v14, Universe navigation, action gate and Browser E2E"},
+    {"id": "coherent-ui-shell", "auditPr": 111, "startPr": 112, "endPr": 115, "status": "completed", "completedPrs": [112, 113, 114, 115], "nextPr": null, "outcome": "One application controller, nine canonical routes and browser/accessibility gate", "archive": "docs/audits/completed/coherent-ui-shell-01.md"},
+    {"id": "ordinary-missions-intelligence", "auditPr": 116, "startPr": 117, "endPr": 120, "status": "completed", "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01", "completedPrs": [117, 118, 119, 120], "nextPr": null, "outcome": "Shared ordinary mission rules, deterministic intelligence, redacted reports and honest bot gate", "archive": "docs/audits/completed/ordinary-missions-intelligence-01.md"},
     {
       "id": "planet-demolition-destruction",
       "auditPr": 121,
+      "auditMergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9",
       "startPr": 122,
       "endPr": 123,
-      "status": "audit-in-progress",
+      "status": "audit-accepted",
       "batchId": "PLANET-DEMOLITION-DESTRUCTION-01",
       "completedPrs": [],
       "nextPr": 122,
-      "outcome": "Ordinary attack demolition, safe colony destruction, released-coordinate debris/recolonization and full gate",
+      "outcome": "Ordinary attack demolition, safe colony destruction including special-mission returns, released-coordinate recovery and full gate",
       "archive": "docs/audits/completed/planet-demolition-destruction-01.md"
     },
-    {
-      "id": "multi-colony-economy-logistics",
-      "auditPr": null,
-      "startPr": null,
-      "endPr": null,
-      "status": "not-audited",
-      "outcome": "Coherent multi-colony economy, logistics and bot planning"
-    },
-    {
-      "id": "pve-meta-and-bot-parity",
-      "auditPr": null,
-      "startPr": null,
-      "endPr": null,
-      "status": "not-audited",
-      "outcome": "PvE/meta depth and honest autonomous bot parity"
-    },
-    {
-      "id": "alliances-and-endgame",
-      "auditPr": null,
-      "startPr": null,
-      "endPr": null,
-      "status": "not-audited",
-      "outcome": "Alliances, solar war, Obelisks, Gates and complete victory"
-    },
-    {
-      "id": "release-candidate",
-      "auditPr": null,
-      "startPr": null,
-      "endPr": null,
-      "status": "not-audited",
-      "outcome": "Balance, performance, onboarding, QA and reproducible Pages release"
-    }
+    {"id": "multi-colony-economy-logistics", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Coherent multi-colony economy, logistics and bot planning"},
+    {"id": "pve-meta-and-bot-parity", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "PvE/meta depth and honest autonomous bot parity"},
+    {"id": "alliances-and-endgame", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Alliances, solar war, Obelisks, Gates and complete victory"},
+    {"id": "release-candidate", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Balance, performance, onboarding, QA and reproducible Pages release"}
   ],
   "planned": [
     {"number": 101, "kind": "audit", "title": "Audit catalog runtime integration", "status": "merged", "mergeSha": "2eb5d4996bb24cb7fa48305bb010e48a1263c465"},
@@ -127,9 +59,9 @@
     {"number": 118, "kind": "implementation", "workItem": "ESPIONAGE-COUNTERINTELLIGENCE", "title": "Complete espionage and counter-intelligence", "status": "merged", "mergeSha": "46570544da064f839055afd3c10a387326452811"},
     {"number": 119, "kind": "implementation", "workItem": "INTELLIGENCE-REPORTS-PRESENTATION", "title": "Route intelligence reports and redacted presentation", "status": "merged", "mergeSha": "e297f77f8e994f37402090a8d9d7c70e28ce099f"},
     {"number": 120, "kind": "implementation", "workItem": "MISSION-INTELLIGENCE-BOT-GATE", "title": "Gate mission intelligence bot parity", "status": "merged", "mergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665"},
-    {"number": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "title": "Audit planet demolition and destruction", "status": "in-progress", "mergeSha": null},
-    {"number": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "title": "Implement deterministic planet demolition", "status": "blocked-until-audit-merge", "mergeSha": null},
+    {"number": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "title": "Audit planet demolition and destruction", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
+    {"number": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "title": "Implement deterministic planet demolition", "status": "next", "mergeSha": null},
     {"number": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "title": "Complete planet destruction and recovery gate", "status": "blocked-until-pr122-merge", "mergeSha": null}
   ],
-  "nextAction": "Finalize and merge Audit PR #121; then create PR #122 from fresh main for PLANET-DEMOLITION-CONTRACT only."
+  "nextAction": "Create PR #122 from fresh current main for PLANET-DEMOLITION-CONTRACT only."
 }
