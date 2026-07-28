@@ -1,19 +1,19 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Audit #121 accepted; implementation #122 is next  
+**Status:** PR #123 closure gate complete; Audit PR #124 is next  
 **Updated:** 2026-07-28  
-**Last merged PR:** #121 · `2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9`  
-**Runtime baseline:** PR #120 · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665`  
+**Last merged PR:** #123 · exact squash SHA recorded in GitHub merge metadata  
+**Runtime baseline:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE`  
 **Release target:** 1.0
 
 ## Authoritative files
 
 ```text
 docs/27-playable-game-roadmap-v5.md
-docs/audits/current-batch-audit.md
 docs/audits/current-execution-state.md
-docs/audits/contracts/planet-demolition-destruction-01-prs.md
-docs/audits/contracts/planet-demolition-destruction-01-rules.md
+docs/audits/completed/planet-demolition-destruction-01.md
+docs/changes/pr123-planet-destruction-recovery-gate.md
+docs/project-status.json
 docs/roadmap-pr-index.json
 ```
 
@@ -23,47 +23,55 @@ docs/roadmap-pr-index.json
 - #106–#110: schema-v14 Universe navigation/action gate;
 - #111–#115: coherent application shell;
 - #116–#120: ordinary mission/intelligence/bot parity gate;
-- #121: accepted heavy planet demolition/destruction audit.
+- #121: accepted heavy planet demolition/destruction audit;
+- #122: deterministic building demolition contract;
+- #123: whole-planet destruction and atomic recovery closure gate.
 
-## Accepted sequence
+## Completed sequence
 
 ```text
 #122 PLANET-DEMOLITION-CONTRACT
 → #123 PLANET-DESTRUCTION-RECOVERY-GATE
+→ batch archived
 ```
 
-### #122 scope
+### Delivered demolition
 
 - faction-specific siege profiles and weapon-level scaling;
 - deterministic demolition points, thresholds, selection and rolls;
 - Annihilator building-roll bonus instead of generic combat damage;
 - one-level building reduction, zone reconciliation and no-refund affected upgrade cancellation;
-- battle report and routed presentation;
-- no planet removal/reference cleanup.
+- battle report and routed presentation.
 
-### #123 scope
+### Delivered destruction and recovery
 
-- whole-planet chance/reductions/cap/final-colony guard;
+- whole-planet chance, reductions, 30% cap and final-colony guard;
 - atomic cleanup/rehome of all live references;
 - ordinary and pending expedition/space-object returns;
 - immutable historical origin plus additive live return destination;
-- debris/recolonization, reports, bots, save/load and closure gate.
+- elapsed/remaining travel-time preservation during rebuilt returns;
+- debris recycling before and after recolonization;
+- fresh colony identity, reports, save/load and Browser E2E closure.
 
-## Deferred
+## Next authorized route
+
+Create a fresh **Audit PR #124** from exact current `main`. The audit must select and bound the next roadmap batch, record the baseline SHA, define implementation PR count/contracts and establish CI, Browser E2E, Graphify and review gates before any new implementation starts.
+
+## Deferred until audited
 
 - multi-colony economy/logistics redesign;
+- deeper PvE/meta and bot parity;
 - solar/system destruction;
 - alliances, crystals, Obelisks, Gates and victory;
-- final-colony destruction;
-- broad balance/mobile/framework work.
+- final-colony destruction and empire elimination;
+- broad balance/mobile/framework/release work.
 
 ## Non-negotiable rules
 
-- #122 starts from fresh current `main`;
-- existing ordinary `attack` only;
-- schema v14 retained;
-- reducer/combat authoritative;
+- fresh current `main` is the only valid baseline;
+- no implementation PR before an accepted Audit #124;
+- schema v14 retained unless an audit proves a migration is required;
+- reducer/combat remains authoritative;
 - deterministic results and no hidden bot/UI target data;
 - no refunds or extra destruction loot;
-- #123 starts only after #122 merges;
-- all repository, Browser E2E and Graphify gates mandatory.
+- all repository, Browser E2E, Graphify and automated review gates remain mandatory.
