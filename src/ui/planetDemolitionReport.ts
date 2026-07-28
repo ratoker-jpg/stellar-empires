@@ -32,15 +32,12 @@ export function findPlanetDemolitionReport(
   for (const entry of state.eventLog) {
     const payload = entry.event.payload;
     if (payload.type === 'BATTLE_REPORT' && payload.report.id === reportId) {
-      if (
-        payload.report.demolition === undefined &&
-        payload.report.destruction === undefined
-      ) {
-        return undefined;
-      }
+      const demolition = payload.report.demolition;
+      const destruction = payload.report.destruction;
+      if (demolition === undefined && destruction === undefined) return undefined;
       return {
-        demolition: payload.report.demolition,
-        destruction: payload.report.destruction,
+        ...(demolition === undefined ? {} : { demolition }),
+        ...(destruction === undefined ? {} : { destruction }),
       };
     }
   }
