@@ -118,11 +118,11 @@ test('new game → map target → reload-safe composer → report backlink → h
     const layout = await page.evaluate(() => ({
       scrollWidth: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
-      canvas: document.querySelector('#phaser-game canvas')?.getBoundingClientRect().toJSON(),
+      activeWorkspace: document.querySelector('#reports-view:not([hidden])')?.getBoundingClientRect().toJSON(),
     }));
     expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
-    expect(layout.canvas?.width ?? 0).toBeGreaterThan(0);
-    expect(layout.canvas?.height ?? 0).toBeGreaterThan(0);
+    expect(layout.activeWorkspace?.width ?? 0).toBeGreaterThan(0);
+    expect(layout.activeWorkspace?.height ?? 0).toBeGreaterThan(0);
   }
 });
 
