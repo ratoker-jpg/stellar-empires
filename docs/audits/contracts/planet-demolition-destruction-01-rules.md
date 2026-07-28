@@ -1,14 +1,14 @@
 # Rules contract — PLANET-DEMOLITION-DESTRUCTION-01
 
 **Audit PR:** #121  
-**Authority:** `docs/25-solar-war-obelisks-gates-and-progression.md` plus explicit project decisions in this audit.
+**Authority:** `docs/25-solar-war-obelisks-gates-and-progression.md` plus explicit decisions in this audit.
 
 ## 1. Entry point
 
 - Existing ordinary mission `attack` only.
 - No new mission enum or command.
-- Existing current level-three intelligence gate remains required before launch.
-- Siege resolves after ordinary deterministic combat.
+- Current level-three intelligence remains required before launch.
+- Siege resolves after deterministic combat.
 
 ## 2. Faction level-10 profiles
 
@@ -18,32 +18,30 @@
 | Synod | Titan class | 90/ship | 250 bps/ship |
 | Veyra | Nox Queen class | 55/ship | 150 bps/ship |
 
-Effective contribution at weapon upgrade level `L`:
+At weapon upgrade level `L`:
 
 ```text
 scaledValue = floor(level10Value * clamp(L, 0, 10) / 10)
 ```
 
-Only surviving post-recovery attacker ships contribute.
+Only surviving post-recovery ships contribute.
 
 ## 3. Demolition
 
 Eligibility:
 
-- result is attacker victory or draw;
-- at least one attacker planet-destroyer survives;
-- target building level is greater than zero;
-- target building is not endgame-locked.
+- attacker victory or draw;
+- surviving attacker planet-destroyer;
+- building level above zero;
+- building not endgame-locked.
 
 Points:
 
 ```text
-raw = sum(attacker surviving count * scaled demolition points)
+raw = sum(attacker survivors * scaled demolition points)
 reduction = floor(surviving defence population / 2500) * 100
 final = max(0, raw - reduction)
 ```
-
-Thresholds:
 
 | Final | Base roll | Selected buildings |
 |---:|---:|---:|
@@ -57,29 +55,25 @@ Thresholds:
 | 851–1000 | 6000 bps | 5 |
 | >1000 | 3300 bps | all eligible |
 
-Annihilator adds its demolition basis points to each building roll. Final building roll chance is clamped to 10000 bps.
-
-Every successful roll removes one level only. Selection and rolls are deterministic and independent. A queue upgrading the affected building is cancelled without refund.
+Annihilator adds its demolition basis points to each building roll; clamp at 10000 bps. Every success removes one level. Selection/rolls are deterministic and independent. An upgrade of an affected building is cancelled without refund.
 
 ## 4. Whole-planet destruction
 
 Eligibility:
 
-- attacker victory only;
-- at least one attacker planet-destroyer survives;
-- defender has more than one active colony.
-
-Chance:
+- attacker victory;
+- surviving attacker planet-destroyer;
+- defender owns more than one colony.
 
 ```text
-raw = sum(attacker surviving count * scaled destruction chance)
+raw = sum(attacker survivors * scaled destruction chance)
 defence = floor(surviving defence population / 1000) * 100
 defenderKillers = sum(surviving defender planet-destroyers * scaled destruction chance)
-polias = active defender Polias reduction basis points
+polias = active defender Polias reduction bps
 final = clamp(0, 3000, raw - defence - defenderKillers - polias)
 ```
 
-The last-colony guard is applied after chance calculation so reports can show risk, but before a successful roll can remove the planet.
+Calculate risk before the last-colony guard, but never apply successful destruction to the final colony.
 
 Blocked reasons:
 
@@ -90,7 +84,7 @@ Blocked reasons:
 
 ## 5. Roll domains
 
-Stable hash inputs:
+Stable inputs:
 
 ```text
 state.seed
@@ -101,7 +95,7 @@ domain label
 building id when applicable
 ```
 
-Domain labels for demolition selection, each building roll and whole destruction must differ. No browser time, `Math.random`, locale order or mutable collection order.
+Demolition selection, each building roll and whole destruction use distinct domains. No browser time, `Math.random`, locale order or mutable insertion order.
 
 ## 6. Resolution order
 
@@ -111,51 +105,62 @@ Domain labels for demolition selection, each building roll and whole destruction
 4. plunder;
 5. ordinary combat debris;
 6. demolition;
-7. whole-destruction chance;
-8. atomic planet reconciliation when successful;
+7. destruction chance/roll;
+8. atomic reconciliation on success;
 9. battle report/event;
 10. attacker return.
 
-If the planet is destroyed, its remaining resources, installations, queues and inventory create no additional reward/debris.
+Destroyed resources, installations, queues and inventory add no extra reward/debris.
 
 ## 7. Destroyed-colony reconciliation
 
 Active state:
 
-- remove colony;
-- release underlying galaxy position;
-- remove planet-bound queues/events/routes/world events;
+- remove colony and release the galaxy position;
+- remove planet-bound queues, completion events, routes and world events;
 - remove stationed fleets;
 - rehome surviving fleets to nearest owned colony by coordinate then ID;
-- turn inbound fleets into deterministic returns;
+- turn ordinary inbound fleets into deterministic returns;
 - clear removed flagship references;
-- preserve historical logs and intelligence snapshots;
-- retain exact coordinate in report;
+- preserve historical logs/intelligence/reports and exact coordinates;
 - re-key debris to galaxy-planet ID.
 
 No-refund applies to all cancelled queues.
 
+### Pending special missions
+
+Expedition and space-object resolve reports contain `originPlanetId`, and their handlers normally station survivors and credit ordinary resources there. If that colony is destroyed before resolution:
+
+- keep `originPlanetId` unchanged as historical launch evidence;
+- add optional `returnPlanetId` pointing to the deterministic rehome colony;
+- live destination is `returnPlanetId ?? originPlanetId`;
+- rehome the fleet's own `originPlanetId` to the same colony;
+- `EXPEDITION_RESOLVE` remains authoritative, stations survivors at the live destination and credits its reward there;
+- `SPACE_OBJECT_MISSION_RESOLVE` remains authoritative, stations survivors/credits normal resources there and still applies depletion, control, cooldown and strategic-resource rewards;
+- do not replace either event with an ordinary `FLEET_RETURN`;
+- additive optional metadata keeps schema v14 and old reports valid.
+
+A missing live destination after reconciliation is an invariant failure, not permission to discard a surviving fleet or reward.
+
 ## 8. Recovery
 
-- no cooldown;
-- no automatic restoration;
-- normal colonization rules apply;
-- recreated colony is fresh and does not inherit old ownership, buildings, resources, inventory, queues or defence;
-- historical reports and intelligence remain historical only.
+- no cooldown or automatic restoration;
+- ordinary colonization rules apply;
+- recreated colony is fresh;
+- historical reports/intelligence remain historical only.
 
 ## 9. Information policy
 
 - launch still requires current level-three intelligence;
-- detailed siege preview may use only information exposed at current level three;
-- bots receive no hidden building, defence, fleet or Commander data;
-- report recipients see only their existing lawful battle/report scope.
+- preview uses only current level-three exposed data;
+- bots receive no hidden target state;
+- report visibility follows existing lawful scope.
 
 ## 10. Endgame separation
 
-This contract does not authorize:
+Not authorized:
 
-- sun brightness;
-- Sun Attack or Sun Support;
+- sun brightness, Sun Attack or Sun Support;
 - system collapse/protostar/recovery;
 - alliances/crystals/Obelisks/Gates;
 - victory or final empire elimination.
