@@ -1,10 +1,10 @@
 # AI Continuation Guide
 
-**Status:** Audit PR #121 defines `PLANET-DEMOLITION-DESTRUCTION-01`  
+**Status:** Audit #121 merged · `2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9`  
 **Updated:** 2026-07-28  
 **Runtime baseline:** PR #120 · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665`  
-**Audit baseline:** post-#120 `main` · `818aba011199dd5a96518f859ed35de671be892f`  
-**Next implementation after audit merge:** #122 `PLANET-DEMOLITION-CONTRACT`
+**Active batch:** `PLANET-DEMOLITION-DESTRUCTION-01`  
+**Next implementation:** #122 `PLANET-DEMOLITION-CONTRACT`
 
 ## Repository
 
@@ -29,51 +29,47 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 
 ## Completed product state
 
-- #101–#105: complete catalog runtime art;
-- #106–#110: schema-v14 Universe navigation and action gate;
-- #111–#115: coherent routed application shell and browser/accessibility gate;
-- #116–#120: shared ordinary mission rules, deterministic intelligence/counter-intelligence, routed redacted reports and honest bot parity gate.
+- #101–#105: catalog runtime art;
+- #106–#110: schema-v14 Universe navigation/action gate;
+- #111–#115: coherent routed shell;
+- #116–#120: ordinary mission/intelligence/bot parity gate;
+- #121: accepted heavy planet demolition/destruction audit.
 
-## Audit #121 decision
-
-Heavy batch `PLANET-DEMOLITION-DESTRUCTION-01` completes the destructive branch of ordinary planet attacks without introducing a new mission kind:
+## Accepted implementation chain
 
 ```text
 #122 PLANET-DEMOLITION-CONTRACT
 → #123 PLANET-DESTRUCTION-RECOVERY-GATE
 ```
 
-### #122
+### PR #122 only
 
-- faction-specific planet-destroyer profiles and weapon-level scaling;
-- deterministic demolition points and threshold table;
-- defence-population reduction;
-- Annihilator modifies building rolls rather than generic combat damage;
-- one-level building damage, zone recalculation and no-refund queue cancellation;
-- extended battle report and routed presentation.
+- add faction-specific siege profiles and weapon-level scaling;
+- deterministic demolition points, thresholds, selection and rolls;
+- move Annihilator demolition from generic combat damage to building rolls;
+- remove one building level and reconcile zone/upgrade queue state;
+- extend battle reports/presentation;
+- do not remove planets or reconcile planet references yet.
 
-### #123
+### PR #123 later
 
-- whole-planet destruction chance, defender planet-killer and Polias reductions;
-- 30% cap and final-colony protection;
-- atomic removal of the colony and reconciliation of fleets, queues, events, routes, world events and flagship references;
-- historical intelligence/report retention and exact coordinate backlinks;
-- debris recycling at the released coordinate;
-- normal recolonization, bots, save/load and Browser E2E gate;
-- batch archive/closure.
+- whole-planet destruction chance/reductions/final-colony guard;
+- atomic live-reference cleanup;
+- ordinary fleet and pending expedition/space-object return recovery;
+- immutable historical origin plus additive live `returnPlanetId`;
+- debris, recolonization, reports, bots, save/load and Browser E2E closure gate.
 
 ## Invariants
 
-- existing ordinary `attack` remains the only command/mission entry point;
-- schema remains v14; no tombstone collection or migration;
-- battle → demolition → destruction order is deterministic;
-- the final colony of an empire cannot be destroyed;
-- no hidden state reaches player previews or bot scoring;
-- no destruction queue cancellation refunds resources;
-- Sun Attack, system collapse, alliances, crystals, Obelisks, Gates and victory remain excluded;
-- economy/logistics redesign remains a separate audit;
-- every implementation branch starts from fresh merged `main`.
+- existing ordinary `attack` only;
+- schema v14 retained;
+- reducer/combat remains authoritative;
+- no hidden target state for UI or bots;
+- no refunds or extra destruction loot;
+- final colony protected;
+- solar/endgame and economy/logistics redesign excluded;
+- #123 cannot begin before #122 merges.
 
 ## Immediate route
 
-Finalize and merge Audit PR #121. After it merges, create PR #122 from exact fresh `main` and implement only `PLANET-DEMOLITION-CONTRACT`. Do not start #123 in the same branch or PR.
+Create PR #122 from exact fresh current `main` and implement only `PLANET-DEMOLITION-CONTRACT`.
