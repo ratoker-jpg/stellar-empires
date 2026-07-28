@@ -4,6 +4,7 @@ import type { GalaxyIntelVisibility } from '../simulation/galaxy/intelligenceVie
 export const FLEET_MISSION_TARGET_EVENT = 'stellar:fleet-mission-target';
 
 const PREPARED_TARGET_STORAGE_KEY = 'stellar-empires:prepared-fleet-target:v1';
+const SHELL_NAVIGATION_STORAGE_KEY = 'stellar-empires:shell-navigation:v1';
 
 export interface FleetMissionTargetRequest {
   readonly targetId: string;
@@ -16,6 +17,14 @@ export interface FleetMissionTargetRequest {
 
 export interface PreparedFleetMissionTarget extends FleetMissionTargetRequest {
   readonly version: 1;
+}
+
+interface ShellNavigationMemoryShape {
+  readonly version: 1;
+  readonly campaignKey: string;
+  readonly activePlanetId: string;
+  readonly lastRouteHashes: Record<string, string>;
+  readonly originHash?: string;
 }
 
 function browserStorage(): Storage | null {
@@ -45,12 +54,50 @@ function normalizedPreparedTarget(
   };
 }
 
+export function rememberPreparedFleetSourceRoute(
+  sourceRouteHash: string | undefined,
+  storage: Storage | null = browserStorage(),
+): boolean {
+  if (
+    storage === null ||
+    sourceRouteHash === undefined ||
+    !sourceRouteHash.startsWith('#/space/')
+  ) return false;
+  const raw = storage.getItem(SHELL_NAVIGATION_STORAGE_KEY);
+  if (raw === null) return false;
+  try {
+    const memory = JSON.parse(raw) as Partial<ShellNavigationMemoryShape>;
+    if (
+      memory.version !== 1 ||
+      typeof memory.campaignKey !== 'string' ||
+      typeof memory.activePlanetId !== 'string' ||
+      memory.lastRouteHashes === null ||
+      typeof memory.lastRouteHashes !== 'object'
+    ) return false;
+    const updated: ShellNavigationMemoryShape = {
+      version: 1,
+      campaignKey: memory.campaignKey,
+      activePlanetId: memory.activePlanetId,
+      lastRouteHashes: {
+        ...(memory.lastRouteHashes as Record<string, string>),
+        space: sourceRouteHash,
+      },
+      ...(typeof memory.originHash === 'string' ? { originHash: memory.originHash } : {}),
+    };
+    storage.setItem(SHELL_NAVIGATION_STORAGE_KEY, JSON.stringify(updated));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function writePreparedFleetMissionTarget(
   detail: FleetMissionTargetRequest,
   storage: Storage | null = browserStorage(),
 ): PreparedFleetMissionTarget {
   const prepared = normalizedPreparedTarget(detail);
   storage?.setItem(PREPARED_TARGET_STORAGE_KEY, JSON.stringify(prepared));
+  rememberPreparedFleetSourceRoute(prepared.sourceRouteHash, storage);
   return prepared;
 }
 
