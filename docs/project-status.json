@@ -1,23 +1,23 @@
 {
-  "statusVersion": 40,
+  "statusVersion": 41,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 129,
-  "lastMergeSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa",
-  "verifiedMainBaseline": "Synchronized post-PR #129 main at 45bd3297d402fd96691a26c60e47bd39a420f174; navigation batch archived and canonical status entrypoints agree that Audit #130 is the only next action",
+  "lastMergedPr": 130,
+  "lastMergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511",
+  "verifiedMainBaseline": "Audit PR #130 LOCAL-CAMPAIGN-TIME-PACING-01 squash-merged as 2379fa7a30974381349433e4f0e0ba43d15f1511 after CI 30389103445, Browser E2E 30389103358 and Graphify 30389103322 passed; four persistence and architecture review findings were fixed and all threads resolved",
   "runtimeBaselinePr": 129,
   "runtimeBaselineSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa",
-  "activePr": 130,
-  "activePrKind": "audit",
-  "activeWorkItem": "LOCAL-CAMPAIGN-TIME-PACING-01",
+  "activePr": null,
+  "activePrKind": null,
+  "activeWorkItem": null,
   "nextPrAfterActive": 131,
   "nextPrKind": "implementation",
   "nextWorkItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
-  "currentMilestone": "M4c local campaign time transition audit",
+  "currentMilestone": "M4c local campaign time transition implementation",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
@@ -67,7 +67,9 @@
     "roadmapMilestone": "M4c",
     "complexity": "heavy",
     "auditPr": 130,
-    "auditStatus": "proposed",
+    "auditStatus": "accepted",
+    "auditMergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511",
+    "auditFinalHeadSha": "d276a8db16af534ec915f877a76a8c419986f793",
     "baselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174",
     "implementationCount": 2,
     "plannedImplementationPrs": [131, 132],
@@ -77,8 +79,8 @@
       "CAMPAIGN-SETTINGS-PERSISTENCE",
       "CAMPAIGN-CLOCK-OFFLINE-GATE"
     ],
-    "status": "audit-active",
-    "activePr": 130,
+    "status": "implementation-ready",
+    "activePr": null,
     "nextPr": 131,
     "nextWorkItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
     "divergence": "none"
@@ -152,11 +154,12 @@
     "shared ordinary mission rules, deterministic intelligence and honest bot mission gate",
     "deterministic demolition and whole-planet destruction with final-colony protection and atomic recovery",
     "canonical local-campaign world-speed and offline-progression product contract",
-    "completed player-centered navigation and measured task gate"
+    "completed player-centered navigation and measured task gate",
+    "accepted local-campaign settings, persistence and chronological clock architecture contract"
   ],
   "activeDelivery": [
     {"pr": 129, "kind": "implementation", "workItem": "NAV-USABILITY-GATE", "status": "merged", "mergeSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"},
-    {"pr": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "status": "active", "baselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174"}
+    {"pr": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "status": "merged", "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"}
   ],
   "knownLimitations": [
     "open-session simulation currently advances only through manual fast-forward controls",
@@ -176,10 +179,10 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "Audit #130 head 0ccefbd3d9b852111bf67a8c4ad9e5daafbd49df passed Graphify run 30388085969",
-    "currentAuditGraph": {
-      "workflowRun": "30388085969",
-      "headSha": "0ccefbd3d9b852111bf67a8c4ad9e5daafbd49df",
+    "lastValidation": "Audit #130 final head d276a8db16af534ec915f877a76a8c419986f793 passed Graphify run 30389103322",
+    "lastAuditGraph": {
+      "workflowRun": "30389103322",
+      "headSha": "d276a8db16af534ec915f877a76a8c419986f793",
       "codeFiles": 334,
       "nodes": 2372,
       "edges": 7703,
@@ -215,5 +218,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Complete and merge Audit PR #130 LOCAL-CAMPAIGN-TIME-PACING-01; then create implementation PR #131 CAMPAIGN-SETTINGS-PERSISTENCE only from fresh merged main."
+  "nextAction": "Create implementation PR #131 CAMPAIGN-SETTINGS-PERSISTENCE from fresh current main and implement only the accepted settings/schema/persistence scope."
 }
