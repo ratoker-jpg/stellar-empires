@@ -290,22 +290,42 @@ export function reconcileDestroyedPlanet(
   pendingEvents = pendingEvents.map((event) => {
     const payload = event.payload;
     if (payload.type === 'EXPEDITION_RESOLVE') {
-      if (payload.report.originPlanetId !== destroyedPlanet.id) return event;
+      const returnPlanetId = payload.report.returnPlanetId ??
+        payload.report.originPlanetId;
+      if (returnPlanetId !== destroyedPlanet.id) return event;
+      const fallback = selectFallbackPlanet(
+        state.planets,
+        payload.report.empireId,
+        destroyedPlanet,
+      );
+      if (fallback === undefined) {
+        throw new Error(`Expedition ${payload.report.id} has no live return colony.`);
+      }
       return {
         ...event,
         payload: {
           type: 'EXPEDITION_RESOLVE' as const,
-          report: { ...payload.report, returnPlanetId: ownerFallback.id },
+          report: { ...payload.report, returnPlanetId: fallback.id },
         },
       };
     }
     if (payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
-      if (payload.report.originPlanetId !== destroyedPlanet.id) return event;
+      const returnPlanetId = payload.report.returnPlanetId ??
+        payload.report.originPlanetId;
+      if (returnPlanetId !== destroyedPlanet.id) return event;
+      const fallback = selectFallbackPlanet(
+        state.planets,
+        payload.report.empireId,
+        destroyedPlanet,
+      );
+      if (fallback === undefined) {
+        throw new Error(`Space-object mission ${payload.report.id} has no live return colony.`);
+      }
       return {
         ...event,
         payload: {
           type: 'SPACE_OBJECT_MISSION_RESOLVE' as const,
-          report: { ...payload.report, returnPlanetId: ownerFallback.id },
+          report: { ...payload.report, returnPlanetId: fallback.id },
         },
       };
     }
