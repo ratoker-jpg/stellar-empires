@@ -221,6 +221,16 @@ export function resolveColonization(
     : state.fleets.map((candidate) =>
         candidate.id === fleet.id ? survivingFleet : candidate,
       );
+  const debrisFields = state.debrisFields.map((field) =>
+    field.planetId === galaxyPlanetId
+      ? {
+          ...field,
+          id: `debris-${unloaded.colony.id}`,
+          planetId: unloaded.colony.id,
+          coordinate: field.coordinate ?? unloaded.colony.coordinate,
+        }
+      : field,
+  );
 
   return {
     colony: unloaded.colony,
@@ -234,6 +244,7 @@ export function resolveColonization(
       ),
       planets: [...state.planets, unloaded.colony],
       fleets,
+      debrisFields,
     },
   };
 }
