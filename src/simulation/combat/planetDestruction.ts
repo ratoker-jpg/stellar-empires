@@ -1,3 +1,4 @@
+import { getCommanderFleetEffects } from '../command/commanderShips';
 import { getUnitDefinition } from '../units/catalog';
 import type { GameState } from '../types';
 import { getPlanetDestroyerSiegeContributions } from './planetSiegeConfig';
@@ -8,7 +9,10 @@ import type {
 } from './types';
 
 export interface ResolvePlanetDestructionInput {
-  readonly state: Pick<GameState, 'seed' | 'planets' | 'shipUpgrades'>;
+  readonly state: Pick<
+    GameState,
+    'seed' | 'planets' | 'shipUpgrades' | 'commanders' | 'fleets'
+  >;
   readonly attackerEmpireId: string;
   readonly attackerFleetId: string;
   readonly attackerRemaining: Readonly<Record<string, number>>;
@@ -41,6 +45,31 @@ function defensePopulation(
       ? total + definition.populationCost * quantity
       : total;
   }, 0);
+}
+
+function assignedDefenderPoliasReduction(
+  state: Pick<GameState, 'commanders' | 'fleets'>,
+  defenderEmpireId: string,
+  targetPlanetId: string,
+): number {
+  const flagshipFleetId = state.commanders.find(
+    (entry) => entry.empireId === defenderEmpireId,
+  )?.flagshipFleetId;
+  if (flagshipFleetId === null || flagshipFleetId === undefined) return 0;
+  const flagship = state.fleets.find(
+    (fleet) =>
+      fleet.id === flagshipFleetId &&
+      fleet.empireId === defenderEmpireId &&
+      fleet.status === 'stationed' &&
+      fleet.location.type === 'planet' &&
+      fleet.location.planetId === targetPlanetId,
+  );
+  return flagship === undefined
+    ? 0
+    : getCommanderFleetEffects(
+        state,
+        flagship,
+      ).planetDestructionReductionBasisPoints;
 }
 
 function toReportContribution(
@@ -88,6 +117,11 @@ export function resolvePlanetDestruction(
   const poliasReductionBasisPoints = Math.max(
     0,
     input.poliasReductionBasisPoints,
+    assignedDefenderPoliasReduction(
+      input.state,
+      input.defenderEmpireId,
+      input.targetPlanetId,
+    ),
   );
   const finalChanceBasisPoints = Math.max(
     0,
