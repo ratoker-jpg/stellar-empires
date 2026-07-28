@@ -23,7 +23,7 @@ const LEGACY_DOM = [
   '#nav-fleet-doctrine',
 ] as const;
 
-test('complete primary shell routes are canonical and modal-free', async ({ page }) => {
+test('complete primary shell routes are canonical, grouped and modal-free', async ({ page }) => {
   await page.goto('/?e2e=1#/command/overview');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   const checksum = await page.locator('html').getAttribute('data-state-checksum');
@@ -31,7 +31,14 @@ test('complete primary shell routes are canonical and modal-free', async ({ page
   await expect(page.locator('#command-view')).toBeVisible();
   await expect(page.locator('#command-overview-view')).toBeVisible();
   await expect(page.locator('#nav-empire')).toHaveAttribute('aria-current', 'page');
-  await expect(page.locator('.side-rail > .rail-button')).toHaveCount(9);
+  await expect(page.locator('.side-rail .rail-button')).toHaveCount(9);
+  await expect(page.locator('.side-rail .rail-group')).toHaveCount(4);
+  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'development');
+  await expect(page.locator('html')).toHaveAttribute('data-shell-navigation-group', 'development');
+  await expect(page.locator('[data-navigation-group="development"]')).toHaveClass(/is-active/);
+  await expect(page.locator('#nav-galaxy')).toContainText('Вселенная');
+  await expect(page.locator('#nav-operations')).toHaveAttribute('data-shell-navigation-group', 'gameplay');
+  await expect(page.locator('#nav-operations')).not.toHaveClass(/rail-button--utility/);
   for (const selector of LEGACY_DOM) await expect(page.locator(selector)).toHaveCount(0);
   await expect(page.locator('.runtime-showcase')).toHaveCount(0);
 
@@ -42,17 +49,24 @@ test('complete primary shell routes are canonical and modal-free', async ({ page
     await expect(page.locator(`[data-command-mode="${mode}"]`)).toHaveAttribute('aria-selected', 'true');
   }
 
+  await page.locator('#nav-operations').click();
+  await expect(page).toHaveURL(/#\/operations\/overview$/);
+  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'gameplay');
+  await expect(page.locator('[data-navigation-group="gameplay"]')).toHaveClass(/is-active/);
+
   await page.locator('#nav-rating').click();
   await expect(page).toHaveURL(/#\/ranking$/);
   await expect(page.locator('#ranking-view')).toBeVisible();
   await expect(page.locator('#ranking-list-view .command-ranking-entry').first()).toBeVisible();
   await expect(page.locator('#shell-context-content')).toContainText('Место');
+  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'information');
 
   await page.locator('#nav-system').click();
   await expect(page).toHaveURL(/#\/system\/saves$/);
   await expect(page.locator('#system-view')).toBeVisible();
   await expect(page.locator('#system-saves-view')).toBeVisible();
   await expect(page.locator('.save-manager-controls')).toBeVisible();
+  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'utility');
   await page.locator('[data-system-mode="settings"]').click();
   await expect(page).toHaveURL(/#\/system\/settings$/);
   await expect(page.locator('#system-settings-view')).toBeVisible();
@@ -75,11 +89,18 @@ test('complete primary shell routes are canonical and modal-free', async ({ page
   await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
 });
 
-test('keyboard navigation activates primary and local routes with heading focus', async ({ page }) => {
+test('keyboard navigation follows the visible hierarchy and activates local routes', async ({ page }) => {
   await page.goto('/?e2e=1#/command/overview');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
 
   await page.locator('#nav-planet').focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('#nav-galaxy')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#\/space\/universe$/);
+  await expect(page.locator('#galaxy-view')).toBeVisible();
+
+  await page.locator('#nav-galaxy').focus();
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('#nav-fleet')).toBeFocused();
   await page.keyboard.press('Enter');
@@ -107,13 +128,13 @@ test('complete HUD and every primary route fit release viewports', async ({ page
     const planetId = await page.locator('#hud-planet-selector').inputValue();
     for (const route of [
       `#/planet/${encodeURIComponent(planetId)}/overview`,
-      '#/fleets/overview',
       '#/space/universe',
+      '#/fleets/overview',
+      '#/operations/overview',
       '#/research',
       '#/command/overview',
-      '#/ranking',
-      '#/operations/overview',
       '#/reports/all',
+      '#/ranking',
       '#/system/settings',
     ]) {
       await page.goto(`/?e2e=1${route}`);
@@ -123,6 +144,7 @@ test('complete HUD and every primary route fit release viewports', async ({ page
       await expect(page.locator('#hud-population-state')).not.toHaveText('');
       await expect(page.locator('#hud-hangar-state')).not.toHaveText('');
       await expect(page.locator('#shell-context-content')).not.toHaveText('');
+      await expect(page.locator('.side-rail .rail-button')).toHaveCount(9);
       await expectNoHorizontalOverflow(page);
     }
   }
