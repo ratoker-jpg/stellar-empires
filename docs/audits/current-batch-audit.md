@@ -1,12 +1,14 @@
 # Current implementation batch audit — PLANET-DEMOLITION-DESTRUCTION-01
 
-**Audit PR:** #121  
-**Status:** accepted when Audit PR #121 merges  
+**Audit PR:** #121 · `2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9`  
+**Status:** accepted  
 **Baseline:** exact post-PR #120 `main`, SHA `818aba011199dd5a96518f859ed35de671be892f`  
+**Accepted audit head:** `5523fa0437b3e838b337a53f58fa5978733827cd`  
+**Validation:** CI `30333447008`, Browser E2E `30333446989`, Graphify `30333446959` — passed  
 **Protocol:** `docs/28-audit-first-autonomous-delivery-protocol.md`  
 **Roadmap milestone:** M4 — Ordinary mechanics complete  
 **Complexity:** heavy  
-**Authorized implementation count:** two sequential PRs, planned #122–#123
+**Authorized implementation count:** two sequential PRs, #122–#123
 
 ## 1. Executive decision
 
@@ -279,15 +281,14 @@ Combat, mission arrival, units/Commanders, planets/colonization, ordinary and sp
 
 No critical unknown remains. Material rule/cleanup changes require amended/replacement audit rather than silent expansion.
 
-## 10. Audit #121 acceptance gate
+## 10. Audit #121 acceptance evidence
 
-- docs/status-only diff;
+- documentation/status-only diff;
 - exact baseline and #122→#123 sequence;
-- valid JSON;
-- assets, lint, TypeScript, full tests/build;
-- Browser E2E and fresh Graphify;
+- JSON valid;
+- final head `5523fa0437b3e838b337a53f58fa5978733827cd` passed CI `30333447008`, Browser E2E `30333446989` and Graphify `30333446959`;
 - no generated outputs;
-- all review blockers resolved;
+- P1 special-mission review blocker incorporated and resolved;
 - critical unknowns zero.
 
-After squash merge, create #122 from fresh post-#121 `main` and implement only `PLANET-DEMOLITION-CONTRACT`.
+Create #122 from fresh post-#121 `main` and implement only `PLANET-DEMOLITION-CONTRACT`.
