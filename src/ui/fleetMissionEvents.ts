@@ -4,6 +4,7 @@ import type { GalaxyIntelVisibility } from '../simulation/galaxy/intelligenceVie
 export const FLEET_MISSION_TARGET_EVENT = 'stellar:fleet-mission-target';
 
 const PREPARED_TARGET_STORAGE_KEY = 'stellar-empires:prepared-fleet-target:v1';
+const PREPARED_SOURCE_ROUTE_STORAGE_KEY = 'stellar-empires:prepared-fleet-source-route:v1';
 const SHELL_NAVIGATION_STORAGE_KEY = 'stellar-empires:shell-navigation:v1';
 
 export interface FleetMissionTargetRequest {
@@ -35,6 +36,10 @@ function browserStorage(): Storage | null {
   }
 }
 
+function isSpaceRouteHash(value: string | undefined | null): value is string {
+  return value !== undefined && value !== null && value.startsWith('#/space/');
+}
+
 function normalizedPreparedTarget(
   detail: FleetMissionTargetRequest,
 ): PreparedFleetMissionTarget {
@@ -54,17 +59,24 @@ function normalizedPreparedTarget(
   };
 }
 
+export function readPreparedFleetSourceRoute(
+  storage: Storage | null = browserStorage(),
+): string | null {
+  const route = storage?.getItem(PREPARED_SOURCE_ROUTE_STORAGE_KEY) ?? null;
+  if (isSpaceRouteHash(route)) return route;
+  if (route !== null) storage?.removeItem(PREPARED_SOURCE_ROUTE_STORAGE_KEY);
+  return null;
+}
+
 export function rememberPreparedFleetSourceRoute(
   sourceRouteHash: string | undefined,
   storage: Storage | null = browserStorage(),
 ): boolean {
-  if (
-    storage === null ||
-    sourceRouteHash === undefined ||
-    !sourceRouteHash.startsWith('#/space/')
-  ) return false;
+  if (storage === null || !isSpaceRouteHash(sourceRouteHash)) return false;
+  storage.setItem(PREPARED_SOURCE_ROUTE_STORAGE_KEY, sourceRouteHash);
+
   const raw = storage.getItem(SHELL_NAVIGATION_STORAGE_KEY);
-  if (raw === null) return false;
+  if (raw === null) return true;
   try {
     const memory = JSON.parse(raw) as Partial<ShellNavigationMemoryShape>;
     if (
@@ -73,7 +85,7 @@ export function rememberPreparedFleetSourceRoute(
       typeof memory.activePlanetId !== 'string' ||
       memory.lastRouteHashes === null ||
       typeof memory.lastRouteHashes !== 'object'
-    ) return false;
+    ) return true;
     const updated: ShellNavigationMemoryShape = {
       version: 1,
       campaignKey: memory.campaignKey,
@@ -87,7 +99,7 @@ export function rememberPreparedFleetSourceRoute(
     storage.setItem(SHELL_NAVIGATION_STORAGE_KEY, JSON.stringify(updated));
     return true;
   } catch {
-    return false;
+    return true;
   }
 }
 
@@ -319,10 +331,19 @@ function installPreparedTargetBridge(): void {
     childList: true,
     subtree: true,
   });
+  const routePrimarySpaceThroughTaskOrigin = (event: Event): void => {
+    const target = event.target;
+    if (!(target instanceof Element) || target.closest('#nav-galaxy') === null) return;
+    if (window.location.hash === '#/space' || window.location.hash.startsWith('#/space/')) return;
+    const sourceRoute = readPreparedFleetSourceRoute();
+    if (sourceRoute !== null) window.history.pushState(null, '', sourceRoute);
+  };
   const stopForDocumentExit = (): void => {
     unloading = true;
     observer.disconnect();
+    document.removeEventListener('click', routePrimarySpaceThroughTaskOrigin, true);
   };
+  document.addEventListener('click', routePrimarySpaceThroughTaskOrigin, true);
   window.addEventListener('pagehide', stopForDocumentExit, { once: true });
   window.addEventListener('beforeunload', stopForDocumentExit, { once: true });
   queueMicrotask(reconcile);
