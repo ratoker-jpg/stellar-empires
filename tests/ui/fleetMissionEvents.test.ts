@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   clearPreparedFleetMissionTarget,
   readPreparedFleetMissionTarget,
+  rememberPreparedFleetSourceRoute,
   writePreparedFleetMissionTarget,
 } from '../../src/ui/fleetMissionEvents';
 
@@ -41,6 +42,32 @@ describe('prepared fleet mission target', () => {
     expect(readPreparedFleetMissionTarget(storage)).toEqual(prepared);
     clearPreparedFleetMissionTarget(storage);
     expect(readPreparedFleetMissionTarget(storage)).toBeNull();
+  });
+
+  it('preserves the exact Space origin in shell navigation memory', () => {
+    const storage = memoryStorage();
+    storage.setItem('stellar-empires:shell-navigation:v1', JSON.stringify({
+      version: 1,
+      campaignKey: '14:test-seed',
+      activePlanetId: 'planet-player',
+      lastRouteHashes: {
+        space: '#/space/universe',
+        fleets: '#/fleets/compose',
+      },
+      originHash: '#/space/universe',
+    }));
+
+    expect(rememberPreparedFleetSourceRoute('#/space/solar/2/17/6', storage)).toBe(true);
+    expect(JSON.parse(storage.getItem('stellar-empires:shell-navigation:v1') ?? '{}')).toEqual({
+      version: 1,
+      campaignKey: '14:test-seed',
+      activePlanetId: 'planet-player',
+      lastRouteHashes: {
+        space: '#/space/solar/2/17/6',
+        fleets: '#/fleets/compose',
+      },
+      originHash: '#/space/universe',
+    });
   });
 
   it('rejects corrupt or incomplete session context', () => {
