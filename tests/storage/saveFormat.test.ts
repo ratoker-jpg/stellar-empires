@@ -232,8 +232,9 @@ describe('save format', () => {
     const {
       campaignSettings: _campaignSettings,
       botAutomation: _botAutomation,
-      ...legacyState
+      ...legacyBase
     } = advanced;
+    const legacyState = { ...legacyBase, schemaVersion: 13 };
     const legacySave = {
       formatVersion: 2,
       slotId: 'bot-automation-v13',
@@ -257,8 +258,9 @@ describe('save format', () => {
     const {
       campaignSettings: _campaignSettings,
       commanders: _commanders,
-      ...legacyState
+      ...legacyBase
     } = current;
+    const legacyState = { ...legacyBase, schemaVersion: 13 };
     const legacySave = {
       formatVersion: 2,
       slotId: 'command-v13',
