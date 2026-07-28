@@ -1,22 +1,22 @@
 {
-  "statusVersion": 35,
+  "statusVersion": 36,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 126,
-  "lastMergeSha": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1",
-  "verifiedMainBaseline": "PR #126 NAV-IA-PRIMARY-SHELL squash-merged as 2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1 after CI 30368968637, Browser E2E 30368968648 and Graphify 30368970159 passed; P1 stale flat-navigation E2E expectation was fixed and its review thread resolved",
-  "runtimeBaselinePr": 126,
-  "runtimeBaselineSha": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1",
+  "lastMergedPr": 127,
+  "lastMergeSha": "2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418",
+  "verifiedMainBaseline": "PR #127 NAV-CONTEXT-ROUTE-MODEL squash-merged as 2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418 after CI 30373287448, Browser E2E 30373287849 and Graphify 30373287422 passed; explicit Space-coordinate and colony-selection ordering P1 blockers were fixed and resolved",
+  "runtimeBaselinePr": 127,
+  "runtimeBaselineSha": "2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418",
   "activePr": null,
   "activePrKind": null,
   "activeWorkItem": null,
-  "nextPrAfterActive": 127,
+  "nextPrAfterActive": 128,
   "nextPrKind": "implementation",
-  "nextWorkItem": "NAV-CONTEXT-ROUTE-MODEL",
+  "nextWorkItem": "NAV-CROSS-DOMAIN-FLOWS",
   "currentMilestone": "M3b navigation and usability repair",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -47,10 +47,7 @@
       "122": "be0caff4fbf06384cdf5d370dbc2da80d4081152",
       "123": "aa1dc67ed874c75aa69af30ce9ced58169793c30"
     },
-    "workItems": [
-      "PLANET-DEMOLITION-CONTRACT",
-      "PLANET-DESTRUCTION-RECOVERY-GATE"
-    ],
+    "workItems": ["PLANET-DEMOLITION-CONTRACT", "PLANET-DESTRUCTION-RECOVERY-GATE"],
     "status": "completed",
     "archive": "docs/audits/completed/planet-demolition-destruction-01.md",
     "divergence": "none"
@@ -65,9 +62,10 @@
     "baselineSha": "cdd112c544ce8d37af17e938867d4588bedcf152",
     "implementationCount": 4,
     "plannedImplementationPrs": [126, 127, 128, 129],
-    "completedImplementationPrs": [126],
+    "completedImplementationPrs": [126, 127],
     "implementationMergeShas": {
-      "126": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1"
+      "126": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1",
+      "127": "2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418"
     },
     "workItems": [
       "NAV-IA-PRIMARY-SHELL",
@@ -76,8 +74,8 @@
       "NAV-USABILITY-GATE"
     ],
     "status": "implementation-active",
-    "nextPr": 127,
-    "nextWorkItem": "NAV-CONTEXT-ROUTE-MODEL",
+    "nextPr": 128,
+    "nextWorkItem": "NAV-CROSS-DOMAIN-FLOWS",
     "divergence": "none"
   },
   "productDecisions": {
@@ -144,19 +142,17 @@
     "deterministic demolition and whole-planet destruction with final-colony protection and atomic recovery",
     "canonical local-campaign world-speed and offline-progression product contract",
     "accepted navigation/usability repair contract and four-PR implementation plan",
-    "player-centered grouped primary navigation with Operations promoted, Universe scope labeling and active-group accessibility"
+    "player-centered grouped primary navigation with Operations promoted, Universe scope labeling and active-group accessibility",
+    "campaign-scoped session route memory, active-colony context, localized breadcrumbs, typed return destinations and safe route normalization"
   ],
   "activeDelivery": [
-    {"pr": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
-    {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "merged", "mergeSha": "be0caff4fbf06384cdf5d370dbc2da80d4081152"},
-    {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "merged", "mergeSha": "aa1dc67ed874c75aa69af30ce9ced58169793c30"},
     {"pr": 124, "kind": "documentation", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "status": "merged", "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152"},
     {"pr": 125, "kind": "audit", "batchId": "NAVIGATION-USABILITY-01", "status": "merged", "mergeSha": "a13f017d79d5dce5fde954e9f6e1419a2182d78e"},
-    {"pr": 126, "kind": "implementation", "workItem": "NAV-IA-PRIMARY-SHELL", "status": "merged", "mergeSha": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1"}
+    {"pr": 126, "kind": "implementation", "workItem": "NAV-IA-PRIMARY-SHELL", "status": "merged", "mergeSha": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1"},
+    {"pr": 127, "kind": "implementation", "workItem": "NAV-CONTEXT-ROUTE-MODEL", "status": "merged", "mergeSha": "2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418"}
   ],
   "knownLimitations": [
-    "primary navigation hierarchy is repaired, but remembered subroutes, breadcrumbs, colony context and return destinations remain for PR #127",
-    "typed reversible cross-domain task flows remain for PR #128",
+    "grouped navigation and typed route/colony/return context are delivered, but reversible prepared cross-domain task flows remain for PR #128",
     "measured complete-task usability closure remains for PR #129",
     "world-speed settings and deterministic offline catch-up are documented but not implemented",
     "campaign progression has not been compressed or balanced for a one-day match",
@@ -173,10 +169,10 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #126 final head b9e11d18fb83da9b6395c8980859b36790bc2f7a passed Graphify run 30368970159",
+    "lastValidation": "PR #127 final head e31961876578499945dbe2ffb0b435d7ffbad4e4 passed Graphify run 30373287422",
     "lastAuditGraph": {
-      "workflowRun": "30368970159",
-      "headSha": "b9e11d18fb83da9b6395c8980859b36790bc2f7a"
+      "workflowRun": "30373287422",
+      "headSha": "e31961876578499945dbe2ffb0b435d7ffbad4e4"
     }
   },
   "sourceAssetIntake": {
@@ -198,7 +194,7 @@
     "docs/audits/contracts/navigation-usability-01-route-context.md",
     "docs/audits/evidence/navigation-usability-01-code-and-flow.md",
     "docs/audits/evidence/navigation-usability-01-pr126-scope.md",
-    "docs/changes/pr126-nav-ia-primary-shell.md",
+    "docs/changes/pr127-nav-context-route-model.md",
     "docs/25a-local-campaign-world-speed-and-offline-progression.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
@@ -206,5 +202,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Create implementation PR #127 NAV-CONTEXT-ROUTE-MODEL from fresh merged main and implement only typed checksum-neutral route memory, breadcrumbs, active-colony context and return destinations."
+  "nextAction": "Create implementation PR #128 NAV-CROSS-DOMAIN-FLOWS from fresh merged main and implement only typed reversible existing player handoffs."
 }
