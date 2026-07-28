@@ -6,30 +6,29 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 130,
-    "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511",
-    "runtimeBaselinePr": 129,
-    "runtimeBaselineSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa",
-    "auditBaselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174",
-    "activeImplementationBaselineSha": "1503c7d37fafc623bee4654ed460c92aa55a7b2f"
+    "lastMergedPr": 131,
+    "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd",
+    "runtimeBaselinePr": 131,
+    "runtimeBaselineSha": "257e3effaab4e34285d00db64b6676fda364fcfd",
+    "auditBaselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174"
   },
-  "activePr": 131,
-  "activePrKind": "implementation",
+  "activePr": null,
+  "activePrKind": null,
   "activeBatchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
-  "activeWorkItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
+  "activeWorkItem": null,
   "nextPr": 132,
   "nextPrKind": "implementation",
   "nextWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
   "phases": [
     {"id": "delivered-foundation-and-catalogs", "startPr": 1, "endPr": 100, "status": "completed", "outcome": "Deterministic PvE foundation, complete mechanical catalogs, canonical roadmap and audit-first delivery protocol"},
     {"id": "catalog-runtime-integration", "auditPr": 101, "startPr": 102, "endPr": 105, "status": "completed", "outcome": "217 mechanical IDs resolve through 173 generated runtime images"},
-    {"id": "universe-navigation", "auditPr": 106, "startPr": 107, "endPr": 110, "status": "completed", "outcome": "Schema v14, Universe navigation, action gate and Browser E2E"},
+    {"id": "universe-navigation", "auditPr": 106, "startPr": 107, "endPr": 110, "status": "completed", "outcome": "Universe navigation, action gate and Browser E2E"},
     {"id": "coherent-ui-shell", "auditPr": 111, "startPr": 112, "endPr": 115, "status": "completed-technical", "completedPrs": [112, 113, 114, 115], "outcome": "One application controller, nine routes and browser/accessibility gate", "archive": "docs/audits/completed/coherent-ui-shell-01.md"},
     {"id": "ordinary-missions-intelligence", "auditPr": 116, "startPr": 117, "endPr": 120, "status": "completed", "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01", "completedPrs": [117, 118, 119, 120], "outcome": "Shared ordinary mission rules, deterministic intelligence, redacted reports and honest bot gate", "archive": "docs/audits/completed/ordinary-missions-intelligence-01.md"},
     {"id": "planet-demolition-destruction", "auditPr": 121, "startPr": 122, "endPr": 123, "status": "completed", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "completedPrs": [122, 123], "outcome": "Deterministic demolition, capped whole-planet destruction, final-colony protection and atomic recovery", "archive": "docs/audits/completed/planet-demolition-destruction-01.md"},
     {"id": "local-campaign-product-contract", "documentationPr": 124, "status": "completed", "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT", "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152", "outcome": "Local campaign, immutable world speed, deterministic offline progression and compressed campaign direction"},
     {"id": "navigation-usability-repair", "auditPr": 125, "auditMergeSha": "a13f017d79d5dce5fde954e9f6e1419a2182d78e", "startPr": 126, "endPr": 129, "status": "completed", "batchId": "NAVIGATION-USABILITY-01", "completedPrs": [126, 127, 128, 129], "implementationMergeShas": {"126": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1", "127": "2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418", "128": "051c46736dbb92a7fb5061243d458eb3faabecfe", "129": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"}, "archive": "docs/audits/completed/navigation-usability-01.md", "outcome": "Player-centered hierarchy, typed context, reversible cross-domain flows and measured release-viewport task gate"},
-    {"id": "local-campaign-time-pacing", "auditPr": 130, "auditMergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511", "startPr": 131, "endPr": 132, "status": "implementation-active", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "complexity": "heavy", "plannedPrs": [131, 132], "completedPrs": [], "activePr": 131, "activeWorkItem": "CAMPAIGN-SETTINGS-PERSISTENCE", "nextPr": 132, "workItems": ["CAMPAIGN-SETTINGS-PERSISTENCE", "CAMPAIGN-CLOCK-OFFLINE-GATE"], "outcome": "Immutable campaign settings, safe runtime metadata, chronological active/offline clock, bounded catch-up and return summary"},
+    {"id": "local-campaign-time-pacing", "auditPr": 130, "auditMergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511", "startPr": 131, "endPr": 132, "status": "implementation-next", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "complexity": "heavy", "plannedPrs": [131, 132], "completedPrs": [131], "implementationMergeShas": {"131": "257e3effaab4e34285d00db64b6676fda364fcfd"}, "activePr": null, "nextPr": 132, "nextWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE", "workItems": ["CAMPAIGN-SETTINGS-PERSISTENCE", "CAMPAIGN-CLOCK-OFFLINE-GATE"], "outcome": "Immutable campaign settings, safe runtime metadata, chronological active/offline clock, bounded catch-up and return summary"},
     {"id": "campaign-progression-balance", "auditPr": null, "startPr": null, "endPr": null, "status": "blocked-until-132", "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01", "outcome": "Exact level/cost/duration compression and measured one-day campaign balance using the delivered clock foundation"},
     {"id": "multi-colony-economy-logistics", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Coherent multi-colony economy, logistics and bot planning under compressed timing"},
     {"id": "pve-meta-and-bot-parity", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "PvE/meta depth and honest autonomous bot parity"},
@@ -37,10 +36,9 @@
     {"id": "release-candidate", "auditPr": null, "startPr": null, "endPr": null, "status": "not-audited", "outcome": "Balance, campaign duration, performance, onboarding, QA and reproducible Pages release"}
   ],
   "planned": [
-    {"number": 129, "kind": "implementation", "workItem": "NAV-USABILITY-GATE", "title": "Gate navigation task usability", "status": "merged", "mergeSha": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"},
     {"number": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "title": "Audit local campaign time and offline progression", "status": "merged", "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"},
-    {"number": 131, "kind": "implementation", "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE", "title": "Persist immutable campaign settings", "status": "active", "baselineSha": "1503c7d37fafc623bee4654ed460c92aa55a7b2f"},
-    {"number": 132, "kind": "implementation", "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE", "title": "Run active and offline campaign time", "status": "blocked-until-131"}
+    {"number": 131, "kind": "implementation", "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE", "title": "Persist immutable campaign settings", "status": "merged", "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd"},
+    {"number": 132, "kind": "implementation", "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE", "title": "Run active and offline campaign time", "status": "next"}
   ],
-  "nextAction": "Complete final validation/review and merge PR #131; synchronize exact merge SHA; only then create PR #132 from fresh main."
+  "nextAction": "Create PR #132 CAMPAIGN-CLOCK-OFFLINE-GATE from fresh current main and implement only the accepted clock/catch-up contract."
 }
