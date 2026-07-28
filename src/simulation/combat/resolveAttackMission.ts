@@ -14,6 +14,7 @@ import {
 import type { ResourceCost } from '../economy/types';
 import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import type { FleetState } from '../fleets/types';
+import { reconcileDestroyedPlanet } from '../planet/reconcileDestroyedPlanet';
 import type { PlanetState } from '../planet/types';
 import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
 import {
@@ -33,6 +34,7 @@ import {
 } from './debris';
 import { getPlanetaryDefenseTargetPriority } from './defenseAbilities';
 import { resolvePlanetDemolition } from './planetDemolition';
+import { resolvePlanetDestruction } from './planetDestruction';
 import { resolveBattle } from './resolveBattle';
 import type { BattleReport } from './types';
 
@@ -342,6 +344,21 @@ export function resolveAttackMission(
     commanderBonusBasisPoints: attackerCommander.demolitionBasisPoints,
   });
   updatedTarget = demolition.planet;
+  const destruction = resolvePlanetDestruction({
+    state,
+    attackerEmpireId: attackerFleet.empireId,
+    attackerFleetId: attackerFleet.id,
+    attackerRemaining: attackerAfterCommanderRecovery,
+    defenderEmpireId: target.ownerEmpireId,
+    defenderRemaining: finalDefenderRemaining,
+    activeDefenses,
+    targetPlanetId: target.id,
+    targetGalaxyPlanetId: target.galaxyPlanetId,
+    winner: resolution.winner,
+    eventSequence,
+    poliasReductionBasisPoints:
+      defenderCommander.planetDestructionReductionBasisPoints,
+  });
 
   fleets = updatedAttacker === undefined
     ? fleets.filter((fleet) => fleet.id !== attackerFleet.id)
@@ -373,6 +390,8 @@ export function resolveAttackMission(
     seed,
     resolvedAt: state.clock.elapsedSeconds,
     targetPlanetId: target.id,
+    targetGalaxyPlanetId: target.galaxyPlanetId,
+    targetCoordinate: target.coordinate,
     attackerEmpireId: attackerFleet.empireId,
     defenderEmpireId: target.ownerEmpireId,
     winner: resolution.winner,
@@ -391,6 +410,7 @@ export function resolveAttackMission(
     debrisCreated,
     plunderedCargo,
     demolition: demolition.report,
+    destruction,
     mode: isPve ? 'pve' : 'pvp',
     threatMultiplierPermille,
     rewardMultiplierPermille,
@@ -400,18 +420,26 @@ export function resolveAttackMission(
     defenderTargetPriority,
   };
 
+  let nextState: GameState = {
+    ...state,
+    planets: state.planets.map((planet) =>
+      planet.id === target.id ? updatedTarget : planet,
+    ),
+    fleets,
+    debrisFields,
+    pendingEvents: demolition.pendingEvents,
+    commanders: awardBattleCommandExperience(state.commanders, report),
+  };
+  if (destruction.planetDestroyed) {
+    nextState = reconcileDestroyedPlanet(nextState, target.id).state;
+  }
+  const resolvedAttacker = updatedAttacker === undefined
+    ? undefined
+    : nextState.fleets.find((fleet) => fleet.id === updatedAttacker?.id);
+
   return {
-    state: {
-      ...state,
-      planets: state.planets.map((planet) =>
-        planet.id === target.id ? updatedTarget : planet,
-      ),
-      fleets,
-      debrisFields,
-      pendingEvents: demolition.pendingEvents,
-      commanders: awardBattleCommandExperience(state.commanders, report),
-    },
+    state: nextState,
     report,
-    attackerFleet: updatedAttacker,
+    attackerFleet: resolvedAttacker,
   };
 }
