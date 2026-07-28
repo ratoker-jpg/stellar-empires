@@ -61,6 +61,14 @@ function renderBadge(id: string, label: string, value: number): void {
   badge.setAttribute('aria-label', `${label}: ${value}`);
 }
 
+function renderActivity(id: string, label: string, text: string, count: number): void {
+  const activity = requireElement<HTMLElement>(`#${id}`);
+  activity.textContent = text;
+  activity.dataset.activityCount = String(count);
+  activity.setAttribute('aria-label', `${label}: ${count}`);
+  activity.title = 'Информационный индикатор. Открой соответствующий раздел в основной навигации.';
+}
+
 export function mountGlobalHud(options: GlobalHudOptions): GlobalHudController {
   const selector = requireElement<HTMLSelectElement>('#hud-planet-selector');
   const coordinate = requireElement<HTMLElement>('#hud-active-coordinate');
@@ -103,12 +111,17 @@ export function mountGlobalHud(options: GlobalHudOptions): GlobalHudController {
     renderCapacity('#hud-population', '#hud-population-value', '#hud-population-state', view.population);
     renderCapacity('#hud-hangar', '#hud-hangar-value', '#hud-hangar-state', view.hangar);
 
-    requireElement<HTMLElement>('#hud-queue-badge').textContent = `Очереди ${view.queueCount}`;
-    requireElement<HTMLElement>('#hud-mission-badge').textContent =
-      `Миссии ${view.activeMissionCount} · входящие ${view.incomingContactCount}`;
-    requireElement<HTMLElement>('#hud-report-badge').textContent = `Отчёты ${view.reportCount}`;
+    const missionCount = view.activeMissionCount + view.incomingContactCount;
+    renderActivity('hud-queue-badge', 'Активные очереди', `Очереди ${view.queueCount}`, view.queueCount);
+    renderActivity(
+      'hud-mission-badge',
+      'Активные и входящие миссии',
+      `Миссии ${view.activeMissionCount} · входящие ${view.incomingContactCount}`,
+      missionCount,
+    );
+    renderActivity('hud-report-badge', 'Доступные отчёты', `Отчёты ${view.reportCount}`, view.reportCount);
     renderBadge('nav-planet-badge', 'Активные очереди', view.queueCount);
-    renderBadge('nav-fleet-badge', 'Активные и входящие миссии', view.activeMissionCount + view.incomingContactCount);
+    renderBadge('nav-fleet-badge', 'Активные и входящие миссии', missionCount);
     renderBadge('nav-research-badge', 'Активные исследования', state.research.find((item) => item.empireId === 'player')?.queue.length ?? 0);
     renderBadge('nav-operations-badge', 'Активные события', state.worldEvents.active.length);
     renderBadge('nav-reports-badge', 'Отчёты', view.reportCount);

@@ -1,3 +1,4 @@
+import '../styles/navigationHierarchy.css';
 import type { GameState } from '../simulation/types';
 import {
   parseAppShellRoute,
@@ -12,8 +13,10 @@ import {
   type SystemShellMode,
 } from './appShellRoute';
 import {
+  SHELL_NAVIGATION_GROUPS,
   SHELL_SCREEN_REGISTRY,
   validateScreenRegistry,
+  type ShellNavigationGroupDefinition,
   type ShellScreenDefinition,
 } from './screenRegistry';
 
@@ -43,6 +46,7 @@ export interface AppShellControllerOptions {
   readonly activateSystem: (mode: SystemShellMode) => void;
   readonly writeStatus?: (message: string) => void;
   readonly registry?: readonly ShellScreenDefinition[];
+  readonly navigationGroups?: readonly ShellNavigationGroupDefinition[];
 }
 
 export interface AppShellSnapshot {
@@ -70,11 +74,12 @@ export function createBrowserAppShellEnvironment(browserWindow: Window = window)
 function createNavigationButton(definition: ShellScreenDefinition): HTMLButtonElement {
   const button = document.createElement('button');
   button.id = definition.elementId;
-  button.className = `rail-button${definition.utility ? ' rail-button--utility' : ''}`;
+  button.className = `rail-button rail-button--${definition.group}`;
   button.type = 'button';
   button.setAttribute('aria-label', definition.ariaLabel);
   button.dataset.shellScreen = definition.id;
   button.dataset.shellScreenKind = definition.kind;
+  button.dataset.shellNavigationGroup = definition.group;
   const icon = document.createElement('span');
   icon.className = 'rail-button__icon';
   icon.textContent = definition.icon;
@@ -90,6 +95,26 @@ function createNavigationButton(definition: ShellScreenDefinition): HTMLButtonEl
     button.append(badge);
   }
   return button;
+}
+
+function createNavigationGroup(
+  group: ShellNavigationGroupDefinition,
+): { readonly root: HTMLElement; readonly items: HTMLElement } {
+  const root = document.createElement('section');
+  root.className = `rail-group rail-group--${group.id}${group.compact ? ' rail-group--compact' : ''}`;
+  root.dataset.navigationGroup = group.id;
+  root.setAttribute('role', 'group');
+  root.setAttribute('aria-label', group.ariaLabel);
+
+  const label = document.createElement('span');
+  label.className = 'rail-group__label';
+  label.textContent = group.label;
+  label.title = group.ariaLabel;
+
+  const items = document.createElement('div');
+  items.className = 'rail-group__items';
+  root.append(label, items);
+  return { root, items };
 }
 
 function routeWorkspaceSelector(route: AppShellRoute): string {
@@ -110,6 +135,7 @@ export class AppShellController {
   readonly #environment: AppShellEnvironment;
   readonly #options: AppShellControllerOptions;
   readonly #registry: readonly ShellScreenDefinition[];
+  readonly #navigationGroups: readonly ShellNavigationGroupDefinition[];
   readonly #listeners = new Set<(snapshot: AppShellSnapshot) => void>();
   readonly #unsubscribeEnvironment: () => void;
   readonly #cleanup: Array<() => void> = [];
@@ -122,7 +148,10 @@ export class AppShellController {
     this.#registry = [...(options.registry ?? SHELL_SCREEN_REGISTRY)].sort(
       (left, right) => left.order - right.order,
     );
-    const registryErrors = validateScreenRegistry(this.#registry);
+    this.#navigationGroups = [...(options.navigationGroups ?? SHELL_NAVIGATION_GROUPS)].sort(
+      (left, right) => left.order - right.order,
+    );
+    const registryErrors = validateScreenRegistry(this.#registry, this.#navigationGroups);
     if (registryErrors.length > 0) throw new Error(registryErrors.join('\n'));
     this.renderNavigation();
     const parsed = parseAppShellRoute(
@@ -225,11 +254,12 @@ export class AppShellController {
     const definitionsByElement = new Map(
       this.#registry.map((definition) => [definition.elementId, definition] as const),
     );
-    for (const button of document.querySelectorAll<HTMLButtonElement>('.side-rail > .rail-button')) {
+    for (const button of document.querySelectorAll<HTMLButtonElement>('.side-rail .rail-button')) {
       const definition = definitionsByElement.get(button.id);
       if (definition === undefined) continue;
       button.dataset.shellScreen = definition.id;
       button.dataset.shellScreenKind = definition.kind;
+      button.dataset.shellNavigationGroup = definition.group;
     }
     this.updateNavigationState(this.#snapshot.route);
   }
@@ -244,33 +274,32 @@ export class AppShellController {
     const rail = document.querySelector<HTMLElement>('.side-rail');
     if (rail === null) throw new Error('Primary navigation rail is missing.');
     rail.replaceChildren();
-    let utilityStarted = false;
-    for (const definition of this.#registry) {
-      if (definition.utility && !utilityStarted) {
-        const spacer = document.createElement('div');
-        spacer.className = 'rail-spacer';
-        rail.append(spacer);
-        utilityStarted = true;
+    for (const group of this.#navigationGroups) {
+      const entries = this.#registry.filter((definition) => definition.group === group.id);
+      if (entries.length === 0) continue;
+      const renderedGroup = createNavigationGroup(group);
+      for (const definition of entries) {
+        const button = createNavigationButton(definition);
+        const onClick = (event: MouseEvent): void => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          switch (definition.routeFamily) {
+            case 'planet': this.navigateToPlanet(); break;
+            case 'fleets': this.navigateToFleets(); break;
+            case 'space': this.navigateToSpace(); break;
+            case 'research': this.navigateToResearch(); break;
+            case 'command': this.navigateToCommand(); break;
+            case 'ranking': this.navigateToRanking(); break;
+            case 'operations': this.navigateToOperations(); break;
+            case 'reports': this.navigateToReports(); break;
+            case 'system': this.navigateToSystem(); break;
+          }
+        };
+        button.addEventListener('click', onClick);
+        this.#cleanup.push(() => button.removeEventListener('click', onClick));
+        renderedGroup.items.append(button);
       }
-      const button = createNavigationButton(definition);
-      const onClick = (event: MouseEvent): void => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        switch (definition.routeFamily) {
-          case 'planet': this.navigateToPlanet(); break;
-          case 'fleets': this.navigateToFleets(); break;
-          case 'space': this.navigateToSpace(); break;
-          case 'research': this.navigateToResearch(); break;
-          case 'command': this.navigateToCommand(); break;
-          case 'ranking': this.navigateToRanking(); break;
-          case 'operations': this.navigateToOperations(); break;
-          case 'reports': this.navigateToReports(); break;
-          case 'system': this.navigateToSystem(); break;
-        }
-      };
-      button.addEventListener('click', onClick);
-      this.#cleanup.push(() => button.removeEventListener('click', onClick));
-      rail.append(button);
+      rail.append(renderedGroup.root);
     }
   }
 
@@ -377,6 +406,25 @@ export class AppShellController {
   }
 
   private updateNavigationState(route: AppShellRoute): void {
+    const activeDefinition = this.#registry.find(
+      (definition) => definition.routeFamily === route.family,
+    );
+    const activeGroup = activeDefinition?.group;
+    const rail = document.querySelector<HTMLElement>('.side-rail');
+    if (rail !== null && activeGroup !== undefined) rail.dataset.activeGroup = activeGroup;
+    if (activeGroup !== undefined) document.documentElement.dataset.shellNavigationGroup = activeGroup;
+
+    for (const group of this.#navigationGroups) {
+      const root = document.querySelector<HTMLElement>(`[data-navigation-group="${group.id}"]`);
+      if (root === null) continue;
+      const active = group.id === activeGroup;
+      root.classList.toggle('is-active', active);
+      root.setAttribute(
+        'aria-label',
+        active ? `${group.ariaLabel}. Активная группа.` : group.ariaLabel,
+      );
+    }
+
     for (const definition of this.#registry) {
       const button = document.querySelector<HTMLButtonElement>(`#${definition.elementId}`);
       if (button === null) continue;

@@ -32,24 +32,43 @@
         <div class="topbar-status">
           <div class="hud-emblem-socket" aria-hidden="true"><img class="commander-emblem" src="./assets/factions/aegis/emblem.svg" alt="" /></div>
           <div><small>Сеть командования</small><strong id="app-status">Инициализация…</strong><span id="hud-save-state">Автосохранение: ожидание</span></div>
-          <div class="hud-activity-badges" aria-label="Активность империи">
-            <span id="hud-queue-badge">Очереди 0</span><span id="hud-mission-badge">Миссии 0</span><span id="hud-report-badge">Отчёты 0</span>
+          <div class="hud-activity-badges" aria-label="Информационные индикаторы активности империи" role="status" aria-live="polite">
+            <span id="hud-queue-badge" aria-label="Активные очереди: 0">Очереди 0</span><span id="hud-mission-badge" aria-label="Активные миссии: 0">Миссии 0</span><span id="hud-report-badge" aria-label="Доступные отчёты: 0">Отчёты 0</span>
           </div>
           <span class="build-badge" id="build-version">v0.1.0</span>
         </div>
       </header>
 
-      <nav class="side-rail" aria-label="Основная навигация">
-        <button id="nav-planet" class="rail-button" type="button" aria-label="Планета"><span class="rail-button__icon">◉</span><small>Планета</small></button>
-        <button id="nav-fleet" class="rail-button" type="button" aria-label="Флот"><span class="rail-button__icon">◆</span><small>Флоты</small></button>
-        <button id="nav-galaxy" class="rail-button" type="button" aria-label="Галактика"><span class="rail-button__icon">✦</span><small>Галактика</small></button>
-        <button id="nav-research" class="rail-button" type="button" aria-label="Исследования"><span class="rail-button__icon">⌬</span><small>Наука</small></button>
-        <button id="nav-empire" class="rail-button" type="button" aria-label="Командование"><span class="rail-button__icon">▦</span><small>Командование</small></button>
-        <button id="nav-rating" class="rail-button" type="button" aria-label="Рейтинг"><span class="rail-button__icon">△</span><small>Рейтинг</small></button>
-        <div class="rail-spacer"></div>
-        <button id="nav-operations" class="rail-button rail-button--utility" type="button" aria-label="Операционный центр"><span class="rail-button__icon">◎</span><small>Операции</small></button>
-        <button id="nav-reports" class="rail-button rail-button--utility" type="button" aria-label="Отчёты"><span class="rail-button__icon">▤</span><small>Отчёты</small></button>
-        <button id="nav-system" class="rail-button rail-button--utility" type="button" aria-label="Настройки"><span class="rail-button__icon">⚙</span><small>Система</small></button>
+      <nav class="side-rail" aria-label="Основная навигация" data-active-group="gameplay">
+        <section class="rail-group rail-group--gameplay is-active" data-navigation-group="gameplay" role="group" aria-label="Основные игровые разделы. Активная группа.">
+          <span class="rail-group__label">Игра</span>
+          <div class="rail-group__items">
+            <button id="nav-planet" class="rail-button rail-button--gameplay is-active" type="button" aria-label="Планета" aria-current="page"><span class="rail-button__icon">◉</span><small>Планета</small></button>
+            <button id="nav-galaxy" class="rail-button rail-button--gameplay" type="button" aria-label="Вселенная и галактики"><span class="rail-button__icon">✦</span><small>Вселенная</small></button>
+            <button id="nav-fleet" class="rail-button rail-button--gameplay" type="button" aria-label="Флоты"><span class="rail-button__icon">◆</span><small>Флоты</small></button>
+            <button id="nav-operations" class="rail-button rail-button--gameplay" type="button" aria-label="Операционный центр"><span class="rail-button__icon">◎</span><small>Операции</small></button>
+          </div>
+        </section>
+        <section class="rail-group rail-group--development" data-navigation-group="development" role="group" aria-label="Развитие империи">
+          <span class="rail-group__label">Развитие</span>
+          <div class="rail-group__items">
+            <button id="nav-research" class="rail-button rail-button--development" type="button" aria-label="Исследования"><span class="rail-button__icon">⌬</span><small>Наука</small></button>
+            <button id="nav-empire" class="rail-button rail-button--development" type="button" aria-label="Командование"><span class="rail-button__icon">▦</span><small>Командование</small></button>
+          </div>
+        </section>
+        <section class="rail-group rail-group--information rail-group--compact" data-navigation-group="information" role="group" aria-label="Информация и история">
+          <span class="rail-group__label">Данные</span>
+          <div class="rail-group__items">
+            <button id="nav-reports" class="rail-button rail-button--information" type="button" aria-label="Отчёты"><span class="rail-button__icon">▤</span><small>Отчёты</small></button>
+            <button id="nav-rating" class="rail-button rail-button--information" type="button" aria-label="Рейтинг"><span class="rail-button__icon">△</span><small>Рейтинг</small></button>
+          </div>
+        </section>
+        <section class="rail-group rail-group--utility rail-group--compact" data-navigation-group="utility" role="group" aria-label="Сохранения и настройки">
+          <span class="rail-group__label">Система</span>
+          <div class="rail-group__items">
+            <button id="nav-system" class="rail-button rail-button--utility" type="button" aria-label="Настройки"><span class="rail-button__icon">⚙</span><small>Настройки</small></button>
+          </div>
+        </section>
       </nav>
 
       <main class="game-layout">
