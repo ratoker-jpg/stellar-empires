@@ -1,8 +1,8 @@
 # AI Continuation Guide
 
-**Status:** PR #123 merged · exact SHA recorded in GitHub merge metadata  
+**Status:** PR #123 merged · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
 **Updated:** 2026-07-28  
-**Runtime baseline:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE`  
+**Runtime baseline:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
 **Last completed batch:** `PLANET-DEMOLITION-DESTRUCTION-01`  
 **Next authorized work:** Audit PR #124 only
 
@@ -41,14 +41,15 @@ The existing ordinary `attack` mission now supports:
 
 - faction-specific siege profiles and weapon-level scaling;
 - deterministic building demolition with Annihilator roll bonus;
-- deterministic whole-planet chance with defence, defender destroyer and Polias reductions;
+- deterministic whole-planet chance with defence, defender destroyer and assigned-flagship Polias reductions;
 - 30% cap and final-colony protection;
 - atomic colony removal and active-reference cleanup;
 - deterministic nearest-colony fleet rehome;
-- ordinary return rebuilding without duplicate events;
-- immutable special-mission historical origin plus additive live `returnPlanetId`;
+- ordinary return rebuilding without duplicate events and with preserved travel time;
+- immutable special-mission historical origin plus repeatable live `returnPlanetId` rehome;
 - reward-safe expedition and space-object resolution;
-- debris recycling at released coordinates and fresh recolonization;
+- debris recycling at released coordinates and after fresh recolonization;
+- outbound recycler retargeting when recolonization changes the live colony ID;
 - exact report evidence and map backlinks after active-colony deletion;
 - schema-v14 save/load, integration and Browser E2E closure.
 
