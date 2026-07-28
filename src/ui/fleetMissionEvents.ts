@@ -4,6 +4,8 @@ import type { GalaxyIntelVisibility } from '../simulation/galaxy/intelligenceVie
 export const FLEET_MISSION_TARGET_EVENT = 'stellar:fleet-mission-target';
 
 const PREPARED_TARGET_STORAGE_KEY = 'stellar-empires:prepared-fleet-target:v1';
+const RESTORE_RETRY_DELAY_MS = 50;
+const RESTORE_RETRY_LIMIT = 40;
 
 export interface FleetMissionTargetRequest {
   readonly targetId: string;
@@ -107,7 +109,22 @@ function installPreparedTargetBridge(): void {
   if (typeof document === 'undefined' || typeof MutationObserver === 'undefined') return;
   let deliveredTargetId: string | null = null;
   let preparedNoticeWasVisible = false;
+  let restoreAttempts = 0;
+  let restoreTimer: number | null = null;
   let clearControl: HTMLButtonElement | null = null;
+
+  const cancelRestoreTimer = (): void => {
+    if (restoreTimer === null) return;
+    window.clearTimeout(restoreTimer);
+    restoreTimer = null;
+  };
+
+  const resetDelivery = (): void => {
+    cancelRestoreTimer();
+    deliveredTargetId = null;
+    preparedNoticeWasVisible = false;
+    restoreAttempts = 0;
+  };
 
   const ensureClearControl = (): HTMLButtonElement | null => {
     if (clearControl?.isConnected === true) return clearControl;
@@ -121,9 +138,8 @@ function installPreparedTargetBridge(): void {
     button.hidden = true;
     button.addEventListener('click', () => {
       clearPreparedFleetMissionTarget();
-      deliveredTargetId = null;
-      preparedNoticeWasVisible = false;
       button.hidden = true;
+      resetDelivery();
       emitPreparedTarget(null);
     });
     tabs.insertAdjacentElement('afterend', button);
@@ -131,7 +147,20 @@ function installPreparedTargetBridge(): void {
     return button;
   };
 
+  const renderInvalidWarning = (message: string): void => {
+    queueMicrotask(() => {
+      const host = document.querySelector<HTMLElement>('#fleet-workspace-host');
+      if (host === null || host.querySelector('.mission-target-invalid') !== null) return;
+      const warning = document.createElement('p');
+      warning.className = 'mission-target-invalid';
+      warning.setAttribute('role', 'status');
+      warning.textContent = message;
+      host.prepend(warning);
+    });
+  };
+
   const reconcile = (): void => {
+    restoreTimer = null;
     const control = ensureClearControl();
     if (document.documentElement.dataset.appReady !== 'true') {
       if (control !== null) control.hidden = true;
@@ -142,64 +171,61 @@ function installPreparedTargetBridge(): void {
     const prepared = readPreparedFleetMissionTarget();
     if (!route.startsWith('#/fleets/compose') || prepared === null) {
       if (control !== null) control.hidden = true;
-      deliveredTargetId = null;
-      preparedNoticeWasVisible = false;
+      resetDelivery();
       return;
     }
 
     if (deliveredTargetId !== prepared.targetId) {
+      cancelRestoreTimer();
       deliveredTargetId = prepared.targetId;
-      emitPreparedTarget(prepared);
-      const restoredNotice = document.querySelector<HTMLElement>(
-        '[data-testid="mission-target-notice"]',
-      );
-      preparedNoticeWasVisible = restoredNotice !== null;
-      if (control !== null) control.hidden = restoredNotice === null;
-      window.setTimeout(reconcile, 0);
-      return;
+      preparedNoticeWasVisible = false;
+      restoreAttempts = 0;
     }
 
     const notice = document.querySelector<HTMLElement>('[data-testid="mission-target-notice"]');
+    if (notice === null) {
+      if (preparedNoticeWasVisible) {
+        clearPreparedFleetMissionTarget();
+        if (control !== null) control.hidden = true;
+        resetDelivery();
+        emitPreparedTarget(null);
+        return;
+      }
+
+      if (restoreAttempts < RESTORE_RETRY_LIMIT) {
+        restoreAttempts += 1;
+        emitPreparedTarget(prepared);
+        if (restoreTimer === null) {
+          restoreTimer = window.setTimeout(reconcile, RESTORE_RETRY_DELAY_MS);
+        }
+        return;
+      }
+
+      clearPreparedFleetMissionTarget();
+      if (control !== null) control.hidden = true;
+      resetDelivery();
+      emitPreparedTarget(null);
+      renderInvalidWarning('Подготовленную цель не удалось восстановить. Выбери цель заново.');
+      return;
+    }
+
+    cancelRestoreTimer();
+    preparedNoticeWasVisible = true;
+    restoreAttempts = 0;
+    if (control !== null) control.hidden = false;
+
     const targetSelectors = Array.from(
       document.querySelectorAll<HTMLSelectElement>('[data-testid^="mission-target-"]'),
     );
     const targetExists = targetSelectors.some((select) =>
       Array.from(select.options).some((option) => option.value === prepared.targetId));
+    if (targetSelectors.length === 0 || targetExists) return;
 
-    if (targetSelectors.length > 0 && !targetExists) {
-      clearPreparedFleetMissionTarget();
-      deliveredTargetId = null;
-      preparedNoticeWasVisible = false;
-      if (control !== null) control.hidden = true;
-      emitPreparedTarget(null);
-      queueMicrotask(() => {
-        const host = document.querySelector<HTMLElement>('#fleet-workspace-host');
-        if (host === null || host.querySelector('.mission-target-invalid') !== null) return;
-        const warning = document.createElement('p');
-        warning.className = 'mission-target-invalid';
-        warning.setAttribute('role', 'status');
-        warning.textContent = 'Подготовленная цель больше недоступна. Выбери новую цель.';
-        host.prepend(warning);
-      });
-      return;
-    }
-
-    if (notice !== null) {
-      preparedNoticeWasVisible = true;
-      if (control !== null) control.hidden = false;
-      return;
-    }
-
-    if (preparedNoticeWasVisible) {
-      clearPreparedFleetMissionTarget();
-      deliveredTargetId = null;
-      preparedNoticeWasVisible = false;
-      if (control !== null) control.hidden = true;
-      emitPreparedTarget(null);
-      return;
-    }
-
+    clearPreparedFleetMissionTarget();
     if (control !== null) control.hidden = true;
+    resetDelivery();
+    emitPreparedTarget(null);
+    renderInvalidWarning('Подготовленная цель больше недоступна. Выбери новую цель.');
   };
 
   const observer = new MutationObserver(reconcile);
