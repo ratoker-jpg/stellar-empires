@@ -1,5 +1,5 @@
 {
-  "statusVersion": 27,
+  "statusVersion": 28,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -9,10 +9,10 @@
   "lastMergedPr": 121,
   "lastMergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9",
   "verifiedMainBaseline": "Audit #121 squash merge 2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9; accepted audit head 5523fa0437b3e838b337a53f58fa5978733827cd passed CI, Browser E2E and Graphify",
-  "activePr": null,
-  "nextPrAfterActive": 122,
+  "activePr": 122,
+  "nextPrAfterActive": 123,
   "nextPrKind": "implementation",
-  "currentMilestone": "M4 accepted planet demolition, destruction and released-coordinate recovery batch",
+  "currentMilestone": "M4 planet demolition implementation active; destruction and released-coordinate recovery remain blocked until PR #122 merges",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -121,11 +121,11 @@
   ],
   "activeDelivery": [
     {"pr": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
-    {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "next"},
+    {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "draft-active", "branch": "agent/planet-demolition-contract"},
     {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "blocked-until-pr122-merge"}
   ],
   "knownLimitations": [
-    "planet demolition/destruction is audited but not implemented until PRs #122–#123",
+    "planet demolition is active in PR #122; whole-planet destruction/recovery remains unimplemented until PR #123",
     "multi-colony economy and logistics coherence remain a separate future audit",
     "deeper PvE/meta systems and complete bot parity remain incomplete",
     "alliances, solar war, Obelisks, Gates and final victory are not implemented",
@@ -139,7 +139,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on accepted Audit #121 head 5523fa0437b3e838b337a53f58fa5978733827cd",
+    "lastValidation": "accepted Audit #121 head passed; PR #122 final-head validation pending",
     "lastAuditGraph": {
       "workflowRun": 30333446959,
       "headSha": "5523fa0437b3e838b337a53f58fa5978733827cd"
@@ -163,11 +163,12 @@
     "docs/audits/contracts/planet-demolition-destruction-01-prs.md",
     "docs/audits/contracts/planet-demolition-destruction-01-rules.md",
     "docs/audits/evidence/planet-demolition-destruction-01-graphify.md",
+    "docs/changes/pr122-planet-demolition-contract.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Create PR #122 from fresh current main and implement only PLANET-DEMOLITION-CONTRACT."
+  "nextAction": "Finish validation and automated review of PR #122; merge only PLANET-DEMOLITION-CONTRACT."
 }

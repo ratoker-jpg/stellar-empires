@@ -1,4 +1,5 @@
 import type { ResourceCost } from '../economy/types';
+import type { FactionId } from '../planet/types';
 import type {
   ProtectionType,
   TargetSize,
@@ -52,6 +53,48 @@ export interface BattleRoundReport {
   readonly defenderTargetBreakdown: readonly BattleTargetDamageReport[];
 }
 
+export interface PlanetDemolitionContributionReport {
+  readonly unitId: string;
+  readonly factionId: FactionId;
+  readonly count: number;
+  readonly weaponLevel: number;
+  readonly pointsPerShip: number;
+  readonly totalPoints: number;
+}
+
+export interface PlanetDemolitionBuildingRollReport {
+  readonly buildingId: string;
+  readonly levelBefore: number;
+  readonly levelAfter: number;
+  readonly chanceBasisPoints: number;
+  readonly rollBasisPoints: number;
+  readonly demolished: boolean;
+}
+
+export type PlanetDemolitionOutcome =
+  | 'applied'
+  | 'battle-result-ineligible'
+  | 'zero-final-points'
+  | 'no-eligible-buildings';
+
+export interface PlanetDemolitionReport {
+  readonly outcome: PlanetDemolitionOutcome;
+  readonly contributions: readonly PlanetDemolitionContributionReport[];
+  readonly defensePopulation: number;
+  readonly rawPoints: number;
+  readonly defenseReduction: number;
+  readonly finalPoints: number;
+  readonly baseChanceBasisPoints: number;
+  readonly commanderBonusBasisPoints: number;
+  readonly finalChanceBasisPoints: number;
+  readonly maximumSelectedBuildings: number;
+  readonly allEligibleBuildingsSelected: boolean;
+  readonly eligibleBuildingCount: number;
+  readonly selectedBuildingIds: readonly string[];
+  readonly rolls: readonly PlanetDemolitionBuildingRollReport[];
+  readonly cancelledQueueItemIds: readonly string[];
+}
+
 export interface BattleReport {
   readonly id: string;
   readonly seed: number;
@@ -74,6 +117,7 @@ export interface BattleReport {
   readonly defensesRecovered?: Readonly<Record<string, number>>;
   readonly debrisCreated?: DebrisAmount;
   readonly plunderedCargo?: ResourceCost;
+  readonly demolition?: PlanetDemolitionReport | undefined;
   readonly mode?: BattleMode;
   readonly threatMultiplierPermille?: number;
   readonly rewardMultiplierPermille?: number;

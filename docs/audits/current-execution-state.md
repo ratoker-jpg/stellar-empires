@@ -13,14 +13,15 @@
 | Complexity | heavy |
 | Authorized chain | #122 `PLANET-DEMOLITION-CONTRACT` → #123 `PLANET-DESTRUCTION-RECOVERY-GATE` |
 | Completed implementation PRs | none |
-| Active implementation PR | none |
+| Active implementation PR | #122 · draft · `agent/planet-demolition-contract` |
 | Persistence | schema v14; no migration or tombstone collection |
-| Validation | CI `30333447008`, Browser E2E `30333446989`, Graphify `30333446959` — passed |
-| Review | P1 special-mission return finding incorporated; all threads resolved |
-| Blockers | none |
+| Delivered in active PR | faction/weapon-scaled demolition, deterministic thresholds/rolls, defence reduction, Annihilator correction, queue/zone/economy reconciliation, battle-report presentation |
+| Validation | active PR checks must pass on final head before merge |
+| Review | automated review required after ready-for-review transition |
+| Blockers | #123 remains blocked until #122 squash merge |
 | Divergence | none |
-| Exact next action | create PR #122 from fresh current `main` and implement only `PLANET-DEMOLITION-CONTRACT` |
+| Exact next action | finish validation/review of PR #122 and merge only `PLANET-DEMOLITION-CONTRACT` |
 
 ## Recovery rule
 
-Do not implement whole-planet removal in #122. PR #123 starts only after #122 merges and owns destruction, live-reference reconciliation, special-mission return destinations, debris/recolonization and the combined closure gate.
+Do not implement whole-planet removal in #122. PR #123 starts only after #122 merges and owns destruction chance, last-colony guard, live-reference reconciliation, pending expedition/space-object return destinations, debris/recolonization and the combined closure gate.

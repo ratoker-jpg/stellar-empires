@@ -4,7 +4,7 @@
 **Updated:** 2026-07-28  
 **Runtime baseline:** PR #120 · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665`  
 **Active batch:** `PLANET-DEMOLITION-DESTRUCTION-01`  
-**Next implementation:** #122 `PLANET-DEMOLITION-CONTRACT`
+**Active implementation:** PR #122 `PLANET-DEMOLITION-CONTRACT`
 
 ## Repository
 
@@ -21,11 +21,12 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 5. `docs/audits/contracts/planet-demolition-destruction-01-prs.md`
 6. `docs/audits/contracts/planet-demolition-destruction-01-rules.md`
 7. `docs/audits/evidence/planet-demolition-destruction-01-graphify.md`
-8. this document
-9. `docs/project-status.json`
-10. `docs/roadmap-pr-index.json`
-11. `docs/27-playable-game-roadmap-v5.md`
-12. latest merged pull requests and actual `main`
+8. `docs/changes/pr122-planet-demolition-contract.md`
+9. this document
+10. `docs/project-status.json`
+11. `docs/roadmap-pr-index.json`
+12. `docs/27-playable-game-roadmap-v5.md`
+13. latest merged pull requests and actual `main`
 
 ## Completed product state
 
@@ -35,23 +36,25 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - #116–#120: ordinary mission/intelligence/bot parity gate;
 - #121: accepted heavy planet demolition/destruction audit.
 
-## Accepted implementation chain
+## Active PR #122
 
-```text
-#122 PLANET-DEMOLITION-CONTRACT
-→ #123 PLANET-DESTRUCTION-RECOVERY-GATE
-```
+Delivered on `agent/planet-demolition-contract`:
 
-### PR #122 only
-
-- add faction-specific siege profiles and weapon-level scaling;
+- faction-specific siege profiles and weapon-level scaling;
 - deterministic demolition points, thresholds, selection and rolls;
-- move Annihilator demolition from generic combat damage to building rolls;
-- remove one building level and reconcile zone/upgrade queue state;
-- extend battle reports/presentation;
-- do not remove planets or reconcile planet references yet.
+- surviving defence-population reduction;
+- Annihilator demolition removed from generic combat damage and applied to building rolls;
+- one-level building damage with endgame structures excluded;
+- matching building queue/event cancellation without refund;
+- zone and economy recalculation;
+- additive `BattleReport.demolition` evidence;
+- routed report-card details and focused simulation/presentation tests.
 
-### PR #123 later
+PR #122 must remain limited to building demolition. It does not remove a planet or alter normal colony/fleet reference topology.
+
+## PR #123 later
+
+After #122 merges, create fresh PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` for:
 
 - whole-planet destruction chance/reductions/final-colony guard;
 - atomic live-reference cleanup;
@@ -66,10 +69,10 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - reducer/combat remains authoritative;
 - no hidden target state for UI or bots;
 - no refunds or extra destruction loot;
-- final colony protected;
+- final colony remains protected until #123 implementation;
 - solar/endgame and economy/logistics redesign excluded;
 - #123 cannot begin before #122 merges.
 
 ## Immediate route
 
-Create PR #122 from exact fresh current `main` and implement only `PLANET-DEMOLITION-CONTRACT`.
+Finish checks and automated review on PR #122. Squash merge only when the final head is green and no unresolved review blocker remains. Then record the exact merge SHA before starting #123.
