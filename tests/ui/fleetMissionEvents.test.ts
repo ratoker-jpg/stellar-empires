@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   clearPreparedFleetMissionTarget,
   readPreparedFleetMissionTarget,
+  readPreparedFleetSourceRoute,
   rememberPreparedFleetSourceRoute,
   writePreparedFleetMissionTarget,
 } from '../../src/ui/fleetMissionEvents';
@@ -40,8 +41,10 @@ describe('prepared fleet mission target', () => {
       sourcePlanetId: 'planet-player',
     });
     expect(readPreparedFleetMissionTarget(storage)).toEqual(prepared);
+    expect(readPreparedFleetSourceRoute(storage)).toBe('#/space/solar/1/2/3');
     clearPreparedFleetMissionTarget(storage);
     expect(readPreparedFleetMissionTarget(storage)).toBeNull();
+    expect(readPreparedFleetSourceRoute(storage)).toBe('#/space/solar/1/2/3');
   });
 
   it('preserves the exact Space origin in shell navigation memory', () => {
@@ -58,6 +61,7 @@ describe('prepared fleet mission target', () => {
     }));
 
     expect(rememberPreparedFleetSourceRoute('#/space/solar/2/17/6', storage)).toBe(true);
+    expect(readPreparedFleetSourceRoute(storage)).toBe('#/space/solar/2/17/6');
     expect(JSON.parse(storage.getItem('stellar-empires:shell-navigation:v1') ?? '{}')).toEqual({
       version: 1,
       campaignKey: '14:test-seed',
@@ -82,5 +86,8 @@ describe('prepared fleet mission target', () => {
       mission: 'scout',
     }));
     expect(readPreparedFleetMissionTarget(storage)).toBeNull();
+
+    storage.setItem('stellar-empires:prepared-fleet-source-route:v1', '#/reports/all');
+    expect(readPreparedFleetSourceRoute(storage)).toBeNull();
   });
 });
