@@ -1,18 +1,18 @@
 {
-  "statusVersion": 26,
+  "statusVersion": 27,
   "updatedAt": "2026-07-28",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 120,
-  "lastMergeSha": "c59a2dd7afdc31fc250d2ec21364f655d6a4e665",
-  "verifiedMainBaseline": "post-PR #120 main 818aba011199dd5a96518f859ed35de671be892f; runtime PR #120 final head dec823e52f55436f6708bfa74aca4996b18c16a7 passed asset audit, lint, TypeScript, 392-test suite, production build, Browser E2E and Graphify",
-  "activePr": 121,
+  "lastMergedPr": 121,
+  "lastMergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9",
+  "verifiedMainBaseline": "Audit #121 squash merge 2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9; accepted audit head 5523fa0437b3e838b337a53f58fa5978733827cd passed CI, Browser E2E and Graphify",
+  "activePr": null,
   "nextPrAfterActive": 122,
   "nextPrKind": "implementation",
-  "currentMilestone": "M4 planet demolition, destruction and released-coordinate recovery audit",
+  "currentMilestone": "M4 accepted planet demolition, destruction and released-coordinate recovery batch",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
@@ -48,7 +48,8 @@
     "roadmapMilestone": "M4",
     "complexity": "heavy",
     "auditPr": 121,
-    "auditStatus": "in-progress",
+    "auditMergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9",
+    "auditStatus": "accepted",
     "baselineSha": "818aba011199dd5a96518f859ed35de671be892f",
     "implementationCount": 2,
     "plannedImplementationPrs": [122, 123],
@@ -57,7 +58,7 @@
       "PLANET-DEMOLITION-CONTRACT",
       "PLANET-DESTRUCTION-RECOVERY-GATE"
     ],
-    "status": "audit-in-progress",
+    "status": "active",
     "archive": "docs/audits/completed/planet-demolition-destruction-01.md",
     "divergence": "none"
   },
@@ -73,6 +74,8 @@
     "immediateNormalRecolonization": true,
     "additionalDestructionLoot": false,
     "endgameBuildingsDemolitionEligible": false,
+    "specialMissionHistoricalOriginPreserved": true,
+    "specialMissionLiveReturnOverrideRequired": true,
     "alliancesIncluded": false,
     "solarWarIncluded": false,
     "economyLogisticsRedesignIncluded": false,
@@ -117,8 +120,8 @@
     "deterministic scout to schema-v14 save/load to attack integration and Browser E2E gate"
   ],
   "activeDelivery": [
-    {"pr": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "in-progress"},
-    {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "blocked-until-audit-merge"},
+    {"pr": 121, "kind": "audit", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "status": "merged", "mergeSha": "2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9"},
+    {"pr": 122, "kind": "implementation", "workItem": "PLANET-DEMOLITION-CONTRACT", "status": "next"},
     {"pr": 123, "kind": "implementation", "workItem": "PLANET-DESTRUCTION-RECOVERY-GATE", "status": "blocked-until-pr122-merge"}
   ],
   "knownLimitations": [
@@ -136,15 +139,10 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "passed on PR #120 final head dec823e52f55436f6708bfa74aca4996b18c16a7; Audit #121 final run pending",
+    "lastValidation": "passed on accepted Audit #121 head 5523fa0437b3e838b337a53f58fa5978733827cd",
     "lastAuditGraph": {
-      "nodes": 2130,
-      "relationships": 6795,
-      "communities": 103,
-      "extractedPercent": 100,
-      "inferredPercent": 0,
-      "ambiguousPercent": 0,
-      "workflowRun": 30311719069
+      "workflowRun": 30333446959,
+      "headSha": "5523fa0437b3e838b337a53f58fa5978733827cd"
     }
   },
   "sourceAssetIntake": {
@@ -171,5 +169,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Finalize and merge Audit PR #121. After merge, create PR #122 from fresh main and implement only PLANET-DEMOLITION-CONTRACT."
+  "nextAction": "Create PR #122 from fresh current main and implement only PLANET-DEMOLITION-CONTRACT."
 }
