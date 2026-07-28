@@ -2,10 +2,10 @@
 
 **Status:** active canonical product roadmap  
 **Updated:** 2026-07-28  
-**Last merged PR:** #129 · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
-**Verified baseline:** `45bd3297d402fd96691a26c60e47bd39a420f174`  
-**Active audit:** #130 `LOCAL-CAMPAIGN-TIME-PACING-01`  
-**Next implementation after audit acceptance:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE`  
+**Last merged PR:** #130 audit · `2379fa7a30974381349433e4f0e0ba43d15f1511`  
+**Runtime baseline:** PR #129 · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa`  
+**Accepted batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
+**Next implementation:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE`  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -28,13 +28,14 @@ Nemexia references define systemic depth only. Stellar Empires keeps original te
 Canonical contracts:
 
 - endgame: `docs/25-solar-war-obelisks-gates-and-progression.md`;
-- local campaign/world speed/offline progression: `docs/25a-local-campaign-world-speed-and-offline-progression.md`.
+- local campaign/world speed/offline progression: `docs/25a-local-campaign-world-speed-and-offline-progression.md`;
+- accepted implementation contract: `docs/audits/current-batch-audit.md`.
 
 The local campaign requires:
 
 - no continuously running game server for Release 1.0;
 - immutable world-speed preset chosen before state creation;
-- no normal in-session fast-forward controls;
+- no normal in-session fast-forward controls after the clock foundation is delivered;
 - deterministic active and offline progression at the same speed;
 - bots and ordinary world rules continue while closed;
 - progression later compressed toward a complete roughly one-day active campaign.
@@ -42,29 +43,21 @@ The local campaign requires:
 ## 2. Source-of-truth hierarchy
 
 1. current merged code/tests on `main`;
-2. accepted current audit and contracts;
-3. this roadmap;
-4. canonical endgame and campaign-runtime contracts;
-5. status/roadmap indexes;
-6. research references;
-7. older audits/handoffs as history only.
+2. accepted audit and contracts;
+3. `docs/audits/current-execution-state.md`;
+4. `docs/project-status.json` and `docs/roadmap-pr-index.json`;
+5. this roadmap;
+6. canonical product/endgame contracts;
+7. older audits and handoffs as history only.
 
-Exact execution sequencing:
-
-```text
-docs/roadmap-pr-index.json
-docs/audits/current-batch-audit.md
-docs/audits/current-execution-state.md
-```
-
-## 3. Delivered baseline through PR #129
+## 3. Delivered baseline through PR #130
 
 ### Simulation and persistence
 
 - deterministic command/event/replay/checksum model;
 - schema v14 and migration chain;
 - IndexedDB autosave, manual slots, import/export, snapshots and recovery;
-- bounded histories;
+- bounded command/event histories;
 - serialized deterministic bot decision cursors;
 - player and bots share ordinary validation and command paths.
 
@@ -92,43 +85,163 @@ docs/audits/current-execution-state.md
 - keyboard, reduced motion and release-viewport Browser E2E;
 - measured task budgets and no-dead-end navigation gate.
 
-### Completed navigation batch
+### Accepted campaign-time architecture
 
-Audit #125 and PRs #126–#129 are complete.
+Audit #130 is merged. It authorizes:
 
-Archive: `docs/audits/completed/navigation-usability-01.md`.
+- schema v15 immutable campaign settings;
+- save format v3 protected runtime metadata;
+- legacy x1 migration using envelope time;
+- one future shared active/offline chronological orchestrator;
+- chronological bot decision boundaries;
+- processed-cursor checkpoints;
+- bounded resumable catch-up;
+- durable return summary until acknowledgement;
+- separation of clock correctness from later numeric balance work.
 
-Final #129 validation:
+Audit validation:
 
-- CI `30384172381`;
-- Browser E2E `30384173409`;
-- Graphify `30384172385`.
+- CI `30389103445`;
+- Browser E2E `30389103358`;
+- Graphify `30389103322`;
+- merge `2379fa7a30974381349433e4f0e0ba43d15f1511`.
 
-## 4. Current campaign-time gap
+## 4. Current runtime gap
 
-The runtime has canonical game seconds but no playable real-time campaign layer.
+The accepted architecture is not implemented yet.
 
-Verified gaps:
+Current runtime still has:
 
-- new game selects only faction;
-- no world-speed state exists;
-- no active real-time ticker exists;
-- normal Planet UI exposes manual fast-forward;
-- autosave load ignores elapsed wall time;
-- save format has no protected runtime activity cursor;
-- bot decisions after a large jump see the final world snapshot;
-- no bounded catch-up progress or return summary exists.
+- faction-only new-game setup;
+- schema v14;
+- save format v2;
+- no immutable world speed;
+- no protected processed real-time cursor or continuation;
+- no open-session real-time ticker;
+- no offline bootstrap catch-up;
+- overdue bots evaluated against the final post-jump state;
+- normal manual Planet fast-forward controls;
+- no catch-up progress surface or durable return summary.
 
-The current `ADVANCE_TIME` reducer already provides the deterministic non-bot foundation by processing event, economy, logistics and world-event boundaries. The current bot scheduler provides persisted cursors and bounded due-decision execution. Audit #130 integrates these foundations rather than replacing them with a second simulation.
+## 5. Active implementation sequence
 
-## 5. Release 1.0 definition
+```text
+#131 CAMPAIGN-SETTINGS-PERSISTENCE — next and only authorized PR
+→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — blocked until #131 merges
+→ separate CAMPAIGN-PROGRESSION-BALANCE-01 audit
+```
 
-### Player loop
+## 6. PR #131 — CAMPAIGN-SETTINGS-PERSISTENCE
+
+### Purpose
+
+Establish immutable campaign identity and a safe persistence contract before activating real/offline time.
+
+### Required deterministic state
+
+```text
+CampaignSettings
+  scenarioPreset: test | campaign | fidelity
+  worldSpeed: 1 | 2 | 5 | 10
+  offlineProgression: true
+  createdAtReal: validated ISO timestamp
+```
+
+Rules:
+
+- selected before initial state generation;
+- included in schema-v15 `GameState` and checksum;
+- immutable after creation;
+- scenario selects the existing topology preset;
+- speed maps real seconds to canonical game seconds only;
+- no economy, combat, reward or duration formula is divided by speed.
+
+### Required persistence
+
+Save format v3 must integrity-protect runtime metadata outside `GameState`:
+
+```text
+lastActiveAtReal
+lastCatchUpRealDurationSeconds
+lastCatchUpGameDurationSeconds
+pendingCatchUp?
+  targetAtReal
+  remainingRealDurationMilliseconds
+  gameTimeFractionNumerator
+  accumulatedSummary
+pendingReturnSummary?
+```
+
+#131 defines, validates, migrates and preserves these shapes but does not execute catch-up.
+
+Required migration rules:
+
+- old saves use world speed x1;
+- scenario derives from existing topology;
+- real creation/cursor time derives from validated envelope `savedAt`;
+- the fixed v14 simulation epoch is never treated as real creation time;
+- manual save, autosave, import/export, snapshot and recovery preserve processed cursor and pending metadata semantics.
+
+### #131 player-visible outcome
+
+- new campaign setup selects faction, scenario and fixed speed in one accessible transaction;
+- immutable campaign identity is visible in System/Save presentation;
+- migrated saves load safely at x1;
+- no active clock or offline catch-up starts yet.
+
+### #131 exclusions
+
+- no active ticker;
+- no elapsed-time processing;
+- no chronological bot refactor;
+- no removal of manual time controls yet;
+- no progression cost/duration/level rebalance;
+- no diplomacy/alliance/endgame runtime.
+
+## 7. PR #132 — CAMPAIGN-CLOCK-OFFLINE-GATE
+
+After #131 merges, #132 may deliver:
+
+- one DOM-independent campaign-time orchestrator;
+- chronological boundaries for pending events, logistics, world-event evaluation, bot decisions and target time;
+- bots evaluated at scheduled world state through ordinary commands;
+- fixed-point x1/x2/x5/x10 mapping with fractional carry;
+- active open-session clock;
+- bounded resumable offline bootstrap;
+- protected pending target/remainder/fraction/summary;
+- checkpoints that advance the real cursor only by processed time;
+- time elapsed during catch-up processed after the original target;
+- final state/cursor/summary saved before interaction;
+- pending summary retained across reload until acknowledgement;
+- normal player fast-forward controls removed;
+- one-day/seven-day deterministic and Browser E2E gates.
+
+Central invariant:
+
+```text
+one large duration
+== any valid smaller time partition
+== any valid operation-budget partition
+```
+
+## 8. Progression compression split
+
+PRs #131–#132 do not change level caps, costs, durations, unlock requirements or rewards.
+
+After #132, `CAMPAIGN-PROGRESSION-BALANCE-01` must use delivered fake-clock/headless runs to determine:
+
+- standard campaign duration;
+- first reconnaissance/combat/colonization timing;
+- level and queue compression;
+- world-speed preset balance;
+- planet-destroyer and endgame timing;
+- repetitive versus meaningful progression steps.
+
+## 9. Release 1.0 definition
 
 A player can:
 
-- choose any faction and understand the shell/HUD;
-- choose immutable campaign scenario and world speed;
+- choose any faction and immutable campaign settings;
 - leave and resume through deterministic offline catch-up;
 - build a viable multi-colony economy;
 - unlock the complete catalog;
@@ -140,23 +253,9 @@ A player can:
 - join/create alliances or remain solo;
 - reach alliance/solo victory or lose when another side wins.
 
-### Bot loop
+Bots must use the same commands, resources, timing and intelligence limits. At least one headless match must eventually reach a complete result, and save/load/offline processing must preserve deterministic outcomes.
 
-Bots use the same commands, resources, timing and intelligence limits. At least one headless match must eventually reach a complete result with all required systems. Save/load and offline catch-up must preserve the same deterministic outcome.
-
-### Product quality
-
-- no incorrect core asset fallback;
-- no dead primary/local route or dead-end task flow;
-- deterministic/serializable destructive and offline actions with history;
-- bounded save/history/catch-up behavior;
-- 1366×768 and 1920×1080 desktop usability;
-- keyboard/reduced-motion support;
-- reproducible GitHub Pages build;
-- complete Browser E2E, victory/defeat path and long-session gate;
-- balanced standard campaign capable of completing in roughly one active day.
-
-## 6. Milestone map
+## 10. Milestone map
 
 | Milestone | Status | Delivery |
 |---|---|---|
@@ -166,121 +265,30 @@ Bots use the same commands, resources, timing and intelligence limits. At least 
 | M3b — Navigation/usability repair | completed | Audit #125; #126–#129 |
 | M4a — Ordinary missions/intelligence | completed | Audit #116; #117–#120 |
 | M4b — Planet demolition/destruction/recovery | completed | Audit #121; #122–#123 |
-| M4c — Local campaign time foundation | audit active | Audit #130; proposed #131–#132 |
-| M4d — Campaign progression balance | blocked until #132 | separate future audit |
+| M4c — Local campaign time foundation | audit accepted | #130; #131 next; #132 blocked |
+| M4d — Campaign progression balance | blocked until #132 | separate audit |
 | M5 — Multi-colony economy/logistics coherence | not audited | sustainability and bot planning |
 | M6 — Full PvE/meta systems | not audited | PvE depth, Arena, Admiral meta, services |
 | M7 — Autonomous bot parity | not audited | honest full-domain bot loop and catch-up parity |
 | M8 — Complete endgame | not audited | alliances, solar war, Obelisks, Gates, victory/defeat |
 | M9 — Release candidate | not audited | balance, onboarding, QA, performance, release |
 
-## 7. Active audit — LOCAL-CAMPAIGN-TIME-PACING-01
+## 11. Key invariants
 
-Complexity: heavy.
-
-```text
-#130 audit
-→ #131 CAMPAIGN-SETTINGS-PERSISTENCE
-→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE
-```
-
-### #131 — campaign settings and persistence
-
-- schema v15 immutable `CampaignSettings`;
-- faction/scenario/world-speed setup before creation;
-- save format v3 runtime metadata outside GameState;
-- envelope integrity and migration;
-- legacy saves use x1;
-- replay takes explicit initial campaign configuration;
-- import/export/snapshot/recovery preserve runtime cursor semantics;
-- no active clock or catch-up yet.
-
-### #132 — active and offline campaign clock
-
-- one chronological DOM-independent orchestrator;
-- event, logistics, world-event and bot decision boundaries;
-- stable same-time ordering;
-- active wall-clock progression with fractional carry;
-- bounded resumable offline catch-up and checkpoints;
-- structured redacted return summary;
-- final state saved before interactive mount;
-- normal fast-forward controls removed;
-- one-day/seven-day deterministic and browser gates;
-- batch archive and status closure.
-
-Detailed contracts:
-
-- `docs/audits/current-batch-audit.md`;
-- `docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md`;
-- `docs/audits/contracts/local-campaign-time-pacing-01-prs.md`.
-
-## 8. Key campaign-time invariants
-
-- world speed changes only real-time-to-game-time mapping;
-- x1/x2/x5/x10 use the same canonical game-second formulas;
-- settings are immutable checksum state;
-- runtime wall-clock cursor is outside GameState;
+- current `main` is the only valid baseline;
+- #131 only is authorized now;
+- #132 cannot start before #131 merges;
+- campaign settings are immutable deterministic state;
+- wall-clock cursor/continuation remain outside `GameState` but integrity protected;
 - old saves migrate to x1;
-- no elapsed time is silently discarded;
-- huge intervals yield through resumable chunks;
-- active and offline paths share one orchestrator;
-- bot decisions occur at their scheduled world snapshot;
-- any valid time/chunk partition reaches the same final checksum;
-- summary does not reveal hidden enemy information;
-- no continuously running server is required.
-
-## 9. Progression compression split
-
-Audit #130 does not choose new level caps, costs, durations or unlock requirements.
-
-After #132, a separate `CAMPAIGN-PROGRESSION-BALANCE-01` audit must use delivered fake-clock/headless runs to determine:
-
-- exact standard-campaign duration;
-- first reconnaissance/combat/colonization timing;
-- level and queue compression;
-- world-speed preset balance;
-- planet-destroyer and endgame timing;
-- repetitive versus meaningful progression steps.
-
-This split prevents clock correctness from being obscured by simultaneous balance changes.
-
-## 10. Remaining product families
-
-### Multi-colony economy/logistics
-
-Specialization, logistics lifecycle/capacity/failures, market coherence, honest bot economic planning and sustainability under compressed timing.
-
-### PvE and meta
-
-Deeper encounters/rewards, repeatable competition, Admiral/Commander meta, non-monetized services and world-event depth.
-
-### Bot parity
-
-Full headless progression, no hidden resources/bot-only mutation, deterministic catch-up, save/load parity and observable failure reasons.
-
-### Endgame
-
-Alliances/diplomacy, solar attack/support/destruction/rebuilding, Solar Crystals, Obelisks, Supreme Gates, victory and deterministic defeat behavior, including offline resolution.
-
-### Release candidate
-
-Onboarding, balance runs, campaign-duration targets, long-session/catch-up performance, recovery drills, accessibility/visual consistency, complete E2E and reproducible release.
-
-## 11. Delivery rules
-
-1. Start every PR from fresh merged `main`.
-2. Use an accepted audit and stable work-item ID.
-3. Heavy batches contain at most two implementation PRs.
-4. Keep simulation independent from DOM/Phaser.
-5. Use the same commands/validators for player and bots.
-6. Add migration fixtures for incompatible state/save changes.
-7. Use injected clocks and no long real waits in tests.
-8. Add focused unit/integration/headless/browser coverage.
-9. Run assets, lint, TypeScript, full tests, build, Browser E2E and Graphify.
-10. Resolve all P0/P1 review findings.
-11. Update status/execution/continuation documents.
-12. Do not mix progression balance into #131–#132.
+- checkpoint cursor represents processed time only;
+- no elapsed duration is silently skipped or capped away;
+- active and offline paths eventually share one orchestrator;
+- pending summary survives until acknowledgement;
+- player and bots use ordinary commands and visibility rules;
+- no continuously running server is required for Release 1.0;
+- no numeric progression rebalance in #131–#132.
 
 ## 12. Immediate action
 
-Complete and merge Audit PR #130. Only after acceptance, create #131 `CAMPAIGN-SETTINGS-PERSISTENCE` from fresh merged `main`.
+Create implementation PR #131 `CAMPAIGN-SETTINGS-PERSISTENCE` from fresh current `main`. Implement only the accepted settings/schema/persistence scope and pass assets, lint, strict TypeScript, full tests, build, Browser E2E, Graphify and clean review before merge.
