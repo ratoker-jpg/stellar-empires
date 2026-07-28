@@ -2,6 +2,7 @@ import { updateGalaxyPlanetOwner } from '../colonization/colonization';
 import type { DebrisField } from '../combat/debris';
 import type { FleetState } from '../fleets/types';
 import '../pve/specialMissionReturn';
+import { calculateCoordinateDistance } from '../space/coordinates';
 import type { GameState, ScheduledGameEvent } from '../types';
 import type { PlanetState } from './types';
 
@@ -12,24 +13,22 @@ export interface DestroyedPlanetReconciliation {
   readonly removedFleetIds: readonly string[];
 }
 
-function comparePlanets(left: PlanetState, right: PlanetState): number {
-  return left.coordinate.galaxy - right.coordinate.galaxy ||
-    left.coordinate.solarSystem - right.coordinate.solarSystem ||
-    left.coordinate.position - right.coordinate.position ||
-    left.id.localeCompare(right.id);
-}
-
 function selectFallbackPlanet(
   planets: readonly PlanetState[],
   empireId: string,
-  excludedPlanetId: string,
+  excludedPlanet: PlanetState,
 ): PlanetState | undefined {
   return planets
     .filter(
       (planet) =>
-        planet.ownerEmpireId === empireId && planet.id !== excludedPlanetId,
+        planet.ownerEmpireId === empireId && planet.id !== excludedPlanet.id,
     )
-    .sort(comparePlanets)[0];
+    .sort(
+      (left, right) =>
+        calculateCoordinateDistance(excludedPlanet.coordinate, left.coordinate) -
+          calculateCoordinateDistance(excludedPlanet.coordinate, right.coordinate) ||
+        left.id.localeCompare(right.id),
+    )[0];
 }
 
 function eventReferencesQueue(
@@ -123,7 +122,7 @@ export function reconcileDestroyedPlanet(
   const ownerFallback = selectFallbackPlanet(
     state.planets,
     destroyedPlanet.ownerEmpireId,
-    destroyedPlanet.id,
+    destroyedPlanet,
   );
   if (ownerFallback === undefined) {
     throw new Error('Planet destruction requires a surviving owner colony.');
@@ -170,7 +169,7 @@ export function reconcileDestroyedPlanet(
     }
 
     const fallback = fleet.originPlanetId === destroyedPlanet.id
-      ? selectFallbackPlanet(state.planets, fleet.empireId, destroyedPlanet.id)
+      ? selectFallbackPlanet(state.planets, fleet.empireId, destroyedPlanet)
       : state.planets.find((planet) => planet.id === fleet.originPlanetId);
     const originPlanetId = fallback?.id ?? fleet.originPlanetId;
     const baseFleet: FleetState = {
@@ -211,7 +210,7 @@ export function reconcileDestroyedPlanet(
     if (targetsDestroyedPlanet || returningToDestroyedPlanet) {
       const liveOrigin = state.planets.find(
         (planet) => planet.id === originPlanetId,
-      ) ?? selectFallbackPlanet(state.planets, fleet.empireId, destroyedPlanet.id);
+      ) ?? selectFallbackPlanet(state.planets, fleet.empireId, destroyedPlanet);
       if (liveOrigin === undefined) {
         throw new Error(`Fleet ${fleet.id} has no live return colony.`);
       }
