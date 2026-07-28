@@ -1,53 +1,55 @@
 # Current execution state
 
 **Updated:** 2026-07-28  
-**Safe to continue:** Audit PR #130 only; no runtime implementation before audit merge
+**Safe to continue:** implementation PR #131 only
 
 | Field | Current value |
 |---|---|
-| Last merged PR | #129 `NAV-USABILITY-GATE` · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa` |
-| Verified runtime baseline | exact synchronized `main` · `45bd3297d402fd96691a26c60e47bd39a420f174` |
-| Last completed batch | `NAVIGATION-USABILITY-01` · #126–#129 |
-| Active audit PR | #130 `LOCAL-CAMPAIGN-TIME-PACING-01` |
+| Last merged PR | #130 `LOCAL-CAMPAIGN-TIME-PACING-01` audit · `2379fa7a30974381349433e4f0e0ba43d15f1511` |
+| Runtime baseline | PR #129 `NAV-USABILITY-GATE` · `a586224aa85eb3bc4676c3f4cd98a0ff7625aafa` |
+| Accepted audit | #130 `LOCAL-CAMPAIGN-TIME-PACING-01` |
 | Audit baseline | `45bd3297d402fd96691a26c60e47bd39a420f174` |
-| Complexity decision | heavy |
-| Proposed implementation sequence | #131 `CAMPAIGN-SETTINGS-PERSISTENCE` → #132 `CAMPAIGN-CLOCK-OFFLINE-GATE` |
-| Runtime schema | v14 until #131 is authorized and merged |
-| Save format | v2 until #131 is authorized and merged |
-| Current scope | campaign settings/schema/persistence contract, chronological active/offline clock, bot interleaving, bounded catch-up, return summary and gates |
-| Explicitly deferred | numeric progression compression and one-day balance; diplomacy/alliance/endgame runtime; server mode |
-| Exact next action | complete review/validation and merge Audit #130; then create implementation PR #131 only from fresh merged `main` |
+| Audit final head | `d276a8db16af534ec915f877a76a8c419986f793` |
+| Complexity | heavy |
+| Authorized sequence | #131 `CAMPAIGN-SETTINGS-PERSISTENCE` → #132 `CAMPAIGN-CLOCK-OFFLINE-GATE` |
+| Active implementation | none |
+| Runtime schema | v14 until #131 merges |
+| Save format | v2 until #131 merges |
+| Exact next action | create #131 from fresh current `main`; implement only settings/schema/persistence scope |
 
-## Audit documents
-
-```text
-docs/audits/current-batch-audit.md
-docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md
-docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md
-docs/audits/contracts/local-campaign-time-pacing-01-prs.md
-```
-
-## Accepted decision shape
+## Accepted contract
 
 ```text
-#130 LOCAL-CAMPAIGN-TIME-PACING-01 — Audit only
-→ #131 CAMPAIGN-SETTINGS-PERSISTENCE
-→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE
-→ later separate CAMPAIGN-PROGRESSION-BALANCE-01 audit
+#130 LOCAL-CAMPAIGN-TIME-PACING-01 — merged audit
+→ #131 CAMPAIGN-SETTINGS-PERSISTENCE — next and only authorized implementation
+→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — blocked until #131 merges
+→ later CAMPAIGN-PROGRESSION-BALANCE-01 audit
 ```
 
-## Critical verified findings
+## #131 scope
 
-- open-session world time currently advances only through manual Planet fast-forward controls;
-- the new-game flow selects only faction;
-- schema v14 has no immutable campaign settings;
-- save format v2 has no protected runtime cursor;
-- `ADVANCE_TIME` chronologically processes existing non-bot domains;
-- bot cursors are persisted and bounded, but overdue planning currently sees the final post-jump state;
-- a complete long catch-up summary cannot be reconstructed from bounded histories alone.
+- immutable schema-v15 `CampaignSettings`;
+- faction, scenario and x1/x2/x5/x10 world-speed selection before state creation;
+- save format v3 runtime metadata and envelope integrity;
+- protected optional pending catch-up and pending return-summary persistence shapes;
+- legacy saves migrate to x1 using validated envelope `savedAt` for real creation/cursor time;
+- explicit replay initial settings;
+- import/export/snapshot/recovery preserve processed cursor and pending runtime metadata;
+- settings are visible but immutable;
+- no live ticker, no offline processing and no removal of manual time controls yet.
+
+## Audit validation
+
+Final #130 head `d276a8db16af534ec915f877a76a8c419986f793` passed:
+
+- CI `30389103445`;
+- Browser E2E `30389103358`;
+- Graphify `30389103322`.
+
+Four persistence/architecture review findings were fixed and all threads resolved.
 
 ## Recovery rule
 
-Preserve deterministic shared commands, event ordering, schema-v14 compatibility until an authorized migration, IndexedDB recovery, autosave snapshots, intelligence redaction, explicit fleet-send confirmation and the completed navigation model.
+Preserve deterministic shared commands, existing event ordering, schema-v14 compatibility until #131 migration, IndexedDB autosave/snapshots/recovery, intelligence redaction, explicit fleet-send confirmation and the completed navigation model.
 
-Audit #130 may change documentation, audit evidence, status entrypoints and project-scoped audit tooling only. It must not add campaign settings to runtime, change schema/save format, start a clock, process offline time, remove time controls or rebalance progression.
+PR #131 must not start the active clock, process offline elapsed time, refactor chronological bot execution, remove normal fast-forward controls, change progression numbers or implement diplomacy/endgame.
