@@ -2,10 +2,10 @@
 
 **Status:** active canonical product roadmap  
 **Updated:** 2026-07-28  
-**Last merged PR:** Audit #125 · `a13f017d79d5dce5fde954e9f6e1419a2182d78e`  
-**Runtime baseline:** #123 · `aa1dc67ed874c75aa69af30ce9ced58169793c30`  
+**Last merged PR:** #126 · `2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1`  
+**Runtime baseline:** #126 · `2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1`  
 **Accepted batch:** `NAVIGATION-USABILITY-01`  
-**Next implementation:** #126 `NAV-IA-PRIMARY-SHELL`  
+**Next implementation:** #127 `NAV-CONTEXT-ROUTE-MODEL`  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -57,7 +57,7 @@ docs/audits/current-batch-audit.md
 docs/audits/current-execution-state.md
 ```
 
-## 3. Delivered baseline through Audit #125
+## 3. Delivered baseline through PR #126
 
 ### Simulation and persistence
 
@@ -85,7 +85,9 @@ docs/audits/current-execution-state.md
 - Universe → Galaxy → Solar-system routing;
 - intelligence-aware action availability and target handoff;
 - one application controller and nine canonical route families;
-- persistent HUD/context, keyboard, reduced motion and release-view Browser E2E.
+- routed development, fleet, operations, command, reports and system workspaces;
+- persistent HUD/context, keyboard, reduced motion and release-view Browser E2E;
+- player-centered grouped primary navigation.
 
 ### Canonical product contract
 
@@ -95,21 +97,39 @@ PR #124 records the local browser campaign, immutable world speed, deterministic
 
 Audit #125 accepted four sequential implementation PRs for player-centered information architecture, typed route/context memory, reversible cross-domain flows and a measured usability gate.
 
-## 4. Verified navigation gap
+### Delivered primary information architecture
 
-The shell is technically routed but not yet proven convenient for complete player tasks.
+PR #126 delivers:
 
-Audit #125 verified:
+```text
+Игра: Планета · Вселенная · Флоты · Операции
+Развитие: Наука · Командование
+Данные: Отчёты · Рейтинг
+Система: Настройки
+```
 
-- nine top-level route families compete with similar visual weight;
-- Operations is classified as utility despite owning frequent gameplay;
-- top-level family buttons normally reset to generic overview/default routes;
-- only Planet encodes colony context while other workspaces consume the implicit active colony;
-- Space has breadcrumbs but the wider application lacks shared hierarchy and return context;
-- target handoff can depend on in-memory events/local workspace state;
-- existing E2E proves route existence, history, keyboard and layout, not task length or context retention.
+- Operations is core gameplay rather than utility;
+- Space is labeled for its complete Universe scope;
+- Reports, Ranking and System have reduced competition with turn-to-turn actions;
+- active navigation group is accessible and exposed through DOM metadata;
+- mouse and keyboard order follow the same registry;
+- route-family IDs, direct URLs and simulation checksums remain unchanged.
 
-Navigation repair precedes campaign settings/time work so later systems are added to an understandable application.
+Validation: CI `30368968637`, Browser E2E `30368968648`, Graphify `30368970159` — passed.
+
+## 4. Remaining navigation gap
+
+The primary hierarchy is repaired, but complete player context is not yet preserved.
+
+Remaining accepted work:
+
+- family buttons still need remembered valid subroutes rather than generic resets;
+- only Planet explicitly carries colony context;
+- the application still lacks shared breadcrumbs and return destinations;
+- target handoff and reversible cross-domain tasks require typed context;
+- current E2E still needs complete-task budgets and final usability closure.
+
+Navigation repair continues before campaign settings/time work so later systems are added to an understandable application.
 
 ## 5. Release 1.0 definition
 
@@ -153,7 +173,7 @@ Bots use the same commands, resources, timing and intelligence limits. At least 
 | M1 — Production assets | completed | Audit #101; #102–#105 |
 | M2 — Navigable Universe | completed | Audit #106; #107–#110 |
 | M3 — Coherent UI shell | technically completed | Audit #111; #112–#115 |
-| M3b — Navigation/usability repair | implementation pending | Audit #125 merged; #126–#129 accepted |
+| M3b — Navigation/usability repair | 1/4 implementation PRs complete | Audit #125; #126 merged; #127–#129 accepted |
 | M4a — Ordinary missions/intelligence | completed | Audit #116; #117–#120 |
 | M4b — Planet demolition/destruction/recovery | completed | Audit #121; #122–#123 |
 | M4c — Local campaign time/pacing transition | blocked until #129 | Audit #130 next |
@@ -166,21 +186,21 @@ Bots use the same commands, resources, timing and intelligence limits. At least 
 ## 7. Active accepted batch — NAVIGATION-USABILITY-01
 
 ```text
-#126 NAV-IA-PRIMARY-SHELL
+#126 NAV-IA-PRIMARY-SHELL — merged
 → #127 NAV-CONTEXT-ROUTE-MODEL
 → #128 NAV-CROSS-DOMAIN-FLOWS
 → #129 NAV-USABILITY-GATE
 ```
 
-### #126 — primary information architecture
+### #126 — primary information architecture — delivered
 
-- group core gameplay, information/history and utility destinations;
-- promote Operations to core gameplay;
-- represent the complete Universe scope in the Space label;
-- reduce low-frequency Ranking/System competition with core actions;
-- preserve route IDs, accessibility and keyboard order.
+- grouped core gameplay, development, information/history and utility destinations;
+- promoted Operations to core gameplay;
+- represented the complete Universe scope in the Space label;
+- reduced low-frequency Ranking/System competition with core actions;
+- preserved route IDs, accessibility, keyboard behavior and checksum neutrality.
 
-### #127 — route and context model
+### #127 — route and context model — next
 
 - remember last valid subroute per family;
 - add common breadcrumbs and return destination;
@@ -262,8 +282,8 @@ Onboarding, balance runs, campaign-duration targets, long-session/catch-up perfo
 8. Add focused unit/integration/headless/browser coverage.
 9. Run assets, lint, TypeScript, full tests, build, Browser E2E and Graphify.
 10. Update status/execution/continuation documents.
-11. Complete #126 → #129 sequentially before Audit #130.
+11. Complete #127 → #129 sequentially before Audit #130.
 
 ## 11. Immediate action
 
-Create PR #126 from fresh merged `main` and implement only `NAV-IA-PRIMARY-SHELL`.
+Create PR #127 from fresh current `main` and implement only `NAV-CONTEXT-ROUTE-MODEL`.
