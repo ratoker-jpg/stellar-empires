@@ -1,4 +1,5 @@
 import type { BotAutomationState } from './bots/state';
+import type { CampaignSettings } from './campaign/settings';
 import type { DebrisField } from './combat/debris';
 import type { FleetFormation, FleetTargetPriority } from './combat/fleetDoctrine';
 import type { BattleReport } from './combat/types';
@@ -295,8 +296,9 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 14;
+  readonly schemaVersion: 15;
   readonly seed: number;
+  readonly campaignSettings: CampaignSettings;
   readonly clock: GameClock;
   readonly empires: readonly string[];
   readonly universe: UniverseModel;
