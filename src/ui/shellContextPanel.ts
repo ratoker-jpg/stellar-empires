@@ -1,3 +1,4 @@
+import '../styles/shellBreadcrumbs.css';
 import { getEmpireCommandState } from '../simulation/command/commandDoctrine';
 import { createIncomingFlightContacts } from '../simulation/intelligence/incomingFlights';
 import { createUnifiedMissionReports } from '../simulation/reports/missionReports';
@@ -6,6 +7,7 @@ import type { AutoSaveStatus } from '../storage/AutoSaveController';
 import type { AppShellSnapshot } from './appShellController';
 import { createPlayerCommandProfile } from './commandRanking';
 import { createOperationsSummary } from './operationsWorkspace';
+import { getShellRouteDisplayName } from './shellNavigationContext';
 
 export interface ShellContextPanelOptions {
   readonly getState: () => GameState;
@@ -24,6 +26,19 @@ function requireHost(): HTMLElement {
   const host = document.querySelector<HTMLElement>('#shell-context-content');
   if (host === null) throw new Error('Shell context host is missing.');
   return host;
+}
+
+function ensureBreadcrumbHost(): HTMLElement {
+  const panel = document.querySelector<HTMLElement>('#shell-context-panel');
+  if (panel === null) throw new Error('Shell context panel is missing.');
+  const existing = panel.querySelector<HTMLElement>('#shell-breadcrumbs');
+  if (existing !== null) return existing;
+  const breadcrumbs = document.createElement('nav');
+  breadcrumbs.id = 'shell-breadcrumbs';
+  breadcrumbs.className = 'shell-breadcrumbs';
+  breadcrumbs.setAttribute('aria-label', 'Путь и возврат');
+  panel.prepend(breadcrumbs);
+  return breadcrumbs;
 }
 
 function createCard(kicker: string, title: string, description: string): HTMLElement {
@@ -57,11 +72,16 @@ function createMetrics(entries: readonly (readonly [string, string])[]): HTMLEle
 
 export function mountShellContextPanel(options: ShellContextPanelOptions): ShellContextPanelController {
   const host = requireHost();
+  const breadcrumbs = ensureBreadcrumbHost();
   let savePhase: AutoSaveStatus['phase'] = 'idle';
 
   const refresh = (snapshot: AppShellSnapshot): void => {
     const state = options.getState();
     const route = snapshot.route;
+    breadcrumbs.toggleAttribute('data-normalization-code', snapshot.normalizationCode !== null);
+    if (snapshot.normalizationCode === null) delete breadcrumbs.dataset.normalizationCode;
+    else breadcrumbs.dataset.normalizationCode = snapshot.normalizationCode;
+
     const activePlanet = state.planets.find(
       (planet) => planet.id === options.getActivePlanetId() && planet.ownerEmpireId === 'player',
     ) ?? state.planets.find((planet) => planet.ownerEmpireId === 'player');
@@ -70,13 +90,14 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
       return;
     }
 
+    const routeLabel = getShellRouteDisplayName(route, state);
     if (route.family === 'planet') {
       const queueCount = activePlanet.buildQueue.length +
         activePlanet.productionQueues.shipyard.length +
         activePlanet.productionQueues.defense.length +
         activePlanet.defense.repairQueue.length;
       host.replaceChildren(
-        createCard('Планетарный контур', activePlanet.name, `${route.mode} · ${route.surface}`),
+        createCard('Планетарный контур', activePlanet.name, routeLabel),
         createMetrics([
           ['Координаты', `${activePlanet.systemId}:${activePlanet.position}`],
           ['Очереди', String(queueCount)],
@@ -91,7 +112,7 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
       const fleets = state.fleets.filter((fleet) => fleet.empireId === 'player');
       const incoming = createIncomingFlightContacts(state, 'player');
       host.replaceChildren(
-        createCard('Флотский контур', 'Флоты и миссии', `Режим: ${route.mode}`),
+        createCard('Флотский контур', 'Флоты и миссии', `${routeLabel} · колония ${activePlanet.name}`),
         createMetrics([
           ['Всего флотов', String(fleets.length)],
           ['На орбите', String(fleets.filter((fleet) => fleet.status === 'stationed').length)],
@@ -104,13 +125,12 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
     }
 
     if (route.family === 'space') {
-      const details = document.querySelector<HTMLElement>('#space-map-selection-details');
       host.replaceChildren(
-        createCard('Космическая навигация', 'Галактическая карта', route.hash),
+        createCard('Космическая навигация', routeLabel, `Активная колония: ${activePlanet.name}`),
         createMetrics([
-          ['Выбранный объект', details?.querySelector('strong')?.textContent ?? 'не выбран'],
-          ['Разведка', details?.dataset.intelQuality ?? 'нет данных'],
-          ['Отношение', details?.dataset.relation ?? 'не определено'],
+          ['Маршрут', route.hash],
+          ['Колония отправления', activePlanet.name],
+          ['Координаты колонии', `${activePlanet.systemId}:${activePlanet.position}`],
         ]),
       );
       return;
@@ -120,11 +140,11 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
       const research = state.research.find((entry) => entry.empireId === 'player');
       const item = research?.queue[0];
       host.replaceChildren(
-        createCard('Научный контур', 'Исследования', item === undefined ? 'Очередь свободна' : `${item.technologyId} · уровень ${item.targetLevel}`),
+        createCard('Научный контур', 'Исследования', `${routeLabel} · лаборатория ${activePlanet.name}`),
         createMetrics([
           ['Активных исследований', String(research?.queue.length ?? 0)],
           ['Изучено уровней', String(Object.values(research?.levels ?? {}).reduce((sum, value) => sum + value, 0))],
-          ['Лаборатория', activePlanet.name],
+          ['Текущая работа', item === undefined ? 'Очередь свободна' : `${item.technologyId} · уровень ${item.targetLevel}`],
         ]),
       );
       return;
@@ -133,7 +153,7 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
     if (route.family === 'operations') {
       const summary = createOperationsSummary(state);
       host.replaceChildren(
-        createCard('Операционный контур', 'Операции империи', `Режим: ${route.mode}`),
+        createCard('Операционный контур', 'Операции империи', `${routeLabel} · колония ${activePlanet.name}`),
         createMetrics([
           ['Маршруты', `${summary.activeRoutes}/${summary.totalRoutes}`],
           ['Экспедиции', String(summary.activeExpeditions)],
@@ -148,7 +168,7 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
       const profile = createPlayerCommandProfile(state);
       const command = getEmpireCommandState(state.commanders, 'player');
       host.replaceChildren(
-        createCard('Стратегическое командование', profile.factionName, route.family === 'ranking' ? `Место #${profile.rank}` : `Режим: ${route.mode}`),
+        createCard('Стратегическое командование', profile.factionName, routeLabel),
         createMetrics([
           ['Очки', String(profile.score)],
           ['Колонии', String(profile.colonies)],
@@ -165,7 +185,7 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
         return report.primaryEmpireId === 'player' || report.secondaryEmpireId === 'player';
       });
       host.replaceChildren(
-        createCard('Оперативная разведка', 'Единые отчёты', `Фильтр: ${route.filter}`),
+        createCard('Оперативная разведка', 'Единые отчёты', routeLabel),
         createMetrics([
           ['Всего отчётов', String(reports.length)],
           ['Боевые', String(reports.filter((report) => report.kind === 'battle').length)],
@@ -177,7 +197,7 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
     }
 
     host.replaceChildren(
-      createCard('Системный контур', 'Локальная партия', `Раздел: ${route.mode}`),
+      createCard('Системный контур', 'Локальная партия', routeLabel),
       createMetrics([
         ['Автосохранение', savePhase],
         ['Схема', `v${state.schemaVersion}`],
@@ -190,6 +210,9 @@ export function mountShellContextPanel(options: ShellContextPanelOptions): Shell
   return {
     refresh,
     setAutoSaveStatus: (status) => { savePhase = status.phase; },
-    dispose: () => host.replaceChildren(),
+    dispose: () => {
+      host.replaceChildren();
+      breadcrumbs.remove();
+    },
   };
 }
