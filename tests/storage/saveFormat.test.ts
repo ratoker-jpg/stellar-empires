@@ -1,22 +1,42 @@
 import { describe, expect, it } from 'vitest';
+import {
+  createCampaignSettings,
+  WORLD_SPEED_PRESETS,
+} from '../../src/simulation/campaign/settings';
 import { createStateChecksum } from '../../src/simulation/checksum';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import {
+  createEmptyCatchUpSummary,
+  createCampaignRuntimeMetadata,
+} from '../../src/storage/runtimeMetadata';
 import {
   createSaveEnvelope,
   parseSaveJson,
   serializeSave,
 } from '../../src/storage/saveFormat';
 
+const SAVE_TIME = '2026-07-18T12:00:00.000Z';
+
 describe('save format', () => {
-  it('round-trips a valid schema-v14 save', () => {
-    const state = createInitialGameState('save-round-trip');
-    const save = createSaveEnvelope('slot-1', state, '2026-07-18T12:00:00.000Z');
+  it.each(WORLD_SPEED_PRESETS)('round-trips schema v15 at world speed x%s', (worldSpeed) => {
+    const settings = createCampaignSettings({
+      scenarioPreset: 'test',
+      worldSpeed,
+      createdAtReal: '2026-07-18T10:00:00.000Z',
+    });
+    const state = createInitialGameState(`save-round-trip-${worldSpeed}`, {
+      playerFaction: 'veyra',
+      campaignSettings: settings,
+    });
+    const runtimeMetadata = createCampaignRuntimeMetadata(SAVE_TIME);
+    const save = createSaveEnvelope('slot-1', state, SAVE_TIME, runtimeMetadata);
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
-  it('migrates a schema-v8 save with empty newer collections and default development metadata', () => {
+  it('migrates a schema-v8 save to schema v15 with x1 and envelope creation time', () => {
     const current = createInitialGameState('legacy-save');
     const {
+      campaignSettings: _campaignSettings,
       debrisFields: _debrisFields,
       logisticsRoutes: _logisticsRoutes,
       market: _market,
@@ -34,28 +54,35 @@ describe('save format', () => {
     const legacySave = {
       formatVersion: 2,
       slotId: 'legacy-slot',
-      savedAt: '2026-07-18T12:00:00.000Z',
+      savedAt: SAVE_TIME,
       checksum: createStateChecksum(legacyState),
       state: legacyState,
     };
     const parsed = parseSaveJson(JSON.stringify(legacySave));
     expect(parsed.ok).toBe(true);
-    if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(14);
-      expect(parsed.value.state.debrisFields).toEqual([]);
-      expect(parsed.value.state.logisticsRoutes).toEqual([]);
-      expect(parsed.value.state.market.reserves).toEqual({
-        metal: 50_000,
-        crystal: 50_000,
-        gas: 50_000,
-      });
-      expect(parsed.value.state.market.trades).toEqual([]);
-      expect(parsed.value.state.shipUpgrades).toHaveLength(parsed.value.state.empires.length);
-      expect(parsed.value.state.shipUpgrades.every((entry) => entry.queue.length === 0)).toBe(true);
-      expect(parsed.value.state.commanders).toHaveLength(parsed.value.state.empires.length);
-      expect(parsed.value.state.planets[0]?.specializationId).toBe('balanced');
-      expect(parsed.value.state.planets[0]?.developmentTemplateId).toBe('balanced');
-    }
+    if (!parsed.ok) return;
+
+    expect(parsed.value.formatVersion).toBe(3);
+    expect(parsed.value.state.schemaVersion).toBe(15);
+    expect(parsed.value.state.campaignSettings).toEqual(createCampaignSettings({
+      scenarioPreset: parsed.value.state.universe.presetId,
+      worldSpeed: 1,
+      createdAtReal: SAVE_TIME,
+    }));
+    expect(parsed.value.runtimeMetadata).toEqual(createCampaignRuntimeMetadata(SAVE_TIME));
+    expect(parsed.value.state.debrisFields).toEqual([]);
+    expect(parsed.value.state.logisticsRoutes).toEqual([]);
+    expect(parsed.value.state.market.reserves).toEqual({
+      metal: 50_000,
+      crystal: 50_000,
+      gas: 50_000,
+    });
+    expect(parsed.value.state.market.trades).toEqual([]);
+    expect(parsed.value.state.shipUpgrades).toHaveLength(parsed.value.state.empires.length);
+    expect(parsed.value.state.shipUpgrades.every((entry) => entry.queue.length === 0)).toBe(true);
+    expect(parsed.value.state.commanders).toHaveLength(parsed.value.state.empires.length);
+    expect(parsed.value.state.planets[0]?.specializationId).toBe('balanced');
+    expect(parsed.value.state.planets[0]?.developmentTemplateId).toBe('balanced');
   });
 
   it('round-trips an active ship-upgrade queue', () => {
@@ -85,7 +112,7 @@ describe('save format', () => {
           : entry,
       ),
     };
-    const save = createSaveEnvelope('upgrade', state, '2026-07-18T12:00:00.000Z');
+    const save = createSaveEnvelope('upgrade', state, SAVE_TIME);
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
@@ -118,7 +145,7 @@ describe('save format', () => {
         },
       ],
     };
-    const save = createSaveEnvelope('debris', state, '2026-07-18T12:00:00.000Z');
+    const save = createSaveEnvelope('debris', state, SAVE_TIME);
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
@@ -129,10 +156,7 @@ describe('save format', () => {
       .find((planet) => planet.ownerEmpireId === null && planet.biome !== 'gas');
     expect(target).toBeDefined();
     if (target === undefined) return;
-
-    const origin = current.planets.find(
-      (planet) => planet.ownerEmpireId === 'player',
-    );
+    const origin = current.planets.find((planet) => planet.ownerEmpireId === 'player');
     expect(origin).toBeDefined();
     if (origin === undefined) return;
 
@@ -159,15 +183,11 @@ describe('save format', () => {
         },
       ],
     };
-    const save = createSaveEnvelope(
-      'colonization',
-      state,
-      '2026-07-18T12:00:00.000Z',
-    );
+    const save = createSaveEnvelope('colonization', state, SAVE_TIME);
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
-  it('adds a null mission to older fleet saves', () => {
+  it('adds a null mission and campaign settings to older fleet saves', () => {
     const current = createInitialGameState('fleet-migration');
     const olderFleet = {
       id: 'fleet-1',
@@ -180,16 +200,17 @@ describe('save format', () => {
       speed: 14,
       cargoCapacity: 20,
     };
-    const { shipUpgrades: _shipUpgrades, commanders: _commanders, ...legacyBase } = current;
-    const legacyState = {
-      ...legacyBase,
-      schemaVersion: 6,
-      fleets: [olderFleet],
-    };
+    const {
+      campaignSettings: _campaignSettings,
+      shipUpgrades: _shipUpgrades,
+      commanders: _commanders,
+      ...legacyBase
+    } = current;
+    const legacyState = { ...legacyBase, schemaVersion: 6, fleets: [olderFleet] };
     const legacySave = {
       formatVersion: 2,
       slotId: 'fleet-v6',
-      savedAt: '2026-07-18T12:00:00.000Z',
+      savedAt: SAVE_TIME,
       checksum: createStateChecksum(legacyState),
       state: legacyState,
     };
@@ -197,17 +218,22 @@ describe('save format', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.state.fleets[0]?.mission).toBeNull();
-      expect(parsed.value.state.schemaVersion).toBe(14);
+      expect(parsed.value.state.schemaVersion).toBe(15);
+      expect(parsed.value.state.campaignSettings.worldSpeed).toBe(1);
     }
   });
 
-  it('adds a serializable bot schedule to schema-v13 saves that predate bot timing state', () => {
+  it('adds a serializable bot schedule to schema-v13 saves', () => {
     const current = createInitialGameState('bot-automation-migration');
     const advanced = {
       ...current,
       clock: { ...current.clock, elapsedSeconds: 1_800 },
     };
-    const { botAutomation: _botAutomation, ...legacyState } = advanced;
+    const {
+      campaignSettings: _campaignSettings,
+      botAutomation: _botAutomation,
+      ...legacyState
+    } = advanced;
     const legacySave = {
       formatVersion: 2,
       slotId: 'bot-automation-v13',
@@ -226,13 +252,17 @@ describe('save format', () => {
     }
   });
 
-  it('adds default command profiles to schema-v13 saves that predate command progression', () => {
+  it('adds default command profiles to schema-v13 saves', () => {
     const current = createInitialGameState('command-migration');
-    const { commanders: _commanders, ...legacyState } = current;
+    const {
+      campaignSettings: _campaignSettings,
+      commanders: _commanders,
+      ...legacyState
+    } = current;
     const legacySave = {
       formatVersion: 2,
       slotId: 'command-v13',
-      savedAt: '2026-07-18T12:00:00.000Z',
+      savedAt: SAVE_TIME,
       checksum: createStateChecksum(legacyState),
       state: legacyState,
     };
@@ -244,15 +274,30 @@ describe('save format', () => {
     }
   });
 
-  it('rejects malformed JSON and checksum tampering', () => {
+  it('rejects state and runtime metadata tampering', () => {
     expect(parseSaveJson('{invalid')).toMatchObject({ ok: false, code: 'INVALID_JSON' });
     const state = createInitialGameState('checksum');
-    const save = createSaveEnvelope('slot-1', state, '2026-07-18T12:00:00.000Z');
-    const tampered = {
+    const runtimeMetadata = {
+      ...createCampaignRuntimeMetadata(SAVE_TIME),
+      pendingReturnSummary: createEmptyCatchUpSummary(),
+    };
+    const save = createSaveEnvelope('slot-1', state, SAVE_TIME, runtimeMetadata);
+    const stateTampered = {
       ...save,
       state: { ...save.state, clock: { ...save.state.clock, elapsedSeconds: 999 } },
     };
-    expect(parseSaveJson(JSON.stringify(tampered))).toMatchObject({
+    expect(parseSaveJson(JSON.stringify(stateTampered))).toMatchObject({
+      ok: false,
+      code: 'CHECKSUM_MISMATCH',
+    });
+    const metadataTampered = {
+      ...save,
+      runtimeMetadata: {
+        ...save.runtimeMetadata,
+        lastActiveAtReal: '2026-07-18T13:00:00.000Z',
+      },
+    };
+    expect(parseSaveJson(JSON.stringify(metadataTampered))).toMatchObject({
       ok: false,
       code: 'CHECKSUM_MISMATCH',
     });
