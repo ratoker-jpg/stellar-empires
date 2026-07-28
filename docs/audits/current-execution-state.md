@@ -1,25 +1,27 @@
 # Current execution state
 
 **Updated:** 2026-07-28  
-**Safe to continue:** implementation PR #126 only
+**Safe to continue:** implementation PR #127 only
 
 | Field | Current value |
 |---|---|
-| Last merged PR | Audit #125 `NAVIGATION-USABILITY-01` · `a13f017d79d5dce5fde954e9f6e1419a2182d78e` |
-| Runtime baseline | PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` · `aa1dc67ed874c75aa69af30ce9ced58169793c30` |
+| Last merged PR | #126 `NAV-IA-PRIMARY-SHELL` · `2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1` |
+| Runtime baseline | PR #126 · `2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1` |
 | Accepted audit | #125 `NAVIGATION-USABILITY-01` |
-| Active implementation PR | #126 `NAV-IA-PRIMARY-SHELL` |
-| Branch baseline | exact current `main` · `7ef156160321104cfbcebc803a9b811a04890f02` |
-| Scope | grouped primary gameplay, development, information/history and utility navigation; Operations promoted; Space relabeled for Universe scope |
-| Persistence | schema v14; navigation remains outside saves and checksums |
-| Runtime/mechanics | unchanged |
-| Validation required | assets, lint, TypeScript, full tests, build, Chromium Browser E2E and Graphify |
-| Exact next action | complete and merge #126; then create #127 `NAV-CONTEXT-ROUTE-MODEL` from fresh merged `main` |
+| Completed implementation PRs | #126 · `2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1` |
+| Current work item | #127 `NAV-CONTEXT-ROUTE-MODEL` |
+| Active implementation PR | none |
+| Delivered | grouped gameplay/development/information/utility navigation; Operations promoted to core gameplay; Space labeled for Universe scope; active group accessibility and keyboard order |
+| Persistence | schema v14; navigation presentation remains outside saves and simulation checksums |
+| Validation | CI `30368968637`, Browser E2E `30368968648`, Graphify `30368970159` — passed |
+| Review | P1 stale flat-navigation E2E expectation fixed; review thread resolved after full Browser E2E passed |
+| Divergence | none |
+| Exact next action | create #127 from fresh merged `main` and implement only `NAV-CONTEXT-ROUTE-MODEL` |
 
 ## Accepted sequence
 
 ```text
-#126 NAV-IA-PRIMARY-SHELL
+#126 NAV-IA-PRIMARY-SHELL — merged
 → #127 NAV-CONTEXT-ROUTE-MODEL
 → #128 NAV-CROSS-DOMAIN-FLOWS
 → #129 NAV-USABILITY-GATE
@@ -27,6 +29,6 @@
 
 ## Recovery rule
 
-PR #126 may change only the primary navigation hierarchy and related presentation/tests. Preserve route-family IDs, direct URLs, keyboard activation, schema v14, simulation checksums, gameplay commands, intelligence redaction and explicit fleet confirmation.
+Preserve the grouped primary navigation delivered by #126, route-family IDs, direct URLs, keyboard activation, schema v14, simulation checksum neutrality, intelligence redaction and explicit fleet confirmation.
 
-Do not add remembered subroutes, shared return context, world speed, offline catch-up, progression compression, alliances or endgame in #126.
+PR #127 may add typed application-only route memory, shared breadcrumbs, active-colony context and return destinations. Do not add cross-domain gameplay flows assigned to #128, world speed, offline catch-up, progression compression, alliances or endgame.
