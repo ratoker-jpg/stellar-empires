@@ -462,8 +462,14 @@ export class AppShellController {
     ].filter((selector): selector is HTMLSelectElement => selector !== null);
     for (const selector of selectors) {
       const onChange = (): void => {
-        if (this.#applyingRoute || !this.#options.selectActivePlanet(selector.value)) return;
-        this.#navigationContext.rememberActivePlanet(this.#options.getState(), selector.value);
+        if (this.#applyingRoute) return;
+        const state = this.#options.getState();
+        const previousPlanetId = this.#options.getActivePlanetId();
+        if (!this.#navigationContext.rememberActivePlanet(state, selector.value)) return;
+        if (!this.#options.selectActivePlanet(selector.value)) {
+          this.#navigationContext.rememberActivePlanet(state, previousPlanetId);
+          return;
+        }
         if (this.#snapshot.route.family === 'planet') {
           this.navigateToPlanet(
             selector.value,
