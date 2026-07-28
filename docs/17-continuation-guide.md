@@ -1,10 +1,10 @@
 # AI Continuation Guide
 
-**Status:** Audit #121 merged · `2000a68216c7681fcbea0d69d1ed7e58e0c0c7f9`  
+**Status:** PR #122 merged · `be0caff4fbf06384cdf5d370dbc2da80d4081152`  
 **Updated:** 2026-07-28  
-**Runtime baseline:** PR #120 · `c59a2dd7afdc31fc250d2ec21364f655d6a4e665`  
+**Runtime baseline:** PR #122 · `be0caff4fbf06384cdf5d370dbc2da80d4081152`  
 **Active batch:** `PLANET-DEMOLITION-DESTRUCTION-01`  
-**Active implementation:** PR #122 `PLANET-DEMOLITION-CONTRACT`
+**Next implementation:** PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE`
 
 ## Repository
 
@@ -34,45 +34,48 @@ GitHub history and current `main` override stale prose, prior chat memory and ab
 - #106–#110: schema-v14 Universe navigation/action gate;
 - #111–#115: coherent routed shell;
 - #116–#120: ordinary mission/intelligence/bot parity gate;
-- #121: accepted heavy planet demolition/destruction audit.
+- #121: accepted heavy planet demolition/destruction audit;
+- #122: deterministic building demolition contract.
 
-## Active PR #122
-
-Delivered on `agent/planet-demolition-contract`:
+## Delivered by PR #122
 
 - faction-specific siege profiles and weapon-level scaling;
-- deterministic demolition points, thresholds, selection and rolls;
+- deterministic demolition points, thresholds, selection and independent rolls;
 - surviving defence-population reduction;
 - Annihilator demolition removed from generic combat damage and applied to building rolls;
 - one-level building damage with endgame structures excluded;
 - matching building queue/event cancellation without refund;
 - zone and economy recalculation;
 - additive `BattleReport.demolition` evidence;
-- routed report-card details and focused simulation/presentation tests.
+- routed report-card details with exact basis-point precision;
+- focused simulation/presentation tests and full CI/Browser/Graphify gate.
 
-PR #122 must remain limited to building demolition. It does not remove a planet or alter normal colony/fleet reference topology.
+Exact merge: `be0caff4fbf06384cdf5d370dbc2da80d4081152`.
 
-## PR #123 later
+## PR #123 only
 
-After #122 merges, create fresh PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` for:
+Create fresh PR #123 `PLANET-DESTRUCTION-RECOVERY-GATE` for:
 
-- whole-planet destruction chance/reductions/final-colony guard;
+- whole-planet destruction chance, reductions and final-colony guard;
 - atomic live-reference cleanup;
 - ordinary fleet and pending expedition/space-object return recovery;
 - immutable historical origin plus additive live `returnPlanetId`;
-- debris, recolonization, reports, bots, save/load and Browser E2E closure gate.
+- debris re-keying and recycling at released coordinates;
+- normal recolonization;
+- reports, bots, save/load, headless and Browser E2E closure gate;
+- batch archive and exact metadata closure.
 
 ## Invariants
 
 - existing ordinary `attack` only;
-- schema v14 retained;
+- schema v14 retained unless an actual incompatibility is proven;
 - reducer/combat remains authoritative;
 - no hidden target state for UI or bots;
 - no refunds or extra destruction loot;
-- final colony remains protected until #123 implementation;
+- final colony protected;
 - solar/endgame and economy/logistics redesign excluded;
-- #123 cannot begin before #122 merges.
+- no implementation after #123 is authorized without a new audit.
 
 ## Immediate route
 
-Finish checks and automated review on PR #122. Squash merge only when the final head is green and no unresolved review blocker remains. Then record the exact merge SHA before starting #123.
+Create PR #123 from fresh current `main`. Implement only `PLANET-DESTRUCTION-RECOVERY-GATE`, close/archive the batch after all checks and review pass, then stop for the next Audit PR.
