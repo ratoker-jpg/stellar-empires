@@ -17,8 +17,20 @@ import {
   SHELL_SCREEN_REGISTRY,
   validateScreenRegistry,
   type ShellNavigationGroupDefinition,
+  type ShellRouteFamily,
   type ShellScreenDefinition,
 } from './screenRegistry';
+import {
+  createBrowserShellNavigationStore,
+  createMemoryShellNavigationStore,
+  createShellBreadcrumbs,
+  getShellRouteDisplayName,
+  normalizeShellRoute,
+  ShellNavigationContextModel,
+  type ShellBreadcrumbEntry,
+  type ShellNavigationMemoryStore,
+  type ShellNavigationNormalizationCode,
+} from './shellNavigationContext';
 
 export interface AppShellEnvironment {
   readHash(): string;
@@ -47,11 +59,15 @@ export interface AppShellControllerOptions {
   readonly writeStatus?: (message: string) => void;
   readonly registry?: readonly ShellScreenDefinition[];
   readonly navigationGroups?: readonly ShellNavigationGroupDefinition[];
+  readonly navigationStore?: ShellNavigationMemoryStore;
 }
 
 export interface AppShellSnapshot {
   readonly route: AppShellRoute;
   readonly error: string | null;
+  readonly normalizationCode: ShellNavigationNormalizationCode | null;
+  readonly breadcrumbs: readonly ShellBreadcrumbEntry[];
+  readonly returnRoute: AppShellRoute | null;
 }
 
 export function createBrowserAppShellEnvironment(browserWindow: Window = window): AppShellEnvironment {
@@ -69,6 +85,14 @@ export function createBrowserAppShellEnvironment(browserWindow: Window = window)
       };
     },
   };
+}
+
+function defaultNavigationStore(): ShellNavigationMemoryStore {
+  try {
+    return createBrowserShellNavigationStore();
+  } catch {
+    return createMemoryShellNavigationStore();
+  }
 }
 
 function createNavigationButton(definition: ShellScreenDefinition): HTMLButtonElement {
@@ -131,11 +155,19 @@ function routeWorkspaceSelector(route: AppShellRoute): string {
   }
 }
 
+function normalizationCodeForError(error: string | null): ShellNavigationNormalizationCode | null {
+  if (error === null) return null;
+  if (error.includes('Колония')) return 'STALE_COLONY_CONTEXT';
+  if (error.includes('Локальный экран')) return 'INVALID_LOCAL_SURFACE';
+  return 'INVALID_FAMILY_MODE';
+}
+
 export class AppShellController {
   readonly #environment: AppShellEnvironment;
   readonly #options: AppShellControllerOptions;
   readonly #registry: readonly ShellScreenDefinition[];
   readonly #navigationGroups: readonly ShellNavigationGroupDefinition[];
+  readonly #navigationContext: ShellNavigationContextModel;
   readonly #listeners = new Set<(snapshot: AppShellSnapshot) => void>();
   readonly #unsubscribeEnvironment: () => void;
   readonly #cleanup: Array<() => void> = [];
@@ -153,23 +185,34 @@ export class AppShellController {
     );
     const registryErrors = validateScreenRegistry(this.#registry, this.#navigationGroups);
     if (registryErrors.length > 0) throw new Error(registryErrors.join('\n'));
+
+    const state = options.getState();
+    this.#navigationContext = new ShellNavigationContextModel(
+      state,
+      options.getActivePlanetId(),
+      options.navigationStore ?? defaultNavigationStore(),
+    );
+    options.selectActivePlanet(this.#navigationContext.restoreActivePlanet(state));
     this.renderNavigation();
+
     const parsed = parseAppShellRoute(
       environment.readHash(),
-      options.getState(),
+      state,
       options.getActivePlanetId(),
     );
-    this.#snapshot = { route: parsed.route, error: parsed.error };
+    const normalizationCode = normalizationCodeForError(parsed.error);
+    this.#snapshot = this.createSnapshot(parsed.route, parsed.error, normalizationCode);
     this.bindPlanetRouteSync();
     this.bindActivePlanetSelectors();
     if (environment.readHash() !== parsed.canonicalHash || parsed.error !== null) {
       environment.replaceHash(parsed.canonicalHash);
     }
     this.#unsubscribeEnvironment = environment.subscribe(() => this.syncFromUrl());
-    this.activate(parsed.route, parsed.error);
+    this.activate(parsed.route, parsed.error, normalizationCode, null);
   }
 
   public get snapshot(): AppShellSnapshot {
+    this.reconcileState();
     return this.#snapshot;
   }
 
@@ -179,15 +222,28 @@ export class AppShellController {
     return () => this.#listeners.delete(listener);
   }
 
-  public navigate(route: AppShellRoute, mode: 'push' | 'replace' = 'push'): void {
+  public navigate(
+    route: AppShellRoute,
+    mode: 'push' | 'replace' = 'push',
+    error: string | null = null,
+    normalizationCode: ShellNavigationNormalizationCode | null = null,
+  ): void {
     const hash = serializeAppShellRoute(route);
     if (this.#environment.readHash() === hash) {
-      this.activate(route, null);
+      this.activate(route, error, normalizationCode, this.#snapshot.route);
       return;
     }
     if (mode === 'replace') this.#environment.replaceHash(hash);
     else this.#environment.pushHash(hash);
-    this.activate(route, null);
+    this.activate(route, error, normalizationCode, this.#snapshot.route);
+  }
+
+  public navigateToFamily(
+    family: ShellRouteFamily,
+    historyMode: 'push' | 'replace' = 'push',
+  ): void {
+    const restored = this.#navigationContext.routeForFamily(family, this.#options.getState());
+    this.navigate(restored.route, historyMode, restored.message, restored.code);
   }
 
   public navigateToPlanet(
@@ -200,11 +256,7 @@ export class AppShellController {
   }
 
   public navigateToSpace(historyMode: 'push' | 'replace' = 'push'): void {
-    const current = this.#environment.readHash();
-    const hash = current === '#/space' || current.startsWith('#/space/')
-      ? current
-      : '#/space/universe';
-    this.navigate({ family: 'space', hash }, historyMode);
+    this.navigateToFamily('space', historyMode);
   }
 
   public navigateToResearch(historyMode: 'push' | 'replace' = 'push'): void {
@@ -250,6 +302,40 @@ export class AppShellController {
     this.navigate({ family: 'system', mode }, historyMode);
   }
 
+  public reconcileState(): void {
+    if (this.#applyingRoute) return;
+    const state = this.#options.getState();
+    const previousActivePlanetId = this.#options.getActivePlanetId();
+    const activePlanetId = this.#navigationContext.restoreActivePlanet(state);
+    this.#options.selectActivePlanet(activePlanetId);
+    const contextChanges = this.#navigationContext.reconcile(state);
+    const normalized = normalizeShellRoute(
+      serializeAppShellRoute(this.#snapshot.route),
+      this.#snapshot.route.family,
+      state,
+      activePlanetId,
+    );
+    if (
+      normalized.code !== null ||
+      serializeAppShellRoute(normalized.route) !== serializeAppShellRoute(this.#snapshot.route)
+    ) {
+      this.navigate(normalized.route, 'replace', normalized.message, normalized.code);
+      return;
+    }
+    if (previousActivePlanetId === activePlanetId && contextChanges.length === 0) return;
+    const firstChange = contextChanges[0];
+    this.#snapshot = this.createSnapshot(
+      this.#snapshot.route,
+      firstChange?.message ?? null,
+      firstChange?.code ?? null,
+    );
+    this.renderBreadcrumbs(this.#snapshot);
+    if (firstChange?.message !== null && firstChange?.message !== undefined) {
+      this.#options.writeStatus?.(firstChange.message);
+    }
+    this.emit();
+  }
+
   public reconcileNavigationMetadata(): void {
     const definitionsByElement = new Map(
       this.#registry.map((definition) => [definition.elementId, definition] as const),
@@ -262,12 +348,28 @@ export class AppShellController {
       button.dataset.shellNavigationGroup = definition.group;
     }
     this.updateNavigationState(this.#snapshot.route);
+    this.renderBreadcrumbs(this.#snapshot);
   }
 
   public dispose(): void {
     this.#unsubscribeEnvironment();
     for (const cleanup of this.#cleanup.splice(0)) cleanup();
     this.#listeners.clear();
+  }
+
+  private createSnapshot(
+    route: AppShellRoute,
+    error: string | null,
+    normalizationCode: ShellNavigationNormalizationCode | null,
+  ): AppShellSnapshot {
+    const state = this.#options.getState();
+    return {
+      route,
+      error,
+      normalizationCode,
+      breadcrumbs: createShellBreadcrumbs(route, state),
+      returnRoute: this.#navigationContext.getReturnRoute(state, route),
+    };
   }
 
   private renderNavigation(): void {
@@ -283,23 +385,50 @@ export class AppShellController {
         const onClick = (event: MouseEvent): void => {
           event.preventDefault();
           event.stopImmediatePropagation();
-          switch (definition.routeFamily) {
-            case 'planet': this.navigateToPlanet(); break;
-            case 'fleets': this.navigateToFleets(); break;
-            case 'space': this.navigateToSpace(); break;
-            case 'research': this.navigateToResearch(); break;
-            case 'command': this.navigateToCommand(); break;
-            case 'ranking': this.navigateToRanking(); break;
-            case 'operations': this.navigateToOperations(); break;
-            case 'reports': this.navigateToReports(); break;
-            case 'system': this.navigateToSystem(); break;
-          }
+          this.navigateToFamily(definition.routeFamily);
         };
         button.addEventListener('click', onClick);
         this.#cleanup.push(() => button.removeEventListener('click', onClick));
         renderedGroup.items.append(button);
       }
       rail.append(renderedGroup.root);
+    }
+  }
+
+  private renderBreadcrumbs(snapshot: AppShellSnapshot): void {
+    const host = document.querySelector<HTMLElement>('#shell-breadcrumbs');
+    if (host === null) return;
+    host.replaceChildren();
+    const trail = document.createElement('div');
+    trail.className = 'shell-breadcrumbs__trail';
+    for (const [index, entry] of snapshot.breadcrumbs.entries()) {
+      if (index > 0) {
+        const separator = document.createElement('span');
+        separator.className = 'shell-breadcrumbs__separator';
+        separator.textContent = '›';
+        separator.setAttribute('aria-hidden', 'true');
+        trail.append(separator);
+      }
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = entry.label;
+      button.dataset.breadcrumbId = entry.id;
+      button.disabled = entry.current;
+      if (entry.current) button.setAttribute('aria-current', 'page');
+      else button.addEventListener('click', () => this.navigate(entry.route));
+      trail.append(button);
+    }
+    host.append(trail);
+
+    if (snapshot.returnRoute !== null) {
+      const returnRoute = snapshot.returnRoute;
+      const returnButton = document.createElement('button');
+      returnButton.type = 'button';
+      returnButton.className = 'shell-breadcrumbs__return';
+      returnButton.dataset.shellReturn = returnRoute.family;
+      returnButton.textContent = `Вернуться: ${getShellRouteDisplayName(returnRoute, this.#options.getState())}`;
+      returnButton.addEventListener('click', () => this.navigate(returnRoute));
+      host.append(returnButton);
     }
   }
 
@@ -333,7 +462,14 @@ export class AppShellController {
     ].filter((selector): selector is HTMLSelectElement => selector !== null);
     for (const selector of selectors) {
       const onChange = (): void => {
-        if (this.#applyingRoute || !this.#options.selectActivePlanet(selector.value)) return;
+        if (this.#applyingRoute) return;
+        const state = this.#options.getState();
+        const previousPlanetId = this.#options.getActivePlanetId();
+        if (!this.#navigationContext.rememberActivePlanet(state, selector.value)) return;
+        if (!this.#options.selectActivePlanet(selector.value)) {
+          this.#navigationContext.rememberActivePlanet(state, previousPlanetId);
+          return;
+        }
         if (this.#snapshot.route.family === 'planet') {
           this.navigateToPlanet(
             selector.value,
@@ -341,7 +477,7 @@ export class AppShellController {
             this.#snapshot.route.surface,
           );
         } else {
-          this.activate(this.#snapshot.route, null);
+          this.activate(this.#snapshot.route, null, null, this.#snapshot.route);
         }
       };
       selector.addEventListener('change', onChange);
@@ -358,15 +494,26 @@ export class AppShellController {
     if (this.#environment.readHash() !== parsed.canonicalHash || parsed.error !== null) {
       this.#environment.replaceHash(parsed.canonicalHash);
     }
-    this.activate(parsed.route, parsed.error);
+    this.activate(
+      parsed.route,
+      parsed.error,
+      normalizationCodeForError(parsed.error),
+      this.#snapshot.route,
+    );
   }
 
-  private activate(route: AppShellRoute, error: string | null): void {
+  private activate(
+    route: AppShellRoute,
+    error: string | null,
+    normalizationCode: ShellNavigationNormalizationCode | null,
+    previousRoute: AppShellRoute | null,
+  ): void {
     this.#applyingRoute = true;
     try {
       switch (route.family) {
         case 'planet':
           this.#options.selectActivePlanet(route.planetId);
+          this.#navigationContext.rememberActivePlanet(this.#options.getState(), route.planetId);
           this.#options.activatePlanet(route.planetId, route.mode, route.surface);
           break;
         case 'space': this.#options.activateSpace(); break;
@@ -378,10 +525,14 @@ export class AppShellController {
         case 'reports': this.#options.activateReports(route.filter); break;
         case 'system': this.#options.activateSystem(route.mode); break;
       }
+      this.#navigationContext.rememberRoute(route, this.#options.getState(), previousRoute);
       this.updateNavigationState(route);
-      this.#snapshot = { route, error };
+      this.#snapshot = this.createSnapshot(route, error, normalizationCode);
+      this.renderBreadcrumbs(this.#snapshot);
       document.documentElement.dataset.shellRouteFamily = route.family;
       document.documentElement.dataset.shellRoute = serializeAppShellRoute(route);
+      if (normalizationCode === null) delete document.documentElement.dataset.shellNormalizationCode;
+      else document.documentElement.dataset.shellNormalizationCode = normalizationCode;
       if (route.family === 'planet') {
         document.documentElement.dataset.planetDevelopmentSurface = route.surface;
       } else {
