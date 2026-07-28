@@ -4,7 +4,7 @@ import {
   AUTOSAVE_SNAPSHOT_SLOT_ID,
   SaveManager,
 } from './SaveManager';
-import type { SaveRepository } from './types';
+import type { CampaignRuntimeMetadata, SaveRepository } from './types';
 
 export type AutosaveLoadResult =
   | { readonly status: 'missing' }
@@ -12,6 +12,7 @@ export type AutosaveLoadResult =
       readonly status: 'loaded';
       readonly state: GameState;
       readonly savedAt: string;
+      readonly runtimeMetadata: CampaignRuntimeMetadata;
       readonly source: 'primary' | 'snapshot';
     }
   | { readonly status: 'invalid'; readonly code: string; readonly message: string };
@@ -29,6 +30,7 @@ export async function loadAutosave(
       status: 'loaded',
       state: recovery.save.state,
       savedAt: recovery.save.savedAt,
+      runtimeMetadata: recovery.save.runtimeMetadata,
       source: 'primary',
     };
   }
@@ -38,6 +40,7 @@ export async function loadAutosave(
       status: 'loaded',
       state: recovery.save.state,
       savedAt: recovery.save.savedAt,
+      runtimeMetadata: recovery.save.runtimeMetadata,
       source: 'snapshot',
     };
   }
@@ -46,9 +49,9 @@ export async function loadAutosave(
     return { status: 'missing' };
   }
 
-  const failure =
-    recovery.primary.status === 'invalid' ? recovery.primary : recovery.snapshot;
-
+  const failure = recovery.primary.status === 'invalid'
+    ? recovery.primary
+    : recovery.snapshot;
   if (failure.status === 'invalid') {
     return {
       status: 'invalid',
