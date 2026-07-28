@@ -15,7 +15,17 @@ export function migrateGameStateV15(
 ): GameState | undefined {
   if (isRecord(value) && value.schemaVersion === 15) {
     if (!isCampaignSettings(value.campaignSettings)) return undefined;
-    return value as unknown as GameState;
+    const { campaignSettings, ...stateWithoutCampaignSettings } = value;
+    const reconciled = migrateGameStateV14({
+      ...stateWithoutCampaignSettings,
+      schemaVersion: 14,
+    });
+    if (reconciled === undefined) return undefined;
+    return {
+      ...reconciled,
+      schemaVersion: 15,
+      campaignSettings,
+    };
   }
 
   const legacy = migrateGameStateV14(value);
