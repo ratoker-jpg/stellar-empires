@@ -107,7 +107,7 @@ describe('chronological campaign time orchestrator', () => {
     expect(chunked.operations).toBe(direct.operationsProcessed);
   });
 
-  it('runs bot decisions at their scheduled boundaries instead of the final snapshot', () => {
+  it('runs bot decisions at their scheduled boundaries without exposing hidden activity', () => {
     const profile: BotProfile = {
       id: 'test.clock-industrial',
       empireId: 'aegis-bot',
@@ -125,7 +125,7 @@ describe('chronological campaign time orchestrator', () => {
     expect(result.complete).toBe(true);
     expect(result.botAudit.map((entry) => entry.decidedAt)).toEqual([0, 300, 600]);
     expect(result.state.botAutomation.nextDecisionAtByEmpire['aegis-bot']).toBe(900);
-    expect(result.summaryDelta.bots.decisions).toBe(3);
+    expect(result.summaryDelta.bots).toEqual({ decisions: 0, acceptedCommands: 0 });
   });
 
   it('processes a seven-day interval without truncating elapsed game time', () => {
