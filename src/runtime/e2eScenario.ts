@@ -15,8 +15,16 @@ export const E2E_REPORT_ID = 'report-e2e-map-backlink';
 export const E2E_SECONDARY_PLANET_ID = 'planet-e2e-secondary';
 const E2E_BOT_IDLE_SECONDS = 86_400;
 const E2E_SCOUT_COOLDOWN_CEILING_SECONDS = 7_200;
+const E2E_BOT_GATE_DELAY_MILLISECONDS = 250;
 
 let botGateResult: OrdinaryMissionIntelligenceGateResult | undefined;
+let botGateScheduled = false;
+
+function isBotGateRequested(): boolean {
+  return E2E_RUNTIME_ENABLED &&
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('botGate') === '1';
+}
 
 function getBotGateResult(): OrdinaryMissionIntelligenceGateResult {
   if (botGateResult === undefined) {
@@ -28,6 +36,30 @@ function getBotGateResult(): OrdinaryMissionIntelligenceGateResult {
     botGateResult = first;
   }
   return botGateResult;
+}
+
+function writeBotGateDiagnostics(): void {
+  const botGate = getBotGateResult();
+  document.documentElement.dataset.e2eBotGateScoutReason = botGate.scoutReasonCode;
+  document.documentElement.dataset.e2eBotGateAttackReason = botGate.attackReasonCode;
+  document.documentElement.dataset.e2eBotGateObservationLevel = String(botGate.observationLevel);
+  document.documentElement.dataset.e2eBotGateSchemaVersion = String(botGate.schemaVersion);
+  document.documentElement.dataset.e2eBotGateDeterministic = 'true';
+  document.documentElement.dataset.e2eBotGateChecksum = botGate.finalChecksum;
+}
+
+function scheduleBotGateDiagnostics(): void {
+  if (!isBotGateRequested() || botGateScheduled) return;
+  botGateScheduled = true;
+  window.setTimeout(() => {
+    try {
+      writeBotGateDiagnostics();
+    } catch (error: unknown) {
+      document.documentElement.dataset.e2eBotGateError =
+        error instanceof Error ? error.message : 'Unknown bot gate error';
+      console.error('[stellar-empires] E2E bot gate failed', error);
+    }
+  }, E2E_BOT_GATE_DELAY_MILLISECONDS);
 }
 
 function requireScenarioPlanets(state: GameState) {
@@ -251,11 +283,5 @@ export function updateE2eRuntimeDiagnostics(state: GameState): void {
   document.documentElement.dataset.sendFleetCommandCount = String(
     state.commandLog.filter((entry) => entry.command.type === 'SEND_FLEET').length,
   );
-  const botGate = getBotGateResult();
-  document.documentElement.dataset.e2eBotGateScoutReason = botGate.scoutReasonCode;
-  document.documentElement.dataset.e2eBotGateAttackReason = botGate.attackReasonCode;
-  document.documentElement.dataset.e2eBotGateObservationLevel = String(botGate.observationLevel);
-  document.documentElement.dataset.e2eBotGateSchemaVersion = String(botGate.schemaVersion);
-  document.documentElement.dataset.e2eBotGateDeterministic = 'true';
-  document.documentElement.dataset.e2eBotGateChecksum = botGate.finalChecksum;
+  scheduleBotGateDiagnostics();
 }
