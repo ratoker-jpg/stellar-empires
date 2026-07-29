@@ -222,7 +222,7 @@ export function advanceCampaignTime(
       botDiagnostics.push(...botResult.diagnostics);
       summary = mergeCatchUpSummaries(
         summary,
-        summarizeCampaignTransition(before, working, [], botResult.audit),
+        summarizeCampaignTransition(before, working, []),
       );
       operationsProcessed += 1;
       continue;
