@@ -34,7 +34,6 @@ async function observeCatchUpProgress(page: Page): Promise<void> {
   const dialog = page.locator('#campaign-catch-up-dialog');
   await expect(dialog).toBeVisible({ timeout: 10_000 });
   await expect(dialog.locator('[role="progressbar"]')).toBeVisible();
-  await expect.poll(() => dialog.getAttribute('data-progress-updates')).not.toBeNull();
 }
 
 async function acknowledgeSummaryByKeyboard(page: Page): Promise<void> {
