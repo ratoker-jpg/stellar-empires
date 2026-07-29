@@ -4,6 +4,7 @@ const APP_READY_TIMEOUT = 45_000;
 const CLOCK_OFFSET_QUERY = 'e2eClockOffsetMilliseconds';
 const CATCH_UP_INTERRUPTED_KEY = 'stellar-e2e-catch-up-interrupted';
 const CATCH_UP_PROGRESS_OBSERVED_KEY = 'stellar-e2e-catch-up-progress-observed';
+const CATCH_UP_INTERRUPT_SCHEDULED_KEY = 'stellar-e2e-catch-up-interrupt-scheduled';
 
 async function waitForApp(page: Page): Promise<void> {
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true', {
@@ -36,31 +37,53 @@ async function installClockOffsetInjection(page: Page): Promise<void> {
 }
 
 async function installCatchUpInterruption(page: Page): Promise<void> {
-  await page.addInitScript(({ interruptedKey, progressObservedKey }) => {
-    const inspect = (): void => {
-      const dialog = document.querySelector<HTMLDialogElement>('#campaign-catch-up-dialog');
-      if (dialog === null) return;
-      const progress = dialog.querySelector<HTMLElement>('[role="progressbar"]');
-      if (progress === null || dialog.dataset.progressUpdates === undefined) return;
-      window.localStorage.setItem(progressObservedKey, 'true');
+  await page.addInitScript(({
+    interruptedKey,
+    progressObservedKey,
+    interruptScheduledKey,
+    offsetQuery,
+  }) => {
+    const originalPut = IDBObjectStore.prototype.put;
+    IDBObjectStore.prototype.put = function(value: unknown): IDBRequest<IDBValidKey> {
+      const request = Reflect.apply(originalPut, this, arguments) as IDBRequest<IDBValidKey>;
+      const envelope = value as {
+        readonly slotId?: unknown;
+        readonly runtimeMetadata?: {
+          readonly pendingCatchUp?: {
+            readonly remainingRealDurationMilliseconds?: unknown;
+          };
+        };
+      };
+      const targetDuration = Number(new URLSearchParams(window.location.search).get(offsetQuery));
+      const remaining = envelope.runtimeMetadata?.pendingCatchUp?.remainingRealDurationMilliseconds;
       if (
-        dialog.dataset.complete === 'false' &&
-        window.localStorage.getItem(interruptedKey) !== 'true'
+        envelope.slotId === 'autosave' &&
+        typeof remaining === 'number' &&
+        Number.isFinite(targetDuration) &&
+        remaining > 0 &&
+        remaining < targetDuration &&
+        window.localStorage.getItem(interruptScheduledKey) !== 'true'
       ) {
-        window.localStorage.setItem(interruptedKey, 'true');
-        window.setTimeout(() => window.location.reload(), 0);
+        window.localStorage.setItem(interruptScheduledKey, 'true');
+        const transaction = this.transaction;
+        transaction.addEventListener('complete', () => {
+          window.setTimeout(() => {
+            const dialog = document.querySelector<HTMLDialogElement>('#campaign-catch-up-dialog');
+            const progress = dialog?.querySelector<HTMLElement>('[role="progressbar"]');
+            if (dialog === null || progress === null || dialog.dataset.complete !== 'false') return;
+            window.localStorage.setItem(progressObservedKey, 'true');
+            window.localStorage.setItem(interruptedKey, 'true');
+            window.location.reload();
+          }, 0);
+        }, { once: true });
       }
+      return request;
     };
-    new MutationObserver(inspect).observe(document, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['data-progress-updates', 'data-complete'],
-    });
-    window.addEventListener('DOMContentLoaded', inspect, { once: true });
-  }, {
+  })({
     interruptedKey: CATCH_UP_INTERRUPTED_KEY,
     progressObservedKey: CATCH_UP_PROGRESS_OBSERVED_KEY,
+    interruptScheduledKey: CATCH_UP_INTERRUPT_SCHEDULED_KEY,
+    offsetQuery: CLOCK_OFFSET_QUERY,
   });
 }
 
