@@ -45,6 +45,13 @@ function normalizeActivePlanetId(state: GameState, requested: string | undefined
     : firstPlayerPlanetId(state);
 }
 
+function normalizeTransitionMessage(
+  source: ApplicationTransitionSource,
+  message: string,
+): string {
+  return source === 'clock' && message.length === 0 ? 'Кампания активна' : message;
+}
+
 export class GameApplicationController {
   readonly #options: GameApplicationControllerOptions;
   readonly #listeners = new Set<(snapshot: ApplicationSnapshot) => void>();
@@ -132,11 +139,17 @@ export class GameApplicationController {
     message: string,
   ): void {
     const previousState = this.#state;
+    const normalizedMessage = normalizeTransitionMessage(source, message);
     this.#state = state;
     this.#activePlanetId = normalizeActivePlanetId(state, this.#activePlanetId);
     this.emit();
-    this.#options.writeStatus?.(message);
-    this.#options.onTransition?.({ previousState, state, source, message });
+    this.#options.writeStatus?.(normalizedMessage);
+    this.#options.onTransition?.({
+      previousState,
+      state,
+      source,
+      message: normalizedMessage,
+    });
   }
 
   private emit(): void {
