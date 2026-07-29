@@ -1,15 +1,15 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const APP_READY_TIMEOUT = 45_000;
 
-async function waitForApp(page: Parameters<typeof test>[0]['page']): Promise<void> {
+async function waitForApp(page: Page): Promise<void> {
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true', {
     timeout: APP_READY_TIMEOUT,
   });
 }
 
 async function installClockOffset(
-  page: Parameters<typeof test>[0]['page'],
+  page: Page,
   milliseconds: number,
 ): Promise<void> {
   await page.addInitScript((offset) => {
