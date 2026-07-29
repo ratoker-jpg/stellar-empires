@@ -117,6 +117,14 @@ function createSecondaryPlayerPlanet(state: GameState, origin: GameState['planet
   };
 }
 
+function canonicalizeFixtureState(state: GameState): GameState {
+  const serialized = JSON.stringify(state);
+  if (serialized === undefined) {
+    throw new Error('E2E scenario state is not JSON serializable.');
+  }
+  return JSON.parse(serialized) as GameState;
+}
+
 export function createE2eFixtureState(state: GameState): GameState {
   const fixtureElapsedSeconds = Math.max(
     state.clock.elapsedSeconds,
@@ -247,7 +255,7 @@ export function createE2eFixtureState(state: GameState): GameState {
     ? planetsWithFuel
     : [...planetsWithFuel, secondaryPlayerPlanet];
   const activeEmpires = new Set(fixtureState.empires);
-  return {
+  const fixture: GameState = {
     ...fixtureState,
     planets,
     fleets,
@@ -285,6 +293,7 @@ export function createE2eFixtureState(state: GameState): GameState {
       ),
     },
   };
+  return canonicalizeFixtureState(fixture);
 }
 
 export function prepareE2eState(state: GameState): GameState {
