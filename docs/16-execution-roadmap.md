@@ -1,10 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** PR #132 merged; `LOCAL-CAMPAIGN-TIME-PACING-01` completed  
+**Status:** Audit PR #133 `CAMPAIGN-PROGRESSION-BALANCE-01` active  
 **Updated:** 2026-07-29  
 **Last merged PR:** #132 · `df56566ce6d311ecef81103dddb924b5da0148c1`  
 **Runtime baseline:** schema v15 / save format v3 / shared active-offline campaign clock  
-**Release target:** 1.0 local PvE browser campaign
+**Proposed target after accepted audit:** schema v16 / save format v3 / dual progression profiles
 
 ## Authoritative files
 
@@ -13,9 +13,12 @@ docs/27-playable-game-roadmap-v5.md
 docs/25a-local-campaign-world-speed-and-offline-progression.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
-docs/audits/completed/local-campaign-time-pacing-01.md
-docs/changes/pr131-campaign-settings-persistence.md
-docs/changes/pr132-campaign-clock-offline-gate.md
+docs/audits/contracts/campaign-progression-balance-01-profile.md
+docs/audits/contracts/campaign-progression-balance-01-prs.md
+docs/audits/evidence/campaign-progression-balance-01-baseline.md
+docs/audits/evidence/campaign-progression-balance-01-candidate.md
+docs/audits/evidence/campaign-progression-balance-01-source-map.md
+docs/audits/evidence/campaign-progression-balance-01-graphify.md
 docs/project-status.json
 docs/roadmap-pr-index.json
 ```
@@ -26,68 +29,63 @@ docs/roadmap-pr-index.json
 - #106–#110: Universe navigation/action gate;
 - #111–#115: coherent application shell;
 - #116–#120: ordinary mission/intelligence/bot parity gate;
-- #121–#123: planet demolition, destruction and atomic recovery;
-- #124: local campaign/world-speed/offline-progression product contract;
-- #125–#129: player-centered navigation and measured usability closure;
-- #130: accepted settings, persistence and chronological clock architecture;
-- #131: schema-v15 campaign identity and save-format-v3 persistence foundation;
-- #132: automatic active time, bounded resumable offline catch-up and durable return summary.
+- #121–#123: planet demolition, destruction and recovery;
+- #124: local campaign product contract;
+- #125–#129: navigation/usability closure;
+- #130–#132: immutable campaign settings, save-format-v3 persistence and active/offline campaign clock.
 
-## Completed M4c outcome
+## Audit #133 measured problem
 
-Merged `main` contains:
-
-- one chronological active/offline campaign-time orchestrator;
-- fixed-point x1/x2/x5/x10 mapping with persistent fractional carry;
-- scheduled-event, logistics, world-event and deterministic bot-decision boundaries;
-- active open-session progression;
-- bounded resumable offline catch-up with processed-cursor checkpoints;
-- cooperative progress and retained retry presentation;
-- durable integrity-protected redacted return summary until acknowledgement;
-- checksum-safe JSON persistence after completed checkpoints;
-- keyboard-safe modal actions isolated from background game controls;
-- removal of normal player fast-forward controls;
-- one-day/seven-day deterministic, performance and Chromium Browser E2E gates.
-
-## Completed sequence
+At recommended x2, current source requires:
 
 ```text
-#130 LOCAL-CAMPAIGN-TIME-PACING-01 — accepted audit
-→ #131 CAMPAIGN-SETTINGS-PERSISTENCE — merged
-→ #132 CAMPAIGN-CLOCK-OFFLINE-GATE — merged
-→ CAMPAIGN-PROGRESSION-BALANCE-01 — next Audit PR only
+first combat ship       0.44 h
+first scout             0.89 h
+first colonizer         4.22 h before resource waiting
+first planet destroyer 22.42 h before resource waiting
+Supreme Gates path    223.36 h before resource waiting
 ```
 
-## Final #132 evidence
+Raw all-level buildings require 731.30 x2 hours and research 118.94 hours. World speed alone cannot satisfy the canonical roughly-one-day active campaign target.
 
-1. final head `67cca4da2c401d2d9f5573e8c463dbbb570204d5`;
-2. CI `30488370854` passed;
-3. Chromium Browser E2E `30488370956` passed, 24/24;
-4. Graphify `30488370908` passed;
-5. no unresolved actionable P0/P1/P2 review thread;
-6. squash merge `df56566ce6d311ecef81103dddb924b5da0148c1`.
+## Proposed accepted solution
 
-## Next ordered audit
+```text
+schema v16
+progressionProfile = legacy-v1 | compressed-v1
+old saves/replays → legacy-v1
+new campaigns → compressed-v1
+save format v3 retained
+complexity heavy
+exactly 2 implementation PRs
+```
 
-`CAMPAIGN-PROGRESSION-BALANCE-01` must measure complete campaign duration on the delivered clock foundation and decide exact level caps, costs, durations, unlock pacing, queue compression and rewards.
+The measured compressed candidate reaches player critical paths in:
 
-No numeric progression change is authorized before that audit is accepted.
+```text
+15.08 / 27.85 / 104.89 / 221.53 / 352.58 minutes at x2
+```
 
-Still later:
+Accepted maxima are 16 / 30 / 120 / 360 / 720 minutes. Full endgame-ready progression targets 12 x2 hours and may not exceed 16 hours across accepted seeds.
 
-- multi-colony economy/logistics coherence;
-- deeper PvE/meta and complete bot parity;
-- alliances, Solar War, Obelisks, Gates and victory/defeat;
-- release balance, onboarding, mobile and hardening.
+## Ordered sequence
+
+```text
+#133 CAMPAIGN-PROGRESSION-BALANCE-01 — active Audit
+→ #134 PROGRESSION-PROFILE-FOUNDATION
+→ #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE
+```
+
+#134 and #135 are authorized only after #133 merges. Actual alliances, Solar War, functional Gates and victory/defeat remain later audits.
 
 ## Non-negotiable rules
 
-- campaign settings remain immutable deterministic state;
-- wall-clock cursor/continuation remain outside `GameState` but integrity protected;
-- checkpoint cursor represents processed time only;
-- no elapsed time is silently skipped;
-- pending summary survives until successful acknowledgement;
-- player and bots use ordinary commands and visibility rules;
-- no continuously running server is required for Release 1.0;
-- the next repository PR is an Audit PR, not unaudited implementation;
-- repository, Browser E2E, Graphify and automated review gates remain mandatory.
+- Audit #133 changes no gameplay value;
+- progression profile is immutable deterministic campaign identity;
+- legacy saves/replays retain exact legacy behavior;
+- player and bots resolve one shared profile and use ordinary commands;
+- world speed continues to accelerate canonical time only;
+- no hidden bot resources or requirement skips;
+- no runtime speed/profile switching;
+- CI, Browser E2E, Graphify and automated review remain mandatory;
+- numeric divergence requires recorded failing seed, explicit contract amendment and full matrix rerun.
