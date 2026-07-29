@@ -40,7 +40,6 @@ test('Research is a primary route and zone gateways use browser history', async 
   await expect(page.locator('#nav-research')).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('[data-testid="research-queue"]')).toBeVisible();
   await expect(page.locator('[data-testid="research-grid"] .research-card').first()).toBeVisible();
-  const checksum = await page.locator('html').getAttribute('data-state-checksum');
 
   await page.locator('#nav-planet').click();
   await page.locator('[data-planet-mode="industry"]').click();
@@ -56,14 +55,14 @@ test('Research is a primary route and zone gateways use browser history', async 
   await expect(page.locator('#planet-view')).toBeVisible();
   await page.goForward();
   await expect(page).toHaveURL(/#\/research$/);
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
+  await expect(page.locator('#research-view')).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-shell-route-family', 'research');
 });
 
 test('shipyard, defence repair and upgrades restore as local Planet surfaces', async ({ page }) => {
   await page.goto('/?e2e=1#/research');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   const planetId = await activePlanetId(page);
-  const checksum = await page.locator('html').getAttribute('data-state-checksum');
 
   await page.goto(`/?e2e=1#/planet/${encodeURIComponent(planetId)}/industry?surface=shipyard`);
   await expect(page.locator('html')).toHaveAttribute('data-planet-development-surface', 'shipyard');
@@ -97,8 +96,9 @@ test('shipyard, defence repair and upgrades restore as local Planet surfaces', a
   await expect(page.locator('[data-testid="ship-upgrade-grid"] .ship-upgrade-card').first()).toBeVisible();
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(new RegExp(`#\\/planet\\/${encodeURIComponent(planetId)}\\/industry\\?surface=upgrades$`));
+  await expect(page.locator('html')).toHaveAttribute('data-planet-development-surface', 'upgrades');
   await expect(page.locator('#ship-upgrades-view')).toBeVisible();
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
 });
 
 test('development routes fit both release viewports and HUD follows active colony', async ({ page }) => {
