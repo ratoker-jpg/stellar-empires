@@ -1,86 +1,63 @@
 {
-  "statusVersion": 44,
+  "statusVersion": 45,
   "updatedAt": "2026-07-29",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 131,
-  "lastMergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd",
-  "verifiedMainBaseline": "PR #131 CAMPAIGN-SETTINGS-PERSISTENCE merged as 257e3effaab4e34285d00db64b6676fda364fcfd after CI, Browser E2E, Graphify and clean Codex re-review; schema v15 and save format v3 are the merged baseline",
-  "runtimeBaselinePr": 131,
-  "runtimeBaselineSha": "257e3effaab4e34285d00db64b6676fda364fcfd",
-  "activePr": 132,
-  "activePrKind": "implementation",
-  "activeWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
+  "lastMergedPr": 132,
+  "lastMergeSha": "df56566ce6d311ecef81103dddb924b5da0148c1",
+  "verifiedMainBaseline": "PR #132 CAMPAIGN-CLOCK-OFFLINE-GATE merged as df56566ce6d311ecef81103dddb924b5da0148c1 after CI 30488370854, Browser E2E 30488370956 (24/24), Graphify 30488370908 and resolved P0/P1/P2 review; schema v15, save format v3 and the shared active/offline campaign clock are the merged baseline",
+  "runtimeBaselinePr": 132,
+  "runtimeBaselineSha": "df56566ce6d311ecef81103dddb924b5da0148c1",
+  "activePr": null,
+  "activePrKind": null,
+  "activeWorkItem": null,
   "nextPrAfterActive": null,
-  "nextPrKind": "audit-after-active",
+  "nextPrKind": "audit",
   "nextWorkItem": "CAMPAIGN-PROGRESSION-BALANCE-01",
-  "currentMilestone": "M4c local campaign time transition implementation",
+  "currentMilestone": "M4c local campaign time transition completed; M4d progression audit next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
-  "currentAuditContracts": [
-    "docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md",
-    "docs/audits/contracts/local-campaign-time-pacing-01-prs.md"
-  ],
-  "currentAuditEvidence": [
-    "docs/audits/evidence/local-campaign-time-pacing-01-code-and-flow.md",
-    "docs/audits/evidence/local-campaign-time-pacing-01-source-map.md",
-    "docs/audits/evidence/local-campaign-time-pacing-01-graphify.md",
-    "docs/23-bot-simulation-time-contract.md",
-    "docs/25a-local-campaign-world-speed-and-offline-progression.md"
-  ],
+  "currentAuditContracts": [],
+  "currentAuditEvidence": [],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "lastChangeDocument": "docs/changes/pr132-campaign-clock-offline-gate.md",
-  "activeBatchArchive": "docs/audits/completed/local-campaign-time-pacing-01.md",
+  "activeBatchArchive": null,
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
-    "batchId": "NAVIGATION-USABILITY-01",
-    "roadmapMilestone": "M3b",
-    "complexity": "medium",
-    "auditPr": 125,
-    "auditStatus": "completed",
-    "auditMergeSha": "a13f017d79d5dce5fde954e9f6e1419a2182d78e",
-    "baselineSha": "cdd112c544ce8d37af17e938867d4588bedcf152",
-    "implementationCount": 4,
-    "implementationPrs": [126, 127, 128, 129],
-    "completedImplementationPrs": [126, 127, 128, 129],
-    "implementationMergeShas": {
-      "126": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1",
-      "127": "2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418",
-      "128": "051c46736dbb92a7fb5061243d458eb3faabecfe",
-      "129": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"
-    },
-    "workItems": ["NAV-IA-PRIMARY-SHELL", "NAV-CONTEXT-ROUTE-MODEL", "NAV-CROSS-DOMAIN-FLOWS", "NAV-USABILITY-GATE"],
-    "status": "completed",
-    "archive": "docs/audits/completed/navigation-usability-01.md",
-    "divergence": "none"
-  },
-  "currentBatch": {
     "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
     "roadmapMilestone": "M4c",
     "complexity": "heavy",
     "auditPr": 130,
-    "auditStatus": "accepted",
+    "auditStatus": "completed",
     "auditMergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511",
-    "auditFinalHeadSha": "d276a8db16af534ec915f877a76a8c419986f793",
     "baselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174",
     "implementationCount": 2,
-    "plannedImplementationPrs": [131, 132],
-    "completedImplementationPrs": [131],
-    "implementationMergeShas": {"131": "257e3effaab4e34285d00db64b6676fda364fcfd"},
-    "workItems": ["CAMPAIGN-SETTINGS-PERSISTENCE", "CAMPAIGN-CLOCK-OFFLINE-GATE"],
-    "status": "implementation-active-final-validation",
-    "activePr": 132,
-    "activeWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
-    "nextPr": null,
-    "nextWorkItem": "CAMPAIGN-PROGRESSION-BALANCE-01-audit-after-merge",
+    "implementationPrs": [
+      131,
+      132
+    ],
+    "completedImplementationPrs": [
+      131,
+      132
+    ],
+    "implementationMergeShas": {
+      "131": "257e3effaab4e34285d00db64b6676fda364fcfd",
+      "132": "df56566ce6d311ecef81103dddb924b5da0148c1"
+    },
+    "workItems": [
+      "CAMPAIGN-SETTINGS-PERSISTENCE",
+      "CAMPAIGN-CLOCK-OFFLINE-GATE"
+    ],
+    "status": "completed",
     "archive": "docs/audits/completed/local-campaign-time-pacing-01.md",
     "divergence": "none"
   },
+  "currentBatch": null,
   "activeImplementationState": {
     "stateSchema": 15,
     "saveFormat": 3,
@@ -100,14 +77,22 @@
     "durableReturnSummaryImplemented": true,
     "manualFastForwardRemoved": true,
     "oneDaySevenDayGatesImplemented": true,
-    "status": "pr132-active-final-validation"
+    "status": "merged-main",
+    "browserInterruptionResumeImplemented": true,
+    "modalKeyboardIsolationImplemented": true,
+    "jsonChecksumRoundTripImplemented": true
   },
   "productDecisions": {
     "localBrowserCampaign": true,
     "requiredContinuousServer": false,
     "immutableWorldSpeedAtCreation": true,
     "runtimeSpeedControls": false,
-    "worldSpeedPresets": [1, 2, 5, 10],
+    "worldSpeedPresets": [
+      1,
+      2,
+      5,
+      10
+    ],
     "recommendedWorldSpeed": 2,
     "offlineProgression": true,
     "offlineBotsContinue": true,
@@ -140,11 +125,33 @@
     "criticalUnknowns": 0
   },
   "scenarioPresets": {
-    "test": {"populatedGalaxies": 2, "systemsPerGalaxy": 9},
-    "campaign": {"populatedGalaxies": 6, "systemsPerGalaxy": 27},
-    "fidelity": {"populatedGalaxies": 15, "systemsPerGalaxy": 81}
+    "test": {
+      "populatedGalaxies": 2,
+      "systemsPerGalaxy": 9
+    },
+    "campaign": {
+      "populatedGalaxies": 6,
+      "systemsPerGalaxy": 27
+    },
+    "fidelity": {
+      "populatedGalaxies": 15,
+      "systemsPerGalaxy": 81
+    }
   },
-  "batchSizing": {"heavy": [1, 2], "medium": [4, 4], "light": [6, 6]},
+  "batchSizing": {
+    "heavy": [
+      1,
+      2
+    ],
+    "medium": [
+      4,
+      4
+    ],
+    "light": [
+      6,
+      6
+    ]
+  },
   "deliveredCatalogs": {
     "buildingsPerFaction": 24,
     "technologiesPerFaction": 22,
@@ -171,9 +178,27 @@
     "20-slot Universe and completed routed player-centered navigation"
   ],
   "activeDelivery": [
-    {"pr": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "status": "merged", "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"},
-    {"pr": 131, "kind": "implementation", "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE", "status": "merged", "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd"},
-    {"pr": 132, "kind": "implementation", "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE", "status": "active-final-validation"}
+    {
+      "pr": 130,
+      "kind": "audit",
+      "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
+      "status": "merged",
+      "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"
+    },
+    {
+      "pr": 131,
+      "kind": "implementation",
+      "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
+      "status": "merged",
+      "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd"
+    },
+    {
+      "pr": 132,
+      "kind": "implementation",
+      "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
+      "status": "merged",
+      "mergeSha": "df56566ce6d311ecef81103dddb924b5da0148c1"
+    }
   ],
   "knownLimitations": [
     "campaign progression is not yet compressed or balanced for a one-day match",
@@ -190,7 +215,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #132 final branch validation is in progress; final head and run are recorded before merge",
+    "lastValidation": "PR #132 final head 67cca4da2c401d2d9f5573e8c463dbbb570204d5 passed Graphify run 30488370908 before squash merge df56566ce6d311ecef81103dddb924b5da0148c1",
     "lastAuditGraph": {
       "workflowRun": "30389103322",
       "headSha": "d276a8db16af534ec915f877a76a8c419986f793",
@@ -219,5 +244,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Finish final CI, Chromium Browser E2E, Graphify and automated review for PR #132; merge it; synchronize the exact merge SHA; then create only the CAMPAIGN-PROGRESSION-BALANCE-01 audit."
+  "nextAction": "Create only the CAMPAIGN-PROGRESSION-BALANCE-01 Audit PR from fresh main; measure complete campaign duration and accept an exact progression contract before changing any balance value."
 }
