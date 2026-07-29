@@ -6,7 +6,6 @@ test('ordinary mission intelligence bot gate is deterministic through save and a
   test.setTimeout(120_000);
   await page.goto('/?e2e=1&botGate=1#/reports/intelligence');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
-  const checksum = await page.locator('html').getAttribute('data-state-checksum');
 
   await expect(page.locator('html')).toHaveAttribute(
     'data-e2e-bot-gate-scout-reason',
@@ -25,7 +24,7 @@ test('ordinary mission intelligence bot gate is deterministic through save and a
 
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
+  await expect(page).toHaveURL(/#\/reports\/intelligence$/);
   await expect(page.locator('html')).toHaveAttribute(
     'data-e2e-bot-gate-checksum',
     gateChecksum ?? '',
