@@ -1,10 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Audit PR #133 `CAMPAIGN-PROGRESSION-BALANCE-01` active  
+**Status:** Audit PR #133 accepted; PR #134 next  
 **Updated:** 2026-07-29  
-**Last merged PR:** #132 · `df56566ce6d311ecef81103dddb924b5da0148c1`  
+**Last merged PR:** #133 · `989c2c0b8fc3d5cfe672af267a248b6b384331cc`  
 **Runtime baseline:** schema v15 / save format v3 / shared active-offline campaign clock  
-**Proposed target after accepted audit:** schema v16 / save format v3 / dual progression profiles
+**Accepted target:** schema v16 / save format v3 / dual progression profiles
 
 ## Authoritative files
 
@@ -32,60 +32,50 @@ docs/roadmap-pr-index.json
 - #121–#123: planet demolition, destruction and recovery;
 - #124: local campaign product contract;
 - #125–#129: navigation/usability closure;
-- #130–#132: immutable campaign settings, save-format-v3 persistence and active/offline campaign clock.
+- #130–#132: immutable settings, save-v3 persistence and active/offline campaign clock;
+- #133: measured and accepted dual-profile progression contract.
 
-## Audit #133 measured problem
-
-At recommended x2, current source requires:
-
-```text
-first combat ship       0.44 h
-first scout             0.89 h
-first colonizer         4.22 h before resource waiting
-first planet destroyer 22.42 h before resource waiting
-Supreme Gates path    223.36 h before resource waiting
-```
-
-Raw all-level buildings require 731.30 x2 hours and research 118.94 hours. World speed alone cannot satisfy the canonical roughly-one-day active campaign target.
-
-## Proposed accepted solution
+## Accepted M4d solution
 
 ```text
 schema v16
 progressionProfile = legacy-v1 | compressed-v1
-old saves/replays → legacy-v1
+schema-v15 and older saves/replays → legacy-v1
 new campaigns → compressed-v1
 save format v3 retained
 complexity heavy
 exactly 2 implementation PRs
 ```
 
-The measured compressed candidate reaches player critical paths in:
+Measured compressed critical paths at recommended x2:
 
 ```text
-15.08 / 27.85 / 104.89 / 221.53 / 352.58 minutes at x2
+15.08 / 27.85 / 104.89 / 221.53 / 352.58 minutes
 ```
 
-Accepted maxima are 16 / 30 / 120 / 360 / 720 minutes. Full endgame-ready progression targets 12 x2 hours and may not exceed 16 hours across accepted seeds.
+Accepted maxima are 16 / 30 / 120 / 360 / 720 minutes. Full deterministic endgame-ready progression targets 12 x2 hours and may not exceed 16 hours across accepted seeds.
 
-## Ordered sequence
+## Ordered implementation
 
 ```text
-#133 CAMPAIGN-PROGRESSION-BALANCE-01 — active Audit
-→ #134 PROGRESSION-PROFILE-FOUNDATION
+#133 CAMPAIGN-PROGRESSION-BALANCE-01 — merged Audit
+→ #134 PROGRESSION-PROFILE-FOUNDATION — next
 → #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE
 ```
 
-#134 and #135 are authorized only after #133 merges. Actual alliances, Solar War, functional Gates and victory/defeat remain later audits.
+PR #134 owns schema/profile identity, migration, central profile registry, profile-aware definition/formula consumers, UI identity and compatibility gates. PR #135 owns starting economy, reward multipliers, deterministic bot phases and full endgame-ready duration closure.
+
+Actual alliances, Solar War, functional Gates and victory/defeat remain later audits.
 
 ## Non-negotiable rules
 
-- Audit #133 changes no gameplay value;
 - progression profile is immutable deterministic campaign identity;
 - legacy saves/replays retain exact legacy behavior;
 - player and bots resolve one shared profile and use ordinary commands;
+- existing queued items preserve paid values and completion timestamps;
 - world speed continues to accelerate canonical time only;
 - no hidden bot resources or requirement skips;
 - no runtime speed/profile switching;
+- #134 must not absorb #135 closure scope;
 - CI, Browser E2E, Graphify and automated review remain mandatory;
 - numeric divergence requires recorded failing seed, explicit contract amendment and full matrix rerun.
