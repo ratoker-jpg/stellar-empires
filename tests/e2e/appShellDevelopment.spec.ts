@@ -12,9 +12,28 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
 }
 
+function captureStartupDiagnostics(page: Page): string[] {
+  const diagnostics: string[] = [];
+  page.on('pageerror', (error) => diagnostics.push(`pageerror=${error.message}`));
+  page.on('console', (message) => {
+    if (message.type() === 'error') diagnostics.push(`console=${message.text()}`);
+  });
+  return diagnostics;
+}
+
+async function expectAppReady(page: Page, diagnostics: readonly string[]): Promise<void> {
+  await expect.poll(async () => {
+    const ready = await page.locator('html').getAttribute('data-app-ready');
+    if (ready === 'true') return 'true';
+    const status = await page.locator('#app-status').textContent().catch(() => null);
+    return `ready=${ready ?? 'unset'}; status=${status?.trim() ?? 'missing'}; ${diagnostics.join(' | ') || 'errors=none'}`;
+  }, { timeout: 15_000 }).toBe('true');
+}
+
 test('Research is a primary route and zone gateways use browser history', async ({ page }) => {
+  const diagnostics = captureStartupDiagnostics(page);
   await page.goto('/?e2e=1#/research');
-  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expectAppReady(page, diagnostics);
   await expect(page.locator('html')).toHaveAttribute('data-shell-route-family', 'research');
   await expect(page.locator('#research-view')).toBeVisible();
   await expect(page.locator('#research-screen-dialog')).toHaveCount(0);
