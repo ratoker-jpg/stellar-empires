@@ -13,10 +13,18 @@ async function waitForApp(page: Page): Promise<void> {
 
 async function installPersistentClockOffset(page: Page): Promise<void> {
   await page.addInitScript((storageKey) => {
-    const offset = window.localStorage.getItem(storageKey);
-    if (offset !== null) {
-      document.documentElement.dataset.e2eClockOffsetMilliseconds = offset;
-    }
+    const applyOffset = (): boolean => {
+      const offset = window.localStorage.getItem(storageKey);
+      const root = document.documentElement;
+      if (offset === null || root === null) return false;
+      root.dataset.e2eClockOffsetMilliseconds = offset;
+      return true;
+    };
+    if (applyOffset()) return;
+    const observer = new MutationObserver(() => {
+      if (applyOffset()) observer.disconnect();
+    });
+    observer.observe(document, { childList: true });
   }, CLOCK_OFFSET_KEY);
 }
 
