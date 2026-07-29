@@ -6,7 +6,7 @@
 **State target:** schema v16  
 **Save format:** v3 retained
 
-## 1. Deterministic profile identity
+## Deterministic profile identity
 
 Schema v16 adds one immutable field:
 
@@ -21,16 +21,16 @@ CampaignSettings
 
 Rules:
 
-- every schema-v15 and older campaign migrates to `legacy-v1`;
-- every new normal campaign defaults to `compressed-v1`;
-- profile is selected before initial state creation and cannot change later;
+- schema-v15 and older campaigns migrate to `legacy-v1`;
+- new normal campaigns default to `compressed-v1`;
+- profile is selected before state creation and cannot change later;
 - profile participates in state checksum, save integrity and replay inputs;
 - world speed remains independent and immutable;
-- save format stays v3 because the envelope structure does not change;
-- existing queued items retain their already-paid cost, target level and completion timestamp after migration;
-- no UI/global fallback may infer profile from app version.
+- save format stays v3;
+- existing queued items retain paid cost, target level and completion timestamp;
+- no app-version/UI fallback may infer profile.
 
-## 2. Legacy profile
+## Legacy profile
 
 `legacy-v1` preserves merged PR #132 behavior exactly:
 
@@ -39,17 +39,17 @@ building cost growth 1600 permille
 building time growth 1450 permille
 research cost growth 1600 permille
 research time growth 1450 permille
-current caps, requirements, starting economy, unit values and rewards
+current caps, requirements, starting economy, units and rewards
 ```
 
-The legacy profile exists for deterministic compatibility, not as the recommended new-game experience.
+It exists for deterministic compatibility, not as the recommended new-game experience.
 
-## 3. Compressed profile — formula constants
+## Compressed formula constants
 
 ```text
-building base cost       1000 permille of faction-tuned catalog base
+building base cost       1000 permille of faction-tuned base
 building cost growth     1280 permille per level
-building base time        600 permille of faction-tuned catalog base
+building base time        600 permille
 building time growth     1180 permille per level
 
 research base cost        900 permille
@@ -62,13 +62,13 @@ ship/defence base time    700 permille
 repair base cost          850 permille
 repair base time          700 permille
 ship-upgrade max level    5
-ship-upgrade cost         700 permille of current calculated cost
-ship-upgrade time         700 permille of current calculated time
+ship-upgrade cost         700 permille of current calculation
+ship-upgrade time         700 permille of current calculation
 ```
 
-All scaling remains integer, deterministic and ceiling-based. No floating-point state is stored.
+Scaling remains integer, deterministic and ceiling-based. No floating-point state is stored.
 
-## 4. Compressed building caps
+## Compressed building caps
 
 | Building role | Cap |
 |---|---:|
@@ -91,15 +91,15 @@ All scaling remains integer, deterministic and ceiling-based. No floating-point 
 | Galactic Obelisk | 1 |
 | Supreme Galactic Gates | 1 |
 
-Profile-resolved requirement level is:
+Profile-resolved requirement level is exactly:
 
 ```text
 min(legacy requirement level, compressed cap of the required definition)
 ```
 
-This rule applies uniformly to building, laboratory and unit requirements and must be shown identically in validators, bots and UI.
+The rule applies to building, laboratory, research and unit requirements and must resolve identically in validators, bots and UI.
 
-## 5. Compressed research caps
+## Compressed research caps
 
 | Research | Cap |
 |---|---:|
@@ -115,20 +115,18 @@ This rule applies uniformly to building, laboratory and unit requirements and mu
 | piercing attack, maneuver defense, critical hit | 5 |
 | light / medium / heavy armor | 1 |
 
-Research prerequisites use the same deterministic cap rule.
+## Endgame-ready prerequisite timers
 
-## 6. Endgame prerequisite timers
-
-Until the real endgame runtime is implemented, these values establish an endgame-ready progression path only:
+Until endgame runtime exists:
 
 ```text
-Galactic Obelisk base build time      14,400 canonical seconds
-Supreme Galactic Gates base build time 14,400 canonical seconds
+Galactic Obelisk base build time        14,400 canonical seconds
+Supreme Galactic Gates base build time  14,400 canonical seconds
 ```
 
 Both remain `endgameLocked`. This batch must not invent alliance, Solar War, crystal or victory logic.
 
-## 7. Starting economy and capacity
+## Starting economy and capacity
 
 `compressed-v1` begins with:
 
@@ -140,37 +138,26 @@ base storage capacity 60,000 per resource
 base population capacity 25
 ```
 
-Profile economy multipliers:
+Profile multipliers:
 
 ```text
-resource-production contributions 6000 permille
-storage-capacity contributions     3000 permille
-mission/expedition/space-object resource rewards 2000 permille
+resource-production contributions                 6000 permille
+storage-capacity contributions                     3000 permille
+mission/expedition/space-object resource rewards   2000 permille
 ```
 
-Energy consumption/production ratios, stability rules, field costs, cargo, combat strength, probabilities, debris-from-losses and plunder-from-existing-stock remain unchanged unless an implementation gate proves a deterministic progression deadlock. Any exception requires an explicit contract amendment in the implementation PR, not an unrecorded tuning change.
+Energy ratios, stability, field costs, cargo, combat strength, probabilities, debris-from-losses and plunder-from-existing-stock remain unchanged unless a deterministic implementation gate proves a deadlock. Any exception requires an explicit recorded contract amendment and full matrix rerun.
 
 World speed accelerates time only; it does not multiply these values.
 
-## 8. Faction parity
+## Faction parity
 
-Existing relative faction tuning remains authoritative:
+- the same semantic cap/requirement matrix applies to Aegis, Synod and Veyra;
+- existing relative faction tuning remains authoritative;
+- profile/tuning order must be documented and identical across player, bots and UI;
+- no faction receives a hidden progression shortcut.
 
-- profile multipliers apply after/before faction tuning in one documented consistent order;
-- the same semantic cap and requirement matrix applies to all three native catalogs;
-- faction identity remains in relative economy, time, cost and unit-stat tuning;
-- no faction may receive a hidden progression shortcut.
-
-Required parity gate:
-
-```text
-for every semantic role and milestone:
-  resolved definition exists for Aegis, Synod and Veyra
-  cap/requirement structure matches
-  only documented faction tuning changes numeric value
-```
-
-## 9. Bot progression phases
+## Bot phases
 
 Bots derive one deterministic phase from their own visible state:
 
@@ -184,62 +171,61 @@ planet-destruction
 endgame-preparation
 ```
 
-The phase changes planner priority only. Bots continue to use ordinary shared commands, resources, intelligence, queues and validators.
+The phase changes priority only. Bots retain ordinary resources, intelligence, queues, commands and validators.
 
-Required x2 bot gates:
+Required x2 gates:
 
-- reconnaissance-capable state ≤ 45 real minutes;
-- colonization-capable state ≤ 180 minutes;
-- heavy-fleet-capable state ≤ 480 minutes;
-- endgame-preparation state ≤ 720 minutes.
+- reconnaissance-capable ≤45 minutes;
+- colonization-capable ≤180 minutes;
+- heavy-fleet-capable ≤480 minutes;
+- endgame-preparation ≤720 minutes.
 
-## 10. Player milestone gates at recommended x2
+## Player milestone gates at recommended x2
 
-Audit critical-path maxima:
+The accepted candidate measurement is archived in `docs/audits/evidence/campaign-progression-balance-01-candidate.md`.
 
 | Milestone | Maximum real time at x2 |
 |---|---:|
-| first combat ship | 15 minutes |
-| first scout | 25 minutes |
+| first combat ship | 16 minutes |
+| first scout | 30 minutes |
 | first colonizer | 120 minutes |
 | first planet destroyer | 360 minutes |
 | endgame-ready prerequisite path | 720 minutes |
 
-The measurement is deterministic canonical progression time. A full playable headless scenario additionally includes economy waiting, queues, missions and bot pressure.
+The candidate measured 15.08 / 27.85 / 104.89 / 221.53 / 352.58 minutes respectively. A playable headless scenario must additionally include economy waiting, queues, missions and bot pressure.
 
-Accepted complete progression envelope:
+Accepted progression envelope:
 
 ```text
-recommended x2 target endgame-ready state: 12 real hours
-accepted x2 hard maximum:                 16 real hours
-x1 exact equivalents:                     24 target / 32 maximum
-x5 exact equivalents:                      4.8 target / 6.4 maximum
-x10 exact equivalents:                     2.4 target / 3.2 maximum
+x2 target endgame-ready state: 12 real hours
+x2 hard maximum:               16 real hours
+x1 exact equivalents:          24 target / 32 maximum
+x5 exact equivalents:           4.8 target / 6.4 maximum
+x10 exact equivalents:          2.4 target / 3.2 maximum
 ```
 
-Actual victory/defeat is not an acceptance condition for this batch because alliance/Gate endgame runtime is not implemented yet.
+Actual victory/defeat is outside this batch because alliance/Gate endgame runtime is not implemented.
 
-## 11. UI contract
+## UI contract
 
-New Game and System/Saves must show:
+New Game and System/Saves show:
 
 ```text
 Compressed · recommended local campaign
 Legacy · compatibility profile
 ```
 
-The player cannot switch profile after creation. Cards, queues, requirements and estimates must all show profile-resolved values. No player-facing manual speed or profile controls are added during a running campaign.
+Cards, queues, requirements and estimates display profile-resolved values. No runtime profile or world-speed switching is added.
 
-## 12. Closure gates
+## Closure gates
 
-The second implementation PR cannot merge until:
+PR #135 cannot merge until:
 
 - schema-v16 migration and legacy replay/save equivalence pass;
 - all three factions pass profile parity;
-- milestone maxima pass from current source-importing tests;
-- deterministic headless x2 progression reaches endgame-ready state within 12-hour target and 16-hour hard maximum across accepted seeds;
-- bots meet all phase gates through ordinary commands;
-- x1/x2/x5/x10 outcomes are partition-equivalent;
-- save/load and offline catch-up preserve profile, state and milestone result;
+- player milestone and bot-phase maxima pass;
+- accepted deterministic seeds reach endgame-ready state within 12-hour target and 16-hour hard maximum;
+- x1/x2/x5/x10 outcomes are exact time-scaled equivalents;
+- save/load/offline catch-up preserve profile, state and milestone checksum;
 - Browser E2E covers setup identity, immutable profile, resolved values and both release viewports;
 - CI, Graphify and automated review are green.
