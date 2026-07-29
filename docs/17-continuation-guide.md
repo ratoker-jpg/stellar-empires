@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** Audit PR #133 `CAMPAIGN-PROGRESSION-BALANCE-01` active; no implementation authorized yet  
+**Status:** Audit PR #133 accepted; implementation PR #134 is next  
 **Updated:** 2026-07-29  
-**Last merged PR:** #132 `CAMPAIGN-CLOCK-OFFLINE-GATE` · `df56566ce6d311ecef81103dddb924b5da0148c1`  
+**Last merged PR:** #133 `CAMPAIGN-PROGRESSION-BALANCE-01` · `989c2c0b8fc3d5cfe672af267a248b6b384331cc`  
 **Runtime baseline:** schema v15 / save format v3 / shared active-offline campaign clock  
-**Active branch:** `agent/campaign-progression-balance-audit`  
-**Proposed next sequence after Audit merge:** #134–#135
+**Accepted target:** schema v16 / `legacy-v1 | compressed-v1` progression profiles  
+**Next branch:** `agent/progression-profile-foundation`
 
 ## Repository
 
@@ -22,15 +22,16 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 5. `docs/audits/contracts/campaign-progression-balance-01-profile.md`
 6. `docs/audits/contracts/campaign-progression-balance-01-prs.md`
 7. `docs/audits/evidence/campaign-progression-balance-01-baseline.md`
-8. `docs/audits/evidence/campaign-progression-balance-01-source-map.md`
-9. `docs/audits/evidence/campaign-progression-balance-01-graphify.md`
-10. `docs/audits/completed/local-campaign-time-pacing-01.md`
-11. `docs/changes/pr132-campaign-clock-offline-gate.md`
-12. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
-13. this document
-14. `docs/project-status.json`
-15. `docs/roadmap-pr-index.json`
-16. latest merged PRs and actual `main`
+8. `docs/audits/evidence/campaign-progression-balance-01-candidate.md`
+9. `docs/audits/evidence/campaign-progression-balance-01-source-map.md`
+10. `docs/audits/evidence/campaign-progression-balance-01-graphify.md`
+11. `docs/audits/completed/local-campaign-time-pacing-01.md`
+12. `docs/changes/pr132-campaign-clock-offline-gate.md`
+13. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
+14. this document
+15. `docs/project-status.json`
+16. `docs/roadmap-pr-index.json`
+17. latest merged PRs and actual `main`
 
 ## Delivered through merged `main`
 
@@ -41,54 +42,53 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 - #121–#123: demolition, whole-planet destruction and recovery;
 - #124: local campaign product contract;
 - #125–#129: navigation/usability repair;
-- #130: accepted local campaign time/persistence architecture;
-- #131: immutable campaign settings and cursor-safe persistence foundation;
-- #132: shared chronological active/offline clock, resumable catch-up and durable return summary.
+- #130–#132: immutable settings, persistence and shared active/offline campaign time;
+- #133: accepted measured progression-profile and two-PR implementation contract.
 
-## Audit #133 verified baseline
-
-Source-importing CI measurement proves at recommended x2:
-
-```text
-first combat ship       0.44 h
-first scout             0.89 h
-first colonizer         4.22 h before resource waiting
-first planet destroyer 22.42 h before resource waiting
-Supreme Gates path    223.36 h before resource waiting
-```
-
-Raw all-level catalogs require 731.30 h for buildings and 118.94 h for research at x2. Existing schema-v15 saves/replays do not record a progression-profile identity, so global unversioned tuning is rejected.
-
-## Proposed contract in #133
+## Accepted progression contract
 
 ```text
 schema v16
 CampaignSettings.progressionProfile = legacy-v1 | compressed-v1
-legacy saves → legacy-v1
-new campaigns → compressed-v1
+schema-v15 and older saves/replays → legacy-v1
+new normal campaigns → compressed-v1
 save format v3 retained
 complexity heavy
 exactly 2 implementation PRs
 ```
 
-Accepted only after #133 merges:
+Measured candidate at recommended x2:
+
+```text
+first combat ship        15.08 min · accepted max 16
+first scout              27.85 min · accepted max 30
+first colonizer         104.89 min · accepted max 120
+first planet destroyer  221.53 min · accepted max 360
+endgame-ready path      352.58 min · accepted max 720
+```
+
+Full deterministic endgame-ready progression targets 12 x2 real hours and has a 16-hour hard maximum. Actual alliances, Solar War, functional Gates and victory/defeat remain outside this batch.
+
+## Ordered implementation
 
 ```text
 #134 PROGRESSION-PROFILE-FOUNDATION
 → #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE
 ```
 
-The compressed profile targets an endgame-ready state within 12 real hours at recommended x2, with 16 hours as the accepted hard maximum. Actual alliances, Solar War, functional Gates and victory/defeat remain outside this batch.
+PR #134 must deliver only:
 
-## Current rules
+- schema-v16 immutable profile identity;
+- legacy migration and new-campaign default;
+- explicit replay/checksum identity;
+- central typed profile registry;
+- profile-aware building/research/unit/defence/repair/upgrade resolution;
+- profile identity in New Game, System and Saves;
+- old queued-item compatibility;
+- formula, migration and three-faction parity gates.
 
-- PR #133 may change only audit evidence, measurement tests and canonical planning/status documents;
-- do not alter gameplay values in the Audit PR;
-- do not open #134 before #133 is green, reviewed and merged;
-- preserve schema-v15/save-v3/runtime behavior on `main` until implementation begins;
-- after #133 merge, use exact accepted profile constants and the two-PR sequence only;
-- any numeric divergence must be documented with a failing deterministic seed and full matrix rerun.
+Economy/reward multipliers, deterministic bot phases and full 12/16-hour campaign closure belong to #135.
 
 ## Recovery
 
-If the Audit chat/session is interrupted, resume PR #133 from its current head, re-check CI, Browser E2E, Graphify and review threads, then finish/merge the audit. Do not skip directly to balance implementation.
+Start #134 from fresh synchronized `main`. Do not alter accepted constants silently. Any required numeric divergence needs a recorded deterministic failure, explicit contract amendment and full matrix rerun.
