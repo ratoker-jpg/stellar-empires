@@ -88,6 +88,16 @@ function isSummaryEmpty(summary: CampaignCatchUpSummary): boolean {
     summary.result.status === 'unknown';
 }
 
+function hasPlayerVisibleCatchUp(summary: CampaignCatchUpSummary): boolean {
+  return !isSummaryEmpty({
+    ...summary,
+    absence: {
+      realDurationSeconds: 0,
+      gameDurationSeconds: summary.absence.gameDurationSeconds,
+    },
+  });
+}
+
 function summaryWithRealDuration(
   summary: CampaignCatchUpSummary,
   realDurationMilliseconds: number,
@@ -159,7 +169,7 @@ function completedRuntimeMetadata(
         gameTimeFractionNumerator: finalFractionNumerator,
         accumulatedSummary: createEmptyCatchUpSummary(),
       };
-  const pendingReturnSummary = mode === 'offline' && !isSummaryEmpty(accumulatedSummary)
+  const pendingReturnSummary = mode === 'offline' && hasPlayerVisibleCatchUp(accumulatedSummary)
     ? mergeCatchUpSummaries(
         previous.pendingReturnSummary ?? createEmptyCatchUpSummary(),
         accumulatedSummary,
