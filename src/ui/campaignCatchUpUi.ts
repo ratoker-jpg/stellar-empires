@@ -7,6 +7,10 @@ export interface CampaignCatchUpProgressUi {
   dispose(): void;
 }
 
+const E2E_INTERRUPT_QUERY = 'e2eInterruptCatchUp';
+const E2E_INTERRUPTED_KEY = 'stellar-e2e-catch-up-interrupted';
+const E2E_PROGRESS_OBSERVED_KEY = 'stellar-e2e-catch-up-progress-observed';
+
 function formatDuration(seconds: number): string {
   const rounded = Math.max(0, Math.floor(seconds));
   const days = Math.floor(rounded / 86_400);
@@ -37,6 +41,15 @@ function createDialog(id: string, className: string): HTMLDialogElement {
   dialog.addEventListener('cancel', (event) => event.preventDefault());
   document.body.append(dialog);
   return dialog;
+}
+
+function interruptE2eCatchUpAfterDurableProgress(progress: CampaignCatchUpProgress): void {
+  if (import.meta.env.VITE_E2E !== '1' || progress.complete) return;
+  if (new URLSearchParams(window.location.search).get(E2E_INTERRUPT_QUERY) !== '1') return;
+  if (window.localStorage.getItem(E2E_INTERRUPTED_KEY) === 'true') return;
+  window.localStorage.setItem(E2E_PROGRESS_OBSERVED_KEY, 'true');
+  window.localStorage.setItem(E2E_INTERRUPTED_KEY, 'true');
+  window.setTimeout(() => window.location.reload(), 0);
 }
 
 function showCatchUpFailure(message: string): void {
@@ -117,6 +130,7 @@ export function mountCampaignCatchUpProgress(): CampaignCatchUpProgressUi {
       game.textContent = formatDuration(snapshot.remainingGameSeconds);
       operations.textContent = String(snapshot.operationsProcessed);
       dialog.dataset.complete = String(snapshot.complete);
+      interruptE2eCatchUpAfterDurableProgress(snapshot);
     },
     dispose: () => {
       if (dialog.dataset.failed === 'true') return;
