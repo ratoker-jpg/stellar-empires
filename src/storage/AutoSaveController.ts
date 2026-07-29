@@ -134,6 +134,10 @@ export class AutoSaveController {
     this.#onStatus({ phase: 'idle' });
   }
 
+  private readPendingSave(): PendingAutoSave | undefined {
+    return this.#pendingSave;
+  }
+
   private async flushInternal(rejectOnError: boolean): Promise<void> {
     if (this.#timer !== undefined) {
       clearTimeout(this.#timer);
@@ -181,7 +185,7 @@ export class AutoSaveController {
     let failure: unknown;
     try {
       await write;
-      const newerPending = this.#pendingSave;
+      const newerPending = this.readPendingSave();
       if (newerPending === undefined || newerPending.revision <= pending.revision) {
         this.#runtimeMetadata = nextRuntimeMetadata;
       }
@@ -191,7 +195,7 @@ export class AutoSaveController {
       this.#onStatus({ phase: 'saved', savedAt });
     } catch (error: unknown) {
       failure = error;
-      const newerPending = this.#pendingSave;
+      const newerPending = this.readPendingSave();
       if (newerPending === undefined || newerPending.revision <= pending.revision) {
         this.#pendingSave = {
           state: pending.state,
@@ -204,7 +208,7 @@ export class AutoSaveController {
       if (this.#activeWrite === write) this.#activeWrite = undefined;
     }
 
-    const nextPending = this.#pendingSave;
+    const nextPending = this.readPendingSave();
     if (nextPending !== undefined && !this.#disposed) {
       this.request(nextPending.state, nextPending.runtimeMetadata);
     }
