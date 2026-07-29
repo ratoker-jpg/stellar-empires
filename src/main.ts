@@ -4,6 +4,7 @@ import './styles/factions.css';
 import './styles/factionTheme.css';
 import './styles/uiPrimitives.css';
 import './styles/newGame.css';
+import './styles/campaignTime.css';
 import './styles/aegisAssets.css';
 import './styles/galaxyIntel.css';
 import './styles/spaceMap.css';
@@ -34,7 +35,8 @@ import {
   parseSpaceMapRoute,
   SpaceMapNavigationController,
 } from './navigation/spaceMapRoute';
-import { BotAutomationController } from './runtime/BotAutomationController';
+import { bootstrapRestoredCampaign, shouldShowCampaignCatchUp } from './runtime/campaignBootstrap';
+import { CampaignClockController } from './runtime/CampaignClockController';
 import { GameApplicationController } from './runtime/GameApplicationController';
 import {
   E2E_RUNTIME_ENABLED,
@@ -71,6 +73,10 @@ import type {
   ReportShellFilter,
   SystemShellMode,
 } from './ui/appShellRoute';
+import {
+  mountCampaignCatchUpProgress,
+  showCampaignReturnSummary,
+} from './ui/campaignCatchUpUi';
 import { mountCommandRankingScreen } from './ui/commandRankingScreen';
 import { mountCommandWorkspace } from './ui/commandWorkspace';
 import { mountDevelopmentPresentation } from './ui/developmentPresentation';
@@ -129,6 +135,16 @@ function writeAutoSaveStatus(status: AutoSaveStatus): void {
   }
 }
 
+function createRuntimeRealTimeSource(): { nowMs(): number } {
+  if (!E2E_RUNTIME_ENABLED) return { nowMs: () => Date.now() };
+  const base = Date.parse(DEFAULT_CAMPAIGN_CREATED_AT_REAL);
+  return {
+    nowMs: () => base + Number(
+      document.documentElement.dataset.e2eClockOffsetMilliseconds ?? 0,
+    ),
+  };
+}
+
 async function createFreshGame(statusPrefix = 'Новая партия'): Promise<{
   readonly state: GameState;
   readonly runtimeMetadata: CampaignRuntimeMetadata;
@@ -161,6 +177,7 @@ async function bootstrap(): Promise<void> {
   const version = requireElement<HTMLElement>('#build-version');
   const systemCount = requireElement<HTMLElement>('#system-count');
   const repository = new IndexedDbSaveRepository();
+  const realTimeSource = createRuntimeRealTimeSource();
   let initialState: GameState;
   let initialRuntimeMetadata: CampaignRuntimeMetadata;
   let startupStatus: string;
@@ -170,8 +187,27 @@ async function bootstrap(): Promise<void> {
   try {
     const restored = await loadAutosave(repository);
     if (restored.status === 'loaded') {
-      initialState = prepareE2eState(restored.state);
-      initialRuntimeMetadata = restored.runtimeMetadata;
+      const catchUpUi = shouldShowCampaignCatchUp(
+        restored.runtimeMetadata,
+        realTimeSource.nowMs(),
+      )
+        ? mountCampaignCatchUpProgress()
+        : undefined;
+      try {
+        const caughtUp = await bootstrapRestoredCampaign({
+          repository,
+          state: restored.state,
+          runtimeMetadata: restored.runtimeMetadata,
+          realTimeSource,
+          operationBudget: 256,
+          onProgress: (progress) => catchUpUi?.update(progress),
+          yieldControl: () => new Promise((resolve) => setTimeout(resolve, 0)),
+        });
+        initialState = prepareE2eState(caughtUp.state);
+        initialRuntimeMetadata = caughtUp.runtimeMetadata;
+      } finally {
+        catchUpUi?.dispose();
+      }
       const speed = formatWorldSpeed(initialState.campaignSettings.worldSpeed);
       startupStatus = restored.source === 'snapshot'
         ? `Партия восстановлена из резерва · ${speed} · seed ${initialState.seed}`
@@ -191,6 +227,7 @@ async function bootstrap(): Promise<void> {
     autosave = new AutoSaveController(repository, {
       runtimeMetadata: initialRuntimeMetadata,
       onStatus: writeAutoSaveStatus,
+      now: () => new Date(realTimeSource.nowMs()).toISOString(),
     });
   } catch (error: unknown) {
     console.error('[stellar-empires] persistence unavailable', error);
@@ -200,6 +237,7 @@ async function bootstrap(): Promise<void> {
     startupStatus = fresh.status;
   }
 
+  let runtimeMetadata = initialRuntimeMetadata;
   const playerFaction = initialState.planets.find(
     (planet) => planet.ownerEmpireId === 'player',
   )?.factionId ?? 'aegis';
@@ -210,7 +248,6 @@ async function bootstrap(): Promise<void> {
   applyClientPresentationSettings(readClientPresentationSettings());
   const disposeAccessibility = mountAccessibilityRuntime();
 
-  const botAutomationRef: { current?: BotAutomationController } = {};
   const gameRef: { current?: ReturnType<typeof createGame> } = {};
   const spaceMapUiRef: { current?: ReturnType<typeof mountSpaceMapNavigation> } = {};
   let syncingPlanetScreen = false;
@@ -229,8 +266,7 @@ async function bootstrap(): Promise<void> {
       if (gameRef.current !== undefined) updateGamePresentation(gameRef.current, state);
       spaceMapUiRef.current?.refresh();
       updateE2eRuntimeDiagnostics(state);
-      autosave?.request(state);
-      if (source !== 'bot') botAutomationRef.current?.request();
+      if (source !== 'clock') autosave?.request(state, runtimeMetadata);
     },
   });
 
@@ -318,7 +354,7 @@ async function bootstrap(): Promise<void> {
   const saveWorkspace = mountSaveManager({
     manager: saveManager,
     getState: () => application.getState(),
-    getRuntimeMetadata: () => autosave?.getRuntimeMetadata() ?? initialRuntimeMetadata,
+    getRuntimeMetadata: () => runtimeMetadata,
     writeStatus: setStatus,
   });
   const systemWorkspace = mountSystemWorkspace({
@@ -461,28 +497,50 @@ async function bootstrap(): Promise<void> {
     shellContext.refresh(appShell.snapshot);
   });
 
-  const botAutomation = new BotAutomationController({
+  const campaignClock = new CampaignClockController({
     getState: () => application.getState(),
-    applyState: (state, acceptedCommandCount) => {
-      application.applyState(
-        state,
-        'bot',
-        acceptedCommandCount > 0
-          ? `Боты выполнили действий · ${acceptedCommandCount}`
-          : 'График решений ботов синхронизирован',
-      );
+    getRuntimeMetadata: () => runtimeMetadata,
+    realTimeSource,
+    applyCheckpoint: (checkpoint, saveRequested) => {
+      runtimeMetadata = checkpoint.runtimeMetadata;
+      autosave?.setRuntimeMetadata(runtimeMetadata);
+      if (checkpoint.state !== application.getState()) {
+        application.applyState(checkpoint.state, 'clock', '');
+      }
+      if (saveRequested) autosave?.request(application.getState(), runtimeMetadata);
     },
-    onError: (message) => {
-      console.error('[stellar-empires] bot scheduler failed', message);
-      setStatus('Ошибка автономного планировщика');
+    onDiagnostic: (diagnostic) => {
+      if (diagnostic === 'clock-rollback') {
+        console.warn('[stellar-empires] system clock moved behind processed campaign cursor');
+      }
+    },
+    onError: (error) => {
+      console.error('[stellar-empires] campaign clock failed', error);
+      setStatus('Ошибка синхронизации времени кампании');
     },
   });
-  botAutomationRef.current = botAutomation;
 
-  const flushAutosave = (): void => { void autosave?.flush(); };
+  const acknowledgeReturnSummary = async (): Promise<void> => {
+    const { pendingReturnSummary: _pendingReturnSummary, ...nextRuntimeMetadata } = runtimeMetadata;
+    runtimeMetadata = nextRuntimeMetadata;
+    autosave?.setRuntimeMetadata(runtimeMetadata);
+    autosave?.request(application.getState(), runtimeMetadata);
+    await autosave?.flush();
+  };
+  if (runtimeMetadata.pendingReturnSummary !== undefined) {
+    showCampaignReturnSummary(
+      runtimeMetadata.pendingReturnSummary,
+      acknowledgeReturnSummary,
+    );
+  }
+
+  const flushAutosave = (): void => {
+    autosave?.request(application.getState(), runtimeMetadata);
+    void autosave?.flush();
+  };
   window.addEventListener('pagehide', flushAutosave);
   window.addEventListener('beforeunload', () => {
-    botAutomation.dispose();
+    campaignClock.dispose();
     applicationSubscription();
     shellRouteSubscription();
     appShell.dispose();
@@ -511,7 +569,7 @@ async function bootstrap(): Promise<void> {
     if (document.visibilityState === 'hidden') flushAutosave();
   });
 
-  botAutomation.request();
+  campaignClock.start();
   setStatus(startupStatus);
   globalHud.refresh();
   shellContext.refresh(appShell.snapshot);
