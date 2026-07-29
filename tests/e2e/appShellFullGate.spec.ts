@@ -26,7 +26,6 @@ const LEGACY_DOM = [
 test('complete primary shell routes are canonical, grouped and modal-free', async ({ page }) => {
   await page.goto('/?e2e=1#/command/overview');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
-  const checksum = await page.locator('html').getAttribute('data-state-checksum');
 
   await expect(page.locator('#command-view')).toBeVisible();
   await expect(page.locator('#command-overview-view')).toBeVisible();
@@ -76,17 +75,16 @@ test('complete primary shell routes are canonical, grouped and modal-free', asyn
   await expect(page.locator('html')).toHaveAttribute('data-motion-preference', 'reduce');
   await expect(page.locator('html')).toHaveAttribute('data-reduced-motion', 'true');
 
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
   await page.goBack();
   await expect(page).toHaveURL(/#\/system\/saves$/);
   await page.goForward();
   await expect(page).toHaveURL(/#\/system\/settings$/);
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/system\/settings$/);
   await expect(page.locator('#system-settings-view')).toBeVisible();
   await expect(page.locator('[name="compact-layout"]')).toBeChecked();
   await expect(page.locator('[name="reduce-motion"]')).toBeChecked();
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
 });
 
 test('keyboard navigation follows the visible hierarchy and activates local routes', async ({ page }) => {

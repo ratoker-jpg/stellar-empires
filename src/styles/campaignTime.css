@@ -1,0 +1,117 @@
+.planet-time-controls {
+  display: none !important;
+}
+
+.campaign-time-dialog {
+  width: min(680px, calc(100vw - 28px));
+  padding: 0;
+  border: 1px solid rgb(90 205 255 / 42%);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgb(5 17 29 / 98%), rgb(1 6 12 / 99%));
+  color: var(--ice-100);
+  box-shadow: 0 32px 120px rgb(0 0 0 / 82%);
+}
+
+.campaign-time-dialog::backdrop {
+  background: rgb(0 3 8 / 92%);
+  backdrop-filter: blur(12px);
+}
+
+.campaign-time-dialog__body {
+  display: grid;
+  gap: 16px;
+  padding: 28px;
+}
+
+.campaign-time-dialog h1,
+.campaign-time-dialog p,
+.campaign-time-dialog dl {
+  margin: 0;
+}
+
+.campaign-time-eyebrow {
+  color: var(--cyan-400);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.campaign-time-dialog h1 {
+  font-size: clamp(1.55rem, 4vw, 2.4rem);
+  line-height: 1.08;
+}
+
+.campaign-time-dialog__body > p:not(.campaign-time-eyebrow) {
+  color: #9eb4c1;
+  line-height: 1.55;
+}
+
+.campaign-time-dialog dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.campaign-time-dialog dl > div {
+  display: grid;
+  gap: 5px;
+  padding: 12px 14px;
+  border: 1px solid rgb(105 190 230 / 16%);
+  border-radius: 9px;
+  background: rgb(8 28 43 / 62%);
+}
+
+.campaign-time-dialog dt {
+  color: #829aaa;
+  font-size: 0.72rem;
+}
+
+.campaign-time-dialog dd {
+  margin: 0;
+  color: #e9f8ff;
+  font-weight: 700;
+}
+
+.campaign-catch-up-progress {
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid rgb(93 207 255 / 24%);
+  border-radius: 999px;
+  background: rgb(0 7 13 / 92%);
+}
+
+.campaign-catch-up-progress i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan-500), #a1f2ff);
+  transition: width 120ms linear;
+}
+
+.campaign-time-note {
+  padding: 10px 12px;
+  border-left: 2px solid rgb(83 205 255 / 55%);
+  background: rgb(20 69 91 / 20%);
+  font-size: 0.78rem;
+}
+
+.campaign-return-summary .se-button {
+  justify-self: end;
+  min-width: 220px;
+}
+
+@media (max-width: 620px) {
+  .campaign-time-dialog__body {
+    padding: 20px;
+  }
+
+  .campaign-time-dialog dl {
+    grid-template-columns: 1fr;
+  }
+
+  .campaign-return-summary .se-button {
+    justify-self: stretch;
+    width: 100%;
+  }
+}

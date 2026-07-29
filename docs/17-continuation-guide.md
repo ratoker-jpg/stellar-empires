@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** PR #131 merged; PR #132 is the only next implementation  
+**Status:** PR #132 is active and in final validation  
 **Updated:** 2026-07-29  
 **Last merged PR:** #131 `CAMPAIGN-SETTINGS-PERSISTENCE` · `257e3effaab4e34285d00db64b6676fda364fcfd`  
 **Runtime baseline:** schema v15 / save format v3  
 **Active batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
-**Next work item:** #132 `CAMPAIGN-CLOCK-OFFLINE-GATE`
+**Active work item:** #132 `CAMPAIGN-CLOCK-OFFLINE-GATE`
 
 ## Repository
 
@@ -22,13 +22,15 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 5. `docs/audits/contracts/local-campaign-time-pacing-01-prs.md`
 6. `docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md`
 7. `docs/changes/pr131-campaign-settings-persistence.md`
-8. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
-9. `docs/23-bot-simulation-time-contract.md`
-10. this document
-11. `docs/project-status.json`
-12. `docs/roadmap-pr-index.json`
-13. `docs/27-playable-game-roadmap-v5.md`
-14. latest merged PRs and actual `main`
+8. `docs/changes/pr132-campaign-clock-offline-gate.md`
+9. `docs/audits/completed/local-campaign-time-pacing-01.md`
+10. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
+11. `docs/23-bot-simulation-time-contract.md`
+12. this document
+13. `docs/project-status.json`
+14. `docs/roadmap-pr-index.json`
+15. `docs/27-playable-game-roadmap-v5.md`
+16. latest merged PRs and actual `main`
 
 ## Delivered through merged `main`
 
@@ -42,60 +44,35 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 - #130: accepted local campaign time/persistence architecture;
 - #131: immutable campaign settings and cursor-safe persistence foundation.
 
-## Current schema and persistence
+## Active PR #132 implementation
 
-### Deterministic state
+The current branch implements:
 
-- `GameState` schema v15;
-- immutable checksummed `CampaignSettings`;
-- scenario `test | campaign | fidelity`;
-- world speed `1 | 2 | 5 | 10`;
-- offline progression fixed true;
-- canonical real creation timestamp;
-- old state-creation and replay overloads remain deterministic x1.
-
-### Save format v3
-
-- runtime cursor/continuation/summary metadata remains outside `GameState`;
-- checksum covers stable envelope fields, runtime metadata and state;
-- v1/v2 envelopes and state v1–v14 migrate to x1;
-- real creation/cursor time comes from validated envelope `savedAt`;
-- current v15 loads execute reconciliation for aliases, schedules and bounded histories;
-- autosave/manual/import/export/snapshot/recovery preserve cursor semantics;
-- ordinary saves preserve `lastActiveAtReal` until time is actually processed;
-- `pendingCatchUp` requires exact target/cursor/remainder consistency.
-
-### Player setup
-
-- one campaign-creation transaction selects faction, topology and immutable speed;
-- x2 is the recommended UI preset;
-- System / Saves exposes immutable campaign identity and processed cursor;
-- settings cannot be changed after creation.
-
-## PR #131 validation
-
-- CI `30405640769`;
-- Browser E2E `30405640704`;
-- Graphify `30405640711`;
-- Codex P1/P2 findings fixed and resolved;
-- final re-review returned 👍;
-- merge `257e3effaab4e34285d00db64b6676fda364fcfd`.
-
-## #132 exact scope
-
-Create only from fresh current `main`:
-
-- one chronological active/offline orchestrator;
-- event/logistics/world-event/bot boundaries;
-- fixed-point speed mapping and fractional carry;
-- active open-session clock;
+- a shared DOM-independent chronological active/offline orchestrator;
+- event, logistics, world-event and bot-decision boundaries;
+- integer fixed-point x1/x2/x5/x10 speed mapping and fractional carry;
+- an active browser campaign clock;
 - bounded resumable offline catch-up;
-- processed-cursor checkpoints;
-- pending target/remainder and accumulated summary persistence;
-- pending return summary until acknowledgement;
-- removal of player fast-forward controls;
-- one-day/seven-day, Browser E2E and performance gates;
-- audit archive and batch closure.
+- processed-cursor checkpoints and protected continuation;
+- cooperative catch-up progress;
+- durable pending return summary until explicit acknowledgement;
+- removal of normal player fast-forward controls;
+- one-day/seven-day deterministic and performance tests;
+- Chromium Browser E2E for active and offline progression;
+- batch change documentation and completion archive.
+
+## Final #132 route
+
+```text
+verify final branch head
+→ pass CI, Browser E2E and Graphify
+→ request automated review
+→ fix every actionable P0/P1/P2 finding
+→ mark ready and squash merge #132
+→ synchronize exact merge SHA on main
+→ close LOCAL-CAMPAIGN-TIME-PACING-01
+→ only then create CAMPAIGN-PROGRESSION-BALANCE-01 audit
+```
 
 ## Explicit exclusions from #132
 
@@ -104,12 +81,6 @@ Create only from fresh current `main`:
 - no server-authoritative/online shared world;
 - no broad mobile/framework redesign.
 
-## Immediate route
+## Next authorized work after merge
 
-```text
-verify fresh current main
-→ create PR #132 CAMPAIGN-CLOCK-OFFLINE-GATE
-→ implement only the accepted clock/catch-up contract
-→ pass CI, Browser E2E, Graphify and clean review
-→ merge #132 and close/archive the batch
-```
+Only Audit `CAMPAIGN-PROGRESSION-BALANCE-01` may begin after #132 is merged and status is synchronized. That audit must measure campaign duration and decide exact progression compression before any balance values change.

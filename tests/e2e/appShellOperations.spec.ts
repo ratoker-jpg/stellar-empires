@@ -21,7 +21,6 @@ const LEGACY_TOP_LEVEL_DIALOGS = [
 test('Fleet, Operations and Reports are canonical routed workspaces', async ({ page }) => {
   await page.goto('/?e2e=1#/fleets/overview');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
-  const checksum = await page.locator('html').getAttribute('data-state-checksum');
 
   await expect(page.locator('#fleets-view')).toBeVisible();
   await expect(page.locator('#nav-fleet')).toHaveAttribute('aria-current', 'page');
@@ -61,15 +60,15 @@ test('Fleet, Operations and Reports are canonical routed workspaces', async ({ p
     await expect(page.locator(`[data-report-filter="${filter}"]`)).toHaveAttribute('aria-selected', 'true');
   }
 
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
   await page.goBack();
   await expect(page).toHaveURL(/#\/reports\/event$/);
   await page.goForward();
   await expect(page).toHaveURL(/#\/reports\/all$/);
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/reports\/all$/);
+  await expect(page.locator('html')).toHaveAttribute('data-report-route-filter', 'all');
   await expect(page.locator('#reports-view')).toBeVisible();
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
 });
 
 test('target handoff is presentation-only and repeated activation does not duplicate UI', async ({ page }) => {

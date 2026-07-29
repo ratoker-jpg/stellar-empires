@@ -1,7 +1,12 @@
 import { executeCommand } from '../simulation/reducer';
 import type { GameCommand, GameState } from '../simulation/types';
 
-export type ApplicationTransitionSource = 'command' | 'planet-compatibility' | 'bot' | 'restore';
+export type ApplicationTransitionSource =
+  | 'command'
+  | 'planet-compatibility'
+  | 'bot'
+  | 'clock'
+  | 'restore';
 
 export interface ApplicationSnapshot {
   readonly state: GameState;
@@ -38,6 +43,13 @@ function normalizeActivePlanetId(state: GameState, requested: string | undefined
   )
     ? requested as string
     : firstPlayerPlanetId(state);
+}
+
+function normalizeTransitionMessage(
+  source: ApplicationTransitionSource,
+  message: string,
+): string {
+  return source === 'clock' && message.length === 0 ? 'Кампания активна' : message;
 }
 
 export class GameApplicationController {
@@ -127,11 +139,17 @@ export class GameApplicationController {
     message: string,
   ): void {
     const previousState = this.#state;
+    const normalizedMessage = normalizeTransitionMessage(source, message);
     this.#state = state;
     this.#activePlanetId = normalizeActivePlanetId(state, this.#activePlanetId);
     this.emit();
-    this.#options.writeStatus?.(message);
-    this.#options.onTransition?.({ previousState, state, source, message });
+    this.#options.writeStatus?.(normalizedMessage);
+    this.#options.onTransition?.({
+      previousState,
+      state,
+      source,
+      message: normalizedMessage,
+    });
   }
 
   private emit(): void {

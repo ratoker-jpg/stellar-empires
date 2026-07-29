@@ -58,7 +58,7 @@ export interface CampaignRuntimeMetadata {
   readonly lastActiveAtReal: string;
   readonly lastCatchUpRealDurationSeconds: number;
   readonly lastCatchUpGameDurationSeconds: number;
-  readonly pendingCatchUp?: PendingCatchUpMetadata;
+  readonly pendingCatchUp?: PendingCatchUpMetadata | undefined;
   readonly pendingReturnSummary?: CampaignCatchUpSummary;
 }
 

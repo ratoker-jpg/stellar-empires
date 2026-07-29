@@ -1,4 +1,5 @@
 import { normalizeRealTimestamp } from '../simulation/campaign/settings';
+import { GAME_TIME_FRACTION_DENOMINATOR } from '../simulation/campaign/time';
 import type {
   CampaignCatchUpSummary,
   CampaignRuntimeMetadata,
@@ -109,6 +110,7 @@ export function isPendingCatchUpMetadata(value: unknown): value is PendingCatchU
     isCanonicalRealTimestamp(value.targetAtReal) &&
     isNonNegativeInteger(value.remainingRealDurationMilliseconds) &&
     isNonNegativeInteger(value.gameTimeFractionNumerator) &&
+    value.gameTimeFractionNumerator < GAME_TIME_FRACTION_DENOMINATOR &&
     isCampaignCatchUpSummary(value.accumulatedSummary);
 }
 

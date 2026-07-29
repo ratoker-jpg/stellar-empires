@@ -6,6 +6,7 @@ import {
 import { createSaveEnvelope } from './saveFormat';
 import {
   createCampaignRuntimeMetadata,
+  isCampaignRuntimeMetadata,
   prepareActiveSaveRuntimeMetadata,
 } from './runtimeMetadata';
 import type { CampaignRuntimeMetadata, SaveRepository } from './types';
@@ -29,6 +30,12 @@ export interface AutoSaveControllerOptions {
   readonly onStatus?: (status: AutoSaveStatus) => void;
 }
 
+interface PendingAutoSave {
+  readonly state: GameState;
+  readonly runtimeMetadata: CampaignRuntimeMetadata | undefined;
+  readonly revision: number;
+}
+
 export class AutoSaveController {
   readonly #repository: SaveRepository;
   readonly #saveManager: SaveManager;
@@ -38,9 +45,12 @@ export class AutoSaveController {
   readonly #now: () => string;
   readonly #onStatus: (status: AutoSaveStatus) => void;
   #runtimeMetadata: CampaignRuntimeMetadata | undefined;
-  #pendingState: GameState | undefined;
+  #pendingSave: PendingAutoSave | undefined;
+  #nextRevision = 0;
   #timer: ReturnType<typeof setTimeout> | undefined;
   #writeChain: Promise<void> = Promise.resolve();
+  #activeWrite: Promise<void> | undefined;
+  #propagateFlushFailure = false;
   #disposed = false;
 
   constructor(repository: SaveRepository, options: AutoSaveControllerOptions = {}) {
@@ -70,38 +80,94 @@ export class AutoSaveController {
     return this.#runtimeMetadata;
   }
 
-  request(state: GameState): void {
+  setRuntimeMetadata(runtimeMetadata: CampaignRuntimeMetadata): void {
     if (this.#disposed) return;
-    this.#pendingState = state;
+    if (!isCampaignRuntimeMetadata(runtimeMetadata)) {
+      throw new Error('Campaign runtime metadata is invalid.');
+    }
+    if (
+      this.#runtimeMetadata?.pendingReturnSummary !== undefined &&
+      runtimeMetadata.pendingReturnSummary === undefined
+    ) {
+      this.#propagateFlushFailure = true;
+    }
+    this.#runtimeMetadata = runtimeMetadata;
+  }
+
+  stage(state: GameState, runtimeMetadata?: CampaignRuntimeMetadata): void {
+    if (this.#disposed) return;
+    if (runtimeMetadata !== undefined) this.setRuntimeMetadata(runtimeMetadata);
+    this.#pendingSave = {
+      state,
+      runtimeMetadata: runtimeMetadata ?? this.#runtimeMetadata,
+      revision: this.#nextRevision += 1,
+    };
+  }
+
+  request(state: GameState, runtimeMetadata?: CampaignRuntimeMetadata): void {
+    if (this.#disposed) return;
+    this.stage(state, runtimeMetadata);
     this.#onStatus({ phase: 'pending' });
     if (this.#timer !== undefined) clearTimeout(this.#timer);
     this.#timer = setTimeout(() => {
       this.#timer = undefined;
-      void this.flush();
+      void this.flush().catch(() => undefined);
     }, this.#delayMs);
   }
 
   async flush(): Promise<void> {
+    await this.flushInternal(this.#propagateFlushFailure);
+  }
+
+  async flushOrThrow(): Promise<void> {
+    await this.flushInternal(true);
+  }
+
+  async dispose(): Promise<void> {
+    if (this.#disposed) {
+      await this.#writeChain;
+      return;
+    }
+    this.#disposed = true;
+    await this.flushInternal(false);
+    await this.#writeChain;
+    this.#onStatus({ phase: 'idle' });
+  }
+
+  private readPendingSave(): PendingAutoSave | undefined {
+    return this.#pendingSave;
+  }
+
+  private async flushInternal(rejectOnError: boolean): Promise<void> {
     if (this.#timer !== undefined) {
       clearTimeout(this.#timer);
       this.#timer = undefined;
     }
-    const state = this.#pendingState;
-    this.#pendingState = undefined;
-    if (state === undefined) {
-      await this.#writeChain;
+    const pending = this.#pendingSave;
+    this.#pendingSave = undefined;
+    if (pending === undefined) {
+      const activeWrite = this.#activeWrite;
+      if (activeWrite === undefined) {
+        await this.#writeChain;
+        return;
+      }
+      try {
+        await activeWrite;
+      } catch (error: unknown) {
+        if (rejectOnError) throw error;
+      }
       return;
     }
 
     const savedAt = this.#now();
-    const currentRuntimeMetadata = this.#runtimeMetadata ??
+    const currentRuntimeMetadata = pending.runtimeMetadata ??
       createCampaignRuntimeMetadata(savedAt);
     const nextRuntimeMetadata = prepareActiveSaveRuntimeMetadata(
       currentRuntimeMetadata,
     );
     const envelope = createSaveEnvelope(
       this.#slotId,
-      state,
+      pending.state,
       savedAt,
       nextRuntimeMetadata,
     );
@@ -113,29 +179,39 @@ export class AutoSaveController {
       }
       await this.#repository.put(envelope);
     });
+    this.#activeWrite = write;
     this.#writeChain = write.catch(() => undefined);
 
+    let failure: unknown;
     try {
       await write;
-      this.#runtimeMetadata = nextRuntimeMetadata;
+      const newerPending = this.readPendingSave();
+      if (newerPending === undefined || newerPending.revision <= pending.revision) {
+        this.#runtimeMetadata = nextRuntimeMetadata;
+      }
+      if (nextRuntimeMetadata.pendingReturnSummary === undefined) {
+        this.#propagateFlushFailure = false;
+      }
       this.#onStatus({ phase: 'saved', savedAt });
     } catch (error: unknown) {
+      failure = error;
+      const newerPending = this.readPendingSave();
+      if (newerPending === undefined || newerPending.revision <= pending.revision) {
+        this.#pendingSave = {
+          state: pending.state,
+          runtimeMetadata: nextRuntimeMetadata,
+          revision: pending.revision,
+        };
+      }
       this.#onStatus({ phase: 'error', error });
+    } finally {
+      if (this.#activeWrite === write) this.#activeWrite = undefined;
     }
 
-    if (this.#pendingState !== undefined && !this.#disposed) {
-      this.request(this.#pendingState);
+    const nextPending = this.readPendingSave();
+    if (nextPending !== undefined && !this.#disposed) {
+      this.request(nextPending.state, nextPending.runtimeMetadata);
     }
-  }
-
-  async dispose(): Promise<void> {
-    if (this.#disposed) {
-      await this.#writeChain;
-      return;
-    }
-    this.#disposed = true;
-    await this.flush();
-    await this.#writeChain;
-    this.#onStatus({ phase: 'idle' });
+    if (failure !== undefined && rejectOnError) throw failure;
   }
 }

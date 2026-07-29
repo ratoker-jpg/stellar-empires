@@ -1,7 +1,9 @@
+import { DEFAULT_BOT_PROFILES } from '../simulation/bots/profiles';
 import { createStateChecksum } from '../simulation/checksum';
 import type { BattleReport } from '../simulation/combat/types';
 import type { FleetState } from '../simulation/fleets/types';
 import type { IntelObservation } from '../simulation/intelligence/types';
+import { executeCommand } from '../simulation/reducer';
 import type { GameState } from '../simulation/types';
 import {
   runOrdinaryMissionIntelligenceGate,
@@ -15,8 +17,16 @@ export const E2E_REPORT_ID = 'report-e2e-map-backlink';
 export const E2E_SECONDARY_PLANET_ID = 'planet-e2e-secondary';
 const E2E_BOT_IDLE_SECONDS = 86_400;
 const E2E_SCOUT_COOLDOWN_CEILING_SECONDS = 7_200;
+const E2E_BOT_GATE_DELAY_MILLISECONDS = 250;
 
 let botGateResult: OrdinaryMissionIntelligenceGateResult | undefined;
+let botGateScheduled = false;
+
+function isBotGateRequested(): boolean {
+  return E2E_RUNTIME_ENABLED &&
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('botGate') === '1';
+}
 
 function getBotGateResult(): OrdinaryMissionIntelligenceGateResult {
   if (botGateResult === undefined) {
@@ -30,6 +40,30 @@ function getBotGateResult(): OrdinaryMissionIntelligenceGateResult {
   return botGateResult;
 }
 
+function writeBotGateDiagnostics(): void {
+  const botGate = getBotGateResult();
+  document.documentElement.dataset.e2eBotGateScoutReason = botGate.scoutReasonCode;
+  document.documentElement.dataset.e2eBotGateAttackReason = botGate.attackReasonCode;
+  document.documentElement.dataset.e2eBotGateObservationLevel = String(botGate.observationLevel);
+  document.documentElement.dataset.e2eBotGateSchemaVersion = String(botGate.schemaVersion);
+  document.documentElement.dataset.e2eBotGateDeterministic = 'true';
+  document.documentElement.dataset.e2eBotGateChecksum = botGate.finalChecksum;
+}
+
+function scheduleBotGateDiagnostics(): void {
+  if (!isBotGateRequested() || botGateScheduled) return;
+  botGateScheduled = true;
+  window.setTimeout(() => {
+    try {
+      writeBotGateDiagnostics();
+    } catch (error: unknown) {
+      document.documentElement.dataset.e2eBotGateError =
+        error instanceof Error ? error.message : 'Unknown bot gate error';
+      console.error('[stellar-empires] E2E bot gate failed', error);
+    }
+  }, E2E_BOT_GATE_DELAY_MILLISECONDS);
+}
+
 function requireScenarioPlanets(state: GameState) {
   const origin = state.planets.find(
     (planet) => planet.ownerEmpireId === 'player' && planet.id !== E2E_SECONDARY_PLANET_ID,
@@ -40,6 +74,19 @@ function requireScenarioPlanets(state: GameState) {
     throw new Error('E2E scenario requires one player colony and one foreign colony.');
   }
   return { origin, target };
+}
+
+function advanceFixtureState(state: GameState, targetElapsedSeconds: number): GameState {
+  const seconds = targetElapsedSeconds - state.clock.elapsedSeconds;
+  if (seconds <= 0) return state;
+  const advanced = executeCommand(state, { type: 'ADVANCE_TIME', seconds });
+  if (!advanced.ok) {
+    throw new Error(`E2E scenario time advance failed: ${advanced.code}`);
+  }
+  return {
+    ...advanced.value,
+    commandLog: state.commandLog,
+  };
 }
 
 function createSecondaryPlayerPlanet(state: GameState, origin: GameState['planets'][number]) {
@@ -70,12 +117,21 @@ function createSecondaryPlayerPlanet(state: GameState, origin: GameState['planet
   };
 }
 
+function canonicalizeFixtureState(state: GameState): GameState {
+  const serialized = JSON.stringify(state);
+  if (serialized === undefined) {
+    throw new Error('E2E scenario state is not JSON serializable.');
+  }
+  return JSON.parse(serialized) as GameState;
+}
+
 export function createE2eFixtureState(state: GameState): GameState {
-  const { origin, target } = requireScenarioPlanets(state);
   const fixtureElapsedSeconds = Math.max(
     state.clock.elapsedSeconds,
     E2E_SCOUT_COOLDOWN_CEILING_SECONDS,
   );
+  const fixtureState = advanceFixtureState(state, fixtureElapsedSeconds);
+  const { origin, target } = requireScenarioPlanets(fixtureState);
   const originWithFuel = {
     ...origin,
     economy: {
@@ -90,7 +146,7 @@ export function createE2eFixtureState(state: GameState): GameState {
       },
     },
   };
-  const secondaryPlayerPlanet = createSecondaryPlayerPlanet(state, originWithFuel);
+  const secondaryPlayerPlanet = createSecondaryPlayerPlanet(fixtureState, originWithFuel);
   const fleet: FleetState = {
     id: E2E_FLEET_ID,
     empireId: 'player',
@@ -149,7 +205,7 @@ export function createE2eFixtureState(state: GameState): GameState {
   };
   const report: BattleReport = {
     id: E2E_REPORT_ID,
-    seed: state.seed,
+    seed: fixtureState.seed,
     resolvedAt: fixtureElapsedSeconds,
     targetPlanetId: target.id,
     targetGalaxyPlanetId: target.galaxyPlanetId,
@@ -189,33 +245,35 @@ export function createE2eFixtureState(state: GameState): GameState {
     rewardMultiplierPermille: 1_000,
   };
   const stableBotDecisionAt = fixtureElapsedSeconds + E2E_BOT_IDLE_SECONDS;
-  const fleets = [...state.fleets];
+  const fleets = [...fixtureState.fleets];
   if (!fleets.some((entry) => entry.id === E2E_FLEET_ID)) fleets.push(fleet);
   if (!fleets.some((entry) => entry.id === E2E_INCOMING_FLEET_ID)) fleets.push(incomingFleet);
-  const planetsWithFuel = state.planets.map((planet) => planet.id === origin.id ? originWithFuel : planet);
+  const planetsWithFuel = fixtureState.planets.map(
+    (planet) => planet.id === origin.id ? originWithFuel : planet,
+  );
   const planets = planetsWithFuel.some((planet) => planet.id === E2E_SECONDARY_PLANET_ID)
     ? planetsWithFuel
     : [...planetsWithFuel, secondaryPlayerPlanet];
-  return {
-    ...state,
-    clock: { ...state.clock, elapsedSeconds: fixtureElapsedSeconds },
+  const activeEmpires = new Set(fixtureState.empires);
+  const fixture: GameState = {
+    ...fixtureState,
     planets,
     fleets,
-    intelligence: state.intelligence.map((entry) =>
+    intelligence: fixtureState.intelligence.map((entry) =>
       entry.empireId !== 'player' || entry.observations.some((item) => item.id === observation.id)
         ? entry
         : { ...entry, observations: [...entry.observations, observation] },
     ),
-    eventLog: state.eventLog.some((entry) =>
+    eventLog: fixtureState.eventLog.some((entry) =>
       entry.event.payload.type === 'BATTLE_REPORT' && entry.event.payload.report.id === E2E_REPORT_ID)
-      ? state.eventLog
+      ? fixtureState.eventLog
       : [
-          ...state.eventLog,
+          ...fixtureState.eventLog,
           {
             event: {
               id: 'event-e2e-report',
               executeAt: fixtureElapsedSeconds,
-              sequence: state.nextEventSequence + 10_000,
+              sequence: fixtureState.nextEventSequence + 10_000,
               payload: { type: 'BATTLE_REPORT', report },
             },
             executedAt: fixtureElapsedSeconds,
@@ -223,15 +281,19 @@ export function createE2eFixtureState(state: GameState): GameState {
         ],
     botAutomation: {
       nextDecisionAtByEmpire: Object.fromEntries(
-        Object.entries(state.botAutomation.nextDecisionAtByEmpire).map(
-          ([empireId, nextDecisionAt]) => [
-            empireId,
-            Math.max(nextDecisionAt, stableBotDecisionAt),
-          ],
-        ),
+        DEFAULT_BOT_PROFILES
+          .filter((profile) => activeEmpires.has(profile.empireId))
+          .map((profile) => [
+            profile.empireId,
+            Math.max(
+              fixtureState.botAutomation.nextDecisionAtByEmpire[profile.empireId] ?? 0,
+              stableBotDecisionAt,
+            ),
+          ]),
       ),
     },
   };
+  return canonicalizeFixtureState(fixture);
 }
 
 export function prepareE2eState(state: GameState): GameState {
@@ -251,11 +313,5 @@ export function updateE2eRuntimeDiagnostics(state: GameState): void {
   document.documentElement.dataset.sendFleetCommandCount = String(
     state.commandLog.filter((entry) => entry.command.type === 'SEND_FLEET').length,
   );
-  const botGate = getBotGateResult();
-  document.documentElement.dataset.e2eBotGateScoutReason = botGate.scoutReasonCode;
-  document.documentElement.dataset.e2eBotGateAttackReason = botGate.attackReasonCode;
-  document.documentElement.dataset.e2eBotGateObservationLevel = String(botGate.observationLevel);
-  document.documentElement.dataset.e2eBotGateSchemaVersion = String(botGate.schemaVersion);
-  document.documentElement.dataset.e2eBotGateDeterministic = 'true';
-  document.documentElement.dataset.e2eBotGateChecksum = botGate.finalChecksum;
+  scheduleBotGateDiagnostics();
 }
