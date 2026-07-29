@@ -1,7 +1,12 @@
 import { executeCommand } from '../simulation/reducer';
 import type { GameCommand, GameState } from '../simulation/types';
 
-export type ApplicationTransitionSource = 'command' | 'planet-compatibility' | 'bot' | 'restore';
+export type ApplicationTransitionSource =
+  | 'command'
+  | 'planet-compatibility'
+  | 'bot'
+  | 'clock'
+  | 'restore';
 
 export interface ApplicationSnapshot {
   readonly state: GameState;
