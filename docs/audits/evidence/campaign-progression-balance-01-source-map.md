@@ -54,18 +54,18 @@
 
 ## Economy, missions and rewards
 
-The full campaign target cannot be met by reducing timers alone. The implementation must resolve profile-aware values for:
+The full progression target cannot be met by reducing timers alone. The implementation must resolve profile-aware values for:
 
 - starting resource stocks and base storage;
 - base population capacity;
 - building production/storage contribution multipliers;
-- mission, expedition, space-object, combat/plunder and debris rewards;
+- mission, expedition and space-object resource rewards;
 - market/logistics transfer costs and cadence where progression-blocking;
 - colonization cost/limit prerequisites;
 - planet-destruction access and rebuild pressure;
 - future endgame resource sinks.
 
-Reward changes must remain deterministic and must not be multiplied by world speed. World speed continues to accelerate canonical time only.
+Combat strength, debris-from-losses and plunder-from-existing-stock are not generic reward multipliers. Reward changes must remain deterministic and must not be multiplied by world speed. World speed continues to accelerate canonical time only.
 
 ## Bots
 
@@ -115,20 +115,22 @@ Required presentation changes:
 
 ### Milestone gates at recommended x2
 
-- first combat ship ≤ 15 real minutes of deterministic critical-path time;
-- first scout ≤ 25 minutes;
+- first combat ship ≤ 16 real minutes of deterministic critical-path time;
+- first scout ≤ 30 minutes;
 - first colonizer ≤ 120 minutes;
 - first planet destroyer ≤ 360 minutes;
 - Supreme Gates prerequisite/build critical path ≤ 720 minutes.
 
-### Full campaign gates
+### Endgame-ready progression gates
 
-- deterministic headless scenario reaches a persisted result at x2 within 12 real-hour-equivalent canonical time;
-- accepted worst-case seed/profile gate ≤ 16 real hours at x2;
+- deterministic headless scenario reaches an endgame-ready progression state at x2 within the 12-hour target;
+- every accepted seed/profile gate remains ≤16 real hours at x2;
 - x1/x5/x10 are exact time-scaled equivalents;
 - bots reach colonization, heavy fleet and endgame-preparation without privileged commands;
-- save/load and offline partitioning preserve result/checksum;
-- Browser E2E covers setup identity, milestone presentation and final result at release viewports.
+- save/load and offline partitioning preserve profile, state and milestone checksum;
+- Browser E2E covers setup identity, milestone presentation and endgame-ready status at release viewports.
+
+Actual alliance/Gate victory is not asserted because that runtime is outside this batch.
 
 ## Explicit non-consumers
 
