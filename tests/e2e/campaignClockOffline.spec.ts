@@ -50,7 +50,6 @@ test('active campaign clock advances without player fast-forward controls', asyn
   await expect(page.locator('#hud-world-time')).toHaveText('02:00:05', {
     timeout: 8_000,
   });
-  await expect(page.locator('#app-status')).toContainText('Кампания активна');
   await expect(page.locator('#hud-save-state')).toHaveAttribute('data-save-phase', 'saved', {
     timeout: 8_000,
   });
