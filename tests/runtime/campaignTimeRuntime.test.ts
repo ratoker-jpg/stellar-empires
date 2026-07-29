@@ -144,6 +144,22 @@ describe('campaign runtime checkpoints', () => {
     expect(second.runtimeMetadata.pendingCatchUp).toBeUndefined();
   });
 
+  it('keeps fractional-only offline progress without creating a return summary', () => {
+    const state = createRuntimeState(1);
+    const step = advanceCampaignRuntimeCheckpoint(
+      state,
+      createCampaignRuntimeMetadata(START),
+      timestampAfter(500),
+      'offline',
+      100,
+    );
+
+    expect(step.complete).toBe(true);
+    expect(step.state.clock.elapsedSeconds).toBe(0);
+    expect(step.runtimeMetadata.pendingCatchUp?.gameTimeFractionNumerator).toBe(500);
+    expect(step.runtimeMetadata.pendingReturnSummary).toBeUndefined();
+  });
+
   it('handles clock rollback without moving the processed cursor backwards', () => {
     const state = createRuntimeState();
     const metadata = createCampaignRuntimeMetadata(timestampAfter(10_000));
