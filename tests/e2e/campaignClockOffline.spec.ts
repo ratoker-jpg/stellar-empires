@@ -44,8 +44,13 @@ async function installCatchUpInterruption(page: Page): Promise<void> {
     offsetQuery,
   }) => {
     const originalPut = IDBObjectStore.prototype.put;
-    IDBObjectStore.prototype.put = function(value: unknown): IDBRequest<IDBValidKey> {
-      const request = Reflect.apply(originalPut, this, arguments) as IDBRequest<IDBValidKey>;
+    IDBObjectStore.prototype.put = function(
+      value: unknown,
+      ...optionalKey: [IDBValidKey?]
+    ): IDBRequest<IDBValidKey> {
+      const request = optionalKey.length === 0
+        ? originalPut.call(this, value)
+        : originalPut.call(this, value, optionalKey[0] as IDBValidKey);
       const envelope = value as {
         readonly slotId?: unknown;
         readonly runtimeMetadata?: {
