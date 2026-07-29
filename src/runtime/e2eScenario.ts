@@ -1,7 +1,9 @@
+import { DEFAULT_BOT_PROFILES } from '../simulation/bots/profiles';
 import { createStateChecksum } from '../simulation/checksum';
 import type { BattleReport } from '../simulation/combat/types';
 import type { FleetState } from '../simulation/fleets/types';
 import type { IntelObservation } from '../simulation/intelligence/types';
+import { executeCommand } from '../simulation/reducer';
 import type { GameState } from '../simulation/types';
 import {
   runOrdinaryMissionIntelligenceGate,
@@ -74,6 +76,19 @@ function requireScenarioPlanets(state: GameState) {
   return { origin, target };
 }
 
+function advanceFixtureState(state: GameState, targetElapsedSeconds: number): GameState {
+  const seconds = targetElapsedSeconds - state.clock.elapsedSeconds;
+  if (seconds <= 0) return state;
+  const advanced = executeCommand(state, { type: 'ADVANCE_TIME', seconds });
+  if (!advanced.ok) {
+    throw new Error(`E2E scenario time advance failed: ${advanced.code}`);
+  }
+  return {
+    ...advanced.value,
+    commandLog: state.commandLog,
+  };
+}
+
 function createSecondaryPlayerPlanet(state: GameState, origin: GameState['planets'][number]) {
   const existing = state.planets.find((planet) => planet.id === E2E_SECONDARY_PLANET_ID);
   if (existing !== undefined) return existing;
@@ -103,11 +118,12 @@ function createSecondaryPlayerPlanet(state: GameState, origin: GameState['planet
 }
 
 export function createE2eFixtureState(state: GameState): GameState {
-  const { origin, target } = requireScenarioPlanets(state);
   const fixtureElapsedSeconds = Math.max(
     state.clock.elapsedSeconds,
     E2E_SCOUT_COOLDOWN_CEILING_SECONDS,
   );
+  const fixtureState = advanceFixtureState(state, fixtureElapsedSeconds);
+  const { origin, target } = requireScenarioPlanets(fixtureState);
   const originWithFuel = {
     ...origin,
     economy: {
@@ -122,7 +138,7 @@ export function createE2eFixtureState(state: GameState): GameState {
       },
     },
   };
-  const secondaryPlayerPlanet = createSecondaryPlayerPlanet(state, originWithFuel);
+  const secondaryPlayerPlanet = createSecondaryPlayerPlanet(fixtureState, originWithFuel);
   const fleet: FleetState = {
     id: E2E_FLEET_ID,
     empireId: 'player',
@@ -181,7 +197,7 @@ export function createE2eFixtureState(state: GameState): GameState {
   };
   const report: BattleReport = {
     id: E2E_REPORT_ID,
-    seed: state.seed,
+    seed: fixtureState.seed,
     resolvedAt: fixtureElapsedSeconds,
     targetPlanetId: target.id,
     targetGalaxyPlanetId: target.galaxyPlanetId,
@@ -221,33 +237,35 @@ export function createE2eFixtureState(state: GameState): GameState {
     rewardMultiplierPermille: 1_000,
   };
   const stableBotDecisionAt = fixtureElapsedSeconds + E2E_BOT_IDLE_SECONDS;
-  const fleets = [...state.fleets];
+  const fleets = [...fixtureState.fleets];
   if (!fleets.some((entry) => entry.id === E2E_FLEET_ID)) fleets.push(fleet);
   if (!fleets.some((entry) => entry.id === E2E_INCOMING_FLEET_ID)) fleets.push(incomingFleet);
-  const planetsWithFuel = state.planets.map((planet) => planet.id === origin.id ? originWithFuel : planet);
+  const planetsWithFuel = fixtureState.planets.map(
+    (planet) => planet.id === origin.id ? originWithFuel : planet,
+  );
   const planets = planetsWithFuel.some((planet) => planet.id === E2E_SECONDARY_PLANET_ID)
     ? planetsWithFuel
     : [...planetsWithFuel, secondaryPlayerPlanet];
+  const activeEmpires = new Set(fixtureState.empires);
   return {
-    ...state,
-    clock: { ...state.clock, elapsedSeconds: fixtureElapsedSeconds },
+    ...fixtureState,
     planets,
     fleets,
-    intelligence: state.intelligence.map((entry) =>
+    intelligence: fixtureState.intelligence.map((entry) =>
       entry.empireId !== 'player' || entry.observations.some((item) => item.id === observation.id)
         ? entry
         : { ...entry, observations: [...entry.observations, observation] },
     ),
-    eventLog: state.eventLog.some((entry) =>
+    eventLog: fixtureState.eventLog.some((entry) =>
       entry.event.payload.type === 'BATTLE_REPORT' && entry.event.payload.report.id === E2E_REPORT_ID)
-      ? state.eventLog
+      ? fixtureState.eventLog
       : [
-          ...state.eventLog,
+          ...fixtureState.eventLog,
           {
             event: {
               id: 'event-e2e-report',
               executeAt: fixtureElapsedSeconds,
-              sequence: state.nextEventSequence + 10_000,
+              sequence: fixtureState.nextEventSequence + 10_000,
               payload: { type: 'BATTLE_REPORT', report },
             },
             executedAt: fixtureElapsedSeconds,
@@ -255,12 +273,15 @@ export function createE2eFixtureState(state: GameState): GameState {
         ],
     botAutomation: {
       nextDecisionAtByEmpire: Object.fromEntries(
-        Object.entries(state.botAutomation.nextDecisionAtByEmpire).map(
-          ([empireId, nextDecisionAt]) => [
-            empireId,
-            Math.max(nextDecisionAt, stableBotDecisionAt),
-          ],
-        ),
+        DEFAULT_BOT_PROFILES
+          .filter((profile) => activeEmpires.has(profile.empireId))
+          .map((profile) => [
+            profile.empireId,
+            Math.max(
+              fixtureState.botAutomation.nextDecisionAtByEmpire[profile.empireId] ?? 0,
+              stableBotDecisionAt,
+            ),
+          ]),
       ),
     },
   };
