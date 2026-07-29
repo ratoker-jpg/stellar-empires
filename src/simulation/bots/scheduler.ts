@@ -170,10 +170,10 @@ function runProfileDecision(
   return { state: working, audit, diagnostics };
 }
 
-function getNextDueProfile(
+function getScheduledProfiles(
   state: GameState,
   profiles: readonly BotProfile[],
-): DueProfile | undefined {
+): readonly DueProfile[] {
   const activeEmpires = new Set(state.empires);
   return profiles
     .filter((profile) => activeEmpires.has(profile.empireId))
@@ -183,12 +183,26 @@ function getNextDueProfile(
         state.botAutomation.nextDecisionAtByEmpire[profile.empireId] ??
         state.clock.elapsedSeconds,
     }))
-    .filter((entry) => entry.nextDecisionAt <= state.clock.elapsedSeconds)
     .sort(
       (left, right) =>
         left.nextDecisionAt - right.nextDecisionAt ||
         left.profile.empireId.localeCompare(right.profile.empireId),
-    )[0];
+    );
+}
+
+export function getNextBotDecisionAt(
+  state: GameState,
+  profiles: readonly BotProfile[] = DEFAULT_BOT_PROFILES,
+): number | undefined {
+  return getScheduledProfiles(state, profiles)[0]?.nextDecisionAt;
+}
+
+function getNextDueProfile(
+  state: GameState,
+  profiles: readonly BotProfile[],
+): DueProfile | undefined {
+  return getScheduledProfiles(state, profiles)
+    .find((entry) => entry.nextDecisionAt <= state.clock.elapsedSeconds);
 }
 
 function advanceProfileCursor(
