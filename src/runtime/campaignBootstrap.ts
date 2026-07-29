@@ -71,7 +71,9 @@ export async function bootstrapRestoredCampaign(
       state,
       runtimeMetadata,
       targetAtReal,
-      operationBudget: options.operationBudget,
+      ...(options.operationBudget === undefined
+        ? {}
+        : { operationBudget: options.operationBudget }),
       checkpoint: async (checkpointState, checkpointMetadata) => {
         await saveManager.snapshot(AUTOSAVE_SLOT_ID, AUTOSAVE_SNAPSHOT_SLOT_ID);
         await options.repository.put(createSaveEnvelope(
@@ -81,8 +83,12 @@ export async function bootstrapRestoredCampaign(
           checkpointMetadata,
         ));
       },
-      onProgress: options.onProgress,
-      yieldControl: options.yieldControl,
+      ...(options.onProgress === undefined
+        ? {}
+        : { onProgress: options.onProgress }),
+      ...(options.yieldControl === undefined
+        ? {}
+        : { yieldControl: options.yieldControl }),
     });
     state = result.state;
     runtimeMetadata = result.runtimeMetadata;
