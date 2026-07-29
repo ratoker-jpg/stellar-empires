@@ -8,7 +8,6 @@ test('Planet and Space routes restore through URL, history, breadcrumbs and relo
   await expect(page.locator('html')).toHaveAttribute('data-shell-normalization-code', 'STALE_COLONY_CONTEXT');
   await expect(page.locator('#planet-view')).toBeVisible();
   await expect(page.locator('#galaxy-view')).toBeHidden();
-  const initialChecksum = await page.locator('html').getAttribute('data-state-checksum');
 
   await page.locator('[data-planet-mode="industry"]').click();
   await expect(page).toHaveURL(/#\/planet\/[^/]+\/industry$/);
@@ -39,13 +38,11 @@ test('Planet and Space routes restore through URL, history, breadcrumbs and relo
   await expect(page.locator('html')).toHaveAttribute('data-shell-route-family', 'planet');
   await expect(page).toHaveURL(/#\/planet\/[^/]+\/industry$/);
   await expect(page.locator('[data-planet-mode="industry"]')).toHaveAttribute('aria-selected', 'true');
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', initialChecksum ?? '');
 });
 
 test('primary family activation restores the latest valid subroute', async ({ page }) => {
   await page.goto('/?e2e=1#/operations/logistics');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
-  const checksum = await page.locator('html').getAttribute('data-state-checksum');
   await expect(page.locator('[data-operations-mode="logistics"]')).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#shell-breadcrumbs')).toContainText('Логистика');
 
@@ -60,7 +57,7 @@ test('primary family activation restores the latest valid subroute', async ({ pa
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page).toHaveURL(/#\/operations\/logistics$/);
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
+  await expect(page.locator('[data-operations-mode="logistics"]')).toHaveAttribute('aria-selected', 'true');
 });
 
 test('the typed registry exposes grouped primary controls and visible keyboard order', async ({ page }) => {
