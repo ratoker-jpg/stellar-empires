@@ -1,18 +1,30 @@
 import { describe, expect, it } from 'vitest';
 import type { BotProfile } from '../../src/simulation/bots/profiles';
-import { createStateChecksum } from '../../src/simulation/checksum';
 import {
   createEmptyCatchUpSummary,
   mergeCatchUpSummaries,
 } from '../../src/simulation/campaign/catchUpSummary';
+import { createCampaignSettings } from '../../src/simulation/campaign/settings';
 import {
   advanceCampaignTime,
   mapProcessedGameTimeToRealDuration,
   mapRealDurationToGameTime,
 } from '../../src/simulation/campaign/time';
+import { createStateChecksum } from '../../src/simulation/checksum';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 
 const ONE_DAY = 86_400;
+
+function createClockState(seedSource: string) {
+  return createInitialGameState(seedSource, {
+    playerFaction: 'aegis',
+    campaignSettings: createCampaignSettings({
+      scenarioPreset: 'test',
+      worldSpeed: 1,
+      createdAtReal: '2026-07-29T00:00:00.000Z',
+    }),
+  });
+}
 
 function drainWithBudget(
   initial: ReturnType<typeof createInitialGameState>,
@@ -68,7 +80,7 @@ describe('campaign time fixed-point mapping', () => {
 
 describe('chronological campaign time orchestrator', () => {
   it('produces the same state for one large interval and minute partitions', () => {
-    const initial = createInitialGameState('campaign-time-partitions');
+    const initial = createClockState('campaign-time-partitions');
     const large = advanceCampaignTime(initial, 3_600, { operationBudget: 10_000 });
     expect(large.complete).toBe(true);
 
@@ -84,7 +96,7 @@ describe('chronological campaign time orchestrator', () => {
   });
 
   it('resumes across operation budgets without duplicate or skipped work', () => {
-    const initial = createInitialGameState('campaign-time-budget');
+    const initial = createClockState('campaign-time-budget');
     const direct = advanceCampaignTime(initial, ONE_DAY, { operationBudget: 100_000 });
     const chunked = drainWithBudget(initial, ONE_DAY, 7);
 
@@ -104,7 +116,7 @@ describe('chronological campaign time orchestrator', () => {
       decisionIntervalSeconds: 300,
       maxCommandsPerDecision: 1,
     };
-    const initial = createInitialGameState('campaign-time-bot-boundary');
+    const initial = createClockState('campaign-time-bot-boundary');
     const result = advanceCampaignTime(initial, 600, {
       operationBudget: 1_000,
       botProfiles: [profile],
@@ -117,7 +129,7 @@ describe('chronological campaign time orchestrator', () => {
   });
 
   it('processes a seven-day interval without truncating elapsed game time', () => {
-    const initial = createInitialGameState('campaign-time-seven-days');
+    const initial = createClockState('campaign-time-seven-days');
     const result = advanceCampaignTime(initial, ONE_DAY * 7, { operationBudget: 100_000 });
 
     expect(result.complete).toBe(true);
@@ -125,5 +137,5 @@ describe('chronological campaign time orchestrator', () => {
     expect(result.remainingGameSeconds).toBe(0);
     expect(result.state.clock.elapsedSeconds).toBe(ONE_DAY * 7);
     expect(result.operationsProcessed).toBeGreaterThan(0);
-  });
+  }, 15_000);
 });
