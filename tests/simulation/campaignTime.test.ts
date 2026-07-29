@@ -2,11 +2,14 @@ import { describe, expect, it } from 'vitest';
 import type { BotProfile } from '../../src/simulation/bots/profiles';
 import { createStateChecksum } from '../../src/simulation/checksum';
 import {
+  createEmptyCatchUpSummary,
+  mergeCatchUpSummaries,
+} from '../../src/simulation/campaign/catchUpSummary';
+import {
   advanceCampaignTime,
   mapProcessedGameTimeToRealDuration,
   mapRealDurationToGameTime,
 } from '../../src/simulation/campaign/time';
-import { mergeCatchUpSummaries } from '../../src/simulation/campaign/catchUpSummary';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 
 const ONE_DAY = 86_400;
@@ -18,7 +21,7 @@ function drainWithBudget(
 ) {
   let state = initial;
   let remaining = seconds;
-  let summary = advanceCampaignTime(initial, 0, { operationBudget: 10_000 }).summaryDelta;
+  let summary = createEmptyCatchUpSummary();
   let operations = 0;
   let runs = 0;
   while (runs < 20_000) {
