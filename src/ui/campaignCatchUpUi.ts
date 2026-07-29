@@ -43,6 +43,15 @@ function createDialog(id: string, className: string): HTMLDialogElement {
   return dialog;
 }
 
+function bindExclusiveKeyboardActivation(button: HTMLButtonElement): void {
+  button.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    button.click();
+  });
+}
+
 function interruptE2eCatchUpAfterDurableProgress(progress: CampaignCatchUpProgress): void {
   if (import.meta.env.VITE_E2E !== '1' || progress.complete) return;
   if (new URLSearchParams(window.location.search).get(E2E_INTERRUPT_QUERY) !== '1') return;
@@ -72,11 +81,16 @@ function showCatchUpFailure(message: string): void {
   retry.type = 'button';
   retry.className = 'se-button';
   retry.textContent = 'Повторить восстановление';
-  retry.addEventListener('click', () => window.location.reload());
+  retry.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    window.location.reload();
+  });
+  bindExclusiveKeyboardActivation(retry);
   body.append(eyebrow, title, description, retry);
   dialog.replaceChildren(body);
   if (!dialog.open) dialog.showModal();
-  retry.focus();
+  retry.focus({ preventScroll: true });
 }
 
 if (typeof window !== 'undefined') {
@@ -181,7 +195,9 @@ export function showCampaignReturnSummary(
   button.type = 'button';
   button.className = 'se-button';
   button.textContent = 'Продолжить кампанию';
-  button.addEventListener('click', () => {
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
     button.disabled = true;
     void acknowledge()
       .then(() => {
@@ -191,10 +207,12 @@ export function showCampaignReturnSummary(
       .catch(() => {
         button.disabled = false;
         note.textContent = 'Не удалось подтвердить сводку. Повторите сохранение.';
-        button.focus();
+        button.focus({ preventScroll: true });
       });
   });
+  bindExclusiveKeyboardActivation(button);
   body.append(eyebrow, title, description, metrics, note, button);
   dialog.replaceChildren(body);
   if (!dialog.open) dialog.showModal();
+  button.focus({ preventScroll: true });
 }
