@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** `LOCAL-CAMPAIGN-TIME-PACING-01` completed; no implementation PR is active  
+**Status:** Audit PR #133 `CAMPAIGN-PROGRESSION-BALANCE-01` active; no implementation authorized yet  
 **Updated:** 2026-07-29  
 **Last merged PR:** #132 `CAMPAIGN-CLOCK-OFFLINE-GATE` · `df56566ce6d311ecef81103dddb924b5da0148c1`  
 **Runtime baseline:** schema v15 / save format v3 / shared active-offline campaign clock  
-**Last completed batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
-**Next authorized work:** Audit `CAMPAIGN-PROGRESSION-BALANCE-01`
+**Active branch:** `agent/campaign-progression-balance-audit`  
+**Proposed next sequence after Audit merge:** #134–#135
 
 ## Repository
 
@@ -19,16 +19,18 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/completed/local-campaign-time-pacing-01.md`
-6. `docs/changes/pr131-campaign-settings-persistence.md`
-7. `docs/changes/pr132-campaign-clock-offline-gate.md`
-8. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
-9. `docs/23-bot-simulation-time-contract.md`
-10. this document
-11. `docs/project-status.json`
-12. `docs/roadmap-pr-index.json`
-13. `docs/27-playable-game-roadmap-v5.md`
-14. latest merged PRs and actual `main`
+5. `docs/audits/contracts/campaign-progression-balance-01-profile.md`
+6. `docs/audits/contracts/campaign-progression-balance-01-prs.md`
+7. `docs/audits/evidence/campaign-progression-balance-01-baseline.md`
+8. `docs/audits/evidence/campaign-progression-balance-01-source-map.md`
+9. `docs/audits/evidence/campaign-progression-balance-01-graphify.md`
+10. `docs/audits/completed/local-campaign-time-pacing-01.md`
+11. `docs/changes/pr132-campaign-clock-offline-gate.md`
+12. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
+13. this document
+14. `docs/project-status.json`
+15. `docs/roadmap-pr-index.json`
+16. latest merged PRs and actual `main`
 
 ## Delivered through merged `main`
 
@@ -43,51 +45,50 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 - #131: immutable campaign settings and cursor-safe persistence foundation;
 - #132: shared chronological active/offline clock, resumable catch-up and durable return summary.
 
-## Completed campaign-time foundation
+## Audit #133 verified baseline
 
-Merged `main` now provides:
-
-- immutable faction, topology and x1/x2/x5/x10 campaign settings;
-- schema-v15 deterministic state and save-format-v3 integrity;
-- one DOM-independent chronological orchestrator for active and offline time;
-- scheduled-event, logistics, world-event and bot-decision boundaries;
-- integer fixed-point speed mapping with persistent fractional carry;
-- automatic open-session campaign progression;
-- bounded resumable offline catch-up with processed-cursor checkpoints;
-- cooperative progress and retry presentation;
-- redacted durable return summary until successful acknowledgement;
-- checksum-safe JSON save round trips;
-- keyboard-safe modal acknowledgement isolated from background game controls;
-- no normal player fast-forward controls.
-
-## Final #132 validation
+Source-importing CI measurement proves at recommended x2:
 
 ```text
-head 67cca4da2c401d2d9f5573e8c463dbbb570204d5
-CI 30488370854 — passed
-Browser E2E 30488370956 — passed, 24/24 Chromium scenarios
-Graphify 30488370908 — passed
-review — no unresolved actionable P0/P1/P2 thread
-squash merge df56566ce6d311ecef81103dddb924b5da0148c1
+first combat ship       0.44 h
+first scout             0.89 h
+first colonizer         4.22 h before resource waiting
+first planet destroyer 22.42 h before resource waiting
+Supreme Gates path    223.36 h before resource waiting
 ```
 
-## Known limitations
+Raw all-level catalogs require 731.30 h for buildings and 118.94 h for research at x2. Existing schema-v15 saves/replays do not record a progression-profile identity, so global unversioned tuning is rejected.
 
-- progression is not yet measured or compressed for the targeted one-active-day campaign;
-- multi-colony economy and logistics coherence require a later audit;
-- deeper PvE/meta systems and complete bot parity remain incomplete;
-- alliances, Solar War, Obelisks, Gates and final victory/defeat are not implemented;
-- full phone/mobile layout, onboarding and release hardening remain incomplete.
-
-## Next authorized route
+## Proposed contract in #133
 
 ```text
-fresh main after #132
-→ create Audit PR CAMPAIGN-PROGRESSION-BALANCE-01
-→ measure complete campaign duration with the delivered fake-clock/headless foundation
-→ decide exact level caps, costs, durations, unlock pacing and rewards
-→ merge the audit contract
-→ only then begin its authorized implementation batch
+schema v16
+CampaignSettings.progressionProfile = legacy-v1 | compressed-v1
+legacy saves → legacy-v1
+new campaigns → compressed-v1
+save format v3 retained
+complexity heavy
+exactly 2 implementation PRs
 ```
 
-No progression value may change before the new audit is accepted. The completed batch archive is `docs/audits/completed/local-campaign-time-pacing-01.md`.
+Accepted only after #133 merges:
+
+```text
+#134 PROGRESSION-PROFILE-FOUNDATION
+→ #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE
+```
+
+The compressed profile targets an endgame-ready state within 12 real hours at recommended x2, with 16 hours as the accepted hard maximum. Actual alliances, Solar War, functional Gates and victory/defeat remain outside this batch.
+
+## Current rules
+
+- PR #133 may change only audit evidence, measurement tests and canonical planning/status documents;
+- do not alter gameplay values in the Audit PR;
+- do not open #134 before #133 is green, reviewed and merged;
+- preserve schema-v15/save-v3/runtime behavior on `main` until implementation begins;
+- after #133 merge, use exact accepted profile constants and the two-PR sequence only;
+- any numeric divergence must be documented with a failing deterministic seed and full matrix rerun.
+
+## Recovery
+
+If the Audit chat/session is interrupted, resume PR #133 from its current head, re-check CI, Browser E2E, Graphify and review threads, then finish/merge the audit. Do not skip directly to balance implementation.
