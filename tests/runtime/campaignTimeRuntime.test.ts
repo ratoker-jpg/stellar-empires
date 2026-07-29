@@ -27,6 +27,22 @@ function createRuntimeState(speed: 1 | 2 | 5 | 10 = 1) {
   });
 }
 
+function postponeBotDecisions(
+  state: ReturnType<typeof createRuntimeState>,
+  nextDecisionAt: number,
+): ReturnType<typeof createRuntimeState> {
+  return {
+    ...state,
+    botAutomation: {
+      nextDecisionAtByEmpire: Object.fromEntries(
+        Object.keys(state.botAutomation.nextDecisionAtByEmpire).map(
+          (empireId) => [empireId, nextDecisionAt],
+        ),
+      ),
+    },
+  };
+}
+
 describe('campaign runtime checkpoints', () => {
   it('records the target before work and never stamps unprocessed now as the cursor', () => {
     const state = createRuntimeState();
@@ -145,7 +161,7 @@ describe('campaign runtime checkpoints', () => {
   });
 
   it('keeps fractional-only offline progress without creating a return summary', () => {
-    const state = createRuntimeState(1);
+    const state = postponeBotDecisions(createRuntimeState(1), 3_600);
     const step = advanceCampaignRuntimeCheckpoint(
       state,
       createCampaignRuntimeMetadata(START),
