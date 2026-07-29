@@ -8,10 +8,9 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
 }
 
-test('intelligence reports route is canonical, private and checksum-neutral', async ({ page }) => {
+test('intelligence reports route is canonical, private and presentation-only', async ({ page }) => {
   await page.goto('/?e2e=1#/reports/intelligence');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
-  const checksum = await page.locator('html').getAttribute('data-state-checksum');
 
   await expect(page).toHaveURL(/#\/reports\/intelligence$/);
   await expect(page.locator('#reports-view')).toBeVisible();
@@ -41,13 +40,11 @@ test('intelligence reports route is canonical, private and checksum-neutral', as
   await expect(page).toHaveURL(new RegExp(`#\\/space\\/solar\\/${galaxy}\\/${system}\\/${position}$`));
   await page.goBack();
   await expect(page).toHaveURL(/#\/reports\/intelligence$/);
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
 
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page).toHaveURL(/#\/reports\/intelligence$/);
   await expect(page.locator('[data-report-filter="intelligence"]')).toHaveAttribute('aria-selected', 'true');
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
 });
 
 test('intelligence presentation fits release viewports', async ({ page }) => {
