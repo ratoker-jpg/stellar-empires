@@ -2,6 +2,8 @@ import { expect, test, type Page } from '@playwright/test';
 
 const APP_READY_TIMEOUT = 45_000;
 const CLOCK_OFFSET_KEY = 'stellar-e2e-clock-offset-milliseconds';
+const CATCH_UP_INTERRUPTED_KEY = 'stellar-e2e-catch-up-interrupted';
+const CATCH_UP_PROGRESS_OBSERVED_KEY = 'stellar-e2e-catch-up-progress-observed';
 
 async function waitForApp(page: Page): Promise<void> {
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true', {
@@ -18,6 +20,35 @@ async function installPersistentClockOffset(page: Page): Promise<void> {
   }, CLOCK_OFFSET_KEY);
 }
 
+async function installCatchUpInterruption(page: Page): Promise<void> {
+  await page.addInitScript(({ interruptedKey, progressObservedKey }) => {
+    const inspect = (): void => {
+      const dialog = document.querySelector<HTMLDialogElement>('#campaign-catch-up-dialog');
+      if (dialog === null) return;
+      const progress = dialog.querySelector<HTMLElement>('[role="progressbar"]');
+      if (progress === null || dialog.dataset.progressUpdates === undefined) return;
+      window.localStorage.setItem(progressObservedKey, 'true');
+      if (
+        dialog.dataset.complete === 'false' &&
+        window.localStorage.getItem(interruptedKey) !== 'true'
+      ) {
+        window.localStorage.setItem(interruptedKey, 'true');
+        window.setTimeout(() => window.location.reload(), 0);
+      }
+    };
+    new MutationObserver(inspect).observe(document, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-progress-updates', 'data-complete'],
+    });
+    window.addEventListener('DOMContentLoaded', inspect, { once: true });
+  }, {
+    interruptedKey: CATCH_UP_INTERRUPTED_KEY,
+    progressObservedKey: CATCH_UP_PROGRESS_OBSERVED_KEY,
+  });
+}
+
 async function setClockOffset(page: Page, milliseconds: number): Promise<void> {
   await page.evaluate(({ storageKey, offset }) => {
     window.localStorage.setItem(storageKey, String(offset));
@@ -28,12 +59,6 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   await expect.poll(() => page.evaluate(
     () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
   )).toBe(true);
-}
-
-async function observeCatchUpProgress(page: Page): Promise<void> {
-  const dialog = page.locator('#campaign-catch-up-dialog');
-  await expect(dialog).toBeVisible({ timeout: 10_000 });
-  await expect(dialog.locator('[role="progressbar"]')).toBeVisible();
 }
 
 async function acknowledgeSummaryByKeyboard(page: Page): Promise<void> {
@@ -67,6 +92,7 @@ test('seven-day catch-up resumes after browser interruption with reduced motion'
   await page.setViewportSize({ width: 1366, height: 768 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await installPersistentClockOffset(page);
+  await installCatchUpInterruption(page);
   await page.goto('/?e2e=1#/planet/overview');
   await waitForApp(page);
   await expect(page.locator('#hud-save-state')).toHaveAttribute('data-save-phase', 'saved', {
@@ -75,10 +101,16 @@ test('seven-day catch-up resumes after browser interruption with reduced motion'
 
   await setClockOffset(page, 604_800_000);
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await observeCatchUpProgress(page);
-  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect.poll(() => page.evaluate(
+    (key) => window.localStorage.getItem(key),
+    CATCH_UP_INTERRUPTED_KEY,
+  ), { timeout: 30_000 }).toBe('true');
   await waitForApp(page);
 
+  await expect.poll(() => page.evaluate(
+    (key) => window.localStorage.getItem(key),
+    CATCH_UP_PROGRESS_OBSERVED_KEY,
+  )).toBe('true');
   await expect(page.locator('#hud-world-time')).toHaveText('7д 02:00:00');
   await expect(page.locator('#campaign-return-summary')).toBeVisible();
   await expect(page.locator('#campaign-return-summary')).toContainText(
