@@ -43,8 +43,11 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
 
 async function acknowledgeSummaryByKeyboard(page: Page): Promise<void> {
   const continueButton = page.getByRole('button', { name: 'Продолжить кампанию' });
+  const routeBeforeAcknowledgement = page.url();
   await continueButton.focus();
+  await expect(continueButton).toBeFocused();
   await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(routeBeforeAcknowledgement);
   await expect(page.locator('#campaign-return-summary')).toHaveCount(0);
 }
 
