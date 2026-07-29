@@ -274,7 +274,6 @@ export async function runCampaignCatchUp(
   let runtimeMetadata = options.runtimeMetadata;
   let checkpoints = 0;
   let operationsProcessed = 0;
-  let finalDiagnostic: CampaignClockDiagnostic = 'ok';
   const finalTargetMilliseconds = parseCanonicalTimestamp(
     options.targetAtReal,
     'Campaign target time',
@@ -283,7 +282,7 @@ export async function runCampaignCatchUp(
 
   const prepared = preparePendingCatchUp(runtimeMetadata, options.targetAtReal);
   runtimeMetadata = prepared.runtimeMetadata;
-  finalDiagnostic = prepared.diagnostic;
+  let finalDiagnostic: CampaignClockDiagnostic = prepared.diagnostic;
   await options.checkpoint(state, runtimeMetadata);
   checkpoints += 1;
 
