@@ -34,6 +34,16 @@ export interface CampaignBootstrapResult {
   readonly operationsProcessed: number;
 }
 
+export class CampaignBootstrapError extends Error {
+  readonly cause: unknown;
+
+  constructor(cause: unknown) {
+    super('CAMPAIGN_CATCH_UP_FAILED');
+    this.name = 'CampaignBootstrapError';
+    this.cause = cause;
+  }
+}
+
 const RESAMPLE_TOLERANCE_MILLISECONDS = 250;
 
 function canonicalTimestamp(milliseconds: number): string {
@@ -51,7 +61,7 @@ export function shouldShowCampaignCatchUp(
     Number.isFinite(cursorMilliseconds) && nowMilliseconds - cursorMilliseconds >= 1_000;
 }
 
-export async function bootstrapRestoredCampaign(
+async function executeBootstrap(
   options: CampaignBootstrapOptions,
 ): Promise<CampaignBootstrapResult> {
   const realTimeSource = options.realTimeSource ?? { nowMs: () => Date.now() };
@@ -107,4 +117,15 @@ export async function bootstrapRestoredCampaign(
     await (options.yieldControl ?? (() => Promise.resolve()))();
   }
   throw new Error('CAMPAIGN_BOOTSTRAP_RESAMPLE_LIMIT');
+}
+
+export async function bootstrapRestoredCampaign(
+  options: CampaignBootstrapOptions,
+): Promise<CampaignBootstrapResult> {
+  try {
+    return await executeBootstrap(options);
+  } catch (error: unknown) {
+    if (error instanceof CampaignBootstrapError) throw error;
+    throw new CampaignBootstrapError(error);
+  }
 }
