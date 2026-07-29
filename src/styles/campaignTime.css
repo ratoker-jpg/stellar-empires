@@ -1,3 +1,7 @@
+.planet-time-controls {
+  display: none !important;
+}
+
 .campaign-time-dialog {
   width: min(680px, calc(100vw - 28px));
   padding: 0;
