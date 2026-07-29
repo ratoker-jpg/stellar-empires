@@ -1,49 +1,115 @@
-# Current implementation batch audit
+# Current implementation batch audit — CAMPAIGN-PROGRESSION-BALANCE-01
 
-**Status:** no active implementation batch  
+**Status:** proposed; accepted only when Audit PR #133 merges  
 **Updated:** 2026-07-29  
-**Last completed batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
-**Archive:** `docs/audits/completed/local-campaign-time-pacing-01.md`  
-**Final implementation:** PR #132 · `df56566ce6d311ecef81103dddb924b5da0148c1`
+**Roadmap milestone:** M4d — Campaign progression balance  
+**Baseline:** `main` after merged PR #132 and exact-SHA synchronization  
+**Complexity:** heavy  
+**Authorized implementation count after acceptance:** exactly 2 PRs  
+**Expected implementation PRs:** #134–#135  
+**State target:** schema v16  
+**Save format:** v3 retained
 
-## Current authorization
+## Audit question
 
-No implementation work is currently authorized.
+What exact deterministic progression profile, economy envelope and bot/player milestone gate are required to move the current local campaign from multi-day/MMO waiting curves to an endgame-ready state within one standard active day, while preserving existing save/replay semantics?
 
-The only permitted next repository batch action is to create a dedicated Audit PR for:
+## Verified baseline
+
+Current source-importing measurement proves:
+
+- buildings: 24 definitions, 731.30 real hours at x2 to max the raw catalog;
+- research: 22 definitions, 118.94 real hours at x2 to max the raw catalog;
+- first combat ship critical path: 0.44 h at x2;
+- first scout: 0.89 h;
+- first colonizer: 4.22 h before resource waiting;
+- first planet destroyer: 22.42 h before resource waiting;
+- Supreme Gates prerequisite/build path: 223.36 h before resource waiting;
+- existing saves/replays have no progression-profile identity.
+
+Evidence:
+
+- `docs/audits/evidence/campaign-progression-balance-01-baseline.md`;
+- `docs/audits/evidence/campaign-progression-balance-01-source-map.md`;
+- `docs/audits/evidence/campaign-progression-balance-01-graphify.md`;
+- `tests/audit/campaignProgressionBaseline.test.ts`;
+- `tests/audit/campaignProgressionCandidate.test.ts`.
+
+## Accepted architecture upon merge
+
+### Immutable dual profile
+
+Schema v16 adds:
 
 ```text
-CAMPAIGN-PROGRESSION-BALANCE-01
+progressionProfile: legacy-v1 | compressed-v1
 ```
 
-That audit must replace this sentinel with a verified implementation contract only after it:
+- old campaigns migrate to `legacy-v1`;
+- new normal campaigns use `compressed-v1`;
+- profile is immutable, checksummed and explicit in replay inputs;
+- save format v3 remains valid;
+- no app-version inference or runtime switching.
 
-- reconciles fresh `main` and merged PR #132;
-- measures complete campaign duration using the delivered active/offline clock and fake-clock/headless foundation;
-- identifies exact progression consumers across player, bots, UI, persistence and tests;
-- decides complexity and authorized implementation count;
-- records exact level caps, costs, durations, unlock pacing, queue compression and rewards;
-- passes repository, Browser E2E, Graphify and automated review gates.
+### Compressed profile
 
-## Completed foundation available to the next audit
+The exact constants, caps, requirement rule, economy values and milestone envelopes are authoritative in:
 
-- schema-v15 immutable campaign settings;
-- save-format-v3 cursor, continuation and pending-summary integrity;
-- one chronological active/offline campaign-time orchestrator;
-- fixed-point x1/x2/x5/x10 speed mapping with fractional carry;
-- bounded resumable offline catch-up and processed-cursor checkpoints;
-- active browser clock;
-- durable redacted return summary until successful acknowledgement;
-- deterministic one-day/seven-day, interruption, reduced-motion, keyboard and performance gates.
+`docs/audits/contracts/campaign-progression-balance-01-profile.md`
 
-## Prohibited before the next audit merges
+### Implementation sequence
 
-Do not change:
+The exact two-PR sequence is authoritative in:
 
-- building, research, production or fleet durations;
-- level caps, costs, unlock requirements or rewards;
-- world-speed presets or recommended speed;
-- planet-destroyer or endgame pacing;
-- general economy/logistics balance.
+`docs/audits/contracts/campaign-progression-balance-01-prs.md`
 
-The archived accepted contract and completion evidence remain historical authority for the finished batch; this file must not be interpreted as an accepted progression audit.
+## Authorized implementation after Audit merge
+
+```text
+#134 PROGRESSION-PROFILE-FOUNDATION
+→ #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE
+```
+
+No third implementation PR is pre-authorized. Any scope that cannot fit this heavy two-PR batch requires a new audit or an explicit re-audit before implementation.
+
+## Critical decisions
+
+1. **VERIFIED:** world speed alone cannot meet the product target.
+2. **VERIFIED:** global unversioned tuning would alter existing deterministic save/replay semantics.
+3. **ACCEPTED ON MERGE:** schema v16 dual-profile identity is required.
+4. **ACCEPTED ON MERGE:** new campaigns use `compressed-v1`; legacy saves remain `legacy-v1`.
+5. **ACCEPTED ON MERGE:** recommended x2 endgame-ready progression target is 12 real hours, hard maximum 16.
+6. **ACCEPTED ON MERGE:** actual victory is outside this batch because alliances/Solar War/Gates runtime is not implemented.
+7. **ACCEPTED ON MERGE:** bots receive phase-aware priorities only and retain ordinary commands/rules.
+8. **ACCEPTED ON MERGE:** faction relative tuning and x1/x2/x5/x10 deterministic time equivalence remain unchanged.
+
+## Explicit exclusions
+
+This batch does not authorize:
+
+- alliance creation or diplomacy;
+- Solar War;
+- functional Obelisk/Gates endgame;
+- crystals or final victory/defeat;
+- combat-strength or destruction-probability rebalance;
+- server authority or multiplayer;
+- runtime world-speed/profile switching.
+
+## Required closure evidence
+
+PR #135 cannot close the batch without:
+
+- schema v16 migration and legacy equivalence;
+- three-faction profile parity;
+- milestone and bot-phase gates;
+- accepted deterministic seed matrix;
+- x2 12-hour target and 16-hour hard maximum;
+- x1/x2/x5/x10 exact scaling equivalence;
+- save/load/offline partition equivalence;
+- release-viewport Browser E2E;
+- CI, Graphify and automated review green;
+- archived completed audit and exact merge SHAs.
+
+## Current action
+
+Until PR #133 merges, no balance implementation is authorized. The Audit PR may change only audit evidence, tests that measure current/proposed values and canonical planning/status documents.
