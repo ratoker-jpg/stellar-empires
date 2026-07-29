@@ -504,7 +504,7 @@ async function bootstrap(): Promise<void> {
     realTimeSource,
     applyCheckpoint: (checkpoint, saveRequested) => {
       runtimeMetadata = checkpoint.runtimeMetadata;
-      autosave?.setRuntimeMetadata(runtimeMetadata);
+      autosave?.stage(checkpoint.state, runtimeMetadata);
       if (checkpoint.state !== application.getState()) {
         application.applyState(checkpoint.state, 'clock', '');
       }
