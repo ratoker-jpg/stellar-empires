@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const APP_READY_TIMEOUT = 45_000;
-const CLOCK_OFFSET_KEY = 'stellar-e2e-clock-offset-milliseconds';
+const CLOCK_OFFSET_QUERY = 'e2eClockOffsetMilliseconds';
 const CATCH_UP_INTERRUPTED_KEY = 'stellar-e2e-catch-up-interrupted';
 const CATCH_UP_PROGRESS_OBSERVED_KEY = 'stellar-e2e-catch-up-progress-observed';
 
@@ -11,21 +11,28 @@ async function waitForApp(page: Page): Promise<void> {
   });
 }
 
-async function installPersistentClockOffset(page: Page): Promise<void> {
-  await page.addInitScript((storageKey) => {
-    const applyOffset = (): boolean => {
-      const offset = window.localStorage.getItem(storageKey);
-      const root = document.documentElement;
-      if (offset === null || root === null) return false;
-      root.dataset.e2eClockOffsetMilliseconds = offset;
-      return true;
-    };
-    if (applyOffset()) return;
-    const observer = new MutationObserver(() => {
-      if (applyOffset()) observer.disconnect();
+async function installClockOffsetInjection(page: Page): Promise<void> {
+  await page.route('**/*', async (route) => {
+    const request = route.request();
+    if (request.resourceType() !== 'document') {
+      await route.continue();
+      return;
+    }
+    const offset = new URL(request.url()).searchParams.get(CLOCK_OFFSET_QUERY);
+    if (offset === null) {
+      await route.continue();
+      return;
+    }
+    const response = await route.fetch();
+    const body = await response.text();
+    await route.fulfill({
+      response,
+      body: body.replace(
+        '<html',
+        `<html data-e2e-clock-offset-milliseconds="${offset}"`,
+      ),
     });
-    observer.observe(document, { childList: true });
-  }, CLOCK_OFFSET_KEY);
+  });
 }
 
 async function installCatchUpInterruption(page: Page): Promise<void> {
@@ -55,12 +62,6 @@ async function installCatchUpInterruption(page: Page): Promise<void> {
     interruptedKey: CATCH_UP_INTERRUPTED_KEY,
     progressObservedKey: CATCH_UP_PROGRESS_OBSERVED_KEY,
   });
-}
-
-async function setClockOffset(page: Page, milliseconds: number): Promise<void> {
-  await page.evaluate(({ storageKey, offset }) => {
-    window.localStorage.setItem(storageKey, String(offset));
-  }, { storageKey: CLOCK_OFFSET_KEY, offset: milliseconds });
 }
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
@@ -99,7 +100,7 @@ test('seven-day catch-up resumes after browser interruption with reduced motion'
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1366, height: 768 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await installPersistentClockOffset(page);
+  await installClockOffsetInjection(page);
   await installCatchUpInterruption(page);
   await page.goto('/?e2e=1#/planet/overview');
   await waitForApp(page);
@@ -107,8 +108,10 @@ test('seven-day catch-up resumes after browser interruption with reduced motion'
     timeout: 8_000,
   });
 
-  await setClockOffset(page, 604_800_000);
-  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.goto(
+    `/?e2e=1&${CLOCK_OFFSET_QUERY}=604800000#/planet/overview`,
+    { waitUntil: 'domcontentloaded' },
+  );
   await expect.poll(() => page.evaluate(
     (key) => window.localStorage.getItem(key),
     CATCH_UP_INTERRUPTED_KEY,
@@ -140,16 +143,18 @@ test('seven-day catch-up resumes after browser interruption with reduced motion'
 test('one-day catch-up completes at the large release viewport', async ({ page }) => {
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await installPersistentClockOffset(page);
+  await installClockOffsetInjection(page);
   await page.goto('/?e2e=1#/planet/overview');
   await waitForApp(page);
   await expect(page.locator('#hud-save-state')).toHaveAttribute('data-save-phase', 'saved', {
     timeout: 8_000,
   });
 
-  await setClockOffset(page, 86_400_000);
   const startedAt = Date.now();
-  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.goto(
+    `/?e2e=1&${CLOCK_OFFSET_QUERY}=86400000#/planet/overview`,
+    { waitUntil: 'domcontentloaded' },
+  );
   await waitForApp(page);
   expect(Date.now() - startedAt).toBeLessThan(35_000);
   await expect(page.locator('#hud-world-time')).toHaveText('1д 02:00:00');
