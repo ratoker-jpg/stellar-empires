@@ -30,16 +30,17 @@ Current source-importing measurement proves:
 Evidence:
 
 - `docs/audits/evidence/campaign-progression-balance-01-baseline.md`;
+- `docs/audits/evidence/campaign-progression-balance-01-candidate.md`;
 - `docs/audits/evidence/campaign-progression-balance-01-source-map.md`;
 - `docs/audits/evidence/campaign-progression-balance-01-graphify.md`;
 - `tests/audit/campaignProgressionBaseline.test.ts`;
-- `tests/audit/campaignProgressionCandidate.test.ts`.
+- CI baseline `30490172979` and candidate experiment `30490664712`.
+
+The accepted candidate measures 15.08 / 27.85 / 104.89 / 221.53 / 352.58 x2 minutes for combat/scout/colonizer/destroyer/endgame-ready prerequisites and uses maxima 16 / 30 / 120 / 360 / 720.
 
 ## Accepted architecture upon merge
 
-### Immutable dual profile
-
-Schema v16 adds:
+Schema v16 adds immutable:
 
 ```text
 progressionProfile: legacy-v1 | compressed-v1
@@ -47,19 +48,15 @@ progressionProfile: legacy-v1 | compressed-v1
 
 - old campaigns migrate to `legacy-v1`;
 - new normal campaigns use `compressed-v1`;
-- profile is immutable, checksummed and explicit in replay inputs;
+- profile is checksummed and explicit in replay inputs;
 - save format v3 remains valid;
 - no app-version inference or runtime switching.
 
-### Compressed profile
-
-The exact constants, caps, requirement rule, economy values and milestone envelopes are authoritative in:
+Exact profile:
 
 `docs/audits/contracts/campaign-progression-balance-01-profile.md`
 
-### Implementation sequence
-
-The exact two-PR sequence is authoritative in:
+Exact two-PR sequence:
 
 `docs/audits/contracts/campaign-progression-balance-01-prs.md`
 
@@ -70,7 +67,7 @@ The exact two-PR sequence is authoritative in:
 → #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE
 ```
 
-No third implementation PR is pre-authorized. Any scope that cannot fit this heavy two-PR batch requires a new audit or an explicit re-audit before implementation.
+No third implementation PR is pre-authorized. Scope that cannot fit this heavy two-PR batch requires a new audit or explicit re-audit.
 
 ## Critical decisions
 
@@ -78,7 +75,7 @@ No third implementation PR is pre-authorized. Any scope that cannot fit this hea
 2. **VERIFIED:** global unversioned tuning would alter existing deterministic save/replay semantics.
 3. **ACCEPTED ON MERGE:** schema v16 dual-profile identity is required.
 4. **ACCEPTED ON MERGE:** new campaigns use `compressed-v1`; legacy saves remain `legacy-v1`.
-5. **ACCEPTED ON MERGE:** recommended x2 endgame-ready progression target is 12 real hours, hard maximum 16.
+5. **ACCEPTED ON MERGE:** recommended x2 endgame-ready target is 12 real hours, hard maximum 16.
 6. **ACCEPTED ON MERGE:** actual victory is outside this batch because alliances/Solar War/Gates runtime is not implemented.
 7. **ACCEPTED ON MERGE:** bots receive phase-aware priorities only and retain ordinary commands/rules.
 8. **ACCEPTED ON MERGE:** faction relative tuning and x1/x2/x5/x10 deterministic time equivalence remain unchanged.
@@ -112,4 +109,4 @@ PR #135 cannot close the batch without:
 
 ## Current action
 
-Until PR #133 merges, no balance implementation is authorized. The Audit PR may change only audit evidence, tests that measure current/proposed values and canonical planning/status documents.
+Until PR #133 merges, no balance implementation is authorized. The Audit PR may change only audit evidence, measurement tests and canonical planning/status documents.
