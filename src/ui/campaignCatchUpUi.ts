@@ -1,5 +1,6 @@
-import type { CampaignCatchUpSummary } from '../storage/types';
+import { CAMPAIGN_CATCH_UP_FAILURE_EVENT } from '../runtime/campaignBootstrap';
 import type { CampaignCatchUpProgress } from '../runtime/campaignTimeRuntime';
+import type { CampaignCatchUpSummary } from '../storage/types';
 
 export interface CampaignCatchUpProgressUi {
   update(progress: CampaignCatchUpProgress): void;
@@ -29,7 +30,7 @@ function sumResourceMap(
 
 function createDialog(id: string, className: string): HTMLDialogElement {
   const existing = document.querySelector<HTMLDialogElement>(`#${id}`);
-  existing?.remove();
+  if (existing !== null) return existing;
   const dialog = document.createElement('dialog');
   dialog.id = id;
   dialog.className = className;
@@ -38,8 +39,43 @@ function createDialog(id: string, className: string): HTMLDialogElement {
   return dialog;
 }
 
+function showCatchUpFailure(message: string): void {
+  const dialog = createDialog(
+    'campaign-catch-up-dialog',
+    'campaign-time-dialog campaign-catch-up-dialog',
+  );
+  dialog.dataset.failed = 'true';
+  const body = document.createElement('div');
+  body.className = 'campaign-time-dialog__body';
+  const eyebrow = document.createElement('p');
+  eyebrow.className = 'campaign-time-eyebrow';
+  eyebrow.textContent = 'Восстановление приостановлено';
+  const title = document.createElement('h1');
+  title.textContent = 'Не удалось сохранить контрольную точку';
+  const description = document.createElement('p');
+  description.setAttribute('role', 'alert');
+  description.textContent = `Последняя подтверждённая точка сохранена. Освободите место или восстановите доступ к хранилищу и повторите попытку. ${message}`;
+  const retry = document.createElement('button');
+  retry.type = 'button';
+  retry.className = 'se-button';
+  retry.textContent = 'Повторить восстановление';
+  retry.addEventListener('click', () => window.location.reload());
+  body.append(eyebrow, title, description, retry);
+  dialog.replaceChildren(body);
+  if (!dialog.open) dialog.showModal();
+  retry.focus();
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(CAMPAIGN_CATCH_UP_FAILURE_EVENT, (event) => {
+    const detail = (event as CustomEvent<{ readonly message?: string }>).detail;
+    showCatchUpFailure(detail?.message ?? 'Ошибка локального хранилища.');
+  });
+}
+
 export function mountCampaignCatchUpProgress(): CampaignCatchUpProgressUi {
   const dialog = createDialog('campaign-catch-up-dialog', 'campaign-time-dialog campaign-catch-up-dialog');
+  delete dialog.dataset.failed;
   dialog.innerHTML = `
     <div class="campaign-time-dialog__body">
       <p class="campaign-time-eyebrow">Синхронизация кампании</p>
@@ -60,10 +96,13 @@ export function mountCampaignCatchUpProgress(): CampaignCatchUpProgressUi {
   const game = dialog.querySelector<HTMLElement>('[data-catch-up-game]')!;
   const operations = dialog.querySelector<HTMLElement>('[data-catch-up-operations]')!;
   let initialRemaining: number | undefined;
-  dialog.showModal();
+  let progressUpdates = 0;
+  if (!dialog.open) dialog.showModal();
 
   return {
     update: (snapshot) => {
+      progressUpdates += 1;
+      dialog.dataset.progressUpdates = String(progressUpdates);
       initialRemaining ??= Math.max(1, snapshot.remainingRealDurationMilliseconds + snapshot.processedRealDurationMilliseconds);
       const completed = Math.max(0, initialRemaining - snapshot.remainingRealDurationMilliseconds);
       const percent = snapshot.complete
@@ -80,6 +119,7 @@ export function mountCampaignCatchUpProgress(): CampaignCatchUpProgressUi {
       dialog.dataset.complete = String(snapshot.complete);
     },
     dispose: () => {
+      if (dialog.dataset.failed === 'true') return;
       dialog.close();
       dialog.remove();
     },
@@ -118,7 +158,6 @@ export function showCampaignReturnSummary(
     createMetric('Произведено кораблей и обороны', String(summary.completions.ships + summary.completions.defenses)),
     createMetric('Боёв с участием игрока', String(summary.combat.battles)),
     createMetric('Атак на ваши колонии', String(summary.combat.attacksOnPlayer)),
-    createMetric('Решений автономных империй', String(summary.bots.decisions)),
     createMetric('Событий и операций мира', String(summary.world.expeditions + summary.world.spaceObjects + summary.world.logisticsTransfers + summary.world.worldEvents)),
   );
   const note = document.createElement('p');
@@ -138,9 +177,10 @@ export function showCampaignReturnSummary(
       .catch(() => {
         button.disabled = false;
         note.textContent = 'Не удалось подтвердить сводку. Повторите сохранение.';
+        button.focus();
       });
   });
   body.append(eyebrow, title, description, metrics, note, button);
-  dialog.append(body);
-  dialog.showModal();
+  dialog.replaceChildren(body);
+  if (!dialog.open) dialog.showModal();
 }
