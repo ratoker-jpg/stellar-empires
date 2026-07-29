@@ -50,6 +50,7 @@ export class AutoSaveController {
   #timer: ReturnType<typeof setTimeout> | undefined;
   #writeChain: Promise<void> = Promise.resolve();
   #activeWrite: Promise<void> | undefined;
+  #propagateFlushFailure = false;
   #disposed = false;
 
   constructor(repository: SaveRepository, options: AutoSaveControllerOptions = {}) {
@@ -84,6 +85,12 @@ export class AutoSaveController {
     if (!isCampaignRuntimeMetadata(runtimeMetadata)) {
       throw new Error('Campaign runtime metadata is invalid.');
     }
+    if (
+      this.#runtimeMetadata?.pendingReturnSummary !== undefined &&
+      runtimeMetadata.pendingReturnSummary === undefined
+    ) {
+      this.#propagateFlushFailure = true;
+    }
     this.#runtimeMetadata = runtimeMetadata;
   }
 
@@ -104,12 +111,12 @@ export class AutoSaveController {
     if (this.#timer !== undefined) clearTimeout(this.#timer);
     this.#timer = setTimeout(() => {
       this.#timer = undefined;
-      void this.flush();
+      void this.flush().catch(() => undefined);
     }, this.#delayMs);
   }
 
   async flush(): Promise<void> {
-    await this.flushInternal(false);
+    await this.flushInternal(this.#propagateFlushFailure);
   }
 
   async flushOrThrow(): Promise<void> {
@@ -122,7 +129,7 @@ export class AutoSaveController {
       return;
     }
     this.#disposed = true;
-    await this.flush();
+    await this.flushInternal(false);
     await this.#writeChain;
     this.#onStatus({ phase: 'idle' });
   }
@@ -177,6 +184,9 @@ export class AutoSaveController {
       const newerPending = this.#pendingSave;
       if (newerPending === undefined || newerPending.revision <= pending.revision) {
         this.#runtimeMetadata = nextRuntimeMetadata;
+      }
+      if (nextRuntimeMetadata.pendingReturnSummary === undefined) {
+        this.#propagateFlushFailure = false;
       }
       this.#onStatus({ phase: 'saved', savedAt });
     } catch (error: unknown) {
