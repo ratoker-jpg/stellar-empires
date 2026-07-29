@@ -24,7 +24,8 @@ export interface CampaignClockControllerOptions {
 
 const DEFAULT_TICK_INTERVAL_MILLISECONDS = 1_000;
 const DEFAULT_SAVE_INTERVAL_MILLISECONDS = 5_000;
-const DEFAULT_ACTIVE_OPERATION_BUDGET = 128;
+const DEFAULT_ACTIVE_OPERATION_BUDGET = 16;
+const ACTIVE_CONTINUATION_YIELD_MILLISECONDS = 16;
 
 function assertPositiveInteger(value: number, label: string): void {
   if (!Number.isSafeInteger(value) || value < 1) {
@@ -58,7 +59,7 @@ export class CampaignClockController {
 
   start(): void {
     if (this.#disposed || this.#timer !== undefined) return;
-    this.schedule(0);
+    this.schedule(this.#tickIntervalMilliseconds);
   }
 
   tick(): void {
@@ -84,7 +85,11 @@ export class CampaignClockController {
       if (checkpoint.diagnostic !== 'ok') {
         this.#options.onDiagnostic?.(checkpoint.diagnostic);
       }
-      this.schedule(checkpoint.complete ? this.#tickIntervalMilliseconds : 0);
+      this.schedule(
+        checkpoint.complete
+          ? this.#tickIntervalMilliseconds
+          : ACTIVE_CONTINUATION_YIELD_MILLISECONDS,
+      );
     } catch (error: unknown) {
       this.#options.onError?.(error);
       this.schedule(this.#tickIntervalMilliseconds);
