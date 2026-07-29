@@ -6,6 +6,7 @@ import {
 import { createSaveEnvelope } from './saveFormat';
 import {
   createCampaignRuntimeMetadata,
+  isCampaignRuntimeMetadata,
   prepareActiveSaveRuntimeMetadata,
 } from './runtimeMetadata';
 import type { CampaignRuntimeMetadata, SaveRepository } from './types';
@@ -70,8 +71,17 @@ export class AutoSaveController {
     return this.#runtimeMetadata;
   }
 
-  request(state: GameState): void {
+  setRuntimeMetadata(runtimeMetadata: CampaignRuntimeMetadata): void {
     if (this.#disposed) return;
+    if (!isCampaignRuntimeMetadata(runtimeMetadata)) {
+      throw new Error('Campaign runtime metadata is invalid.');
+    }
+    this.#runtimeMetadata = runtimeMetadata;
+  }
+
+  request(state: GameState, runtimeMetadata?: CampaignRuntimeMetadata): void {
+    if (this.#disposed) return;
+    if (runtimeMetadata !== undefined) this.setRuntimeMetadata(runtimeMetadata);
     this.#pendingState = state;
     this.#onStatus({ phase: 'pending' });
     if (this.#timer !== undefined) clearTimeout(this.#timer);
