@@ -37,59 +37,67 @@ async function installClockOffsetInjection(page: Page): Promise<void> {
 }
 
 async function installCatchUpInterruption(page: Page): Promise<void> {
-  await page.addInitScript(({
-    interruptedKey,
-    progressObservedKey,
-    interruptScheduledKey,
-    offsetQuery,
-  }) => {
-    const originalPut = IDBObjectStore.prototype.put;
-    IDBObjectStore.prototype.put = function(
-      value: unknown,
-      ...optionalKey: [IDBValidKey?]
-    ): IDBRequest<IDBValidKey> {
-      const request = optionalKey.length === 0
-        ? originalPut.call(this, value)
-        : originalPut.call(this, value, optionalKey[0] as IDBValidKey);
-      const envelope = value as {
-        readonly slotId?: unknown;
-        readonly runtimeMetadata?: {
-          readonly pendingCatchUp?: {
-            readonly remainingRealDurationMilliseconds?: unknown;
+  await page.addInitScript(
+    ({
+      interruptedKey,
+      progressObservedKey,
+      interruptScheduledKey,
+      offsetQuery,
+    }: {
+      readonly interruptedKey: string;
+      readonly progressObservedKey: string;
+      readonly interruptScheduledKey: string;
+      readonly offsetQuery: string;
+    }) => {
+      const originalPut = IDBObjectStore.prototype.put;
+      IDBObjectStore.prototype.put = function(
+        value: unknown,
+        ...optionalKey: [IDBValidKey?]
+      ): IDBRequest<IDBValidKey> {
+        const request = optionalKey.length === 0
+          ? originalPut.call(this, value)
+          : originalPut.call(this, value, optionalKey[0] as IDBValidKey);
+        const envelope = value as {
+          readonly slotId?: unknown;
+          readonly runtimeMetadata?: {
+            readonly pendingCatchUp?: {
+              readonly remainingRealDurationMilliseconds?: unknown;
+            };
           };
         };
+        const targetDuration = Number(new URLSearchParams(window.location.search).get(offsetQuery));
+        const remaining = envelope.runtimeMetadata?.pendingCatchUp?.remainingRealDurationMilliseconds;
+        if (
+          envelope.slotId === 'autosave' &&
+          typeof remaining === 'number' &&
+          Number.isFinite(targetDuration) &&
+          remaining > 0 &&
+          remaining < targetDuration &&
+          window.localStorage.getItem(interruptScheduledKey) !== 'true'
+        ) {
+          window.localStorage.setItem(interruptScheduledKey, 'true');
+          const transaction = this.transaction;
+          transaction.addEventListener('complete', () => {
+            window.setTimeout(() => {
+              const dialog = document.querySelector<HTMLDialogElement>('#campaign-catch-up-dialog');
+              const progress = dialog?.querySelector<HTMLElement>('[role="progressbar"]');
+              if (dialog === null || progress === null || dialog.dataset.complete !== 'false') return;
+              window.localStorage.setItem(progressObservedKey, 'true');
+              window.localStorage.setItem(interruptedKey, 'true');
+              window.location.reload();
+            }, 0);
+          }, { once: true });
+        }
+        return request;
       };
-      const targetDuration = Number(new URLSearchParams(window.location.search).get(offsetQuery));
-      const remaining = envelope.runtimeMetadata?.pendingCatchUp?.remainingRealDurationMilliseconds;
-      if (
-        envelope.slotId === 'autosave' &&
-        typeof remaining === 'number' &&
-        Number.isFinite(targetDuration) &&
-        remaining > 0 &&
-        remaining < targetDuration &&
-        window.localStorage.getItem(interruptScheduledKey) !== 'true'
-      ) {
-        window.localStorage.setItem(interruptScheduledKey, 'true');
-        const transaction = this.transaction;
-        transaction.addEventListener('complete', () => {
-          window.setTimeout(() => {
-            const dialog = document.querySelector<HTMLDialogElement>('#campaign-catch-up-dialog');
-            const progress = dialog?.querySelector<HTMLElement>('[role="progressbar"]');
-            if (dialog === null || progress === null || dialog.dataset.complete !== 'false') return;
-            window.localStorage.setItem(progressObservedKey, 'true');
-            window.localStorage.setItem(interruptedKey, 'true');
-            window.location.reload();
-          }, 0);
-        }, { once: true });
-      }
-      return request;
-    };
-  })({
-    interruptedKey: CATCH_UP_INTERRUPTED_KEY,
-    progressObservedKey: CATCH_UP_PROGRESS_OBSERVED_KEY,
-    interruptScheduledKey: CATCH_UP_INTERRUPT_SCHEDULED_KEY,
-    offsetQuery: CLOCK_OFFSET_QUERY,
-  });
+    },
+    {
+      interruptedKey: CATCH_UP_INTERRUPTED_KEY,
+      progressObservedKey: CATCH_UP_PROGRESS_OBSERVED_KEY,
+      interruptScheduledKey: CATCH_UP_INTERRUPT_SCHEDULED_KEY,
+      offsetQuery: CLOCK_OFFSET_QUERY,
+    },
+  );
 }
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
