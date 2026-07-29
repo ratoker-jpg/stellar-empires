@@ -4,7 +4,7 @@ import type { BattleReport } from '../simulation/combat/types';
 import type { FleetState } from '../simulation/fleets/types';
 import type { IntelObservation } from '../simulation/intelligence/types';
 import { executeCommand } from '../simulation/reducer';
-import type { GameState, ScheduledGameEvent } from '../simulation/types';
+import type { GameState } from '../simulation/types';
 import {
   runOrdinaryMissionIntelligenceGate,
   type OrdinaryMissionIntelligenceGateResult,
@@ -18,9 +18,6 @@ export const E2E_SECONDARY_PLANET_ID = 'planet-e2e-secondary';
 const E2E_BOT_IDLE_SECONDS = 86_400;
 const E2E_SCOUT_COOLDOWN_CEILING_SECONDS = 7_200;
 const E2E_BOT_GATE_DELAY_MILLISECONDS = 250;
-const E2E_CATCH_UP_BOUNDARY_COUNT = 300;
-const E2E_CATCH_UP_BOUNDARY_INTERVAL_SECONDS = 60;
-const E2E_CATCH_UP_BOUNDARY_PREFIX = 'e2e-catch-up-boundary-';
 
 let botGateResult: OrdinaryMissionIntelligenceGateResult | undefined;
 let botGateScheduled = false;
@@ -92,41 +89,6 @@ function advanceFixtureState(state: GameState, targetElapsedSeconds: number): Ga
   };
 }
 
-function seedCatchUpBoundaries(
-  state: GameState,
-  fixtureElapsedSeconds: number,
-  enabled: boolean,
-): {
-  readonly pendingEvents: readonly ScheduledGameEvent[];
-  readonly nextEventSequence: number;
-} {
-  if (!enabled) {
-    return {
-      pendingEvents: state.pendingEvents,
-      nextEventSequence: state.nextEventSequence,
-    };
-  }
-  const boundaries: ScheduledGameEvent[] = Array.from(
-    { length: E2E_CATCH_UP_BOUNDARY_COUNT },
-    (_, index) => ({
-      id: `${E2E_CATCH_UP_BOUNDARY_PREFIX}${index + 1}`,
-      executeAt: fixtureElapsedSeconds +
-        E2E_CATCH_UP_BOUNDARY_INTERVAL_SECONDS * (index + 1),
-      sequence: state.nextEventSequence + index,
-      payload: {
-        type: 'NOOP',
-        label: `${E2E_CATCH_UP_BOUNDARY_PREFIX}${index + 1}`,
-      },
-    }),
-  );
-  return {
-    pendingEvents: [...state.pendingEvents, ...boundaries].sort(
-      (left, right) => left.executeAt - right.executeAt || left.sequence - right.sequence,
-    ),
-    nextEventSequence: state.nextEventSequence + boundaries.length,
-  };
-}
-
 function createSecondaryPlayerPlanet(state: GameState, origin: GameState['planets'][number]) {
   const existing = state.planets.find((planet) => planet.id === E2E_SECONDARY_PLANET_ID);
   if (existing !== undefined) return existing;
@@ -156,17 +118,11 @@ function createSecondaryPlayerPlanet(state: GameState, origin: GameState['planet
 }
 
 export function createE2eFixtureState(state: GameState): GameState {
-  const seedBoundaries = state.clock.elapsedSeconds < E2E_SCOUT_COOLDOWN_CEILING_SECONDS;
   const fixtureElapsedSeconds = Math.max(
     state.clock.elapsedSeconds,
     E2E_SCOUT_COOLDOWN_CEILING_SECONDS,
   );
   const fixtureState = advanceFixtureState(state, fixtureElapsedSeconds);
-  const { pendingEvents, nextEventSequence } = seedCatchUpBoundaries(
-    fixtureState,
-    fixtureElapsedSeconds,
-    seedBoundaries,
-  );
   const { origin, target } = requireScenarioPlanets(fixtureState);
   const originWithFuel = {
     ...origin,
@@ -293,8 +249,6 @@ export function createE2eFixtureState(state: GameState): GameState {
   const activeEmpires = new Set(fixtureState.empires);
   return {
     ...fixtureState,
-    nextEventSequence,
-    pendingEvents,
     planets,
     fleets,
     intelligence: fixtureState.intelligence.map((entry) =>
@@ -311,7 +265,7 @@ export function createE2eFixtureState(state: GameState): GameState {
             event: {
               id: 'event-e2e-report',
               executeAt: fixtureElapsedSeconds,
-              sequence: nextEventSequence + 10_000,
+              sequence: fixtureState.nextEventSequence + 10_000,
               payload: { type: 'BATTLE_REPORT', report },
             },
             executedAt: fixtureElapsedSeconds,
