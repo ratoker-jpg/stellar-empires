@@ -111,6 +111,34 @@ describe('offline campaign bootstrap', () => {
     expect(result.checkpoints).toBeGreaterThan(1);
   });
 
+  it('hands a moving persistence tail to the active clock instead of failing startup', async () => {
+    const repository = new InMemorySaveRepository();
+    const state = createState();
+    const metadata = createCampaignRuntimeMetadata(START);
+    await repository.put(createSaveEnvelope(AUTOSAVE_SLOT_ID, state, START, metadata));
+    let sample = START_MS + 3_600_000;
+    const realTimeSource = {
+      nowMs: () => {
+        const current = sample;
+        sample += 500;
+        return current;
+      },
+    };
+
+    const result = await bootstrapRestoredCampaign({
+      repository,
+      state,
+      runtimeMetadata: metadata,
+      realTimeSource,
+      operationBudget: 31,
+      yieldControl: async () => undefined,
+    });
+
+    expect(result.catchUpRuns).toBe(2);
+    expect(result.state.clock.elapsedSeconds).toBeGreaterThanOrEqual(3_600);
+    expect(Date.parse(result.runtimeMetadata.lastActiveAtReal)).toBeLessThan(sample);
+  });
+
   it('fails closed and preserves the previously readable autosave', async () => {
     const state = createState();
     const metadata = createCampaignRuntimeMetadata(START);
