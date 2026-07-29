@@ -30,6 +30,12 @@ export interface AutoSaveControllerOptions {
   readonly onStatus?: (status: AutoSaveStatus) => void;
 }
 
+interface PendingAutoSave {
+  readonly state: GameState;
+  readonly runtimeMetadata: CampaignRuntimeMetadata | undefined;
+  readonly revision: number;
+}
+
 export class AutoSaveController {
   readonly #repository: SaveRepository;
   readonly #saveManager: SaveManager;
@@ -39,9 +45,11 @@ export class AutoSaveController {
   readonly #now: () => string;
   readonly #onStatus: (status: AutoSaveStatus) => void;
   #runtimeMetadata: CampaignRuntimeMetadata | undefined;
-  #pendingState: GameState | undefined;
+  #pendingSave: PendingAutoSave | undefined;
+  #nextRevision = 0;
   #timer: ReturnType<typeof setTimeout> | undefined;
   #writeChain: Promise<void> = Promise.resolve();
+  #activeWrite: Promise<void> | undefined;
   #disposed = false;
 
   constructor(repository: SaveRepository, options: AutoSaveControllerOptions = {}) {
@@ -82,7 +90,11 @@ export class AutoSaveController {
   stage(state: GameState, runtimeMetadata?: CampaignRuntimeMetadata): void {
     if (this.#disposed) return;
     if (runtimeMetadata !== undefined) this.setRuntimeMetadata(runtimeMetadata);
-    this.#pendingState = state;
+    this.#pendingSave = {
+      state,
+      runtimeMetadata: runtimeMetadata ?? this.#runtimeMetadata,
+      revision: this.#nextRevision += 1,
+    };
   }
 
   request(state: GameState, runtimeMetadata?: CampaignRuntimeMetadata): void {
@@ -97,50 +109,11 @@ export class AutoSaveController {
   }
 
   async flush(): Promise<void> {
-    if (this.#timer !== undefined) {
-      clearTimeout(this.#timer);
-      this.#timer = undefined;
-    }
-    const state = this.#pendingState;
-    this.#pendingState = undefined;
-    if (state === undefined) {
-      await this.#writeChain;
-      return;
-    }
+    await this.flushInternal(false);
+  }
 
-    const savedAt = this.#now();
-    const currentRuntimeMetadata = this.#runtimeMetadata ??
-      createCampaignRuntimeMetadata(savedAt);
-    const nextRuntimeMetadata = prepareActiveSaveRuntimeMetadata(
-      currentRuntimeMetadata,
-    );
-    const envelope = createSaveEnvelope(
-      this.#slotId,
-      state,
-      savedAt,
-      nextRuntimeMetadata,
-    );
-    this.#onStatus({ phase: 'saving' });
-
-    const write = this.#writeChain.then(async () => {
-      if (this.#snapshotSlotId !== undefined) {
-        await this.#saveManager.snapshot(this.#slotId, this.#snapshotSlotId);
-      }
-      await this.#repository.put(envelope);
-    });
-    this.#writeChain = write.catch(() => undefined);
-
-    try {
-      await write;
-      this.#runtimeMetadata = nextRuntimeMetadata;
-      this.#onStatus({ phase: 'saved', savedAt });
-    } catch (error: unknown) {
-      this.#onStatus({ phase: 'error', error });
-    }
-
-    if (this.#pendingState !== undefined && !this.#disposed) {
-      this.request(this.#pendingState);
-    }
+  async flushOrThrow(): Promise<void> {
+    await this.flushInternal(true);
   }
 
   async dispose(): Promise<void> {
@@ -152,5 +125,79 @@ export class AutoSaveController {
     await this.flush();
     await this.#writeChain;
     this.#onStatus({ phase: 'idle' });
+  }
+
+  private async flushInternal(rejectOnError: boolean): Promise<void> {
+    if (this.#timer !== undefined) {
+      clearTimeout(this.#timer);
+      this.#timer = undefined;
+    }
+    const pending = this.#pendingSave;
+    this.#pendingSave = undefined;
+    if (pending === undefined) {
+      const activeWrite = this.#activeWrite;
+      if (activeWrite === undefined) {
+        await this.#writeChain;
+        return;
+      }
+      try {
+        await activeWrite;
+      } catch (error: unknown) {
+        if (rejectOnError) throw error;
+      }
+      return;
+    }
+
+    const savedAt = this.#now();
+    const currentRuntimeMetadata = pending.runtimeMetadata ??
+      createCampaignRuntimeMetadata(savedAt);
+    const nextRuntimeMetadata = prepareActiveSaveRuntimeMetadata(
+      currentRuntimeMetadata,
+    );
+    const envelope = createSaveEnvelope(
+      this.#slotId,
+      pending.state,
+      savedAt,
+      nextRuntimeMetadata,
+    );
+    this.#onStatus({ phase: 'saving' });
+
+    const write = this.#writeChain.then(async () => {
+      if (this.#snapshotSlotId !== undefined) {
+        await this.#saveManager.snapshot(this.#slotId, this.#snapshotSlotId);
+      }
+      await this.#repository.put(envelope);
+    });
+    this.#activeWrite = write;
+    this.#writeChain = write.catch(() => undefined);
+
+    let failure: unknown;
+    try {
+      await write;
+      const newerPending = this.#pendingSave;
+      if (newerPending === undefined || newerPending.revision <= pending.revision) {
+        this.#runtimeMetadata = nextRuntimeMetadata;
+      }
+      this.#onStatus({ phase: 'saved', savedAt });
+    } catch (error: unknown) {
+      failure = error;
+      const newerPending = this.#pendingSave;
+      if (newerPending === undefined || newerPending.revision <= pending.revision) {
+        this.#pendingSave = {
+          state: pending.state,
+          runtimeMetadata: nextRuntimeMetadata,
+          revision: pending.revision,
+        };
+      }
+      this.#onStatus({ phase: 'error', error });
+    } finally {
+      if (this.#activeWrite === write) this.#activeWrite = undefined;
+    }
+
+    const nextPending = this.#pendingSave;
+    if (nextPending !== undefined && !this.#disposed) {
+      this.request(nextPending.state, nextPending.runtimeMetadata);
+    }
+    if (failure !== undefined && rejectOnError) throw failure;
   }
 }
