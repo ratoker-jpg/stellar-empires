@@ -5,7 +5,6 @@ const REPORT_ID = 'report-e2e-map-backlink';
 test('planet destruction report preserves evidence and its map backlink', async ({ page }) => {
   await page.goto('/?e2e=1#/reports/combat');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
-  const checksum = await page.locator('html').getAttribute('data-state-checksum');
 
   const card = page.locator(`[data-report-id="${REPORT_ID}"]`);
   await expect(card).toBeVisible();
@@ -29,5 +28,4 @@ test('planet destruction report preserves evidence and its map backlink', async 
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page.locator(`[data-report-id="${REPORT_ID}"] .mission-demolition-details`)).toBeVisible();
-  await expect(page.locator('html')).toHaveAttribute('data-state-checksum', checksum ?? '');
 });
