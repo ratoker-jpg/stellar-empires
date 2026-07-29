@@ -184,12 +184,12 @@ function completedRuntimeMetadata(
         lastCatchUpRealDurationSeconds: previous.lastCatchUpRealDurationSeconds,
         lastCatchUpGameDurationSeconds: previous.lastCatchUpGameDurationSeconds,
       };
+  const { pendingCatchUp: _clearedPendingCatchUp, ...previousWithoutPendingCatchUp } = previous;
   return {
-    ...previous,
+    ...previousWithoutPendingCatchUp,
     ...catchUpDurations,
     lastActiveAtReal: pending.targetAtReal,
     ...(fractionContinuation === undefined ? {} : { pendingCatchUp: fractionContinuation }),
-    ...(fractionContinuation === undefined ? { pendingCatchUp: undefined } : {}),
     ...(pendingReturnSummary === undefined ? {} : { pendingReturnSummary }),
   };
 }
