@@ -307,7 +307,7 @@ export function summarizeCampaignTransition(
   before: GameState,
   after: GameState,
   events: readonly ExecutedGameEvent[],
-  botAudit: readonly BotSchedulerAuditEntry[] = [],
+  _botAudit: readonly BotSchedulerAuditEntry[] = [],
 ): CampaignCatchUpSummary {
   const resources = summarizePlayerResourceDelta(before, after);
   const eventSummary = summarizeEvents(before, after, events);
@@ -315,10 +315,7 @@ export function summarizeCampaignTransition(
   return {
     ...eventSummary,
     ...resources,
-    bots: {
-      decisions: new Set(botAudit.map((entry) => `${entry.empireId}:${entry.decidedAt}`)).size,
-      acceptedCommands: botAudit.filter((entry) => entry.accepted).length,
-    },
+    bots: eventSummary.bots,
     world: {
       ...eventSummary.world,
       logisticsTransfers,
