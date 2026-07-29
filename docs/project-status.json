@@ -1,5 +1,5 @@
 {
-  "statusVersion": 43,
+  "statusVersion": 44,
   "updatedAt": "2026-07-29",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -8,15 +8,15 @@
   "releaseTarget": "1.0",
   "lastMergedPr": 131,
   "lastMergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd",
-  "verifiedMainBaseline": "PR #131 CAMPAIGN-SETTINGS-PERSISTENCE merged as 257e3effaab4e34285d00db64b6676fda364fcfd after CI, Browser E2E, Graphify and clean Codex re-review; schema v15 and save format v3 are now the merged runtime baseline",
+  "verifiedMainBaseline": "PR #131 CAMPAIGN-SETTINGS-PERSISTENCE merged as 257e3effaab4e34285d00db64b6676fda364fcfd after CI, Browser E2E, Graphify and clean Codex re-review; schema v15 and save format v3 are the merged baseline",
   "runtimeBaselinePr": 131,
   "runtimeBaselineSha": "257e3effaab4e34285d00db64b6676fda364fcfd",
-  "activePr": null,
-  "activePrKind": null,
-  "activeWorkItem": null,
-  "nextPrAfterActive": 132,
-  "nextPrKind": "implementation",
-  "nextWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
+  "activePr": 132,
+  "activePrKind": "implementation",
+  "activeWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
+  "nextPrAfterActive": null,
+  "nextPrKind": "audit-after-active",
+  "nextWorkItem": "CAMPAIGN-PROGRESSION-BALANCE-01",
   "currentMilestone": "M4c local campaign time transition implementation",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -34,7 +34,8 @@
     "docs/25a-local-campaign-world-speed-and-offline-progression.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastChangeDocument": "docs/changes/pr131-campaign-settings-persistence.md",
+  "lastChangeDocument": "docs/changes/pr132-campaign-clock-offline-gate.md",
+  "activeBatchArchive": "docs/audits/completed/local-campaign-time-pacing-01.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
     "batchId": "NAVIGATION-USABILITY-01",
@@ -53,12 +54,7 @@
       "128": "051c46736dbb92a7fb5061243d458eb3faabecfe",
       "129": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"
     },
-    "workItems": [
-      "NAV-IA-PRIMARY-SHELL",
-      "NAV-CONTEXT-ROUTE-MODEL",
-      "NAV-CROSS-DOMAIN-FLOWS",
-      "NAV-USABILITY-GATE"
-    ],
+    "workItems": ["NAV-IA-PRIMARY-SHELL", "NAV-CONTEXT-ROUTE-MODEL", "NAV-CROSS-DOMAIN-FLOWS", "NAV-USABILITY-GATE"],
     "status": "completed",
     "archive": "docs/audits/completed/navigation-usability-01.md",
     "divergence": "none"
@@ -75,17 +71,14 @@
     "implementationCount": 2,
     "plannedImplementationPrs": [131, 132],
     "completedImplementationPrs": [131],
-    "implementationMergeShas": {
-      "131": "257e3effaab4e34285d00db64b6676fda364fcfd"
-    },
-    "workItems": [
-      "CAMPAIGN-SETTINGS-PERSISTENCE",
-      "CAMPAIGN-CLOCK-OFFLINE-GATE"
-    ],
-    "status": "implementation-next",
-    "activePr": null,
-    "nextPr": 132,
-    "nextWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
+    "implementationMergeShas": {"131": "257e3effaab4e34285d00db64b6676fda364fcfd"},
+    "workItems": ["CAMPAIGN-SETTINGS-PERSISTENCE", "CAMPAIGN-CLOCK-OFFLINE-GATE"],
+    "status": "implementation-active-final-validation",
+    "activePr": 132,
+    "activeWorkItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
+    "nextPr": null,
+    "nextWorkItem": "CAMPAIGN-PROGRESSION-BALANCE-01-audit-after-merge",
+    "archive": "docs/audits/completed/local-campaign-time-pacing-01.md",
     "divergence": "none"
   },
   "activeImplementationState": {
@@ -98,10 +91,16 @@
     "explicitReplaySettingsImplemented": true,
     "processedCursorIntegrityImplemented": true,
     "pendingCatchUpConsistencyImplemented": true,
-    "activeClockImplemented": false,
-    "offlineCatchUpImplemented": false,
-    "manualFastForwardRemoved": false,
-    "status": "pr131-merged"
+    "chronologicalOrchestratorImplemented": true,
+    "fixedPointWorldSpeedImplemented": true,
+    "botDecisionBoundaryImplemented": true,
+    "activeClockImplemented": true,
+    "offlineCatchUpImplemented": true,
+    "catchUpProgressImplemented": true,
+    "durableReturnSummaryImplemented": true,
+    "manualFastForwardRemoved": true,
+    "oneDaySevenDayGatesImplemented": true,
+    "status": "pr132-active-final-validation"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -157,30 +156,26 @@
   },
   "deliveredDomains": [
     "deterministic schema-v15 simulation with immutable campaign identity",
-    "save format v3 with integrity-protected runtime cursor, continuation and pending summary metadata",
+    "save format v3 with integrity-protected cursor, continuation and pending summary metadata",
     "campaign setup for faction, topology and immutable x1/x2/x5/x10 speed",
     "schema v1-v14 and save format v1-v2 migration to x1 using validated envelope time",
+    "one chronological active/offline campaign-time orchestrator",
+    "fixed-point world-speed mapping with persistent fractional carry",
+    "bounded resumable offline catch-up and processed-cursor checkpoints",
+    "active open-session clock and durable return summary",
     "IndexedDB autosave, manual slots, import/export, snapshots and recovery",
     "multi-colony economy, research, production, fleets, combat and reports",
-    "ordinary missions, debris, defence repair, logistics, markets and PvE foundations",
+    "ordinary missions, logistics, markets and PvE foundations",
     "honest autonomous bots using shared commands and visibility rules",
-    "serialized bounded bot decision cursors and worker scheduling",
     "complete mechanical catalogs and processed runtime art",
-    "20-slot Universe with Universe to Galaxy to Solar-system navigation",
-    "completed routed shell, player-centered navigation and measured task gate",
-    "accepted chronological active/offline campaign-time architecture"
+    "20-slot Universe and completed routed player-centered navigation"
   ],
   "activeDelivery": [
     {"pr": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "status": "merged", "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"},
     {"pr": 131, "kind": "implementation", "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE", "status": "merged", "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd"},
-    {"pr": 132, "kind": "implementation", "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE", "status": "next"}
+    {"pr": 132, "kind": "implementation", "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE", "status": "active-final-validation"}
   ],
   "knownLimitations": [
-    "world speed is persisted but does not yet drive real elapsed time",
-    "open-session simulation still advances through manual fast-forward controls",
-    "deterministic offline catch-up is not implemented",
-    "current overdue bot decisions are evaluated against the final post-jump state",
-    "catch-up progress and return-summary presentation are not implemented",
     "campaign progression is not yet compressed or balanced for a one-day match",
     "multi-colony economy and logistics coherence remain a later audit",
     "deeper PvE/meta systems and complete bot parity remain incomplete",
@@ -195,7 +190,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #131 final head 5e1c27c6a6d635982d446649e00ff329f49923cb passed Graphify run 30405640711",
+    "lastValidation": "PR #132 final branch validation is in progress; final head and run are recorded before merge",
     "lastAuditGraph": {
       "workflowRun": "30389103322",
       "headSha": "d276a8db16af534ec915f877a76a8c419986f793",
@@ -214,6 +209,8 @@
     "docs/audits/contracts/local-campaign-time-pacing-01-clock-catchup.md",
     "docs/audits/contracts/local-campaign-time-pacing-01-prs.md",
     "docs/changes/pr131-campaign-settings-persistence.md",
+    "docs/changes/pr132-campaign-clock-offline-gate.md",
+    "docs/audits/completed/local-campaign-time-pacing-01.md",
     "docs/25a-local-campaign-world-speed-and-offline-progression.md",
     "docs/23-bot-simulation-time-contract.md",
     "docs/17-continuation-guide.md",
@@ -222,5 +219,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Create implementation PR #132 CAMPAIGN-CLOCK-OFFLINE-GATE only from fresh current main; do not start progression balance or later roadmap work."
+  "nextAction": "Finish final CI, Chromium Browser E2E, Graphify and automated review for PR #132; merge it; synchronize the exact merge SHA; then create only the CAMPAIGN-PROGRESSION-BALANCE-01 audit."
 }
