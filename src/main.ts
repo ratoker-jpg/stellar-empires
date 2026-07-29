@@ -230,6 +230,7 @@ async function bootstrap(): Promise<void> {
       now: () => new Date(realTimeSource.nowMs()).toISOString(),
     });
   } catch (error: unknown) {
+    if (error instanceof Error && error.name === 'CampaignBootstrapError') throw error;
     console.error('[stellar-empires] persistence unavailable', error);
     const fresh = await createFreshGame('Локальное хранилище недоступно · новая партия');
     initialState = fresh.state;
