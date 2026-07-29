@@ -6,16 +6,16 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 132,
-    "mergeSha": "df56566ce6d311ecef81103dddb924b5da0148c1",
+    "lastMergedPr": 133,
+    "mergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc",
     "runtimeBaselinePr": 132,
     "runtimeBaselineSha": "df56566ce6d311ecef81103dddb924b5da0148c1",
-    "auditBaselineSha": "f60f8640aa4097a01bdc975fd27d9b86e871bea1"
+    "auditBaselineSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc"
   },
-  "activePr": 133,
-  "activePrKind": "audit",
+  "activePr": null,
+  "activePrKind": null,
   "activeBatchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
-  "activeWorkItem": "CAMPAIGN-PROGRESSION-BALANCE-01",
+  "activeWorkItem": null,
   "nextPr": 134,
   "nextPrKind": "implementation",
   "nextWorkItem": "PROGRESSION-PROFILE-FOUNDATION",
@@ -29,7 +29,7 @@
     {"id":"local-campaign-product-contract","documentationPr":124,"status":"completed","workItem":"LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT","mergeSha":"cdd112c544ce8d37af17e938867d4588bedcf152","outcome":"Local campaign, immutable world speed, deterministic offline progression and compressed campaign direction"},
     {"id":"navigation-usability-repair","auditPr":125,"auditMergeSha":"a13f017d79d5dce5fde954e9f6e1419a2182d78e","startPr":126,"endPr":129,"status":"completed","batchId":"NAVIGATION-USABILITY-01","completedPrs":[126,127,128,129],"implementationMergeShas":{"126":"2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1","127":"2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418","128":"051c46736dbb92a7fb5061243d458eb3faabecfe","129":"a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"},"archive":"docs/audits/completed/navigation-usability-01.md","outcome":"Player-centered hierarchy, typed context, reversible cross-domain flows and measured release-viewport task gate"},
     {"id":"local-campaign-time-pacing","auditPr":130,"auditMergeSha":"2379fa7a30974381349433e4f0e0ba43d15f1511","startPr":131,"endPr":132,"status":"completed","batchId":"LOCAL-CAMPAIGN-TIME-PACING-01","complexity":"heavy","plannedPrs":[131,132],"completedPrs":[131,132],"implementationMergeShas":{"131":"257e3effaab4e34285d00db64b6676fda364fcfd","132":"df56566ce6d311ecef81103dddb924b5da0148c1"},"workItems":["CAMPAIGN-SETTINGS-PERSISTENCE","CAMPAIGN-CLOCK-OFFLINE-GATE"],"archive":"docs/audits/completed/local-campaign-time-pacing-01.md","outcome":"Immutable campaign settings, save-format-v3 runtime metadata, chronological active/offline clock, bounded resumable catch-up and durable redacted return summary"},
-    {"id":"campaign-progression-balance","auditPr":133,"startPr":134,"endPr":135,"status":"audit-active","batchId":"CAMPAIGN-PROGRESSION-BALANCE-01","complexity":"heavy","plannedPrs":[134,135],"workItems":["PROGRESSION-PROFILE-FOUNDATION","COMPRESSED-CAMPAIGN-PROGRESSION-GATE"],"targetStateSchema":16,"targetSaveFormat":3,"outcome":"Versioned legacy/compressed progression identity and measured endgame-ready campaign envelope"},
+    {"id":"campaign-progression-balance","auditPr":133,"auditMergeSha":"989c2c0b8fc3d5cfe672af267a248b6b384331cc","startPr":134,"endPr":135,"status":"accepted-awaiting-implementation","batchId":"CAMPAIGN-PROGRESSION-BALANCE-01","complexity":"heavy","plannedPrs":[134,135],"completedPrs":[],"workItems":["PROGRESSION-PROFILE-FOUNDATION","COMPRESSED-CAMPAIGN-PROGRESSION-GATE"],"targetStateSchema":16,"targetSaveFormat":3,"outcome":"Versioned legacy/compressed progression identity and measured endgame-ready campaign envelope"},
     {"id":"multi-colony-economy-logistics","auditPr":null,"startPr":null,"endPr":null,"status":"not-audited","outcome":"Coherent multi-colony economy, logistics and bot planning under compressed timing"},
     {"id":"pve-meta-and-bot-parity","auditPr":null,"startPr":null,"endPr":null,"status":"not-audited","outcome":"PvE/meta depth and honest autonomous bot parity"},
     {"id":"alliances-and-endgame","auditPr":null,"startPr":null,"endPr":null,"status":"not-audited","outcome":"Alliances, solar war, Obelisks, Gates and complete victory/defeat"},
@@ -39,9 +39,9 @@
     {"number":130,"kind":"audit","batchId":"LOCAL-CAMPAIGN-TIME-PACING-01","title":"Audit local campaign time and offline progression","status":"merged","mergeSha":"2379fa7a30974381349433e4f0e0ba43d15f1511"},
     {"number":131,"kind":"implementation","workItem":"CAMPAIGN-SETTINGS-PERSISTENCE","title":"Persist immutable campaign settings","status":"merged","mergeSha":"257e3effaab4e34285d00db64b6676fda364fcfd"},
     {"number":132,"kind":"implementation","workItem":"CAMPAIGN-CLOCK-OFFLINE-GATE","title":"Run active and offline campaign time","status":"merged","mergeSha":"df56566ce6d311ecef81103dddb924b5da0148c1"},
-    {"number":133,"kind":"audit","batchId":"CAMPAIGN-PROGRESSION-BALANCE-01","title":"Audit campaign progression balance","status":"draft"},
-    {"number":134,"kind":"implementation","workItem":"PROGRESSION-PROFILE-FOUNDATION","title":"Version deterministic progression profiles","status":"blocked-by-audit-133"},
+    {"number":133,"kind":"audit","batchId":"CAMPAIGN-PROGRESSION-BALANCE-01","title":"Audit campaign progression balance","status":"merged","mergeSha":"989c2c0b8fc3d5cfe672af267a248b6b384331cc"},
+    {"number":134,"kind":"implementation","workItem":"PROGRESSION-PROFILE-FOUNDATION","title":"Version deterministic progression profiles","status":"next"},
     {"number":135,"kind":"implementation","workItem":"COMPRESSED-CAMPAIGN-PROGRESSION-GATE","title":"Balance the compressed campaign progression","status":"blocked-by-pr-134"}
   ],
-  "nextAction": "Finish CI, Browser E2E, Graphify and review for Audit PR #133. Do not begin PR #134 until #133 merges."
+  "nextAction": "Create PR #134 PROGRESSION-PROFILE-FOUNDATION from fresh synchronized main and implement only its accepted contract."
 }
