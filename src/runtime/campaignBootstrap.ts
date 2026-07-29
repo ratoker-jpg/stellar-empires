@@ -16,6 +16,8 @@ import {
   type RunCampaignCatchUpResult,
 } from './campaignTimeRuntime';
 
+export const CAMPAIGN_CATCH_UP_FAILURE_EVENT = 'stellar-campaign-catch-up-failure';
+
 export interface CampaignBootstrapOptions {
   readonly repository: SaveRepository;
   readonly state: GameState;
@@ -34,6 +36,19 @@ export interface CampaignBootstrapResult {
   readonly operationsProcessed: number;
 }
 
+function dispatchCatchUpFailure(cause: unknown): void {
+  if (
+    typeof globalThis.dispatchEvent !== 'function' ||
+    typeof CustomEvent === 'undefined'
+  ) {
+    return;
+  }
+  const message = cause instanceof Error ? cause.message : 'Неизвестная ошибка сохранения';
+  globalThis.dispatchEvent(new CustomEvent(CAMPAIGN_CATCH_UP_FAILURE_EVENT, {
+    detail: { message },
+  }));
+}
+
 export class CampaignBootstrapError extends Error {
   readonly cause: unknown;
 
@@ -41,10 +56,12 @@ export class CampaignBootstrapError extends Error {
     super('CAMPAIGN_CATCH_UP_FAILED');
     this.name = 'CampaignBootstrapError';
     this.cause = cause;
+    dispatchCatchUpFailure(cause);
   }
 }
 
 const RESAMPLE_TOLERANCE_MILLISECONDS = 250;
+const MAX_EAGER_RESAMPLES = 2;
 
 function canonicalTimestamp(milliseconds: number): string {
   if (!Number.isFinite(milliseconds)) throw new Error('Campaign bootstrap clock is invalid.');
@@ -74,7 +91,7 @@ async function executeBootstrap(
   let checkpoints = 0;
   let operationsProcessed = 0;
 
-  for (let resample = 0; resample < 16; resample += 1) {
+  while (true) {
     const sampledNowMilliseconds = realTimeSource.nowMs();
     const targetAtReal = canonicalTimestamp(sampledNowMilliseconds);
     const result: RunCampaignCatchUpResult = await runCampaignCatchUp({
@@ -108,15 +125,13 @@ async function executeBootstrap(
 
     const cursorMilliseconds = Date.parse(runtimeMetadata.lastActiveAtReal);
     const newerNowMilliseconds = realTimeSource.nowMs();
-    if (
-      !Number.isFinite(cursorMilliseconds) ||
-      newerNowMilliseconds - cursorMilliseconds <= RESAMPLE_TOLERANCE_MILLISECONDS
-    ) {
+    const caughtUpWithinTolerance = !Number.isFinite(cursorMilliseconds) ||
+      newerNowMilliseconds - cursorMilliseconds <= RESAMPLE_TOLERANCE_MILLISECONDS;
+    if (caughtUpWithinTolerance || catchUpRuns >= MAX_EAGER_RESAMPLES) {
       return { state, runtimeMetadata, catchUpRuns, checkpoints, operationsProcessed };
     }
     await (options.yieldControl ?? (() => Promise.resolve()))();
   }
-  throw new Error('CAMPAIGN_BOOTSTRAP_RESAMPLE_LIMIT');
 }
 
 export async function bootstrapRestoredCampaign(
