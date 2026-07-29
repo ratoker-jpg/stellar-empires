@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const APP_READY_TIMEOUT = 45_000;
+const CLOCK_OFFSET_KEY = 'stellar-e2e-clock-offset-milliseconds';
 
 async function waitForApp(page: Page): Promise<void> {
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true', {
@@ -8,13 +9,19 @@ async function waitForApp(page: Page): Promise<void> {
   });
 }
 
-async function installClockOffset(
-  page: Page,
-  milliseconds: number,
-): Promise<void> {
-  await page.addInitScript((offset) => {
-    document.documentElement.dataset.e2eClockOffsetMilliseconds = String(offset);
-  }, milliseconds);
+async function installPersistentClockOffset(page: Page): Promise<void> {
+  await page.addInitScript((storageKey) => {
+    const offset = window.localStorage.getItem(storageKey);
+    if (offset !== null) {
+      document.documentElement.dataset.e2eClockOffsetMilliseconds = offset;
+    }
+  }, CLOCK_OFFSET_KEY);
+}
+
+async function setClockOffset(page: Page, milliseconds: number): Promise<void> {
+  await page.evaluate(({ storageKey, offset }) => {
+    window.localStorage.setItem(storageKey, String(offset));
+  }, { storageKey: CLOCK_OFFSET_KEY, offset: milliseconds });
 }
 
 test('active campaign clock advances without player fast-forward controls', async ({ page }) => {
@@ -42,8 +49,9 @@ test('offline one-day and seven-day catch-up are bounded, resumable and acknowle
   await expect(page.locator('#hud-save-state')).toHaveAttribute('data-save-phase', 'saved', {
     timeout: 8_000,
   });
+  await installPersistentClockOffset(page);
 
-  await installClockOffset(page, 86_400_000);
+  await setClockOffset(page, 86_400_000);
   const oneDayStartedAt = Date.now();
   await page.reload();
   await waitForApp(page);
@@ -62,7 +70,7 @@ test('offline one-day and seven-day catch-up are bounded, resumable and acknowle
   await expect(page.locator('#hud-world-time')).toHaveText('1д 02:00:00');
   await expect(page.locator('#campaign-return-summary')).toHaveCount(0);
 
-  await installClockOffset(page, 604_800_000);
+  await setClockOffset(page, 604_800_000);
   const sevenDayStartedAt = Date.now();
   await page.reload();
   await waitForApp(page);
