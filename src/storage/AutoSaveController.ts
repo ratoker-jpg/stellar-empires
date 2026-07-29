@@ -79,10 +79,15 @@ export class AutoSaveController {
     this.#runtimeMetadata = runtimeMetadata;
   }
 
-  request(state: GameState, runtimeMetadata?: CampaignRuntimeMetadata): void {
+  stage(state: GameState, runtimeMetadata?: CampaignRuntimeMetadata): void {
     if (this.#disposed) return;
     if (runtimeMetadata !== undefined) this.setRuntimeMetadata(runtimeMetadata);
     this.#pendingState = state;
+  }
+
+  request(state: GameState, runtimeMetadata?: CampaignRuntimeMetadata): void {
+    if (this.#disposed) return;
+    this.stage(state, runtimeMetadata);
     this.#onStatus({ phase: 'pending' });
     if (this.#timer !== undefined) clearTimeout(this.#timer);
     this.#timer = setTimeout(() => {
