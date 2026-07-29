@@ -62,10 +62,17 @@ export class CampaignBootstrapError extends Error {
 
 const RESAMPLE_TOLERANCE_MILLISECONDS = 250;
 const MAX_EAGER_RESAMPLES = 2;
+const INITIAL_PROGRESS_PAINT_DELAY_MILLISECONDS = 50;
 
 function canonicalTimestamp(milliseconds: number): string {
   if (!Number.isFinite(milliseconds)) throw new Error('Campaign bootstrap clock is invalid.');
   return new Date(milliseconds).toISOString();
+}
+
+function allowProgressSurfaceToPaint(): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, INITIAL_PROGRESS_PAINT_DELAY_MILLISECONDS);
+  });
 }
 
 export function shouldShowCampaignCatchUp(
@@ -94,6 +101,7 @@ async function executeBootstrap(
   while (true) {
     const sampledNowMilliseconds = realTimeSource.nowMs();
     const targetAtReal = canonicalTimestamp(sampledNowMilliseconds);
+    let runCheckpointIndex = 0;
     const result: RunCampaignCatchUpResult = await runCampaignCatchUp({
       state,
       runtimeMetadata,
@@ -109,6 +117,10 @@ async function executeBootstrap(
           canonicalTimestamp(realTimeSource.nowMs()),
           checkpointMetadata,
         ));
+        runCheckpointIndex += 1;
+        if (runCheckpointIndex === 1 && options.onProgress !== undefined) {
+          await allowProgressSurfaceToPaint();
+        }
       },
       ...(options.onProgress === undefined
         ? {}
