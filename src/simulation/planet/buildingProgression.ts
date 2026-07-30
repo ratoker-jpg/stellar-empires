@@ -138,6 +138,7 @@ export function refundResources(
 }
 
 export function completeBuilding(
+  profileId: ProgressionProfileId,
   planet: PlanetState,
   buildingId: string,
   targetLevel: number,
@@ -187,6 +188,7 @@ export function completeBuilding(
         }
       : planet.zones;
   const economy = refreshPlanetEconomy(
+    profileId,
     planet.economy,
     buildings,
     0,

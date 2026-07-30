@@ -337,7 +337,13 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
     planets: replacePlanet(
       state.planets,
       planet.id,
-      completeBuilding(planet, payload.buildingId, payload.targetLevel, payload.queueItemId),
+      completeBuilding(
+        state.campaignSettings.progressionProfile,
+        planet,
+        payload.buildingId,
+        payload.targetLevel,
+        payload.queueItemId,
+      ),
     ),
   };
 }
@@ -345,7 +351,12 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
 function accrueStateEconomies(state: GameState, seconds: number): GameState {
   return {
     ...state,
-    planets: accrueAllPlanetEconomies(state.planets, seconds, getEnergyOutputByEmpire(state)),
+    planets: accrueAllPlanetEconomies(
+      state.campaignSettings.progressionProfile,
+      state.planets,
+      seconds,
+      getEnergyOutputByEmpire(state),
+    ),
   };
 }
 

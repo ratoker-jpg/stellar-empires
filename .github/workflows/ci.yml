@@ -7,40 +7,13 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  patch-economy-profile:
-    if: github.event_name == 'pull_request' && github.head_ref == 'agent/compressed-campaign-progression-gate'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout implementation branch
-        uses: actions/checkout@v6
-        with:
-          ref: agent/compressed-campaign-progression-gate
-          fetch-depth: 0
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.13'
-      - name: Apply guarded replacements
-        run: python scripts/wire-economy-progression-profile.py
-      - name: Restore trusted workflow and remove patch script
-        run: |
-          git show origin/main:.github/workflows/ci.yml > .github/workflows/ci.yml
-          rm scripts/wire-economy-progression-profile.py
-      - name: Commit patched runtime
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Wire campaign profile through economy runtime'
-          git push origin HEAD:agent/compressed-campaign-progression-gate
-
   quality:
     name: Asset audit, lint, typecheck, test and build
     runs-on: ubuntu-latest

@@ -123,6 +123,7 @@ export function migrateLegacySynodAliases(state: GameState): GameState {
     return {
       ...mapped,
       economy: refreshPlanetEconomy(
+        state.campaignSettings.progressionProfile,
         mapped.economy,
         mapped.buildings,
         synodEnergyOutput(research, mapped.ownerEmpireId),

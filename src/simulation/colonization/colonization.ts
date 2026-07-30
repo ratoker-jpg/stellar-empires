@@ -1,3 +1,4 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import { createInitialPlanetDefenseState } from '../defense/types';
 import { createPlanetEconomy } from '../economy/planetEconomy';
 import type { ResourceCost } from '../economy/types';
@@ -79,7 +80,8 @@ export function getEmpireColonyCount(state: GameState, empireId: string): number
 export function createColonyPlanet(
   location: GalaxyPlanetLocation,
   empireId: string,
-  factionId: FactionId = 'aegis',
+  factionId: FactionId,
+  progressionProfile: ProgressionProfileId,
   colonyId = `colony-${location.planet.id}`,
 ): PlanetState {
   const buildings = getStartingBuildingsForFaction(factionId);
@@ -97,7 +99,7 @@ export function createColonyPlanet(
     zones: createPlanetZones(buildings),
     buildings,
     buildQueue: [],
-    economy: createPlanetEconomy(buildings, 0, 'balanced'),
+    economy: createPlanetEconomy(progressionProfile, buildings, 0, 'balanced'),
     inventory: { ships: {}, defenses: {} },
     productionQueues: { shipyard: [], defense: [] },
     defense: createInitialPlanetDefenseState(),
@@ -195,6 +197,7 @@ export function resolveColonization(
     location,
     fleet.empireId,
     factionId,
+    state.campaignSettings.progressionProfile,
     `colony-${location.planet.id}-${state.nextEventSequence}`,
   );
   const unloaded = unloadCargo(baseColony, fleet.cargo);

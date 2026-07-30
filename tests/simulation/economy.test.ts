@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { createCampaignSettings } from '../../src/simulation/campaign/settings';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import {
   accruePlanetEconomy,
@@ -8,7 +9,9 @@ import {
 import { executeCommand } from '../../src/simulation/reducer';
 
 function getPlayerPlanet(seed: string) {
-  const state = createInitialGameState(seed);
+  const state = createInitialGameState(seed, {
+    campaignSettings: createCampaignSettings({ progressionProfile: 'legacy-v1' }),
+  });
   const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player');
 
   if (planet === undefined) {
@@ -89,7 +92,7 @@ describe('planet economy', () => {
   });
 
   it('uses the strictest operating limit during a deficit', () => {
-    const economy = createPlanetEconomy([
+    const economy = createPlanetEconomy('legacy-v1', [
       { buildingId: 'building.aegis.infrared-bot', level: 1 },
       { buildingId: 'building.aegis.metal-bot-1', level: 10 },
     ]);
@@ -120,7 +123,7 @@ describe('planet economy', () => {
       },
     };
 
-    const updated = accruePlanetEconomy(nearlyFull, 86_400);
+    const updated = accruePlanetEconomy('legacy-v1', nearlyFull, 86_400);
     expect(updated.economy.resources.metal.amount).toBe(
       updated.economy.resources.metal.capacity,
     );

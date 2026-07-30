@@ -47,7 +47,7 @@ function pirateDefenses(tier: number): Readonly<Record<string, number>> {
 
 function createPiratePlanet(candidate: Candidate, tier: number): PlanetState {
   const buildings = pirateBuildings(tier);
-  const economy = createPlanetEconomy(buildings, 0, 'military');
+  const economy = createPlanetEconomy('legacy-v1', buildings, 0, 'military');
   const rewardScale = tier + 1;
   return {
     id: `pirate-base-${candidate.planet.id}`,

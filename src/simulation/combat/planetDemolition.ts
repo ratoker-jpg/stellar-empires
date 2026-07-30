@@ -371,6 +371,7 @@ export function resolvePlanetDemolition(
         buildQueue,
         zones: createPlanetZones(buildings),
         economy: refreshPlanetEconomy(
+          input.state.campaignSettings.progressionProfile,
           input.target.economy,
           buildings,
           0,
