@@ -117,13 +117,14 @@ export function migrateLegacyVeyraAliases(state: GameState): GameState {
   const research = state.research.map((entry) =>
     veyraEmpireIds.has(entry.empireId) ? mapMechanicalIds(entry) : entry,
   );
+  const profileId = state.campaignSettings?.progressionProfile ?? 'legacy-v1';
   const planets = state.planets.map((planet) => {
     if (planet.factionId !== 'veyra') return planet;
     const mapped = mapMechanicalIds(planet);
     return {
       ...mapped,
       economy: refreshPlanetEconomy(
-        'legacy-v1',
+        profileId,
         mapped.economy,
         mapped.buildings,
         veyraEnergyOutput(research, mapped.ownerEmpireId),
