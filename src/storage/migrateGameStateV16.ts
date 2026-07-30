@@ -4,6 +4,8 @@ import {
   LEGACY_PROGRESSION_PROFILE_ID,
   type CampaignSettings,
 } from '../simulation/campaign/settings';
+import { refreshPlanetEconomy } from '../simulation/economy/planetEconomy';
+import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
 import type { GameState } from '../simulation/types';
 import {
   migrateGameStateV15,
@@ -20,6 +22,27 @@ function legacySettingsFromCurrent(settings: CampaignSettings): LegacyCampaignSe
     worldSpeed: settings.worldSpeed,
     offlineProgression: true,
     createdAtReal: settings.createdAtReal,
+  };
+}
+
+function restoreProfileEconomy(state: GameState): GameState {
+  const empireIds = new Set(state.empires);
+  return {
+    ...state,
+    planets: state.planets.map((planet) =>
+      empireIds.has(planet.ownerEmpireId)
+        ? {
+            ...planet,
+            economy: refreshPlanetEconomy(
+              state.campaignSettings.progressionProfile,
+              planet.economy,
+              planet.buildings,
+              getResearchEffectsForEmpire(state, planet.ownerEmpireId).energyOutputPercent,
+              planet.specializationId,
+            ),
+          }
+        : planet,
+    ),
   };
 }
 
@@ -40,11 +63,11 @@ export function migrateGameStateV16(
       legacySavedAt,
     );
     if (reconciled === undefined) return undefined;
-    return {
+    return restoreProfileEconomy({
       ...reconciled,
       schemaVersion: 16,
       campaignSettings,
-    };
+    });
   }
 
   const legacy = migrateGameStateV15(value, legacySavedAt);
@@ -62,9 +85,9 @@ export function migrateGameStateV16(
     return undefined;
   }
 
-  return {
+  return restoreProfileEconomy({
     ...legacy,
     schemaVersion: 16,
     campaignSettings,
-  };
+  });
 }
