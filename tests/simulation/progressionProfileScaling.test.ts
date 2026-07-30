@@ -21,6 +21,7 @@ describe('progression profile repair and upgrade scaling', () => {
   it('applies the accepted compressed profile deterministically', () => {
     const repairCost = scaleRepairCost('compressed-v1', BASE_COST);
     const upgradeCost = scaleShipUpgradeCost('compressed-v1', BASE_COST);
+    const compressedMaxLevel = getShipUpgradeMaxLevel('compressed-v1');
 
     expect(repairCost).toEqual({ metal: 850, crystal: 680, gas: 170 });
     expect(upgradeCost).toEqual({ metal: 700, crystal: 560, gas: 140 });
@@ -30,6 +31,7 @@ describe('progression profile repair and upgrade scaling', () => {
     expect(scaleRepairSeconds('compressed-v1', 0)).toBe(1);
     expect(scaleShipUpgradeSeconds('compressed-v1', 1_000)).toBe(700);
     expect(scaleShipUpgradeSeconds('compressed-v1', 0)).toBe(1);
-    expect(getShipUpgradeMaxLevel('compressed-v1')).toBe(5);
+    expect(compressedMaxLevel).toBe(5);
+    expect(compressedMaxLevel).toBeLessThan(getShipUpgradeMaxLevel('legacy-v1'));
   });
 });
