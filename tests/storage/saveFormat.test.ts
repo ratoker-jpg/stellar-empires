@@ -63,10 +63,11 @@ describe('save format', () => {
     if (!parsed.ok) return;
 
     expect(parsed.value.formatVersion).toBe(3);
-    expect(parsed.value.state.schemaVersion).toBe(15);
+    expect(parsed.value.state.schemaVersion).toBe(16);
     expect(parsed.value.state.campaignSettings).toEqual(createCampaignSettings({
       scenarioPreset: parsed.value.state.universe.presetId,
       worldSpeed: 1,
+      progressionProfile: 'legacy-v1',
       createdAtReal: SAVE_TIME,
     }));
     expect(parsed.value.runtimeMetadata).toEqual(createCampaignRuntimeMetadata(SAVE_TIME));
@@ -218,7 +219,7 @@ describe('save format', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.state.fleets[0]?.mission).toBeNull();
-      expect(parsed.value.state.schemaVersion).toBe(15);
+      expect(parsed.value.state.schemaVersion).toBe(16);
       expect(parsed.value.state.campaignSettings.worldSpeed).toBe(1);
     }
   });
