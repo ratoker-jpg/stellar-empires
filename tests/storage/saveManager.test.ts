@@ -28,6 +28,11 @@ describe('save manager', () => {
     const summaries = await manager.list();
     expect(summaries.map((slot) => slot.slotId)).toEqual(['manual-b', 'manual-a']);
     expect(summaries.every((slot) => slot.worldSpeed === 1)).toBe(true);
+    expect(
+      summaries.every(
+        (slot) => slot.progressionProfile === state.campaignSettings.progressionProfile,
+      ),
+    ).toBe(true);
     expect(summaries.every((slot) => slot.lastActiveAtReal === runtimeMetadata.lastActiveAtReal)).toBe(true);
   });
 
