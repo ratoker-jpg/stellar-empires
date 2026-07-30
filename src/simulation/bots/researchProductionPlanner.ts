@@ -166,6 +166,7 @@ function chooseProduction(
   const roles = getFactionMechanicalRoles(factionId);
   const ships = roles.ships.complete;
   const defenses = roles.defenses.complete;
+  const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
   const commanderIds = getCommanderShipCatalog().map((definition) => definition.id);
   const unitIds = new Set([
     ...getUnitCatalogForFaction(factionId).map((definition) => definition.id),
@@ -203,30 +204,32 @@ function chooseProduction(
   const phasePriority = getBotPhaseProductionTargets(state, empireId, phase, threatened)
     .filter((target) => countUnit(state, empireId, target.unitId) < target.desiredTotal)
     .map((target) => ({ id: target.unitId, quantity: target.quantity }));
-  const availableCommanders = commanderCandidates(state, empireId);
-  const fallback: readonly { readonly id: string; readonly quantity: number }[] = threatened
-    ? [
-        { id: defenses.basicTurret, quantity: 2 },
-        { id: defenses.laserTurret, quantity: 1 },
-        { id: ships.supportShip, quantity: 1 },
-        { id: defenses.secondaryShield, quantity: 1 },
-        { id: defenses.plasmaTurret, quantity: 1 },
-        { id: defenses.laserIonBattery, quantity: 1 },
-        { id: defenses.planetaryShield, quantity: 1 },
-      ]
-    : [
-        ...(countUnit(state, empireId, ships.smallTransport) === 0
-          ? [{ id: ships.smallTransport, quantity: 1 }]
-          : []),
-        ...(countUnit(state, empireId, ships.recycler) === 0
-          ? [{ id: ships.recycler, quantity: 1 }]
-          : []),
-        ...(countUnit(state, empireId, ships.largeTransport) === 0
-          ? [{ id: ships.largeTransport, quantity: 1 }]
-          : []),
-        { id: defenses.basicTurret, quantity: 1 },
-        { id: defenses.secondaryShield, quantity: 1 },
-      ];
+  const availableCommanders = compressed ? [] : commanderCandidates(state, empireId);
+  const fallback: readonly { readonly id: string; readonly quantity: number }[] = compressed
+    ? []
+    : threatened
+      ? [
+          { id: defenses.basicTurret, quantity: 2 },
+          { id: defenses.laserTurret, quantity: 1 },
+          { id: ships.supportShip, quantity: 1 },
+          { id: defenses.secondaryShield, quantity: 1 },
+          { id: defenses.plasmaTurret, quantity: 1 },
+          { id: defenses.laserIonBattery, quantity: 1 },
+          { id: defenses.planetaryShield, quantity: 1 },
+        ]
+      : [
+          ...(countUnit(state, empireId, ships.smallTransport) === 0
+            ? [{ id: ships.smallTransport, quantity: 1 }]
+            : []),
+          ...(countUnit(state, empireId, ships.recycler) === 0
+            ? [{ id: ships.recycler, quantity: 1 }]
+            : []),
+          ...(countUnit(state, empireId, ships.largeTransport) === 0
+            ? [{ id: ships.largeTransport, quantity: 1 }]
+            : []),
+          { id: defenses.basicTurret, quantity: 1 },
+          { id: defenses.secondaryShield, quantity: 1 },
+        ];
   const priority = [
     ...phasePriority,
     ...availableCommanders.slice(0, 1),
