@@ -1,11 +1,11 @@
 # CAMPAIGN-PROGRESSION-BALANCE-01 — authorized implementation sequence
 
-**Status:** proposed for acceptance in Audit PR #133  
+**Status:** accepted by Audit PR #133; PR #134 merged and PR #135 next  
 **Complexity:** heavy  
 **Authorized implementation PRs:** exactly 2  
 **Expected numbers:** #134–#135
 
-No implementation may start before Audit PR #133 merges.
+Audit PR #133 merged. PR #134 merged as `aa87e764ef40444660039dc8d6a96d7f5514cc23`; only PR #135 remains authorized.
 
 ## PR #134 — PROGRESSION-PROFILE-FOUNDATION
 

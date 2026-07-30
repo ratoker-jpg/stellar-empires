@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** Audit PR #133 accepted; implementation PR #134 is next  
-**Updated:** 2026-07-29  
-**Last merged PR:** #133 `CAMPAIGN-PROGRESSION-BALANCE-01` · `989c2c0b8fc3d5cfe672af267a248b6b384331cc`  
-**Runtime baseline:** schema v15 / save format v3 / shared active-offline campaign clock  
-**Accepted target:** schema v16 / `legacy-v1 | compressed-v1` progression profiles  
-**Next branch:** `agent/progression-profile-foundation`
+**Status:** PR #134 merged; final implementation PR #135 is next  
+**Updated:** 2026-07-30  
+**Last merged PR:** #134 `PROGRESSION-PROFILE-FOUNDATION` · `aa87e764ef40444660039dc8d6a96d7f5514cc23`  
+**Runtime baseline:** schema v16 / save format v3 / `legacy-v1 | compressed-v1` progression profiles  
+**Accepted target:** compressed economy, rewards, bot phases and measured campaign closure  
+**Next branch:** `agent/compressed-campaign-progression-gate`
 
 ## Repository
 
@@ -43,7 +43,8 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 - #124: local campaign product contract;
 - #125–#129: navigation/usability repair;
 - #130–#132: immutable settings, persistence and shared active/offline campaign time;
-- #133: accepted measured progression-profile and two-PR implementation contract.
+- #133: accepted measured progression-profile and two-PR implementation contract;
+- #134: schema-v16 dual-profile foundation, legacy migration, deterministic profile consumers and profile identity UI.
 
 ## Accepted progression contract
 
@@ -72,14 +73,14 @@ Full deterministic endgame-ready progression targets 12 x2 real hours and has a 
 ## Ordered implementation
 
 ```text
-#134 PROGRESSION-PROFILE-FOUNDATION
-→ #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE
+#134 PROGRESSION-PROFILE-FOUNDATION — merged as aa87e764ef40444660039dc8d6a96d7f5514cc23
+→ #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE — next
 ```
 
-PR #134 must deliver only:
+PR #134 delivered:
 
 - schema-v16 immutable profile identity;
-- legacy migration and new-campaign default;
+- legacy migration and compressed new-campaign default;
 - explicit replay/checksum identity;
 - central typed profile registry;
 - profile-aware building/research/unit/defence/repair/upgrade resolution;
@@ -87,8 +88,18 @@ PR #134 must deliver only:
 - old queued-item compatibility;
 - formula, migration and three-faction parity gates.
 
-Economy/reward multipliers, deterministic bot phases and full 12/16-hour campaign closure belong to #135.
+PR #135 must deliver only:
+
+- compressed starting stocks, capacity and population;
+- accepted production, storage and reward multipliers;
+- consistent mission, expedition and space-object rewards;
+- deterministic bot progression phases using ordinary commands;
+- milestone runner and accepted seed/faction matrix;
+- x1/x2/x5/x10 exact scaling equivalence;
+- active/offline/save-load partition equivalence;
+- 12-hour target and 16-hour hard-maximum closure;
+- release-viewport Browser E2E, final change record and batch archive.
 
 ## Recovery
 
-Start #134 from fresh synchronized `main`. Do not alter accepted constants silently. Any required numeric divergence needs a recorded deterministic failure, explicit contract amendment and full matrix rerun.
+Start #135 from fresh synchronized `main`. Do not alter accepted profile identity or constants silently. Any required numeric divergence needs a recorded deterministic failure, explicit contract amendment and full matrix rerun.

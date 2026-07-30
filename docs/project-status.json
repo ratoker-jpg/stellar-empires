@@ -1,23 +1,23 @@
 {
-  "statusVersion": 47,
-  "updatedAt": "2026-07-29",
+  "statusVersion": 48,
+  "updatedAt": "2026-07-30",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 133,
-  "lastMergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc",
-  "verifiedMainBaseline": "Audit PR #133 CAMPAIGN-PROGRESSION-BALANCE-01 merged as 989c2c0b8fc3d5cfe672af267a248b6b384331cc after CI 30491819396, Browser E2E 30491819390, Graphify 30491819395 and no unresolved review threads; runtime remains schema v15/save v3 until authorized PR #134",
-  "runtimeBaselinePr": 132,
-  "runtimeBaselineSha": "df56566ce6d311ecef81103dddb924b5da0148c1",
+  "lastMergedPr": 134,
+  "lastMergeSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
+  "verifiedMainBaseline": "Implementation PR #134 PROGRESSION-PROFILE-FOUNDATION merged as aa87e764ef40444660039dc8d6a96d7f5514cc23 after CI 30553697886, Browser E2E 30553697703, Graphify 30553697767 and no unresolved review threads; runtime is schema v16/save v3 with immutable legacy-v1 | compressed-v1 progression identity",
+  "runtimeBaselinePr": 134,
+  "runtimeBaselineSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
   "activePr": null,
   "activePrKind": null,
   "activeWorkItem": null,
-  "nextPrAfterActive": 134,
+  "nextPrAfterActive": 135,
   "nextPrKind": "implementation",
-  "nextWorkItem": "PROGRESSION-PROFILE-FOUNDATION",
-  "currentMilestone": "M4d accepted progression batch; PR #134 next",
+  "nextWorkItem": "COMPRESSED-CAMPAIGN-PROGRESSION-GATE",
+  "currentMilestone": "M4d final implementation PR #135 next",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
@@ -45,13 +45,22 @@
     "auditMergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511",
     "baselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174",
     "implementationCount": 2,
-    "implementationPrs": [131, 132],
-    "completedImplementationPrs": [131, 132],
+    "implementationPrs": [
+      131,
+      132
+    ],
+    "completedImplementationPrs": [
+      131,
+      132
+    ],
     "implementationMergeShas": {
       "131": "257e3effaab4e34285d00db64b6676fda364fcfd",
       "132": "df56566ce6d311ecef81103dddb924b5da0148c1"
     },
-    "workItems": ["CAMPAIGN-SETTINGS-PERSISTENCE", "CAMPAIGN-CLOCK-OFFLINE-GATE"],
+    "workItems": [
+      "CAMPAIGN-SETTINGS-PERSISTENCE",
+      "CAMPAIGN-CLOCK-OFFLINE-GATE"
+    ],
     "status": "completed",
     "archive": "docs/audits/completed/local-campaign-time-pacing-01.md",
     "divergence": "none"
@@ -66,15 +75,26 @@
     "baselinePr": 132,
     "baselineSha": "df56566ce6d311ecef81103dddb924b5da0148c1",
     "implementationCount": 2,
-    "implementationPrs": [134, 135],
-    "completedImplementationPrs": [],
-    "workItems": ["PROGRESSION-PROFILE-FOUNDATION", "COMPRESSED-CAMPAIGN-PROGRESSION-GATE"],
-    "status": "accepted-awaiting-implementation",
+    "implementationPrs": [
+      134,
+      135
+    ],
+    "completedImplementationPrs": [
+      134
+    ],
+    "workItems": [
+      "PROGRESSION-PROFILE-FOUNDATION",
+      "COMPRESSED-CAMPAIGN-PROGRESSION-GATE"
+    ],
+    "status": "implementation-in-progress",
     "targetStateSchema": 16,
-    "targetSaveFormat": 3
+    "targetSaveFormat": 3,
+    "implementationMergeShas": {
+      "134": "aa87e764ef40444660039dc8d6a96d7f5514cc23"
+    }
   },
   "activeImplementationState": {
-    "stateSchema": 15,
+    "stateSchema": 16,
     "saveFormat": 3,
     "campaignSettingsImplemented": true,
     "campaignSetupImplemented": true,
@@ -95,7 +115,7 @@
     "browserInterruptionResumeImplemented": true,
     "modalKeyboardIsolationImplemented": true,
     "jsonChecksumRoundTripImplemented": true,
-    "progressionProfileImplemented": false,
+    "progressionProfileImplemented": true,
     "compressedProgressionImplemented": false,
     "status": "merged-main"
   },
@@ -104,7 +124,12 @@
     "requiredContinuousServer": false,
     "immutableWorldSpeedAtCreation": true,
     "runtimeSpeedControls": false,
-    "worldSpeedPresets": [1, 2, 5, 10],
+    "worldSpeedPresets": [
+      1,
+      2,
+      5,
+      10
+    ],
     "recommendedWorldSpeed": 2,
     "offlineProgression": true,
     "offlineBotsContinue": true,
@@ -120,12 +145,21 @@
     "targetStateSchema": 16,
     "targetSaveFormat": 3,
     "progressionProfileInCampaignSettings": true,
-    "progressionProfileIds": ["legacy-v1", "compressed-v1"],
+    "progressionProfileIds": [
+      "legacy-v1",
+      "compressed-v1"
+    ],
     "legacyMigrationProfile": "legacy-v1",
     "newCampaignDefaultProfile": "compressed-v1",
     "recommendedX2EndgameReadyTargetHours": 12,
     "recommendedX2HardMaximumHours": 16,
-    "playerMilestoneMaximumMinutes": [16, 30, 120, 360, 720],
+    "playerMilestoneMaximumMinutes": [
+      16,
+      30,
+      120,
+      360,
+      720
+    ],
     "actualVictoryIncluded": false,
     "profileRuntimeSwitchAllowed": false,
     "worldSpeedChangesIncluded": false,
@@ -134,11 +168,33 @@
     "criticalUnknowns": 0
   },
   "scenarioPresets": {
-    "test": {"populatedGalaxies": 2, "systemsPerGalaxy": 9},
-    "campaign": {"populatedGalaxies": 6, "systemsPerGalaxy": 27},
-    "fidelity": {"populatedGalaxies": 15, "systemsPerGalaxy": 81}
+    "test": {
+      "populatedGalaxies": 2,
+      "systemsPerGalaxy": 9
+    },
+    "campaign": {
+      "populatedGalaxies": 6,
+      "systemsPerGalaxy": 27
+    },
+    "fidelity": {
+      "populatedGalaxies": 15,
+      "systemsPerGalaxy": 81
+    }
   },
-  "batchSizing": {"heavy": [1, 2], "medium": [4, 4], "light": [6, 6]},
+  "batchSizing": {
+    "heavy": [
+      1,
+      2
+    ],
+    "medium": [
+      4,
+      4
+    ],
+    "light": [
+      6,
+      6
+    ]
+  },
   "deliveredCatalogs": {
     "buildingsPerFaction": 24,
     "technologiesPerFaction": 22,
@@ -149,10 +205,11 @@
     "catalogRuntimeTextures": 173
   },
   "deliveredDomains": [
-    "deterministic schema-v15 simulation with immutable campaign identity",
+    "deterministic schema-v16 simulation with immutable campaign and progression-profile identity",
     "save format v3 with integrity-protected cursor, continuation and pending summary metadata",
     "campaign setup for faction, topology and immutable x1/x2/x5/x10 speed",
-    "schema v1-v14 and save format v1-v2 migration to x1 using validated envelope time",
+    "schema v1-v15 and save format v1-v2 migration to x1 and legacy-v1 using validated envelope time",
+    "central legacy-v1/compressed-v1 progression caps, requirements, costs, times and queue compatibility",
     "one chronological active/offline campaign-time orchestrator",
     "fixed-point world-speed mapping with persistent fractional carry",
     "bounded resumable offline catch-up and processed-cursor checkpoints",
@@ -165,13 +222,44 @@
     "20-slot Universe and completed routed player-centered navigation"
   ],
   "activeDelivery": [
-    {"pr": 130, "kind": "audit", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "status": "merged", "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"},
-    {"pr": 131, "kind": "implementation", "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE", "status": "merged", "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd"},
-    {"pr": 132, "kind": "implementation", "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE", "status": "merged", "mergeSha": "df56566ce6d311ecef81103dddb924b5da0148c1"},
-    {"pr": 133, "kind": "audit", "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01", "status": "merged", "mergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc"}
+    {
+      "pr": 130,
+      "kind": "audit",
+      "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
+      "status": "merged",
+      "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"
+    },
+    {
+      "pr": 131,
+      "kind": "implementation",
+      "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
+      "status": "merged",
+      "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd"
+    },
+    {
+      "pr": 132,
+      "kind": "implementation",
+      "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
+      "status": "merged",
+      "mergeSha": "df56566ce6d311ecef81103dddb924b5da0148c1"
+    },
+    {
+      "pr": 133,
+      "kind": "audit",
+      "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
+      "status": "merged",
+      "mergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc"
+    },
+    {
+      "pr": 134,
+      "kind": "implementation",
+      "workItem": "PROGRESSION-PROFILE-FOUNDATION",
+      "status": "merged",
+      "mergeSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23"
+    }
   ],
   "knownLimitations": [
-    "campaign progression remains legacy until PR #134 and PR #135 implement the accepted audit",
+    "compressed starting economy, rewards, deterministic bot phases and full campaign-duration closure remain until PR #135",
     "multi-colony economy and logistics coherence remain a later audit",
     "deeper PvE/meta systems and complete bot parity remain incomplete",
     "alliances, solar war, functional Obelisks/Gates and final victory/defeat are not implemented",
@@ -185,11 +273,11 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "Audit PR #133 final head 0b0301cb6a3394ddff6eae277921e443af5f596a passed Graphify run 30491819395 before squash merge 989c2c0b8fc3d5cfe672af267a248b6b384331cc",
+    "lastValidation": "PR #134 final head 0c5b6940ee25ca28de4ac4d194535f77b0ba332a passed Graphify run 30553697767 before squash merge aa87e764ef40444660039dc8d6a96d7f5514cc23",
     "lastAuditGraph": {
-      "workflowRun": "30491819395",
-      "headSha": "0b0301cb6a3394ddff6eae277921e443af5f596a",
-      "evidence": "docs/audits/evidence/campaign-progression-balance-01-graphify.md"
+      "workflowRun": "30553697767",
+      "headSha": "0c5b6940ee25ca28de4ac4d194535f77b0ba332a",
+      "evidence": "PR #134 Graphify workflow artifact"
     }
   },
   "requiredStartupReading": [
@@ -211,5 +299,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Create PR #134 PROGRESSION-PROFILE-FOUNDATION from fresh synchronized main and implement only its accepted contract."
+  "nextAction": "Create PR #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE from fresh synchronized main and implement only its accepted closure contract."
 }

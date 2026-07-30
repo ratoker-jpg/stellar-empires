@@ -1,11 +1,11 @@
 # Stellar Empires — canonical roadmap to a complete playable game v5
 
 **Status:** active canonical product roadmap  
-**Updated:** 2026-07-29  
-**Last merged PR:** #132 `CAMPAIGN-CLOCK-OFFLINE-GATE` · `df56566ce6d311ecef81103dddb924b5da0148c1`  
-**Runtime baseline:** schema v15 / save format v3 / shared active-offline campaign clock  
+**Updated:** 2026-07-30  
+**Last merged PR:** #134 `PROGRESSION-PROFILE-FOUNDATION` · `aa87e764ef40444660039dc8d6a96d7f5514cc23`  
+**Runtime baseline:** schema v16 / save format v3 / immutable dual progression profiles  
 **Last completed batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
-**Next authorized work:** Audit `CAMPAIGN-PROGRESSION-BALANCE-01`  
+**Next authorized work:** PR #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE`  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -44,17 +44,17 @@ Canonical contracts:
 6. canonical product/endgame contracts;
 7. older audits and handoffs as history only.
 
-## 3. Delivered baseline through PR #132
+## 3. Delivered baseline through PR #134
 
 ### Simulation and persistence
 
 - deterministic command/event/replay/checksum model;
-- schema v15 immutable checksummed `CampaignSettings`;
+- schema v16 immutable checksummed `CampaignSettings` with `legacy-v1 | compressed-v1`;
 - scenario presets `test | campaign | fidelity`;
 - immutable world speed `x1 | x2 | x5 | x10`;
 - save format v3 integrity over stable envelope fields, runtime metadata and state;
 - protected processed cursor, pending catch-up and pending return-summary metadata;
-- state v1–v14 and save format v1–v2 migration to x1 using validated envelope time;
+- state v1–v15 and save format v1–v2 migration to x1 plus `legacy-v1` using validated envelope time;
 - autosave, manual slots, import/export, snapshots and recovery;
 - versioned state/runtime-metadata autosave staging resistant to stale writes;
 - checksum-safe JSON persistence with cleared optional metadata omitted;
@@ -66,7 +66,7 @@ Canonical contracts:
 - one accessible transaction selects faction, topology and immutable speed;
 - Aegis, Synod and Veyra are available;
 - compact, campaign and fidelity topologies are available;
-- x2 is presented as recommended;
+- x2 and `compressed-v1` are presented as recommended;
 - offline progression is visibly fixed on;
 - one chronological active/offline campaign-time orchestrator;
 - scheduled-event, logistics, world-event and bot-decision boundaries;
@@ -101,31 +101,29 @@ Canonical contracts:
 - campaign-time modal keyboard actions isolated from background Phaser controls;
 - measured task budgets and no-dead-end navigation gate.
 
-### PR #132 validation
+### PR #134 validation
 
-- final head `67cca4da2c401d2d9f5573e8c463dbbb570204d5`;
-- CI `30488370854`;
-- Browser E2E `30488370956`, 24/24 Chromium scenarios;
-- Graphify `30488370908`;
-- all actionable P0/P1/P2 review threads resolved;
-- merge `df56566ce6d311ecef81103dddb924b5da0148c1`.
+- final head `0c5b6940ee25ca28de4ac4d194535f77b0ba332a`;
+- CI `30553697886`;
+- Browser E2E `30553697703`;
+- Graphify `30553697767`;
+- no unresolved review threads;
+- merge `aa87e764ef40444660039dc8d6a96d7f5514cc23`.
 
-## 4. Next measured gap — progression balance
+## 4. Current measured gap — compressed campaign closure
 
-The campaign now has correct persisted identity, active time and offline continuation, but current progression values have not yet been measured or compressed for the intended complete campaign duration.
+The campaign now has schema-v16 dual-profile identity and all existing progression consumers resolve through the immutable profile. The remaining accepted work is the final #135 economy/reward/bot and measured-duration closure.
 
-`CAMPAIGN-PROGRESSION-BALANCE-01` must audit before any value changes:
+`COMPRESSED-CAMPAIGN-PROGRESSION-GATE` must deliver:
 
-- standard complete campaign duration;
-- first reconnaissance, combat and colonization timing;
-- building/research/production level and queue compression;
-- world-speed preset balance and x2 recommendation;
-- resource income, storage and population constraints;
-- fleet, planet-destroyer and eventual endgame timing;
-- repetitive versus meaningful progression steps;
-- player and honest-bot ability to reach the same milestones.
-
-The audit must use the delivered fake-clock/headless and Browser E2E foundation, record exact measurements, determine complexity and authorize a bounded implementation batch.
+- compressed starting stocks, capacities, population and storage/production multipliers;
+- consistent mission, expedition and space-object rewards;
+- deterministic bot progression phases using ordinary commands;
+- player and bot milestone gates across the accepted seed/faction matrix;
+- exact x1/x2/x5/x10 scaling equivalence;
+- active/offline/save-load partition equivalence;
+- median ≤12 x2 hours and every accepted seed ≤16 x2 hours;
+- release-viewport Browser E2E, change record and completed batch archive.
 
 ## 5. Release 1.0 definition
 
@@ -156,7 +154,7 @@ Bots must use the same commands, resources, timing and intelligence limits. At l
 | M4a — Ordinary missions/intelligence | completed | Audit #116; #117–#120 |
 | M4b — Planet demolition/destruction/recovery | completed | Audit #121; #122–#123 |
 | M4c — Local campaign time foundation | completed | #130 accepted; #131–#132 merged |
-| M4d — Campaign progression balance | next audit authorized | separate `CAMPAIGN-PROGRESSION-BALANCE-01` audit |
+| M4d — Campaign progression balance | implementation active | Audit #133; #134 merged; #135 next |
 | M5 — Multi-colony economy/logistics coherence | not audited | sustainability and bot planning |
 | M6 — Full PvE/meta systems | not audited | PvE depth, Arena, Admiral meta, services |
 | M7 — Autonomous bot parity | not audited | honest full-domain bot loop and catch-up parity |
@@ -166,18 +164,18 @@ Bots must use the same commands, resources, timing and intelligence limits. At l
 ## 7. Key invariants
 
 - current `main` is the only valid baseline;
-- the next repository PR must be an Audit PR;
+- the next repository PR must be authorized implementation PR #135;
 - campaign settings remain immutable deterministic state;
 - wall-clock cursor/continuation remain outside `GameState` but integrity protected;
-- old saves migrate to x1;
+- old saves migrate to x1 and `legacy-v1`; new campaigns use `compressed-v1`;
 - checkpoint cursor represents processed time only;
 - no elapsed duration is silently skipped or capped away;
 - active and offline paths use one orchestrator;
 - pending summary survives until successful acknowledgement;
 - player and bots use ordinary commands and visibility rules;
 - no continuously running server is required for Release 1.0;
-- no numeric progression change is allowed before the progression audit merges.
+- accepted progression constants may change only through the recorded divergence rule and full matrix rerun.
 
 ## 8. Immediate action
 
-Create Audit PR `CAMPAIGN-PROGRESSION-BALANCE-01` from fresh current `main`. Measure the full affected code, player, bot, persistence, UI and test surface; decide exact progression compression and batch complexity; do not implement balance changes in the audit itself.
+Create PR #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE` from fresh synchronized `main`. Implement only the accepted economy, reward, bot-phase and measured closure contract; do not implement alliances, Solar War, functional Gates or victory/defeat.

@@ -1,8 +1,8 @@
 # Current implementation batch audit — CAMPAIGN-PROGRESSION-BALANCE-01
 
-**Status:** accepted by Audit PR #133  
+**Status:** implementation active; PR #134 merged and PR #135 authorized next  
 **Audit merge:** `989c2c0b8fc3d5cfe672af267a248b6b384331cc`  
-**Updated:** 2026-07-29  
+**Updated:** 2026-07-30  
 **Roadmap milestone:** M4d — Campaign progression balance  
 **Baseline:** merged PR #132 · `df56566ce6d311ecef81103dddb924b5da0148c1`  
 **Complexity:** heavy  
@@ -55,6 +55,19 @@ Exact sequence:
 
 No third implementation PR is pre-authorized.
 
+## Implementation progress
+
+```text
+#134 head 0c5b6940ee25ca28de4ac4d194535f77b0ba332a
+CI 30553697886 — passed
+Browser E2E 30553697703 — passed
+Graphify 30553697767 — passed
+review threads — none
+squash merge aa87e764ef40444660039dc8d6a96d7f5514cc23
+```
+
+PR #134 delivered schema v16, dual-profile identity, legacy migration, centralized deterministic progression consumers, queue compatibility and profile identity UI.
+
 ## Critical accepted decisions
 
 1. World speed alone cannot meet the product target.
@@ -91,4 +104,4 @@ No third implementation PR is pre-authorized.
 
 ## Current action
 
-Create and execute only PR #134 `PROGRESSION-PROFILE-FOUNDATION` from fresh synchronized `main`.
+Create and execute only PR #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE` from fresh synchronized `main`. Preserve all #134 migration, checksum and queued-item compatibility contracts.

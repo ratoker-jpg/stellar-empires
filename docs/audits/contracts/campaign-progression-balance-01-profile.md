@@ -1,6 +1,6 @@
 # CAMPAIGN-PROGRESSION-BALANCE-01 — accepted progression profile contract
 
-**Status:** proposed for acceptance in Audit PR #133  
+**Status:** accepted by Audit PR #133; profile foundation merged in PR #134  
 **Complexity:** heavy  
 **Implementation count:** exactly 2 PRs  
 **State target:** schema v16  
