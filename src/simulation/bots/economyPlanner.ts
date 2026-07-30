@@ -142,6 +142,7 @@ export function planBotEconomy(
   }
 
   const profileId = state.campaignSettings.progressionProfile;
+  const compressed = profileId === 'compressed-v1';
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).buildings;
   const phase = getBotProgressionPhase(state, empireId);
@@ -153,8 +154,8 @@ export function planBotEconomy(
   };
   const lowestResource = (Object.entries(resourceRatios) as [keyof typeof resourceRatios, number][])
     .sort((left, right) => left[1] - right[1] || left[0].localeCompare(right[0]))[0];
-  const specializationThreshold = profileId === 'compressed-v1' ? 0.05 : 0.3;
-  const recoveryThreshold = profileId === 'compressed-v1' ? 0.05 : 0.35;
+  const specializationThreshold = compressed ? 0.05 : 0.3;
+  const recoveryThreshold = compressed ? 0.05 : 0.35;
 
   if (planet.specializationId === 'balanced') {
     const specializationId =
@@ -213,13 +214,16 @@ export function planBotEconomy(
       gas: roles.gas,
     }[lowestResource[0]];
     const currentLevel = getBuildingLevel(planet.buildings, resourceBuilding);
+    const recoveryLevel = compressed
+      ? Math.min(6, currentLevel + 1)
+      : currentLevel + 1;
     const plan = createBuildingPlan(
       profileId,
       empireId,
       planet,
       'resource-deficit',
       `Самый слабый резерв — ${lowestResource[0]}: восстанавливается добыча.`,
-      [{ buildingId: resourceBuilding, level: currentLevel + 1 }],
+      [{ buildingId: resourceBuilding, level: recoveryLevel }],
       catalog,
     );
     if (plan !== undefined) return plan;
@@ -250,6 +254,7 @@ export function planBotEconomy(
   );
   if (sensorPlan !== undefined) return sensorPlan;
 
+  const balancedMaximum = compressed ? 4 : Number.MAX_SAFE_INTEGER;
   const balancedTargets = [roles.power, roles.metal, roles.crystal, roles.gas, roles.command]
     .sort(
       (left, right) =>
@@ -258,7 +263,10 @@ export function planBotEconomy(
     )
     .map((buildingId) => ({
       buildingId,
-      level: getBuildingLevel(planet.buildings, buildingId) + 1,
+      level: Math.min(
+        balancedMaximum,
+        getBuildingLevel(planet.buildings, buildingId) + 1,
+      ),
     }));
   const balancedPlan = createBuildingPlan(
     profileId,
