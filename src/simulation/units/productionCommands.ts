@@ -4,10 +4,10 @@ import {
   getDefenseGridCapacity,
   getDefenseGridUsed,
 } from '../defense/planetaryDefense';
-import { appendCommandHistory } from '../history/stateHistory';
 import { enqueueEvent } from '../eventQueue';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
+import { appendCommandHistory } from '../history/stateHistory';
 import {
   canAfford,
   getBuildingLevel,
@@ -15,6 +15,7 @@ import {
   spendResources,
 } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
+import { getBuildingMaxLevelById } from '../progression/profile';
 import { getEmpireResearch } from '../research/researchState';
 import type {
   CommandLogEntry,
@@ -88,7 +89,14 @@ function validateCommanderProduction(
   }
   const shipyardId = getFactionMechanicalRoles(planet.factionId).buildings.shipyard;
   const currentShipyardLevel = getBuildingLevel(planet.buildings, shipyardId);
-  const requiredShipyardLevel = definition.requiredShipyardLevel ?? 1;
+  const rawRequiredShipyardLevel = definition.requiredShipyardLevel ?? 1;
+  const shipyardCap = getBuildingMaxLevelById(
+    state.campaignSettings.progressionProfile,
+    shipyardId,
+  );
+  const requiredShipyardLevel = shipyardCap === undefined
+    ? rawRequiredShipyardLevel
+    : Math.min(rawRequiredShipyardLevel, shipyardCap);
   if (currentShipyardLevel < requiredShipyardLevel) {
     return {
       ok: false,
@@ -140,7 +148,13 @@ export function queueUnitBatch(
     return { ok: false, code: 'RESEARCH_STATE_NOT_FOUND', message: 'Empire research state not found.' };
   }
 
-  const missingRequirements = findMissingUnitRequirements(definition, planet, research);
+  const profileId = state.campaignSettings.progressionProfile;
+  const missingRequirements = findMissingUnitRequirements(
+    definition,
+    planet,
+    research,
+    profileId,
+  );
   if (missingRequirements.length > 0) {
     return {
       ok: false,
@@ -204,7 +218,7 @@ export function queueUnitBatch(
     }
   }
 
-  const cost = calculateUnitBatchCost(definition, command.quantity);
+  const cost = calculateUnitBatchCost(definition, command.quantity, profileId);
   if (!canAfford(planet.economy, cost)) {
     return {
       ok: false,
@@ -216,7 +230,12 @@ export function queueUnitBatch(
 
   const sequence = state.nextEventSequence;
   const queueItemId = `production-${sequence}`;
-  const duration = calculateUnitBatchSeconds(definition, command.quantity, planet);
+  const duration = calculateUnitBatchSeconds(
+    definition,
+    command.quantity,
+    planet,
+    profileId,
+  );
   const completesAt = state.clock.elapsedSeconds + duration;
   const queueItem = {
     id: queueItemId,
