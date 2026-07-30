@@ -23,6 +23,23 @@ export interface BotProductionTarget {
   readonly desiredTotal: number;
 }
 
+const researchTargetCache = new Map<string, readonly BotResearchTarget[]>();
+const productionTargetCache = new Map<string, readonly BotProductionTarget[]>();
+
+function cacheKey(
+  state: GameState,
+  empireId: string,
+  phase: BotProgressionPhase,
+  threatened: boolean,
+): string {
+  return [
+    getFactionIdForEmpire(state, empireId),
+    state.campaignSettings.progressionProfile,
+    phase,
+    threatened ? 'threat' : 'normal',
+  ].join(':');
+}
+
 function phaseShipTargets(
   state: GameState,
   empireId: string,
@@ -53,6 +70,10 @@ export function getBotPhaseResearchTargets(
   phase: BotProgressionPhase,
   threatened: boolean,
 ): readonly BotResearchTarget[] {
+  const key = cacheKey(state, empireId, phase, threatened);
+  const cached = researchTargetCache.get(key);
+  if (cached !== undefined) return cached;
+
   const factionId = getFactionIdForEmpire(state, empireId);
   const profileId = state.campaignSettings.progressionProfile;
   const roles = getFactionMechanicalRoles(factionId);
@@ -112,10 +133,12 @@ export function getBotPhaseResearchTargets(
   ];
   for (const target of baselineTargets) addTarget(target.technologyId, target.level);
 
-  return order.map((technologyId) => ({
+  const targets = order.map((technologyId) => ({
     technologyId,
     level: levels.get(technologyId) ?? 1,
   }));
+  researchTargetCache.set(key, targets);
+  return targets;
 }
 
 export function getBotPhaseProductionTargets(
@@ -124,6 +147,10 @@ export function getBotPhaseProductionTargets(
   phase: BotProgressionPhase,
   threatened: boolean,
 ): readonly BotProductionTarget[] {
+  const key = cacheKey(state, empireId, phase, threatened);
+  const cached = productionTargetCache.get(key);
+  if (cached !== undefined) return cached;
+
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).ships;
   const primary: readonly BotProductionTarget[] = (() => {
@@ -169,5 +196,7 @@ export function getBotPhaseProductionTargets(
         { unitId: roles.corvette, quantity: 2, desiredTotal: 4 },
       ]
     : [];
-  return [...pressure, ...primary];
+  const targets = [...pressure, ...primary];
+  productionTargetCache.set(key, targets);
+  return targets;
 }
