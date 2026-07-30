@@ -131,7 +131,7 @@ function createPhasePrerequisiteTargets(
       const requirement = resolveResearchRequirement(profileId, rawRequirement);
       addResearch(requirement.technologyId, requirement.level);
     }
-    addBuilding(roles.buildings.researchCenter, definition.requiredLaboratoryLevel);
+    addBuilding(roles.buildings.laboratory, definition.requiredLaboratoryLevel);
     const currentTarget = researchLevels.get(technologyId) ?? 0;
     if (currentTarget >= level) return;
     researchLevels.set(technologyId, level);
