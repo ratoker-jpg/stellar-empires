@@ -72,14 +72,35 @@ export function getPlanetDemolitionThreshold(
   }
   if (finalPoints <= 550) {
     return {
-      baseChanceBasisPoints: 8_000,
+      baseChanceBasisPoints: 5_000,
       maximumSelectedBuildings: 2,
       selectAllEligible: false,
     };
   }
+  if (finalPoints <= 700) {
+    return {
+      baseChanceBasisPoints: 7_000,
+      maximumSelectedBuildings: 2,
+      selectAllEligible: false,
+    };
+  }
+  if (finalPoints <= 850) {
+    return {
+      baseChanceBasisPoints: 5_000,
+      maximumSelectedBuildings: 3,
+      selectAllEligible: false,
+    };
+  }
+  if (finalPoints <= 1_000) {
+    return {
+      baseChanceBasisPoints: 6_000,
+      maximumSelectedBuildings: 5,
+      selectAllEligible: false,
+    };
+  }
   return {
-    baseChanceBasisPoints: 10_000,
-    maximumSelectedBuildings: Number.POSITIVE_INFINITY,
+    baseChanceBasisPoints: 3_300,
+    maximumSelectedBuildings: Number.MAX_SAFE_INTEGER,
     selectAllEligible: true,
   };
 }
@@ -93,183 +114,155 @@ function hashText(value: string): number {
   return hash >>> 0;
 }
 
-function deterministicRollBasisPoints(
-  seed: number,
-  eventSequence: number,
-  attackerEmpireId: string,
-  attackerFleetId: string,
-  targetPlanetId: string,
-  buildingId: string,
-  selectionIndex: number,
-): number {
-  return hashText(
-    `${seed}:${eventSequence}:${attackerEmpireId}:${attackerFleetId}:${targetPlanetId}:${buildingId}:${selectionIndex}:planet-demolition`,
-  ) % 10_000;
+function rollBasisPoints(domain: string): number {
+  return hashText(domain) % 10_000;
 }
 
-function getEligibleBuildings(
-  target: PlanetState,
-): readonly PlanetBuildingState[] {
-  return target.buildings
-    .filter((building) => building.level > 0 && !isBuildingEndgameLocked(building.buildingId))
-    .sort((left, right) => {
-      const levelDifference = right.level - left.level;
-      if (levelDifference !== 0) return levelDifference;
-      return resolveCanonicalBuildingId(left.buildingId).localeCompare(
-        resolveCanonicalBuildingId(right.buildingId),
-      );
-    });
-}
-
-function getAttackerPlanetDestroyerCount(
-  ships: Readonly<Record<string, number>>,
-): number {
-  return Object.entries(ships).reduce((total, [unitId, quantity]) => {
-    const definition = getUnitDefinition(unitId);
-    return definition?.role === 'planet-destroyer' ? total + quantity : total;
-  }, 0);
-}
-
-function getActiveDefensePopulation(
+function getDefensePopulation(
   defenses: Readonly<Record<string, number>>,
 ): number {
-  return Object.entries(defenses).reduce((total, [unitId, quantity]) => {
+  return Object.entries(defenses).reduce((total, [unitId, count]) => {
+    if (count <= 0) return total;
     const definition = getUnitDefinition(unitId);
     return definition?.kind === 'defense'
-      ? total + definition.populationCost * quantity
+      ? total + definition.populationCost * count
       : total;
   }, 0);
 }
 
-function getDefenseReductionBasisPoints(defensePopulation: number): number {
-  return Math.min(7_500, defensePopulation * 50);
-}
-
-function applyReduction(points: number, reductionBasisPoints: number): number {
-  return Math.floor((points * (10_000 - reductionBasisPoints)) / 10_000);
-}
-
-function selectEligibleBuildings(
-  eligible: readonly PlanetBuildingState[],
-  maximumSelectedBuildings: number,
+function eligibleBuildings(
+  target: PlanetState,
 ): readonly PlanetBuildingState[] {
-  return maximumSelectedBuildings === Number.POSITIVE_INFINITY
-    ? eligible
-    : eligible.slice(0, maximumSelectedBuildings);
+  return target.buildings
+    .filter(
+      (building) =>
+        building.level > 0 && !isBuildingEndgameLocked(building.buildingId),
+    )
+    .map((building) => ({
+      buildingId: resolveCanonicalBuildingId(building.buildingId),
+      level: building.level,
+    }))
+    .sort((left, right) => left.buildingId.localeCompare(right.buildingId));
+}
+
+function selectionDomain(
+  input: ResolvePlanetDemolitionInput,
+  buildingId: string,
+): string {
+  return [
+    input.state.seed,
+    input.eventSequence,
+    input.attackerFleetId,
+    input.target.galaxyPlanetId,
+    'planet-demolition-selection',
+    buildingId,
+  ].join(':');
+}
+
+function buildingRollDomain(
+  input: ResolvePlanetDemolitionInput,
+  buildingId: string,
+): string {
+  return [
+    input.state.seed,
+    input.eventSequence,
+    input.attackerFleetId,
+    input.target.galaxyPlanetId,
+    'planet-demolition-roll',
+    buildingId,
+  ].join(':');
 }
 
 function buildReport(
   input: ResolvePlanetDemolitionInput,
-  status: PlanetDemolitionReport['status'],
+  outcome: PlanetDemolitionReport['outcome'],
   rawPoints: number,
   defensePopulation: number,
-  defenseReductionBasisPoints: number,
+  defenseReduction: number,
   finalPoints: number,
   threshold: PlanetDemolitionThreshold,
-  eligibleBuildingIds: readonly string[],
+  eligibleBuildingCount: number,
   selectedBuildingIds: readonly string[],
-  buildingRolls: readonly PlanetDemolitionBuildingRollReport[],
-  demolishedBuildingIds: readonly string[],
+  rolls: readonly PlanetDemolitionBuildingRollReport[],
   cancelledQueueItemIds: readonly string[],
 ): PlanetDemolitionReport {
+  const commanderBonusBasisPoints = Math.max(
+    0,
+    input.commanderBonusBasisPoints,
+  );
   return {
-    status,
-    attackerEmpireId: input.attackerEmpireId,
-    attackerFleetId: input.attackerFleetId,
-    targetPlanetId: input.target.id,
-    planetDestroyerCount: getAttackerPlanetDestroyerCount(input.attackerRemaining),
-    commanderBonusBasisPoints: input.commanderBonusBasisPoints,
-    rawPoints,
+    outcome,
+    contributions: getPlanetDestroyerSiegeContributions(
+      input.state.shipUpgrades,
+      input.attackerEmpireId,
+      input.attackerRemaining,
+    ).map((contribution) => ({
+      unitId: contribution.unitId,
+      factionId: contribution.factionId,
+      count: contribution.count,
+      weaponLevel: contribution.weaponLevel,
+      pointsPerShip: contribution.demolitionPointsPerShip,
+      totalPoints: contribution.totalDemolitionPoints,
+    })),
     defensePopulation,
-    defenseReductionBasisPoints,
+    rawPoints,
+    defenseReduction,
     finalPoints,
-    threshold: {
-      baseChanceBasisPoints: threshold.baseChanceBasisPoints,
-      maximumSelectedBuildings:
-        threshold.maximumSelectedBuildings === Number.POSITIVE_INFINITY
-          ? eligibleBuildingIds.length
-          : threshold.maximumSelectedBuildings,
-      selectAllEligible: threshold.selectAllEligible,
-    },
-    eligibleBuildingIds,
+    baseChanceBasisPoints: threshold.baseChanceBasisPoints,
+    commanderBonusBasisPoints,
+    finalChanceBasisPoints: Math.min(
+      10_000,
+      threshold.baseChanceBasisPoints + commanderBonusBasisPoints,
+    ),
+    maximumSelectedBuildings: threshold.selectAllEligible
+      ? eligibleBuildingCount
+      : threshold.maximumSelectedBuildings,
+    allEligibleBuildingsSelected: threshold.selectAllEligible,
+    eligibleBuildingCount,
     selectedBuildingIds,
-    buildingRolls,
-    demolishedBuildingIds,
+    rolls,
     cancelledQueueItemIds,
   };
-}
-
-function createNoopReport(
-  input: ResolvePlanetDemolitionInput,
-  status: PlanetDemolitionReport['status'],
-): PlanetDemolitionReport {
-  return buildReport(
-    input,
-    status,
-    0,
-    getActiveDefensePopulation(input.activeDefenses),
-    0,
-    0,
-    getPlanetDemolitionThreshold(0),
-    [],
-    [],
-    [],
-    [],
-    [],
-  );
 }
 
 export function resolvePlanetDemolition(
   input: ResolvePlanetDemolitionInput,
 ): PlanetDemolitionResolution {
-  if (input.winner !== 'attacker') {
-    return {
-      planet: input.target,
-      pendingEvents: input.state.pendingEvents,
-      report: createNoopReport(input, 'skipped-attacker-lost'),
-    };
-  }
-
   const contributions = getPlanetDestroyerSiegeContributions(
-    input.attackerRemaining,
     input.state.shipUpgrades,
     input.attackerEmpireId,
+    input.attackerRemaining,
   );
-  const rawPoints = contributions.reduce(
-    (sum, contribution) => sum + contribution.totalDemolitionPoints,
-    0,
-  );
-  if (rawPoints <= 0) {
+  if (contributions.length === 0) {
     return {
       planet: input.target,
       pendingEvents: input.state.pendingEvents,
-      report: createNoopReport(input, 'skipped-no-planet-destroyer'),
     };
   }
 
-  const defensePopulation = getActiveDefensePopulation(input.activeDefenses);
-  const defenseReductionBasisPoints = getDefenseReductionBasisPoints(defensePopulation);
-  const defendedPoints = applyReduction(rawPoints, defenseReductionBasisPoints);
-  const finalPoints = Math.floor(
-    (defendedPoints * (10_000 + Math.max(0, input.commanderBonusBasisPoints))) / 10_000,
+  const rawPoints = contributions.reduce(
+    (total, contribution) => total + contribution.totalDemolitionPoints,
+    0,
   );
+  const defensePopulation = getDefensePopulation(input.activeDefenses);
+  const defenseReduction = Math.floor(defensePopulation / 2_500) * 100;
+  const finalPoints = Math.max(0, rawPoints - defenseReduction);
   const threshold = getPlanetDemolitionThreshold(finalPoints);
-  const eligible = getEligibleBuildings(input.target);
-  const eligibleBuildingIds = eligible.map((building) => building.buildingId);
-  if (eligible.length === 0 || threshold.baseChanceBasisPoints === 0) {
+  const eligible = eligibleBuildings(input.target);
+
+  if (input.winner === 'defender') {
     return {
       planet: input.target,
       pendingEvents: input.state.pendingEvents,
       report: buildReport(
         input,
-        eligible.length === 0 ? 'skipped-no-eligible-buildings' : 'applied',
+        'battle-result-ineligible',
         rawPoints,
         defensePopulation,
-        defenseReductionBasisPoints,
+        defenseReduction,
         finalPoints,
         threshold,
-        eligibleBuildingIds,
-        [],
+        eligible.length,
         [],
         [],
         [],
@@ -277,35 +270,85 @@ export function resolvePlanetDemolition(
     };
   }
 
-  const selected = selectEligibleBuildings(eligible, threshold.maximumSelectedBuildings);
-  const selectedBuildingIds = selected.map((building) => building.buildingId);
-  const buildingRolls: PlanetDemolitionBuildingRollReport[] = [];
-  const demolishedBuildingIds = new Set<string>();
+  if (threshold.maximumSelectedBuildings === 0) {
+    return {
+      planet: input.target,
+      pendingEvents: input.state.pendingEvents,
+      report: buildReport(
+        input,
+        'zero-final-points',
+        rawPoints,
+        defensePopulation,
+        defenseReduction,
+        finalPoints,
+        threshold,
+        eligible.length,
+        [],
+        [],
+        [],
+      ),
+    };
+  }
 
-  selected.forEach((building, selectionIndex) => {
-    const rollBasisPoints = deterministicRollBasisPoints(
-      input.state.seed,
-      input.eventSequence,
-      input.attackerEmpireId,
-      input.attackerFleetId,
-      input.target.id,
-      building.buildingId,
-      selectionIndex,
-    );
-    const passed = threshold.selectAllEligible || rollBasisPoints < threshold.baseChanceBasisPoints;
-    buildingRolls.push({
-      buildingId: building.buildingId,
-      levelBefore: building.level,
-      chanceBasisPoints: threshold.baseChanceBasisPoints,
-      rollBasisPoints,
-      passed,
-    });
-    if (passed) demolishedBuildingIds.add(resolveCanonicalBuildingId(building.buildingId));
-  });
+  if (eligible.length === 0) {
+    return {
+      planet: input.target,
+      pendingEvents: input.state.pendingEvents,
+      report: buildReport(
+        input,
+        'no-eligible-buildings',
+        rawPoints,
+        defensePopulation,
+        defenseReduction,
+        finalPoints,
+        threshold,
+        0,
+        [],
+        [],
+        [],
+      ),
+    };
+  }
 
-  const buildings = input.target.buildings.filter(
-    (building) => !demolishedBuildingIds.has(resolveCanonicalBuildingId(building.buildingId)),
+  const selected = threshold.selectAllEligible
+    ? eligible
+    : [...eligible]
+        .sort((left, right) => {
+          const leftHash = hashText(selectionDomain(input, left.buildingId));
+          const rightHash = hashText(selectionDomain(input, right.buildingId));
+          return leftHash - rightHash || left.buildingId.localeCompare(right.buildingId);
+        })
+        .slice(0, threshold.maximumSelectedBuildings);
+  const finalChanceBasisPoints = Math.min(
+    10_000,
+    threshold.baseChanceBasisPoints +
+      Math.max(0, input.commanderBonusBasisPoints),
   );
+  const rolls: PlanetDemolitionBuildingRollReport[] = selected.map(
+    (building) => {
+      const roll = rollBasisPoints(
+        buildingRollDomain(input, building.buildingId),
+      );
+      const demolished = roll < finalChanceBasisPoints;
+      return {
+        buildingId: building.buildingId,
+        levelBefore: building.level,
+        levelAfter: demolished ? Math.max(0, building.level - 1) : building.level,
+        chanceBasisPoints: finalChanceBasisPoints,
+        rollBasisPoints: roll,
+        demolished,
+      };
+    },
+  );
+  const demolishedBuildingIds = new Set(
+    rolls.filter((roll) => roll.demolished).map((roll) => roll.buildingId),
+  );
+  const buildings = input.target.buildings.flatMap((building) => {
+    const canonicalId = resolveCanonicalBuildingId(building.buildingId);
+    if (!demolishedBuildingIds.has(canonicalId)) return [building];
+    const level = Math.max(0, building.level - 1);
+    return level === 0 ? [] : [{ buildingId: canonicalId, level }];
+  });
   const cancelledQueueItemIds = input.target.buildQueue
     .filter((item) =>
       demolishedBuildingIds.has(resolveCanonicalBuildingId(item.buildingId)),
@@ -347,13 +390,12 @@ export function resolvePlanetDemolition(
       'applied',
       rawPoints,
       defensePopulation,
-      defenseReductionBasisPoints,
+      defenseReduction,
       finalPoints,
       threshold,
-      eligibleBuildingIds,
-      selectedBuildingIds,
-      buildingRolls,
-      [...demolishedBuildingIds].sort(),
+      eligible.length,
+      selected.map((building) => building.buildingId),
+      rolls,
       cancelledQueueItemIds,
     ),
   };
