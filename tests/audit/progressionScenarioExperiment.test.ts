@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { runProgressionScenario } from '../../src/simulation/progression/scenarioRunner';
 
-const scenarioIt = process.env.RUN_PROGRESSION_SCENARIO === '1' ? it : it.skip;
+const runtimeEnvironment = (
+  globalThis as typeof globalThis & {
+    readonly process?: { readonly env?: Readonly<Record<string, string | undefined>> };
+  }
+).process?.env;
+const scenarioIt = runtimeEnvironment?.RUN_PROGRESSION_SCENARIO === '1' ? it : it.skip;
 
 describe('compressed progression scenario experiment', () => {
   scenarioIt('drives the accepted baseline seed through ordinary player and bot commands', () => {
