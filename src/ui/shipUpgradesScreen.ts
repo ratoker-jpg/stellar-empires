@@ -1,12 +1,12 @@
 import '../styles/shipUpgrades.css';
 import { getFleetShipArtUrl } from '../assets/galaxyFleetRuntimeAssets';
+import { getShipUpgradeMaxLevel } from '../simulation/progression/profileScaling';
 import type { GameCommand, GameState } from '../simulation/types';
 import { getUnitsByKind } from '../simulation/units/catalog';
 import {
   calculateShipUpgradeCost,
   getEmpireShipUpgradeState,
   getShipUpgradeLevels,
-  SHIP_UPGRADE_MAX_LEVEL,
   SHIP_UPGRADE_TRACKS,
 } from '../simulation/upgrades/shipUpgrades';
 import type { ShipUpgradeTrack } from '../simulation/upgrades/types';
@@ -143,9 +143,15 @@ export function mountShipUpgradesScreen(bridge: ShipUpgradeBridge): ShipUpgrades
     const selectedTrack = (trackSelect.value || TRACKS[0]) as ShipUpgradeTrack;
     if (selectedUnit !== undefined) {
       const current = getShipUpgradeLevels(state.shipUpgrades, 'player', selectedUnit)[selectedTrack];
-      const cost = calculateShipUpgradeCost(selectedUnit, selectedTrack, current + 1);
-      quote.textContent = current >= SHIP_UPGRADE_MAX_LEVEL
-        ? `Максимальный уровень ${SHIP_UPGRADE_MAX_LEVEL}`
+      const maxLevel = getShipUpgradeMaxLevel(state.campaignSettings.progressionProfile);
+      const cost = calculateShipUpgradeCost(
+        selectedUnit,
+        selectedTrack,
+        current + 1,
+        state.campaignSettings.progressionProfile,
+      );
+      quote.textContent = current >= maxLevel
+        ? `Максимальный уровень ${maxLevel}`
         : cost === undefined
           ? 'Стоимость недоступна'
           : `Уровень ${current} → ${current + 1} · ${NUMBER_FORMAT.format(cost.metal)} M · ${NUMBER_FORMAT.format(cost.crystal)} C · ${NUMBER_FORMAT.format(cost.gas)} G · +${SHIP_UPGRADE_TRACKS[selectedTrack].percentPerLevel}%`;

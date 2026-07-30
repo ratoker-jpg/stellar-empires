@@ -126,11 +126,11 @@ describe('complete planetary defense catalogs', () => {
     expect(shield).toBeDefined();
     if (shield === undefined) return;
 
-    expect(calculateDefenseRepairCost(shield, 2)).toMatchObject({
+    expect(calculateDefenseRepairCost(shield, 2, 'legacy-v1')).toMatchObject({
       metal: expect.any(Number),
       crystal: expect.any(Number),
       gas: expect.any(Number),
     });
-    expect(calculateDefenseRepairSeconds(shield, 2)).toBeGreaterThan(0);
+    expect(calculateDefenseRepairSeconds(shield, 2, 'legacy-v1')).toBeGreaterThan(0);
   });
 });
