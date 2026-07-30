@@ -4,8 +4,13 @@ import { getBuildingDefinition } from '../planet/buildingCatalog';
 import { isBuildingEndgameLocked } from '../planet/buildingOperations';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
-import { resolveBuildingRequirement } from '../progression/profile';
+import {
+  resolveBuildingRequirement,
+  resolveResearchRequirement,
+} from '../progression/profile';
+import { getEmpireResearch, getResearchLevel } from '../research/researchState';
 import type { GameState } from '../types';
+import { getUnitDefinition } from '../units/catalog';
 import { getLegacyUnitIdsForCanonical } from '../units/unitAliases';
 
 export const BOT_PROGRESSION_PHASES = [
@@ -57,6 +62,40 @@ function countShip(
   );
 }
 
+function hasUnitProductionCapability(
+  state: GameState,
+  empireId: string,
+  unitId: string,
+): boolean {
+  const definition = getUnitDefinition(unitId);
+  if (definition === undefined || definition.kind !== 'ship') return false;
+  const profileId = state.campaignSettings.progressionProfile;
+  const research = getEmpireResearch(state.research, empireId);
+  const researchReady = definition.researchRequirements.every((rawRequirement) => {
+    const requirement = resolveResearchRequirement(profileId, rawRequirement);
+    return research !== undefined &&
+      getResearchLevel(research, requirement.technologyId) >= requirement.level;
+  });
+  if (!researchReady) return false;
+  return state.planets
+    .filter((planet) => planet.ownerEmpireId === empireId)
+    .some((planet) =>
+      definition.buildingRequirements.every((rawRequirement) => {
+        const requirement = resolveBuildingRequirement(profileId, rawRequirement);
+        return getBuildingLevel(planet.buildings, requirement.buildingId) >= requirement.level;
+      }),
+    );
+}
+
+function hasShipOrCapability(
+  state: GameState,
+  empireId: string,
+  snapshot: EmpireCapabilitySnapshot,
+  unitId: string,
+): boolean {
+  return countShip(snapshot, unitId) > 0 || hasUnitProductionCapability(state, empireId, unitId);
+}
+
 function hasResolvedBuildingPrerequisites(
   state: GameState,
   planet: PlanetState,
@@ -75,14 +114,11 @@ function hasResolvedBuildingPrerequisites(
     const levelSatisfied =
       isBuildingEndgameLocked(requirement.buildingId) ||
       getBuildingLevel(planet.buildings, requirement.buildingId) >= requirement.level;
-    return (
-      levelSatisfied &&
-      hasResolvedBuildingPrerequisites(
-        state,
-        planet,
-        requirement.buildingId,
-        nextVisited,
-      )
+    return levelSatisfied && hasResolvedBuildingPrerequisites(
+      state,
+      planet,
+      requirement.buildingId,
+      nextVisited,
     );
   });
 }
@@ -102,16 +138,22 @@ export function getBotProgressionPhase(
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).ships;
   const snapshot = createCapabilitySnapshot(state, empireId);
-  const hasScout = countShip(snapshot, roles.scout) > 0;
+  const hasScout = hasShipOrCapability(state, empireId, snapshot, roles.scout);
   const hasCombat =
-    countShip(snapshot, roles.fighter) > 0 ||
-    countShip(snapshot, roles.corvette) > 0;
+    hasShipOrCapability(state, empireId, snapshot, roles.fighter) ||
+    hasShipOrCapability(state, empireId, snapshot, roles.corvette);
   const hasColonization =
-    snapshot.colonyCount > 1 || countShip(snapshot, roles.colonizer) > 0;
+    snapshot.colonyCount > 1 ||
+    hasShipOrCapability(state, empireId, snapshot, roles.colonizer);
   const hasHeavyFleet =
-    countShip(snapshot, roles.frigate) > 0 ||
-    countShip(snapshot, roles.cruiser) > 0;
-  const hasPlanetDestroyer = countShip(snapshot, roles.dreadnought) > 0;
+    hasShipOrCapability(state, empireId, snapshot, roles.frigate) ||
+    hasShipOrCapability(state, empireId, snapshot, roles.cruiser);
+  const hasPlanetDestroyer = hasShipOrCapability(
+    state,
+    empireId,
+    snapshot,
+    roles.dreadnought,
+  );
 
   if (!hasScout) return 'foundation';
   if (!hasCombat) return 'reconnaissance';
