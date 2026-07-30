@@ -99,8 +99,8 @@ test('complete primary shell routes are canonical, grouped and modal-free', asyn
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page).toHaveURL(/#\/system\/settings$/);
   await expect(page.locator('#system-settings-view')).toBeVisible();
-  await expect(page.locator('[name="compact-layout"]').toBeChecked();
-  await expect(page.locator('[name="reduce-motion"]').toBeChecked();
+  await expect(page.locator('[name="compact-layout"]')).toBeChecked();
+  await expect(page.locator('[name="reduce-motion"]')).toBeChecked();
 });
 
 test('keyboard navigation follows the visible hierarchy and activates local routes', async ({ page }) => {
