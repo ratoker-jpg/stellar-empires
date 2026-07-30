@@ -1,7 +1,7 @@
-import { appendCommandHistory } from '../history/stateHistory';
 import { enqueueEvent } from '../eventQueue';
 import { getResearchCatalogForFaction } from '../factions/factionMechanicalCatalogRegistry';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
+import { appendCommandHistory } from '../history/stateHistory';
 import {
   canAfford,
   refundResources,
@@ -9,6 +9,7 @@ import {
 } from '../planet/buildingProgression';
 import { getPlanetBuildingOperationalSummary } from '../planet/buildingOperations';
 import type { PlanetState } from '../planet/types';
+import { getResearchMaxLevel } from '../progression/profile';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -100,9 +101,10 @@ export function queueResearch(
     };
   }
 
+  const profileId = state.campaignSettings.progressionProfile;
   const currentLevel = getResearchLevel(research, definition.id);
   const targetLevel = currentLevel + 1;
-  if (targetLevel > definition.maxLevel) {
+  if (targetLevel > getResearchMaxLevel(profileId, definition)) {
     return {
       ok: false,
       code: 'RESEARCH_MAX_LEVEL',
@@ -110,7 +112,12 @@ export function queueResearch(
     };
   }
 
-  const missingRequirements = findMissingResearchRequirements(definition, research, planet);
+  const missingRequirements = findMissingResearchRequirements(
+    definition,
+    research,
+    planet,
+    profileId,
+  );
   if (missingRequirements.length > 0) {
     return {
       ok: false,
@@ -120,7 +127,7 @@ export function queueResearch(
     };
   }
 
-  const cost = calculateResearchCost(definition, targetLevel);
+  const cost = calculateResearchCost(definition, targetLevel, profileId);
   if (!canAfford(planet.economy, cost)) {
     return {
       ok: false,
@@ -136,7 +143,7 @@ export function queueResearch(
     research,
     getResearchCatalogForFaction(planet.factionId),
   );
-  const baseSeconds = calculateResearchSeconds(definition, targetLevel);
+  const baseSeconds = calculateResearchSeconds(definition, targetLevel, profileId);
   const duration = applySpeedPercent(
     baseSeconds,
     effects.researchSpeedPercent +
