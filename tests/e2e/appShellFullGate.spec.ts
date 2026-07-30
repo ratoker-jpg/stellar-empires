@@ -23,6 +23,22 @@ const LEGACY_DOM = [
   '#nav-fleet-doctrine',
 ] as const;
 
+test('new campaign exposes immutable compressed duration expectations at release viewports', async ({ page }) => {
+  for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    const dialog = page.locator('.new-game-dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('[data-progression-profile="compressed-v1"]')).toBeVisible();
+    const duration = dialog.locator('[data-campaign-duration-expectation="true"]');
+    await expect(duration).toContainText('ориентир 12 ч · максимум 16 ч');
+    await dialog.locator('.new-game-setting__select').nth(1).selectOption('10');
+    await expect(duration).toContainText('ориентир 2,4 ч · максимум 3,2 ч');
+    await expect(dialog).toContainText('Финальная победа и работа Врат пока не входят');
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
 test('complete primary shell routes are canonical, grouped and modal-free', async ({ page }) => {
   await page.goto('/?e2e=1#/command/overview');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
@@ -83,8 +99,8 @@ test('complete primary shell routes are canonical, grouped and modal-free', asyn
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page).toHaveURL(/#\/system\/settings$/);
   await expect(page.locator('#system-settings-view')).toBeVisible();
-  await expect(page.locator('[name="compact-layout"]')).toBeChecked();
-  await expect(page.locator('[name="reduce-motion"]')).toBeChecked();
+  await expect(page.locator('[name="compact-layout"]').toBeChecked();
+  await expect(page.locator('[name="reduce-motion"]').toBeChecked();
 });
 
 test('keyboard navigation follows the visible hierarchy and activates local routes', async ({ page }) => {
