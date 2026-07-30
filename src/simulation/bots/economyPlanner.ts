@@ -182,6 +182,30 @@ export function planBotEconomy(
     };
   }
 
+  const productionQueuesIdle =
+    planet.productionQueues.shipyard.length === 0 &&
+    planet.productionQueues.defense.length === 0;
+  if (
+    compressed &&
+    phase !== 'foundation' &&
+    phase !== 'reconnaissance' &&
+    planet.specializationId !== 'resource' &&
+    productionQueuesIdle
+  ) {
+    return {
+      empireId,
+      planetId: planet.id,
+      reasonCode: 'select-resource-specialization',
+      explanation: `Phase ${phase}: ресурсный поток важнее раннего ускорения строительства.`,
+      command: {
+        type: 'SET_PLANET_SPECIALIZATION',
+        empireId,
+        planetId: planet.id,
+        specializationId: 'resource',
+      },
+    };
+  }
+
   if (planet.economy.energy.produced < planet.economy.energy.consumed + 20) {
     const currentLevel = getBuildingLevel(planet.buildings, roles.power);
     const plan = createBuildingPlan(
