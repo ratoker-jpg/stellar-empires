@@ -94,14 +94,23 @@ for path in [
 
 replace(
     'tests/simulation/economy.test.ts',
-    'createPlanetEconomy(buildings)',
-    "createPlanetEconomy('legacy-v1', buildings)",
-    expected=2,
+    "import { createInitialGameState } from '../../src/simulation/createInitialGameState';",
+    "import { createCampaignSettings } from '../../src/simulation/campaign/settings';\nimport { createInitialGameState } from '../../src/simulation/createInitialGameState';",
 )
 replace(
     'tests/simulation/economy.test.ts',
-    'accruePlanetEconomy(planet, 3_600)',
-    "accruePlanetEconomy('legacy-v1', planet, 3_600)",
+    '  const state = createInitialGameState(seed);',
+    "  const state = createInitialGameState(seed, {\n    campaignSettings: createCampaignSettings({ progressionProfile: 'legacy-v1' }),\n  });",
+)
+replace(
+    'tests/simulation/economy.test.ts',
+    'const economy = createPlanetEconomy([',
+    "const economy = createPlanetEconomy('legacy-v1', [",
+)
+replace(
+    'tests/simulation/economy.test.ts',
+    'const updated = accruePlanetEconomy(nearlyFull, 86_400);',
+    "const updated = accruePlanetEconomy('legacy-v1', nearlyFull, 86_400);",
 )
 replace(
     'tests/simulation/researchQueue.test.ts',
