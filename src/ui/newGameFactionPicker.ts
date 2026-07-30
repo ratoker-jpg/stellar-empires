@@ -2,6 +2,8 @@ import type { FactionArtKey } from '../assets/artTokens';
 import { FACTION_SHOWCASES } from '../assets/factionShowcase';
 import {
   createCampaignSettings,
+  DEFAULT_PROGRESSION_PROFILE_ID,
+  formatProgressionProfile,
   type CampaignSettings,
   type WorldSpeed,
 } from '../simulation/campaign/settings';
@@ -95,6 +97,18 @@ function createFactionChoice(
   return button;
 }
 
+function createProgressionProfileIdentity(): HTMLDivElement {
+  const identity = document.createElement('div');
+  identity.className = 'new-game-setting';
+  identity.dataset.progressionProfile = DEFAULT_PROGRESSION_PROFILE_ID;
+  const caption = document.createElement('span');
+  caption.textContent = 'Профиль прогрессии';
+  const value = document.createElement('strong');
+  value.textContent = formatProgressionProfile(DEFAULT_PROGRESSION_PROFILE_ID);
+  identity.append(caption, value);
+  return identity;
+}
+
 function createSelect<T extends string | number>(
   labelText: string,
   options: readonly { readonly value: T; readonly name: string; readonly detail: string }[],
@@ -156,7 +170,7 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
     const settings = document.createElement('section');
     settings.className = 'new-game-settings';
     settings.setAttribute('aria-label', 'Неизменяемые настройки кампании');
-    settings.append(scenario.label, speed.label);
+    settings.append(scenario.label, speed.label, createProgressionProfileIdentity());
 
     const grid = document.createElement('div');
     grid.className = 'new-game-faction-grid';
@@ -166,6 +180,7 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
       const campaignSettings = createCampaignSettings({
         scenarioPreset,
         worldSpeed,
+        progressionProfile: DEFAULT_PROGRESSION_PROFILE_ID,
         createdAtReal: new Date().toISOString(),
       });
       dialog.close();
@@ -179,7 +194,7 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
     const note = document.createElement('p');
     note.className = 'new-game-note';
     note.textContent =
-      'Офлайн-прогрессия включена для локальной кампании. Изменить размер мира или скорость после старта нельзя.';
+      'Офлайн-прогрессия включена. Размер мира, скорость и профиль прогрессии после старта изменить нельзя.';
     dialog.append(header, settings, grid, note);
     document.body.append(dialog);
     dialog.showModal();

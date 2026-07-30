@@ -13,7 +13,7 @@ describe('military zone view model', () => {
       return;
     }
 
-    const view = createMilitaryZoneViewModel(planet);
+    const view = createMilitaryZoneViewModel(planet, state.campaignSettings.progressionProfile);
 
     expect(view.buildings.every((building) => building.zoneId === 'military')).toBe(true);
     expect(view.gateways.map((gateway) => gateway.id)).toEqual(['defense', 'fleet']);

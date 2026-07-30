@@ -41,6 +41,7 @@ import {
   setPlanetSpecialization,
 } from './planet/specializationCommands';
 import type { PlanetState } from './planet/types';
+import { getBuildingMaxLevel } from './progression/profile';
 import {
   recallFleetWithExpeditionSupport,
   sendFleetWithExpeditionGuard,
@@ -180,12 +181,13 @@ function queueBuilding(
       message: 'This galactic structure is reserved for the later alliance endgame.',
     };
   }
+  const profileId = state.campaignSettings.progressionProfile;
   const currentLevel = getBuildingLevel(planet.buildings, definition.id);
   const targetLevel = currentLevel + 1;
-  if (targetLevel > definition.maxLevel) {
+  if (targetLevel > getBuildingMaxLevel(profileId, definition)) {
     return { ok: false, code: 'BUILDING_MAX_LEVEL', message: 'The building is at maximum level.' };
   }
-  const missingRequirements = findMissingRequirements(planet, definition.requirements);
+  const missingRequirements = findMissingRequirements(planet, definition.requirements, profileId);
   if (missingRequirements.length > 0) {
     return {
       ok: false,
@@ -201,7 +203,7 @@ function queueBuilding(
       return { ok: false, code: 'ZONE_FIELDS_FULL', message: 'The target zone has no free fields.' };
     }
   }
-  const cost = calculateBuildingCost(definition, targetLevel);
+  const cost = calculateBuildingCost(definition, targetLevel, profileId);
   if (!canAfford(planet.economy, cost)) {
     return { ok: false, code: 'INSUFFICIENT_RESOURCES', message: 'The planet does not have enough resources.' };
   }
@@ -209,7 +211,7 @@ function queueBuilding(
   const queueItemId = `build-${sequence}`;
   const effects = getResearchEffectsForEmpire(state, command.empireId);
   const researchDuration = applySpeedPercent(
-    calculateBuildSeconds(definition, targetLevel, planet),
+    calculateBuildSeconds(definition, targetLevel, profileId, planet),
     effects?.constructionSpeedPercent ?? 0,
   );
   const specialization = getPlanetSpecializationEffects(planet.specializationId);

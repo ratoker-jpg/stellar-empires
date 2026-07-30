@@ -1,9 +1,14 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getPlanetBuildingOperationalSummary } from '../planet/buildingOperations';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
-import type { EmpireResearchState } from '../research/types';
+import {
+  resolveBuildingRequirement,
+  resolveResearchRequirement,
+} from '../progression/profile';
 import { getResearchLevel } from '../research/researchState';
+import type { EmpireResearchState } from '../research/types';
 import { getUnitDefinition } from './catalog';
 import type { UnitDefinition, UnitKind } from './types';
 
@@ -84,10 +89,12 @@ export function findMissingUnitRequirements(
   definition: UnitDefinition,
   planet: PlanetState,
   research: EmpireResearchState,
+  profileId: ProgressionProfileId,
 ): readonly MissingUnitRequirement[] {
   const missing: MissingUnitRequirement[] = [];
 
-  for (const requirement of definition.buildingRequirements) {
+  for (const sourceRequirement of definition.buildingRequirements) {
+    const requirement = resolveBuildingRequirement(profileId, sourceRequirement);
     const currentLevel = getBuildingLevel(planet.buildings, requirement.buildingId);
     if (currentLevel < requirement.level) {
       missing.push({
@@ -99,7 +106,8 @@ export function findMissingUnitRequirements(
     }
   }
 
-  for (const requirement of definition.researchRequirements) {
+  for (const sourceRequirement of definition.researchRequirements) {
+    const requirement = resolveResearchRequirement(profileId, sourceRequirement);
     const currentLevel = getResearchLevel(research, requirement.technologyId);
     if (currentLevel < requirement.level) {
       missing.push({

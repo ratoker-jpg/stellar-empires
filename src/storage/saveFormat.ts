@@ -14,7 +14,7 @@ import { PLANET_ZONE_IDS } from '../simulation/planet/zones';
 import { isSpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
 import { isUniverseModel } from '../simulation/universe/model';
-import { migrateGameStateV15 } from './migrateGameStateV15';
+import { migrateGameStateV16 } from './migrateGameStateV16';
 import {
   createCampaignRuntimeMetadata,
   isCampaignRuntimeMetadata,
@@ -45,7 +45,7 @@ function isResourceCost(value: unknown): boolean {
 }
 function isStateShell(value: unknown): value is Record<string, unknown> {
   return isRecord(value) &&
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
       .includes(value.schemaVersion as number) &&
     typeof value.seed === 'number' && Number.isInteger(value.seed) && isRecord(value.clock) &&
     typeof value.clock.startedAt === 'string' && isNonNegativeInteger(value.clock.elapsedSeconds) &&
@@ -241,7 +241,7 @@ function isBotAutomationState(
     normalizeBotAutomationState(value, validEmpireIds, elapsedSeconds) !== undefined;
 }
 function isGameState(value: unknown): value is GameState {
-  return isStateShell(value) && value.schemaVersion === 15 &&
+  return isStateShell(value) && value.schemaVersion === 16 &&
     isCampaignSettings(value.campaignSettings) && isUniverseModel(value.universe) &&
     value.campaignSettings.scenarioPreset === value.universe.presetId &&
     Array.isArray(value.commandLog) && value.commandLog.length <= STATE_HISTORY_LIMITS.commands &&
@@ -360,7 +360,7 @@ export function parseSaveJson(json: string): SaveParseResult {
       message: 'Save data checksum does not match its state or runtime metadata.',
     };
   }
-  const state = migrateGameStateV15(parsed.state, parsed.savedAt);
+  const state = migrateGameStateV16(parsed.state, parsed.savedAt);
   if (!isGameState(state)) {
     return {
       ok: false,

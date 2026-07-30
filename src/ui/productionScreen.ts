@@ -279,8 +279,17 @@ export function mountProductionScreens(options: ProductionScreenOptions): Produc
       const refreshAvailability = (): void => {
         const amount = Math.max(1, Math.min(100, Math.floor(Number(quantity.value) || 1)));
         quantity.value = String(amount);
-        const cost = calculateUnitBatchCost(definition, amount);
-        const missing = findMissingUnitRequirements(definition, planet, research);
+        const cost = calculateUnitBatchCost(
+          definition,
+          amount,
+          state.campaignSettings.progressionProfile,
+        );
+        const missing = findMissingUnitRequirements(
+          definition,
+          planet,
+          research,
+          state.campaignSettings.progressionProfile,
+        );
         const populationRequired = definition.populationCost * amount;
         const populationAvailable = planet.economy.population.capacity -
           planet.economy.population.used - getUnitPopulationUsed(planet) - getReservedPopulation(planet);
@@ -292,7 +301,12 @@ export function mountProductionScreens(options: ProductionScreenOptions): Produc
         const capacityOk = populationRequired <= populationAvailable &&
           (kind === 'ship' ? hangarRequired <= hangarAvailable : defenseGridRequired <= defenseGridAvailable);
         action.disabled = !(missing.length === 0 && queueFree && affordable && capacityOk);
-        const time = calculateUnitBatchSeconds(definition, amount, planet);
+        const time = calculateUnitBatchSeconds(
+          definition,
+          amount,
+          planet,
+          state.campaignSettings.progressionProfile,
+        );
         const capacityMessage = kind === 'defense' ? ` · сеть ${defenseGridRequired}/${defenseGridAvailable}` : '';
         status.textContent = `${formatCost(cost)} · ${formatGameDuration(time)}${capacityMessage}${missing.length > 0 ? ` · требования: ${missing.map((item) => `${item.id} ${item.currentLevel}/${item.requiredLevel}`).join(', ')}` : !queueFree ? ' · очередь занята' : !affordable ? ' · недостаточно ресурсов' : !capacityOk ? ' · не хватает вместимости' : ''}`;
       };
@@ -333,8 +347,16 @@ export function mountProductionScreens(options: ProductionScreenOptions): Produc
         const refreshRepairAvailability = (): void => {
           const repairAmount = Math.max(1, Math.min(Math.max(1, damagedAvailable), Math.floor(Number(repairQuantity.value) || 1)));
           repairQuantity.value = String(repairAmount);
-          const repairCost = calculateDefenseRepairCost(definition, repairAmount);
-          const repairSeconds = calculateDefenseRepairSeconds(definition, repairAmount);
+          const repairCost = calculateDefenseRepairCost(
+            definition,
+            repairAmount,
+            state.campaignSettings.progressionProfile,
+          );
+          const repairSeconds = calculateDefenseRepairSeconds(
+            definition,
+            repairAmount,
+            state.campaignSettings.progressionProfile,
+          );
           const repairQueueFree = planet.defense.repairQueue.length === 0;
           const repairAffordable = canAfford(state, planet.id, repairCost);
           repairAction.disabled = !(damagedAvailable > 0 && repairQueueFree && repairAffordable);

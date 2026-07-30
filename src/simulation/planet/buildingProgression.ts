@@ -1,5 +1,13 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import { refreshPlanetEconomy } from '../economy/planetEconomy';
 import type { PlanetEconomyState, ResourceCost, ResourceId } from '../economy/types';
+import {
+  getBuildingBaseSeconds,
+  getProgressionProfileRules,
+  growProgressionInteger,
+  resolveBuildingRequirement,
+  scaleProgressionCost,
+} from '../progression/profile';
 import type { BuildingDefinition, BuildingRequirement } from './buildingCatalog';
 import { getBuildingDefinition } from './buildingCatalog';
 import { resolveCanonicalBuildingId } from './buildingAliases';
@@ -7,16 +15,6 @@ import { getPlanetBuildingOperationalSummary } from './buildingOperations';
 import type { PlanetBuildingState, PlanetState } from './types';
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
-
-function scaleInteger(base: number, level: number, percent: number): number {
-  let value = base;
-
-  for (let currentLevel = 1; currentLevel < level; currentLevel += 1) {
-    value = Math.ceil((value * percent) / 100);
-  }
-
-  return value;
-}
 
 export function getBuildingLevel(
   buildings: readonly PlanetBuildingState[],
@@ -29,20 +27,29 @@ export function getBuildingLevel(
 export function calculateBuildingCost(
   definition: BuildingDefinition,
   targetLevel: number,
+  profileId: ProgressionProfileId,
 ): ResourceCost {
+  const rules = getProgressionProfileRules(profileId).building;
+  const baseCost = scaleProgressionCost(definition.baseCost, rules.baseCostPermille);
   return {
-    metal: scaleInteger(definition.baseCost.metal, targetLevel, 160),
-    crystal: scaleInteger(definition.baseCost.crystal, targetLevel, 160),
-    gas: scaleInteger(definition.baseCost.gas, targetLevel, 160),
+    metal: growProgressionInteger(baseCost.metal, targetLevel, rules.costGrowthPermille),
+    crystal: growProgressionInteger(baseCost.crystal, targetLevel, rules.costGrowthPermille),
+    gas: growProgressionInteger(baseCost.gas, targetLevel, rules.costGrowthPermille),
   };
 }
 
 export function calculateBuildSeconds(
   definition: BuildingDefinition,
   targetLevel: number,
+  profileId: ProgressionProfileId,
   planet?: Pick<PlanetState, 'buildings'>,
 ): number {
-  const baseSeconds = scaleInteger(definition.baseBuildSeconds, targetLevel, 145);
+  const rules = getProgressionProfileRules(profileId).building;
+  const baseSeconds = growProgressionInteger(
+    getBuildingBaseSeconds(profileId, definition),
+    targetLevel,
+    rules.timeGrowthPermille,
+  );
   const speedPercent = planet === undefined
     ? 0
     : getPlanetBuildingOperationalSummary(planet).constructionSpeedPercent;
@@ -54,10 +61,13 @@ export function calculateBuildSeconds(
 export function findMissingRequirements(
   planet: PlanetState,
   requirements: readonly BuildingRequirement[],
+  profileId: ProgressionProfileId,
 ): readonly BuildingRequirement[] {
-  return requirements.filter(
-    (requirement) => getBuildingLevel(planet.buildings, requirement.buildingId) < requirement.level,
-  );
+  return requirements
+    .map((requirement) => resolveBuildingRequirement(profileId, requirement))
+    .filter(
+      (requirement) => getBuildingLevel(planet.buildings, requirement.buildingId) < requirement.level,
+    );
 }
 
 export function canAfford(economy: PlanetEconomyState, cost: ResourceCost): boolean {

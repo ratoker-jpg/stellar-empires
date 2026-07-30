@@ -57,7 +57,7 @@ export function createInitialGameState(
   const colonies = createInitialPlanetStates(galaxy, playerFaction);
   const neutralForces = createInitialNeutralForces(galaxy, seed);
   return {
-    schemaVersion: 15,
+    schemaVersion: 16,
     seed,
     campaignSettings,
     clock: {

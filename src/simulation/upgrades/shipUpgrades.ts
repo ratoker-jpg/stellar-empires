@@ -1,3 +1,4 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import { appendCommandHistory } from '../history/stateHistory';
 import type { ResourceCost } from '../economy/types';
 import { enqueueEvent } from '../eventQueue';
@@ -10,6 +11,11 @@ import {
   spendResources,
 } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
+import {
+  getShipUpgradeMaxLevel,
+  scaleShipUpgradeCost,
+  scaleShipUpgradeSeconds,
+} from '../progression/profileScaling';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -97,21 +103,29 @@ export function calculateShipUpgradeCost(
   unitId: string,
   track: ShipUpgradeTrack,
   targetLevel: number,
+  profileId: ProgressionProfileId,
 ): ResourceCost | undefined {
   const definition = getUnitDefinition(unitId);
   if (definition?.kind !== 'ship' || targetLevel <= 0) return undefined;
   const factor = SHIP_UPGRADE_TRACKS[track].costPermille + targetLevel * 170;
-  return {
+  return scaleShipUpgradeCost(profileId, {
     metal: Math.max(1, Math.ceil((definition.baseCost.metal * factor) / 1_000)),
     crystal: Math.max(1, Math.ceil((definition.baseCost.crystal * factor) / 1_000)),
     gas: Math.max(0, Math.ceil((definition.baseCost.gas * factor) / 1_000)),
-  };
+  });
 }
 
-export function calculateShipUpgradeSeconds(unitId: string, targetLevel: number): number {
+export function calculateShipUpgradeSeconds(
+  unitId: string,
+  targetLevel: number,
+  profileId: ProgressionProfileId,
+): number {
   const definition = getUnitDefinition(unitId);
   if (definition?.kind !== 'ship') return 0;
-  return Math.max(60, Math.ceil(definition.baseSeconds * (0.55 + targetLevel * 0.25)));
+  return scaleShipUpgradeSeconds(
+    profileId,
+    Math.max(60, Math.ceil(definition.baseSeconds * (0.55 + targetLevel * 0.25))),
+  );
 }
 
 function updateEmpireState(
@@ -162,10 +176,15 @@ export function queueShipUpgrade(
     command.unitId,
   )[command.track];
   const targetLevel = currentLevel + 1;
-  if (targetLevel > SHIP_UPGRADE_MAX_LEVEL) {
+  if (targetLevel > getShipUpgradeMaxLevel(state.campaignSettings.progressionProfile)) {
     return { ok: false, code: 'SHIP_UPGRADE_MAX_LEVEL', message: 'The upgrade is at maximum level.' };
   }
-  const cost = calculateShipUpgradeCost(command.unitId, command.track, targetLevel);
+  const cost = calculateShipUpgradeCost(
+    command.unitId,
+    command.track,
+    targetLevel,
+    state.campaignSettings.progressionProfile,
+  );
   if (cost === undefined || !canAfford(planet.economy, cost)) {
     return { ok: false, code: 'INSUFFICIENT_RESOURCES', message: 'The planet cannot fund this upgrade.' };
   }
@@ -179,7 +198,11 @@ export function queueShipUpgrade(
     planetId: planet.id,
     startedAt: state.clock.elapsedSeconds,
     completesAt:
-      state.clock.elapsedSeconds + calculateShipUpgradeSeconds(command.unitId, targetLevel),
+      state.clock.elapsedSeconds + calculateShipUpgradeSeconds(
+        command.unitId,
+        targetLevel,
+        state.campaignSettings.progressionProfile,
+      ),
     cost,
   };
   const event: ScheduledGameEvent = {

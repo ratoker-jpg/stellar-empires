@@ -222,7 +222,7 @@ describe('native Synod runtime', () => {
   it('does not expose Aegis building definitions on a Synod planet view-model', () => {
     const state = createInitialGameState('synod-view-model', 'synod');
     const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player')!;
-    const cards = createBuildingCardViewModels(planet);
+    const cards = createBuildingCardViewModels(planet, state.campaignSettings.progressionProfile);
     expect(cards).toHaveLength(24);
     expect(cards.every((card) => card.id.startsWith('building.synod.'))).toBe(true);
     expect(cards.some((card) => card.id.includes('.aegis.'))).toBe(false);

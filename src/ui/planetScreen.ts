@@ -208,7 +208,10 @@ function setBuildingArtwork(element: HTMLElement, asset: AegisVerticalSliceAsset
 }
 
 function getZoneBuildingCards(planet: PlanetState, zoneId: PlanetZoneId): readonly BuildingCardViewModel[] {
-  return createBuildingCardViewModels(planet).filter((candidate) => candidate.zoneId === zoneId);
+  return createBuildingCardViewModels(
+    planet,
+    requireState().campaignSettings.progressionProfile,
+  ).filter((candidate) => candidate.zoneId === zoneId);
 }
 
 function selectDefaultBuilding(planet: PlanetState, zoneId: PlanetZoneId): void {
@@ -350,7 +353,7 @@ function renderResourceContext(planet: PlanetState, panel: HTMLElement): void {
 }
 
 function renderIndustryContext(planet: PlanetState, panel: HTMLElement): void {
-  const view = createIndustryZoneViewModel(planet);
+  const view = createIndustryZoneViewModel(planet, requireState().campaignSettings.progressionProfile);
   const eyebrow = document.createElement('p');
   eyebrow.className = 'panel-label';
   eyebrow.textContent = 'Промышленный контур';
@@ -396,7 +399,7 @@ function renderIndustryContext(planet: PlanetState, panel: HTMLElement): void {
 }
 
 function renderMilitaryContext(planet: PlanetState, panel: HTMLElement): void {
-  const view = createMilitaryZoneViewModel(planet);
+  const view = createMilitaryZoneViewModel(planet, requireState().campaignSettings.progressionProfile);
   const activeDefenses = sumRecord(planet.inventory.defenses);
   const damagedDefenses = sumRecord(planet.defense.damaged);
   const queuedRepairs = planet.defense.repairQueue.reduce((total, item) => total + item.quantity, 0);

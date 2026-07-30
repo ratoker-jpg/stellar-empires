@@ -20,7 +20,7 @@ function getPlayerPlanet(state: GameState) {
 describe('planet view model', () => {
   it('creates one building card for every complete Aegis catalog building', () => {
     const planet = getPlayerPlanet(createInitialGameState('planet-ui-cards'));
-    const cards = createBuildingCardViewModels(planet);
+    const cards = createBuildingCardViewModels(planet, 'compressed-v1');
 
     expect(cards).toHaveLength(24);
     expect(new Set(cards.map((card) => card.id)).size).toBe(24);
@@ -29,7 +29,7 @@ describe('planet view model', () => {
 
   it('explains the prerequisite for the second metal extraction tier', () => {
     const planet = getPlayerPlanet(createInitialGameState('planet-ui-requirement'));
-    const card = createBuildingCardViewModels(planet).find(
+    const card = createBuildingCardViewModels(planet, 'compressed-v1').find(
       (candidate) => candidate.id === 'building.aegis.metal-bot-2',
     );
 
@@ -51,7 +51,10 @@ describe('planet view model', () => {
     expect(queued.ok).toBe(true);
     if (!queued.ok) return;
 
-    const cards = createBuildingCardViewModels(getPlayerPlanet(queued.value));
+    const cards = createBuildingCardViewModels(
+      getPlayerPlanet(queued.value),
+      queued.value.campaignSettings.progressionProfile,
+    );
     const ordinaryCards = cards.filter(
       (card) =>
         card.id !== 'building.aegis.aksum-obelisk' &&
@@ -80,7 +83,7 @@ describe('planet view model', () => {
       ),
     };
 
-    const card = createBuildingCardViewModels(prepared).find(
+    const card = createBuildingCardViewModels(prepared, 'compressed-v1').find(
       (candidate) => candidate.id === 'building.aegis.metal-bot-2',
     );
 

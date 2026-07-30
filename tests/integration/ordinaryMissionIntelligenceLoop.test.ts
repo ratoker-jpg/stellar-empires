@@ -18,7 +18,7 @@ describe('ordinary mission intelligence integration gate', () => {
       attackReasonCode: 'mission-attack-selected',
       attackAvailabilityCode: null,
       observationLevel: 3,
-      schemaVersion: 15,
+      schemaVersion: 16,
     });
     expect(first.finalChecksum).toMatch(/^[0-9a-f]{8}$/);
   });

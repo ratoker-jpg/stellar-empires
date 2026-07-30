@@ -1,3 +1,4 @@
+import type { ProgressionProfileId } from '../simulation/campaign/settings';
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getBuildingLevel } from '../simulation/planet/buildingProgression';
 import type { PlanetState } from '../simulation/planet/types';
@@ -18,13 +19,16 @@ export interface MilitaryZoneViewModel {
   readonly gateways: readonly MilitaryGatewayViewModel[];
 }
 
-export function createMilitaryZoneViewModel(planet: PlanetState): MilitaryZoneViewModel {
+export function createMilitaryZoneViewModel(
+  planet: PlanetState,
+  profileId: ProgressionProfileId,
+): MilitaryZoneViewModel {
   const roles = getFactionMechanicalRoles(planet.factionId).buildings;
   const sensorLevel = getBuildingLevel(planet.buildings, roles.sensorGrid);
   const commandLevel = getBuildingLevel(planet.buildings, roles.command);
 
   return {
-    buildings: createBuildingCardViewModels(planet).filter(
+    buildings: createBuildingCardViewModels(planet, profileId).filter(
       (building) => building.zoneId === 'military',
     ),
     gateways: [

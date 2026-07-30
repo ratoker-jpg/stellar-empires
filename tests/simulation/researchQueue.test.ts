@@ -94,7 +94,7 @@ describe('research queue', () => {
     }
     expect(item.technologyId).toBe(CANONICAL_CONSTRUCTION_ID);
 
-    const cost = calculateResearchCost(getConstructionDefinition(), 1);
+    const cost = calculateResearchCost(getConstructionDefinition(), 1, 'compressed-v1');
     expect(getPlayerPlanet(queued.value).economy.resources.metal.amount).toBe(
       planet.economy.resources.metal.amount - cost.metal,
     );

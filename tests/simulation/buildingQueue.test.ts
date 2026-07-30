@@ -41,7 +41,7 @@ describe('building queue', () => {
       return;
     }
 
-    const cost = calculateBuildingCost(definition, 2);
+    const cost = calculateBuildingCost(definition, 2, 'compressed-v1');
     const result = queue(state, definition.id);
 
     expect(result.ok).toBe(true);
@@ -95,7 +95,7 @@ describe('building queue', () => {
       return;
     }
 
-    const duration = calculateBuildSeconds(definition, 2);
+    const duration = calculateBuildSeconds(definition, 2, 'compressed-v1');
     const advanced = executeCommand(queued.value, {
       type: 'ADVANCE_TIME',
       seconds: duration + 3_600,
