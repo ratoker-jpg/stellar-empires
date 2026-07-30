@@ -163,11 +163,15 @@ describe('compressed campaign resource rewards', () => {
   });
 
   it('does not add a campaign multiplier to plunder', () => {
+    const state = withExpeditionFleet(stateFor('compressed-v1', 'reward-plunder'));
+    const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player');
+    const fleet = state.fleets.find((candidate) => candidate.id === 'reward-expedition');
+    if (planet === undefined || fleet === undefined) throw new Error('Plunder fixtures missing.');
     const plunder = { metal: 1_000, crystal: 500, gas: 250 } as const;
-    expect(applyPvePlunderMultiplier(plunder, 1_250)).toEqual({
-      metal: 1_250,
-      crystal: 625,
-      gas: 312,
+    expect(applyPvePlunderMultiplier(planet, fleet, plunder, 750).plundered).toEqual({
+      metal: 750,
+      crystal: 375,
+      gas: 187,
     });
   });
 });
