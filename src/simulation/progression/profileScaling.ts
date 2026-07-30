@@ -6,6 +6,8 @@ import {
   scaleProgressionInteger,
 } from './profile';
 
+const MINIMUM_PROFILED_DURATION_SECONDS = 1;
+
 export function scaleRepairCost(
   profileId: ProgressionProfileId,
   cost: ResourceCost,
@@ -18,7 +20,7 @@ export function scaleRepairSeconds(
   seconds: number,
 ): number {
   return Math.max(
-    1,
+    MINIMUM_PROFILED_DURATION_SECONDS,
     scaleProgressionInteger(seconds, getProgressionProfileRules(profileId).repair.timePermille),
   );
 }
@@ -42,7 +44,7 @@ export function scaleShipUpgradeSeconds(
   seconds: number,
 ): number {
   return Math.max(
-    1,
+    MINIMUM_PROFILED_DURATION_SECONDS,
     scaleProgressionInteger(
       seconds,
       getProgressionProfileRules(profileId).shipUpgrade.timePermille,
