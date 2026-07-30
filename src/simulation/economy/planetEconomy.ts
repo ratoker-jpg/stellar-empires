@@ -1,9 +1,15 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import { getBuildingDefinition } from '../planet/buildingCatalog';
 import {
   getPlanetSpecializationEffects,
   type PlanetSpecializationId,
 } from '../planet/specialization';
 import type { PlanetBuildingState, PlanetState } from '../planet/types';
+import {
+  getEconomyProgressionProfile,
+  scaleProductionContribution,
+  scaleStorageContribution,
+} from '../progression/economyProfile';
 import type {
   EnergyBalance,
   PlanetEconomyState,
@@ -14,13 +20,6 @@ import type {
 } from './types';
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
-const BASE_CAPACITY = 10_000;
-const BASE_POPULATION_CAPACITY = 10;
-const STARTING_AMOUNTS: Readonly<Record<ResourceId, number>> = {
-  metal: 2_500,
-  crystal: 1_800,
-  gas: 900,
-};
 
 interface EconomySummary {
   readonly production: Readonly<Record<ResourceId, number>>;
@@ -35,19 +34,21 @@ function ratioPermille(capacity: number, demand: number): number {
 }
 
 function calculateSummary(
+  profileId: ProgressionProfileId,
   buildings: readonly PlanetBuildingState[],
   energyOutputPercent = 0,
   specializationId: PlanetSpecializationId = 'balanced',
 ): EconomySummary {
+  const profile = getEconomyProgressionProfile(profileId);
   const production: Record<ResourceId, number> = { metal: 0, crystal: 0, gas: 0 };
   const capacity: Record<ResourceId, number> = {
-    metal: BASE_CAPACITY,
-    crystal: BASE_CAPACITY,
-    gas: BASE_CAPACITY,
+    metal: profile.baseStorageCapacity,
+    crystal: profile.baseStorageCapacity,
+    gas: profile.baseStorageCapacity,
   };
   let energyProduced = 0;
   let energyConsumed = 0;
-  let populationCapacity = BASE_POPULATION_CAPACITY;
+  let populationCapacity = profile.basePopulationCapacity;
   let populationUsed = 0;
   let stabilityCapacity = 0;
   let stabilityDemand = 0;
@@ -63,9 +64,15 @@ function calculateSummary(
     const contribution = definition.economy;
 
     for (const resourceId of RESOURCE_IDS) {
-      production[resourceId] +=
+      const factionTunedProduction =
         (contribution.resourceProductionPerHour?.[resourceId] ?? 0) * level;
-      capacity[resourceId] += (contribution.storageCapacity?.[resourceId] ?? 0) * level;
+      const factionTunedStorage =
+        (contribution.storageCapacity?.[resourceId] ?? 0) * level;
+      production[resourceId] += scaleProductionContribution(
+        profileId,
+        factionTunedProduction,
+      );
+      capacity[resourceId] += scaleStorageContribution(profileId, factionTunedStorage);
     }
 
     energyProduced += (contribution.energyProduction ?? 0) * level;
@@ -115,14 +122,16 @@ function calculateSummary(
 }
 
 function createStock(
+  profileId: ProgressionProfileId,
   resourceId: ResourceId,
   summary: EconomySummary,
   previous?: ResourceStock,
 ): ResourceStock {
+  const profile = getEconomyProgressionProfile(profileId);
   const capacity = summary.capacity[resourceId];
 
   return {
-    amount: Math.min(previous?.amount ?? STARTING_AMOUNTS[resourceId], capacity),
+    amount: Math.min(previous?.amount ?? profile.startingResources[resourceId], capacity),
     capacity,
     productionPerHour: summary.production[resourceId],
     productionRemainder: previous?.productionRemainder ?? 0,
@@ -130,17 +139,23 @@ function createStock(
 }
 
 export function createPlanetEconomy(
+  profileId: ProgressionProfileId,
   buildings: readonly PlanetBuildingState[],
   energyOutputPercent = 0,
   specializationId: PlanetSpecializationId = 'balanced',
 ): PlanetEconomyState {
-  const summary = calculateSummary(buildings, energyOutputPercent, specializationId);
+  const summary = calculateSummary(
+    profileId,
+    buildings,
+    energyOutputPercent,
+    specializationId,
+  );
 
   return {
     resources: {
-      metal: createStock('metal', summary),
-      crystal: createStock('crystal', summary),
-      gas: createStock('gas', summary),
+      metal: createStock(profileId, 'metal', summary),
+      crystal: createStock(profileId, 'crystal', summary),
+      gas: createStock(profileId, 'gas', summary),
     },
     energy: summary.energy,
     population: summary.population,
@@ -149,18 +164,24 @@ export function createPlanetEconomy(
 }
 
 export function refreshPlanetEconomy(
+  profileId: ProgressionProfileId,
   economy: PlanetEconomyState,
   buildings: readonly PlanetBuildingState[],
   energyOutputPercent = 0,
   specializationId: PlanetSpecializationId = 'balanced',
 ): PlanetEconomyState {
-  const summary = calculateSummary(buildings, energyOutputPercent, specializationId);
+  const summary = calculateSummary(
+    profileId,
+    buildings,
+    energyOutputPercent,
+    specializationId,
+  );
 
   return {
     resources: {
-      metal: createStock('metal', summary, economy.resources.metal),
-      crystal: createStock('crystal', summary, economy.resources.crystal),
-      gas: createStock('gas', summary, economy.resources.gas),
+      metal: createStock(profileId, 'metal', summary, economy.resources.metal),
+      crystal: createStock(profileId, 'crystal', summary, economy.resources.crystal),
+      gas: createStock(profileId, 'gas', summary, economy.resources.gas),
     },
     energy: summary.energy,
     population: summary.population,
@@ -199,6 +220,7 @@ export function getSecondsUntilResourceFull(stock: ResourceStock): number | null
 }
 
 export function accruePlanetEconomy(
+  profileId: ProgressionProfileId,
   planet: PlanetState,
   seconds: number,
   energyOutputPercent = 0,
@@ -208,6 +230,7 @@ export function accruePlanetEconomy(
   }
 
   const economy = refreshPlanetEconomy(
+    profileId,
     planet.economy,
     planet.buildings,
     energyOutputPercent,
@@ -228,12 +251,14 @@ export function accruePlanetEconomy(
 }
 
 export function accrueAllPlanetEconomies(
+  profileId: ProgressionProfileId,
   planets: readonly PlanetState[],
   seconds: number,
   energyOutputByEmpire: Readonly<Record<string, number>> = {},
 ): readonly PlanetState[] {
   return planets.map((planet) =>
     accruePlanetEconomy(
+      profileId,
       planet,
       seconds,
       energyOutputByEmpire[planet.ownerEmpireId] ?? 0,
