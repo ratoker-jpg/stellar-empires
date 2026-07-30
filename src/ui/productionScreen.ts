@@ -279,8 +279,17 @@ export function mountProductionScreens(options: ProductionScreenOptions): Produc
       const refreshAvailability = (): void => {
         const amount = Math.max(1, Math.min(100, Math.floor(Number(quantity.value) || 1)));
         quantity.value = String(amount);
-        const cost = calculateUnitBatchCost(definition, amount);
-        const missing = findMissingUnitRequirements(definition, planet, research);
+        const cost = calculateUnitBatchCost(
+          definition,
+          amount,
+          state.campaignSettings.progressionProfile,
+        );
+        const missing = findMissingUnitRequirements(
+          definition,
+          planet,
+          research,
+          state.campaignSettings.progressionProfile,
+        );
         const populationRequired = definition.populationCost * amount;
         const populationAvailable = planet.economy.population.capacity -
           planet.economy.population.used - getUnitPopulationUsed(planet) - getReservedPopulation(planet);
@@ -292,7 +301,12 @@ export function mountProductionScreens(options: ProductionScreenOptions): Produc
         const capacityOk = populationRequired <= populationAvailable &&
           (kind === 'ship' ? hangarRequired <= hangarAvailable : defenseGridRequired <= defenseGridAvailable);
         action.disabled = !(missing.length === 0 && queueFree && affordable && capacityOk);
-        const time = calculateUnitBatchSeconds(definition, amount, planet);
+        const time = calculateUnitBatchSeconds(
+          definition,
+          amount,
+          planet,
+          state.campaignSettings.progressionProfile,
+        );
         const capacityMessage = kind === 'defense' ? ` · сеть ${defenseGridRequired}/${defenseGridAvailable}` : '';
         status.textContent = `${formatCost(cost)} · ${formatGameDuration(time)}${capacityMessage}${missing.length > 0 ? ` · требования: ${missing.map((item) => `${item.id} ${item.currentLevel}/${item.requiredLevel}`).join(', ')}` : !queueFree ? ' · очередь занята' : !affordable ? ' · недостаточно ресурсов' : !capacityOk ? ' · не хватает вместимости' : ''}`;
       };

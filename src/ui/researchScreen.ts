@@ -1,6 +1,7 @@
 import { resolveCompleteMechanicalAsset } from '../assets/completeMechanicalAssetManifest';
 import { applyMechanicalAssetArtwork } from '../assets/runtimeMechanicalAssets';
 import { getResearchCatalogForFaction } from '../simulation/factions/factionMechanicalCatalogRegistry';
+import { getResearchMaxLevel } from '../simulation/progression/profile';
 import { getResearchDefinition } from '../simulation/research/catalog';
 import {
   calculateResearchCost,
@@ -154,13 +155,20 @@ export function mountResearchScreen(options: ResearchScreenOptions): ResearchScr
 
     grid.replaceChildren();
     for (const definition of getResearchCatalogForFaction(planet.factionId)) {
+      const profileId = state.campaignSettings.progressionProfile;
+      const maxLevel = getResearchMaxLevel(profileId, definition);
       const level = getResearchLevel(research, definition.id);
       const targetLevel = level + 1;
-      const missing = findMissingResearchRequirements(definition, research, planet);
-      const maxed = level >= definition.maxLevel;
-      const boundedTargetLevel = Math.min(targetLevel, definition.maxLevel);
-      const cost = calculateResearchCost(definition, boundedTargetLevel);
-      const seconds = calculateResearchSeconds(definition, boundedTargetLevel);
+      const missing = findMissingResearchRequirements(
+        definition,
+        research,
+        planet,
+        profileId,
+      );
+      const maxed = level >= maxLevel;
+      const boundedTargetLevel = Math.min(targetLevel, maxLevel);
+      const cost = calculateResearchCost(definition, boundedTargetLevel, profileId);
+      const seconds = calculateResearchSeconds(definition, boundedTargetLevel, profileId);
       const affordable = canAffordResearch(state, planet.id, cost);
       const queueFree = research.queue.length === 0;
       const available = !maxed && missing.length === 0 && affordable && queueFree;
@@ -175,7 +183,7 @@ export function mountResearchScreen(options: ResearchScreenOptions): ResearchScr
       const body = document.createElement('div');
       const meta = document.createElement('div');
       meta.className = 'research-card-meta';
-      meta.textContent = `${CATEGORY_LABELS[definition.category]} · ур. ${level}/${definition.maxLevel}`;
+      meta.textContent = `${CATEGORY_LABELS[definition.category]} · ур. ${level}/${maxLevel}`;
       const cardTitle = document.createElement('h2');
       cardTitle.textContent = definition.name;
       const description = document.createElement('p');
