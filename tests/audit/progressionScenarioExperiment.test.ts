@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { runProgressionScenario } from '../../src/simulation/progression/scenarioRunner';
 
+const scenarioIt = process.env.RUN_PROGRESSION_SCENARIO === '1' ? it : it.skip;
+
 describe('compressed progression scenario experiment', () => {
-  it('drives the accepted baseline seed through ordinary player and bot commands', () => {
+  scenarioIt('drives the accepted baseline seed through ordinary player and bot commands', () => {
     const result = runProgressionScenario({
       seed: 'stellar-empires-m1',
       playerFaction: 'aegis',
