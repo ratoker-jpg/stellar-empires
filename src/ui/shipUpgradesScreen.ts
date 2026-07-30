@@ -139,11 +139,11 @@ export function mountShipUpgradesScreen(bridge: ShipUpgradeBridge): ShipUpgrades
       queueHost.append(copy, cancel);
     }
 
+    const maxLevel = getShipUpgradeMaxLevel(state.campaignSettings.progressionProfile);
     const selectedUnit = unitSelect.value || factionShips[0]?.id;
     const selectedTrack = (trackSelect.value || TRACKS[0]) as ShipUpgradeTrack;
     if (selectedUnit !== undefined) {
       const current = getShipUpgradeLevels(state.shipUpgrades, 'player', selectedUnit)[selectedTrack];
-      const maxLevel = getShipUpgradeMaxLevel(state.campaignSettings.progressionProfile);
       const cost = calculateShipUpgradeCost(
         selectedUnit,
         selectedTrack,
@@ -171,7 +171,7 @@ export function mountShipUpgradesScreen(bridge: ShipUpgradeBridge): ShipUpgrades
       const title = document.createElement('h2');
       title.textContent = ship.name;
       const stats = document.createElement('p');
-      stats.textContent = `Вооружение ${levels.weapons}/${SHIP_UPGRADE_MAX_LEVEL} · Броня ${levels.armor}/${SHIP_UPGRADE_MAX_LEVEL} · Груз ${levels.cargo}/${SHIP_UPGRADE_MAX_LEVEL}`;
+      stats.textContent = `Вооружение ${levels.weapons}/${maxLevel} · Броня ${levels.armor}/${maxLevel} · Груз ${levels.cargo}/${maxLevel}`;
       body.append(title, stats);
       card.append(art, body);
       const selectCard = (): void => {
