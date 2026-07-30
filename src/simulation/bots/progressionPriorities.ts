@@ -32,6 +32,12 @@ export interface BotProductionTarget {
   readonly desiredTotal: number;
 }
 
+interface PhaseEconomyLevels {
+  readonly metal: number;
+  readonly crystal: number;
+  readonly gas: number;
+}
+
 const buildingTargetCache = new Map<string, readonly BotBuildingTarget[]>();
 const researchTargetCache = new Map<string, readonly BotResearchTarget[]>();
 const productionTargetCache = new Map<string, readonly BotProductionTarget[]>();
@@ -74,16 +80,16 @@ function phaseShipTargets(
   }
 }
 
-function phaseEconomyLevel(phase: BotProgressionPhase): number {
+function phaseEconomyLevels(phase: BotProgressionPhase): PhaseEconomyLevels {
   switch (phase) {
-    case 'foundation': return 3;
-    case 'reconnaissance': return 4;
-    case 'first-combat': return 5;
-    case 'colonization': return 7;
-    case 'heavy-fleet': return 8;
+    case 'foundation': return { metal: 2, crystal: 4, gas: 2 };
+    case 'reconnaissance': return { metal: 3, crystal: 6, gas: 3 };
+    case 'first-combat': return { metal: 4, crystal: 8, gas: 4 };
+    case 'colonization': return { metal: 6, crystal: 10, gas: 6 };
+    case 'heavy-fleet': return { metal: 8, crystal: 10, gas: 8 };
     case 'planet-destruction':
     case 'endgame-preparation':
-      return 10;
+      return { metal: 10, crystal: 10, gas: 10 };
   }
 }
 
@@ -181,10 +187,10 @@ function createPhasePrerequisiteTargets(
   }
 
   if (profileId === 'compressed-v1') {
-    const economyLevel = phaseEconomyLevel(phase);
-    addBuilding(roles.buildings.complete.metalPrimary, economyLevel);
-    addBuilding(roles.buildings.complete.crystalPrimary, economyLevel);
-    addBuilding(roles.buildings.complete.gasPrimary, economyLevel);
+    const economy = phaseEconomyLevels(phase);
+    addBuilding(roles.buildings.complete.metalPrimary, economy.metal);
+    addBuilding(roles.buildings.complete.crystalPrimary, economy.crystal);
+    addBuilding(roles.buildings.complete.gasPrimary, economy.gas);
   }
 
   const buildings = buildingOrder.map((buildingId) => ({
