@@ -17,7 +17,7 @@ test('ordinary mission intelligence bot gate is deterministic through save and a
     'mission-attack-selected',
   );
   await expect(page.locator('html')).toHaveAttribute('data-e2e-bot-gate-observation-level', '3');
-  await expect(page.locator('html')).toHaveAttribute('data-e2e-bot-gate-schema-version', '15');
+  await expect(page.locator('html')).toHaveAttribute('data-e2e-bot-gate-schema-version', '16');
   await expect(page.locator('html')).toHaveAttribute('data-e2e-bot-gate-deterministic', 'true');
   const gateChecksum = await page.locator('html').getAttribute('data-e2e-bot-gate-checksum');
   expect(gateChecksum).toMatch(/^[0-9a-f]{8}$/);
