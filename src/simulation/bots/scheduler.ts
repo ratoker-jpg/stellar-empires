@@ -71,6 +71,18 @@ function candidatesForPersonality(
   const science = planBotResearchAndProduction(state, profile.empireId);
   const fleet = planBotFleetMission(state, profile.empireId);
   const threat = planBotThreatAndRecovery(state, profile.empireId);
+  if (state.campaignSettings.progressionProfile === 'compressed-v1') {
+    return {
+      candidates: [
+        { source: 'production', command: science.production.command },
+        { source: 'research', command: science.research.command },
+        { source: 'economy', command: economy.command },
+        { source: 'threat', command: threat.command },
+        { source: 'fleet', command: fleet.command },
+      ],
+      fleet,
+    };
+  }
   const candidates: Readonly<Record<BotPersonality, readonly CommandCandidate[]>> = {
     industrial: [
       { source: 'economy', command: economy.command },
