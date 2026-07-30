@@ -19,28 +19,41 @@ export const BOT_PROGRESSION_PHASES = [
 
 export type BotProgressionPhase = (typeof BOT_PROGRESSION_PHASES)[number];
 
-function countShip(state: GameState, empireId: string, canonicalUnitId: string): number {
-  const unitIds = [canonicalUnitId, ...getLegacyUnitIdsForCanonical(canonicalUnitId)];
-  const onPlanets = state.planets
-    .filter((planet) => planet.ownerEmpireId === empireId)
-    .reduce(
-      (total, planet) =>
-        total + unitIds.reduce(
-          (subtotal, unitId) => subtotal + (planet.inventory.ships[unitId] ?? 0),
-          0,
-        ),
-      0,
-    );
-  return state.fleets
-    .filter((fleet) => fleet.empireId === empireId)
-    .reduce(
-      (total, fleet) =>
-        total + unitIds.reduce(
-          (subtotal, unitId) => subtotal + (fleet.ships[unitId] ?? 0),
-          0,
-        ),
-      onPlanets,
-    );
+interface EmpireCapabilitySnapshot {
+  readonly colonyCount: number;
+  readonly shipCounts: Readonly<Record<string, number>>;
+}
+
+function createCapabilitySnapshot(
+  state: GameState,
+  empireId: string,
+): EmpireCapabilitySnapshot {
+  const shipCounts: Record<string, number> = {};
+  let colonyCount = 0;
+  for (const planet of state.planets) {
+    if (planet.ownerEmpireId !== empireId) continue;
+    colonyCount += 1;
+    for (const [unitId, count] of Object.entries(planet.inventory.ships)) {
+      shipCounts[unitId] = (shipCounts[unitId] ?? 0) + count;
+    }
+  }
+  for (const fleet of state.fleets) {
+    if (fleet.empireId !== empireId) continue;
+    for (const [unitId, count] of Object.entries(fleet.ships)) {
+      shipCounts[unitId] = (shipCounts[unitId] ?? 0) + count;
+    }
+  }
+  return { colonyCount, shipCounts };
+}
+
+function countShip(
+  snapshot: EmpireCapabilitySnapshot,
+  canonicalUnitId: string,
+): number {
+  return [canonicalUnitId, ...getLegacyUnitIdsForCanonical(canonicalUnitId)].reduce(
+    (total, unitId) => total + (snapshot.shipCounts[unitId] ?? 0),
+    0,
+  );
 }
 
 function hasResolvedBuildingPrerequisites(
@@ -84,36 +97,26 @@ export function getBotProgressionPhase(
 ): BotProgressionPhase {
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).ships;
-  const hasScout = countShip(state, empireId, roles.scout) > 0;
+  const snapshot = createCapabilitySnapshot(state, empireId);
+  const hasScout = countShip(snapshot, roles.scout) > 0;
   const hasCombat =
-    countShip(state, empireId, roles.fighter) > 0 ||
-    countShip(state, empireId, roles.corvette) > 0;
+    countShip(snapshot, roles.fighter) > 0 ||
+    countShip(snapshot, roles.corvette) > 0;
   const hasColonization =
-    state.planets.filter((planet) => planet.ownerEmpireId === empireId).length > 1 ||
-    countShip(state, empireId, roles.colonizer) > 0;
+    snapshot.colonyCount > 1 || countShip(snapshot, roles.colonizer) > 0;
   const hasHeavyFleet =
-    countShip(state, empireId, roles.frigate) > 0 ||
-    countShip(state, empireId, roles.cruiser) > 0;
-  const hasPlanetDestroyer = countShip(state, empireId, roles.dreadnought) > 0;
+    countShip(snapshot, roles.frigate) > 0 ||
+    countShip(snapshot, roles.cruiser) > 0;
+  const hasPlanetDestroyer = countShip(snapshot, roles.dreadnought) > 0;
 
-  if (
-    hasScout &&
-    hasCombat &&
-    hasColonization &&
-    hasHeavyFleet &&
-    hasPlanetDestroyer &&
-    hasEndgamePreparationInfrastructure(state, empireId)
-  ) {
-    return 'endgame-preparation';
-  }
-  if (hasScout && hasCombat && hasColonization && hasHeavyFleet && hasPlanetDestroyer) {
-    return 'planet-destruction';
-  }
-  if (hasScout && hasCombat && hasColonization && hasHeavyFleet) return 'heavy-fleet';
-  if (hasScout && hasCombat && hasColonization) return 'colonization';
-  if (hasScout && hasCombat) return 'first-combat';
-  if (hasScout) return 'reconnaissance';
-  return 'foundation';
+  if (!hasScout) return 'foundation';
+  if (!hasCombat) return 'reconnaissance';
+  if (!hasColonization) return 'first-combat';
+  if (!hasHeavyFleet) return 'colonization';
+  if (!hasPlanetDestroyer) return 'heavy-fleet';
+  return hasEndgamePreparationInfrastructure(state, empireId)
+    ? 'endgame-preparation'
+    : 'planet-destruction';
 }
 
 export function getAllBotProgressionPhases(
