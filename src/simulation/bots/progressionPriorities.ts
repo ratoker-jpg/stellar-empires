@@ -256,19 +256,21 @@ export function getBotPhaseResearchTargets(
     addTarget(target.technologyId, target.level);
   }
 
-  const baselineTargets: readonly BotResearchTarget[] = [
-    { technologyId: roles.research.construction, level: 2 },
-    { technologyId: roles.research.energy, level: 2 },
-    { technologyId: roles.research.sensors, level: 2 },
-    { technologyId: roles.research.propulsion, level: 2 },
-    { technologyId: roles.research.logistics, level: 2 },
-    { technologyId: roles.research.colonization, level: 1 },
-    { technologyId: roles.research.protection, level: 2 },
-    { technologyId: roles.research.weapons, level: 2 },
-    { technologyId: roles.research.advancedProtection, level: 2 },
-    { technologyId: roles.research.battleNetwork, level: 2 },
-  ];
-  for (const target of baselineTargets) addTarget(target.technologyId, target.level);
+  if (profileId === 'legacy-v1') {
+    const baselineTargets: readonly BotResearchTarget[] = [
+      { technologyId: roles.research.construction, level: 2 },
+      { technologyId: roles.research.energy, level: 2 },
+      { technologyId: roles.research.sensors, level: 2 },
+      { technologyId: roles.research.propulsion, level: 2 },
+      { technologyId: roles.research.logistics, level: 2 },
+      { technologyId: roles.research.colonization, level: 1 },
+      { technologyId: roles.research.protection, level: 2 },
+      { technologyId: roles.research.weapons, level: 2 },
+      { technologyId: roles.research.advancedProtection, level: 2 },
+      { technologyId: roles.research.battleNetwork, level: 2 },
+    ];
+    for (const target of baselineTargets) addTarget(target.technologyId, target.level);
+  }
 
   const targets = order.map((technologyId) => ({
     technologyId,
