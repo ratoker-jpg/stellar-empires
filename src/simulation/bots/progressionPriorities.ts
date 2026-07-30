@@ -1,16 +1,25 @@
 import {
+  getBuildingCatalogForFaction,
   getFactionIdForEmpire,
   getResearchCatalogForFaction,
   getUnitCatalogForFaction,
 } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
+import { isBuildingEndgameLocked } from '../planet/buildingOperations';
 import {
+  getBuildingMaxLevelById,
   getResearchMaxLevelById,
+  resolveBuildingRequirement,
   resolveResearchRequirement,
 } from '../progression/profile';
 import type { GameState } from '../types';
 import type { UnitDefinition } from '../units/types';
 import type { BotProgressionPhase } from './progressionPhase';
+
+export interface BotBuildingTarget {
+  readonly buildingId: string;
+  readonly level: number;
+}
 
 export interface BotResearchTarget {
   readonly technologyId: string;
@@ -23,6 +32,7 @@ export interface BotProductionTarget {
   readonly desiredTotal: number;
 }
 
+const buildingTargetCache = new Map<string, readonly BotBuildingTarget[]>();
 const researchTargetCache = new Map<string, readonly BotResearchTarget[]>();
 const productionTargetCache = new Map<string, readonly BotProductionTarget[]>();
 
@@ -64,6 +74,111 @@ function phaseShipTargets(
   }
 }
 
+function createPhasePrerequisiteTargets(
+  state: GameState,
+  empireId: string,
+  phase: BotProgressionPhase,
+): {
+  readonly buildings: readonly BotBuildingTarget[];
+  readonly research: readonly BotResearchTarget[];
+} {
+  const key = cacheKey(state, empireId, phase, false);
+  const cachedBuildings = buildingTargetCache.get(key);
+  const cachedResearch = researchTargetCache.get(key);
+  if (cachedBuildings !== undefined && cachedResearch !== undefined) {
+    return { buildings: cachedBuildings, research: cachedResearch };
+  }
+
+  const factionId = getFactionIdForEmpire(state, empireId);
+  const profileId = state.campaignSettings.progressionProfile;
+  const roles = getFactionMechanicalRoles(factionId);
+  const buildingById = new Map(
+    getBuildingCatalogForFaction(factionId).map((definition) => [definition.id, definition]),
+  );
+  const researchById = new Map(
+    getResearchCatalogForFaction(factionId).map((definition) => [definition.id, definition]),
+  );
+  const unitsById = new Map(
+    getUnitCatalogForFaction(factionId).map((definition) => [definition.id, definition]),
+  );
+  const buildingLevels = new Map<string, number>();
+  const buildingOrder: string[] = [];
+  const researchLevels = new Map<string, number>();
+  const researchOrder: string[] = [];
+
+  const addBuilding = (buildingId: string, requestedLevel: number): void => {
+    const definition = buildingById.get(buildingId);
+    if (definition === undefined) return;
+    const maximum = getBuildingMaxLevelById(profileId, buildingId) ?? requestedLevel;
+    const level = Math.min(requestedLevel, maximum);
+    for (const rawRequirement of definition.requirements) {
+      const requirement = resolveBuildingRequirement(profileId, rawRequirement);
+      addBuilding(requirement.buildingId, requirement.level);
+    }
+    if (isBuildingEndgameLocked(buildingId)) return;
+    const currentTarget = buildingLevels.get(buildingId) ?? 0;
+    if (currentTarget >= level) return;
+    buildingLevels.set(buildingId, level);
+    if (!buildingOrder.includes(buildingId)) buildingOrder.push(buildingId);
+  };
+
+  const addResearch = (technologyId: string, requestedLevel: number): void => {
+    const definition = researchById.get(technologyId);
+    if (definition === undefined) return;
+    const maximum = getResearchMaxLevelById(profileId, technologyId) ?? requestedLevel;
+    const level = Math.min(requestedLevel, maximum);
+    for (const rawRequirement of definition.requirements) {
+      const requirement = resolveResearchRequirement(profileId, rawRequirement);
+      addResearch(requirement.technologyId, requirement.level);
+    }
+    addBuilding(roles.buildings.researchCenter, definition.requiredLaboratoryLevel);
+    const currentTarget = researchLevels.get(technologyId) ?? 0;
+    if (currentTarget >= level) return;
+    researchLevels.set(technologyId, level);
+    if (!researchOrder.includes(technologyId)) researchOrder.push(technologyId);
+  };
+
+  const addUnitRequirements = (unitId: string): void => {
+    const definition: UnitDefinition | undefined = unitsById.get(unitId);
+    if (definition === undefined) return;
+    for (const rawRequirement of definition.buildingRequirements) {
+      const requirement = resolveBuildingRequirement(profileId, rawRequirement);
+      addBuilding(requirement.buildingId, requirement.level);
+    }
+    for (const rawRequirement of definition.researchRequirements) {
+      const requirement = resolveResearchRequirement(profileId, rawRequirement);
+      addResearch(requirement.technologyId, requirement.level);
+    }
+  };
+
+  for (const unitId of phaseShipTargets(state, empireId, phase)) {
+    addUnitRequirements(unitId);
+  }
+  if (phase === 'planet-destruction' || phase === 'endgame-preparation') {
+    addBuilding(roles.buildings.complete.supremeGalacticGates, 1);
+  }
+
+  const buildings = buildingOrder.map((buildingId) => ({
+    buildingId,
+    level: buildingLevels.get(buildingId) ?? 1,
+  }));
+  const research = researchOrder.map((technologyId) => ({
+    technologyId,
+    level: researchLevels.get(technologyId) ?? 1,
+  }));
+  buildingTargetCache.set(key, buildings);
+  researchTargetCache.set(key, research);
+  return { buildings, research };
+}
+
+export function getBotPhaseBuildingTargets(
+  state: GameState,
+  empireId: string,
+  phase: BotProgressionPhase,
+): readonly BotBuildingTarget[] {
+  return createPhasePrerequisiteTargets(state, empireId, phase).buildings;
+}
+
 export function getBotPhaseResearchTargets(
   state: GameState,
   empireId: string,
@@ -77,12 +192,8 @@ export function getBotPhaseResearchTargets(
   const factionId = getFactionIdForEmpire(state, empireId);
   const profileId = state.campaignSettings.progressionProfile;
   const roles = getFactionMechanicalRoles(factionId);
-  const researchCatalog = getResearchCatalogForFaction(factionId);
   const researchById = new Map(
-    researchCatalog.map((definition) => [definition.id, definition]),
-  );
-  const unitsById = new Map(
-    getUnitCatalogForFaction(factionId).map((definition) => [definition.id, definition]),
+    getResearchCatalogForFaction(factionId).map((definition) => [definition.id, definition]),
   );
   const levels = new Map<string, number>();
   const order: string[] = [];
@@ -102,21 +213,12 @@ export function getBotPhaseResearchTargets(
     if (!order.includes(technologyId)) order.push(technologyId);
   };
 
-  const addUnitRequirements = (unitId: string): void => {
-    const definition: UnitDefinition | undefined = unitsById.get(unitId);
-    if (definition === undefined) return;
-    for (const rawRequirement of definition.researchRequirements) {
-      const requirement = resolveResearchRequirement(profileId, rawRequirement);
-      addTarget(requirement.technologyId, requirement.level);
-    }
-  };
-
   if (threatened) {
     addTarget(roles.research.weapons, 3);
     addTarget(roles.research.protection, 3);
   }
-  for (const unitId of phaseShipTargets(state, empireId, phase)) {
-    addUnitRequirements(unitId);
+  for (const target of createPhasePrerequisiteTargets(state, empireId, phase).research) {
+    addTarget(target.technologyId, target.level);
   }
 
   const baselineTargets: readonly BotResearchTarget[] = [
@@ -158,6 +260,7 @@ export function getBotPhaseProductionTargets(
       case 'foundation':
         return [
           { unitId: roles.scout, quantity: 1, desiredTotal: 1 },
+          { unitId: roles.fighter, quantity: 1, desiredTotal: 1 },
           { unitId: roles.transport, quantity: 1, desiredTotal: 1 },
         ];
       case 'reconnaissance':
