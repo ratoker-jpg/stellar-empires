@@ -2,16 +2,24 @@ import { getEmpireCommandState } from '../command/commandDoctrine';
 import {
   getCommanderShipCatalog,
   getFactionIdForEmpire,
-  getResearchCatalogForFaction,
   getUnitCatalogForFaction,
 } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { queueResearch } from '../research/researchCommands';
+import { getEmpireResearch, getResearchLevel } from '../research/researchState';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
 import { getLegacyUnitIdsForCanonical } from '../units/unitAliases';
 import { queueUnitBatch } from '../units/productionCommands';
 import { createBotPerception } from './perception';
+import {
+  getBotPhaseProductionTargets,
+  getBotPhaseResearchTargets,
+} from './progressionPriorities';
+import {
+  getBotProgressionPhase,
+  type BotProgressionPhase,
+} from './progressionPhase';
 
 export type BotResearchReasonCode =
   | 'research-queue-busy'
@@ -41,8 +49,9 @@ function chooseResearch(
   state: GameState,
   empireId: string,
   threatened: boolean,
+  phase: BotProgressionPhase,
 ): BotPlannerDecision {
-  const research = state.research.find((candidate) => candidate.empireId === empireId);
+  const research = getEmpireResearch(state.research, empireId);
   if (research?.queue.length) {
     return {
       reasonCode: 'research-queue-busy',
@@ -56,7 +65,6 @@ function chooseResearch(
     .sort((left, right) => left.id.localeCompare(right.id));
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId);
-  const catalog = getResearchCatalogForFaction(factionId);
   const laboratoryExists = planets.some((planet) =>
     planet.buildings.some(
       (building) =>
@@ -71,43 +79,24 @@ function chooseResearch(
     };
   }
 
-  const priority = threatened
-    ? [
-        roles.research.weapons,
-        roles.research.protection,
-        roles.research.sensors,
-        roles.research.propulsion,
-        roles.research.battleNetwork,
-        roles.research.construction,
-        roles.research.energy,
-        roles.research.colonization,
-      ]
-    : [
-        roles.research.construction,
-        roles.research.energy,
-        roles.research.sensors,
-        roles.research.propulsion,
-        roles.research.logistics,
-        roles.research.protection,
-        roles.research.weapons,
-        roles.research.colonization,
-      ];
-
-  for (const technologyId of priority) {
-    if (!catalog.some((definition) => definition.id === technologyId)) continue;
+  const targets = getBotPhaseResearchTargets(state, empireId, phase, threatened);
+  for (const target of targets) {
+    if (research !== undefined && getResearchLevel(research, target.technologyId) >= target.level) {
+      continue;
+    }
     for (const planet of planets) {
       const command: Extract<GameCommand, { readonly type: 'QUEUE_RESEARCH' }> = {
         type: 'QUEUE_RESEARCH',
         empireId,
         planetId: planet.id,
-        technologyId,
+        technologyId: target.technologyId,
       };
       if (queueResearch(state, command).ok) {
         return {
           reasonCode: 'research-selected',
           explanation: threatened
-            ? `Обнаружена угроза: приоритет исследованию ${technologyId}.`
-            : `Выбрано доступное исследование экономического цикла: ${technologyId}.`,
+            ? `Угроза подтверждена: phase ${phase}, исследование ${target.technologyId} до уровня ${target.level}.`
+            : `Phase ${phase}: исследование ${target.technologyId} до уровня ${target.level}.`,
           command,
         };
       }
@@ -116,7 +105,7 @@ function chooseResearch(
 
   return {
     reasonCode: 'research-unavailable',
-    explanation: 'Нет доступного и оплачиваемого исследования.',
+    explanation: `Phase ${phase}: нет доступного и оплачиваемого исследования.`,
     command: null,
   };
 }
@@ -168,6 +157,7 @@ function chooseProduction(
   state: GameState,
   empireId: string,
   threatened: boolean,
+  phase: BotProgressionPhase,
 ): BotPlannerDecision {
   const planets = state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
@@ -210,43 +200,38 @@ function chooseProduction(
     };
   }
 
+  const phasePriority = getBotPhaseProductionTargets(state, empireId, phase, threatened)
+    .filter((target) => countUnit(state, empireId, target.unitId) < target.desiredTotal)
+    .map((target) => ({ id: target.unitId, quantity: target.quantity }));
   const availableCommanders = commanderCandidates(state, empireId);
-  const priority: readonly { readonly id: string; readonly quantity: number }[] = threatened
+  const fallback: readonly { readonly id: string; readonly quantity: number }[] = threatened
     ? [
-        ...availableCommanders.slice(0, 1),
-        { id: ships.lightFighter, quantity: 3 },
-        { id: ships.interceptor, quantity: 2 },
         { id: defenses.basicTurret, quantity: 2 },
         { id: defenses.laserTurret, quantity: 1 },
         { id: ships.supportShip, quantity: 1 },
         { id: defenses.secondaryShield, quantity: 1 },
-        { id: ships.lineBattleship, quantity: 1 },
         { id: defenses.plasmaTurret, quantity: 1 },
-        { id: ships.heavyAssault, quantity: 1 },
-        { id: ships.bomber, quantity: 1 },
         { id: defenses.laserIonBattery, quantity: 1 },
         { id: defenses.planetaryShield, quantity: 1 },
       ]
     : [
-        ...(countUnit(state, empireId, ships.spyProbe) === 0
-          ? [{ id: ships.spyProbe, quantity: 1 }]
-          : []),
         ...(countUnit(state, empireId, ships.smallTransport) === 0
           ? [{ id: ships.smallTransport, quantity: 1 }]
           : []),
         ...(countUnit(state, empireId, ships.recycler) === 0
           ? [{ id: ships.recycler, quantity: 1 }]
           : []),
-        ...availableCommanders.slice(0, 1),
         ...(countUnit(state, empireId, ships.largeTransport) === 0
           ? [{ id: ships.largeTransport, quantity: 1 }]
           : []),
-        { id: ships.lightFighter, quantity: 2 },
-        { id: ships.interceptor, quantity: 1 },
-        { id: ships.lineBattleship, quantity: 1 },
         { id: defenses.basicTurret, quantity: 1 },
         { id: defenses.secondaryShield, quantity: 1 },
       ];
+  const priority = [
+    ...phasePriority,
+    ...availableCommanders.slice(0, 1),
+    ...fallback,
+  ];
 
   for (const candidate of priority) {
     if (!unitIds.has(candidate.id)) continue;
@@ -262,8 +247,8 @@ function chooseProduction(
         return {
           reasonCode: 'production-selected',
           explanation: threatened
-            ? `Разведка показывает угрозу: заказан ${candidate.id}.`
-            : `Закрывается дефицит сервисного, командирского или оборонного контура: ${candidate.id}.`,
+            ? `Угроза подтверждена: phase ${phase}, заказан ${candidate.id}.`
+            : `Phase ${phase}: заказан ${candidate.id}.`,
           command,
         };
       }
@@ -272,7 +257,7 @@ function chooseProduction(
 
   return {
     reasonCode: 'production-unavailable',
-    explanation: 'Нет доступного и оплачиваемого производственного заказа.',
+    explanation: `Phase ${phase}: нет доступного и оплачиваемого производственного заказа.`,
     command: null,
   };
 }
@@ -287,10 +272,11 @@ export function planBotResearchAndProduction(
     perception.foreignPlanets.some(
       (planet) => planet.freshness === 'current' && planet.snapshot.ownerEmpireId !== null,
     );
+  const phase = getBotProgressionPhase(state, empireId);
   return {
     empireId,
-    research: chooseResearch(state, empireId, threatened),
-    production: chooseProduction(state, empireId, threatened),
+    research: chooseResearch(state, empireId, threatened, phase),
+    production: chooseProduction(state, empireId, threatened, phase),
   };
 }
 
