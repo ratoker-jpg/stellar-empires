@@ -107,16 +107,6 @@ function deterministicRollBasisPoints(
   ) % 10_000;
 }
 
-function getCurrentBuildingLevel(
-  buildings: readonly PlanetBuildingState[],
-  buildingId: string,
-): number {
-  const canonicalBuildingId = resolveCanonicalBuildingId(buildingId);
-  return buildings.find(
-    (building) => resolveCanonicalBuildingId(building.buildingId) === canonicalBuildingId,
-  )?.level ?? 0;
-}
-
 function getEligibleBuildings(
   target: PlanetState,
 ): readonly PlanetBuildingState[] {

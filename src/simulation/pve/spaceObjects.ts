@@ -12,6 +12,7 @@ import {
 import type { FleetState } from '../fleets/types';
 import type { GalaxyModel } from '../galaxy/types';
 import type { FactionId, PlanetState } from '../planet/types';
+import { scaleProgressionReward } from '../progression/economyProfile';
 import type { SpaceCoordinate } from '../space/coordinates';
 import type {
   CommandLogEntry,
@@ -244,7 +245,7 @@ function createMissionReport(
   const losses = Math.floor(roll / 19) % 1_000 < effectiveHazard
     ? { [specialistShipId]: 1 }
     : {};
-  const reward =
+  const baseReward =
     object.kind === 'asteroid'
       ? {
           metal: Math.floor(depletion * 0.7),
@@ -255,6 +256,11 @@ function createMissionReport(
       : object.kind === 'gas-cloud'
         ? { metal: 0, crystal: 0, gas: depletion, exoticMatter: 0 }
         : { metal: 0, crystal: 0, gas: 0, exoticMatter: depletion };
+  const resourceReward = scaleProgressionReward(
+    state.campaignSettings.progressionProfile,
+    { metal: baseReward.metal, crystal: baseReward.crystal, gas: baseReward.gas },
+  );
+  const reward = { ...resourceReward, exoticMatter: baseReward.exoticMatter };
   const narrative =
     object.kind === 'asteroid'
       ? 'Промышленная группа закрепилась на астероиде и вывезла металл с кристаллическими включениями.'
