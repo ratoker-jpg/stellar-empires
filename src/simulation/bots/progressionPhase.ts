@@ -1,7 +1,10 @@
 import { getFactionIdForEmpire } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getBuildingDefinition } from '../planet/buildingCatalog';
-import { isBuildingEndgameLocked } from '../planet/buildingOperations';
+import {
+  getPlanetBuildingOperationalSummary,
+  isBuildingEndgameLocked,
+} from '../planet/buildingOperations';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
 import {
@@ -80,6 +83,7 @@ function hasUnitProductionCapability(
   return state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
     .some((planet) =>
+      getPlanetBuildingOperationalSummary(planet).hangarCapacity >= definition.hangarCost &&
       definition.buildingRequirements.every((rawRequirement) => {
         const requirement = resolveBuildingRequirement(profileId, rawRequirement);
         return getBuildingLevel(planet.buildings, requirement.buildingId) >= requirement.level;
