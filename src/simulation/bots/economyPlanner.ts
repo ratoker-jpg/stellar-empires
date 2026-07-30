@@ -1,3 +1,4 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import {
   getBuildingCatalogForFaction,
   getFactionIdForEmpire,
@@ -12,6 +13,7 @@ import {
   getBuildingLevel,
 } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
+import { getBuildingMaxLevel } from '../progression/profile';
 import type { GameCommand, GameState } from '../types';
 import { createBotPerception } from './perception';
 
@@ -50,14 +52,15 @@ function buildingCommand(
 }
 
 function canQueueBuilding(
+  profileId: ProgressionProfileId,
   planet: PlanetState,
   definition: BuildingDefinition,
 ): boolean {
   if (planet.buildQueue.length > 0) return false;
   if (!canUseMechanicalDefinition(definition.factionId, planet.factionId)) return false;
   const currentLevel = getBuildingLevel(planet.buildings, definition.id);
-  if (currentLevel >= definition.maxLevel) return false;
-  if (findMissingRequirements(planet, definition.requirements).length > 0) return false;
+  if (currentLevel >= getBuildingMaxLevel(profileId, definition)) return false;
+  if (findMissingRequirements(planet, definition.requirements, profileId).length > 0) return false;
   if (
     currentLevel === 0 &&
     planet.zones[definition.zoneId].fieldLimit -
@@ -68,11 +71,12 @@ function canQueueBuilding(
   }
   return canAfford(
     planet.economy,
-    calculateBuildingCost(definition, currentLevel + 1),
+    calculateBuildingCost(definition, currentLevel + 1, profileId),
   );
 }
 
 function createBuildingPlan(
+  profileId: ProgressionProfileId,
   empireId: string,
   planet: PlanetState,
   reasonCode: BotEconomyReasonCode,
@@ -84,7 +88,7 @@ function createBuildingPlan(
   const definition = candidateIds
     .map((buildingId) => definitions.get(buildingId))
     .find((candidate): candidate is BuildingDefinition =>
-      candidate !== undefined && canQueueBuilding(planet, candidate),
+      candidate !== undefined && canQueueBuilding(profileId, planet, candidate),
     );
   return definition === undefined
     ? undefined
@@ -130,6 +134,7 @@ export function planBotEconomy(
     };
   }
 
+  const profileId = state.campaignSettings.progressionProfile;
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).buildings;
   const catalog = getBuildingCatalogForFaction(factionId);
@@ -177,6 +182,7 @@ export function planBotEconomy(
 
   if (planet.economy.energy.produced < planet.economy.energy.consumed + 20) {
     const plan = createBuildingPlan(
+      profileId,
       empireId,
       planet,
       'energy-deficit',
@@ -194,6 +200,7 @@ export function planBotEconomy(
       gas: roles.gas,
     }[lowestResource[0]];
     const plan = createBuildingPlan(
+      profileId,
       empireId,
       planet,
       'resource-deficit',
@@ -206,6 +213,7 @@ export function planBotEconomy(
 
   if (getBuildingLevel(planet.buildings, roles.command) < 2) {
     const plan = createBuildingPlan(
+      profileId,
       empireId,
       planet,
       'unlock-industry',
@@ -217,6 +225,7 @@ export function planBotEconomy(
   }
 
   const industryPlan = createBuildingPlan(
+    profileId,
     empireId,
     planet,
     'expand-industry',
@@ -227,6 +236,7 @@ export function planBotEconomy(
   if (industryPlan !== undefined) return industryPlan;
 
   const sensorPlan = createBuildingPlan(
+    profileId,
     empireId,
     planet,
     'expand-sensors',
@@ -237,6 +247,7 @@ export function planBotEconomy(
   if (sensorPlan !== undefined) return sensorPlan;
 
   const balancedPlan = createBuildingPlan(
+    profileId,
     empireId,
     planet,
     'balanced-upgrade',
