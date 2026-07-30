@@ -1,6 +1,7 @@
 import { getFactionIdForEmpire } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getBuildingDefinition } from '../planet/buildingCatalog';
+import { isBuildingEndgameLocked } from '../planet/buildingOperations';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
 import { resolveBuildingRequirement } from '../progression/profile';
@@ -71,8 +72,11 @@ function hasResolvedBuildingPrerequisites(
       state.campaignSettings.progressionProfile,
       rawRequirement,
     );
+    const levelSatisfied =
+      isBuildingEndgameLocked(requirement.buildingId) ||
+      getBuildingLevel(planet.buildings, requirement.buildingId) >= requirement.level;
     return (
-      getBuildingLevel(planet.buildings, requirement.buildingId) >= requirement.level &&
+      levelSatisfied &&
       hasResolvedBuildingPrerequisites(
         state,
         planet,
