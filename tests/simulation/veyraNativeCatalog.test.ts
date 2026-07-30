@@ -222,7 +222,7 @@ describe('native Veyra runtime', () => {
   it('does not expose Aegis building definitions on a Veyra planet view-model', () => {
     const state = createInitialGameState('veyra-view-model', 'veyra');
     const planet = state.planets.find((candidate) => candidate.ownerEmpireId === 'player')!;
-    const cards = createBuildingCardViewModels(planet);
+    const cards = createBuildingCardViewModels(planet, state.campaignSettings.progressionProfile);
     expect(cards).toHaveLength(24);
     expect(cards.every((card) => card.id.startsWith('building.veyra.'))).toBe(true);
     expect(cards.some((card) => card.id.includes('.aegis.'))).toBe(false);

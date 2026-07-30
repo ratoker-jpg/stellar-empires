@@ -1,3 +1,4 @@
+import type { ProgressionProfileId } from '../simulation/campaign/settings';
 import { getFactionMechanicalRoles } from '../simulation/factions/factionMechanicalRoles';
 import { getBuildingLevel } from '../simulation/planet/buildingProgression';
 import type { PlanetState } from '../simulation/planet/types';
@@ -37,10 +38,13 @@ function createGateway(
   };
 }
 
-export function createIndustryZoneViewModel(planet: PlanetState): IndustryZoneViewModel {
+export function createIndustryZoneViewModel(
+  planet: PlanetState,
+  profileId: ProgressionProfileId,
+): IndustryZoneViewModel {
   const buildings = getFactionMechanicalRoles(planet.factionId).buildings;
   return {
-    buildings: createBuildingCardViewModels(planet).filter(
+    buildings: createBuildingCardViewModels(planet, profileId).filter(
       (building) => building.zoneId === 'industry',
     ),
     gateways: [
