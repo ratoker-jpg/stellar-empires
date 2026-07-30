@@ -55,8 +55,8 @@ function sumBuildingCatalog(factionId: FactionId): ProgressionTotals {
   let gameSeconds = 0;
   for (const definition of COMPLETE_BUILDING_CATALOGS[factionId]) {
     for (let level = 1; level <= definition.maxLevel; level += 1) {
-      cost = addCost(cost, calculateBuildingCost('legacy-v1', definition, level));
-      gameSeconds += calculateBuildSeconds('legacy-v1', definition, level);
+      cost = addCost(cost, calculateBuildingCost(definition, level, 'legacy-v1'));
+      gameSeconds += calculateBuildSeconds(definition, level, 'legacy-v1');
     }
   }
   return { cost, gameSeconds };
@@ -67,8 +67,8 @@ function sumResearchCatalog(factionId: FactionId): ProgressionTotals {
   let gameSeconds = 0;
   for (const definition of COMPLETE_RESEARCH_CATALOGS[factionId]) {
     for (let level = 1; level <= definition.maxLevel; level += 1) {
-      cost = addCost(cost, calculateResearchCost('legacy-v1', definition, level));
-      gameSeconds += calculateResearchSeconds('legacy-v1', definition, level);
+      cost = addCost(cost, calculateResearchCost(definition, level, 'legacy-v1'));
+      gameSeconds += calculateResearchSeconds(definition, level, 'legacy-v1');
     }
   }
   return { cost, gameSeconds };
@@ -128,15 +128,15 @@ function createMilestone(
     const definition = buildings.get(buildingId)!;
     const startingLevel = startingBuildings.get(buildingId) ?? 0;
     for (let level = startingLevel + 1; level <= targetLevel; level += 1) {
-      cost = addCost(cost, calculateBuildingCost('legacy-v1', definition, level));
-      gameSeconds += calculateBuildSeconds('legacy-v1', definition, level);
+      cost = addCost(cost, calculateBuildingCost(definition, level, 'legacy-v1'));
+      gameSeconds += calculateBuildSeconds(definition, level, 'legacy-v1');
     }
   }
   for (const [technologyId, targetLevel] of requiredResearch) {
     const definition = research.get(technologyId)!;
     for (let level = 1; level <= targetLevel; level += 1) {
-      cost = addCost(cost, calculateResearchCost('legacy-v1', definition, level));
-      gameSeconds += calculateResearchSeconds('legacy-v1', definition, level);
+      cost = addCost(cost, calculateResearchCost(definition, level, 'legacy-v1'));
+      gameSeconds += calculateResearchSeconds(definition, level, 'legacy-v1');
     }
   }
   if (targetUnit !== undefined) {

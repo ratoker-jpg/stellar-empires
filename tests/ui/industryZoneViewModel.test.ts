@@ -13,7 +13,7 @@ describe('industry zone view model', () => {
       return;
     }
 
-    const view = createIndustryZoneViewModel(planet);
+    const view = createIndustryZoneViewModel(planet, state.campaignSettings.progressionProfile);
 
     expect(view.buildings.every((building) => building.zoneId === 'industry')).toBe(true);
     expect(view.gateways.map((gateway) => gateway.id)).toEqual(['research', 'shipyard']);
