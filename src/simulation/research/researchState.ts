@@ -1,6 +1,11 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { getBuildingLevel } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
+import {
+  getBuildingMaxLevelById,
+  resolveResearchRequirement,
+} from '../progression/profile';
 import {
   getLegacyResearchIdsForCanonical,
   resolveCanonicalResearchId,
@@ -43,21 +48,27 @@ export function findMissingResearchRequirements(
   definition: ResearchDefinition,
   research: EmpireResearchState,
   planet: PlanetState,
+  profileId: ProgressionProfileId,
 ): readonly MissingResearchRequirement[] {
   const missing: MissingResearchRequirement[] = [];
   const laboratoryId = getFactionMechanicalRoles(planet.factionId).buildings.laboratory;
   const laboratoryLevel = getBuildingLevel(planet.buildings, laboratoryId);
+  const laboratoryCap = getBuildingMaxLevelById(profileId, laboratoryId);
+  const requiredLaboratoryLevel = laboratoryCap === undefined
+    ? definition.requiredLaboratoryLevel
+    : Math.min(definition.requiredLaboratoryLevel, laboratoryCap);
 
-  if (laboratoryLevel < definition.requiredLaboratoryLevel) {
+  if (laboratoryLevel < requiredLaboratoryLevel) {
     missing.push({
       type: 'laboratory',
       id: laboratoryId,
-      requiredLevel: definition.requiredLaboratoryLevel,
+      requiredLevel: requiredLaboratoryLevel,
       currentLevel: laboratoryLevel,
     });
   }
 
-  for (const requirement of definition.requirements) {
+  for (const sourceRequirement of definition.requirements) {
+    const requirement = resolveResearchRequirement(profileId, sourceRequirement);
     const currentLevel = getResearchLevel(research, requirement.technologyId);
 
     if (currentLevel < requirement.level) {
