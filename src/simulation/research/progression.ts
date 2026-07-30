@@ -1,35 +1,39 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import type { ResourceCost } from '../economy/types';
+import {
+  getProgressionProfileRules,
+  growProgressionInteger,
+  scaleProgressionCost,
+} from '../progression/profile';
 import { getResearchDefinition } from './catalog';
 import { getResearchLevel } from './researchState';
 import type { EmpireResearchState, ResearchDefinition } from './types';
 
-const COST_SCALE_PERMILLE = 1_600;
-const TIME_SCALE_PERMILLE = 1_450;
-
-function scaleInteger(base: number, level: number, scalePermille: number): number {
-  let value = base;
-  for (let current = 1; current < level; current += 1) {
-    value = Math.ceil((value * scalePermille) / 1_000);
-  }
-  return value;
-}
-
 export function calculateResearchCost(
   definition: ResearchDefinition,
   targetLevel: number,
+  profileId: ProgressionProfileId,
 ): ResourceCost {
+  const rules = getProgressionProfileRules(profileId).research;
+  const baseCost = scaleProgressionCost(definition.baseCost, rules.baseCostPermille);
   return {
-    metal: scaleInteger(definition.baseCost.metal, targetLevel, COST_SCALE_PERMILLE),
-    crystal: scaleInteger(definition.baseCost.crystal, targetLevel, COST_SCALE_PERMILLE),
-    gas: scaleInteger(definition.baseCost.gas, targetLevel, COST_SCALE_PERMILLE),
+    metal: growProgressionInteger(baseCost.metal, targetLevel, rules.costGrowthPermille),
+    crystal: growProgressionInteger(baseCost.crystal, targetLevel, rules.costGrowthPermille),
+    gas: growProgressionInteger(baseCost.gas, targetLevel, rules.costGrowthPermille),
   };
 }
 
 export function calculateResearchSeconds(
   definition: ResearchDefinition,
   targetLevel: number,
+  profileId: ProgressionProfileId,
 ): number {
-  return scaleInteger(definition.baseSeconds, targetLevel, TIME_SCALE_PERMILLE);
+  const rules = getProgressionProfileRules(profileId).research;
+  return growProgressionInteger(
+    Math.max(1, Math.ceil((definition.baseSeconds * rules.baseTimePermille) / 1_000)),
+    targetLevel,
+    rules.timeGrowthPermille,
+  );
 }
 
 export interface ResearchEffectSummary {
