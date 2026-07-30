@@ -145,6 +145,15 @@ function createPhasePrerequisiteTargets(
       const requirement = resolveBuildingRequirement(profileId, rawRequirement);
       addBuilding(requirement.buildingId, requirement.level);
     }
+    const hangarId = roles.buildings.complete.hangar;
+    const hangarCapacityPerLevel =
+      buildingById.get(hangarId)?.operations?.hangarCapacity ?? 0;
+    if (definition.hangarCost > 0 && hangarCapacityPerLevel > 0) {
+      addBuilding(
+        hangarId,
+        Math.ceil(definition.hangarCost / hangarCapacityPerLevel),
+      );
+    }
     for (const rawRequirement of definition.researchRequirements) {
       const requirement = resolveResearchRequirement(profileId, rawRequirement);
       addResearch(requirement.technologyId, requirement.level);
