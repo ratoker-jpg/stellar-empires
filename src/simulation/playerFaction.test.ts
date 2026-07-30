@@ -22,7 +22,7 @@ describe('player faction state', () => {
       .toBe('veyra');
   });
 
-  it('preserves faction identity for newly created colonies', () => {
+  it('preserves faction and progression identity for newly created colonies', () => {
     const state = createInitialGameState('faction-colony', 'veyra');
     const target = state.galaxy.systems
       .flatMap((system) => system.planets.map((planet) => ({ system, planet })))
@@ -35,6 +35,13 @@ describe('player faction state', () => {
     expect(location).toBeDefined();
     if (location === undefined) return;
 
-    expect(createColonyPlanet(location, 'player', 'veyra').factionId).toBe('veyra');
+    const colony = createColonyPlanet(
+      location,
+      'player',
+      'veyra',
+      state.campaignSettings.progressionProfile,
+    );
+    expect(colony.factionId).toBe('veyra');
+    expect(colony.economy.resources.metal.capacity).toBe(60_000);
   });
 });
