@@ -267,11 +267,7 @@ export function planBotResearchAndProduction(
   empireId: string,
 ): BotResearchProductionPlan {
   const perception = createBotPerception(state, empireId);
-  const threatened =
-    perception.alerts.length > 0 ||
-    perception.foreignPlanets.some(
-      (planet) => planet.freshness === 'current' && planet.snapshot.ownerEmpireId !== null,
-    );
+  const threatened = perception.alerts.length > 0;
   const phase = getBotProgressionPhase(state, empireId);
   return {
     empireId,
