@@ -90,6 +90,10 @@ export function getBotPhaseResearchTargets(
     }
   };
 
+  if (threatened) {
+    addTarget(roles.research.weapons, 3);
+    addTarget(roles.research.protection, 3);
+  }
   for (const unitId of phaseShipTargets(state, empireId, phase)) {
     addUnitRequirements(unitId);
   }
@@ -101,8 +105,8 @@ export function getBotPhaseResearchTargets(
     { technologyId: roles.research.propulsion, level: 2 },
     { technologyId: roles.research.logistics, level: 2 },
     { technologyId: roles.research.colonization, level: 1 },
-    { technologyId: roles.research.protection, level: threatened ? 3 : 2 },
-    { technologyId: roles.research.weapons, level: threatened ? 3 : 2 },
+    { technologyId: roles.research.protection, level: 2 },
+    { technologyId: roles.research.weapons, level: 2 },
     { technologyId: roles.research.advancedProtection, level: 2 },
     { technologyId: roles.research.battleNetwork, level: 2 },
   ];
@@ -165,5 +169,5 @@ export function getBotPhaseProductionTargets(
         { unitId: roles.corvette, quantity: 2, desiredTotal: 4 },
       ]
     : [];
-  return [...primary, ...pressure];
+  return [...pressure, ...primary];
 }
