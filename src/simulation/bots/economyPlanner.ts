@@ -16,10 +16,8 @@ import type { PlanetState } from '../planet/types';
 import { getBuildingMaxLevel } from '../progression/profile';
 import type { GameCommand, GameState } from '../types';
 import { createBotPerception } from './perception';
-import {
-  getBotProgressionPhase,
-  type BotProgressionPhase,
-} from './progressionPhase';
+import { getBotPhaseBuildingTargets } from './progressionPriorities';
+import { getBotProgressionPhase } from './progressionPhase';
 
 export type BotEconomyReasonCode =
   | 'no-planets'
@@ -42,33 +40,34 @@ export interface BotEconomyPlan {
   readonly command: GameCommand | null;
 }
 
+interface BuildingTarget {
+  readonly buildingId: string;
+  readonly level: number;
+}
+
 function buildingCommand(
   empireId: string,
   planetId: string,
   buildingId: string,
 ): GameCommand {
-  return {
-    type: 'QUEUE_BUILDING',
-    empireId,
-    planetId,
-    buildingId,
-  };
+  return { type: 'QUEUE_BUILDING', empireId, planetId, buildingId };
 }
 
 function canQueueBuilding(
   profileId: ProgressionProfileId,
   planet: PlanetState,
   definition: BuildingDefinition,
+  desiredLevel: number,
 ): boolean {
   if (planet.buildQueue.length > 0) return false;
   if (!canUseMechanicalDefinition(definition.factionId, planet.factionId)) return false;
   const currentLevel = getBuildingLevel(planet.buildings, definition.id);
-  if (currentLevel >= getBuildingMaxLevel(profileId, definition)) return false;
+  const targetLevel = Math.min(desiredLevel, getBuildingMaxLevel(profileId, definition));
+  if (currentLevel >= targetLevel) return false;
   if (findMissingRequirements(planet, definition.requirements, profileId).length > 0) return false;
   if (
     currentLevel === 0 &&
-    planet.zones[definition.zoneId].fieldLimit -
-      planet.zones[definition.zoneId].usedFields <
+    planet.zones[definition.zoneId].fieldLimit - planet.zones[definition.zoneId].usedFields <
       definition.fieldCost
   ) {
     return false;
@@ -85,89 +84,32 @@ function createBuildingPlan(
   planet: PlanetState,
   reasonCode: BotEconomyReasonCode,
   explanation: string,
-  candidateIds: readonly string[],
+  targets: readonly BuildingTarget[],
   catalog: readonly BuildingDefinition[],
 ): BotEconomyPlan | undefined {
   const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
-  const definition = candidateIds
-    .map((buildingId) => definitions.get(buildingId))
-    .find((candidate): candidate is BuildingDefinition =>
-      candidate !== undefined && canQueueBuilding(profileId, planet, candidate),
+  const target = targets.find((candidate) => {
+    const definition = definitions.get(candidate.buildingId);
+    return definition !== undefined && canQueueBuilding(
+      profileId,
+      planet,
+      definition,
+      candidate.level,
     );
-  return definition === undefined
+  });
+  return target === undefined
     ? undefined
     : {
         empireId,
         planetId: planet.id,
         reasonCode,
         explanation,
-        command: buildingCommand(empireId, planet.id, definition.id),
+        command: buildingCommand(empireId, planet.id, target.buildingId),
       };
 }
 
 function stockRatio(amount: number, capacity: number): number {
   return capacity <= 0 ? 1 : amount / capacity;
-}
-
-function phaseIndustryCandidateIds(
-  roles: ReturnType<typeof getFactionMechanicalRoles>['buildings'],
-  phase: BotProgressionPhase,
-): readonly string[] {
-  const complete = roles.complete;
-  switch (phase) {
-    case 'foundation':
-      return [
-        complete.constructionComplex,
-        complete.researchCenter,
-        complete.shipyard,
-        complete.hangar,
-      ];
-    case 'reconnaissance':
-      return [
-        complete.researchCenter,
-        complete.shipyard,
-        complete.constructionComplex,
-        complete.spaceport,
-      ];
-    case 'first-combat':
-      return [
-        complete.shipyard,
-        complete.researchCenter,
-        complete.spaceport,
-        complete.hangar,
-        complete.government,
-      ];
-    case 'colonization':
-      return [
-        complete.shipyard,
-        complete.researchCenter,
-        complete.spaceport,
-        complete.advancedFactory,
-        complete.government,
-        complete.hangar,
-      ];
-    case 'heavy-fleet':
-      return [
-        complete.shipyard,
-        complete.researchCenter,
-        complete.spaceport,
-        complete.advancedFactory,
-        complete.government,
-        complete.independentPower,
-        complete.hangar,
-      ];
-    case 'planet-destruction':
-    case 'endgame-preparation':
-      return [
-        complete.government,
-        complete.researchCenter,
-        complete.spaceport,
-        complete.shipyard,
-        complete.advancedFactory,
-        complete.independentPower,
-        complete.hangar,
-      ];
-  }
 }
 
 export function planBotEconomy(
@@ -205,25 +147,18 @@ export function planBotEconomy(
   const phase = getBotProgressionPhase(state, empireId);
   const catalog = getBuildingCatalogForFaction(factionId);
   const resourceRatios = {
-    metal: stockRatio(
-      planet.economy.resources.metal.amount,
-      planet.economy.resources.metal.capacity,
-    ),
-    crystal: stockRatio(
-      planet.economy.resources.crystal.amount,
-      planet.economy.resources.crystal.capacity,
-    ),
-    gas: stockRatio(
-      planet.economy.resources.gas.amount,
-      planet.economy.resources.gas.capacity,
-    ),
+    metal: stockRatio(planet.economy.resources.metal.amount, planet.economy.resources.metal.capacity),
+    crystal: stockRatio(planet.economy.resources.crystal.amount, planet.economy.resources.crystal.capacity),
+    gas: stockRatio(planet.economy.resources.gas.amount, planet.economy.resources.gas.capacity),
   };
   const lowestResource = (Object.entries(resourceRatios) as [keyof typeof resourceRatios, number][])
     .sort((left, right) => left[1] - right[1] || left[0].localeCompare(right[0]))[0];
+  const specializationThreshold = profileId === 'compressed-v1' ? 0.05 : 0.3;
+  const recoveryThreshold = profileId === 'compressed-v1' ? 0.05 : 0.35;
 
   if (planet.specializationId === 'balanced') {
     const specializationId =
-      lowestResource !== undefined && lowestResource[1] < 0.3
+      lowestResource !== undefined && lowestResource[1] < specializationThreshold
         ? 'resource'
         : 'industry';
     return {
@@ -235,8 +170,8 @@ export function planBotEconomy(
           : 'select-industry-specialization',
       explanation:
         specializationId === 'resource'
-          ? 'Запасы относительно ёмкости низкие: планета получает ресурсную роль.'
-          : 'Экономика стабильна: планета получает промышленную роль.',
+          ? 'Запасы действительно истощены: планета получает ресурсную роль.'
+          : 'Стартовые запасы обеспечивают ускоренное промышленное развитие.',
       command: {
         type: 'SET_PLANET_SPECIALIZATION',
         empireId,
@@ -247,31 +182,44 @@ export function planBotEconomy(
   }
 
   if (planet.economy.energy.produced < planet.economy.energy.consumed + 20) {
+    const currentLevel = getBuildingLevel(planet.buildings, roles.power);
     const plan = createBuildingPlan(
       profileId,
       empireId,
       planet,
       'energy-deficit',
       'Энергетический резерв недостаточен: приоритет реактору.',
-      [roles.power],
+      [{ buildingId: roles.power, level: currentLevel + 1 }],
       catalog,
     );
     if (plan !== undefined) return plan;
   }
 
-  if (lowestResource !== undefined && lowestResource[1] < 0.35) {
+  const phasePlan = createBuildingPlan(
+    profileId,
+    empireId,
+    planet,
+    'expand-industry',
+    `Phase ${phase}: строится точный prerequisite следующей capability.`,
+    getBotPhaseBuildingTargets(state, empireId, phase),
+    catalog,
+  );
+  if (phasePlan !== undefined) return phasePlan;
+
+  if (lowestResource !== undefined && lowestResource[1] < recoveryThreshold) {
     const resourceBuilding = {
       metal: roles.metal,
       crystal: roles.crystal,
       gas: roles.gas,
     }[lowestResource[0]];
+    const currentLevel = getBuildingLevel(planet.buildings, resourceBuilding);
     const plan = createBuildingPlan(
       profileId,
       empireId,
       planet,
       'resource-deficit',
-      `Самый слабый резерв — ${lowestResource[0]}: усиливается добыча.`,
-      [resourceBuilding],
+      `Самый слабый резерв — ${lowestResource[0]}: восстанавливается добыча.`,
+      [{ buildingId: resourceBuilding, level: currentLevel + 1 }],
       catalog,
     );
     if (plan !== undefined) return plan;
@@ -283,47 +231,42 @@ export function planBotEconomy(
       empireId,
       planet,
       'unlock-industry',
-      'Командная инфраструктура повышается до уровня доступа к лаборатории и верфи.',
-      [roles.command],
+      'Командная инфраструктура повышается до базового рабочего уровня.',
+      [{ buildingId: roles.command, level: 2 }],
       catalog,
     );
     if (plan !== undefined) return plan;
   }
 
-  const industryPlan = createBuildingPlan(
-    profileId,
-    empireId,
-    planet,
-    'expand-industry',
-    `Phase ${phase}: расширяется требуемый научно-производственный контур.`,
-    phaseIndustryCandidateIds(roles, phase),
-    catalog,
-  );
-  if (industryPlan !== undefined) return industryPlan;
-
+  const sensorLevel = getBuildingLevel(planet.buildings, roles.sensorGrid);
   const sensorPlan = createBuildingPlan(
     profileId,
     empireId,
     planet,
     'expand-sensors',
     `Phase ${phase}: свободные ресурсы направляются в сенсорную инфраструктуру.`,
-    [roles.sensorGrid],
+    [{ buildingId: roles.sensorGrid, level: sensorLevel + 1 }],
     catalog,
   );
   if (sensorPlan !== undefined) return sensorPlan;
 
+  const balancedTargets = [roles.power, roles.metal, roles.crystal, roles.gas, roles.command]
+    .sort(
+      (left, right) =>
+        getBuildingLevel(planet.buildings, left) - getBuildingLevel(planet.buildings, right) ||
+        left.localeCompare(right),
+    )
+    .map((buildingId) => ({
+      buildingId,
+      level: getBuildingLevel(planet.buildings, buildingId) + 1,
+    }));
   const balancedPlan = createBuildingPlan(
     profileId,
     empireId,
     planet,
     'balanced-upgrade',
     `Phase ${phase}: повышается самое слабое базовое здание.`,
-    [roles.power, roles.metal, roles.crystal, roles.gas, roles.command].sort(
-      (left, right) =>
-        getBuildingLevel(planet.buildings, left) -
-          getBuildingLevel(planet.buildings, right) ||
-        left.localeCompare(right),
-    ),
+    balancedTargets,
     catalog,
   );
   if (balancedPlan !== undefined) return balancedPlan;
