@@ -347,8 +347,16 @@ export function mountProductionScreens(options: ProductionScreenOptions): Produc
         const refreshRepairAvailability = (): void => {
           const repairAmount = Math.max(1, Math.min(Math.max(1, damagedAvailable), Math.floor(Number(repairQuantity.value) || 1)));
           repairQuantity.value = String(repairAmount);
-          const repairCost = calculateDefenseRepairCost(definition, repairAmount);
-          const repairSeconds = calculateDefenseRepairSeconds(definition, repairAmount);
+          const repairCost = calculateDefenseRepairCost(
+            definition,
+            repairAmount,
+            state.campaignSettings.progressionProfile,
+          );
+          const repairSeconds = calculateDefenseRepairSeconds(
+            definition,
+            repairAmount,
+            state.campaignSettings.progressionProfile,
+          );
           const repairQueueFree = planet.defense.repairQueue.length === 0;
           const repairAffordable = canAfford(state, planet.id, repairCost);
           repairAction.disabled = !(damagedAvailable > 0 && repairQueueFree && repairAffordable);

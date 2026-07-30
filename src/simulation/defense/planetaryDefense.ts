@@ -1,3 +1,4 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import { appendCommandHistory } from '../history/stateHistory';
 import { enqueueEvent } from '../eventQueue';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
@@ -9,6 +10,7 @@ import {
   spendResources,
 } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
+import { scaleRepairCost, scaleRepairSeconds } from '../progression/profileScaling';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -101,22 +103,27 @@ export function getDefenseGridUsed(planet: PlanetState): number {
 export function calculateDefenseRepairCost(
   definition: UnitDefinition,
   quantity: number,
+  profileId: ProgressionProfileId,
 ): { readonly metal: number; readonly crystal: number; readonly gas: number } {
   const repairPermille = getRepairCostPermille(definition);
-  return {
+  return scaleRepairCost(profileId, {
     metal: Math.ceil((definition.baseCost.metal * quantity * repairPermille) / 1_000),
     crystal: Math.ceil((definition.baseCost.crystal * quantity * repairPermille) / 1_000),
     gas: Math.ceil((definition.baseCost.gas * quantity * repairPermille) / 1_000),
-  };
+  });
 }
 
 export function calculateDefenseRepairSeconds(
   definition: UnitDefinition,
   quantity: number,
+  profileId: ProgressionProfileId,
 ): number {
-  return Math.max(
-    30,
-    Math.ceil((definition.baseSeconds * quantity * getRepairTimePermille(definition)) / 1_000),
+  return scaleRepairSeconds(
+    profileId,
+    Math.max(
+      30,
+      Math.ceil((definition.baseSeconds * quantity * getRepairTimePermille(definition)) / 1_000),
+    ),
   );
 }
 
@@ -186,14 +193,22 @@ export function queueDefenseRepair(
       details: { requested: command.quantity, available: damagedAvailable },
     };
   }
-  const cost = calculateDefenseRepairCost(definition, command.quantity);
+  const cost = calculateDefenseRepairCost(
+    definition,
+    command.quantity,
+    state.campaignSettings.progressionProfile,
+  );
   if (!canAfford(planet.economy, cost)) {
     return { ok: false, code: 'INSUFFICIENT_RESOURCES', message: 'Planet does not have enough resources for repairs.', details: { cost } };
   }
   const sequence = state.nextEventSequence;
   const queueItemId = `defense-repair-${sequence}`;
   const completesAt = state.clock.elapsedSeconds +
-    calculateDefenseRepairSeconds(definition, command.quantity);
+    calculateDefenseRepairSeconds(
+      definition,
+      command.quantity,
+      state.campaignSettings.progressionProfile,
+    );
   const queueItem: DefenseRepairQueueItem = {
     id: queueItemId,
     unitId: definition.id,
