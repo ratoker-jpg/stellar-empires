@@ -112,13 +112,12 @@ replace(
     'const updated = accruePlanetEconomy(nearlyFull, 86_400);',
     "const updated = accruePlanetEconomy('legacy-v1', nearlyFull, 86_400);",
 )
-replace(
+for path in [
     'tests/simulation/researchQueue.test.ts',
-    "createPlanetEconomy(buildings, 0, 'balanced')",
-    "createPlanetEconomy('compressed-v1', buildings, 0, 'balanced')",
-)
-replace(
     'tests/simulation/unitProduction.test.ts',
-    "createPlanetEconomy(buildings, 0, 'balanced')",
-    "createPlanetEconomy('compressed-v1', buildings, 0, 'balanced')",
-)
+]:
+    replace(
+        path,
+        'economy: refreshPlanetEconomy(planet.economy, buildings),',
+        'economy: refreshPlanetEconomy(\n          state.campaignSettings.progressionProfile,\n          planet.economy,\n          buildings,\n        ),',
+    )
