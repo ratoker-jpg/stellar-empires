@@ -16,6 +16,10 @@ import type { PlanetState } from '../planet/types';
 import { getBuildingMaxLevel } from '../progression/profile';
 import type { GameCommand, GameState } from '../types';
 import { createBotPerception } from './perception';
+import {
+  getBotProgressionPhase,
+  type BotProgressionPhase,
+} from './progressionPhase';
 
 export type BotEconomyReasonCode =
   | 'no-planets'
@@ -105,6 +109,67 @@ function stockRatio(amount: number, capacity: number): number {
   return capacity <= 0 ? 1 : amount / capacity;
 }
 
+function phaseIndustryCandidateIds(
+  roles: ReturnType<typeof getFactionMechanicalRoles>['buildings'],
+  phase: BotProgressionPhase,
+): readonly string[] {
+  const complete = roles.complete;
+  switch (phase) {
+    case 'foundation':
+      return [
+        complete.constructionComplex,
+        complete.researchCenter,
+        complete.shipyard,
+        complete.hangar,
+      ];
+    case 'reconnaissance':
+      return [
+        complete.researchCenter,
+        complete.shipyard,
+        complete.constructionComplex,
+        complete.spaceport,
+      ];
+    case 'first-combat':
+      return [
+        complete.shipyard,
+        complete.researchCenter,
+        complete.spaceport,
+        complete.hangar,
+        complete.government,
+      ];
+    case 'colonization':
+      return [
+        complete.shipyard,
+        complete.researchCenter,
+        complete.spaceport,
+        complete.advancedFactory,
+        complete.government,
+        complete.hangar,
+      ];
+    case 'heavy-fleet':
+      return [
+        complete.shipyard,
+        complete.researchCenter,
+        complete.spaceport,
+        complete.advancedFactory,
+        complete.government,
+        complete.independentPower,
+        complete.hangar,
+      ];
+    case 'planet-destruction':
+    case 'endgame-preparation':
+      return [
+        complete.government,
+        complete.researchCenter,
+        complete.spaceport,
+        complete.shipyard,
+        complete.advancedFactory,
+        complete.independentPower,
+        complete.hangar,
+      ];
+  }
+}
+
 export function planBotEconomy(
   state: GameState,
   empireId: string,
@@ -137,6 +202,7 @@ export function planBotEconomy(
   const profileId = state.campaignSettings.progressionProfile;
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).buildings;
+  const phase = getBotProgressionPhase(state, empireId);
   const catalog = getBuildingCatalogForFaction(factionId);
   const resourceRatios = {
     metal: stockRatio(
@@ -229,8 +295,8 @@ export function planBotEconomy(
     empireId,
     planet,
     'expand-industry',
-    'Расширяется научно-производственный контур.',
-    [roles.laboratory, roles.shipyard],
+    `Phase ${phase}: расширяется требуемый научно-производственный контур.`,
+    phaseIndustryCandidateIds(roles, phase),
     catalog,
   );
   if (industryPlan !== undefined) return industryPlan;
@@ -240,7 +306,7 @@ export function planBotEconomy(
     empireId,
     planet,
     'expand-sensors',
-    'Свободные ресурсы направляются в сенсорную инфраструктуру.',
+    `Phase ${phase}: свободные ресурсы направляются в сенсорную инфраструктуру.`,
     [roles.sensorGrid],
     catalog,
   );
@@ -251,7 +317,7 @@ export function planBotEconomy(
     empireId,
     planet,
     'balanced-upgrade',
-    'Основная инфраструктура готова: повышается самое слабое базовое здание.',
+    `Phase ${phase}: повышается самое слабое базовое здание.`,
     [roles.power, roles.metal, roles.crystal, roles.gas, roles.command].sort(
       (left, right) =>
         getBuildingLevel(planet.buildings, left) -
@@ -266,7 +332,7 @@ export function planBotEconomy(
     empireId,
     planetId: planet.id,
     reasonCode: 'wait-resources',
-    explanation: 'Нет доступного и оплачиваемого строительного решения.',
+    explanation: `Phase ${phase}: нет доступного и оплачиваемого строительного решения.`,
     command: null,
   };
 }
