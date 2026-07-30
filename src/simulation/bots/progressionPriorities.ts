@@ -74,6 +74,19 @@ function phaseShipTargets(
   }
 }
 
+function phaseEconomyLevel(phase: BotProgressionPhase): number {
+  switch (phase) {
+    case 'foundation': return 3;
+    case 'reconnaissance': return 4;
+    case 'first-combat': return 5;
+    case 'colonization': return 7;
+    case 'heavy-fleet': return 8;
+    case 'planet-destruction':
+    case 'endgame-preparation':
+      return 10;
+  }
+}
+
 function createPhasePrerequisiteTargets(
   state: GameState,
   empireId: string,
@@ -165,6 +178,13 @@ function createPhasePrerequisiteTargets(
   }
   if (phase === 'planet-destruction' || phase === 'endgame-preparation') {
     addBuilding(roles.buildings.complete.supremeGalacticGates, 1);
+  }
+
+  if (profileId === 'compressed-v1') {
+    const economyLevel = phaseEconomyLevel(phase);
+    addBuilding(roles.buildings.complete.metalPrimary, economyLevel);
+    addBuilding(roles.buildings.complete.crystalPrimary, economyLevel);
+    addBuilding(roles.buildings.complete.gasPrimary, economyLevel);
   }
 
   const buildings = buildingOrder.map((buildingId) => ({
