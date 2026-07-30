@@ -1,0 +1,35 @@
+name: Synchronize PR 134 exact status
+
+on:
+  push:
+    paths:
+      - '.github/workflows/sync-pr134-exact-status.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  synchronize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Apply guarded synchronization
+        run: python scripts/sync-pr134-exact-status.py
+      - name: Validate machine-readable status
+        run: |
+          python -m json.tool docs/project-status.json >/dev/null
+          python -m json.tool docs/roadmap-pr-index.json >/dev/null
+      - name: Remove temporary synchronization files
+        run: rm scripts/sync-pr134-exact-status.py .github/workflows/sync-pr134-exact-status.yml
+      - name: Commit synchronized status
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Synchronize status after PR 134'
+          git push origin HEAD:main
