@@ -1,0 +1,31 @@
+name: Fix progression profile argument order
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-progression-profile-argument-order.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/progression-profile-foundation
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Apply guarded replacements
+        run: python scripts/fix-progression-profile-argument-order.py
+      - name: Remove temporary patch files
+        run: rm scripts/fix-progression-profile-argument-order.py .github/workflows/fix-progression-profile-argument-order.yml
+      - name: Commit corrected callsites
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Correct progression profile argument order'
+          git push origin HEAD:agent/progression-profile-foundation
