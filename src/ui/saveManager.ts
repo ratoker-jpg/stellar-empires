@@ -1,4 +1,4 @@
-import { formatWorldSpeed } from '../simulation/campaign/settings';
+import { formatProgressionProfile, formatWorldSpeed } from '../simulation/campaign/settings';
 import type { GameState } from '../simulation/types';
 import { AUTOSAVE_SLOT_ID } from '../storage/AutoSaveController';
 import {
@@ -88,6 +88,7 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
     campaign.innerHTML = `
       <div><span>Сценарий</span><strong>${settings.scenarioPreset}</strong></div>
       <div><span>Скорость мира</span><strong>${formatWorldSpeed(settings.worldSpeed)}</strong></div>
+      <div><span>Профиль прогрессии</span><strong data-progression-profile="${settings.progressionProfile}">${formatProgressionProfile(settings.progressionProfile)}</strong></div>
       <div><span>Офлайн-прогрессия</span><strong>Включена</strong></div>
       <div><span>Создана</span><strong>${settings.createdAtReal}</strong></div>
       <p>Настройки входят в checksum партии и не изменяются после создания.</p>
@@ -135,7 +136,7 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
       name.textContent = summary.slotId;
       const meta = document.createElement('span');
       meta.textContent = summary.valid
-        ? `${summary.savedAt} · ${summary.scenarioPreset ?? 'campaign'} · x${summary.worldSpeed ?? 1} · ${formatWorldTime(summary.elapsedSeconds)}`
+        ? `${summary.savedAt} · ${summary.scenarioPreset ?? 'campaign'} · x${summary.worldSpeed ?? 1} · ${summary.progressionProfile === undefined ? 'legacy-v1' : summary.progressionProfile} · ${formatWorldTime(summary.elapsedSeconds)}`
         : `${summary.savedAt} · ${summary.errorCode ?? 'INVALID'}`;
       const cursor = document.createElement('small');
       cursor.textContent = summary.valid && summary.lastActiveAtReal !== undefined

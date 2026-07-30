@@ -1,4 +1,4 @@
-import type { WorldSpeed } from '../simulation/campaign/settings';
+import type { ProgressionProfileId, WorldSpeed } from '../simulation/campaign/settings';
 import type { GameState } from '../simulation/types';
 import { createSaveEnvelope, parseSaveJson, serializeSave } from './saveFormat';
 import { createCampaignRuntimeMetadata } from './runtimeMetadata';
@@ -17,6 +17,7 @@ export interface SaveSlotSummary {
   readonly elapsedSeconds: number;
   readonly scenarioPreset?: GameState['campaignSettings']['scenarioPreset'];
   readonly worldSpeed?: WorldSpeed;
+  readonly progressionProfile?: ProgressionProfileId;
   readonly lastActiveAtReal?: string;
   readonly valid: boolean;
   readonly errorCode?: string;
@@ -114,6 +115,7 @@ export class SaveManager {
         elapsedSeconds: result.save.state.clock.elapsedSeconds,
         scenarioPreset: result.save.state.campaignSettings.scenarioPreset,
         worldSpeed: result.save.state.campaignSettings.worldSpeed,
+        progressionProfile: result.save.state.campaignSettings.progressionProfile,
         lastActiveAtReal: result.save.runtimeMetadata.lastActiveAtReal,
         valid: true,
       };

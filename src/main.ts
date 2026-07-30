@@ -46,6 +46,7 @@ import {
 import {
   createCampaignSettings,
   DEFAULT_CAMPAIGN_CREATED_AT_REAL,
+  formatProgressionProfile,
   formatWorldSpeed,
 } from './simulation/campaign/settings';
 import { createInitialGameState } from './simulation/createInitialGameState';
@@ -169,7 +170,7 @@ async function createFreshGame(statusPrefix = 'Новая партия'): Promis
     runtimeMetadata: createCampaignRuntimeMetadata(
       selection.campaignSettings.createdAtReal,
     ),
-    status: `${statusPrefix} · ${selection.faction.toUpperCase()} · ${formatWorldSpeed(selection.campaignSettings.worldSpeed)} · seed ${state.seed}`,
+    status: `${statusPrefix} · ${selection.faction.toUpperCase()} · ${formatWorldSpeed(selection.campaignSettings.worldSpeed)} · ${formatProgressionProfile(selection.campaignSettings.progressionProfile)} · seed ${state.seed}`,
   };
 }
 
@@ -209,9 +210,12 @@ async function bootstrap(): Promise<void> {
         catchUpUi?.dispose();
       }
       const speed = formatWorldSpeed(initialState.campaignSettings.worldSpeed);
+      const progressionProfile = formatProgressionProfile(
+        initialState.campaignSettings.progressionProfile,
+      );
       startupStatus = restored.source === 'snapshot'
-        ? `Партия восстановлена из резерва · ${speed} · seed ${initialState.seed}`
-        : `Партия восстановлена · ${speed} · seed ${initialState.seed}`;
+        ? `Партия восстановлена из резерва · ${speed} · ${progressionProfile} · seed ${initialState.seed}`
+        : `Партия восстановлена · ${speed} · ${progressionProfile} · seed ${initialState.seed}`;
     } else {
       if (restored.status === 'invalid') {
         console.warn('[stellar-empires] invalid autosave', restored.code, restored.message);
@@ -360,6 +364,7 @@ async function bootstrap(): Promise<void> {
   });
   const systemWorkspace = mountSystemWorkspace({
     saves: saveWorkspace,
+    getState: () => application.getState(),
     navigateToMode: (mode) => appShellRef.current?.navigateToSystem(mode),
   });
 

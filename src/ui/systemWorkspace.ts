@@ -1,3 +1,5 @@
+import { formatProgressionProfile } from '../simulation/campaign/settings';
+import type { GameState } from '../simulation/types';
 import type { SystemShellMode } from './appShellRoute';
 import type { SaveManagerUiMount } from './saveManager';
 
@@ -8,6 +10,7 @@ export interface ClientPresentationSettings {
 
 export interface SystemWorkspaceOptions {
   readonly saves: SaveManagerUiMount;
+  readonly getState: () => GameState;
   readonly navigateToMode: (mode: SystemShellMode) => void;
 }
 
@@ -55,7 +58,8 @@ export function mountSystemWorkspace(options: SystemWorkspaceOptions): SystemWor
     <section class="system-settings-card">
       <p class="panel-label">Presentation only</p>
       <h2>Настройки интерфейса</h2>
-      <p>Настройки сохраняются только в браузере и не входят в GameState или игровые сохранения.</p>
+      <p>Настройки интерфейса сохраняются только в браузере и не входят в GameState.</p>
+      <div class="system-campaign-profile"><span>Профиль кампании</span><strong data-campaign-profile></strong><small>Входит в checksum и не меняется после создания.</small></div>
       <label><input type="checkbox" name="reduce-motion" /><span><strong>Уменьшить движение</strong><small>Отключает переходы и анимационные акценты.</small></span></label>
       <label><input type="checkbox" name="compact-layout" /><span><strong>Компактный интерфейс</strong><small>Уменьшает отступы, сохраняя все primary routes и действия.</small></span></label>
       <button type="button" data-settings-reset>Сбросить настройки</button>
@@ -64,6 +68,7 @@ export function mountSystemWorkspace(options: SystemWorkspaceOptions): SystemWor
   const reduceMotion = settingsHost.querySelector<HTMLInputElement>('[name="reduce-motion"]')!;
   const compactLayout = settingsHost.querySelector<HTMLInputElement>('[name="compact-layout"]')!;
   const reset = settingsHost.querySelector<HTMLButtonElement>('[data-settings-reset]')!;
+  const campaignProfile = settingsHost.querySelector<HTMLElement>('[data-campaign-profile]')!;
 
   const applyInputs = (): void => {
     const settings = { reduceMotion: reduceMotion.checked, compactLayout: compactLayout.checked };
@@ -74,6 +79,9 @@ export function mountSystemWorkspace(options: SystemWorkspaceOptions): SystemWor
     const settings = readClientPresentationSettings();
     reduceMotion.checked = settings.reduceMotion;
     compactLayout.checked = settings.compactLayout;
+    const progressionProfile = options.getState().campaignSettings.progressionProfile;
+    campaignProfile.dataset.progressionProfile = progressionProfile;
+    campaignProfile.textContent = formatProgressionProfile(progressionProfile);
     applyClientPresentationSettings(settings);
   };
   const onReset = (): void => {
