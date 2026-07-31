@@ -1,18 +1,17 @@
 # AI Continuation Guide
 
-**Status:** PR #135 active and blocked; recovery documentation PR #136 records the exact continuation chain  
+**Status:** Audit PR #137 active; M5 implementation locked until it merges  
 **Updated:** 2026-07-31  
-**Last merged runtime PR:** #134 `PROGRESSION-PROFILE-FOUNDATION` · `aa87e764ef40444660039dc8d6a96d7f5514cc23`  
-**Verified main:** `1a9ea165f96c8e46aae668a962ea7e1048252812`  
-**Active implementation:** #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE`  
-**Verified #135 head:** `69e5cf7a505be3b71363453751fc7463ef3c28b9`  
-**Recovery handoff:** `docs/handoffs/2026-07-31-pr135-recovery-and-delivery-chain.md`
+**Last merged PR:** #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE`  
+**Verified main:** `3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992`  
+**Active audit:** #137 `MULTI-COLONY-ECONOMY-LOGISTICS-01`  
+**Active branch:** `audit/multi-colony-economy-logistics-01`
 
 ## Repository
 
 `ratoker-jpg/stellar-empires` · default branch `main` · GitHub Pages deployment.
 
-Current GitHub history and actual `main` override stale prose, prior chat memory and abandoned branches.
+Actual `main` and merged GitHub history override stale prose, abandoned branches and private chat memory.
 
 ## Required startup reading
 
@@ -20,125 +19,94 @@ Current GitHub history and actual `main` override stale prose, prior chat memory
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/handoffs/2026-07-31-pr135-recovery-and-delivery-chain.md`
-6. `docs/audits/contracts/campaign-progression-balance-01-profile.md`
-7. `docs/audits/contracts/campaign-progression-balance-01-prs.md`
-8. `docs/audits/evidence/campaign-progression-balance-01-baseline.md`
-9. `docs/audits/evidence/campaign-progression-balance-01-candidate.md`
-10. `docs/audits/evidence/campaign-progression-balance-01-source-map.md`
-11. `docs/audits/evidence/campaign-progression-balance-01-graphify.md`
-12. `docs/audits/completed/local-campaign-time-pacing-01.md`
-13. `docs/changes/pr132-campaign-clock-offline-gate.md`
-14. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
-15. this document
-16. `docs/project-status.json`
-17. `docs/roadmap-pr-index.json`
-18. `docs/27-playable-game-roadmap-v5.md`
-19. latest merged PRs, open PRs and actual `main`
+5. `docs/audits/contracts/multi-colony-economy-logistics-01.md`
+6. `docs/audits/evidence/multi-colony-economy-logistics-01.md`
+7. `docs/audits/completed/campaign-progression-balance-01.md`
+8. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
+9. `docs/project-status.json`
+10. `docs/roadmap-pr-index.json`
+11. `docs/27-playable-game-roadmap-v5.md`
+12. latest merged PRs, open PRs and actual `main`
 
-## Delivered through merged runtime `main`
+## Delivered through PR #135
 
-- #101–#105: complete catalog runtime art;
-- #106–#110: Universe navigation/action gate;
-- #111–#115: routed application shell;
-- #116–#120: ordinary mission/intelligence/bot parity gate;
-- #121–#123: demolition, whole-planet destruction and recovery;
-- #124: local campaign product contract;
-- #125–#129: navigation/usability repair;
-- #130–#132: immutable settings, persistence and shared active/offline campaign time;
-- #133: accepted measured progression-profile and two-PR implementation contract;
-- #134: schema-v16 dual-profile foundation, legacy migration, deterministic profile consumers and profile identity UI.
+- complete mechanical catalogs and runtime art;
+- navigable Universe/Galaxy/Solar-system hierarchy;
+- canonical routed application shell and navigation usability gate;
+- ordinary missions, deterministic intelligence and honest bot mission path;
+- planet demolition, destruction, recovery and recolonization;
+- immutable local-campaign settings, save-v3 persistence and shared active/offline clock;
+- schema-v16 immutable `legacy-v1 | compressed-v1` progression identity;
+- accepted compressed economy/rewards and ordinary phase-aware bots;
+- permanent five-seed × three-player-faction progression matrix;
+- seven-day catch-up measured at 9.99 seconds against the 30-second gate.
 
-## Current accepted batch
+Final #135 checks:
 
 ```text
-schema v16
-CampaignSettings.progressionProfile = legacy-v1 | compressed-v1
-schema-v15 and older saves/replays → legacy-v1
-new normal campaigns → compressed-v1
-save format v3 retained
-complexity heavy
-exactly 2 implementation PRs
+CI             30640953169 — success
+Browser E2E    30640952948 — success
+Graphify       30640954312 — success
+merge          3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992
 ```
 
-Ordered implementation:
+## Current audit decision
+
+M5 is a medium batch because the required state, commands and persistence already exist. The work separates cleanly into four independently reviewable consumers:
 
 ```text
-#134 PROGRESSION-PROFILE-FOUNDATION — merged
-→ #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE — active final implementation
+#137 Audit — MULTI-COLONY-ECONOMY-LOGISTICS-01
+→ #138 COLONY-PORTFOLIO-FOUNDATION
+→ #139 LOGISTICS-ROUTE-LIFECYCLE
+→ #140 COLONY-OPERATIONS-UX
+→ #141 BOT-COLONY-LOGISTICS-GATE
+→ #142 next Audit from fresh main
 ```
 
-PR #135 remains the only authorized implementation branch. Do not create a third progression implementation PR.
+Exactly four M5 implementation PRs are authorized after #137 merges. No fifth PR may be added without an audit amendment.
 
-## Current PR #135 status
+## Verified M5 gaps
 
-Verified state:
+- Empire Overview shows raw totals but not route flow, pressure or health reasons.
+- Logistics allows duplicate route keys.
+- Resuming a paused route can replay departures from the paused interval.
+- Endpoint destruction already removes routes atomically.
+- Operations exposes market/logistics routes but lacks route editing, diagnostics and explicit market-colony selection.
+- Duplicate legacy market/logistics panel modules have no Graphify caller.
+- Bots select one free colony queue and have no portfolio role allocation or logistics planner.
 
-```text
-branch            agent/compressed-campaign-progression-gate
-head              69e5cf7a505be3b71363453751fc7463ef3c28b9
-state             open, draft, mergeable
-Graphify          30629427690 — success
-Browser E2E       30629427762 — success
-CI                30629427716 — failure
-```
+## M5 invariants
 
-The latest scenario completes in 13 h 42 min, but phase timings fail:
-
-```text
-player colonization 284 min
-Aegis colonization  376 min
-Synod colonization  300 min
-Veyra colonization  296 min
-required maximum    180 min
-```
-
-Heavy-fleet and endgame-preparation gates also fail for some or all empires. The seven-day catch-up takes about 72.95 seconds against the approved sub-30-second budget.
-
-The accepted starting bank remains exactly:
-
-```text
-15,000 metal
-12,000 crystal
- 6,000 gas
-```
-
-Larger speculative banks were reverted. Do not restore them or weaken tests without an explicit contract amendment.
+- schema v16 and save format v3 retained;
+- abstract scheduled logistics retained;
+- no cargo fleets, fuel, distance, interception or route combat;
+- no progression constant, starting bank, profile or world-speed change;
+- market remains emergency local support;
+- player and bots use the same ordinary commands and validators;
+- direct, chunked, offline and save-loaded processing remain deterministic;
+- permanent progression and catch-up gates remain mandatory.
 
 ## Exact recovery action
 
-1. Fetch actual PR #135 head and workflow runs; this snapshot may be stale.
-2. Continue the existing branch only.
-3. Fix seven-day catch-up performance without truncation or lost deterministic work.
-4. Improve phase timing only through ordinary mechanics and ordinary commands.
-5. Parallel one-scout expedition fleets are a candidate, not an accepted result; isolate and measure them.
-6. Do not use hidden bot resources, requirement skips, privileged commands or hidden outcome selection.
-7. Rerun focused gates, then full CI, Browser E2E and Graphify.
-8. Synchronize #135 with latest `main` before final documentation changes.
-9. Archive the batch and merge only after every required check is green.
+While #137 is open:
 
-Detailed measurements and file-level guidance are in `docs/handoffs/2026-07-31-pr135-recovery-and-delivery-chain.md`.
+1. inspect its latest head and workflow runs;
+2. change documentation/audit scope only;
+3. run CI, Browser E2E and Graphify;
+4. resolve blocking review threads;
+5. squash merge #137.
 
-## Delivery chain after #135
+After #137 merges:
 
-Documentation continuity PR #136 is outside implementation counts. It shifts the next audit number:
+1. fetch fresh `main` and exact #137 merge SHA;
+2. create only #138 `COLONY-PORTFOLIO-FOUNDATION`;
+3. follow the exact path and acceptance contract;
+4. do not rediscover or expand the whole M5 batch inside #138.
 
-```text
-#135 finish and merge
-→ #137 Audit from fresh main
-→ #138–#141 only if #137 authorizes a medium four-PR batch
-→ #142 Audit from fresh main
-→ #143–#148 only if #142 authorizes a light six-PR batch
-→ #149 Audit
-→ execute only the implementation batch authorized by #149
-```
+## Hard stops
 
-The likely subject for #137 is M5 multi-colony economy/logistics coherence, but no implementation scope is authorized until #137 itself audits the current code and merges.
-
-## Hard stop rules
-
-- Do not open #137 while #135 remains unmerged.
-- Do not open #138 before #137 merges.
-- Do not treat documentation PR #136 as one of the 2/4/6 implementation PRs.
-- Do not continue from an abandoned branch when GitHub shows a newer active branch.
-- Do not rely on private chat history when repository evidence is available.
+- do not start #138 before #137 merges;
+- do not combine physical convoys, PvE/meta, alliances or endgame into M5;
+- do not change schema/save format without replacing or amending Audit #137;
+- do not weaken the 15-case progression or seven-day performance gates;
+- do not bypass ordinary commands for bot behavior.
