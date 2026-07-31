@@ -45,6 +45,12 @@ export interface BotThreatRecoveryPlan {
   readonly command: GameCommand | null;
 }
 
+export interface BotThreatRecoveryDependencies {
+  readonly economy?: ReturnType<typeof planBotEconomy>;
+  readonly researchProduction?: ReturnType<typeof planBotResearchAndProduction>;
+  readonly fleet?: ReturnType<typeof planBotFleetMission>;
+}
+
 type Action = Pick<BotThreatRecoveryPlan, 'reasonCode' | 'explanation' | 'command'>;
 
 interface UnitIdentity {
@@ -284,9 +290,10 @@ function selectAction(
   phase: BotRecoveryPhase,
   threat: BotThreatLevel,
   hasTarget: boolean,
+  dependencies: BotThreatRecoveryDependencies,
 ): Action {
   if (phase === 'critical' || phase === 'economic') {
-    const economy = planBotEconomy(state, empireId);
+    const economy = dependencies.economy ?? planBotEconomy(state, empireId);
     if (economy.command !== null) {
       return {
         reasonCode:
@@ -309,17 +316,18 @@ function selectAction(
         command: combatCommand,
       };
     }
-    const production = planBotResearchAndProduction(state, empireId).production;
-    if (production.command !== null) {
+    const production =
+      dependencies.researchProduction ?? planBotResearchAndProduction(state, empireId);
+    if (production.production.command !== null) {
       return {
         reasonCode: threat === 'high' ? 'high-threat-response' : 'military-recovery',
-        explanation: production.explanation,
-        command: production.command,
+        explanation: production.production.explanation,
+        command: production.production.command,
       };
     }
   }
 
-  const fleet = planBotFleetMission(state, empireId);
+  const fleet = dependencies.fleet ?? planBotFleetMission(state, empireId);
   if (fleet.command !== null) {
     return {
       reasonCode: hasTarget ? 'target-opportunity' : 'stable-development',
@@ -328,12 +336,13 @@ function selectAction(
     };
   }
 
-  const research = planBotResearchAndProduction(state, empireId).research;
-  if (research.command !== null) {
+  const research =
+    dependencies.researchProduction ?? planBotResearchAndProduction(state, empireId);
+  if (research.research.command !== null) {
     return {
       reasonCode: 'stable-development',
-      explanation: research.explanation,
-      command: research.command,
+      explanation: research.research.explanation,
+      command: research.research.command,
     };
   }
 
@@ -347,6 +356,7 @@ function selectAction(
 export function planBotThreatAndRecovery(
   state: GameState,
   empireId: string,
+  dependencies: BotThreatRecoveryDependencies = {},
 ): BotThreatRecoveryPlan {
   const perception = createBotPerception(state, empireId);
   const militaryPower = ownMilitaryPower(perception);
@@ -373,7 +383,14 @@ export function planBotThreatAndRecovery(
     knownHostilePower,
     targets,
     selectedTargetPlanetId: target?.planetId ?? null,
-    ...selectAction(state, empireId, phase, threat, target !== null),
+    ...selectAction(
+      state,
+      empireId,
+      phase,
+      threat,
+      target !== null,
+      dependencies,
+    ),
   };
 }
 
