@@ -271,7 +271,13 @@ function createOrderedPhasePlan(
   resourceBuildings: ResourceBuildingIds,
 ): BotEconomyPlan | undefined {
   const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
+  const resourceBuildingIds = new Set<string>([
+    ...resourceBuildings.metal,
+    ...resourceBuildings.crystal,
+    ...resourceBuildings.gas,
+  ]);
   const target = targets.find((candidate) => {
+    if (resourceBuildingIds.has(candidate.buildingId)) return false;
     const definition = definitions.get(candidate.buildingId);
     if (definition === undefined) return false;
     const targetLevel = Math.min(
