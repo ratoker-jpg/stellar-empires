@@ -1,4 +1,3 @@
-import { appendCommandHistory, appendExecutedEventHistory } from './history/stateHistory';
 import { assignFlagship, setCommandDoctrine } from './command/commandDoctrine';
 import {
   cancelDefenseRepair,
@@ -12,13 +11,15 @@ import { canUseMechanicalDefinition } from './factions/sharedMechanicalCatalog';
 import { createFleet, disbandFleet } from './fleets/fleetCommands';
 import { setFleetCombatDoctrine } from './fleets/fleetDoctrineCommands';
 import { applyFlightEvent } from './fleets/flightCommands';
+import { appendCommandHistory, appendExecutedEventHistory } from './history/stateHistory';
 import {
   createLogisticsRoute,
   deleteLogisticsRoute,
   getNextLogisticsDepartureAt,
-  processLogisticsDeparturesAt,
+  processLogisticsDeparturesAtWithReceipts,
   updateLogisticsRoute,
 } from './logistics/routes';
+import type { LogisticsDepartureReceipt } from './logistics/types';
 import { executeMarketSwap } from './market/market';
 import { getBuildingDefinition } from './planet/buildingCatalog';
 import { isBuildingEndgameLocked } from './planet/buildingOperations';
@@ -81,6 +82,11 @@ import {
   completeShipUpgrade,
   queueShipUpgrade,
 } from './upgrades/shipUpgrades';
+
+export interface AdvanceTimeExecution {
+  readonly state: GameState;
+  readonly logisticsReceipts: readonly LogisticsDepartureReceipt[];
+}
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
   return appendCommandHistory(state.commandLog, command);
@@ -365,15 +371,16 @@ function earliestTime(values: readonly (number | undefined)[]): number | undefin
   return defined.length === 0 ? undefined : Math.min(...defined);
 }
 
-function advanceTime(
+export function executeAdvanceTimeWithTelemetry(
   state: GameState,
   command: Extract<GameCommand, { readonly type: 'ADVANCE_TIME' }>,
-): CommandResult<GameState> {
+): CommandResult<AdvanceTimeExecution> {
   if (!isNonNegativeInteger(command.seconds)) {
     return { ok: false, code: 'INVALID_TIME_DELTA', message: 'Time delta must be a non-negative integer.' };
   }
   const targetTime = state.clock.elapsedSeconds + command.seconds;
   const executedEvents: ExecutedGameEvent[] = [];
+  const logisticsReceipts: LogisticsDepartureReceipt[] = [];
   let working = state;
   let cursor = state.clock.elapsedSeconds;
   while (true) {
@@ -387,7 +394,11 @@ function advanceTime(
     if (nextAt === undefined) break;
     working = accrueStateEconomies(working, nextAt - cursor);
     working = { ...working, clock: { ...working.clock, elapsedSeconds: nextAt } };
-    if (nextRouteAt === nextAt) working = processLogisticsDeparturesAt(working, nextAt);
+    if (nextRouteAt === nextAt) {
+      const processed = processLogisticsDeparturesAtWithReceipts(working, nextAt);
+      working = processed.state;
+      logisticsReceipts.push(...processed.receipts);
+    }
     if (nextEventAt === nextAt && nextEvent !== undefined) {
       working = { ...working, pendingEvents: working.pendingEvents.slice(1) };
       working = applyEvent(working, nextEvent);
@@ -402,12 +413,25 @@ function advanceTime(
   return {
     ok: true,
     value: {
-      ...working,
-      clock: { ...working.clock, elapsedSeconds: targetTime },
-      commandLog: appendCommand(state, command),
-      eventLog: appendExecutedEventHistory(state.eventLog, executedEvents),
+      state: {
+        ...working,
+        clock: { ...working.clock, elapsedSeconds: targetTime },
+        commandLog: appendCommand(state, command),
+        eventLog: appendExecutedEventHistory(state.eventLog, executedEvents),
+      },
+      logisticsReceipts,
     },
   };
+}
+
+function advanceTime(
+  state: GameState,
+  command: Extract<GameCommand, { readonly type: 'ADVANCE_TIME' }>,
+): CommandResult<GameState> {
+  const execution = executeAdvanceTimeWithTelemetry(state, command);
+  return execution.ok
+    ? { ok: true, value: execution.value.state }
+    : execution;
 }
 
 export function executeCommand(state: GameState, command: GameCommand): CommandResult<GameState> {
