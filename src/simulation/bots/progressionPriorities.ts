@@ -85,7 +85,7 @@ function phaseEconomyLevels(phase: BotProgressionPhase): PhaseEconomyLevels {
   switch (phase) {
     case 'foundation':
     case 'reconnaissance':
-      return { metal: 2, crystal: 8, gas: 3 };
+      return { metal: 1, crystal: 1, gas: 1 };
     case 'first-combat':
       return { metal: 4, crystal: 10, gas: 6 };
     case 'colonization':
