@@ -2,10 +2,10 @@
 
 **Status:** active canonical product roadmap  
 **Updated:** 2026-07-31  
-**Last merged PR:** #138 `COLONY-PORTFOLIO-FOUNDATION` · `b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f`  
+**Last merged PR:** #139 `LOGISTICS-ROUTE-LIFECYCLE` · `dc8b42fc0e41b631a61dda524224145f2d8ba214`  
 **Runtime baseline:** schema v16 / save format v3 / immutable dual progression profiles  
 **Last completed batch:** `CAMPAIGN-PROGRESSION-BALANCE-01`  
-**Current authorized work:** PR #139 `LOGISTICS-ROUTE-LIFECYCLE`  
+**Current authorized work:** PR #140 `COLONY-OPERATIONS-UX`  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -39,16 +39,15 @@ Nemexia references define systemic depth only. Stellar Empires keeps original te
 The merged product includes:
 
 - deterministic schema-v16 simulation and save-v3 persistence;
-- immutable local campaign settings and x1/x2/x5/x10 time;
-- shared active/offline chronological processing;
-- compressed finite-campaign progression and permanent 15-case matrix;
-- complete mechanical catalogs and runtime art;
-- routed application, Universe hierarchy and release-viewport browser gate;
+- immutable local campaign settings and shared active/offline time;
+- compressed finite progression with permanent 15-case matrix;
+- complete mechanical catalogs, runtime art and routed application;
 - ordinary missions, intelligence, combat, destruction/recovery and PvE foundations;
-- multi-colony economy, specializations, development templates, abstract routes and market;
-- a shared pure empire economy portfolio with stock pressure, configured flow, effective net flow and health diagnostics.
+- multi-colony economy, specializations, development templates and market;
+- a shared empire portfolio with stock pressure and configured route flow;
+- hardened abstract route lifecycle, exact ephemeral catch-up receipts and deterministic legacy duplicate repair.
 
-PR #138 merged the portfolio foundation as `b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f` after CI `30659596856`, Browser `30659596868` and Graphify `30659596839`.
+PR #139 merged as `dc8b42fc0e41b631a61dda524224145f2d8ba214` after CI `30661645271`, Browser `30661645781` and Graphify `30661645236`.
 
 ## 4. Accepted M5 contract
 
@@ -56,41 +55,46 @@ Audit #137 authorized exactly:
 
 ```text
 #138 COLONY-PORTFOLIO-FOUNDATION — merged
-→ #139 LOGISTICS-ROUTE-LIFECYCLE — active
-→ #140 COLONY-OPERATIONS-UX
+→ #139 LOGISTICS-ROUTE-LIFECYCLE — merged
+→ #140 COLONY-OPERATIONS-UX — active
 → #141 BOT-COLONY-LOGISTICS-GATE
 ```
 
 No fifth M5 implementation PR is authorized.
 
-## 5. Current implementation — logistics route lifecycle
+## 5. Current implementation — colony Operations UX
 
-PR #139 closes runtime and compatibility gaps before UI and bot automation depend on routes:
+PR #140 completes the player-facing product surface without changing simulation rules:
 
-- reject new duplicate `(empire, origin, target, resource)` keys;
-- paused routes perform no departures;
-- resume and active interval edits schedule from current game time;
-- amount/reserve/priority-only edits retain the current departure;
-- same-time routes resolve priority descending, then route ID ascending;
-- every departure emits an ephemeral receipt;
-- campaign summaries count every successful player receipt exactly;
-- old duplicate save-v3 routes normalize deterministically after integrity validation;
-- schema v16/save v3 remain unchanged.
+- canonical routed logistics and market modes;
+- route create/edit/pause/resume/delete controls;
+- priority, next departure, configured hourly flow, last result and miss diagnostics;
+- origin/target pressure from the shared portfolio;
+- endpoint links with browser-history return;
+- explicit owned-colony market selection and stock/capacity context;
+- selected colony passed to ordinary `MARKET_SWAP`;
+- local accessible success/error feedback;
+- unsaved form drafts remain presentation-only and disappear after reload;
+- real Chromium workflow at both release viewports.
 
-Receipts are never persisted and do not affect checksums or replay identity.
+The former standalone panels are now render modules consumed by the routed Operations workspace and cannot mount independently.
 
 ## 6. Remaining M5 gap
 
-After #139:
+After #140, only #141 remains. It must:
 
-- #140 completes route create/edit/pause/resume/delete diagnostics, endpoint context and explicit selected-colony market workflow;
-- #141 gives bots deterministic colony-role and ordinary logistics planning and closes the combined M5 gate.
+- converge bot colony roles deterministically;
+- create/update ordinary logistics routes from the shared portfolio;
+- use ordinary selected-colony market support when logistics cannot solve a critical deficit;
+- prove direct/chunked/save-loaded equality in three-faction 24-hour fixtures;
+- retain progression and seven-day performance gates;
+- archive and close M5 with exact merge SHAs.
 
 Physical convoys, fuel, distance, interception and route combat remain outside M5.
 
 ## 7. Release 1.0 definition
 
-A player can create and resume a deterministic campaign, build and understand a multi-colony economy, configure reliable logistics, unlock the catalog, navigate and execute supported missions, fight and recover colonies, interact with complete PvE/meta systems, join or avoid alliances and reach victory or defeat.
+A player can create and resume a deterministic campaign, build and understand a multi-colony economy, configure reliable logistics, unlock the catalog, execute supported missions, fight and recover colonies, interact with complete PvE/meta systems, join or avoid alliances and reach victory or defeat.
 
 Bots must use the same commands, resources, timing and intelligence limits. Save/load/offline partitions must preserve deterministic outcomes.
 
@@ -106,7 +110,7 @@ Bots must use the same commands, resources, timing and intelligence limits. Save
 | M4b — Planet demolition/destruction/recovery | completed | Audit #121; #122–#123 |
 | M4c — Local campaign time foundation | completed | Audit #130; #131–#132 |
 | M4d — Campaign progression balance | completed | Audit #133; #134–#135 |
-| M5 — Multi-colony economy/logistics coherence | implementation active | #137 merged; #138 merged; #139 active; #140–#141 ordered |
+| M5 — Multi-colony economy/logistics coherence | implementation active | #137 merged; #138–#139 merged; #140 active; #141 ordered |
 | M6 — Full PvE/meta systems | not audited | PvE depth, Arena, Admiral meta, services |
 | M7 — Autonomous bot parity | not audited | honest full-domain bot loop beyond colony economy |
 | M8 — Complete endgame | not audited | alliances, Solar War, Obelisks, Gates, victory/defeat |
@@ -115,16 +119,14 @@ Bots must use the same commands, resources, timing and intelligence limits. Save
 ## 9. Key invariants
 
 - current `main` is the only valid baseline;
-- #140 must not start before #139 merges;
+- #141 must not start before #140 merges;
 - campaign settings and progression profile remain immutable;
-- no elapsed duration is skipped;
 - active and offline paths use one orchestrator;
 - player and bots use ordinary commands and visibility rules;
 - schema v16/save v3 remain unless the audit is replaced;
-- telemetry receipts remain outside deterministic state;
 - M5 does not alter progression constants or duration gates;
 - no continuously running server is required.
 
 ## 10. Immediate action
 
-Validate the latest PR #139 head through CI, Browser E2E and Graphify, resolve every blocking review thread, mark ready and squash merge. Then create only PR #140 `COLONY-OPERATIONS-UX` from fresh `main`.
+Validate the latest PR #140 head through CI, Browser E2E and Graphify, resolve every blocking review thread, mark ready and squash merge. Then create only PR #141 `BOT-COLONY-LOGISTICS-GATE` from fresh `main` and close M5 there.
