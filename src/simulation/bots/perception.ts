@@ -81,6 +81,8 @@ export interface BotPerception {
   }[];
 }
 
+const perceptionCache = new WeakMap<GameState, Map<string, BotPerception>>();
+
 function createOwnPlanetPerception(planet: PlanetState): BotOwnPlanetPerception {
   return {
     id: planet.id,
@@ -111,6 +113,9 @@ export function createBotPerception(
   state: GameState,
   empireId: string,
 ): BotPerception {
+  const cached = perceptionCache.get(state)?.get(empireId);
+  if (cached !== undefined) return cached;
+
   const intelligence = getEmpireIntelligence(state.intelligence, empireId);
   const research = getEmpireResearch(state.research, empireId);
   const observations = [...(intelligence?.observations ?? [])].sort(
@@ -152,7 +157,7 @@ export function createBotPerception(
       left.planetId.localeCompare(right.planetId),
     );
 
-  return {
+  const perception: BotPerception = {
     empireId,
     perceivedAt: state.clock.elapsedSeconds,
     ownPlanets: state.planets
@@ -200,4 +205,9 @@ export function createBotPerception(
         mission: fleet.mission === null ? null : { ...fleet.mission },
       })),
   };
+
+  const byEmpire = perceptionCache.get(state) ?? new Map<string, BotPerception>();
+  byEmpire.set(empireId, perception);
+  perceptionCache.set(state, byEmpire);
+  return perception;
 }
