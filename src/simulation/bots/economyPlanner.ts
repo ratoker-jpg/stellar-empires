@@ -212,6 +212,10 @@ function createResourceSupportPlan(
   resourceBuildings: ResourceBuildingIds,
 ): BotEconomyPlan | undefined {
   const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
+  const phaseTargets = new Map(
+    getBotPhaseBuildingTargets(state, empireId, phase)
+      .map((target) => [target.buildingId, target.level]),
+  );
   const candidates = RESOURCE_IDS
     .map((resourceId) => ({
       resourceId,
@@ -238,13 +242,16 @@ function createResourceSupportPlan(
       const definition = definitions.get(buildingId);
       if (definition === undefined) continue;
       const currentLevel = getBuildingLevel(planet.buildings, buildingId);
-      if (currentLevel >= getBuildingMaxLevel(profileId, definition)) continue;
-      if (canQueueBuilding(profileId, planet, definition, currentLevel + 1)) {
+      const maximumLevel = profileId === 'compressed-v1'
+        ? phaseTargets.get(buildingId) ?? currentLevel
+        : getBuildingMaxLevel(profileId, definition);
+      if (currentLevel >= maximumLevel) continue;
+      if (canQueueBuilding(profileId, planet, definition, maximumLevel)) {
         return {
           empireId,
           planetId: planet.id,
           reasonCode: 'resource-deficit',
-          explanation: `Phase ${phase}: ${candidate.resourceId} задерживает ${blockedLabel} на ${candidate.waitSeconds} сек., повышается ${buildingId}.`,
+          explanation: `Phase ${phase}: ${candidate.resourceId} задерживает ${blockedLabel} на ${candidate.waitSeconds} сек., повышается ${buildingId} до фазового предела ${maximumLevel}.`,
           command: buildingCommand(empireId, planet.id, buildingId),
         };
       }
