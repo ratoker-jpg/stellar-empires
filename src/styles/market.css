@@ -1,6 +1,6 @@
 .market-panel {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .market-panel h2 {
@@ -8,54 +8,72 @@
 }
 
 .market-reserves,
-.market-history {
+.market-history,
+.market-colony-stocks {
   display: grid;
-  gap: 4px;
+  gap: 5px;
   color: #819aaa;
-  font-size: 0.65rem;
+  font-size: 0.69rem;
 }
 
-.market-reserves {
+.market-reserves,
+.market-colony-stocks {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.market-reserves span {
-  padding: 5px;
+.market-reserves span,
+.market-colony-stocks span {
+  padding: 7px;
   border: 1px solid rgb(71 199 241 / 12%);
   border-radius: 5px;
   text-align: center;
+  background: rgb(2 8 14 / 44%);
 }
 
 .market-form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgb(71 199 241 / 14%);
+  border-radius: 8px;
+  background: rgb(2 8 14 / 52%);
+}
+
+.market-form label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: #90a7b6;
+  font-size: 0.67rem;
 }
 
 .market-form select,
 .market-form input,
 .market-form button {
   min-width: 0;
-  min-height: 34px;
-  padding: 6px 8px;
+  min-height: 36px;
+  padding: 7px 9px;
   border: 1px solid color-mix(in srgb, var(--faction-accent, var(--cyan-400)) 24%, transparent);
   border-radius: 6px;
   background: rgb(3 12 20 / 88%);
   color: var(--ice-100);
 }
 
+.market-colony-stocks,
 .market-quote,
+.market-form .operations-command-feedback,
 .market-form button {
   grid-column: 1 / -1;
 }
 
 .market-quote {
-  min-height: 34px;
-  padding: 7px;
+  min-height: 36px;
+  padding: 8px;
   border-radius: 6px;
   background: rgb(2 8 14 / 64%);
   color: var(--ice-300);
-  font-size: 0.65rem;
+  font-size: 0.69rem;
   line-height: 1.4;
 }
 
@@ -66,4 +84,22 @@
 .market-form button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
+}
+
+.market-history span {
+  padding: 7px 9px;
+  border: 1px solid rgb(71 199 241 / 10%);
+  border-radius: 5px;
+  background: rgb(2 8 14 / 46%);
+}
+
+@media (max-width: 800px) {
+  .market-form {
+    grid-template-columns: 1fr;
+  }
+
+  .market-reserves,
+  .market-colony-stocks {
+    grid-template-columns: 1fr;
+  }
 }
