@@ -14,9 +14,13 @@ import {
 } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
 import { getBuildingMaxLevel } from '../progression/profile';
+import { getEmpireResearch, getResearchLevel } from '../research/researchState';
 import type { GameCommand, GameState } from '../types';
 import { createBotPerception } from './perception';
-import { getBotPhaseBuildingTargets } from './progressionPriorities';
+import {
+  getBotPhaseBuildingTargets,
+  getBotPhaseResearchTargets,
+} from './progressionPriorities';
 import { getBotProgressionPhase, type BotProgressionPhase } from './progressionPhase';
 
 export type BotEconomyReasonCode =
@@ -325,6 +329,24 @@ export function planBotEconomy(
     { metal: roles.metal, crystal: roles.crystal, gas: roles.gas },
   );
   if (phasePlan !== undefined) return phasePlan;
+
+  if (compressed) {
+    const research = getEmpireResearch(state.research, empireId);
+    const pendingResearch = getBotPhaseResearchTargets(state, empireId, phase, false)
+      .find((target) =>
+        research === undefined ||
+        getResearchLevel(research, target.technologyId) < target.level,
+      );
+    if (pendingResearch !== undefined) {
+      return {
+        empireId,
+        planetId: planet.id,
+        reasonCode: 'wait-resources',
+        explanation: `Phase ${phase}: ресурсы резервируются для исследования ${pendingResearch.technologyId} до уровня ${pendingResearch.level}.`,
+        command: null,
+      };
+    }
+  }
 
   if (lowestResource !== undefined && lowestResource[1] < recoveryThreshold) {
     const resourceBuilding = {
