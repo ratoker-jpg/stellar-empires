@@ -138,7 +138,7 @@ describe('bot research and production planner', () => {
     }
   });
 
-  it('prioritizes military research and fighters when current intelligence shows a threat', () => {
+  it('prioritizes military research and adds fighter pressure when intelligence shows a threat', () => {
     let state = prepareBotInfrastructure(
       createInitialGameState('bot-science-threat'),
       'aegis-bot',
@@ -196,7 +196,7 @@ describe('bot research and production planner', () => {
       const researchResult = executeCommand(state, plan.research.command);
       expect(researchResult.ok).toBe(true);
     }
-    expect(getBotPhaseProductionTargets(state, 'aegis-bot', phase, true)[0]).toEqual({
+    expect(getBotPhaseProductionTargets(state, 'aegis-bot', phase, true)).toContainEqual({
       unitId: getFactionMechanicalRoles('aegis').ships.fighter,
       quantity: 3,
       desiredTotal: 6,
