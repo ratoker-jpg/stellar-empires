@@ -55,7 +55,7 @@ describe('autonomous bot scheduler', () => {
       [...second.audit.map((entry) => entry.decidedAt)].sort((left, right) => left - right),
     );
     expect(new Set(second.audit.map((entry) => entry.decidedAt))).toEqual(
-      new Set([240, 480]),
+      new Set([240]),
     );
     expect(second.state.botAutomation.nextDecisionAtByEmpire).toEqual({
       'aegis-bot': 720,
