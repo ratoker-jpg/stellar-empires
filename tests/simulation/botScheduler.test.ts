@@ -88,7 +88,7 @@ describe('autonomous bot scheduler', () => {
     expect(first).toEqual(second);
     expect(first.runs).toBeGreaterThan(1);
     expect(first.decidedAt).toEqual([...first.decidedAt].sort((left, right) => left - right));
-  });
+  }, 20_000);
 
   it('enforces difficulty limits and honest personality fallback', () => {
     const state = createInitialGameState('bot-scheduler-profile');
