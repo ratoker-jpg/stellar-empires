@@ -61,10 +61,72 @@ interface DueProfile {
 
 interface PlannerCandidates {
   readonly candidates: readonly CommandCandidate[];
-  readonly fleet: BotFleetMissionPlan;
+  readonly fleet: BotFleetMissionPlan | null;
 }
 
-function candidatesForPersonality(
+function isSameCommand(left: GameCommand, right: GameCommand): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function hasBeenAttempted(
+  command: GameCommand | null,
+  attempted: readonly GameCommand[],
+): boolean {
+  return command !== null && attempted.some((candidate) => isSameCommand(candidate, command));
+}
+
+function selectCandidate(
+  source: BotPlannerSource,
+  command: GameCommand | null,
+  attempted: readonly GameCommand[],
+): CommandCandidate | null {
+  return command === null || hasBeenAttempted(command, attempted)
+    ? null
+    : { source, command };
+}
+
+function compressedCandidate(
+  state: GameState,
+  profile: BotProfile,
+  attempted: readonly GameCommand[],
+  precomputedFleet?: BotFleetMissionPlan,
+): PlannerCandidates {
+  const science = planBotResearchAndProduction(state, profile.empireId);
+  const production = selectCandidate(
+    'production',
+    science.production.command,
+    attempted,
+  );
+  if (production !== null) return { candidates: [production], fleet: precomputedFleet ?? null };
+
+  const research = selectCandidate('research', science.research.command, attempted);
+  if (research !== null) return { candidates: [research], fleet: precomputedFleet ?? null };
+
+  const economy = planBotEconomy(state, profile.empireId);
+  const economyCandidate = selectCandidate('economy', economy.command, attempted);
+  if (economyCandidate !== null) {
+    return { candidates: [economyCandidate], fleet: precomputedFleet ?? null };
+  }
+
+  const threat = planBotThreatAndRecovery(state, profile.empireId, {
+    economy,
+    researchProduction: science,
+    ...(precomputedFleet === undefined ? {} : { fleet: precomputedFleet }),
+  });
+  const threatCandidate = selectCandidate('threat', threat.command, attempted);
+  if (threatCandidate !== null) {
+    return { candidates: [threatCandidate], fleet: precomputedFleet ?? null };
+  }
+
+  const fleet = precomputedFleet ?? planBotFleetMission(state, profile.empireId);
+  const fleetCandidate = selectCandidate('fleet', fleet.command, attempted);
+  return {
+    candidates: fleetCandidate === null ? [] : [fleetCandidate],
+    fleet,
+  };
+}
+
+function legacyCandidatesForPersonality(
   state: GameState,
   profile: BotProfile,
 ): PlannerCandidates {
@@ -76,18 +138,6 @@ function candidatesForPersonality(
     researchProduction: science,
     fleet,
   });
-  if (state.campaignSettings.progressionProfile === 'compressed-v1') {
-    return {
-      candidates: [
-        { source: 'production', command: science.production.command },
-        { source: 'research', command: science.research.command },
-        { source: 'economy', command: economy.command },
-        { source: 'threat', command: threat.command },
-        { source: 'fleet', command: fleet.command },
-      ],
-      fleet,
-    };
-  }
   const candidates: Readonly<Record<BotPersonality, readonly CommandCandidate[]>> = {
     industrial: [
       { source: 'economy', command: economy.command },
@@ -112,10 +162,6 @@ function candidatesForPersonality(
     ],
   };
   return { candidates: candidates[profile.personality], fleet };
-}
-
-function isSameCommand(left: GameCommand, right: GameCommand): boolean {
-  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 function diagnosticForBlockedFleet(
@@ -154,19 +200,24 @@ function runProfileDecision(
   const audit: BotSchedulerAuditEntry[] = [];
   const diagnostics: BotSchedulerDiagnosticEntry[] = [];
   const attempted: GameCommand[] = [];
-
-  const initial = candidatesForPersonality(working, profile);
-  const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, initial.fleet);
+  const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
+  const diagnosticFleet = planBotFleetMission(working, profile.empireId);
+  const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, diagnosticFleet);
   if (diagnostic !== null) diagnostics.push(diagnostic);
 
   for (let index = 0; index < profile.maxCommandsPerDecision; index += 1) {
-    const planning = index === 0 ? initial : candidatesForPersonality(working, profile);
+    const planning = compressed
+      ? compressedCandidate(
+          working,
+          profile,
+          attempted,
+          index === 0 ? diagnosticFleet : undefined,
+        )
+      : legacyCandidatesForPersonality(working, profile);
     const candidate = planning.candidates.find(
       (item) =>
         item.command !== null &&
-        !attempted.some((command) =>
-          item.command === null ? false : isSameCommand(command, item.command),
-        ),
+        !hasBeenAttempted(item.command, attempted),
     );
     if (candidate?.command === null || candidate === undefined) break;
     attempted.push(candidate.command);
