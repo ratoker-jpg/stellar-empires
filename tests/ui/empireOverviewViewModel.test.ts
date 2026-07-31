@@ -3,7 +3,7 @@ import { createInitialGameState } from '../../src/simulation/createInitialGameSt
 import { createEmpireOverviewViewModel } from '../../src/ui/empireOverviewViewModel';
 
 describe('empire overview view model', () => {
-  it('aggregates resources, queues and fleets across owned colonies', () => {
+  it('aggregates resources, roles, route flow, queues and fleets across owned colonies', () => {
     const initial = createInitialGameState('empire-overview');
     const home = initial.planets.find(
       (planet) => planet.ownerEmpireId === 'player',
@@ -18,6 +18,8 @@ describe('empire overview view model', () => {
       systemId: 'system-second',
       position: 4,
       name: 'Second Foundry',
+      specializationId: 'industry' as const,
+      developmentTemplateId: 'industrial-hub' as const,
       economy: {
         ...home.economy,
         resources: {
@@ -55,6 +57,23 @@ describe('empire overview view model', () => {
     const state = {
       ...initial,
       planets: [...initial.planets, colony],
+      logisticsRoutes: [
+        {
+          id: 'logistics-view-model',
+          empireId: 'player',
+          originPlanetId: home.id,
+          targetPlanetId: colony.id,
+          resourceId: 'metal' as const,
+          amountPerTrip: 100,
+          originReserve: 500,
+          intervalSeconds: 1_800,
+          priority: 2 as const,
+          status: 'active' as const,
+          nextDepartureAt: 1_800,
+          consecutiveMisses: 0,
+          lastResult: null,
+        },
+      ],
       fleets: [
         {
           id: 'fleet-home',
@@ -99,6 +118,7 @@ describe('empire overview view model', () => {
           : research,
       ),
     };
+    const before = JSON.stringify(state);
 
     const view = createEmpireOverviewViewModel(state, 'player');
     expect(view).toMatchObject({
@@ -113,12 +133,23 @@ describe('empire overview view model', () => {
     expect(view.resources.metal.productionPerHour).toBe(
       home.economy.resources.metal.productionPerHour + 50,
     );
+    expect(view.resources.metal.scheduledInboundPerHour).toBe(200);
+    expect(view.resources.metal.scheduledOutboundPerHour).toBe(200);
     expect(
       view.colonies.find((candidate) => candidate.id === colony.id),
     ).toMatchObject({
+      specializationId: 'industry',
+      developmentTemplateId: 'industrial-hub',
       buildingQueueCount: 1,
       activeMissionCount: 1,
       stationedFleetCount: 0,
+    });
+    expect(
+      view.colonies.find((candidate) => candidate.id === colony.id)?.resources.metal,
+    ).toMatchObject({
+      scheduledInboundPerHour: 200,
+      scheduledOutboundPerHour: 0,
+      effectiveNetFlowPerHour: 250,
     });
     expect(
       view.colonies.find((candidate) => candidate.id === home.id),
@@ -126,6 +157,7 @@ describe('empire overview view model', () => {
       activeMissionCount: 0,
       stationedFleetCount: 1,
     });
+    expect(JSON.stringify(state)).toBe(before);
   });
 
   it('does not include colonies or fleets owned by another empire', () => {
