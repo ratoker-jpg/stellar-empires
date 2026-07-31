@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { planBotEconomy } from '../../src/simulation/bots/economyPlanner';
 import { getBotProgressionPhase } from '../../src/simulation/bots/progressionPhase';
 import { planBotResearchAndProduction } from '../../src/simulation/bots/researchProductionPlanner';
-import { runProgressionScenario } from '../../src/simulation/progression/scenarioRunner';
+import {
+  ACCEPTED_PROGRESSION_SEEDS,
+  runProgressionScenario,
+} from '../../src/simulation/progression/scenarioRunner';
+import type { FactionId } from '../../src/simulation/planet/types';
 import type { GameState } from '../../src/simulation/types';
 
 const runtimeEnvironment = (
@@ -11,6 +15,7 @@ const runtimeEnvironment = (
   }
 ).process?.env;
 const scenarioIt = runtimeEnvironment?.RUN_PROGRESSION_SCENARIO === '1' ? it : it.skip;
+const PLAYER_FACTIONS: readonly FactionId[] = ['aegis', 'synod', 'veyra'];
 
 function diagnosticsForState(state: GameState): Readonly<Record<string, unknown>> {
   return Object.fromEntries(
@@ -95,4 +100,27 @@ describe('compressed progression scenario experiment', () => {
       expect(phases?.['endgame-preparation']).toBeLessThanOrEqual(720 * 60);
     }
   }, 120_000);
+
+  scenarioIt('measures every accepted seed and player faction through ordinary commands', () => {
+    const matrix = ACCEPTED_PROGRESSION_SEEDS.flatMap((seed) =>
+      PLAYER_FACTIONS.map((playerFaction) => {
+        const result = runProgressionScenario({
+          seed,
+          playerFaction,
+          worldSpeed: 2,
+        });
+        expect(result.complete).toBe(true);
+        expect(result.elapsedRealSeconds).toBeLessThanOrEqual(16 * 60 * 60);
+        return {
+          seed,
+          playerFaction,
+          elapsedRealSeconds: result.elapsedRealSeconds,
+          phases: result.phaseReachedAtRealSeconds,
+          acceptedPlayerCommands: result.acceptedPlayerCommands,
+          rejectedPlayerCommands: result.rejectedPlayerCommands,
+        };
+      }),
+    );
+    console.info(`COMPRESSED_PROGRESSION_MATRIX=${JSON.stringify(matrix)}`);
+  }, 300_000);
 });
