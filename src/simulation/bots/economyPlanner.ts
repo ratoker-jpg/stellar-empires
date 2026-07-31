@@ -260,6 +260,42 @@ function createResourceSupportPlan(
   return undefined;
 }
 
+function resolveRequiredBuildingTarget(
+  profileId: ProgressionProfileId,
+  planet: PlanetState,
+  candidate: BuildingTarget,
+  definitions: ReadonlyMap<string, BuildingDefinition>,
+  visited = new Set<string>(),
+): BuildingTarget | undefined {
+  if (visited.has(candidate.buildingId)) return undefined;
+  const definition = definitions.get(candidate.buildingId);
+  if (definition === undefined) return undefined;
+  const targetLevel = Math.min(
+    candidate.level,
+    getBuildingMaxLevel(profileId, definition),
+  );
+  if (getBuildingLevel(planet.buildings, candidate.buildingId) >= targetLevel) {
+    return undefined;
+  }
+
+  const nextVisited = new Set(visited).add(candidate.buildingId);
+  for (const requirement of findMissingRequirements(
+    planet,
+    definition.requirements,
+    profileId,
+  )) {
+    const nested = resolveRequiredBuildingTarget(
+      profileId,
+      planet,
+      requirement,
+      definitions,
+      nextVisited,
+    );
+    if (nested !== undefined) return nested;
+  }
+  return { buildingId: candidate.buildingId, level: targetLevel };
+}
+
 function createOrderedPhasePlan(
   state: GameState,
   profileId: ProgressionProfileId,
@@ -276,7 +312,7 @@ function createOrderedPhasePlan(
     ...resourceBuildings.crystal,
     ...resourceBuildings.gas,
   ]);
-  const target = targets.find((candidate) => {
+  const milestone = targets.find((candidate) => {
     if (resourceBuildingIds.has(candidate.buildingId)) return false;
     const definition = definitions.get(candidate.buildingId);
     if (definition === undefined) return false;
@@ -286,8 +322,15 @@ function createOrderedPhasePlan(
     );
     return getBuildingLevel(planet.buildings, candidate.buildingId) < targetLevel;
   });
-  if (target === undefined) return undefined;
+  if (milestone === undefined) return undefined;
 
+  const target = resolveRequiredBuildingTarget(
+    profileId,
+    planet,
+    milestone,
+    definitions,
+  );
+  if (target === undefined) return undefined;
   const definition = definitions.get(target.buildingId);
   if (definition === undefined) return undefined;
   if (canQueueBuilding(profileId, planet, definition, target.level)) {
