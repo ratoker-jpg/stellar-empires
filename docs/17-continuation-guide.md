@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** PR #138 `COLONY-PORTFOLIO-FOUNDATION` active  
+**Status:** PR #139 `LOGISTICS-ROUTE-LIFECYCLE` active  
 **Updated:** 2026-07-31  
-**Last merged PR:** #137 Audit `MULTI-COLONY-ECONOMY-LOGISTICS-01`  
-**Verified main:** `4e7fd20fdc415f30bf8a1476b67c79b0b8e79166`  
-**Active branch:** `agent/colony-portfolio-foundation`  
-**Next authorized PR after merge:** #139 `LOGISTICS-ROUTE-LIFECYCLE`
+**Last merged PR:** #138 `COLONY-PORTFOLIO-FOUNDATION`  
+**Verified main:** `b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f`  
+**Active branch:** `agent/logistics-route-lifecycle`  
+**Next authorized PR after merge:** #140 `COLONY-OPERATIONS-UX`
 
 ## Repository
 
@@ -22,45 +22,37 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 5. `docs/audits/contracts/multi-colony-economy-logistics-01.md`
 6. `docs/audits/evidence/multi-colony-economy-logistics-01.md`
 7. `docs/changes/pr138-colony-portfolio-foundation.md`
-8. `docs/audits/completed/campaign-progression-balance-01.md`
-9. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
-10. `docs/project-status.json`
-11. `docs/roadmap-pr-index.json`
-12. `docs/27-playable-game-roadmap-v5.md`
-13. latest merged PRs, open PRs and actual `main`
+8. `docs/changes/pr139-logistics-route-lifecycle.md`
+9. `docs/audits/completed/campaign-progression-balance-01.md`
+10. `docs/25a-local-campaign-world-speed-and-offline-progression.md`
+11. `docs/project-status.json`
+12. `docs/roadmap-pr-index.json`
+13. `docs/27-playable-game-roadmap-v5.md`
+14. latest merged PRs, open PRs and actual `main`
 
 ## Delivered baseline
 
-Through PR #135 runtime includes:
+Through PR #135 runtime includes the complete catalog, routed application, ordinary missions/intelligence, destruction/recovery, local campaign settings/time, schema-v16 dual progression profiles, permanent progression matrix and bounded catch-up.
 
-- complete mechanical catalogs and runtime art;
-- navigable Universe/Galaxy/Solar-system hierarchy;
-- canonical routed application shell and usability gate;
-- ordinary missions, intelligence, destruction/recovery and honest bots;
-- immutable local-campaign settings, save-v3 persistence and shared active/offline clock;
-- schema-v16 `legacy-v1 | compressed-v1` progression identity;
-- permanent five-seed × three-player-faction progression matrix;
-- seven-day catch-up below the 30-second gate.
-
-Audit #137 then accepted M5 as a medium four-PR batch and merged as:
+Audit #137 accepted M5 as a medium four-PR batch. PR #138 then delivered the shared pure colony portfolio and Empire Overview flow/health presentation, merging as:
 
 ```text
-4e7fd20fdc415f30bf8a1476b67c79b0b8e79166
+b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f
 ```
 
-Final Audit checks:
+Final #138 checks:
 
 ```text
-CI             30653954497 — success
-Browser E2E    30653954284 — success
-Graphify       30653954501 — success
+CI             30659596856 — success
+Browser E2E    30659596868 — success
+Graphify       30659596839 — success
 ```
 
 ## Current M5 sequence
 
 ```text
-#138 COLONY-PORTFOLIO-FOUNDATION — active
-→ #139 LOGISTICS-ROUTE-LIFECYCLE
+#138 COLONY-PORTFOLIO-FOUNDATION — merged
+→ #139 LOGISTICS-ROUTE-LIFECYCLE — active
 → #140 COLONY-OPERATIONS-UX
 → #141 BOT-COLONY-LOGISTICS-GATE
 → #142 next Audit from fresh main
@@ -68,21 +60,22 @@ Graphify       30653954501 — success
 
 Exactly four M5 implementation PRs are authorized. No fifth PR may be added without an audit amendment.
 
-## Active PR #138 contract
+## Active PR #139 contract
 
-PR #138 implements only the shared read model and Empire Overview consumer:
+PR #139 implements only route runtime, load compatibility and catch-up accounting:
 
-- pure empire/colony economy selector;
-- deterministic owned-colony ordering;
-- stock, capacity, fill pressure and local production;
-- scheduled active-route inflow/outflow and effective net flow;
-- energy, population, stability, specialization/template, queues and fleets;
-- stable health codes;
-- release-viewport player presentation and focused tests.
+- duplicate route-key rejection;
+- pause/resume and active interval rebasing;
+- stable same-time priority ordering;
+- ephemeral per-departure receipts through the shared `ADVANCE_TIME` reducer;
+- exact campaign catch-up transfer counting;
+- deterministic legacy duplicate save-v3 repair after integrity validation;
+- direct/partitioned/operation-budget equality tests;
+- schema v16/save v3 retained.
 
-It does **not** change route lifecycle, saves, campaign time, market commands, bot planning or progression.
+It does **not** implement route editing UI, selected-colony market, bot planning or physical convoys.
 
-Code head `bfeac936232bbe16a25aac26d22e3819c7cc8d60` passed CI `30659066384` and Graphify `30659066387`. Browser run `30659066404` and the final documentation-head rerun must be checked before merge.
+Code head `ab8669941d1b8e4c11c4929a697ee6eb3339de4d` passed asset/lint/typecheck/test/build, catch-up performance and Graphify `30661187260`. The final documentation-head progression and Browser runs must be checked before merge.
 
 ## M5 invariants
 
@@ -92,30 +85,31 @@ Code head `bfeac936232bbe16a25aac26d22e3819c7cc8d60` passed CI `30659066384` and
 - no progression constant, starting bank, profile or world-speed change;
 - market remains emergency local support;
 - player and bots use ordinary commands and validators;
+- receipts remain ephemeral and outside deterministic state;
 - permanent progression and catch-up gates remain mandatory.
 
 ## Exact recovery action
 
-While #138 is open:
+While #139 is open:
 
 1. fetch its latest head, workflows and review threads;
-2. continue only `agent/colony-portfolio-foundation`;
-3. keep changes inside the #138 selector/UI/test/status contract;
+2. continue only `agent/logistics-route-lifecycle`;
+3. keep changes inside route lifecycle/load/catch-up/test/status scope;
 4. run CI, Browser E2E and Graphify after every final head;
 5. resolve blocking review threads;
-6. squash merge #138 only when all gates are green.
+6. squash merge #139 only when all gates are green.
 
-After #138 merges:
+After #139 merges:
 
-1. fetch fresh `main` and exact #138 merge SHA;
-2. create only #139 `LOGISTICS-ROUTE-LIFECYCLE`;
-3. implement deterministic duplicate repair, pause/resume rebasing and exact catch-up receipts;
-4. do not start #140 before #139 merges.
+1. fetch fresh `main` and exact #139 merge SHA;
+2. create only #140 `COLONY-OPERATIONS-UX`;
+3. implement complete routed logistics editing/diagnostics and selected-colony market workflow;
+4. do not start #141 before #140 merges.
 
 ## Hard stops
 
-- do not absorb #139 lifecycle work into #138;
-- do not combine physical convoys, PvE/meta, alliances or endgame into M5;
+- do not absorb #140 player UX into #139;
+- do not combine bot logistics, physical convoys, PvE/meta, alliances or endgame into #139;
 - do not change schema/save format without replacing or amending Audit #137;
 - do not weaken progression or performance gates;
-- do not bypass ordinary commands for bot behavior.
+- do not persist telemetry receipts.
