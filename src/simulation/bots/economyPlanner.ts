@@ -45,6 +45,12 @@ interface BuildingTarget {
   readonly level: number;
 }
 
+interface ResourceBuildingIds {
+  readonly metal: string;
+  readonly crystal: string;
+  readonly gas: string;
+}
+
 function buildingCommand(
   empireId: string,
   planetId: string,
@@ -115,6 +121,7 @@ function createOrderedPhasePlan(
   phase: BotProgressionPhase,
   targets: readonly BuildingTarget[],
   catalog: readonly BuildingDefinition[],
+  resourceBuildings: ResourceBuildingIds,
 ): BotEconomyPlan | undefined {
   const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
   const target = targets.find((candidate) => {
@@ -140,6 +147,50 @@ function createOrderedPhasePlan(
       explanation: `Phase ${phase}: строится следующий prerequisite ${target.buildingId}.`,
       command: buildingCommand(empireId, planet.id, target.buildingId),
     };
+  }
+
+  if (definition !== undefined) {
+    const nextLevel = getBuildingLevel(planet.buildings, definition.id) + 1;
+    const cost = calculateBuildingCost(definition, nextLevel, profileId);
+    const bottlenecks = [
+      {
+        resourceId: 'metal' as const,
+        buildingId: resourceBuildings.metal,
+        deficit: Math.max(0, cost.metal - planet.economy.resources.metal.amount),
+      },
+      {
+        resourceId: 'crystal' as const,
+        buildingId: resourceBuildings.crystal,
+        deficit: Math.max(0, cost.crystal - planet.economy.resources.crystal.amount),
+      },
+      {
+        resourceId: 'gas' as const,
+        buildingId: resourceBuildings.gas,
+        deficit: Math.max(0, cost.gas - planet.economy.resources.gas.amount),
+      },
+    ].sort((left, right) =>
+      right.deficit - left.deficit || left.resourceId.localeCompare(right.resourceId),
+    );
+    for (const bottleneck of bottlenecks) {
+      if (bottleneck.deficit <= 0) continue;
+      const supportTarget = targets.find(
+        (candidate) => candidate.buildingId === bottleneck.buildingId,
+      );
+      const supportDefinition = definitions.get(bottleneck.buildingId);
+      if (
+        supportTarget !== undefined &&
+        supportDefinition !== undefined &&
+        canQueueBuilding(profileId, planet, supportDefinition, supportTarget.level)
+      ) {
+        return {
+          empireId,
+          planetId: planet.id,
+          reasonCode: 'resource-deficit',
+          explanation: `Phase ${phase}: ${bottleneck.resourceId} блокирует ${target.buildingId}, усиливается профильная добыча.`,
+          command: buildingCommand(empireId, planet.id, bottleneck.buildingId),
+        };
+      }
+    }
   }
 
   return {
@@ -249,7 +300,8 @@ export function planBotEconomy(
     };
   }
 
-  if (planet.economy.energy.produced < planet.economy.energy.consumed + 20) {
+  const requiredEnergyReserve = compressed ? 0 : 20;
+  if (planet.economy.energy.produced < planet.economy.energy.consumed + requiredEnergyReserve) {
     const currentLevel = getBuildingLevel(planet.buildings, roles.power);
     const plan = createBuildingPlan(
       profileId,
@@ -270,6 +322,7 @@ export function planBotEconomy(
     phase,
     getBotPhaseBuildingTargets(state, empireId, phase),
     catalog,
+    { metal: roles.metal, crystal: roles.crystal, gas: roles.gas },
   );
   if (phasePlan !== undefined) return phasePlan;
 
