@@ -2,10 +2,10 @@
 
 **Status:** active canonical product roadmap  
 **Updated:** 2026-07-31  
-**Last merged PR:** #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE` · `3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992`  
-**Runtime baseline:** schema v16 / save format v3 / immutable dual progression profiles  
+**Last merged PR:** #137 Audit `MULTI-COLONY-ECONOMY-LOGISTICS-01` · `4e7fd20fdc415f30bf8a1476b67c79b0b8e79166`  
+**Runtime baseline:** PR #135 · schema v16 / save format v3 / immutable dual progression profiles  
 **Last completed batch:** `CAMPAIGN-PROGRESSION-BALANCE-01`  
-**Current authorized work:** Audit PR #137 `MULTI-COLONY-ECONOMY-LOGISTICS-01`  
+**Current authorized work:** PR #138 `COLONY-PORTFOLIO-FOUNDATION`  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -29,6 +29,7 @@ Canonical contracts:
 
 - current delivery authorization: `docs/audits/current-batch-audit.md`;
 - M5 implementation contract: `docs/audits/contracts/multi-colony-economy-logistics-01.md`;
+- active delivery record: `docs/changes/pr138-colony-portfolio-foundation.md`;
 - local campaign/world speed/offline progression: `docs/25a-local-campaign-world-speed-and-offline-progression.md`;
 - endgame: `docs/25-solar-war-obelisks-gates-and-progression.md`.
 
@@ -42,7 +43,7 @@ Canonical contracts:
 6. canonical product/endgame contracts;
 7. completed audits and older handoffs as history.
 
-## 3. Delivered baseline through PR #135
+## 3. Delivered baseline through Audit #137
 
 ### Simulation and persistence
 
@@ -63,7 +64,7 @@ Canonical contracts:
 - deterministic phase-aware bot economy/research/production/fleet behavior;
 - permanent 5-seed × 3-player-faction progression matrix;
 - measured x2 median 14 h 28 m and maximum 15 h 18 m;
-- seven-day catch-up 9.99 seconds against the 30-second gate.
+- seven-day catch-up below the 30-second gate.
 
 ### World and mechanics
 
@@ -84,32 +85,45 @@ Canonical contracts:
 - persistent HUD, breadcrumbs and colony/return context;
 - keyboard, reduced motion and release-viewport Browser E2E.
 
-## 4. Current measured gap — M5 colony coherence
+### Accepted M5 contract
 
-The required state and commands already exist, but they are not yet one coherent player/bot system.
-
-Audit #137 verifies:
-
-- Empire Overview lacks route inflow/outflow and sustainability health;
-- route creation allows duplicate keys;
-- paused routes resume from stale departure time;
-- Operations logistics lacks editing and full diagnostics;
-- market silently acts on the active colony rather than an explicit selection;
-- duplicate legacy market/logistics panels remain uncalled;
-- bots do not allocate colony roles or operate logistics routes.
-
-M5 is therefore a medium four-PR batch:
+Audit #137 merged as `4e7fd20fdc415f30bf8a1476b67c79b0b8e79166` and authorized exactly:
 
 ```text
 #138 COLONY-PORTFOLIO-FOUNDATION
-#139 LOGISTICS-ROUTE-LIFECYCLE
-#140 COLONY-OPERATIONS-UX
-#141 BOT-COLONY-LOGISTICS-GATE
+→ #139 LOGISTICS-ROUTE-LIFECYCLE
+→ #140 COLONY-OPERATIONS-UX
+→ #141 BOT-COLONY-LOGISTICS-GATE
 ```
+
+## 4. Current implementation — colony portfolio foundation
+
+PR #138 creates one deterministic empire-level read model instead of letting each UI or later bot planner rescan state independently.
+
+The active implementation provides:
+
+- deterministic owned-colony ordering by system, position and planet ID;
+- stock, capacity, fill pressure and local production for each resource;
+- configured active-route inbound and outbound amount per hour;
+- effective net flow per resource and colony;
+- empire aggregate flow dimensions;
+- energy, population, stability, specialization/template, queue and fleet state;
+- stable health codes for deficits, storage pressure and stalled routes;
+- Empire Overview roles, health and flow presentation at release viewports.
+
+PR #138 is read-only with respect to simulation state. Route lifecycle, save repair, market workflow and bot logistics remain in #139–#141.
+
+## 5. Remaining M5 gap
+
+After #138:
+
+- #139 rejects new duplicate route keys, repairs old duplicate save-v3 routes, rebases pause/resume and records exact catch-up departure receipts;
+- #140 completes route editing/diagnostics and explicit selected-colony market workflow;
+- #141 gives bots deterministic colony-role and ordinary logistics planning and closes the combined gate.
 
 The batch retains schema v16/save v3 and abstract fixed-interval logistics. It does not add physical convoys, fuel, distance, interception or route combat.
 
-## 5. Release 1.0 definition
+## 6. Release 1.0 definition
 
 A player can:
 
@@ -128,7 +142,7 @@ A player can:
 
 Bots must use the same commands, resources, timing and intelligence limits. At least one headless match must eventually reach a complete result, and save/load/offline processing must preserve deterministic outcomes.
 
-## 6. Milestone map
+## 7. Milestone map
 
 | Milestone | Status | Delivery |
 |---|---|---|
@@ -140,16 +154,16 @@ Bots must use the same commands, resources, timing and intelligence limits. At l
 | M4b — Planet demolition/destruction/recovery | completed | Audit #121; #122–#123 |
 | M4c — Local campaign time foundation | completed | Audit #130; #131–#132 |
 | M4d — Campaign progression balance | completed | Audit #133; #134–#135 |
-| M5 — Multi-colony economy/logistics coherence | audit active | Audit #137; #138–#141 after merge |
+| M5 — Multi-colony economy/logistics coherence | implementation active | Audit #137 merged; #138 active; #139–#141 ordered |
 | M6 — Full PvE/meta systems | not audited | PvE depth, Arena, Admiral meta, services |
 | M7 — Autonomous bot parity | not audited | honest full-domain bot loop beyond colony economy |
 | M8 — Complete endgame | not audited | alliances, Solar War, Obelisks, Gates, victory/defeat |
 | M9 — Release candidate | not audited | balance, onboarding, QA, performance, release |
 
-## 7. Key invariants
+## 8. Key invariants
 
 - current `main` is the only valid baseline;
-- Audit #137 must merge before #138 starts;
+- #139 must not start before #138 merges;
 - campaign settings and progression profile remain immutable deterministic state;
 - no elapsed duration is silently skipped or capped away;
 - active and offline paths use one orchestrator;
@@ -158,6 +172,6 @@ Bots must use the same commands, resources, timing and intelligence limits. At l
 - M5 does not alter progression constants or accepted duration gates;
 - no continuously running server is required for Release 1.0.
 
-## 8. Immediate action
+## 9. Immediate action
 
-Finish Audit PR #137, run CI/Browser E2E/Graphify, resolve review and squash merge. Then create only PR #138 `COLONY-PORTFOLIO-FOUNDATION` from the resulting fresh `main`.
+Validate the latest PR #138 head through CI, Browser E2E and Graphify, resolve every blocking review thread, mark ready and squash merge. Then create only PR #139 `LOGISTICS-ROUTE-LIFECYCLE` from the resulting fresh `main`.
