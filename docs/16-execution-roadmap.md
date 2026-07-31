@@ -1,10 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Audit PR #137 active; M5 implementation blocked until audit merge  
+**Status:** PR #138 `COLONY-PORTFOLIO-FOUNDATION` active  
 **Updated:** 2026-07-31  
-**Verified main:** `3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992`  
-**Last merged PR:** #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE`  
-**Active audit:** #137 `MULTI-COLONY-ECONOMY-LOGISTICS-01`
+**Verified main:** `4e7fd20fdc415f30bf8a1476b67c79b0b8e79166`  
+**Last merged PR:** #137 Audit `MULTI-COLONY-ECONOMY-LOGISTICS-01`  
+**Active implementation:** #138 `COLONY-PORTFOLIO-FOUNDATION`
 
 ## Authoritative files
 
@@ -15,6 +15,7 @@ docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
 docs/audits/contracts/multi-colony-economy-logistics-01.md
 docs/audits/evidence/multi-colony-economy-logistics-01.md
+docs/changes/pr138-colony-portfolio-foundation.md
 docs/27-playable-game-roadmap-v5.md
 docs/25a-local-campaign-world-speed-and-offline-progression.md
 docs/project-status.json
@@ -32,36 +33,41 @@ docs/roadmap-pr-index.json
 - #125–#129: navigation/usability closure;
 - #130–#132: immutable campaign settings and active/offline clock;
 - #133–#135: schema-v16 progression profiles and measured compressed campaign closure;
-- #136: documentation continuity outside implementation counts.
+- #136: documentation continuity outside implementation counts;
+- #137: accepted M5 medium four-PR contract.
 
 ## Current medium batch
 
 ```text
-#137 MULTI-COLONY-ECONOMY-LOGISTICS-01 — Audit active
-→ #138 COLONY-PORTFOLIO-FOUNDATION
+#137 MULTI-COLONY-ECONOMY-LOGISTICS-01 — Audit merged
+→ #138 COLONY-PORTFOLIO-FOUNDATION — active
 → #139 LOGISTICS-ROUTE-LIFECYCLE
 → #140 COLONY-OPERATIONS-UX
 → #141 BOT-COLONY-LOGISTICS-GATE
 ```
 
-Exactly four implementation PRs are authorized only after #137 merges.
+Exactly four implementation PRs are authorized. #139 remains blocked until #138 merges.
 
-## Verified gap
+## Active result
 
-- colony totals exist, but empire-level route flow and stable health reasons do not;
-- logistics state/commands/save compatibility exist, but duplicate keys and stale resume timing remain;
-- Operations market/logistics routes exist, but route editing, diagnostics and selected-colony market context are incomplete;
-- duplicate legacy panel modules are uncalled;
-- bots have no portfolio role allocation or logistics planner.
+PR #138 adds one pure empire economy portfolio and connects Empire Overview to it:
+
+- deterministic colony ordering;
+- stock, capacity, fill pressure and local production;
+- active-route inbound/outbound flow and effective net flow;
+- energy, population, stability, roles, queue/fleet load and stable health reasons;
+- release-viewport player presentation and focused tests.
+
+The PR does not change route lifecycle, persistence, market commands, bots or progression.
 
 ## Immediate action
 
 ```text
-finish Audit #137 docs/status
+validate latest #138 head
 → CI + Browser E2E + Graphify
 → resolve blocking review
-→ squash merge #137
-→ create #138 from fresh main
+→ mark ready and squash merge #138
+→ create #139 from fresh main
 ```
 
 ## M5 boundaries
