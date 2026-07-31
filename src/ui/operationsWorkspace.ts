@@ -3,7 +3,6 @@ import {
   GALAXY_SYSTEM_SELECTED_EVENT,
   type GalaxySystemSelectionDetail,
 } from '../game/galaxyPresentationEvents';
-import type { ResourceId } from '../simulation/economy/types';
 import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
 import { estimateFlightToGalaxyPlanet } from '../simulation/fleets/flightCalculations';
 import type { FleetState } from '../simulation/fleets/types';
@@ -16,8 +15,6 @@ import {
   type GalaxyOwnerFilter,
 } from '../simulation/galaxy/intelligenceView';
 import type { PlanetBiome } from '../simulation/galaxy/types';
-import type { LogisticsRoute } from '../simulation/logistics/types';
-import { quoteMarketSwap } from '../simulation/market/market';
 import {
   estimateSpaceObjectMission,
   getRequiredSpaceObjectShipId,
@@ -36,6 +33,8 @@ import {
   dispatchFleetMissionTarget,
   inferMissionForGalaxyTarget,
 } from './fleetMissionEvents';
+import { renderLogisticsRoutesPanel } from './logisticsRoutesPanel';
+import { renderMarketPanel } from './marketPanel';
 import { formatGameDuration } from './planetViewModel';
 import {
   SPACE_OBJECT_TARGET_EVENT,
@@ -76,12 +75,6 @@ const MODES: readonly OperationsShellMode[] = [
   'market',
   'logistics',
 ];
-
-const RESOURCE_LABELS: Readonly<Record<ResourceId, string>> = {
-  metal: 'Металл',
-  crystal: 'Минералы',
-  gas: 'Газ',
-};
 
 const OBJECT_LABELS = {
   asteroid: 'Астероид',
@@ -236,25 +229,6 @@ function targetLabel(state: GameState, event: WorldEventInstance): string {
   return state.planets.find((planet) => planet.id === event.targetId)?.name ?? event.targetId;
 }
 
-function routeStatus(route: LogisticsRoute): string {
-  if (route.lastResult === null) return 'Ожидает первого рейса';
-  if (route.lastResult.code === 'transferred') return `Доставлено: ${route.lastResult.amount}`;
-  if (route.lastResult.code === 'origin-reserve') return 'Недостаток сверх резерва';
-  if (route.lastResult.code === 'target-full') return 'Склад назначения заполнен';
-  return 'Маршрут потерял конечную точку';
-}
-
-function createPlanetSelect(planets: GameState['planets']): HTMLSelectElement {
-  const select = document.createElement('select');
-  for (const planet of planets) {
-    const option = document.createElement('option');
-    option.value = planet.id;
-    option.textContent = planet.name;
-    select.append(option);
-  }
-  return select;
-}
-
 function intelResourceLine(planet: GalaxyIntelPlanet): string {
   const resources = planet.resources;
   if (resources === null || resources === undefined) return 'Экономика скрыта';
@@ -295,7 +269,11 @@ export function mountOperationsWorkspace(options: OperationsWorkspaceOptions): O
     summary.append(
       createMetric('Маршруты', `${data.activeRoutes}/${data.totalRoutes}`, 'активно / всего'),
       createMetric('Рынок', String(data.marketTrades), 'завершённых сделок'),
-      createMetric('Полевые операции', String(data.activeExpeditions + data.activeObjectOperations), `${data.activeExpeditions} эксп. · ${data.activeObjectOperations} объектов`),
+      createMetric(
+        'Полевые операции',
+        String(data.activeExpeditions + data.activeObjectOperations),
+        `${data.activeExpeditions} эксп. · ${data.activeObjectOperations} объектов`,
+      ),
       createMetric('Объекты', String(data.availableObjects), 'доступно'),
       createMetric('События', String(data.activeEvents), 'активно'),
       createMetric('Отчёты', String(data.reports), 'в журнале'),
@@ -462,9 +440,10 @@ export function mountOperationsWorkspace(options: OperationsWorkspaceOptions): O
       start.type = 'button';
       start.textContent = 'Подтвердить экспедицию';
       const refresh = (): void => {
-        const fleet = options.getState().fleets.find((candidate) => candidate.id === fleetSelect.value);
+        const current = options.getState();
+        const fleet = current.fleets.find((candidate) => candidate.id === fleetSelect.value);
         const originId = fleet?.location.type === 'planet' ? fleet.location.planetId : undefined;
-        const origin = options.getState().planets.find((planet) => planet.id === originId);
+        const origin = current.planets.find((planet) => planet.id === originId);
         if (fleet === undefined || origin === undefined) {
           start.disabled = true;
           preview.textContent = 'Маршрут недоступен.';
@@ -472,11 +451,11 @@ export function mountOperationsWorkspace(options: OperationsWorkspaceOptions): O
         }
         try {
           const estimate = estimateFlightToGalaxyPlanet(
-            state.galaxy,
-            state.planets,
+            current.galaxy,
+            current.planets,
             fleet,
             targetSelect.value,
-            fleetSpeedBonus(state, fleet.empireId),
+            fleetSpeedBonus(current, fleet.empireId),
           );
           const fuel = estimate.fuelCost * 2;
           start.disabled = origin.economy.resources.gas.amount < fuel;
@@ -659,191 +638,6 @@ export function mountOperationsWorkspace(options: OperationsWorkspaceOptions): O
     host.replaceChildren(status, activeEvents, history);
   };
 
-  const renderMarket = (state: GameState): void => {
-    const section = document.createElement('section');
-    section.className = 'market-panel operations-embedded-panel';
-    const heading = document.createElement('h2');
-    heading.textContent = 'Динамический рынок';
-    const reserves = document.createElement('div');
-    reserves.className = 'market-reserves';
-    for (const resourceId of ['metal', 'crystal', 'gas'] as const) {
-      const item = document.createElement('span');
-      item.textContent = `${RESOURCE_LABELS[resourceId]} ${state.market.reserves[resourceId]}`;
-      reserves.append(item);
-    }
-    const form = document.createElement('form');
-    form.className = 'market-form';
-    const give = document.createElement('select');
-    const receive = document.createElement('select');
-    for (const resourceId of ['metal', 'crystal', 'gas'] as const) {
-      for (const select of [give, receive]) {
-        const option = document.createElement('option');
-        option.value = resourceId;
-        option.textContent = RESOURCE_LABELS[resourceId];
-        select.append(option);
-      }
-    }
-    receive.value = 'crystal';
-    const amount = document.createElement('input');
-    amount.type = 'number';
-    amount.min = '1';
-    amount.value = '500';
-    amount.setAttribute('aria-label', 'Количество продаваемого ресурса');
-    const quote = document.createElement('output');
-    quote.className = 'market-quote';
-    const submit = document.createElement('button');
-    submit.type = 'submit';
-    submit.textContent = 'Подтвердить обмен';
-    const updateQuote = (): void => {
-      const result = quoteMarketSwap(
-        options.getState().market,
-        give.value as ResourceId,
-        receive.value as ResourceId,
-        Number(amount.value),
-      );
-      quote.textContent = result.accepted
-        ? `Получишь ${result.receiveAmount} · комиссия ${result.feeAmount}`
-        : `Сделка недоступна · ${result.rejectionCode ?? 'ошибка'}`;
-      submit.disabled = !result.accepted;
-    };
-    for (const input of [give, receive, amount]) {
-      input.addEventListener('input', updateQuote);
-      input.addEventListener('change', updateQuote);
-    }
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const result = quoteMarketSwap(
-        options.getState().market,
-        give.value as ResourceId,
-        receive.value as ResourceId,
-        Number(amount.value),
-      );
-      if (!result.accepted) return;
-      if (options.execute({
-        type: 'MARKET_SWAP',
-        empireId: 'player',
-        planetId: options.getActivePlanetId(),
-        giveResourceId: give.value as ResourceId,
-        receiveResourceId: receive.value as ResourceId,
-        giveAmount: Number(amount.value),
-      }, `Рынок · получено ${result.receiveAmount} ${RESOURCE_LABELS[receive.value as ResourceId]}`)) render();
-    });
-    form.append(give, receive, amount, quote, submit);
-    updateQuote();
-    const history = document.createElement('div');
-    history.className = 'market-history';
-    for (const trade of state.market.trades.slice(-10).reverse()) {
-      const row = document.createElement('span');
-      row.textContent = `${trade.giveAmount} ${RESOURCE_LABELS[trade.giveResourceId]} → ${trade.receiveAmount} ${RESOURCE_LABELS[trade.receiveResourceId]}`;
-      history.append(row);
-    }
-    if (history.childElementCount === 0) history.append('Сделок пока нет.');
-    section.append(heading, reserves, form, history);
-    host.replaceChildren(section);
-  };
-
-  const renderLogistics = (state: GameState): void => {
-    const planets = state.planets.filter((planet) => planet.ownerEmpireId === 'player');
-    const routes = state.logisticsRoutes.filter((route) => route.empireId === 'player');
-    const section = document.createElement('section');
-    section.className = 'logistics-panel operations-embedded-panel';
-    const heading = document.createElement('h2');
-    heading.textContent = 'Логистические маршруты';
-    const summary = document.createElement('p');
-    summary.textContent = `${routes.filter((route) => route.status === 'active').length} активных · ${routes.length} всего`;
-    section.append(heading, summary);
-    if (planets.length < 2) {
-      section.append('Для постоянного маршрута требуется минимум две колонии.');
-      host.replaceChildren(section);
-      return;
-    }
-    const form = document.createElement('form');
-    form.className = 'logistics-form';
-    const origin = createPlanetSelect(planets);
-    const target = createPlanetSelect(planets);
-    target.selectedIndex = 1;
-    const resource = document.createElement('select');
-    for (const resourceId of ['metal', 'crystal', 'gas'] as const) {
-      const option = document.createElement('option');
-      option.value = resourceId;
-      option.textContent = RESOURCE_LABELS[resourceId];
-      resource.append(option);
-    }
-    const amount = document.createElement('input');
-    amount.type = 'number';
-    amount.min = '1';
-    amount.value = '500';
-    amount.setAttribute('aria-label', 'Объём рейса');
-    const reserve = document.createElement('input');
-    reserve.type = 'number';
-    reserve.min = '0';
-    reserve.value = '1000';
-    reserve.setAttribute('aria-label', 'Резерв на планете отправления');
-    const interval = document.createElement('select');
-    for (const [seconds, label] of [[1800, '30 мин'], [3600, '1 час'], [10800, '3 часа']] as const) {
-      const option = document.createElement('option');
-      option.value = String(seconds);
-      option.textContent = label;
-      interval.append(option);
-    }
-    const submit = document.createElement('button');
-    submit.type = 'submit';
-    submit.textContent = 'Создать маршрут';
-    form.append(origin, target, resource, amount, reserve, interval, submit);
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      if (origin.value === target.value) return;
-      if (options.execute({
-        type: 'CREATE_LOGISTICS_ROUTE',
-        empireId: 'player',
-        originPlanetId: origin.value,
-        targetPlanetId: target.value,
-        resourceId: resource.value as ResourceId,
-        amountPerTrip: Number(amount.value),
-        originReserve: Number(reserve.value),
-        intervalSeconds: Number(interval.value),
-        priority: 2,
-      }, 'Постоянный маршрут создан')) render();
-    });
-    section.append(form);
-    const list = document.createElement('div');
-    list.className = 'logistics-list';
-    for (const route of routes) {
-      const card = document.createElement('article');
-      const title = document.createElement('strong');
-      title.textContent = `${planets.find((planet) => planet.id === route.originPlanetId)?.name ?? '—'} → ${planets.find((planet) => planet.id === route.targetPlanetId)?.name ?? '—'}`;
-      const details = document.createElement('span');
-      details.textContent = `${RESOURCE_LABELS[route.resourceId]} · ${route.amountPerTrip} · резерв ${route.originReserve}`;
-      const status = document.createElement('small');
-      status.textContent = `${route.status === 'active' ? 'Активен' : 'Пауза'} · ${routeStatus(route)}`;
-      const toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.textContent = route.status === 'active' ? 'Пауза' : 'Запустить';
-      toggle.addEventListener('click', () => {
-        if (options.execute({
-          type: 'UPDATE_LOGISTICS_ROUTE',
-          empireId: 'player',
-          routeId: route.id,
-          status: route.status === 'active' ? 'paused' : 'active',
-        }, route.status === 'active' ? 'Маршрут приостановлен' : 'Маршрут запущен')) render();
-      });
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.textContent = 'Удалить';
-      remove.addEventListener('click', () => {
-        if (options.execute(
-          { type: 'DELETE_LOGISTICS_ROUTE', empireId: 'player', routeId: route.id },
-          'Маршрут удалён',
-        )) render();
-      });
-      card.append(title, details, status, toggle, remove);
-      list.append(card);
-    }
-    if (routes.length === 0) list.append('Маршрутов пока нет.');
-    section.append(list);
-    host.replaceChildren(section);
-  };
-
   const render = (): void => {
     if (!active) return;
     refreshTabs();
@@ -852,8 +646,11 @@ export function mountOperationsWorkspace(options: OperationsWorkspaceOptions): O
     else if (mode === 'expeditions') renderExpeditions(state);
     else if (mode === 'objects') renderObjects(state);
     else if (mode === 'events') renderEvents(state);
-    else if (mode === 'market') renderMarket(state);
-    else renderLogistics(state);
+    else if (mode === 'market') {
+      renderMarketPanel(host, { ...options, refresh: render });
+    } else {
+      renderLogisticsRoutesPanel(host, { ...options, refresh: render });
+    }
   };
 
   const onTabClick = (event: Event): void => {
