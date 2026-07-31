@@ -22,9 +22,9 @@ Bot empires with multiple colonies allocate stable colony roles and use the same
 - No change to `legacy-v1 | compressed-v1`, starting bank, reward multipliers, progression requirements or accepted runtime envelope.
 - No server requirement and no wall-clock work outside the shared campaign-time orchestrator.
 - Logistics remains an abstract scheduled resource transfer. No transport ships, fuel, distance, interception or route combat.
-- One active or paused route maximum per `(empireId, originPlanetId, targetPlanetId, resourceId)` key.
+- One active or paused route maximum per `(empireId, originPlanetId, targetPlanetId, resourceId)` key after deterministic load repair.
 - All ordering is deterministic with explicit stable tie-breakers.
-- Existing saves remain valid without schema migration.
+- Existing save-v3 envelopes remain loadable without a schema or save-format bump.
 
 # #138 — `COLONY-PORTFOLIO-FOUNDATION`
 
@@ -77,19 +77,22 @@ Calculations are pure selectors. They do not mutate `GameState`, issue commands 
 
 ## Purpose
 
-Close deterministic route lifecycle gaps before richer UI or bot automation depends on them.
+Close deterministic route lifecycle, legacy-save and catch-up-accounting gaps before richer UI or bot automation depends on them.
 
 ## Expected paths
 
 ```text
 src/simulation/logistics/routes.ts
-src/simulation/logistics/types.ts                       only if a compatible derived type is required
+src/simulation/logistics/types.ts                       ephemeral receipt types allowed
 src/simulation/reducer.ts
 src/simulation/planet/reconcileDestroyedPlanet.ts
+src/simulation/campaign/time.ts
 src/simulation/campaign/catchUpSummary.ts
 src/storage/saveFormat.ts                               validation only; schema unchanged
-src/storage/migrateGameState.ts                         compatibility only
+src/storage/migrateGameState.ts                         compatibility normalization
 tests/simulation/logisticsRoutes.test.ts
+tests/simulation/campaignCatchUpSummary.test.ts         or existing summary suite
+tests/storage/saveFormat.test.ts
 tests/simulation/planetDestructionRecoveryLoop.test.ts
 tests/audit/compressedProgressionPartition.test.ts
 ```
@@ -107,11 +110,54 @@ tests/audit/compressedProgressionPartition.test.ts
 9. Updating or deleting another empire's route remains rejected.
 10. Route commands remain ordinary deterministic commands and continue to be logged.
 
+## Legacy duplicate normalization
+
+Current baseline saves may legitimately contain duplicate route keys because the old create path allowed them. They must remain loadable.
+
+After envelope integrity is verified and while the existing state is structurally normalized:
+
+1. preserve input order only for validation; do not execute duplicate routes first;
+2. group routes by `(empireId, originPlanetId, targetPlanetId, resourceId)`;
+3. select one survivor by the lowest numeric creation sequence parsed from `logistics-<sequence>`;
+4. if an ID has no valid numeric suffix or sequences tie, use route ID lexicographic order;
+5. retain the survivor's complete configuration and runtime fields unchanged;
+6. discard later duplicates before the loaded state becomes active;
+7. serialize the repaired state with one route per key.
+
+This is deterministic compatibility repair, not a command, shipment or migration to a new schema. Tests must cover active/paused duplicates, conflicting configuration, malformed legacy IDs, save integrity before repair and stable round-trip output.
+
+## Exact catch-up accounting
+
+`lastResult` is not sufficient evidence for a transition containing multiple departures. #139 must introduce non-persisted per-departure receipts on the shared advance-time path.
+
+Each resolved route departure produces one immutable receipt containing:
+
+```text
+routeId
+empireId
+executedAt
+resultCode
+amount
+```
+
+Rules:
+
+- `processLogisticsDeparturesAt()` or its shared internal successor returns the updated state plus all receipts for that boundary;
+- the shared ADVANCE_TIME reducer accumulates receipts across every logistics boundary it processes;
+- ordinary `executeCommand()` still returns only deterministic `GameState`; telemetry is discarded when no campaign summary consumer requests it;
+- `advanceCampaignTime()` consumes the same reducer path with telemetry and passes receipts into catch-up summarization;
+- `world.logisticsTransfers` counts every receipt where `empireId === 'player'` and `resultCode === 'transferred'`;
+- misses do not increment the transfer count, including when a later miss follows earlier successes;
+- receipts are ephemeral and never enter `GameState`, save envelopes, checksums, command/event history or replay identity.
+
+Tests must cover several successes on one route, multiple routes at one boundary, success followed by reserve/target-full misses, operation-budget continuation and merged summary deltas.
+
 ## Acceptance
 
 - focused duplicate, pause/resume, interval-edit, same-time-priority and destruction tests;
-- direct/chunked/save-loaded time produces identical state;
-- old save-v3 routes parse unchanged;
+- legacy duplicate save-v3 normalization and stable round trip;
+- exact multi-departure and mixed-result catch-up summary counts;
+- direct/chunked/save-loaded time produces identical state and summary;
 - one-day and seven-day catch-up budgets remain green;
 - no new schema or save-format version.
 
@@ -199,7 +245,18 @@ For bots only, when at least two colonies exist:
 - third colony: `military` + `fortress`;
 - further colonies: `balanced` + `balanced`.
 
-Existing non-balanced roles are not churned unless the assigned role is invalid for current state. Changes use ordinary `SET_PLANET_SPECIALIZATION` and `SET_PLANET_DEVELOPMENT_TEMPLATE` commands and respect queue blockers.
+Role reconciliation rules:
+
+1. while an empire has exactly one colony, retain the existing phase-aware single-colony behavior;
+2. as soon as it has at least two colonies, derive the canonical assignment from current colony order;
+3. any specialization or template that differs from the canonical assignment is eligible for deterministic reassignment, including a first colony previously set to `resource`;
+4. issue at most one role-changing ordinary command per bot decision;
+5. specialization converges before development template for the same colony;
+6. respect existing queue blockers and retry on later decisions;
+7. after the assignment matches, issue no further role changes;
+8. acquisition, destruction or recolonization may change colony order, after which the planner converges once to the new canonical assignment under the same rules.
+
+This finite convergence is required role reconciliation, not uncontrolled role churn.
 
 ## Bot logistics policy
 
@@ -217,10 +274,12 @@ Existing non-balanced roles are not churned unless the assigned role is invalid 
 
 A deterministic two-colony fixture for each faction must demonstrate over 24 campaign hours:
 
-- stable bot role assignment;
+- convergence from the existing single-colony `resource` specialization into the canonical two-colony assignment;
+- stable role assignment after convergence;
 - at least one accepted logistics transfer when donor/receiver thresholds are present;
 - no duplicate route keys;
 - no retroactive departures after pause/resume;
+- exact multiple-departure catch-up summary accounting;
 - deterministic direct/chunked/save-loaded equality;
 - bounded route count and command history;
 - no hidden resources or privileged commands.
@@ -246,4 +305,4 @@ The last PR must additionally:
 
 ## Divergence rule
 
-If implementation requires a state-schema/save-format change, physical convoy model, new resource, or material change to progression timing, stop the batch and amend or replace Audit #137 before expanding the implementation.
+If implementation requires a state-schema/save-format change, physical convoy model, new resource, persisted logistics telemetry, or material change to progression timing, stop the batch and amend or replace Audit #137 before expanding the implementation.
