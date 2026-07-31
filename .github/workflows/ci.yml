@@ -41,10 +41,30 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        run: npm run test
+        run: npm run test -- --exclude tests/simulation/campaignTimePerformance.test.ts
 
       - name: Build
         run: npm run build
+
+  campaign-performance:
+    name: Campaign catch-up performance
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.12.0'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run isolated catch-up performance gate
+        run: npx vitest run tests/simulation/campaignTimePerformance.test.ts --maxWorkers=1 --no-file-parallelism
 
   progression-scenario:
     name: Compressed progression scenario
