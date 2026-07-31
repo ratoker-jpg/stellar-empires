@@ -292,6 +292,7 @@ export function getBotPhaseProductionTargets(
 
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).ships;
+  const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
   const primary: readonly BotProductionTarget[] = (() => {
     switch (phase) {
       case 'foundation':
@@ -323,11 +324,13 @@ export function getBotPhaseProductionTargets(
         ];
       case 'planet-destruction':
       case 'endgame-preparation':
-        return [
-          { unitId: roles.dreadnought, quantity: 1, desiredTotal: 2 },
-          { unitId: roles.cruiser, quantity: 1, desiredTotal: 3 },
-          { unitId: roles.frigate, quantity: 1, desiredTotal: 3 },
-        ];
+        return compressed
+          ? []
+          : [
+              { unitId: roles.dreadnought, quantity: 1, desiredTotal: 2 },
+              { unitId: roles.cruiser, quantity: 1, desiredTotal: 3 },
+              { unitId: roles.frigate, quantity: 1, desiredTotal: 3 },
+            ];
     }
   })();
   const pressure: readonly BotProductionTarget[] = threatened
