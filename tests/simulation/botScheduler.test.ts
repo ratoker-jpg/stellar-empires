@@ -55,12 +55,12 @@ describe('autonomous bot scheduler', () => {
       [...second.audit.map((entry) => entry.decidedAt)].sort((left, right) => left - right),
     );
     expect(new Set(second.audit.map((entry) => entry.decidedAt))).toEqual(
-      new Set([240]),
+      new Set([240, 480]),
     );
     expect(second.state.botAutomation.nextDecisionAtByEmpire).toEqual({
-      'aegis-bot': 1_080,
-      'synod-bot': 780,
-      'veyra-bot': 930,
+      'aegis-bot': 720,
+      'synod-bot': 720,
+      'veyra-bot': 720,
     });
   });
 
