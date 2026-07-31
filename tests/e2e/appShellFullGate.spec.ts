@@ -23,19 +23,24 @@ const LEGACY_DOM = [
   '#nav-fleet-doctrine',
 ] as const;
 
-test('new campaign exposes immutable compressed duration expectations at release viewports', async ({ page }) => {
+test('new campaign exposes immutable compressed duration expectations at release viewports', async ({ browser }) => {
   for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
-    await page.setViewportSize(viewport);
-    await page.goto('/');
-    const dialog = page.locator('.new-game-dialog');
-    await expect(dialog).toBeVisible();
-    await expect(dialog.locator('[data-progression-profile="compressed-v1"]')).toBeVisible();
-    const duration = dialog.locator('[data-campaign-duration-expectation="true"]');
-    await expect(duration).toContainText('ориентир 12 ч · максимум 16 ч');
-    await dialog.locator('.new-game-setting__select').nth(1).selectOption('10');
-    await expect(duration).toContainText('ориентир 2,4 ч · максимум 3,2 ч');
-    await expect(dialog).toContainText('Финальная победа и работа Врат пока не входят');
-    await expectNoHorizontalOverflow(page);
+    const context = await browser.newContext({ viewport });
+    const page = await context.newPage();
+    try {
+      await page.goto('/');
+      const dialog = page.locator('.new-game-dialog');
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator('[data-progression-profile="compressed-v1"]')).toBeVisible();
+      const duration = dialog.locator('[data-campaign-duration-expectation="true"]');
+      await expect(duration).toContainText('ориентир 12 ч · максимум 16 ч');
+      await dialog.locator('.new-game-setting__select').nth(1).selectOption('10');
+      await expect(duration).toContainText('ориентир 2,4 ч · максимум 3,2 ч');
+      await expect(dialog).toContainText('Финальная победа и работа Врат пока не входят');
+      await expectNoHorizontalOverflow(page);
+    } finally {
+      await context.close();
+    }
   }
 });
 
