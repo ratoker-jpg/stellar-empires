@@ -5,33 +5,64 @@ import {
   type CampaignSettings,
 } from '../simulation/campaign/settings';
 import { refreshPlanetEconomy } from '../simulation/economy/planetEconomy';
-import type { PlanetEconomyState } from '../simulation/economy/types';
+import type { ResourceId } from '../simulation/economy/types';
 import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
+import { compactGameStateHistory } from '../simulation/history/stateHistory';
+import { reconcileWorldEventSchedule } from '../simulation/pve/worldEvents';
 import type { GameState } from '../simulation/types';
+import { migrateLegacySynodAliases } from './migrateLegacySynodAliases';
+import { migrateLegacyVeyraAliases } from './migrateLegacyVeyraAliases';
 import {
   migrateGameStateV15,
   type LegacyCampaignSettingsV15,
 } from './migrateGameStateV15';
 
+interface SavedResourceProgress {
+  readonly amount: number;
+  readonly productionRemainder: number;
+}
+
+type SavedPlanetResourceProgress = Readonly<Record<ResourceId, SavedResourceProgress>>;
+
+const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function readSavedPlanetEconomies(
+function isNonNegativeInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+function readSavedResourceProgress(
   value: Record<string, unknown>,
-): ReadonlyMap<string, PlanetEconomyState> {
-  const saved = new Map<string, PlanetEconomyState>();
+): ReadonlyMap<string, SavedPlanetResourceProgress> {
+  const saved = new Map<string, SavedPlanetResourceProgress>();
   if (!Array.isArray(value.planets)) return saved;
 
   for (const planetValue of value.planets) {
-    if (
-      !isRecord(planetValue) ||
-      typeof planetValue.id !== 'string' ||
-      !isRecord(planetValue.economy)
-    ) {
-      continue;
+    if (!isRecord(planetValue) || typeof planetValue.id !== 'string') continue;
+    const economy = planetValue.economy;
+    if (!isRecord(economy) || !isRecord(economy.resources)) continue;
+
+    const resources = {} as Record<ResourceId, SavedResourceProgress>;
+    let complete = true;
+    for (const resourceId of RESOURCE_IDS) {
+      const stock = economy.resources[resourceId];
+      if (
+        !isRecord(stock) ||
+        !isNonNegativeInteger(stock.amount) ||
+        !isNonNegativeInteger(stock.productionRemainder)
+      ) {
+        complete = false;
+        break;
+      }
+      resources[resourceId] = {
+        amount: stock.amount,
+        productionRemainder: stock.productionRemainder,
+      };
     }
-    saved.set(planetValue.id, planetValue.economy as unknown as PlanetEconomyState);
+    if (complete) saved.set(planetValue.id, resources);
   }
   return saved;
 }
@@ -45,7 +76,10 @@ function legacySettingsFromCurrent(settings: CampaignSettings): LegacyCampaignSe
   };
 }
 
-function restoreProfileEconomy(state: GameState): GameState {
+function restoreProfileEconomy(
+  state: GameState,
+  savedProgress: ReadonlyMap<string, SavedPlanetResourceProgress> = new Map(),
+): GameState {
   const managedEmpireIds = new Set(state.empires);
   return {
     ...state,
@@ -56,31 +90,47 @@ function restoreProfileEconomy(state: GameState): GameState {
       ) {
         return planet;
       }
+
+      const economy = refreshPlanetEconomy(
+        state.campaignSettings.progressionProfile,
+        planet.economy,
+        planet.buildings,
+        getResearchEffectsForEmpire(state, planet.ownerEmpireId).energyOutputPercent,
+        planet.specializationId,
+      );
+      const progress = savedProgress.get(planet.id);
+      if (progress === undefined) return { ...planet, economy };
+
       return {
         ...planet,
-        economy: refreshPlanetEconomy(
-          state.campaignSettings.progressionProfile,
-          planet.economy,
-          planet.buildings,
-          getResearchEffectsForEmpire(state, planet.ownerEmpireId).energyOutputPercent,
-          planet.specializationId,
-        ),
+        economy: {
+          ...economy,
+          resources: Object.fromEntries(
+            RESOURCE_IDS.map((resourceId) => {
+              const stock = economy.resources[resourceId];
+              return [
+                resourceId,
+                {
+                  ...stock,
+                  amount: Math.min(progress[resourceId].amount, stock.capacity),
+                  productionRemainder: progress[resourceId].productionRemainder,
+                },
+              ];
+            }),
+          ) as GameState['planets'][number]['economy']['resources'],
+        },
       };
     }),
   };
 }
 
-function restoreSavedPlanetEconomies(
+function finalizeCurrentState(
   state: GameState,
-  savedEconomies: ReadonlyMap<string, PlanetEconomyState>,
+  savedProgress: ReadonlyMap<string, SavedPlanetResourceProgress> = new Map(),
 ): GameState {
-  return {
-    ...state,
-    planets: state.planets.map((planet) => {
-      const economy = savedEconomies.get(planet.id);
-      return economy === undefined ? planet : { ...planet, economy };
-    }),
-  };
+  const aliases = migrateLegacyVeyraAliases(migrateLegacySynodAliases(state));
+  const scheduled = reconcileWorldEventSchedule(aliases);
+  return restoreProfileEconomy(compactGameStateHistory(scheduled), savedProgress);
 }
 
 export function migrateGameStateV16(
@@ -90,7 +140,7 @@ export function migrateGameStateV16(
   if (isRecord(value) && value.schemaVersion === 16) {
     if (!isCampaignSettings(value.campaignSettings)) return undefined;
     const campaignSettings = value.campaignSettings;
-    const savedEconomies = readSavedPlanetEconomies(value);
+    const savedProgress = readSavedResourceProgress(value);
     const { campaignSettings: _ignored, ...stateWithoutCampaignSettings } = value;
     const reconciled = migrateGameStateV15(
       {
@@ -101,13 +151,14 @@ export function migrateGameStateV16(
       legacySavedAt,
     );
     if (reconciled === undefined) return undefined;
-    return restoreSavedPlanetEconomies(
+
+    return finalizeCurrentState(
       {
         ...reconciled,
         schemaVersion: 16,
         campaignSettings,
       },
-      savedEconomies,
+      savedProgress,
     );
   }
 
@@ -126,7 +177,7 @@ export function migrateGameStateV16(
     return undefined;
   }
 
-  return restoreProfileEconomy({
+  return finalizeCurrentState({
     ...legacy,
     schemaVersion: 16,
     campaignSettings,
