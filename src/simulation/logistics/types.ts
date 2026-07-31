@@ -14,6 +14,14 @@ export interface LogisticsRouteResult {
   readonly amount: number;
 }
 
+export interface LogisticsDepartureReceipt {
+  readonly routeId: string;
+  readonly empireId: string;
+  readonly executedAt: number;
+  readonly resultCode: LogisticsRouteResultCode;
+  readonly amount: number;
+}
+
 export interface LogisticsRoute {
   readonly id: string;
   readonly empireId: string;
