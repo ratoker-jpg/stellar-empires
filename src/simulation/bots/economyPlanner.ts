@@ -312,7 +312,19 @@ function createOrderedPhasePlan(
     ...resourceBuildings.crystal,
     ...resourceBuildings.gas,
   ]);
-  const milestone = targets.find((candidate) => {
+  const bootstrap = profileId === 'compressed-v1' && phase === 'first-combat'
+    ? targets.find((candidate) => {
+        if (!resourceBuildingIds.has(candidate.buildingId)) return false;
+        const definition = definitions.get(candidate.buildingId);
+        if (definition === undefined) return false;
+        const targetLevel = Math.min(
+          candidate.level,
+          getBuildingMaxLevel(profileId, definition),
+        );
+        return getBuildingLevel(planet.buildings, candidate.buildingId) < targetLevel;
+      })
+    : undefined;
+  const milestone = bootstrap ?? targets.find((candidate) => {
     if (resourceBuildingIds.has(candidate.buildingId)) return false;
     const definition = definitions.get(candidate.buildingId);
     if (definition === undefined) return false;
