@@ -1,5 +1,6 @@
 import type { BotSchedulerAuditEntry } from '../bots/scheduler';
 import type { ResourceCost, ResourceId } from '../economy/types';
+import type { LogisticsDepartureReceipt } from '../logistics/types';
 import type { ExecutedGameEvent, GameState } from '../types';
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
@@ -293,25 +294,18 @@ function summarizeEvents(
   };
 }
 
-function countPlayerLogisticsTransfers(before: GameState, after: GameState): number {
-  let count = 0;
-  for (const route of after.logisticsRoutes) {
-    if (route.empireId !== 'player' || route.lastResult?.code !== 'transferred') continue;
-    const previous = before.logisticsRoutes.find((candidate) => candidate.id === route.id)?.lastResult;
-    if (previous?.executedAt !== route.lastResult.executedAt) count += 1;
-  }
-  return count;
-}
-
 export function summarizeCampaignTransition(
   before: GameState,
   after: GameState,
   events: readonly ExecutedGameEvent[],
   _botAudit: readonly BotSchedulerAuditEntry[] = [],
+  logisticsReceipts: readonly LogisticsDepartureReceipt[] = [],
 ): CampaignCatchUpSummary {
   const resources = summarizePlayerResourceDelta(before, after);
   const eventSummary = summarizeEvents(before, after, events);
-  const logisticsTransfers = countPlayerLogisticsTransfers(before, after);
+  const logisticsTransfers = logisticsReceipts.filter(
+    (receipt) => receipt.empireId === 'player' && receipt.resultCode === 'transferred',
+  ).length;
   return {
     ...eventSummary,
     ...resources,
