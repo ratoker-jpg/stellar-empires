@@ -48,10 +48,13 @@ src/ui/planetDevelopmentControls.ts
 - Transfer amount is bounded by configured amount, stock above the origin reserve and target free capacity.
 - Same-time departures resolve by priority descending and route ID ascending.
 - Current bounds are 300–86,400 seconds per interval and at most 100,000 units per trip.
-- Duplicate routes for the same empire/origin/target/resource are currently allowed.
+- Duplicate routes for the same empire/origin/target/resource are currently allowed, so legitimate baseline save-v3 files may already contain duplicate keys.
+- `readLogisticsRoutes()` currently preserves every valid route and supplies defaults only for `consecutiveMisses` and `lastResult`; it does not normalize duplicate keys.
 - Pausing does not rebase `nextDepartureAt`; resuming after elapsed time can therefore execute retroactive departures.
 - Destroying either endpoint currently removes the route atomically through `reconcileDestroyedPlanet()`.
 - Route transport is intentionally abstract: no cargo ship, fuel, distance, travel time or interception is consumed.
+- `countPlayerLogisticsTransfers()` compares only before/after `lastResult`; a single large transition containing several departures can report at most one success per surviving route and can report zero when a final miss follows earlier successes.
+- `advanceCampaignTime()` usually summarizes one chronological boundary at a time, but the summary helper and shared ADVANCE_TIME reducer do not provide an exact per-departure accounting contract.
 
 Primary paths:
 
@@ -90,7 +93,8 @@ src/ui/operationsWorkspace.ts
 
 - `planBotEconomy()` sorts owned colonies and chooses the first colony with an empty build queue.
 - It evaluates stock ratios and phase prerequisites only for that selected colony.
-- A balanced selected colony becomes resource-specialized in compressed campaigns; there is no empire-level role allocation.
+- A balanced selected colony becomes resource-specialized in compressed campaigns; therefore the original colony is normally already `resource` before a second colony exists.
+- A fixed two-colony mapping of first=`industry`, second=`resource` conflicts with a blanket rule that existing non-balanced roles never change; the implementation contract must define finite deterministic reconciliation.
 - No bot planner creates, updates, pauses or deletes logistics routes.
 - No bot planner measures aggregate route flow or donor/receiver pressure.
 - The scheduler supports economy/research/production/fleet/threat sources but no logistics source.
@@ -157,6 +161,9 @@ tests/e2e/appShellOperations.spec.ts
 5. Player actions and bot actions continue through the same ordinary commands and validators.
 6. No progression constants, starting resources, world speed or profile identity change in this batch.
 7. The two dead standalone panel modules are removed or reduced to shared pure helpers; duplicate independently mounted UI is forbidden.
+8. Existing duplicate save-v3 routes are repaired after integrity validation by retaining the earliest creation-sequence route for each key; later duplicates never execute after load.
+9. Exact catch-up accounting uses ephemeral per-departure receipts from the shared advance-time path, not persisted counters or inferred final `lastResult` deltas.
+10. Bot roles converge to the canonical current colony ordering whenever the empire has at least two colonies; previous single-colony specialization is not grandfathered against that mapping.
 
 ## Non-critical unknowns
 
