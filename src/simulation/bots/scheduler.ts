@@ -18,7 +18,7 @@ import { planBotThreatAndRecovery } from './threatRecoveryPlanner';
 
 export type BotPlannerSource = 'economy' | 'research' | 'production' | 'fleet' | 'threat';
 export const MAX_BOT_DECISIONS_PER_RUN = 32;
-const COMPRESSED_EARLY_DECISION_INTERVAL_SECONDS = 240;
+const COMPRESSED_EARLY_DECISION_INTERVAL_SECONDS = 180;
 const COMPRESSED_EARLY_COMMANDS_PER_DECISION = 6;
 
 export interface BotSchedulerAuditEntry {
