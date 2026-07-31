@@ -1,3 +1,5 @@
+import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
+import { estimateFlightToGalaxyPlanet } from '../fleets/flightCalculations';
 import { startExpedition } from '../pve/expeditions';
 import type { GameCommand, GameState } from '../types';
 import { hasShipRole } from '../units/shipCapabilities';
@@ -53,22 +55,40 @@ export function planBotExpedition(
   );
   const targets = state.galaxy.systems
     .flatMap((system) => system.planets)
-    .filter((planet) => !occupiedGalaxyPlanetIds.has(planet.id))
-    .sort((left, right) => left.id.localeCompare(right.id));
+    .filter((planet) => !occupiedGalaxyPlanetIds.has(planet.id));
+  const speedBonus = getResearchEffectsForEmpire(state, empireId).fleetSpeedPercent;
 
   for (const fleet of fleets) {
-    for (const target of targets) {
+    const rankedTargets = targets
+      .map((target) => ({
+        target,
+        estimate: estimateFlightToGalaxyPlanet(
+          state.galaxy,
+          state.planets,
+          fleet,
+          target.id,
+          speedBonus,
+        ),
+      }))
+      .sort(
+        (left, right) =>
+          left.estimate.durationSeconds - right.estimate.durationSeconds ||
+          left.estimate.fuelCost - right.estimate.fuelCost ||
+          left.target.id.localeCompare(right.target.id),
+      );
+
+    for (const candidate of rankedTargets) {
       const command: Extract<GameCommand, { readonly type: 'START_EXPEDITION' }> = {
         type: 'START_EXPEDITION',
         empireId,
         fleetId: fleet.id,
-        targetGalaxyPlanetId: target.id,
+        targetGalaxyPlanetId: candidate.target.id,
       };
       if (startExpedition(state, command).ok) {
         return {
           empireId,
           reasonCode: 'expedition-selected',
-          explanation: `Флот ${fleet.id} отправляется в ресурсную экспедицию к ${target.id}.`,
+          explanation: `Флот ${fleet.id} отправляется в ближайшую ресурсную экспедицию к ${candidate.target.id}.`,
           command,
         };
       }
