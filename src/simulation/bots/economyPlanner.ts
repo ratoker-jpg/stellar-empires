@@ -1,4 +1,5 @@
 import type { ProgressionProfileId } from '../campaign/settings';
+import type { ResourceCost, ResourceId } from '../economy/types';
 import {
   getBuildingCatalogForFaction,
   getFactionIdForEmpire,
@@ -14,6 +15,8 @@ import {
 } from '../planet/buildingProgression';
 import type { PlanetState } from '../planet/types';
 import { getBuildingMaxLevel } from '../progression/profile';
+import { getResearchDefinition } from '../research/catalog';
+import { calculateResearchCost } from '../research/progression';
 import { getEmpireResearch, getResearchLevel } from '../research/researchState';
 import type { GameCommand, GameState } from '../types';
 import { createBotPerception } from './perception';
@@ -54,6 +57,8 @@ interface ResourceBuildingIds {
   readonly crystal: string;
   readonly gas: string;
 }
+
+const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
 
 function buildingCommand(
   empireId: string,
@@ -118,6 +123,58 @@ function createBuildingPlan(
       };
 }
 
+function resourceWaitSeconds(
+  planet: PlanetState,
+  resourceId: ResourceId,
+  cost: ResourceCost,
+): number {
+  const stock = planet.economy.resources[resourceId];
+  const deficit = Math.max(0, cost[resourceId] - stock.amount);
+  if (deficit === 0) return 0;
+  return stock.productionPerHour <= 0
+    ? Number.POSITIVE_INFINITY
+    : Math.ceil((deficit * 3600) / stock.productionPerHour);
+}
+
+function createResourceSupportPlan(
+  profileId: ProgressionProfileId,
+  empireId: string,
+  planet: PlanetState,
+  phase: BotProgressionPhase,
+  blockedLabel: string,
+  cost: ResourceCost,
+  catalog: readonly BuildingDefinition[],
+  resourceBuildings: ResourceBuildingIds,
+): BotEconomyPlan | undefined {
+  const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
+  const candidates = RESOURCE_IDS
+    .map((resourceId) => ({
+      resourceId,
+      buildingId: resourceBuildings[resourceId],
+      waitSeconds: resourceWaitSeconds(planet, resourceId, cost),
+    }))
+    .filter((candidate) => candidate.waitSeconds > 0)
+    .sort((left, right) =>
+      right.waitSeconds - left.waitSeconds || left.resourceId.localeCompare(right.resourceId),
+    );
+
+  for (const candidate of candidates) {
+    const definition = definitions.get(candidate.buildingId);
+    if (definition === undefined) continue;
+    const nextLevel = getBuildingLevel(planet.buildings, candidate.buildingId) + 1;
+    if (canQueueBuilding(profileId, planet, definition, nextLevel)) {
+      return {
+        empireId,
+        planetId: planet.id,
+        reasonCode: 'resource-deficit',
+        explanation: `Phase ${phase}: ${candidate.resourceId} задерживает ${blockedLabel} на ${candidate.waitSeconds} сек., повышается добыча.`,
+        command: buildingCommand(empireId, planet.id, candidate.buildingId),
+      };
+    }
+  }
+  return undefined;
+}
+
 function createOrderedPhasePlan(
   profileId: ProgressionProfileId,
   empireId: string,
@@ -140,10 +197,8 @@ function createOrderedPhasePlan(
   if (target === undefined) return undefined;
 
   const definition = definitions.get(target.buildingId);
-  if (
-    definition !== undefined &&
-    canQueueBuilding(profileId, planet, definition, target.level)
-  ) {
+  if (definition === undefined) return undefined;
+  if (canQueueBuilding(profileId, planet, definition, target.level)) {
     return {
       empireId,
       planetId: planet.id,
@@ -153,47 +208,75 @@ function createOrderedPhasePlan(
     };
   }
 
-  if (definition !== undefined) {
-    const nextLevel = getBuildingLevel(planet.buildings, definition.id) + 1;
-    const cost = calculateBuildingCost(definition, nextLevel, profileId);
-    const bottlenecks = [
-      {
-        resourceId: 'metal' as const,
-        buildingId: resourceBuildings.metal,
-        deficit: Math.max(0, cost.metal - planet.economy.resources.metal.amount),
-      },
-      {
-        resourceId: 'crystal' as const,
-        buildingId: resourceBuildings.crystal,
-        deficit: Math.max(0, cost.crystal - planet.economy.resources.crystal.amount),
-      },
-      {
-        resourceId: 'gas' as const,
-        buildingId: resourceBuildings.gas,
-        deficit: Math.max(0, cost.gas - planet.economy.resources.gas.amount),
-      },
-    ].sort((left, right) =>
-      right.deficit - left.deficit || left.resourceId.localeCompare(right.resourceId),
+  const nextLevel = getBuildingLevel(planet.buildings, definition.id) + 1;
+  const support = createResourceSupportPlan(
+    profileId,
+    empireId,
+    planet,
+    phase,
+    target.buildingId,
+    calculateBuildingCost(definition, nextLevel, profileId),
+    catalog,
+    resourceBuildings,
+  );
+  if (support !== undefined) return support;
+
+  return {
+    empireId,
+    planetId: planet.id,
+    reasonCode: 'wait-resources',
+    explanation: `Phase ${phase}: ресурсы резервируются для ${target.buildingId} до уровня ${target.level}.`,
+    command: null,
+  };
+}
+
+function createPendingResearchPlan(
+  state: GameState,
+  empireId: string,
+  planet: PlanetState,
+  phase: BotProgressionPhase,
+  catalog: readonly BuildingDefinition[],
+  resourceBuildings: ResourceBuildingIds,
+): BotEconomyPlan | undefined {
+  const research = getEmpireResearch(state.research, empireId);
+  const pending = getBotPhaseResearchTargets(state, empireId, phase, false)
+    .find((target) =>
+      research === undefined ||
+      getResearchLevel(research, target.technologyId) < target.level,
     );
-    for (const bottleneck of bottlenecks) {
-      if (bottleneck.deficit <= 0) continue;
-      const supportTarget = targets.find(
-        (candidate) => candidate.buildingId === bottleneck.buildingId,
+  if (pending === undefined) return undefined;
+  if (research?.queue.length) {
+    return {
+      empireId,
+      planetId: planet.id,
+      reasonCode: 'wait-resources',
+      explanation: `Phase ${phase}: исследование ${research.queue[0]?.technologyId ?? pending.technologyId} уже выполняется.`,
+      command: null,
+    };
+  }
+
+  const definition = getResearchDefinition(pending.technologyId);
+  const currentLevel = research === undefined
+    ? 0
+    : getResearchLevel(research, pending.technologyId);
+  if (definition !== undefined) {
+    const cost = calculateResearchCost(
+      definition,
+      currentLevel + 1,
+      state.campaignSettings.progressionProfile,
+    );
+    if (!canAfford(planet.economy, cost)) {
+      const support = createResourceSupportPlan(
+        state.campaignSettings.progressionProfile,
+        empireId,
+        planet,
+        phase,
+        pending.technologyId,
+        cost,
+        catalog,
+        resourceBuildings,
       );
-      const supportDefinition = definitions.get(bottleneck.buildingId);
-      if (
-        supportTarget !== undefined &&
-        supportDefinition !== undefined &&
-        canQueueBuilding(profileId, planet, supportDefinition, supportTarget.level)
-      ) {
-        return {
-          empireId,
-          planetId: planet.id,
-          reasonCode: 'resource-deficit',
-          explanation: `Phase ${phase}: ${bottleneck.resourceId} блокирует ${target.buildingId}, усиливается профильная добыча.`,
-          command: buildingCommand(empireId, planet.id, bottleneck.buildingId),
-        };
-      }
+      if (support !== undefined) return support;
     }
   }
 
@@ -201,7 +284,7 @@ function createOrderedPhasePlan(
     empireId,
     planetId: planet.id,
     reasonCode: 'wait-resources',
-    explanation: `Phase ${phase}: ресурсы резервируются для ${target.buildingId} до уровня ${target.level}.`,
+    explanation: `Phase ${phase}: ресурсы резервируются для исследования ${pending.technologyId} до уровня ${pending.level}.`,
     command: null,
   };
 }
@@ -245,6 +328,11 @@ export function planBotEconomy(
   const roles = getFactionMechanicalRoles(factionId).buildings;
   const phase = getBotProgressionPhase(state, empireId);
   const catalog = getBuildingCatalogForFaction(factionId);
+  const resourceBuildings = {
+    metal: roles.metal,
+    crystal: roles.crystal,
+    gas: roles.gas,
+  } as const;
   const resourceRatios = {
     metal: stockRatio(planet.economy.resources.metal.amount, planet.economy.resources.metal.capacity),
     crystal: stockRatio(planet.economy.resources.crystal.amount, planet.economy.resources.crystal.capacity),
@@ -326,45 +414,39 @@ export function planBotEconomy(
     phase,
     getBotPhaseBuildingTargets(state, empireId, phase),
     catalog,
-    { metal: roles.metal, crystal: roles.crystal, gas: roles.gas },
+    resourceBuildings,
   );
   if (phasePlan !== undefined) return phasePlan;
 
   if (compressed) {
-    const research = getEmpireResearch(state.research, empireId);
-    const pendingResearch = getBotPhaseResearchTargets(state, empireId, phase, false)
-      .find((target) =>
-        research === undefined ||
-        getResearchLevel(research, target.technologyId) < target.level,
-      );
-    if (pendingResearch !== undefined) {
-      return {
-        empireId,
-        planetId: planet.id,
-        reasonCode: 'wait-resources',
-        explanation: `Phase ${phase}: ресурсы резервируются для исследования ${pendingResearch.technologyId} до уровня ${pendingResearch.level}.`,
-        command: null,
-      };
-    }
+    const researchPlan = createPendingResearchPlan(
+      state,
+      empireId,
+      planet,
+      phase,
+      catalog,
+      resourceBuildings,
+    );
+    if (researchPlan !== undefined) return researchPlan;
+    return {
+      empireId,
+      planetId: planet.id,
+      reasonCode: 'wait-resources',
+      explanation: `Phase ${phase}: обязательные prerequisites закрыты, ожидается переход capability.`,
+      command: null,
+    };
   }
 
   if (lowestResource !== undefined && lowestResource[1] < recoveryThreshold) {
-    const resourceBuilding = {
-      metal: roles.metal,
-      crystal: roles.crystal,
-      gas: roles.gas,
-    }[lowestResource[0]];
+    const resourceBuilding = resourceBuildings[lowestResource[0]];
     const currentLevel = getBuildingLevel(planet.buildings, resourceBuilding);
-    const recoveryLevel = compressed
-      ? Math.min(6, currentLevel + 1)
-      : currentLevel + 1;
     const plan = createBuildingPlan(
       profileId,
       empireId,
       planet,
       'resource-deficit',
       `Самый слабый резерв — ${lowestResource[0]}: восстанавливается добыча.`,
-      [{ buildingId: resourceBuilding, level: recoveryLevel }],
+      [{ buildingId: resourceBuilding, level: currentLevel + 1 }],
       catalog,
     );
     if (plan !== undefined) return plan;
@@ -395,7 +477,6 @@ export function planBotEconomy(
   );
   if (sensorPlan !== undefined) return sensorPlan;
 
-  const balancedMaximum = compressed ? 4 : Number.MAX_SAFE_INTEGER;
   const balancedTargets = [roles.power, roles.metal, roles.crystal, roles.gas, roles.command]
     .sort(
       (left, right) =>
@@ -404,10 +485,7 @@ export function planBotEconomy(
     )
     .map((buildingId) => ({
       buildingId,
-      level: Math.min(
-        balancedMaximum,
-        getBuildingLevel(planet.buildings, buildingId) + 1,
-      ),
+      level: getBuildingLevel(planet.buildings, buildingId) + 1,
     }));
   const balancedPlan = createBuildingPlan(
     profileId,
