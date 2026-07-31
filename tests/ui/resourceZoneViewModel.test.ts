@@ -21,6 +21,6 @@ describe('resource zone view model', () => {
     expect(view.stabilityEfficiencyPermille).toBe(1_000);
     expect(view.productionEfficiencyPermille).toBe(1_000);
     expect(view.populationUsed).toBe(4);
-    expect(view.populationCapacity).toBe(55);
+    expect(view.populationCapacity).toBe(70);
   });
 });
