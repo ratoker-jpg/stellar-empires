@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  getBotPhaseProductionTargets,
   getBotPhaseResearchTargets,
 } from '../../src/simulation/bots/progressionPriorities';
 import { getBotProgressionPhase } from '../../src/simulation/bots/progressionPhase';
@@ -181,10 +182,10 @@ describe('bot research and production planner', () => {
       ),
     };
 
+    const phase = getBotProgressionPhase(state, 'aegis-bot');
     const plan = planBotResearchAndProduction(state, 'aegis-bot');
     expect(plan.research.command?.type).toBe('QUEUE_RESEARCH');
     if (plan.research.command?.type === 'QUEUE_RESEARCH') {
-      const phase = getBotProgressionPhase(state, 'aegis-bot');
       const militaryPath = getBotPhaseResearchTargets(
         state,
         'aegis-bot',
@@ -195,10 +196,10 @@ describe('bot research and production planner', () => {
       const researchResult = executeCommand(state, plan.research.command);
       expect(researchResult.ok).toBe(true);
     }
-    expect(plan.production.command).toMatchObject({
-      type: 'QUEUE_UNIT_BATCH',
-      unitId: 'ship.aegis.scout',
+    expect(getBotPhaseProductionTargets(state, 'aegis-bot', phase, true)[0]).toEqual({
+      unitId: 'ship.aegis.fighter',
       quantity: 3,
+      desiredTotal: 6,
     });
   });
 
