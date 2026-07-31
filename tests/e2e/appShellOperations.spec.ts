@@ -95,6 +95,87 @@ test('target handoff is presentation-only and repeated activation does not dupli
   await expect(page.locator('#mission-screen-dialog')).toHaveCount(0);
 });
 
+test('canonical logistics supports create, edit, pause, resume, endpoint return and delete', async ({ page }) => {
+  await page.goto('/?e2e=1#/operations/logistics');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page.locator('[data-testid="canonical-logistics-panel"]')).toHaveCount(1);
+  await expect(page.locator('.command-panel .logistics-panel')).toHaveCount(0);
+
+  const form = page.locator('[data-testid="logistics-create-form"]');
+  const origin = form.locator('label').filter({ hasText: 'Планета отправления' }).locator('select');
+  const target = form.locator('label').filter({ hasText: 'Планета назначения' }).locator('select');
+  const values = await origin.locator('option').evaluateAll((options) =>
+    options.map((option) => (option as HTMLOptionElement).value));
+  expect(values.length).toBeGreaterThanOrEqual(2);
+  await origin.selectOption(values[0]!);
+  await target.selectOption(values[1]!);
+  await form.locator('label').filter({ hasText: 'Объём рейса' }).locator('input').fill('120');
+  await form.locator('label').filter({ hasText: 'Резерв отправителя' }).locator('input').fill('50');
+  await form.locator('label').filter({ hasText: 'Интервал' }).locator('select').selectOption('900');
+  await form.locator('label').filter({ hasText: 'Приоритет' }).locator('select').selectOption('3');
+  await form.getByRole('button', { name: 'Создать маршрут' }).click();
+
+  const card = page.locator('[data-testid="logistics-route-list"] article');
+  await expect(card).toHaveCount(1);
+  await expect(card).toContainText('120 за рейс');
+  await expect(card).toContainText('480/ч');
+  await expect(card).toContainText('приоритет 3');
+  await expect(card.locator('[data-testid="logistics-origin-link"]')).toHaveCount(1);
+  await expect(card.locator('[data-testid="logistics-target-link"]')).toHaveCount(1);
+
+  await card.locator('[data-testid="logistics-edit"]').click();
+  const editForm = card.locator('.logistics-edit-form');
+  await editForm.locator('label').filter({ hasText: 'Объём рейса' }).locator('input').fill('200');
+  await editForm.locator('label').filter({ hasText: 'Интервал' }).locator('select').selectOption('1800');
+  await editForm.locator('label').filter({ hasText: 'Приоритет' }).locator('select').selectOption('1');
+  await editForm.getByRole('button', { name: 'Сохранить изменения' }).click();
+  await expect(card).toContainText('200 за рейс');
+  await expect(card).toContainText('400/ч');
+  await expect(card).toContainText('приоритет 1');
+
+  await card.locator('[data-testid="logistics-toggle"]').click();
+  await expect(card).toContainText('Маршрут приостановлен');
+  await card.locator('[data-testid="logistics-toggle"]').click();
+  await expect(card).toContainText('Следующий рейс через');
+
+  await card.locator('[data-testid="logistics-edit"]').click();
+  await expect(card.locator('.logistics-edit-form')).toHaveCount(1);
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/operations\/logistics$/);
+  await expect(page.locator('.logistics-edit-form')).toHaveCount(0);
+
+  const endpoint = page.locator('[data-testid="logistics-origin-link"]').first();
+  await endpoint.click();
+  await expect(page).toHaveURL(/#\/planet\/.+\/overview$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/#\/operations\/logistics$/);
+  await expect(page.locator('[data-testid="canonical-logistics-panel"]')).toBeVisible();
+
+  await page.locator('[data-testid="logistics-delete"]').click();
+  await expect(page.locator('[data-testid="logistics-route-list"] article')).toHaveCount(0);
+});
+
+test('market executes on the explicitly selected colony', async ({ page }) => {
+  await page.goto('/?e2e=1#/operations/market');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page.locator('[data-testid="canonical-market-panel"]')).toHaveCount(1);
+  await expect(page.locator('.command-panel .market-panel')).toHaveCount(0);
+
+  const secondaryPlanetId = await page.locator('html').getAttribute('data-e2e-secondary-planet-id');
+  expect(secondaryPlanetId).not.toBeNull();
+  await page.locator('[data-testid="market-planet"]').selectOption(secondaryPlanetId!);
+  await expect(page.locator('[data-testid="market-colony-stocks"]')).toContainText('Металл');
+  await page.locator('[data-testid="market-give-resource"]').selectOption('metal');
+  await page.locator('[data-testid="market-receive-resource"]').selectOption('crystal');
+  await page.locator('[data-testid="market-give-amount"]').fill('1');
+  await expect(page.locator('[data-testid="market-quote"]')).toContainText('Получишь');
+  await page.getByRole('button', { name: 'Подтвердить обмен' }).click();
+
+  await expect(page.locator('.market-history')).toContainText('Вторая колония E2E');
+  await expect(page.locator('[data-testid="market-feedback"]')).toHaveCount(1);
+});
+
 test('operation workspaces fit release viewports', async ({ page }) => {
   for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
     await page.setViewportSize(viewport);
