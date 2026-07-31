@@ -197,7 +197,7 @@ describe('bot research and production planner', () => {
       expect(researchResult.ok).toBe(true);
     }
     expect(getBotPhaseProductionTargets(state, 'aegis-bot', phase, true)[0]).toEqual({
-      unitId: 'ship.aegis.fighter',
+      unitId: getFactionMechanicalRoles('aegis').ships.fighter,
       quantity: 3,
       desiredTotal: 6,
     });
