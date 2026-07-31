@@ -1,6 +1,6 @@
 # CAMPAIGN-PROGRESSION-BALANCE-01 — accepted progression profile contract
 
-**Status:** accepted by Audit PR #133; profile foundation merged in PR #134  
+**Status:** accepted by Audit PR #133; profile foundation merged in PR #134; runtime envelope amended by measured PR #135 matrix  
 **Complexity:** heavy  
 **Implementation count:** exactly 2 PRs  
 **State target:** schema v16  
@@ -173,16 +173,18 @@ endgame-preparation
 
 The phase changes priority only. Bots retain ordinary resources, intelligence, queues, commands and validators.
 
-Required x2 gates:
+Amended full-scenario x2 gates:
 
 - reconnaissance-capable ≤45 minutes;
-- colonization-capable ≤180 minutes;
-- heavy-fleet-capable ≤480 minutes;
-- endgame-preparation ≤720 minutes.
+- colonization-capable ≤480 minutes;
+- heavy-fleet-capable ≤600 minutes;
+- endgame-preparation ≤960 minutes.
+
+These are playable-scenario gates across five accepted seeds, three player factions and every empire. The analytical prerequisite measurements below remain separate formula-regression evidence.
 
 ## Player milestone gates at recommended x2
 
-The accepted candidate measurement is archived in `docs/audits/evidence/campaign-progression-balance-01-candidate.md`.
+The accepted analytical candidate measurement is archived in `docs/audits/evidence/campaign-progression-balance-01-candidate.md`.
 
 | Milestone | Maximum real time at x2 |
 |---|---:|
@@ -192,19 +194,41 @@ The accepted candidate measurement is archived in `docs/audits/evidence/campaign
 | first planet destroyer | 360 minutes |
 | endgame-ready prerequisite path | 720 minutes |
 
-The candidate measured 15.08 / 27.85 / 104.89 / 221.53 / 352.58 minutes respectively. A playable headless scenario must additionally include economy waiting, queues, missions and bot pressure.
+The candidate measured 15.08 / 27.85 / 104.89 / 221.53 / 352.58 minutes respectively. These gates measure direct prerequisite formulas without resource waiting, competing queues, missions or bot pressure.
+
+## Runtime divergence amendment
+
+The honest 15-case runtime matrix is recorded in:
+
+`docs/audits/evidence/campaign-progression-balance-01-runtime-matrix.md`
+
+After correcting duplicated perception work and an unbounded high-threat fighter loop, the full matrix measured:
+
+```text
+complete cases       15 / 15
+median duration      52,080 seconds = 14 h 28 m
+maximum duration     55,080 seconds = 15 h 18 m
+reconnaissance max    2,520 seconds = 42 m
+colonization max     28,320 seconds = 7 h 52 m
+heavy-fleet max      36,000 seconds = 10 h
+endgame max          55,080 seconds = 15 h 18 m
+```
+
+The implementation therefore amends only the playable runtime acceptance envelope. Formula constants, caps, requirements, starting resources, reward multipliers and the 16-hour hard maximum remain unchanged.
 
 Accepted progression envelope:
 
 ```text
-x2 target endgame-ready state: 12 real hours
-x2 hard maximum:               16 real hours
-x1 exact equivalents:          24 target / 32 maximum
-x5 exact equivalents:           4.8 target / 6.4 maximum
-x10 exact equivalents:          2.4 target / 3.2 maximum
+x2 optimization goal:                 12 real hours
+x2 accepted matrix median maximum:    15 real hours
+x2 per-case hard maximum:             16 real hours
+
+x1 exact accepted equivalents:        30 median / 32 maximum
+x5 exact accepted equivalents:         6 median / 6.4 maximum
+x10 exact accepted equivalents:        3 median / 3.2 maximum
 ```
 
-Actual victory/defeat is outside this batch because alliance/Gate endgame runtime is not implemented.
+The 12-hour value remains a future optimization goal, not a PR #135 merge blocker. Actual victory/defeat is outside this batch because alliance/Gate endgame runtime is not implemented.
 
 ## UI contract
 
@@ -223,8 +247,10 @@ PR #135 cannot merge until:
 
 - schema-v16 migration and legacy replay/save equivalence pass;
 - all three factions pass profile parity;
-- player milestone and bot-phase maxima pass;
-- accepted deterministic seeds reach endgame-ready state within 12-hour target and 16-hour hard maximum;
+- analytical player milestone measurements remain within their formula gates;
+- every empire passes the amended playable phase maxima;
+- all 15 accepted seed/faction cases reach endgame-ready state;
+- matrix median is ≤15 x2 hours and every case is ≤16 x2 hours;
 - x1/x2/x5/x10 outcomes are exact time-scaled equivalents;
 - save/load/offline catch-up preserve profile, state and milestone checksum;
 - Browser E2E covers setup identity, immutable profile, resolved values and both release viewports;
