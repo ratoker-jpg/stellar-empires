@@ -36,6 +36,7 @@ interface PhaseEconomyLevels {
   readonly metal: number;
   readonly crystal: number;
   readonly gas: number;
+  readonly gasSecondary: number;
 }
 
 const buildingTargetCache = new Map<string, readonly BotBuildingTarget[]>();
@@ -85,16 +86,16 @@ function phaseEconomyLevels(phase: BotProgressionPhase): PhaseEconomyLevels {
   switch (phase) {
     case 'foundation':
     case 'reconnaissance':
-      return { metal: 1, crystal: 1, gas: 1 };
+      return { metal: 1, crystal: 1, gas: 1, gasSecondary: 0 };
     case 'first-combat':
-      return { metal: 4, crystal: 6, gas: 4 };
+      return { metal: 4, crystal: 10, gas: 10, gasSecondary: 3 };
     case 'colonization':
-      return { metal: 5, crystal: 7, gas: 5 };
+      return { metal: 6, crystal: 10, gas: 10, gasSecondary: 4 };
     case 'heavy-fleet':
-      return { metal: 6, crystal: 8, gas: 6 };
+      return { metal: 8, crystal: 10, gas: 10, gasSecondary: 6 };
     case 'planet-destruction':
     case 'endgame-preparation':
-      return { metal: 8, crystal: 10, gas: 8 };
+      return { metal: 10, crystal: 10, gas: 10, gasSecondary: 6 };
   }
 }
 
@@ -131,6 +132,7 @@ function createPhasePrerequisiteTargets(
   const researchOrder: string[] = [];
 
   const addBuilding = (buildingId: string, requestedLevel: number): void => {
+    if (requestedLevel <= 0) return;
     const definition = buildingById.get(buildingId);
     if (definition === undefined) return;
     const maximum = getBuildingMaxLevelById(profileId, buildingId) ?? requestedLevel;
@@ -187,8 +189,9 @@ function createPhasePrerequisiteTargets(
   const addCompressedEconomyTargets = (): void => {
     if (profileId !== 'compressed-v1') return;
     const economy = phaseEconomyLevels(phase);
-    addBuilding(roles.buildings.complete.crystalPrimary, economy.crystal);
     addBuilding(roles.buildings.complete.gasPrimary, economy.gas);
+    addBuilding(roles.buildings.complete.crystalPrimary, economy.crystal);
+    addBuilding(roles.buildings.complete.gasSecondary, economy.gasSecondary);
     addBuilding(roles.buildings.complete.metalPrimary, economy.metal);
   };
 
