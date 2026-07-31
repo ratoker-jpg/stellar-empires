@@ -109,18 +109,23 @@ describe('compressed progression scenario experiment', () => {
           playerFaction,
           worldSpeed: 2,
         });
-        expect(result.complete).toBe(true);
-        expect(result.elapsedRealSeconds).toBeLessThanOrEqual(16 * 60 * 60);
-        return {
+        const entry = {
           seed,
           playerFaction,
+          complete: result.complete,
           elapsedRealSeconds: result.elapsedRealSeconds,
           phases: result.phaseReachedAtRealSeconds,
           acceptedPlayerCommands: result.acceptedPlayerCommands,
           rejectedPlayerCommands: result.rejectedPlayerCommands,
         };
+        console.info(`COMPRESSED_PROGRESSION_MATRIX_CASE=${JSON.stringify(entry)}`);
+        return entry;
       }),
     );
     console.info(`COMPRESSED_PROGRESSION_MATRIX=${JSON.stringify(matrix)}`);
+
+    expect(matrix.filter((entry) => !entry.complete)).toEqual([]);
+    expect(Math.max(...matrix.map((entry) => entry.elapsedRealSeconds)))
+      .toBeLessThanOrEqual(16 * 60 * 60);
   }, 300_000);
 });
