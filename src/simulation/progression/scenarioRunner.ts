@@ -1,4 +1,5 @@
 import { planBotEconomy } from '../bots/economyPlanner';
+import { planBotFleetMission } from '../bots/fleetMissionPlanner';
 import { planBotResearchAndProduction } from '../bots/researchProductionPlanner';
 import {
   BOT_PROGRESSION_PHASES,
@@ -65,7 +66,13 @@ function runPlayerDecision(state: GameState): {
   const commands = (): readonly (GameCommand | null)[] => {
     const economy = planBotEconomy(working, 'player');
     const science = planBotResearchAndProduction(working, 'player');
-    return [economy.command, science.research.command, science.production.command];
+    const fleet = planBotFleetMission(working, 'player');
+    return [
+      science.production.command,
+      science.research.command,
+      economy.command,
+      fleet.command,
+    ];
   };
   for (let pass = 0; pass < 2; pass += 1) {
     let changed = false;
