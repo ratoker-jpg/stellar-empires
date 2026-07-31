@@ -101,6 +101,37 @@ describe('compressed progression scenario experiment', () => {
     }
   }, 120_000);
 
+  scenarioIt('diagnoses the representative Aegis hard-limit failure', () => {
+    const hardLimit = runProgressionScenario({
+      seed: 'progression-aegis-01',
+      playerFaction: 'aegis',
+      worldSpeed: 2,
+      maximumRealSeconds: 16 * 60 * 60,
+    });
+    const extended = runProgressionScenario({
+      seed: 'progression-aegis-01',
+      playerFaction: 'aegis',
+      worldSpeed: 2,
+      maximumRealSeconds: 20 * 60 * 60,
+    });
+    console.info(
+      `COMPRESSED_AEGIS_HARD_LIMIT=${JSON.stringify({
+        hardLimit: {
+          complete: hardLimit.complete,
+          elapsedRealSeconds: hardLimit.elapsedRealSeconds,
+          phases: hardLimit.phaseReachedAtRealSeconds,
+          aegisBot: diagnosticsForState(hardLimit.state)['aegis-bot'],
+        },
+        extended: {
+          complete: extended.complete,
+          elapsedRealSeconds: extended.elapsedRealSeconds,
+          phases: extended.phaseReachedAtRealSeconds,
+        },
+      })}`,
+    );
+    expect(hardLimit.complete).toBe(true);
+  }, 120_000);
+
   scenarioIt('measures every accepted seed and player faction through ordinary commands', () => {
     const matrix = ACCEPTED_PROGRESSION_SEEDS.flatMap((seed) =>
       PLAYER_FACTIONS.map((playerFaction) => {
