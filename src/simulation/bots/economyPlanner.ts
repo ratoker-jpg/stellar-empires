@@ -53,9 +53,9 @@ interface BuildingTarget {
 }
 
 interface ResourceBuildingIds {
-  readonly metal: string;
-  readonly crystal: string;
-  readonly gas: string;
+  readonly metal: readonly string[];
+  readonly crystal: readonly string[];
+  readonly gas: readonly string[];
 }
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
@@ -150,7 +150,6 @@ function createResourceSupportPlan(
   const candidates = RESOURCE_IDS
     .map((resourceId) => ({
       resourceId,
-      buildingId: resourceBuildings[resourceId],
       waitSeconds: resourceWaitSeconds(planet, resourceId, cost),
     }))
     .filter((candidate) => candidate.waitSeconds > 0)
@@ -159,17 +158,20 @@ function createResourceSupportPlan(
     );
 
   for (const candidate of candidates) {
-    const definition = definitions.get(candidate.buildingId);
-    if (definition === undefined) continue;
-    const nextLevel = getBuildingLevel(planet.buildings, candidate.buildingId) + 1;
-    if (canQueueBuilding(profileId, planet, definition, nextLevel)) {
-      return {
-        empireId,
-        planetId: planet.id,
-        reasonCode: 'resource-deficit',
-        explanation: `Phase ${phase}: ${candidate.resourceId} задерживает ${blockedLabel} на ${candidate.waitSeconds} сек., повышается добыча.`,
-        command: buildingCommand(empireId, planet.id, candidate.buildingId),
-      };
+    for (const buildingId of resourceBuildings[candidate.resourceId]) {
+      const definition = definitions.get(buildingId);
+      if (definition === undefined) continue;
+      const currentLevel = getBuildingLevel(planet.buildings, buildingId);
+      if (currentLevel >= getBuildingMaxLevel(profileId, definition)) continue;
+      if (canQueueBuilding(profileId, planet, definition, currentLevel + 1)) {
+        return {
+          empireId,
+          planetId: planet.id,
+          reasonCode: 'resource-deficit',
+          explanation: `Phase ${phase}: ${candidate.resourceId} задерживает ${blockedLabel} на ${candidate.waitSeconds} сек., повышается ${buildingId}.`,
+          command: buildingCommand(empireId, planet.id, buildingId),
+        };
+      }
     }
   }
   return undefined;
@@ -329,9 +331,13 @@ export function planBotEconomy(
   const phase = getBotProgressionPhase(state, empireId);
   const catalog = getBuildingCatalogForFaction(factionId);
   const resourceBuildings = {
-    metal: roles.metal,
-    crystal: roles.crystal,
-    gas: roles.gas,
+    metal: [
+      roles.complete.metalPrimary,
+      roles.complete.metalSecondary,
+      roles.complete.metalTertiary,
+    ],
+    crystal: [roles.complete.crystalPrimary, roles.complete.crystalSecondary],
+    gas: [roles.complete.gasPrimary, roles.complete.gasSecondary],
   } as const;
   const resourceRatios = {
     metal: stockRatio(planet.economy.resources.metal.amount, planet.economy.resources.metal.capacity),
@@ -340,12 +346,13 @@ export function planBotEconomy(
   };
   const lowestResource = (Object.entries(resourceRatios) as [keyof typeof resourceRatios, number][])
     .sort((left, right) => left[1] - right[1] || left[0].localeCompare(right[0]))[0];
-  const specializationThreshold = compressed ? 0.05 : 0.3;
-  const recoveryThreshold = compressed ? 0.05 : 0.35;
+  const specializationThreshold = 0.3;
+  const recoveryThreshold = 0.35;
 
   if (planet.specializationId === 'balanced') {
-    const specializationId =
-      lowestResource !== undefined && lowestResource[1] < specializationThreshold
+    const specializationId = compressed
+      ? 'resource'
+      : lowestResource !== undefined && lowestResource[1] < specializationThreshold
         ? 'resource'
         : 'industry';
     return {
@@ -357,37 +364,13 @@ export function planBotEconomy(
           : 'select-industry-specialization',
       explanation:
         specializationId === 'resource'
-          ? 'Запасы действительно истощены: планета получает ресурсную роль.'
+          ? 'Критический путь зависит от добычи: планета получает ресурсную роль.'
           : 'Стартовые запасы обеспечивают ускоренное промышленное развитие.',
       command: {
         type: 'SET_PLANET_SPECIALIZATION',
         empireId,
         planetId: planet.id,
         specializationId,
-      },
-    };
-  }
-
-  const productionQueuesIdle =
-    planet.productionQueues.shipyard.length === 0 &&
-    planet.productionQueues.defense.length === 0;
-  if (
-    compressed &&
-    phase !== 'foundation' &&
-    phase !== 'reconnaissance' &&
-    planet.specializationId !== 'resource' &&
-    productionQueuesIdle
-  ) {
-    return {
-      empireId,
-      planetId: planet.id,
-      reasonCode: 'select-resource-specialization',
-      explanation: `Phase ${phase}: ресурсный поток важнее раннего ускорения строительства.`,
-      command: {
-        type: 'SET_PLANET_SPECIALIZATION',
-        empireId,
-        planetId: planet.id,
-        specializationId: 'resource',
       },
     };
   }
@@ -438,18 +421,20 @@ export function planBotEconomy(
   }
 
   if (lowestResource !== undefined && lowestResource[1] < recoveryThreshold) {
-    const resourceBuilding = resourceBuildings[lowestResource[0]];
-    const currentLevel = getBuildingLevel(planet.buildings, resourceBuilding);
-    const plan = createBuildingPlan(
-      profileId,
-      empireId,
-      planet,
-      'resource-deficit',
-      `Самый слабый резерв — ${lowestResource[0]}: восстанавливается добыча.`,
-      [{ buildingId: resourceBuilding, level: currentLevel + 1 }],
-      catalog,
-    );
-    if (plan !== undefined) return plan;
+    const resourceBuilding = resourceBuildings[lowestResource[0]][0];
+    if (resourceBuilding !== undefined) {
+      const currentLevel = getBuildingLevel(planet.buildings, resourceBuilding);
+      const plan = createBuildingPlan(
+        profileId,
+        empireId,
+        planet,
+        'resource-deficit',
+        `Самый слабый резерв — ${lowestResource[0]}: восстанавливается добыча.`,
+        [{ buildingId: resourceBuilding, level: currentLevel + 1 }],
+        catalog,
+      );
+      if (plan !== undefined) return plan;
+    }
   }
 
   if (getBuildingLevel(planet.buildings, roles.command) < 2) {
