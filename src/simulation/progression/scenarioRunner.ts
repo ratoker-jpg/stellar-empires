@@ -1,4 +1,5 @@
 import { planBotEconomy } from '../bots/economyPlanner';
+import { planBotExpedition } from '../bots/expeditionPlanner';
 import { planBotFleetMission } from '../bots/fleetMissionPlanner';
 import { planBotResearchAndProduction } from '../bots/researchProductionPlanner';
 import {
@@ -66,11 +67,13 @@ function runPlayerDecision(state: GameState): {
   const commands = (): readonly (GameCommand | null)[] => {
     const economy = planBotEconomy(working, 'player');
     const science = planBotResearchAndProduction(working, 'player');
+    const expedition = planBotExpedition(working, 'player');
     const fleet = planBotFleetMission(working, 'player');
     return [
       science.production.command,
       science.research.command,
       economy.command,
+      expedition.command,
       fleet.command,
     ];
   };
@@ -90,6 +93,16 @@ function runPlayerDecision(state: GameState): {
     if (!changed) break;
   }
   return { state: working, accepted, rejected };
+}
+
+function runBotExpeditionDecisions(state: GameState): GameState {
+  let working = state;
+  for (const empireId of state.empires) {
+    if (empireId === 'player') continue;
+    const result = applyCommand(working, planBotExpedition(working, empireId).command);
+    if (result.accepted) working = result.state;
+  }
+  return working;
 }
 
 function recordPhases(
@@ -151,7 +164,7 @@ export function runProgressionScenario(
     !allEmpiresReachedEndgamePreparation(state)
   ) {
     const player = runPlayerDecision(state);
-    state = player.state;
+    state = runBotExpeditionDecisions(player.state);
     acceptedPlayerCommands += player.accepted;
     rejectedPlayerCommands += player.rejected;
     recordPhases(state, resolvedInput.worldSpeed, phaseReachedAtRealSeconds);
