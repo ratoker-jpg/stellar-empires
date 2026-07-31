@@ -1,14 +1,30 @@
 import { describe, expect, it } from 'vitest';
 import {
+  getBotPhaseResearchTargets,
+} from '../../src/simulation/bots/progressionPriorities';
+import { getBotProgressionPhase } from '../../src/simulation/bots/progressionPhase';
+import {
   planAllBotResearchAndProduction,
   planBotResearchAndProduction,
 } from '../../src/simulation/bots/researchProductionPlanner';
+import { createCampaignSettings } from '../../src/simulation/campaign/settings';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { getFactionIdForEmpire } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
 import { getCompleteResearchId } from '../../src/simulation/research/completeResearchCatalog';
 import type { GameState } from '../../src/simulation/types';
+
+function createLegacyGameState(seed: string): GameState {
+  return createInitialGameState(seed, {
+    campaignSettings: createCampaignSettings({
+      scenarioPreset: 'campaign',
+      worldSpeed: 1,
+      progressionProfile: 'legacy-v1',
+      createdAtReal: '2026-07-18T00:00:00.000Z',
+    }),
+  });
+}
 
 function prepareBotInfrastructure(
   state: GameState,
@@ -94,7 +110,7 @@ describe('bot research and production planner', () => {
   });
 
   it('queues faction-valid research and unit production for Synod and Veyra', () => {
-    let state = createInitialGameState('bot-science-shared');
+    let state = createLegacyGameState('bot-science-shared');
 
     for (const empireId of ['synod-bot', 'veyra-bot'] as const) {
       state = prepareBotInfrastructure(state, empireId, starterResearchLevels(state, empireId));
@@ -168,10 +184,16 @@ describe('bot research and production planner', () => {
     const plan = planBotResearchAndProduction(state, 'aegis-bot');
     expect(plan.research.command?.type).toBe('QUEUE_RESEARCH');
     if (plan.research.command?.type === 'QUEUE_RESEARCH') {
-      expect([
-        'technology.aegis.laser-science',
-        'technology.aegis.ship-armor',
-      ]).toContain(plan.research.command.technologyId);
+      const phase = getBotProgressionPhase(state, 'aegis-bot');
+      const militaryPath = getBotPhaseResearchTargets(
+        state,
+        'aegis-bot',
+        phase,
+        true,
+      ).map((target) => target.technologyId);
+      expect(militaryPath).toContain(plan.research.command.technologyId);
+      const researchResult = executeCommand(state, plan.research.command);
+      expect(researchResult.ok).toBe(true);
     }
     expect(plan.production.command).toMatchObject({
       type: 'QUEUE_UNIT_BATCH',
