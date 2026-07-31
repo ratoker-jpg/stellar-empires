@@ -47,6 +47,22 @@ export interface BotThreatRecoveryPlan {
 
 type Action = Pick<BotThreatRecoveryPlan, 'reasonCode' | 'explanation' | 'command'>;
 
+interface UnitIdentity {
+  readonly ids: readonly string[];
+  readonly idSet: ReadonlySet<string>;
+}
+
+const unitIdentityCache = new Map<string, UnitIdentity>();
+
+function getUnitIdentity(unitId: string): UnitIdentity {
+  const cached = unitIdentityCache.get(unitId);
+  if (cached !== undefined) return cached;
+  const ids = [unitId, ...getLegacyUnitIdsForCanonical(unitId)];
+  const identity: UnitIdentity = { ids, idSet: new Set(ids) };
+  unitIdentityCache.set(unitId, identity);
+  return identity;
+}
+
 function unitPower(unitId: string, quantity: number): number {
   const stats = getUnitDefinition(unitId)?.stats;
   return stats === undefined
@@ -196,13 +212,13 @@ function recoveryPhase(
 }
 
 function countEmpireUnit(state: GameState, empireId: string, unitId: string): number {
-  const ids = new Set([unitId, ...getLegacyUnitIdsForCanonical(unitId)]);
+  const identity = getUnitIdentity(unitId);
   const definition = getUnitDefinition(unitId);
   const isDefense = definition?.kind === 'defense';
   const onPlanets = state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
     .reduce((total, planet) => {
-      const inventory = ids.values().reduce(
+      const inventory = identity.ids.reduce(
         (subtotal, candidateId) => subtotal + (
           isDefense
             ? planet.inventory.defenses[candidateId] ?? 0
@@ -214,7 +230,7 @@ function countEmpireUnit(state: GameState, empireId: string, unitId: string): nu
         ? planet.productionQueues.defense
         : planet.productionQueues.shipyard;
       const queued = queue.reduce(
-        (subtotal, item) => subtotal + (ids.has(item.unitId) ? item.quantity : 0),
+        (subtotal, item) => subtotal + (identity.idSet.has(item.unitId) ? item.quantity : 0),
         0,
       );
       return total + inventory + queued;
@@ -223,7 +239,7 @@ function countEmpireUnit(state: GameState, empireId: string, unitId: string): nu
   return state.fleets
     .filter((fleet) => fleet.empireId === empireId)
     .reduce(
-      (total, fleet) => total + ids.values().reduce(
+      (total, fleet) => total + identity.ids.reduce(
         (subtotal, candidateId) => subtotal + (fleet.ships[candidateId] ?? 0),
         0,
       ),
