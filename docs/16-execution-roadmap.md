@@ -1,11 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Audit PR #133 accepted; PR #134 merged; PR #135 active and blocked  
+**Status:** Audit PR #137 active; M5 implementation blocked until audit merge  
 **Updated:** 2026-07-31  
-**Verified main:** `1a9ea165f96c8e46aae668a962ea7e1048252812`  
-**Last merged runtime PR:** #134 · `aa87e764ef40444660039dc8d6a96d7f5514cc23`  
-**Active implementation PR:** #135 · head `69e5cf7a505be3b71363453751fc7463ef3c28b9`  
-**Recovery handoff:** `docs/handoffs/2026-07-31-pr135-recovery-and-delivery-chain.md`
+**Verified main:** `3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992`  
+**Last merged PR:** #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE`  
+**Active audit:** #137 `MULTI-COLONY-ECONOMY-LOGISTICS-01`
 
 ## Authoritative files
 
@@ -14,91 +13,67 @@ AGENTS.md
 docs/28-audit-first-autonomous-delivery-protocol.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
-docs/handoffs/2026-07-31-pr135-recovery-and-delivery-chain.md
+docs/audits/contracts/multi-colony-economy-logistics-01.md
+docs/audits/evidence/multi-colony-economy-logistics-01.md
 docs/27-playable-game-roadmap-v5.md
 docs/25a-local-campaign-world-speed-and-offline-progression.md
-docs/audits/contracts/campaign-progression-balance-01-profile.md
-docs/audits/contracts/campaign-progression-balance-01-prs.md
 docs/project-status.json
 docs/roadmap-pr-index.json
 ```
 
 ## Delivered merged state
 
-- #101–#105: catalog runtime art;
+- #101–#105: complete catalog runtime art;
 - #106–#110: Universe navigation/action gate;
 - #111–#115: coherent application shell;
-- #116–#120: ordinary mission/intelligence/bot parity gate;
+- #116–#120: ordinary missions, intelligence and honest bot path;
 - #121–#123: planet demolition, destruction and recovery;
 - #124: local campaign product contract;
 - #125–#129: navigation/usability closure;
-- #130–#132: immutable settings, save-v3 persistence and active/offline campaign clock;
-- #133: measured and accepted dual-profile progression contract;
-- #134: schema-v16 progression-profile foundation.
+- #130–#132: immutable campaign settings and active/offline clock;
+- #133–#135: schema-v16 progression profiles and measured compressed campaign closure;
+- #136: documentation continuity outside implementation counts.
 
-## Current heavy batch
-
-```text
-#133 CAMPAIGN-PROGRESSION-BALANCE-01 — merged Audit
-→ #134 PROGRESSION-PROFILE-FOUNDATION — merged
-→ #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE — active final implementation
-```
-
-Audit #133 authorized exactly two implementation PRs. PR #135 must close compressed starting economy, rewards, deterministic bot phases and measured progression using ordinary commands. No third implementation PR is authorized.
-
-## Current blocker
-
-Latest verified #135 workflows:
+## Current medium batch
 
 ```text
-Graphify 30629427690 — success
-Browser  30629427762 — success
-CI       30629427716 — failure
+#137 MULTI-COLONY-ECONOMY-LOGISTICS-01 — Audit active
+→ #138 COLONY-PORTFOLIO-FOUNDATION
+→ #139 LOGISTICS-ROUTE-LIFECYCLE
+→ #140 COLONY-OPERATIONS-UX
+→ #141 BOT-COLONY-LOGISTICS-GATE
 ```
 
-The deterministic scenario completes in 13 h 42 min but misses the accepted phase envelope. Colonization reaches 284–376 minutes across the player and bots against a 180-minute gate. The seven-day catch-up takes approximately 72.95 seconds against the approved sub-30-second CI budget.
+Exactly four implementation PRs are authorized only after #137 merges.
 
-The compressed starting bank remains fixed at `15,000 / 12,000 / 6,000`. Larger experimental banks were reverted. Do not hide the failures by increasing resources silently, weakening gates, skipping requirements or granting privileged bot actions.
+## Verified gap
+
+- colony totals exist, but empire-level route flow and stable health reasons do not;
+- logistics state/commands/save compatibility exist, but duplicate keys and stale resume timing remain;
+- Operations market/logistics routes exist, but route editing, diagnostics and selected-colony market context are incomplete;
+- duplicate legacy panel modules are uncalled;
+- bots have no portfolio role allocation or logistics planner.
 
 ## Immediate action
 
 ```text
-merge documentation continuity PR #136
-→ continue existing PR #135 only
-→ fix catch-up performance
-→ fix phase timing through ordinary mechanics
-→ rerun focused gates
-→ rerun full CI, Browser E2E and Graphify
-→ synchronize final #135 docs with latest main
-→ archive batch and squash merge #135
+finish Audit #137 docs/status
+→ CI + Browser E2E + Graphify
+→ resolve blocking review
+→ squash merge #137
+→ create #138 from fresh main
 ```
 
-## Delivery rhythm after #135
+## M5 boundaries
 
-Documentation PR #136 is outside implementation counts and consumes that PR number. Therefore:
+- schema v16/save v3 retained;
+- abstract interval logistics retained;
+- no cargo ships, fuel, distance, interception or route combat;
+- no progression/economy rebalance;
+- no PvE/meta expansion, alliances or endgame;
+- player and bots use ordinary shared commands;
+- permanent progression and catch-up gates remain mandatory.
 
-```text
-#137 Audit from fresh main
-→ #138–#141 only if #137 authorizes a medium four-PR batch
-→ #142 Audit from fresh main
-→ #143–#148 only if #142 authorizes a light six-PR batch
-→ #149 Audit
-→ execute only the batch authorized by #149
-```
+## After M5
 
-The likely #137 subject is M5 multi-colony economy/logistics coherence, but this is not implementation authorization. The audit must determine the actual scope, complexity and work-item IDs.
-
-## Non-negotiable rules
-
-- current `main` and GitHub history override stale documents and chat memory;
-- progression profile is immutable deterministic campaign identity;
-- legacy saves/replays retain exact legacy behavior;
-- player and bots resolve one shared profile and use ordinary commands;
-- existing queued items preserve paid values and completion timestamps;
-- world speed accelerates canonical time only;
-- no hidden bot resources or requirement skips;
-- no runtime speed/profile switching;
-- no milestone or performance threshold weakening to conceal failure;
-- #135 must not absorb alliances, Solar War, functional Gates or victory/defeat;
-- CI, Browser E2E, Graphify and review remain mandatory;
-- numeric divergence requires recorded failing evidence, explicit contract amendment and full matrix rerun.
+The final #141 closure PR must archive the batch and identify Audit #142 from fresh `main`. Audit #142, not this document, will determine the scope and size of the next PvE/meta or bot-parity batch.

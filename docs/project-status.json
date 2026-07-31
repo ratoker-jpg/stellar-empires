@@ -1,122 +1,100 @@
 {
-  "statusVersion": 48,
-  "updatedAt": "2026-07-30",
+  "statusVersion": 49,
+  "updatedAt": "2026-07-31",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 134,
-  "lastMergeSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
-  "verifiedMainBaseline": "Implementation PR #134 PROGRESSION-PROFILE-FOUNDATION merged as aa87e764ef40444660039dc8d6a96d7f5514cc23 after CI 30553697886, Browser E2E 30553697703, Graphify 30553697767 and no unresolved review threads; runtime is schema v16/save v3 with immutable legacy-v1 | compressed-v1 progression identity",
-  "runtimeBaselinePr": 134,
-  "runtimeBaselineSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
-  "activePr": null,
-  "activePrKind": null,
-  "activeWorkItem": null,
-  "nextPrAfterActive": 135,
+  "lastMergedPr": 135,
+  "lastMergeSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
+  "verifiedMainBaseline": "PR #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE merged after CI 30640953169, Browser E2E 30640952948, Graphify 30640954312, 15/15 progression cases and a 9.99-second seven-day catch-up gate",
+  "runtimeBaselinePr": 135,
+  "runtimeBaselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
+  "activePr": 137,
+  "activePrKind": "audit",
+  "activeWorkItem": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
+  "nextPrAfterActive": 138,
   "nextPrKind": "implementation",
-  "nextWorkItem": "COMPRESSED-CAMPAIGN-PROGRESSION-GATE",
-  "currentMilestone": "M4d final implementation PR #135 next",
+  "nextWorkItem": "COLONY-PORTFOLIO-FOUNDATION",
+  "currentMilestone": "M5 Audit PR #137 active",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
   "currentAuditContracts": [
-    "docs/audits/contracts/campaign-progression-balance-01-profile.md",
-    "docs/audits/contracts/campaign-progression-balance-01-prs.md"
+    "docs/audits/contracts/multi-colony-economy-logistics-01.md"
   ],
   "currentAuditEvidence": [
-    "docs/audits/evidence/campaign-progression-balance-01-baseline.md",
-    "docs/audits/evidence/campaign-progression-balance-01-candidate.md",
-    "docs/audits/evidence/campaign-progression-balance-01-source-map.md",
-    "docs/audits/evidence/campaign-progression-balance-01-graphify.md"
+    "docs/audits/evidence/multi-colony-economy-logistics-01.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastChangeDocument": "docs/changes/pr132-campaign-clock-offline-gate.md",
+  "lastChangeDocument": "docs/changes/pr135-compressed-campaign-progression-gate.md",
   "activeBatchArchive": null,
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
-    "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
-    "roadmapMilestone": "M4c",
-    "complexity": "heavy",
-    "auditPr": 130,
-    "auditStatus": "completed",
-    "auditMergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511",
-    "baselineSha": "45bd3297d402fd96691a26c60e47bd39a420f174",
-    "implementationCount": 2,
-    "implementationPrs": [
-      131,
-      132
-    ],
-    "completedImplementationPrs": [
-      131,
-      132
-    ],
-    "implementationMergeShas": {
-      "131": "257e3effaab4e34285d00db64b6676fda364fcfd",
-      "132": "df56566ce6d311ecef81103dddb924b5da0148c1"
-    },
-    "workItems": [
-      "CAMPAIGN-SETTINGS-PERSISTENCE",
-      "CAMPAIGN-CLOCK-OFFLINE-GATE"
-    ],
-    "status": "completed",
-    "archive": "docs/audits/completed/local-campaign-time-pacing-01.md",
-    "divergence": "none"
-  },
-  "currentBatch": {
     "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
     "roadmapMilestone": "M4d",
     "complexity": "heavy",
     "auditPr": 133,
-    "auditStatus": "accepted",
+    "auditStatus": "completed",
     "auditMergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc",
-    "baselinePr": 132,
     "baselineSha": "df56566ce6d311ecef81103dddb924b5da0148c1",
     "implementationCount": 2,
-    "implementationPrs": [
-      134,
-      135
-    ],
-    "completedImplementationPrs": [
-      134
-    ],
+    "implementationPrs": [134, 135],
+    "completedImplementationPrs": [134, 135],
+    "implementationMergeShas": {
+      "134": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
+      "135": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992"
+    },
     "workItems": [
       "PROGRESSION-PROFILE-FOUNDATION",
       "COMPRESSED-CAMPAIGN-PROGRESSION-GATE"
     ],
-    "status": "implementation-in-progress",
+    "status": "completed",
+    "archive": "docs/audits/completed/campaign-progression-balance-01.md",
+    "divergence": "Playable runtime envelope amended to a 15-hour x2 median and 16-hour hard maximum; gameplay constants unchanged"
+  },
+  "currentBatch": {
+    "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
+    "roadmapMilestone": "M5",
+    "complexity": "medium",
+    "auditPr": 137,
+    "auditStatus": "active",
+    "auditMergeSha": null,
+    "baselinePr": 135,
+    "baselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
+    "implementationCount": 4,
+    "implementationPrs": [138, 139, 140, 141],
+    "completedImplementationPrs": [],
+    "workItems": [
+      "COLONY-PORTFOLIO-FOUNDATION",
+      "LOGISTICS-ROUTE-LIFECYCLE",
+      "COLONY-OPERATIONS-UX",
+      "BOT-COLONY-LOGISTICS-GATE"
+    ],
+    "status": "audit-active",
     "targetStateSchema": 16,
-    "targetSaveFormat": 3,
-    "implementationMergeShas": {
-      "134": "aa87e764ef40444660039dc8d6a96d7f5514cc23"
-    }
+    "targetSaveFormat": 3
   },
   "activeImplementationState": {
     "stateSchema": 16,
     "saveFormat": 3,
     "campaignSettingsImplemented": true,
-    "campaignSetupImplemented": true,
-    "runtimeMetadataImplemented": true,
-    "legacyMigrationImplemented": true,
-    "explicitReplaySettingsImplemented": true,
-    "processedCursorIntegrityImplemented": true,
-    "pendingCatchUpConsistencyImplemented": true,
-    "chronologicalOrchestratorImplemented": true,
-    "fixedPointWorldSpeedImplemented": true,
-    "botDecisionBoundaryImplemented": true,
-    "activeClockImplemented": true,
+    "campaignTimeImplemented": true,
     "offlineCatchUpImplemented": true,
-    "catchUpProgressImplemented": true,
-    "durableReturnSummaryImplemented": true,
-    "manualFastForwardRemoved": true,
-    "oneDaySevenDayGatesImplemented": true,
-    "browserInterruptionResumeImplemented": true,
-    "modalKeyboardIsolationImplemented": true,
-    "jsonChecksumRoundTripImplemented": true,
     "progressionProfileImplemented": true,
-    "compressedProgressionImplemented": false,
+    "compressedProgressionImplemented": true,
+    "fiveSeedThreeFactionMatrixImplemented": true,
+    "multiColonyEconomyFoundationImplemented": true,
+    "planetSpecializationsImplemented": true,
+    "planetDevelopmentTemplatesImplemented": true,
+    "logisticsRoutesImplemented": true,
+    "marketImplemented": true,
+    "empirePortfolioHealthImplemented": false,
+    "hardenedLogisticsLifecycleImplemented": false,
+    "completeColonyOperationsUxImplemented": false,
+    "botMultiColonyLogisticsImplemented": false,
     "status": "merged-main"
   },
   "productDecisions": {
@@ -124,76 +102,35 @@
     "requiredContinuousServer": false,
     "immutableWorldSpeedAtCreation": true,
     "runtimeSpeedControls": false,
-    "worldSpeedPresets": [
-      1,
-      2,
-      5,
-      10
-    ],
+    "worldSpeedPresets": [1, 2, 5, 10],
     "recommendedWorldSpeed": 2,
     "offlineProgression": true,
     "offlineBotsContinue": true,
-    "offlineAttacksAllowedThroughNormalRules": true,
-    "offlineDiplomacyAndEndgameContinueWhenImplemented": true,
     "targetCompleteCampaignWithinOneActiveDay": true,
-    "progressionCompressionRequiresSeparateAudit": true
+    "abstractLogisticsRoutes": true,
+    "physicalConvoysInM5": false,
+    "marketIsEmergencyLocalSupport": true
   },
   "auditDecisions": {
-    "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
-    "implementationCount": 2,
-    "complexity": "heavy",
+    "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
+    "implementationCount": 4,
+    "complexity": "medium",
     "targetStateSchema": 16,
     "targetSaveFormat": 3,
-    "progressionProfileInCampaignSettings": true,
-    "progressionProfileIds": [
-      "legacy-v1",
-      "compressed-v1"
-    ],
-    "legacyMigrationProfile": "legacy-v1",
-    "newCampaignDefaultProfile": "compressed-v1",
-    "recommendedX2EndgameReadyTargetHours": 12,
-    "recommendedX2HardMaximumHours": 16,
-    "playerMilestoneMaximumMinutes": [
-      16,
-      30,
-      120,
-      360,
-      720
-    ],
-    "actualVictoryIncluded": false,
-    "profileRuntimeSwitchAllowed": false,
-    "worldSpeedChangesIncluded": false,
-    "newGameplayCommands": false,
-    "newMissionKinds": false,
+    "newSchemaMigration": false,
+    "sharedEmpirePortfolioSelector": true,
+    "duplicateRouteKeysAllowed": false,
+    "pausedTimeProducesRetroactiveTransfers": false,
+    "canonicalOperationsWorkspaceOnly": true,
+    "botOrdinaryLogisticsCommands": true,
+    "progressionRebalanceIncluded": false,
+    "physicalConvoysIncluded": false,
     "criticalUnknowns": 0
   },
-  "scenarioPresets": {
-    "test": {
-      "populatedGalaxies": 2,
-      "systemsPerGalaxy": 9
-    },
-    "campaign": {
-      "populatedGalaxies": 6,
-      "systemsPerGalaxy": 27
-    },
-    "fidelity": {
-      "populatedGalaxies": 15,
-      "systemsPerGalaxy": 81
-    }
-  },
   "batchSizing": {
-    "heavy": [
-      1,
-      2
-    ],
-    "medium": [
-      4,
-      4
-    ],
-    "light": [
-      6,
-      6
-    ]
+    "heavy": [1, 2],
+    "medium": [4, 4],
+    "light": [6, 6]
   },
   "deliveredCatalogs": {
     "buildingsPerFaction": 24,
@@ -206,43 +143,13 @@
   },
   "deliveredDomains": [
     "deterministic schema-v16 simulation with immutable campaign and progression-profile identity",
-    "save format v3 with integrity-protected cursor, continuation and pending summary metadata",
-    "campaign setup for faction, topology and immutable x1/x2/x5/x10 speed",
-    "schema v1-v15 and save format v1-v2 migration to x1 and legacy-v1 using validated envelope time",
-    "central legacy-v1/compressed-v1 progression caps, requirements, costs, times and queue compatibility",
-    "one chronological active/offline campaign-time orchestrator",
-    "fixed-point world-speed mapping with persistent fractional carry",
-    "bounded resumable offline catch-up and processed-cursor checkpoints",
-    "active open-session clock and durable return summary",
-    "IndexedDB autosave, manual slots, import/export, snapshots and recovery",
-    "multi-colony economy, research, production, fleets, combat and reports",
-    "ordinary missions, logistics, markets and PvE foundations",
-    "honest autonomous bots using shared commands and visibility rules",
-    "complete mechanical catalogs and processed runtime art",
-    "20-slot Universe and completed routed player-centered navigation"
+    "save format v3 with active/offline continuation integrity",
+    "compressed finite campaign progression with 15-case deterministic matrix",
+    "multi-colony economy, specialization, logistics-route and market foundations",
+    "ordinary missions, fleets, combat, intelligence, PvE foundations and honest autonomous bots",
+    "complete mechanical catalogs and routed release-viewport application"
   ],
   "activeDelivery": [
-    {
-      "pr": 130,
-      "kind": "audit",
-      "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
-      "status": "merged",
-      "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"
-    },
-    {
-      "pr": 131,
-      "kind": "implementation",
-      "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
-      "status": "merged",
-      "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd"
-    },
-    {
-      "pr": 132,
-      "kind": "implementation",
-      "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
-      "status": "merged",
-      "mergeSha": "df56566ce6d311ecef81103dddb924b5da0148c1"
-    },
     {
       "pr": 133,
       "kind": "audit",
@@ -256,14 +163,37 @@
       "workItem": "PROGRESSION-PROFILE-FOUNDATION",
       "status": "merged",
       "mergeSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23"
+    },
+    {
+      "pr": 135,
+      "kind": "implementation",
+      "workItem": "COMPRESSED-CAMPAIGN-PROGRESSION-GATE",
+      "status": "merged",
+      "mergeSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992"
+    },
+    {
+      "pr": 136,
+      "kind": "documentation",
+      "workItem": "PR135-RECOVERY-DELIVERY-CHAIN",
+      "status": "merged",
+      "mergeSha": "fcd06dfb485966979b5e583b6d42fc869ba65a45"
+    },
+    {
+      "pr": 137,
+      "kind": "audit",
+      "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
+      "status": "active",
+      "mergeSha": null
     }
   ],
   "knownLimitations": [
-    "compressed starting economy, rewards, deterministic bot phases and full campaign-duration closure remain until PR #135",
-    "multi-colony economy and logistics coherence remain a later audit",
-    "deeper PvE/meta systems and complete bot parity remain incomplete",
-    "alliances, solar war, functional Obelisks/Gates and final victory/defeat are not implemented",
-    "complete phone/mobile layout, onboarding and release hardening remain incomplete"
+    "Empire-level colony flow and sustainability diagnostics are not yet implemented",
+    "Logistics route duplicate and pause/resume lifecycle gaps remain until PR #139",
+    "Player route editing and selected-colony market context remain incomplete until PR #140",
+    "Bots do not yet allocate portfolio roles or create logistics routes until PR #141",
+    "PvE/meta depth and complete endgame remain later audits",
+    "Alliances, Solar War, functional Obelisks/Gates and victory/defeat are not implemented",
+    "Onboarding, final mobile layout and release hardening remain incomplete"
   ],
   "graphify": {
     "package": "graphifyy",
@@ -273,11 +203,14 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #134 final head 0c5b6940ee25ca28de4ac4d194535f77b0ba332a passed Graphify run 30553697767 before squash merge aa87e764ef40444660039dc8d6a96d7f5514cc23",
+    "lastValidation": "PR #135 final head cca00be156c36e0ae80f963a81b0fa6242284702 passed Graphify run 30640954312",
     "lastAuditGraph": {
-      "workflowRun": "30553697767",
-      "headSha": "0c5b6940ee25ca28de4ac4d194535f77b0ba332a",
-      "evidence": "PR #134 Graphify workflow artifact"
+      "workflowRun": "30640954312",
+      "headSha": "cca00be156c36e0ae80f963a81b0fa6242284702",
+      "nodes": 2712,
+      "edges": 9177,
+      "communities": 118,
+      "evidence": "docs/audits/evidence/multi-colony-economy-logistics-01.md"
     }
   },
   "requiredStartupReading": [
@@ -285,13 +218,9 @@
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
-    "docs/audits/contracts/campaign-progression-balance-01-profile.md",
-    "docs/audits/contracts/campaign-progression-balance-01-prs.md",
-    "docs/audits/evidence/campaign-progression-balance-01-baseline.md",
-    "docs/audits/evidence/campaign-progression-balance-01-candidate.md",
-    "docs/audits/evidence/campaign-progression-balance-01-source-map.md",
-    "docs/audits/evidence/campaign-progression-balance-01-graphify.md",
-    "docs/audits/completed/local-campaign-time-pacing-01.md",
+    "docs/audits/contracts/multi-colony-economy-logistics-01.md",
+    "docs/audits/evidence/multi-colony-economy-logistics-01.md",
+    "docs/audits/completed/campaign-progression-balance-01.md",
     "docs/25a-local-campaign-world-speed-and-offline-progression.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
@@ -299,5 +228,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Create PR #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE from fresh synchronized main and implement only its accepted closure contract."
+  "nextAction": "Finish and merge Audit PR #137, then create only PR #138 COLONY-PORTFOLIO-FOUNDATION from fresh main."
 }

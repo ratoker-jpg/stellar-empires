@@ -1,24 +1,24 @@
 {
   "roadmapVersion": 5,
-  "updatedAt": "2026-07-30",
+  "updatedAt": "2026-07-31",
   "releaseTarget": "1.0",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 134,
-    "mergeSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
-    "runtimeBaselinePr": 134,
-    "runtimeBaselineSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
-    "auditBaselineSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc"
+    "lastMergedPr": 135,
+    "mergeSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
+    "runtimeBaselinePr": 135,
+    "runtimeBaselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
+    "auditBaselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992"
   },
-  "activePr": null,
-  "activePrKind": null,
-  "activeBatchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
+  "activePr": 137,
+  "activePrKind": "audit",
+  "activeBatchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
   "activeWorkItem": null,
-  "nextPr": 135,
+  "nextPr": 138,
   "nextPrKind": "implementation",
-  "nextWorkItem": "COMPRESSED-CAMPAIGN-PROGRESSION-GATE",
+  "nextWorkItem": "COLONY-PORTFOLIO-FOUNDATION",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -49,12 +49,6 @@
       "startPr": 112,
       "endPr": 115,
       "status": "completed-technical",
-      "completedPrs": [
-        112,
-        113,
-        114,
-        115
-      ],
       "outcome": "One application controller, nine routes and browser/accessibility gate",
       "archive": "docs/audits/completed/coherent-ui-shell-01.md"
     },
@@ -65,13 +59,6 @@
       "endPr": 120,
       "status": "completed",
       "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01",
-      "completedPrs": [
-        117,
-        118,
-        119,
-        120
-      ],
-      "outcome": "Shared ordinary mission rules, deterministic intelligence, redacted reports and honest bot gate",
       "archive": "docs/audits/completed/ordinary-missions-intelligence-01.md"
     },
     {
@@ -81,106 +68,67 @@
       "endPr": 123,
       "status": "completed",
       "batchId": "PLANET-DEMOLITION-DESTRUCTION-01",
-      "completedPrs": [
-        122,
-        123
-      ],
-      "outcome": "Deterministic demolition, capped whole-planet destruction, final-colony protection and atomic recovery",
       "archive": "docs/audits/completed/planet-demolition-destruction-01.md"
     },
     {
       "id": "local-campaign-product-contract",
       "documentationPr": 124,
       "status": "completed",
-      "workItem": "LOCAL-CAMPAIGN-WORLD-SPEED-CONTRACT",
-      "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152",
-      "outcome": "Local campaign, immutable world speed, deterministic offline progression and compressed campaign direction"
+      "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152"
     },
     {
       "id": "navigation-usability-repair",
       "auditPr": 125,
-      "auditMergeSha": "a13f017d79d5dce5fde954e9f6e1419a2182d78e",
       "startPr": 126,
       "endPr": 129,
       "status": "completed",
       "batchId": "NAVIGATION-USABILITY-01",
-      "completedPrs": [
-        126,
-        127,
-        128,
-        129
-      ],
-      "implementationMergeShas": {
-        "126": "2a9ebcbbe42c67f76f0c78dee9ed431555c9afd1",
-        "127": "2821c4dda3f41ab0daf4c7d24f9c1cd6664e2418",
-        "128": "051c46736dbb92a7fb5061243d458eb3faabecfe",
-        "129": "a586224aa85eb3bc4676c3f4cd98a0ff7625aafa"
-      },
-      "archive": "docs/audits/completed/navigation-usability-01.md",
-      "outcome": "Player-centered hierarchy, typed context, reversible cross-domain flows and measured release-viewport task gate"
+      "archive": "docs/audits/completed/navigation-usability-01.md"
     },
     {
       "id": "local-campaign-time-pacing",
       "auditPr": 130,
-      "auditMergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511",
       "startPr": 131,
       "endPr": 132,
       "status": "completed",
       "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
       "complexity": "heavy",
-      "plannedPrs": [
-        131,
-        132
-      ],
-      "completedPrs": [
-        131,
-        132
-      ],
-      "implementationMergeShas": {
-        "131": "257e3effaab4e34285d00db64b6676fda364fcfd",
-        "132": "df56566ce6d311ecef81103dddb924b5da0148c1"
-      },
-      "workItems": [
-        "CAMPAIGN-SETTINGS-PERSISTENCE",
-        "CAMPAIGN-CLOCK-OFFLINE-GATE"
-      ],
-      "archive": "docs/audits/completed/local-campaign-time-pacing-01.md",
-      "outcome": "Immutable campaign settings, save-format-v3 runtime metadata, chronological active/offline clock, bounded resumable catch-up and durable redacted return summary"
+      "archive": "docs/audits/completed/local-campaign-time-pacing-01.md"
     },
     {
       "id": "campaign-progression-balance",
       "auditPr": 133,
-      "auditMergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc",
       "startPr": 134,
       "endPr": 135,
-      "status": "implementation-in-progress",
+      "status": "completed",
       "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
       "complexity": "heavy",
-      "plannedPrs": [
-        134,
-        135
-      ],
-      "completedPrs": [
-        134
-      ],
-      "workItems": [
-        "PROGRESSION-PROFILE-FOUNDATION",
-        "COMPRESSED-CAMPAIGN-PROGRESSION-GATE"
-      ],
-      "targetStateSchema": 16,
-      "targetSaveFormat": 3,
-      "outcome": "Versioned legacy/compressed progression identity and measured endgame-ready campaign envelope",
+      "completedPrs": [134, 135],
       "implementationMergeShas": {
-        "134": "aa87e764ef40444660039dc8d6a96d7f5514cc23"
-      }
+        "134": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
+        "135": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992"
+      },
+      "archive": "docs/audits/completed/campaign-progression-balance-01.md",
+      "outcome": "Immutable dual progression profiles and measured compressed campaign closure"
     },
     {
       "id": "multi-colony-economy-logistics",
-      "auditPr": null,
-      "startPr": null,
-      "endPr": null,
-      "status": "not-audited",
-      "outcome": "Coherent multi-colony economy, logistics and bot planning under compressed timing"
+      "auditPr": 137,
+      "startPr": 138,
+      "endPr": 141,
+      "status": "audit-active",
+      "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
+      "complexity": "medium",
+      "plannedPrs": [138, 139, 140, 141],
+      "workItems": [
+        "COLONY-PORTFOLIO-FOUNDATION",
+        "LOGISTICS-ROUTE-LIFECYCLE",
+        "COLONY-OPERATIONS-UX",
+        "BOT-COLONY-LOGISTICS-GATE"
+      ],
+      "targetStateSchema": 16,
+      "targetSaveFormat": 3,
+      "outcome": "Coherent multi-colony portfolio, hardened abstract logistics, complete player workflow and honest bot planning"
     },
     {
       "id": "pve-meta-and-bot-parity",
@@ -188,7 +136,7 @@
       "startPr": null,
       "endPr": null,
       "status": "not-audited",
-      "outcome": "PvE/meta depth and honest autonomous bot parity"
+      "outcome": "PvE/meta depth and honest autonomous bot parity outside colony economy"
     },
     {
       "id": "alliances-and-endgame",
@@ -196,7 +144,7 @@
       "startPr": null,
       "endPr": null,
       "status": "not-audited",
-      "outcome": "Alliances, solar war, Obelisks, Gates and complete victory/defeat"
+      "outcome": "Alliances, Solar War, Obelisks, Gates and complete victory/defeat"
     },
     {
       "id": "release-candidate",
@@ -204,39 +152,14 @@
       "startPr": null,
       "endPr": null,
       "status": "not-audited",
-      "outcome": "Balance, campaign duration, performance, onboarding, QA and reproducible Pages release"
+      "outcome": "Balance, onboarding, QA, performance and reproducible Pages release"
     }
   ],
   "planned": [
     {
-      "number": 130,
-      "kind": "audit",
-      "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
-      "title": "Audit local campaign time and offline progression",
-      "status": "merged",
-      "mergeSha": "2379fa7a30974381349433e4f0e0ba43d15f1511"
-    },
-    {
-      "number": 131,
-      "kind": "implementation",
-      "workItem": "CAMPAIGN-SETTINGS-PERSISTENCE",
-      "title": "Persist immutable campaign settings",
-      "status": "merged",
-      "mergeSha": "257e3effaab4e34285d00db64b6676fda364fcfd"
-    },
-    {
-      "number": 132,
-      "kind": "implementation",
-      "workItem": "CAMPAIGN-CLOCK-OFFLINE-GATE",
-      "title": "Run active and offline campaign time",
-      "status": "merged",
-      "mergeSha": "df56566ce6d311ecef81103dddb924b5da0148c1"
-    },
-    {
       "number": 133,
       "kind": "audit",
       "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
-      "title": "Audit campaign progression balance",
       "status": "merged",
       "mergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc"
     },
@@ -244,7 +167,6 @@
       "number": 134,
       "kind": "implementation",
       "workItem": "PROGRESSION-PROFILE-FOUNDATION",
-      "title": "Version deterministic progression profiles",
       "status": "merged",
       "mergeSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23"
     },
@@ -252,9 +174,51 @@
       "number": 135,
       "kind": "implementation",
       "workItem": "COMPRESSED-CAMPAIGN-PROGRESSION-GATE",
-      "title": "Balance the compressed campaign progression",
-      "status": "next"
+      "status": "merged",
+      "mergeSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992"
+    },
+    {
+      "number": 136,
+      "kind": "documentation",
+      "workItem": "PR135-RECOVERY-DELIVERY-CHAIN",
+      "status": "merged",
+      "mergeSha": "fcd06dfb485966979b5e583b6d42fc869ba65a45"
+    },
+    {
+      "number": 137,
+      "kind": "audit",
+      "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
+      "title": "Audit multi-colony economy and logistics",
+      "status": "active"
+    },
+    {
+      "number": 138,
+      "kind": "implementation",
+      "workItem": "COLONY-PORTFOLIO-FOUNDATION",
+      "title": "Model the colony economy portfolio",
+      "status": "blocked-until-audit-merge"
+    },
+    {
+      "number": 139,
+      "kind": "implementation",
+      "workItem": "LOGISTICS-ROUTE-LIFECYCLE",
+      "title": "Harden logistics route lifecycle",
+      "status": "planned"
+    },
+    {
+      "number": 140,
+      "kind": "implementation",
+      "workItem": "COLONY-OPERATIONS-UX",
+      "title": "Complete colony logistics operations",
+      "status": "planned"
+    },
+    {
+      "number": 141,
+      "kind": "implementation",
+      "workItem": "BOT-COLONY-LOGISTICS-GATE",
+      "title": "Run autonomous colony logistics",
+      "status": "planned"
     }
   ],
-  "nextAction": "Create PR #135 COMPRESSED-CAMPAIGN-PROGRESSION-GATE from fresh synchronized main and implement only its accepted closure contract."
+  "nextAction": "Finish and merge Audit PR #137, then create only PR #138 COLONY-PORTFOLIO-FOUNDATION from fresh main."
 }
