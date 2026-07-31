@@ -137,16 +137,6 @@ function diagnosticForBlockedFleet(
   };
 }
 
-function getCommandBudget(state: GameState, profile: BotProfile): number {
-  if (state.campaignSettings.progressionProfile !== 'compressed-v1') {
-    return profile.maxCommandsPerDecision;
-  }
-  const phase = getBotProgressionPhase(state, profile.empireId);
-  return phase === 'foundation' || phase === 'reconnaissance'
-    ? Math.max(profile.maxCommandsPerDecision, 4)
-    : profile.maxCommandsPerDecision;
-}
-
 function runProfileDecision(
   state: GameState,
   profile: BotProfile,
@@ -160,13 +150,12 @@ function runProfileDecision(
   const audit: BotSchedulerAuditEntry[] = [];
   const diagnostics: BotSchedulerDiagnosticEntry[] = [];
   const attempted: GameCommand[] = [];
-  const commandBudget = getCommandBudget(state, profile);
 
   const initial = candidatesForPersonality(working, profile);
   const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, initial.fleet);
   if (diagnostic !== null) diagnostics.push(diagnostic);
 
-  for (let index = 0; index < commandBudget; index += 1) {
+  for (let index = 0; index < profile.maxCommandsPerDecision; index += 1) {
     const planning = index === 0 ? initial : candidatesForPersonality(working, profile);
     const candidate = planning.candidates.find(
       (item) =>
@@ -229,6 +218,22 @@ function getNextDueProfile(
     .find((entry) => entry.nextDecisionAt <= state.clock.elapsedSeconds);
 }
 
+function getDecisionIntervalSeconds(state: GameState, profile: BotProfile): number {
+  if (
+    state.campaignSettings.progressionProfile === 'compressed-v1' &&
+    profile.earlyDecisionIntervalSeconds !== undefined
+  ) {
+    const phase = getBotProgressionPhase(state, profile.empireId);
+    if (phase === 'foundation' || phase === 'reconnaissance') {
+      return Math.min(
+        profile.decisionIntervalSeconds,
+        profile.earlyDecisionIntervalSeconds,
+      );
+    }
+  }
+  return profile.decisionIntervalSeconds;
+}
+
 function advanceProfileCursor(
   state: GameState,
   due: DueProfile,
@@ -238,7 +243,8 @@ function advanceProfileCursor(
     botAutomation: {
       nextDecisionAtByEmpire: {
         ...state.botAutomation.nextDecisionAtByEmpire,
-        [due.profile.empireId]: due.nextDecisionAt + due.profile.decisionIntervalSeconds,
+        [due.profile.empireId]:
+          due.nextDecisionAt + getDecisionIntervalSeconds(state, due.profile),
       },
     },
   };
