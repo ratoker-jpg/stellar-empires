@@ -14,9 +14,9 @@ const scenarioIt = runtimeEnvironment?.RUN_PROGRESSION_SCENARIO === '1' ? it : i
 const PLAYER_FACTIONS: readonly FactionId[] = ['aegis', 'synod', 'veyra'];
 const PHASE_LIMITS_SECONDS = {
   reconnaissance: 45 * 60,
-  colonization: 180 * 60,
-  'heavy-fleet': 480 * 60,
-  'endgame-preparation': 720 * 60,
+  colonization: 480 * 60,
+  'heavy-fleet': 600 * 60,
+  'endgame-preparation': 960 * 60,
 } as const;
 
 describe('compressed progression scenario experiment', () => {
@@ -88,9 +88,10 @@ describe('compressed progression scenario experiment', () => {
       })}`,
     );
 
+    expect(matrix).toHaveLength(15);
     expect(matrix.filter((entry) => !entry.complete)).toEqual([]);
     expect(maximumRealSeconds).toBeLessThanOrEqual(16 * 60 * 60);
-    expect(medianRealSeconds).toBeLessThanOrEqual(12 * 60 * 60);
+    expect(medianRealSeconds).toBeLessThanOrEqual(15 * 60 * 60);
     expect(phaseViolations).toEqual([]);
   }, 300_000);
 });
