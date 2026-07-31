@@ -138,6 +138,58 @@ describe('bot research and production planner', () => {
     }
   });
 
+  it('counts queued ship batches before scheduling duplicate expedition support', () => {
+    const initial = createInitialGameState('bot-science-queued-ships');
+    let state = prepareBotInfrastructure(
+      initial,
+      'aegis-bot',
+      starterResearchLevels(initial, 'aegis-bot'),
+    );
+    const roles = getFactionMechanicalRoles('aegis');
+    state = {
+      ...state,
+      planets: state.planets.map((planet) =>
+        planet.ownerEmpireId === 'aegis-bot'
+          ? {
+              ...planet,
+              inventory: {
+                ...planet.inventory,
+                ships: {
+                  ...planet.inventory.ships,
+                  [roles.ships.scout]: 1,
+                  [roles.ships.fighter]: 1,
+                },
+              },
+              productionQueues: {
+                ...planet.productionQueues,
+                shipyard: [
+                  ...planet.productionQueues.shipyard,
+                  {
+                    id: 'queued-scout-support',
+                    unitId: roles.ships.scout,
+                    kind: 'ship' as const,
+                    quantity: 1,
+                    startedAt: 0,
+                    completesAt: 120,
+                    cost: { metal: 0, crystal: 0, gas: 0 },
+                    populationReserved: 0,
+                    hangarReserved: 0,
+                  },
+                ],
+              },
+            }
+          : planet,
+      ),
+    };
+
+    expect(getBotProgressionPhase(state, 'aegis-bot')).toBe('first-combat');
+    const plan = planBotResearchAndProduction(state, 'aegis-bot');
+    const plannedUnitId = plan.production.command?.type === 'QUEUE_UNIT_BATCH'
+      ? plan.production.command.unitId
+      : null;
+    expect(plannedUnitId).not.toBe(roles.ships.scout);
+  });
+
   it('prioritizes military research and adds fighter pressure when intelligence shows a threat', () => {
     let state = prepareBotInfrastructure(
       createInitialGameState('bot-science-threat'),
