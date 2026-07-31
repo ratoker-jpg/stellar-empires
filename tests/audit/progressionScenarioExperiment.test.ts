@@ -56,6 +56,19 @@ describe('compressed progression scenario experiment', () => {
       })}`,
     );
 
+    const colonizationBoundary = runProgressionScenario({
+      seed: 'stellar-empires-m1',
+      playerFaction: 'aegis',
+      worldSpeed: 2,
+      maximumRealSeconds: 3 * 60 * 60,
+    });
+    console.info(
+      `COMPRESSED_COLONIZATION_BOUNDARY=${JSON.stringify({
+        phases: colonizationBoundary.phaseReachedAtRealSeconds,
+        diagnostics: diagnosticsForState(colonizationBoundary.state),
+      })}`,
+    );
+
     const result = runProgressionScenario({
       seed: 'stellar-empires-m1',
       playerFaction: 'aegis',
