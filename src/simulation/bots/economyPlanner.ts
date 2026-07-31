@@ -6,6 +6,7 @@ import {
 } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { canUseMechanicalDefinition } from '../factions/sharedMechanicalCatalog';
+import { quoteMarketSwap } from '../market/market';
 import type { BuildingDefinition } from '../planet/buildingCatalog';
 import {
   calculateBuildingCost,
@@ -136,7 +137,71 @@ function resourceWaitSeconds(
     : Math.ceil((deficit * 3600) / stock.productionPerHour);
 }
 
+function createMarketSupportPlan(
+  state: GameState,
+  empireId: string,
+  planet: PlanetState,
+  phase: BotProgressionPhase,
+  blockedLabel: string,
+  receiveResourceId: ResourceId,
+  cost: ResourceCost,
+): BotEconomyPlan | undefined {
+  const deficit = Math.max(
+    0,
+    cost[receiveResourceId] - planet.economy.resources[receiveResourceId].amount,
+  );
+  if (deficit <= 0) return undefined;
+
+  const donors = RESOURCE_IDS
+    .filter((resourceId) => resourceId !== receiveResourceId)
+    .map((resourceId) => ({
+      resourceId,
+      surplus: Math.max(
+        0,
+        planet.economy.resources[resourceId].amount - cost[resourceId],
+      ),
+    }))
+    .filter((candidate) => candidate.surplus > 0)
+    .sort((left, right) =>
+      right.surplus - left.surplus || left.resourceId.localeCompare(right.resourceId),
+    );
+
+  for (const donor of donors) {
+    let giveAmount = Math.min(
+      donor.surplus,
+      Math.max(1, Math.ceil((deficit * 5) / 4)),
+    );
+    while (giveAmount > 0) {
+      const quote = quoteMarketSwap(
+        state.market,
+        donor.resourceId,
+        receiveResourceId,
+        giveAmount,
+      );
+      if (quote.accepted && quote.receiveAmount > 0) {
+        return {
+          empireId,
+          planetId: planet.id,
+          reasonCode: 'resource-deficit',
+          explanation: `Phase ${phase}: рынок покрывает ${receiveResourceId}-дефицит для ${blockedLabel}: ${giveAmount} ${donor.resourceId} → ${quote.receiveAmount} ${receiveResourceId}.`,
+          command: {
+            type: 'MARKET_SWAP',
+            empireId,
+            planetId: planet.id,
+            giveResourceId: donor.resourceId,
+            receiveResourceId,
+            giveAmount,
+          },
+        };
+      }
+      giveAmount = Math.floor(giveAmount / 2);
+    }
+  }
+  return undefined;
+}
+
 function createResourceSupportPlan(
+  state: GameState,
   profileId: ProgressionProfileId,
   empireId: string,
   planet: PlanetState,
@@ -158,6 +223,17 @@ function createResourceSupportPlan(
     );
 
   for (const candidate of candidates) {
+    const market = createMarketSupportPlan(
+      state,
+      empireId,
+      planet,
+      phase,
+      blockedLabel,
+      candidate.resourceId,
+      cost,
+    );
+    if (market !== undefined) return market;
+
     for (const buildingId of resourceBuildings[candidate.resourceId]) {
       const definition = definitions.get(buildingId);
       if (definition === undefined) continue;
@@ -178,6 +254,7 @@ function createResourceSupportPlan(
 }
 
 function createOrderedPhasePlan(
+  state: GameState,
   profileId: ProgressionProfileId,
   empireId: string,
   planet: PlanetState,
@@ -212,6 +289,7 @@ function createOrderedPhasePlan(
 
   const nextLevel = getBuildingLevel(planet.buildings, definition.id) + 1;
   const support = createResourceSupportPlan(
+    state,
     profileId,
     empireId,
     planet,
@@ -269,6 +347,7 @@ function createPendingResearchPlan(
     );
     if (!canAfford(planet.economy, cost)) {
       const support = createResourceSupportPlan(
+        state,
         state.campaignSettings.progressionProfile,
         empireId,
         planet,
@@ -391,6 +470,7 @@ export function planBotEconomy(
   }
 
   const phasePlan = createOrderedPhasePlan(
+    state,
     profileId,
     empireId,
     planet,
