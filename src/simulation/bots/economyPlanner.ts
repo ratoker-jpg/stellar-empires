@@ -17,7 +17,7 @@ import { getBuildingMaxLevel } from '../progression/profile';
 import type { GameCommand, GameState } from '../types';
 import { createBotPerception } from './perception';
 import { getBotPhaseBuildingTargets } from './progressionPriorities';
-import { getBotProgressionPhase } from './progressionPhase';
+import { getBotProgressionPhase, type BotProgressionPhase } from './progressionPhase';
 
 export type BotEconomyReasonCode =
   | 'no-planets'
@@ -106,6 +106,49 @@ function createBuildingPlan(
         explanation,
         command: buildingCommand(empireId, planet.id, target.buildingId),
       };
+}
+
+function createOrderedPhasePlan(
+  profileId: ProgressionProfileId,
+  empireId: string,
+  planet: PlanetState,
+  phase: BotProgressionPhase,
+  targets: readonly BuildingTarget[],
+  catalog: readonly BuildingDefinition[],
+): BotEconomyPlan | undefined {
+  const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
+  const target = targets.find((candidate) => {
+    const definition = definitions.get(candidate.buildingId);
+    if (definition === undefined) return false;
+    const targetLevel = Math.min(
+      candidate.level,
+      getBuildingMaxLevel(profileId, definition),
+    );
+    return getBuildingLevel(planet.buildings, candidate.buildingId) < targetLevel;
+  });
+  if (target === undefined) return undefined;
+
+  const definition = definitions.get(target.buildingId);
+  if (
+    definition !== undefined &&
+    canQueueBuilding(profileId, planet, definition, target.level)
+  ) {
+    return {
+      empireId,
+      planetId: planet.id,
+      reasonCode: 'expand-industry',
+      explanation: `Phase ${phase}: строится следующий prerequisite ${target.buildingId}.`,
+      command: buildingCommand(empireId, planet.id, target.buildingId),
+    };
+  }
+
+  return {
+    empireId,
+    planetId: planet.id,
+    reasonCode: 'wait-resources',
+    explanation: `Phase ${phase}: ресурсы резервируются для ${target.buildingId} до уровня ${target.level}.`,
+    command: null,
+  };
 }
 
 function stockRatio(amount: number, capacity: number): number {
@@ -220,12 +263,11 @@ export function planBotEconomy(
     if (plan !== undefined) return plan;
   }
 
-  const phasePlan = createBuildingPlan(
+  const phasePlan = createOrderedPhasePlan(
     profileId,
     empireId,
     planet,
-    'expand-industry',
-    `Phase ${phase}: строится точный prerequisite следующей capability.`,
+    phase,
     getBotPhaseBuildingTargets(state, empireId, phase),
     catalog,
   );
