@@ -75,10 +75,16 @@ function restoreProfileEconomy(
   state: GameState,
   savedProgress: ReadonlyMap<string, SavedPlanetResourceProgress> = new Map(),
 ): GameState {
+  const managedEmpireIds = new Set(state.empires);
   return {
     ...state,
     planets: state.planets.map((planet) => {
-      if (planet.ownerEmpireId === null) return planet;
+      if (
+        planet.ownerEmpireId === null ||
+        !managedEmpireIds.has(planet.ownerEmpireId)
+      ) {
+        return planet;
+      }
       const economy = refreshPlanetEconomy(
         state.campaignSettings.progressionProfile,
         planet.economy,
