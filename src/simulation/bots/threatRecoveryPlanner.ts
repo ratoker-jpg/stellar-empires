@@ -3,6 +3,7 @@ import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import type { IntelPlanetSnapshot } from '../intelligence/types';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
+import { getLegacyUnitIdsForCanonical } from '../units/unitAliases';
 import { queueUnitBatch } from '../units/productionCommands';
 import { planBotEconomy } from './economyPlanner';
 import { planBotFleetMission } from './fleetMissionPlanner';
@@ -44,7 +45,29 @@ export interface BotThreatRecoveryPlan {
   readonly command: GameCommand | null;
 }
 
+export interface BotThreatRecoveryDependencies {
+  readonly economy?: ReturnType<typeof planBotEconomy>;
+  readonly researchProduction?: ReturnType<typeof planBotResearchAndProduction>;
+  readonly fleet?: ReturnType<typeof planBotFleetMission>;
+}
+
 type Action = Pick<BotThreatRecoveryPlan, 'reasonCode' | 'explanation' | 'command'>;
+
+interface UnitIdentity {
+  readonly ids: readonly string[];
+  readonly idSet: ReadonlySet<string>;
+}
+
+const unitIdentityCache = new Map<string, UnitIdentity>();
+
+function getUnitIdentity(unitId: string): UnitIdentity {
+  const cached = unitIdentityCache.get(unitId);
+  if (cached !== undefined) return cached;
+  const ids = [unitId, ...getLegacyUnitIdsForCanonical(unitId)];
+  const identity: UnitIdentity = { ids, idSet: new Set(ids) };
+  unitIdentityCache.set(unitId, identity);
+  return identity;
+}
 
 function unitPower(unitId: string, quantity: number): number {
   const stats = getUnitDefinition(unitId)?.stats;
@@ -194,27 +217,66 @@ function recoveryPhase(
   return shipCount < 2 || threat === 'high' ? 'fleet' : 'stable';
 }
 
+function countEmpireUnit(state: GameState, empireId: string, unitId: string): number {
+  const identity = getUnitIdentity(unitId);
+  const definition = getUnitDefinition(unitId);
+  const isDefense = definition?.kind === 'defense';
+  const onPlanets = state.planets
+    .filter((planet) => planet.ownerEmpireId === empireId)
+    .reduce((total, planet) => {
+      const inventory = identity.ids.reduce(
+        (subtotal, candidateId) => subtotal + (
+          isDefense
+            ? planet.inventory.defenses[candidateId] ?? 0
+            : planet.inventory.ships[candidateId] ?? 0
+        ),
+        0,
+      );
+      const queue = isDefense
+        ? planet.productionQueues.defense
+        : planet.productionQueues.shipyard;
+      const queued = queue.reduce(
+        (subtotal, item) => subtotal + (identity.idSet.has(item.unitId) ? item.quantity : 0),
+        0,
+      );
+      return total + inventory + queued;
+    }, 0);
+  if (isDefense) return onPlanets;
+  return state.fleets
+    .filter((fleet) => fleet.empireId === empireId)
+    .reduce(
+      (total, fleet) => total + identity.ids.reduce(
+        (subtotal, candidateId) => subtotal + (fleet.ships[candidateId] ?? 0),
+        0,
+      ),
+      onPlanets,
+    );
+}
+
 function militaryRecoveryCommand(
   state: GameState,
   empireId: string,
 ): GameCommand | null {
   const roles = getFactionMechanicalRoles(getFactionIdForEmpire(state, empireId));
   const candidates = [
-    { unitId: roles.ships.fighter, quantity: 3 },
-    { unitId: roles.defenses.light, quantity: 2 },
-    { unitId: roles.ships.frigate, quantity: 1 },
+    { unitId: roles.ships.fighter, quantity: 3, desiredTotal: 6 },
+    { unitId: roles.defenses.light, quantity: 2, desiredTotal: 4 },
+    { unitId: roles.ships.frigate, quantity: 1, desiredTotal: 2 },
   ] as const;
   const planets = state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
     .sort((left, right) => left.id.localeCompare(right.id));
   for (const candidate of candidates) {
+    const current = countEmpireUnit(state, empireId, candidate.unitId);
+    if (current >= candidate.desiredTotal) continue;
+    const quantity = Math.min(candidate.quantity, candidate.desiredTotal - current);
     for (const planet of planets) {
       const command: Extract<GameCommand, { readonly type: 'QUEUE_UNIT_BATCH' }> = {
         type: 'QUEUE_UNIT_BATCH',
         empireId,
         planetId: planet.id,
         unitId: candidate.unitId,
-        quantity: candidate.quantity,
+        quantity,
       };
       if (queueUnitBatch(state, command).ok) return command;
     }
@@ -228,9 +290,10 @@ function selectAction(
   phase: BotRecoveryPhase,
   threat: BotThreatLevel,
   hasTarget: boolean,
+  dependencies: BotThreatRecoveryDependencies,
 ): Action {
   if (phase === 'critical' || phase === 'economic') {
-    const economy = planBotEconomy(state, empireId);
+    const economy = dependencies.economy ?? planBotEconomy(state, empireId);
     if (economy.command !== null) {
       return {
         reasonCode:
@@ -248,22 +311,23 @@ function selectAction(
         reasonCode: threat === 'high' ? 'high-threat-response' : 'military-recovery',
         explanation:
           threat === 'high'
-            ? 'Известная угроза превышает безопасный уровень: восстанавливается боевой контур.'
-            : 'После потерь приоритет отдан боевым кораблям и обороне.',
+            ? 'Известная угроза превышает безопасный уровень: восстанавливается ограниченный боевой резерв.'
+            : 'После потерь приоритет отдан восстановлению ограниченного боевого резерва.',
         command: combatCommand,
       };
     }
-    const production = planBotResearchAndProduction(state, empireId).production;
-    if (production.command !== null) {
+    const production =
+      dependencies.researchProduction ?? planBotResearchAndProduction(state, empireId);
+    if (production.production.command !== null) {
       return {
         reasonCode: threat === 'high' ? 'high-threat-response' : 'military-recovery',
-        explanation: production.explanation,
-        command: production.command,
+        explanation: production.production.explanation,
+        command: production.production.command,
       };
     }
   }
 
-  const fleet = planBotFleetMission(state, empireId);
+  const fleet = dependencies.fleet ?? planBotFleetMission(state, empireId);
   if (fleet.command !== null) {
     return {
       reasonCode: hasTarget ? 'target-opportunity' : 'stable-development',
@@ -272,12 +336,13 @@ function selectAction(
     };
   }
 
-  const research = planBotResearchAndProduction(state, empireId).research;
-  if (research.command !== null) {
+  const research =
+    dependencies.researchProduction ?? planBotResearchAndProduction(state, empireId);
+  if (research.research.command !== null) {
     return {
       reasonCode: 'stable-development',
-      explanation: research.explanation,
-      command: research.command,
+      explanation: research.research.explanation,
+      command: research.research.command,
     };
   }
 
@@ -291,6 +356,7 @@ function selectAction(
 export function planBotThreatAndRecovery(
   state: GameState,
   empireId: string,
+  dependencies: BotThreatRecoveryDependencies = {},
 ): BotThreatRecoveryPlan {
   const perception = createBotPerception(state, empireId);
   const militaryPower = ownMilitaryPower(perception);
@@ -317,7 +383,14 @@ export function planBotThreatAndRecovery(
     knownHostilePower,
     targets,
     selectedTargetPlanetId: target?.planetId ?? null,
-    ...selectAction(state, empireId, phase, threat, target !== null),
+    ...selectAction(
+      state,
+      empireId,
+      phase,
+      threat,
+      target !== null,
+      dependencies,
+    ),
   };
 }
 

@@ -4,6 +4,7 @@ import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects'
 import { estimateFlightToGalaxyPlanet } from '../fleets/flightCalculations';
 import type { FleetState } from '../fleets/types';
 import type { PlanetState } from '../planet/types';
+import { scaleProgressionReward } from '../progression/economyProfile';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -90,7 +91,10 @@ function createOutcome(
     startedAt,
   );
   const reward = (base: { readonly metal: number; readonly crystal: number; readonly gas: number }) =>
-    scalePveReward(base, rewardMultiplierPermille);
+    scalePveReward(
+      scaleProgressionReward(state.campaignSettings.progressionProfile, base),
+      rewardMultiplierPermille,
+    );
 
   if (outcomeIndex === 0) {
     return {

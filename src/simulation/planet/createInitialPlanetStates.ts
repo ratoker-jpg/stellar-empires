@@ -1,3 +1,4 @@
+import type { ProgressionProfileId } from '../campaign/settings';
 import { createInitialPlanetDefenseState } from '../defense/types';
 import { createPlanetEconomy } from '../economy/planetEconomy';
 import { getStartingBuildingsForFaction } from '../factions/factionMechanicalRoles';
@@ -23,6 +24,7 @@ function factionForEmpire(empireId: string, playerFaction: FactionId): FactionId
 export function createInitialPlanetStates(
   galaxy: GalaxyModel,
   playerFaction: FactionId = 'aegis',
+  progressionProfile: ProgressionProfileId = 'compressed-v1',
 ): readonly PlanetState[] {
   const planets: PlanetState[] = [];
 
@@ -49,7 +51,7 @@ export function createInitialPlanetStates(
         zones: createPlanetZones(buildings),
         buildings,
         buildQueue: [],
-        economy: createPlanetEconomy(buildings, 0, 'balanced'),
+        economy: createPlanetEconomy(progressionProfile, buildings, 0, 'balanced'),
         inventory: { ships: {}, defenses: {} },
         productionQueues: { shipyard: [], defense: [] },
         defense: createInitialPlanetDefenseState(),

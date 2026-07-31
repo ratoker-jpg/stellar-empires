@@ -66,6 +66,7 @@ export function setPlanetSpecialization(
     ...owned.value,
     specializationId: command.specializationId,
     economy: refreshPlanetEconomy(
+      state.campaignSettings.progressionProfile,
       owned.value.economy,
       owned.value.buildings,
       0,

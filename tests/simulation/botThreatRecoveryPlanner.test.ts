@@ -255,6 +255,56 @@ describe('bot threat, target and recovery planner', () => {
     });
   });
 
+  it('does not exceed the bounded combat reserve under a persistent high alert', () => {
+    const empireId = 'aegis-bot';
+    const roles = getFactionMechanicalRoles('aegis');
+    let state = prepareMilitaryIndustry(
+      createInitialGameState('bot-threat-bounded-reserve'),
+      empireId,
+    );
+    state = {
+      ...state,
+      planets: state.planets.map((planet) =>
+        planet.ownerEmpireId === empireId
+          ? {
+              ...planet,
+              inventory: {
+                ...planet.inventory,
+                ships: {
+                  ...planet.inventory.ships,
+                  [roles.ships.fighter]: 6,
+                },
+              },
+            }
+          : planet,
+      ),
+      intelligence: state.intelligence.map((entry) =>
+        entry.empireId === empireId
+          ? {
+              ...entry,
+              alerts: [
+                {
+                  id: 'persistent-high-alert',
+                  empireId,
+                  sourceEmpireId: 'player',
+                  targetPlanetId: entry.empireId,
+                  detectedAt: 0,
+                  confidence: 'high' as const,
+                },
+              ],
+            }
+          : entry,
+      ),
+    };
+
+    const plan = planBotThreatAndRecovery(state, empireId);
+    expect(plan.threatLevel).toBe('high');
+    expect(plan.command).not.toMatchObject({
+      type: 'QUEUE_UNIT_BATCH',
+      unitId: roles.ships.fighter,
+    });
+  });
+
   it('returns a critical no-action plan after complete planet loss', () => {
     const state = createInitialGameState('bot-threat-defeat');
     const empireId = 'aegis-bot';

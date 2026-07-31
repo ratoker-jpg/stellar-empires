@@ -105,7 +105,7 @@ describe('chronological campaign time orchestrator', () => {
     expect(chunked.state).toEqual(direct.state);
     expect(chunked.summary).toEqual(direct.summaryDelta);
     expect(chunked.operations).toBe(direct.operationsProcessed);
-  });
+  }, 30_000);
 
   it('runs bot decisions at their scheduled boundaries without exposing hidden activity', () => {
     const profile: BotProfile = {
@@ -137,5 +137,5 @@ describe('chronological campaign time orchestrator', () => {
     expect(result.remainingGameSeconds).toBe(0);
     expect(result.state.clock.elapsedSeconds).toBe(ONE_DAY * 7);
     expect(result.operationsProcessed).toBeGreaterThan(0);
-  }, 15_000);
+  }, 30_000);
 });

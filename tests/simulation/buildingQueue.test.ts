@@ -110,7 +110,7 @@ describe('building queue', () => {
     const planet = getPlayerPlanet(advanced.value);
     expect(getBuildingLevel(planet.buildings, definition.id)).toBe(2);
     expect(planet.buildQueue).toHaveLength(0);
-    expect(planet.economy.resources.metal.productionPerHour).toBe(258);
+    expect(planet.economy.resources.metal.productionPerHour).toBe(1_548);
     expect(advanced.value.eventLog.filter((entry) => entry.event.payload.type === 'BUILDING_COMPLETE')).toHaveLength(1);
 
     const later = executeCommand(advanced.value, { type: 'ADVANCE_TIME', seconds: 3_600 });

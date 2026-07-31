@@ -67,8 +67,8 @@ function readBuildings(value: unknown): readonly PlanetBuildingState[] | undefin
   return buildings;
 }
 function normalizeEconomy(value: unknown, buildings: readonly PlanetBuildingState[], specializationId: PlanetSpecializationId): PlanetEconomyState {
-  if (!isRecord(value) || !isRecord(value.resources)) return createPlanetEconomy(buildings, 0, specializationId);
-  return refreshPlanetEconomy(value as unknown as PlanetEconomyState, buildings, 0, specializationId);
+  if (!isRecord(value) || !isRecord(value.resources)) return createPlanetEconomy('legacy-v1', buildings, 0, specializationId);
+  return refreshPlanetEconomy('legacy-v1', value as unknown as PlanetEconomyState, buildings, 0, specializationId);
 }
 function readCountRecord(value: unknown): Readonly<Record<string, number>> | undefined {
   if (!isRecord(value)) return undefined;

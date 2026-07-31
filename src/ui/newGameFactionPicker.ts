@@ -61,6 +61,16 @@ export const NEW_GAME_SPEED_OPTIONS: readonly NewGameSpeedOption[] = [
   { value: 10, name: 'x10', detail: 'Экспресс-кампания' },
 ];
 
+function formatHours(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1).replace('.', ',');
+}
+
+export function formatCompressedCampaignDurationExpectation(
+  worldSpeed: WorldSpeed,
+): string {
+  return `До готовности к эндгейму: ориентир ${formatHours(24 / worldSpeed)} ч · максимум ${formatHours(32 / worldSpeed)} ч`;
+}
+
 function createFactionChoice(
   option: NewGameFactionOption,
   select: (factionId: FactionArtKey) => void,
@@ -146,7 +156,7 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
     title.textContent = 'Настройте кампанию';
     const description = document.createElement('p');
     description.textContent =
-      'Размер мира и скорость фиксируются при создании и сохраняются внутри партии.';
+      'Размер мира, скорость и профиль фиксируются при создании и сохраняются внутри партии.';
     header.append(eyebrow, title, description);
 
     const scenario = createSelect(
@@ -172,6 +182,17 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
     settings.setAttribute('aria-label', 'Неизменяемые настройки кампании');
     settings.append(scenario.label, speed.label, createProgressionProfileIdentity());
 
+    const duration = document.createElement('p');
+    duration.className = 'new-game-note';
+    duration.dataset.campaignDurationExpectation = 'true';
+    const updateDuration = (): void => {
+      duration.textContent = formatCompressedCampaignDurationExpectation(
+        Number(speed.select.value) as WorldSpeed,
+      );
+    };
+    speed.select.addEventListener('change', updateDuration);
+    updateDuration();
+
     const grid = document.createElement('div');
     grid.className = 'new-game-faction-grid';
     const finish = (faction: FactionArtKey): void => {
@@ -194,8 +215,8 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
     const note = document.createElement('p');
     note.className = 'new-game-note';
     note.textContent =
-      'Офлайн-прогрессия включена. Размер мира, скорость и профиль прогрессии после старта изменить нельзя.';
-    dialog.append(header, settings, grid, note);
+      'Офлайн-прогрессия включена. Настройки после старта изменить нельзя. Финальная победа и работа Врат пока не входят в текущий runtime.';
+    dialog.append(header, settings, duration, grid, note);
     document.body.append(dialog);
     dialog.showModal();
   });

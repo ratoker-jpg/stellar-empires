@@ -1,14 +1,31 @@
 import { describe, expect, it } from 'vitest';
 import {
+  getBotPhaseProductionTargets,
+  getBotPhaseResearchTargets,
+} from '../../src/simulation/bots/progressionPriorities';
+import { getBotProgressionPhase } from '../../src/simulation/bots/progressionPhase';
+import {
   planAllBotResearchAndProduction,
   planBotResearchAndProduction,
 } from '../../src/simulation/bots/researchProductionPlanner';
+import { createCampaignSettings } from '../../src/simulation/campaign/settings';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { getFactionIdForEmpire } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
 import { getCompleteResearchId } from '../../src/simulation/research/completeResearchCatalog';
 import type { GameState } from '../../src/simulation/types';
+
+function createLegacyGameState(seed: string): GameState {
+  return createInitialGameState(seed, {
+    campaignSettings: createCampaignSettings({
+      scenarioPreset: 'campaign',
+      worldSpeed: 1,
+      progressionProfile: 'legacy-v1',
+      createdAtReal: '2026-07-18T00:00:00.000Z',
+    }),
+  });
+}
 
 function prepareBotInfrastructure(
   state: GameState,
@@ -94,7 +111,7 @@ describe('bot research and production planner', () => {
   });
 
   it('queues faction-valid research and unit production for Synod and Veyra', () => {
-    let state = createInitialGameState('bot-science-shared');
+    let state = createLegacyGameState('bot-science-shared');
 
     for (const empireId of ['synod-bot', 'veyra-bot'] as const) {
       state = prepareBotInfrastructure(state, empireId, starterResearchLevels(state, empireId));
@@ -121,7 +138,59 @@ describe('bot research and production planner', () => {
     }
   });
 
-  it('prioritizes military research and fighters when current intelligence shows a threat', () => {
+  it('counts queued ship batches before scheduling duplicate expedition support', () => {
+    const initial = createInitialGameState('bot-science-queued-ships');
+    let state = prepareBotInfrastructure(
+      initial,
+      'aegis-bot',
+      starterResearchLevels(initial, 'aegis-bot'),
+    );
+    const roles = getFactionMechanicalRoles('aegis');
+    state = {
+      ...state,
+      planets: state.planets.map((planet) =>
+        planet.ownerEmpireId === 'aegis-bot'
+          ? {
+              ...planet,
+              inventory: {
+                ...planet.inventory,
+                ships: {
+                  ...planet.inventory.ships,
+                  [roles.ships.scout]: 1,
+                  [roles.ships.fighter]: 1,
+                },
+              },
+              productionQueues: {
+                ...planet.productionQueues,
+                shipyard: [
+                  ...planet.productionQueues.shipyard,
+                  {
+                    id: 'queued-scout-support',
+                    unitId: roles.ships.scout,
+                    kind: 'ship' as const,
+                    quantity: 1,
+                    startedAt: 0,
+                    completesAt: 120,
+                    cost: { metal: 0, crystal: 0, gas: 0 },
+                    populationReserved: 0,
+                    hangarReserved: 0,
+                  },
+                ],
+              },
+            }
+          : planet,
+      ),
+    };
+
+    expect(getBotProgressionPhase(state, 'aegis-bot')).toBe('first-combat');
+    const plan = planBotResearchAndProduction(state, 'aegis-bot');
+    const plannedUnitId = plan.production.command?.type === 'QUEUE_UNIT_BATCH'
+      ? plan.production.command.unitId
+      : null;
+    expect(plannedUnitId).not.toBe(roles.ships.scout);
+  });
+
+  it('prioritizes military research and adds fighter pressure when intelligence shows a threat', () => {
     let state = prepareBotInfrastructure(
       createInitialGameState('bot-science-threat'),
       'aegis-bot',
@@ -165,18 +234,24 @@ describe('bot research and production planner', () => {
       ),
     };
 
+    const phase = getBotProgressionPhase(state, 'aegis-bot');
     const plan = planBotResearchAndProduction(state, 'aegis-bot');
     expect(plan.research.command?.type).toBe('QUEUE_RESEARCH');
     if (plan.research.command?.type === 'QUEUE_RESEARCH') {
-      expect([
-        'technology.aegis.laser-science',
-        'technology.aegis.ship-armor',
-      ]).toContain(plan.research.command.technologyId);
+      const militaryPath = getBotPhaseResearchTargets(
+        state,
+        'aegis-bot',
+        phase,
+        true,
+      ).map((target) => target.technologyId);
+      expect(militaryPath).toContain(plan.research.command.technologyId);
+      const researchResult = executeCommand(state, plan.research.command);
+      expect(researchResult.ok).toBe(true);
     }
-    expect(plan.production.command).toMatchObject({
-      type: 'QUEUE_UNIT_BATCH',
-      unitId: 'ship.aegis.scout',
+    expect(getBotPhaseProductionTargets(state, 'aegis-bot', phase, true)).toContainEqual({
+      unitId: getFactionMechanicalRoles('aegis').ships.fighter,
       quantity: 3,
+      desiredTotal: 6,
     });
   });
 

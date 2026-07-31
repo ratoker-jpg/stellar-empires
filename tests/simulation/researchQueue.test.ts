@@ -27,7 +27,11 @@ function withPlayerLaboratory(state: GameState): GameState {
         ...planet,
         buildings,
         zones: createPlanetZones(buildings),
-        economy: refreshPlanetEconomy(planet.economy, buildings),
+        economy: refreshPlanetEconomy(
+          state.campaignSettings.progressionProfile,
+          planet.economy,
+          buildings,
+        ),
       };
     }),
   };

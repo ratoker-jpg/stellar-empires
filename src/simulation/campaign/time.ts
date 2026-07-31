@@ -215,15 +215,10 @@ export function advanceCampaignTime(
 
     const dueBotAt = getNextBotDecisionAt(working, botProfiles);
     if (dueBotAt !== undefined && dueBotAt <= working.clock.elapsedSeconds && dueBotAt <= targetTime) {
-      const before = working;
       const botResult = runBotScheduler(working, botProfiles, 1);
       working = botResult.state;
       botAudit.push(...botResult.audit);
       botDiagnostics.push(...botResult.diagnostics);
-      summary = mergeCatchUpSummaries(
-        summary,
-        summarizeCampaignTransition(before, working, []),
-      );
       operationsProcessed += 1;
       continue;
     }

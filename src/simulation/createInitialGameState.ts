@@ -54,7 +54,11 @@ export function createInitialGameState(
   const universe = createUniverseModel(seed, campaignSettings.scenarioPreset);
   const galaxy = materializeGalaxy(universe, 1);
   const empires = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'] as const;
-  const colonies = createInitialPlanetStates(galaxy, playerFaction);
+  const colonies = createInitialPlanetStates(
+    galaxy,
+    playerFaction,
+    campaignSettings.progressionProfile,
+  );
   const neutralForces = createInitialNeutralForces(galaxy, seed);
   return {
     schemaVersion: 16,

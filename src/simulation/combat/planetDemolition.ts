@@ -19,7 +19,10 @@ export interface PlanetDemolitionThreshold {
 }
 
 export interface ResolvePlanetDemolitionInput {
-  readonly state: Pick<GameState, 'seed' | 'shipUpgrades' | 'pendingEvents'>;
+  readonly state: Pick<
+    GameState,
+    'seed' | 'shipUpgrades' | 'pendingEvents' | 'campaignSettings'
+  >;
   readonly attackerEmpireId: string;
   readonly attackerFleetId: string;
   readonly attackerRemaining: Readonly<Record<string, number>>;
@@ -371,6 +374,7 @@ export function resolvePlanetDemolition(
         buildQueue,
         zones: createPlanetZones(buildings),
         economy: refreshPlanetEconomy(
+          input.state.campaignSettings.progressionProfile,
           input.target.economy,
           buildings,
           0,

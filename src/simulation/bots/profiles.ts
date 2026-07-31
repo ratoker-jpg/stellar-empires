@@ -7,6 +7,7 @@ export interface BotProfile {
   readonly personality: BotPersonality;
   readonly difficulty: BotDifficulty;
   readonly decisionIntervalSeconds: number;
+  readonly earlyDecisionIntervalSeconds?: number;
   readonly maxCommandsPerDecision: number;
 }
 
@@ -17,6 +18,7 @@ export const DEFAULT_BOT_PROFILES: readonly BotProfile[] = [
     personality: 'industrial',
     difficulty: 'normal',
     decisionIntervalSeconds: 600,
+    earlyDecisionIntervalSeconds: 240,
     maxCommandsPerDecision: 2,
   },
   {
@@ -25,6 +27,7 @@ export const DEFAULT_BOT_PROFILES: readonly BotProfile[] = [
     personality: 'explorer',
     difficulty: 'hard',
     decisionIntervalSeconds: 300,
+    earlyDecisionIntervalSeconds: 240,
     maxCommandsPerDecision: 3,
   },
   {
@@ -33,6 +36,7 @@ export const DEFAULT_BOT_PROFILES: readonly BotProfile[] = [
     personality: 'aggressive',
     difficulty: 'normal',
     decisionIntervalSeconds: 450,
+    earlyDecisionIntervalSeconds: 240,
     maxCommandsPerDecision: 2,
   },
 ] as const;

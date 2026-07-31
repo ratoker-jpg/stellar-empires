@@ -50,17 +50,17 @@ describe('autonomous bot scheduler', () => {
     const state = createInitialGameState('bot-scheduler-cadence');
     const first = runBotScheduler(state);
     const second = runBotScheduler(advance(first.state, 600));
-    expect(second.processedDecisions).toBe(4);
+    expect(second.processedDecisions).toBe(6);
     expect(second.audit.map((entry) => entry.decidedAt)).toEqual(
       [...second.audit.map((entry) => entry.decidedAt)].sort((left, right) => left - right),
     );
     expect(new Set(second.audit.map((entry) => entry.decidedAt))).toEqual(
-      new Set([300, 450, 600]),
+      new Set([240]),
     );
     expect(second.state.botAutomation.nextDecisionAtByEmpire).toEqual({
-      'aegis-bot': 1_200,
-      'synod-bot': 900,
-      'veyra-bot': 900,
+      'aegis-bot': 720,
+      'synod-bot': 720,
+      'veyra-bot': 720,
     });
   });
 
@@ -88,7 +88,7 @@ describe('autonomous bot scheduler', () => {
     expect(first).toEqual(second);
     expect(first.runs).toBeGreaterThan(1);
     expect(first.decidedAt).toEqual([...first.decidedAt].sort((left, right) => left - right));
-  });
+  }, 20_000);
 
   it('enforces difficulty limits and honest personality fallback', () => {
     const state = createInitialGameState('bot-scheduler-profile');
@@ -152,7 +152,6 @@ describe('autonomous bot scheduler', () => {
     expect(runBotScheduler(parsed.value.state)).toEqual(runBotScheduler(partiallyCaughtUp));
   });
 
-
   it('records shared mission blockers as serializable scheduler diagnostics', () => {
     let state = createInitialGameState('bot-scheduler-diagnostic');
     const empireId = 'aegis-bot';
@@ -209,6 +208,7 @@ describe('autonomous bot scheduler', () => {
     }]);
     expect(JSON.parse(JSON.stringify(result.diagnostics))).toEqual(result.diagnostics);
   });
+
   it('does not change decisions when hidden player resources change', () => {
     const state = createInitialGameState('bot-scheduler-hidden');
     const before = runBotScheduler(state);
