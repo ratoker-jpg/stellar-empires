@@ -6,19 +6,19 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 135,
-    "mergeSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
+    "lastMergedPr": 137,
+    "mergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166",
     "runtimeBaselinePr": 135,
     "runtimeBaselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
-    "auditBaselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992"
+    "auditBaselineSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166"
   },
-  "activePr": 137,
-  "activePrKind": "audit",
+  "activePr": 138,
+  "activePrKind": "implementation",
   "activeBatchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
-  "activeWorkItem": null,
-  "nextPr": 138,
+  "activeWorkItem": "COLONY-PORTFOLIO-FOUNDATION",
+  "nextPr": 139,
   "nextPrKind": "implementation",
-  "nextWorkItem": "COLONY-PORTFOLIO-FOUNDATION",
+  "nextWorkItem": "LOGISTICS-ROUTE-LIFECYCLE",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -114,12 +114,14 @@
     {
       "id": "multi-colony-economy-logistics",
       "auditPr": 137,
+      "auditMergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166",
       "startPr": 138,
       "endPr": 141,
-      "status": "audit-active",
+      "status": "implementation-in-progress",
       "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
       "complexity": "medium",
       "plannedPrs": [138, 139, 140, 141],
+      "completedPrs": [],
       "workItems": [
         "COLONY-PORTFOLIO-FOUNDATION",
         "LOGISTICS-ROUTE-LIFECYCLE",
@@ -189,21 +191,22 @@
       "kind": "audit",
       "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
       "title": "Audit multi-colony economy and logistics",
-      "status": "active"
+      "status": "merged",
+      "mergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166"
     },
     {
       "number": 138,
       "kind": "implementation",
       "workItem": "COLONY-PORTFOLIO-FOUNDATION",
       "title": "Model the colony economy portfolio",
-      "status": "blocked-until-audit-merge"
+      "status": "active"
     },
     {
       "number": 139,
       "kind": "implementation",
       "workItem": "LOGISTICS-ROUTE-LIFECYCLE",
       "title": "Harden logistics route lifecycle",
-      "status": "planned"
+      "status": "blocked-until-pr-138-merge"
     },
     {
       "number": 140,
@@ -220,5 +223,5 @@
       "status": "planned"
     }
   ],
-  "nextAction": "Finish and merge Audit PR #137, then create only PR #138 COLONY-PORTFOLIO-FOUNDATION from fresh main."
+  "nextAction": "Finish and merge PR #138 COLONY-PORTFOLIO-FOUNDATION, then create only PR #139 LOGISTICS-ROUTE-LIFECYCLE from fresh main."
 }
