@@ -8,6 +8,16 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
 }
 
+async function mountNewGameDialog(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const modulePath = '/src/ui/newGameFactionPicker.ts';
+    const picker = await import(/* @vite-ignore */ modulePath) as {
+      selectNewGameCampaign(): Promise<unknown>;
+    };
+    void picker.selectNewGameCampaign();
+  });
+}
+
 const LEGACY_DOM = [
   '#empire-overview-dialog',
   '#command-ranking-dialog',
@@ -29,6 +39,8 @@ test('new campaign exposes immutable compressed duration expectations at release
     const page = await context.newPage();
     try {
       await page.goto('/');
+      await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+      await mountNewGameDialog(page);
       const dialog = page.locator('.new-game-dialog');
       await expect(dialog).toBeVisible();
       await expect(dialog.locator('[data-progression-profile="compressed-v1"]')).toBeVisible();
