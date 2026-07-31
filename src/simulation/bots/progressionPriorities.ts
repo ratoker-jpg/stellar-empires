@@ -32,6 +32,12 @@ export interface BotProductionTarget {
   readonly desiredTotal: number;
 }
 
+interface PhaseEconomyLevels {
+  readonly metal: number;
+  readonly crystal: number;
+  readonly gas: number;
+}
+
 const buildingTargetCache = new Map<string, readonly BotBuildingTarget[]>();
 const researchTargetCache = new Map<string, readonly BotResearchTarget[]>();
 const productionTargetCache = new Map<string, readonly BotProductionTarget[]>();
@@ -72,6 +78,23 @@ function phaseShipTargets(
     case 'planet-destruction':
     case 'endgame-preparation':
       return [];
+  }
+}
+
+function phaseEconomyLevels(phase: BotProgressionPhase): PhaseEconomyLevels {
+  switch (phase) {
+    case 'foundation':
+    case 'reconnaissance':
+      return { metal: 2, crystal: 8, gas: 3 };
+    case 'first-combat':
+      return { metal: 4, crystal: 10, gas: 6 };
+    case 'colonization':
+      return { metal: 6, crystal: 10, gas: 8 };
+    case 'heavy-fleet':
+      return { metal: 8, crystal: 10, gas: 10 };
+    case 'planet-destruction':
+    case 'endgame-preparation':
+      return { metal: 10, crystal: 10, gas: 10 };
   }
 }
 
@@ -161,12 +184,28 @@ function createPhasePrerequisiteTargets(
     }
   };
 
+  const addCompressedEconomyTargets = (): void => {
+    if (profileId !== 'compressed-v1') return;
+    const economy = phaseEconomyLevels(phase);
+    addBuilding(roles.buildings.complete.crystalPrimary, economy.crystal);
+    addBuilding(roles.buildings.complete.gasPrimary, economy.gas);
+    addBuilding(roles.buildings.complete.metalPrimary, economy.metal);
+  };
+
+  const frontLoadEconomy =
+    profileId === 'compressed-v1' &&
+    phase !== 'foundation' &&
+    phase !== 'reconnaissance';
+  if (frontLoadEconomy) addCompressedEconomyTargets();
+
   for (const unitId of phaseShipTargets(state, empireId, phase)) {
     addUnitRequirements(unitId);
   }
   if (phase === 'planet-destruction' || phase === 'endgame-preparation') {
     addBuilding(roles.buildings.complete.supremeGalacticGates, 1);
   }
+
+  if (!frontLoadEconomy) addCompressedEconomyTargets();
 
   const buildings = buildingOrder.map((buildingId) => ({
     buildingId,
