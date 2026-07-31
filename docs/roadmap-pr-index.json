@@ -6,19 +6,19 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 137,
-    "mergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166",
-    "runtimeBaselinePr": 135,
-    "runtimeBaselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
+    "lastMergedPr": 138,
+    "mergeSha": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f",
+    "runtimeBaselinePr": 138,
+    "runtimeBaselineSha": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f",
     "auditBaselineSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166"
   },
-  "activePr": 138,
+  "activePr": 139,
   "activePrKind": "implementation",
   "activeBatchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
-  "activeWorkItem": "COLONY-PORTFOLIO-FOUNDATION",
-  "nextPr": 139,
+  "activeWorkItem": "LOGISTICS-ROUTE-LIFECYCLE",
+  "nextPr": 140,
   "nextPrKind": "implementation",
-  "nextWorkItem": "LOGISTICS-ROUTE-LIFECYCLE",
+  "nextWorkItem": "COLONY-OPERATIONS-UX",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -121,7 +121,10 @@
       "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
       "complexity": "medium",
       "plannedPrs": [138, 139, 140, 141],
-      "completedPrs": [],
+      "completedPrs": [138],
+      "implementationMergeShas": {
+        "138": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f"
+      },
       "workItems": [
         "COLONY-PORTFOLIO-FOUNDATION",
         "LOGISTICS-ROUTE-LIFECYCLE",
@@ -159,34 +162,6 @@
   ],
   "planned": [
     {
-      "number": 133,
-      "kind": "audit",
-      "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
-      "status": "merged",
-      "mergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc"
-    },
-    {
-      "number": 134,
-      "kind": "implementation",
-      "workItem": "PROGRESSION-PROFILE-FOUNDATION",
-      "status": "merged",
-      "mergeSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23"
-    },
-    {
-      "number": 135,
-      "kind": "implementation",
-      "workItem": "COMPRESSED-CAMPAIGN-PROGRESSION-GATE",
-      "status": "merged",
-      "mergeSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992"
-    },
-    {
-      "number": 136,
-      "kind": "documentation",
-      "workItem": "PR135-RECOVERY-DELIVERY-CHAIN",
-      "status": "merged",
-      "mergeSha": "fcd06dfb485966979b5e583b6d42fc869ba65a45"
-    },
-    {
       "number": 137,
       "kind": "audit",
       "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
@@ -199,21 +174,22 @@
       "kind": "implementation",
       "workItem": "COLONY-PORTFOLIO-FOUNDATION",
       "title": "Model the colony economy portfolio",
-      "status": "active"
+      "status": "merged",
+      "mergeSha": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f"
     },
     {
       "number": 139,
       "kind": "implementation",
       "workItem": "LOGISTICS-ROUTE-LIFECYCLE",
       "title": "Harden logistics route lifecycle",
-      "status": "blocked-until-pr-138-merge"
+      "status": "active"
     },
     {
       "number": 140,
       "kind": "implementation",
       "workItem": "COLONY-OPERATIONS-UX",
       "title": "Complete colony logistics operations",
-      "status": "planned"
+      "status": "blocked-until-pr-139-merge"
     },
     {
       "number": 141,
@@ -223,5 +199,5 @@
       "status": "planned"
     }
   ],
-  "nextAction": "Finish and merge PR #138 COLONY-PORTFOLIO-FOUNDATION, then create only PR #139 LOGISTICS-ROUTE-LIFECYCLE from fresh main."
+  "nextAction": "Finish and merge PR #139 LOGISTICS-ROUTE-LIFECYCLE, then create only PR #140 COLONY-OPERATIONS-UX from fresh main."
 }
