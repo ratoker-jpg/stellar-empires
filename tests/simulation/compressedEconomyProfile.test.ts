@@ -13,13 +13,13 @@ function playerPlanet(profile: 'legacy-v1' | 'compressed-v1') {
 }
 
 describe('compressed campaign economy profile', () => {
-  it('uses the playable starting stocks, capacity and population', () => {
+  it('uses the audited starting stocks, capacity and population', () => {
     const { planet } = playerPlanet('compressed-v1');
 
     expect(planet.economy.resources).toMatchObject({
-      metal: { amount: 35_000, capacity: 60_000 },
-      crystal: { amount: 35_000, capacity: 60_000 },
-      gas: { amount: 20_000, capacity: 60_000 },
+      metal: { amount: 15_000, capacity: 60_000 },
+      crystal: { amount: 12_000, capacity: 60_000 },
+      gas: { amount: 6_000, capacity: 60_000 },
     });
     expect(planet.economy.population).toEqual({ used: 4, capacity: 70 });
   });
