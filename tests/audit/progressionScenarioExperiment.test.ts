@@ -1,13 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { planBotEconomy } from '../../src/simulation/bots/economyPlanner';
-import { getBotProgressionPhase } from '../../src/simulation/bots/progressionPhase';
-import { planBotResearchAndProduction } from '../../src/simulation/bots/researchProductionPlanner';
 import {
   ACCEPTED_PROGRESSION_SEEDS,
   runProgressionScenario,
 } from '../../src/simulation/progression/scenarioRunner';
 import type { FactionId } from '../../src/simulation/planet/types';
-import type { GameState } from '../../src/simulation/types';
 
 const runtimeEnvironment = (
   globalThis as typeof globalThis & {
@@ -16,111 +12,85 @@ const runtimeEnvironment = (
 ).process?.env;
 const scenarioIt = runtimeEnvironment?.RUN_PROGRESSION_SCENARIO === '1' ? it : it.skip;
 const PLAYER_FACTIONS: readonly FactionId[] = ['aegis', 'synod', 'veyra'];
-
-function diagnosticsForState(state: GameState): Readonly<Record<string, unknown>> {
-  return Object.fromEntries(
-    state.empires.map((empireId) => {
-      const planet = state.planets.find(
-        (candidate) => candidate.ownerEmpireId === empireId,
-      );
-      const research = state.research.find(
-        (candidate) => candidate.empireId === empireId,
-      );
-      return [
-        empireId,
-        {
-          phase: getBotProgressionPhase(state, empireId),
-          economyPlan: planBotEconomy(state, empireId),
-          researchProductionPlan: planBotResearchAndProduction(state, empireId),
-          resources: planet?.economy.resources,
-          specialization: planet?.specializationId,
-          buildings: planet?.buildings,
-          buildQueue: planet?.buildQueue,
-          productionQueues: planet?.productionQueues,
-          ships: planet?.inventory.ships,
-          researchLevels: research?.levels,
-          researchQueue: research?.queue,
-        },
-      ];
-    }),
-  );
-}
-
-function summarizeCommands(state: GameState, empireId: string): Readonly<Record<string, unknown>> {
-  const queuedUnits: Record<string, number> = {};
-  const commandTypes: Record<string, number> = {};
-  for (const entry of state.commandLog) {
-    const command = entry.command;
-    if (!('empireId' in command) || command.empireId !== empireId) continue;
-    commandTypes[command.type] = (commandTypes[command.type] ?? 0) + 1;
-    if (command.type === 'QUEUE_UNIT_BATCH') {
-      queuedUnits[command.unitId] = (queuedUnits[command.unitId] ?? 0) + command.quantity;
-    }
-  }
-  return { retainedCommands: state.commandLog.length, commandTypes, queuedUnits };
-}
+const PHASE_LIMITS_SECONDS = {
+  reconnaissance: 45 * 60,
+  colonization: 180 * 60,
+  'heavy-fleet': 480 * 60,
+  'endgame-preparation': 720 * 60,
+} as const;
 
 describe('compressed progression scenario experiment', () => {
-  scenarioIt('drives the accepted baseline seed through ordinary player and bot commands', () => {
-    const result = runProgressionScenario({
-      seed: 'stellar-empires-m1',
-      playerFaction: 'aegis',
-      worldSpeed: 2,
-    });
-    console.info(
-      `COMPRESSED_PROGRESSION_SCENARIO=${JSON.stringify({
-        complete: result.complete,
-        elapsedRealSeconds: result.elapsedRealSeconds,
-        phases: result.phaseReachedAtRealSeconds,
-        acceptedPlayerCommands: result.acceptedPlayerCommands,
-        rejectedPlayerCommands: result.rejectedPlayerCommands,
-        diagnostics: diagnosticsForState(result.state),
-      })}`,
-    );
-
-    expect(result.complete).toBe(true);
-    expect(result.elapsedRealSeconds).toBeLessThanOrEqual(16 * 60 * 60);
-    for (const empireId of result.state.empires) {
-      const phases = result.phaseReachedAtRealSeconds[empireId];
-      expect(phases?.reconnaissance).toBeLessThanOrEqual(45 * 60);
-      expect(phases?.colonization).toBeLessThanOrEqual(180 * 60);
-      expect(phases?.['heavy-fleet']).toBeLessThanOrEqual(480 * 60);
-      expect(phases?.['endgame-preparation']).toBeLessThanOrEqual(720 * 60);
-    }
-  }, 120_000);
-
-  scenarioIt('diagnoses the representative Aegis hard-limit failure', () => {
-    const hardLimit = runProgressionScenario({
-      seed: 'progression-aegis-01',
-      playerFaction: 'aegis',
-      worldSpeed: 2,
-      maximumRealSeconds: 16 * 60 * 60,
-    });
-    console.info(
-      `COMPRESSED_AEGIS_HARD_LIMIT=${JSON.stringify({
-        complete: hardLimit.complete,
-        elapsedRealSeconds: hardLimit.elapsedRealSeconds,
-        phases: hardLimit.phaseReachedAtRealSeconds,
-        aegisBot: diagnosticsForState(hardLimit.state)['aegis-bot'],
-        commands: summarizeCommands(hardLimit.state, 'aegis-bot'),
-      })}`,
-    );
-    expect(hardLimit.complete).toBe(true);
-  }, 120_000);
-
-  it.skip('measures every accepted seed and player faction through ordinary commands', () => {
+  scenarioIt('gates every accepted seed and player faction through ordinary commands', () => {
     const matrix = ACCEPTED_PROGRESSION_SEEDS.flatMap((seed) =>
       PLAYER_FACTIONS.map((playerFaction) => {
-        const result = runProgressionScenario({ seed, playerFaction, worldSpeed: 2 });
-        return {
+        const result = runProgressionScenario({
+          seed,
+          playerFaction,
+          worldSpeed: 2,
+        });
+        const entry = {
           seed,
           playerFaction,
           complete: result.complete,
           elapsedRealSeconds: result.elapsedRealSeconds,
           phases: result.phaseReachedAtRealSeconds,
+          acceptedPlayerCommands: result.acceptedPlayerCommands,
+          rejectedPlayerCommands: result.rejectedPlayerCommands,
         };
+        console.info(`COMPRESSED_PROGRESSION_MATRIX_CASE=${JSON.stringify(entry)}`);
+        return entry;
       }),
     );
+
+    const durations = matrix
+      .map((entry) => entry.elapsedRealSeconds)
+      .sort((left, right) => left - right);
+    const medianRealSeconds = durations[Math.floor(durations.length / 2)] ?? 0;
+    const maximumRealSeconds = durations[durations.length - 1] ?? 0;
+    const phaseMaximums = Object.fromEntries(
+      Object.keys(PHASE_LIMITS_SECONDS).map((phase) => [
+        phase,
+        Math.max(
+          ...matrix.flatMap((entry) =>
+            Object.values(entry.phases).map((phases) =>
+              phases[phase as keyof typeof PHASE_LIMITS_SECONDS] ?? 0,
+            ),
+          ),
+        ),
+      ]),
+    );
+    const phaseViolations = matrix.flatMap((entry) =>
+      Object.entries(entry.phases).flatMap(([empireId, phases]) =>
+        Object.entries(PHASE_LIMITS_SECONDS)
+          .filter(([phase, limit]) =>
+            (phases[phase as keyof typeof PHASE_LIMITS_SECONDS] ?? Number.POSITIVE_INFINITY) > limit,
+          )
+          .map(([phase, limit]) => ({
+            seed: entry.seed,
+            playerFaction: entry.playerFaction,
+            empireId,
+            phase,
+            reachedAtRealSeconds:
+              phases[phase as keyof typeof PHASE_LIMITS_SECONDS] ?? null,
+            limit,
+          })),
+      ),
+    );
+
+    console.info(
+      `COMPRESSED_PROGRESSION_MATRIX_SUMMARY=${JSON.stringify({
+        cases: matrix.length,
+        completeCases: matrix.filter((entry) => entry.complete).length,
+        medianRealSeconds,
+        maximumRealSeconds,
+        phaseMaximums,
+        phaseViolations,
+      })}`,
+    );
+
     expect(matrix.filter((entry) => !entry.complete)).toEqual([]);
-  });
+    expect(maximumRealSeconds).toBeLessThanOrEqual(16 * 60 * 60);
+    expect(medianRealSeconds).toBeLessThanOrEqual(12 * 60 * 60);
+    expect(phaseViolations).toEqual([]);
+  }, 300_000);
 });
