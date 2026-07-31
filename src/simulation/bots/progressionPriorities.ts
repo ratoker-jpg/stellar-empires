@@ -63,15 +63,16 @@ function phaseShipTargets(
 ): readonly string[] {
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).ships;
+  const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
   switch (phase) {
     case 'foundation':
       return [roles.scout];
     case 'reconnaissance':
-      return [roles.fighter, roles.corvette];
+      return compressed ? [roles.fighter] : [roles.fighter, roles.corvette];
     case 'first-combat':
       return [roles.colonizer];
     case 'colonization':
-      return [roles.frigate, roles.cruiser];
+      return compressed ? [roles.frigate] : [roles.frigate, roles.cruiser];
     case 'heavy-fleet':
       return [roles.dreadnought];
     case 'planet-destruction':
@@ -293,46 +294,61 @@ export function getBotPhaseProductionTargets(
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).ships;
   const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
-  const primary: readonly BotProductionTarget[] = (() => {
-    switch (phase) {
-      case 'foundation':
-        return [
-          { unitId: roles.scout, quantity: 1, desiredTotal: 1 },
-          { unitId: roles.fighter, quantity: 1, desiredTotal: 1 },
-          { unitId: roles.transport, quantity: 1, desiredTotal: 1 },
-        ];
-      case 'reconnaissance':
-        return [
-          { unitId: roles.fighter, quantity: 2, desiredTotal: 2 },
-          { unitId: roles.corvette, quantity: 1, desiredTotal: 1 },
-        ];
-      case 'first-combat':
-        return [
-          { unitId: roles.colonizer, quantity: 1, desiredTotal: 1 },
-          { unitId: roles.transport, quantity: 1, desiredTotal: 1 },
-        ];
-      case 'colonization':
-        return [
-          { unitId: roles.frigate, quantity: 1, desiredTotal: 1 },
-          { unitId: roles.cruiser, quantity: 1, desiredTotal: 1 },
-          { unitId: roles.recycler, quantity: 1, desiredTotal: 1 },
-        ];
-      case 'heavy-fleet':
-        return [
-          { unitId: roles.dreadnought, quantity: 1, desiredTotal: 1 },
-          { unitId: roles.cruiser, quantity: 1, desiredTotal: 2 },
-        ];
-      case 'planet-destruction':
-      case 'endgame-preparation':
-        return compressed
-          ? []
-          : [
+  const primary: readonly BotProductionTarget[] = compressed
+    ? (() => {
+        switch (phase) {
+          case 'foundation':
+            return [{ unitId: roles.scout, quantity: 1, desiredTotal: 1 }];
+          case 'reconnaissance':
+            return [{ unitId: roles.fighter, quantity: 1, desiredTotal: 1 }];
+          case 'first-combat':
+            return [{ unitId: roles.colonizer, quantity: 1, desiredTotal: 1 }];
+          case 'colonization':
+            return [{ unitId: roles.frigate, quantity: 1, desiredTotal: 1 }];
+          case 'heavy-fleet':
+          case 'planet-destruction':
+          case 'endgame-preparation':
+            return [];
+        }
+      })()
+    : (() => {
+        switch (phase) {
+          case 'foundation':
+            return [
+              { unitId: roles.scout, quantity: 1, desiredTotal: 1 },
+              { unitId: roles.fighter, quantity: 1, desiredTotal: 1 },
+              { unitId: roles.transport, quantity: 1, desiredTotal: 1 },
+            ];
+          case 'reconnaissance':
+            return [
+              { unitId: roles.fighter, quantity: 2, desiredTotal: 2 },
+              { unitId: roles.corvette, quantity: 1, desiredTotal: 1 },
+            ];
+          case 'first-combat':
+            return [
+              { unitId: roles.colonizer, quantity: 1, desiredTotal: 1 },
+              { unitId: roles.transport, quantity: 1, desiredTotal: 1 },
+            ];
+          case 'colonization':
+            return [
+              { unitId: roles.frigate, quantity: 1, desiredTotal: 1 },
+              { unitId: roles.cruiser, quantity: 1, desiredTotal: 1 },
+              { unitId: roles.recycler, quantity: 1, desiredTotal: 1 },
+            ];
+          case 'heavy-fleet':
+            return [
+              { unitId: roles.dreadnought, quantity: 1, desiredTotal: 1 },
+              { unitId: roles.cruiser, quantity: 1, desiredTotal: 2 },
+            ];
+          case 'planet-destruction':
+          case 'endgame-preparation':
+            return [
               { unitId: roles.dreadnought, quantity: 1, desiredTotal: 2 },
               { unitId: roles.cruiser, quantity: 1, desiredTotal: 3 },
               { unitId: roles.frigate, quantity: 1, desiredTotal: 3 },
             ];
-    }
-  })();
+        }
+      })();
   const pressure: readonly BotProductionTarget[] = threatened
     ? [
         { unitId: roles.fighter, quantity: 3, desiredTotal: 6 },
