@@ -11,6 +11,22 @@ async function waitForApp(page: Page): Promise<void> {
   });
 }
 
+async function readLocalStorageAcrossNavigation(
+  page: Page,
+  key: string,
+): Promise<string | null> {
+  try {
+    await page.waitForLoadState('domcontentloaded');
+    return await page.evaluate(
+      (storageKey) => window.localStorage.getItem(storageKey),
+      key,
+    );
+  } catch (error) {
+    if (page.isClosed()) throw error;
+    return null;
+  }
+}
+
 async function installClockOffsetInjection(page: Page): Promise<void> {
   await page.route('**/*', async (route) => {
     const request = route.request();
@@ -85,16 +101,15 @@ test('seven-day catch-up resumes after browser interruption with reduced motion'
     `/?e2e=1&${CLOCK_OFFSET_QUERY}=604800000&e2eInterruptCatchUp=1#/planet/overview`,
     { waitUntil: 'domcontentloaded' },
   );
-  await expect.poll(() => page.evaluate(
-    (key) => window.localStorage.getItem(key),
-    CATCH_UP_INTERRUPTED_KEY,
-  ), { timeout: 30_000 }).toBe('true');
+  await expect.poll(
+    () => readLocalStorageAcrossNavigation(page, CATCH_UP_INTERRUPTED_KEY),
+    { timeout: 30_000 },
+  ).toBe('true');
   await waitForApp(page);
 
-  await expect.poll(() => page.evaluate(
-    (key) => window.localStorage.getItem(key),
-    CATCH_UP_PROGRESS_OBSERVED_KEY,
-  )).toBe('true');
+  await expect.poll(
+    () => readLocalStorageAcrossNavigation(page, CATCH_UP_PROGRESS_OBSERVED_KEY),
+  ).toBe('true');
   await expect(page.locator('#hud-world-time')).toHaveText('7д 02:00:00');
   await expect(page.locator('#campaign-return-summary')).toBeVisible();
   await expect(page.locator('#campaign-return-summary')).toContainText(
