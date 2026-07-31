@@ -21,7 +21,7 @@ const LEGACY_ECONOMY_PROFILE: EconomyProgressionProfile = {
 };
 
 const COMPRESSED_ECONOMY_PROFILE: EconomyProgressionProfile = {
-  startingResources: { metal: 35_000, crystal: 35_000, gas: 20_000 },
+  startingResources: { metal: 15_000, crystal: 12_000, gas: 6_000 },
   baseStorageCapacity: 60_000,
   basePopulationCapacity: 25,
   productionContributionPermille: 6_000,
