@@ -304,22 +304,7 @@ export function getBotPhaseProductionTargets(
   const roles = getFactionMechanicalRoles(factionId).ships;
   const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
   const primary: readonly BotProductionTarget[] = compressed
-    ? (() => {
-        switch (phase) {
-          case 'foundation':
-            return [{ unitId: roles.scout, quantity: 1, desiredTotal: 1 }];
-          case 'reconnaissance':
-            return [{ unitId: roles.fighter, quantity: 1, desiredTotal: 1 }];
-          case 'first-combat':
-            return [{ unitId: roles.colonizer, quantity: 1, desiredTotal: 1 }];
-          case 'colonization':
-            return [{ unitId: roles.frigate, quantity: 1, desiredTotal: 1 }];
-          case 'heavy-fleet':
-          case 'planet-destruction':
-          case 'endgame-preparation':
-            return [];
-        }
-      })()
+    ? []
     : (() => {
         switch (phase) {
           case 'foundation':
