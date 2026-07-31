@@ -204,6 +204,12 @@ function chooseProduction(
   const phasePriority = getBotPhaseProductionTargets(state, empireId, phase, threatened)
     .filter((target) => countUnit(state, empireId, target.unitId) < target.desiredTotal)
     .map((target) => ({ id: target.unitId, quantity: target.quantity }));
+  const expeditionSupport =
+    compressed &&
+    phase === 'first-combat' &&
+    countUnit(state, empireId, roles.ships.scout) < 2
+      ? [{ id: roles.ships.scout, quantity: 1 }]
+      : [];
   const availableCommanders = compressed ? [] : commanderCandidates(state, empireId);
   const fallback: readonly { readonly id: string; readonly quantity: number }[] = compressed
     ? []
@@ -232,6 +238,7 @@ function chooseProduction(
         ];
   const priority = [
     ...phasePriority,
+    ...expeditionSupport,
     ...availableCommanders.slice(0, 1),
     ...fallback,
   ];
