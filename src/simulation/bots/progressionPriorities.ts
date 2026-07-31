@@ -32,12 +32,6 @@ export interface BotProductionTarget {
   readonly desiredTotal: number;
 }
 
-interface PhaseEconomyLevels {
-  readonly metal: number;
-  readonly crystal: number;
-  readonly gas: number;
-}
-
 const buildingTargetCache = new Map<string, readonly BotBuildingTarget[]>();
 const researchTargetCache = new Map<string, readonly BotResearchTarget[]>();
 const productionTargetCache = new Map<string, readonly BotProductionTarget[]>();
@@ -78,24 +72,6 @@ function phaseShipTargets(
     case 'planet-destruction':
     case 'endgame-preparation':
       return [];
-  }
-}
-
-function phaseEconomyLevels(phase: BotProgressionPhase): PhaseEconomyLevels {
-  switch (phase) {
-    case 'foundation':
-    case 'reconnaissance':
-      return { metal: 1, crystal: 1, gas: 1 };
-    case 'first-combat':
-      return { metal: 2, crystal: 6, gas: 3 };
-    case 'colonization':
-      return { metal: 4, crystal: 8, gas: 5 };
-    case 'heavy-fleet':
-      return { metal: 6, crystal: 10, gas: 7 };
-    case 'planet-destruction':
-      return { metal: 8, crystal: 10, gas: 9 };
-    case 'endgame-preparation':
-      return { metal: 10, crystal: 10, gas: 10 };
   }
 }
 
@@ -190,13 +166,6 @@ function createPhasePrerequisiteTargets(
   }
   if (phase === 'planet-destruction' || phase === 'endgame-preparation') {
     addBuilding(roles.buildings.complete.supremeGalacticGates, 1);
-  }
-
-  if (profileId === 'compressed-v1') {
-    const economy = phaseEconomyLevels(phase);
-    addBuilding(roles.buildings.complete.metalPrimary, economy.metal);
-    addBuilding(roles.buildings.complete.crystalPrimary, economy.crystal);
-    addBuilding(roles.buildings.complete.gasPrimary, economy.gas);
   }
 
   const buildings = buildingOrder.map((buildingId) => ({
@@ -300,22 +269,7 @@ export function getBotPhaseProductionTargets(
   const roles = getFactionMechanicalRoles(factionId).ships;
   const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
   const primary: readonly BotProductionTarget[] = compressed
-    ? (() => {
-        switch (phase) {
-          case 'foundation':
-            return [{ unitId: roles.scout, quantity: 1, desiredTotal: 1 }];
-          case 'reconnaissance':
-            return [{ unitId: roles.fighter, quantity: 1, desiredTotal: 1 }];
-          case 'first-combat':
-            return [{ unitId: roles.colonizer, quantity: 1, desiredTotal: 1 }];
-          case 'colonization':
-            return [{ unitId: roles.frigate, quantity: 1, desiredTotal: 1 }];
-          case 'heavy-fleet':
-          case 'planet-destruction':
-          case 'endgame-preparation':
-            return [];
-        }
-      })()
+    ? []
     : (() => {
         switch (phase) {
           case 'foundation':
