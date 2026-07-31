@@ -18,6 +18,7 @@ import { planBotThreatAndRecovery } from './threatRecoveryPlanner';
 
 export type BotPlannerSource = 'economy' | 'research' | 'production' | 'fleet' | 'threat';
 export const MAX_BOT_DECISIONS_PER_RUN = 32;
+export const POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS = 3_600;
 
 export interface BotSchedulerAuditEntry {
   readonly empireId: string;
@@ -274,12 +275,18 @@ function getNextDueProfile(
 }
 
 function getDecisionIntervalSeconds(state: GameState, profile: BotProfile): number {
-  if (
-    state.campaignSettings.progressionProfile === 'compressed-v1' &&
-    profile.earlyDecisionIntervalSeconds !== undefined
-  ) {
+  if (state.campaignSettings.progressionProfile === 'compressed-v1') {
     const phase = getBotProgressionPhase(state, profile.empireId);
-    if (phase === 'foundation' || phase === 'reconnaissance') {
+    if (phase === 'endgame-preparation') {
+      return Math.max(
+        profile.decisionIntervalSeconds,
+        POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS,
+      );
+    }
+    if (
+      profile.earlyDecisionIntervalSeconds !== undefined &&
+      (phase === 'foundation' || phase === 'reconnaissance')
+    ) {
       return Math.min(
         profile.decisionIntervalSeconds,
         profile.earlyDecisionIntervalSeconds,
