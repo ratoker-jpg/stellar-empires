@@ -3,7 +3,7 @@ import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import type { IntelPlanetSnapshot } from '../intelligence/types';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
-import { resolveCanonicalUnitId } from '../units/unitAliases';
+import { getLegacyUnitIdsForCanonical } from '../units/unitAliases';
 import { queueUnitBatch } from '../units/productionCommands';
 import { planBotEconomy } from './economyPlanner';
 import { planBotFleetMission } from './fleetMissionPlanner';
@@ -196,26 +196,25 @@ function recoveryPhase(
 }
 
 function countEmpireUnit(state: GameState, empireId: string, unitId: string): number {
-  const canonicalId = resolveCanonicalUnitId(unitId);
-  const matches = (candidateId: string): boolean =>
-    resolveCanonicalUnitId(candidateId) === canonicalId;
-  const definition = getUnitDefinition(canonicalId) ?? getUnitDefinition(unitId);
+  const ids = new Set([unitId, ...getLegacyUnitIdsForCanonical(unitId)]);
+  const definition = getUnitDefinition(unitId);
   const isDefense = definition?.kind === 'defense';
   const onPlanets = state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
     .reduce((total, planet) => {
-      const inventory = Object.entries(
-        isDefense ? planet.inventory.defenses : planet.inventory.ships,
-      ).reduce(
-        (subtotal, [candidateId, quantity]) =>
-          subtotal + (matches(candidateId) ? quantity : 0),
+      const inventory = ids.values().reduce(
+        (subtotal, candidateId) => subtotal + (
+          isDefense
+            ? planet.inventory.defenses[candidateId] ?? 0
+            : planet.inventory.ships[candidateId] ?? 0
+        ),
         0,
       );
       const queue = isDefense
         ? planet.productionQueues.defense
         : planet.productionQueues.shipyard;
       const queued = queue.reduce(
-        (subtotal, item) => subtotal + (matches(item.unitId) ? item.quantity : 0),
+        (subtotal, item) => subtotal + (ids.has(item.unitId) ? item.quantity : 0),
         0,
       );
       return total + inventory + queued;
@@ -224,9 +223,8 @@ function countEmpireUnit(state: GameState, empireId: string, unitId: string): nu
   return state.fleets
     .filter((fleet) => fleet.empireId === empireId)
     .reduce(
-      (total, fleet) => total + Object.entries(fleet.ships).reduce(
-        (subtotal, [candidateId, quantity]) =>
-          subtotal + (matches(candidateId) ? quantity : 0),
+      (total, fleet) => total + ids.values().reduce(
+        (subtotal, candidateId) => subtotal + (fleet.ships[candidateId] ?? 0),
         0,
       ),
       onPlanets,
