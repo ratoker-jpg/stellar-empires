@@ -168,7 +168,7 @@ test('market executes on the explicitly selected colony', async ({ page }) => {
   await expect(page.locator('[data-testid="market-colony-stocks"]')).toContainText('Металл');
   await page.locator('[data-testid="market-give-resource"]').selectOption('metal');
   await page.locator('[data-testid="market-receive-resource"]').selectOption('crystal');
-  await page.locator('[data-testid="market-give-amount"]').fill('1');
+  await page.locator('[data-testid="market-give-amount"]').fill('500');
   await expect(page.locator('[data-testid="market-quote"]')).toContainText('Получишь');
   await page.getByRole('button', { name: 'Подтвердить обмен' }).click();
 
