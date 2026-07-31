@@ -23,7 +23,7 @@ describe('planet specializations', () => {
 
     const planet = specialization.value.planets.find((candidate) => candidate.id === planetId);
     expect(planet?.specializationId).toBe('resource');
-    expect(planet?.economy.resources.metal.productionPerHour).toBe(154);
+    expect(planet?.economy.resources.metal.productionPerHour).toBe(928);
 
     const template = executeCommand(specialization.value, {
       type: 'SET_PLANET_DEVELOPMENT_TEMPLATE',
