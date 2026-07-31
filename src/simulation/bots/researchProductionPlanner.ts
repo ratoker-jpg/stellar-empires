@@ -115,18 +115,25 @@ function countUnit(state: GameState, empireId: string, unitId: string): number {
   const ids = [unitId, ...getLegacyUnitIdsForCanonical(unitId)];
   const onPlanets = state.planets
     .filter((planet) => planet.ownerEmpireId === empireId)
-    .reduce(
-      (total, planet) =>
-        total + ids.reduce(
-          (subtotal, id) => subtotal + (
-            definition?.kind === 'defense'
-              ? planet.inventory.defenses[id] ?? 0
-              : planet.inventory.ships[id] ?? 0
-          ),
-          0,
+    .reduce((total, planet) => {
+      const inventory = ids.reduce(
+        (subtotal, id) => subtotal + (
+          definition?.kind === 'defense'
+            ? planet.inventory.defenses[id] ?? 0
+            : planet.inventory.ships[id] ?? 0
         ),
-      0,
-    );
+        0,
+      );
+      const queue = definition?.kind === 'defense'
+        ? planet.productionQueues.defense
+        : planet.productionQueues.shipyard;
+      const queued = queue.reduce(
+        (subtotal, item) => subtotal + (ids.includes(item.unitId) ? item.quantity : 0),
+        0,
+      );
+      return total + inventory + queued;
+    }, 0);
+  if (definition?.kind === 'defense') return onPlanets;
   return state.fleets
     .filter((fleet) => fleet.empireId === empireId)
     .reduce((total, fleet) => total + ids.reduce(
