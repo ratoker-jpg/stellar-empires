@@ -311,23 +311,21 @@ export function getBotPhaseProductionTargets(
   const factionId = getFactionIdForEmpire(state, empireId);
   const roles = getFactionMechanicalRoles(factionId).ships;
   const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
+  const compressedMilestones = [
+    { unitId: roles.scout, quantity: 1, desiredTotal: 1 },
+    { unitId: roles.fighter, quantity: 1, desiredTotal: 1 },
+    { unitId: roles.colonizer, quantity: 1, desiredTotal: 1 },
+    { unitId: roles.frigate, quantity: 1, desiredTotal: 1 },
+  ] as const;
+  const compressedMilestoneCount = phase === 'foundation'
+    ? 1
+    : phase === 'reconnaissance'
+      ? 2
+      : phase === 'first-combat'
+        ? 3
+        : 4;
   const primary: readonly BotProductionTarget[] = compressed
-    ? (() => {
-        switch (phase) {
-          case 'foundation':
-            return [{ unitId: roles.scout, quantity: 1, desiredTotal: 1 }];
-          case 'reconnaissance':
-            return [{ unitId: roles.fighter, quantity: 1, desiredTotal: 1 }];
-          case 'first-combat':
-            return [{ unitId: roles.colonizer, quantity: 1, desiredTotal: 1 }];
-          case 'colonization':
-            return [{ unitId: roles.frigate, quantity: 1, desiredTotal: 1 }];
-          case 'heavy-fleet':
-          case 'planet-destruction':
-          case 'endgame-preparation':
-            return [];
-        }
-      })()
+    ? compressedMilestones.slice(0, compressedMilestoneCount)
     : (() => {
         switch (phase) {
           case 'foundation':
@@ -372,7 +370,9 @@ export function getBotPhaseProductionTargets(
         { unitId: roles.corvette, quantity: 2, desiredTotal: 4 },
       ]
     : [];
-  const targets = [...pressure, ...primary];
+  const targets = compressed
+    ? [...primary, ...pressure]
+    : [...pressure, ...primary];
   productionTargetCache.set(key, targets);
   return targets;
 }
