@@ -71,7 +71,11 @@ function candidatesForPersonality(
   const economy = planBotEconomy(state, profile.empireId);
   const science = planBotResearchAndProduction(state, profile.empireId);
   const fleet = planBotFleetMission(state, profile.empireId);
-  const threat = planBotThreatAndRecovery(state, profile.empireId);
+  const threat = planBotThreatAndRecovery(state, profile.empireId, {
+    economy,
+    researchProduction: science,
+    fleet,
+  });
   if (state.campaignSettings.progressionProfile === 'compressed-v1') {
     return {
       candidates: [
