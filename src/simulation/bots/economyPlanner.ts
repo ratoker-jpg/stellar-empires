@@ -227,17 +227,6 @@ function createResourceSupportPlan(
     );
 
   for (const candidate of candidates) {
-    const market = createMarketSupportPlan(
-      state,
-      empireId,
-      planet,
-      phase,
-      blockedLabel,
-      candidate.resourceId,
-      cost,
-    );
-    if (market !== undefined) return market;
-
     for (const buildingId of resourceBuildings[candidate.resourceId]) {
       const definition = definitions.get(buildingId);
       if (definition === undefined) continue;
@@ -256,6 +245,17 @@ function createResourceSupportPlan(
         };
       }
     }
+
+    const market = createMarketSupportPlan(
+      state,
+      empireId,
+      planet,
+      phase,
+      blockedLabel,
+      candidate.resourceId,
+      cost,
+    );
+    if (market !== undefined) return market;
   }
   return undefined;
 }
@@ -312,19 +312,7 @@ function createOrderedPhasePlan(
     ...resourceBuildings.crystal,
     ...resourceBuildings.gas,
   ]);
-  const bootstrap = profileId === 'compressed-v1' && phase === 'first-combat'
-    ? targets.find((candidate) => {
-        if (!resourceBuildingIds.has(candidate.buildingId)) return false;
-        const definition = definitions.get(candidate.buildingId);
-        if (definition === undefined) return false;
-        const targetLevel = Math.min(
-          candidate.level,
-          getBuildingMaxLevel(profileId, definition),
-        );
-        return getBuildingLevel(planet.buildings, candidate.buildingId) < targetLevel;
-      })
-    : undefined;
-  const milestone = bootstrap ?? targets.find((candidate) => {
+  const milestone = targets.find((candidate) => {
     if (resourceBuildingIds.has(candidate.buildingId)) return false;
     const definition = definitions.get(candidate.buildingId);
     if (definition === undefined) return false;
