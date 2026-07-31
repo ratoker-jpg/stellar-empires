@@ -180,6 +180,20 @@ function createPhasePrerequisiteTargets(
     }
   };
 
+  const addCompressedEconomyTargets = (): void => {
+    if (profileId !== 'compressed-v1') return;
+    const economy = phaseEconomyLevels(phase);
+    addBuilding(roles.buildings.complete.metalPrimary, economy.metal);
+    addBuilding(roles.buildings.complete.crystalPrimary, economy.crystal);
+    addBuilding(roles.buildings.complete.gasPrimary, economy.gas);
+  };
+
+  const frontLoadEconomy =
+    profileId === 'compressed-v1' &&
+    phase !== 'foundation' &&
+    phase !== 'reconnaissance';
+  if (frontLoadEconomy) addCompressedEconomyTargets();
+
   for (const unitId of phaseShipTargets(state, empireId, phase)) {
     addUnitRequirements(unitId);
   }
@@ -187,12 +201,7 @@ function createPhasePrerequisiteTargets(
     addBuilding(roles.buildings.complete.supremeGalacticGates, 1);
   }
 
-  if (profileId === 'compressed-v1') {
-    const economy = phaseEconomyLevels(phase);
-    addBuilding(roles.buildings.complete.metalPrimary, economy.metal);
-    addBuilding(roles.buildings.complete.crystalPrimary, economy.crystal);
-    addBuilding(roles.buildings.complete.gasPrimary, economy.gas);
-  }
+  if (!frontLoadEconomy) addCompressedEconomyTargets();
 
   const buildings = buildingOrder.map((buildingId) => ({
     buildingId,
