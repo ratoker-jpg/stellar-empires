@@ -119,7 +119,7 @@ export function runProgressionScenario(
     playerFaction: input.playerFaction,
     worldSpeed: input.worldSpeed ?? 2,
     maximumRealSeconds: input.maximumRealSeconds ?? 16 * 60 * 60,
-    decisionStepGameSeconds: input.decisionStepGameSeconds ?? 300,
+    decisionStepGameSeconds: input.decisionStepGameSeconds ?? 240,
   };
   let state = createInitialGameState(resolvedInput.seed, {
     playerFaction: resolvedInput.playerFaction,
