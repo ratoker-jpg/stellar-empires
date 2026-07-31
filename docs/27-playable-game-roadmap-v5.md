@@ -1,24 +1,24 @@
 # Stellar Empires — canonical roadmap to a complete playable game v5
 
 **Status:** active canonical product roadmap  
-**Updated:** 2026-07-30  
-**Last merged PR:** #134 `PROGRESSION-PROFILE-FOUNDATION` · `aa87e764ef40444660039dc8d6a96d7f5514cc23`  
+**Updated:** 2026-07-31  
+**Last merged PR:** #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE` · `3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992`  
 **Runtime baseline:** schema v16 / save format v3 / immutable dual progression profiles  
-**Last completed batch:** `LOCAL-CAMPAIGN-TIME-PACING-01`  
-**Next authorized work:** PR #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE`  
+**Last completed batch:** `CAMPAIGN-PROGRESSION-BALANCE-01`  
+**Current authorized work:** Audit PR #137 `MULTI-COLONY-ECONOMY-LOGISTICS-01`  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
 
 ```text
 choose faction and immutable campaign settings
-→ develop economy and infrastructure
+→ develop a coherent multi-colony economy
 → research and build fleets
 → explore Universe / Galaxy / Solar systems
 → spy, transport, colonize, recycle, raid and fight
 → damage or destroy rival secondary colonies
 → compete and negotiate with autonomous bot empires
-→ participate in alliances and solar war
+→ participate in alliances and Solar War
 → build or destroy final Gates
 → reach deterministic alliance or solo victory, or lose when another side wins
 ```
@@ -27,103 +27,87 @@ Nemexia references define systemic depth only. Stellar Empires keeps original te
 
 Canonical contracts:
 
-- endgame: `docs/25-solar-war-obelisks-gates-and-progression.md`;
-- local campaign/world speed/offline progression: `docs/25a-local-campaign-world-speed-and-offline-progression.md`;
 - current delivery authorization: `docs/audits/current-batch-audit.md`;
-- completed campaign-time batch: `docs/audits/completed/local-campaign-time-pacing-01.md`;
-- PR #131 delivery record: `docs/changes/pr131-campaign-settings-persistence.md`;
-- PR #132 delivery record: `docs/changes/pr132-campaign-clock-offline-gate.md`.
+- M5 implementation contract: `docs/audits/contracts/multi-colony-economy-logistics-01.md`;
+- local campaign/world speed/offline progression: `docs/25a-local-campaign-world-speed-and-offline-progression.md`;
+- endgame: `docs/25-solar-war-obelisks-gates-and-progression.md`.
 
 ## 2. Source-of-truth hierarchy
 
 1. current merged code/tests on `main`;
-2. accepted audit and contracts;
+2. accepted current audit and contracts;
 3. `docs/audits/current-execution-state.md`;
 4. `docs/project-status.json` and `docs/roadmap-pr-index.json`;
 5. this roadmap;
 6. canonical product/endgame contracts;
-7. older audits and handoffs as history only.
+7. completed audits and older handoffs as history.
 
-## 3. Delivered baseline through PR #134
+## 3. Delivered baseline through PR #135
 
 ### Simulation and persistence
 
 - deterministic command/event/replay/checksum model;
-- schema v16 immutable checksummed `CampaignSettings` with `legacy-v1 | compressed-v1`;
-- scenario presets `test | campaign | fidelity`;
-- immutable world speed `x1 | x2 | x5 | x10`;
-- save format v3 integrity over stable envelope fields, runtime metadata and state;
-- protected processed cursor, pending catch-up and pending return-summary metadata;
-- state v1–v15 and save format v1–v2 migration to x1 plus `legacy-v1` using validated envelope time;
+- schema v16 immutable checksummed campaign settings and `legacy-v1 | compressed-v1` profile;
+- save format v3 with protected cursor, continuation and return-summary metadata;
+- state v1–v15 and save v1–v2 migration;
 - autosave, manual slots, import/export, snapshots and recovery;
-- versioned state/runtime-metadata autosave staging resistant to stale writes;
-- checksum-safe JSON persistence with cleared optional metadata omitted;
-- bounded histories and serialized deterministic bot decision cursors;
-- player and bots share ordinary validation and command paths.
+- bounded histories and deterministic bot cursors;
+- player and bots share ordinary validation and commands.
 
-### Campaign creation and time
+### Campaign creation, time and progression
 
-- one accessible transaction selects faction, topology and immutable speed;
-- Aegis, Synod and Veyra are available;
-- compact, campaign and fidelity topologies are available;
-- x2 and `compressed-v1` are presented as recommended;
-- offline progression is visibly fixed on;
+- faction, topology and immutable x1/x2/x5/x10 world speed;
 - one chronological active/offline campaign-time orchestrator;
-- scheduled-event, logistics, world-event and bot-decision boundaries;
-- fixed-point speed mapping with persistent fractional carry;
-- automatic open-session campaign clock;
-- bounded resumable offline catch-up with processed-cursor checkpoints;
-- cooperative progress and retained retry presentation;
-- durable redacted return summary until successful acknowledgement;
-- normal player fast-forward controls removed.
+- bounded resumable catch-up and durable redacted return summary;
+- compressed starting economy, capacity, production/storage/reward profile;
+- deterministic phase-aware bot economy/research/production/fleet behavior;
+- permanent 5-seed × 3-player-faction progression matrix;
+- measured x2 median 14 h 28 m and maximum 15 h 18 m;
+- seven-day catch-up 9.99 seconds against the 30-second gate.
 
 ### World and mechanics
 
 - 20-slot Universe and three topology presets;
 - multi-colony economy/research/production foundations;
+- planet specializations and development templates;
+- persistent abstract logistics routes and dynamic local market;
 - complete building, technology, ship, defence and Commander catalogs;
-- ordinary missions, combat, plunder, debris and reports;
-- colonization, expeditions, space objects, logistics, market and world-event foundations;
-- formations, priorities, upgrades and Commander effects;
-- deterministic intelligence and incoming visibility;
-- deterministic building demolition and capped planet destruction;
-- final-colony protection, atomic recovery, debris recycling and fresh recolonization.
+- ordinary missions, combat, plunder, debris, reports, expeditions and space objects;
+- deterministic intelligence, demolition, planet destruction, recovery and recolonization.
 
 ### Runtime art and application
 
-- 217 mechanical IDs through 173 catalog runtime images;
+- 217 mechanical IDs through 173 runtime images;
 - Universe → Galaxy → Solar-system routing;
-- one application controller and nine canonical route families;
-- routed development, fleet, operations, command, reports and system workspaces;
-- persistent HUD, breadcrumbs and route/colony/return context;
-- grouped player-centered navigation;
-- keyboard, reduced motion and release-viewport Browser E2E;
-- campaign-time modal keyboard actions isolated from background Phaser controls;
-- measured task budgets and no-dead-end navigation gate.
+- one application controller and canonical route families;
+- routed development, fleet, Operations, command, reports and system workspaces;
+- persistent HUD, breadcrumbs and colony/return context;
+- keyboard, reduced motion and release-viewport Browser E2E.
 
-### PR #134 validation
+## 4. Current measured gap — M5 colony coherence
 
-- final head `0c5b6940ee25ca28de4ac4d194535f77b0ba332a`;
-- CI `30553697886`;
-- Browser E2E `30553697703`;
-- Graphify `30553697767`;
-- no unresolved review threads;
-- merge `aa87e764ef40444660039dc8d6a96d7f5514cc23`.
+The required state and commands already exist, but they are not yet one coherent player/bot system.
 
-## 4. Current measured gap — compressed campaign closure
+Audit #137 verifies:
 
-The campaign now has schema-v16 dual-profile identity and all existing progression consumers resolve through the immutable profile. The remaining accepted work is the final #135 economy/reward/bot and measured-duration closure.
+- Empire Overview lacks route inflow/outflow and sustainability health;
+- route creation allows duplicate keys;
+- paused routes resume from stale departure time;
+- Operations logistics lacks editing and full diagnostics;
+- market silently acts on the active colony rather than an explicit selection;
+- duplicate legacy market/logistics panels remain uncalled;
+- bots do not allocate colony roles or operate logistics routes.
 
-`COMPRESSED-CAMPAIGN-PROGRESSION-GATE` must deliver:
+M5 is therefore a medium four-PR batch:
 
-- compressed starting stocks, capacities, population and storage/production multipliers;
-- consistent mission, expedition and space-object rewards;
-- deterministic bot progression phases using ordinary commands;
-- player and bot milestone gates across the accepted seed/faction matrix;
-- exact x1/x2/x5/x10 scaling equivalence;
-- active/offline/save-load partition equivalence;
-- median ≤12 x2 hours and every accepted seed ≤16 x2 hours;
-- release-viewport Browser E2E, change record and completed batch archive.
+```text
+#138 COLONY-PORTFOLIO-FOUNDATION
+#139 LOGISTICS-ROUTE-LIFECYCLE
+#140 COLONY-OPERATIONS-UX
+#141 BOT-COLONY-LOGISTICS-GATE
+```
+
+The batch retains schema v16/save v3 and abstract fixed-interval logistics. It does not add physical convoys, fuel, distance, interception or route combat.
 
 ## 5. Release 1.0 definition
 
@@ -131,13 +115,14 @@ A player can:
 
 - choose any faction and immutable campaign settings;
 - leave and resume through deterministic offline catch-up;
-- build a viable multi-colony economy;
+- build and understand a viable multi-colony economy;
+- configure predictable logistics and local market support;
 - unlock the complete catalog;
 - navigate and launch every supported mission without dead ends;
 - inspect intelligence/reports and return to relevant context;
 - fight fleets/defence and use Commander/planet-destroyer mechanics;
 - safely lose and recolonize secondary colonies;
-- interact with PvE/economic systems;
+- interact with complete PvE/economic systems;
 - join/create alliances or remain solo;
 - reach alliance/solo victory or lose when another side wins.
 
@@ -153,29 +138,26 @@ Bots must use the same commands, resources, timing and intelligence limits. At l
 | M3b — Navigation/usability repair | completed | Audit #125; #126–#129 |
 | M4a — Ordinary missions/intelligence | completed | Audit #116; #117–#120 |
 | M4b — Planet demolition/destruction/recovery | completed | Audit #121; #122–#123 |
-| M4c — Local campaign time foundation | completed | #130 accepted; #131–#132 merged |
-| M4d — Campaign progression balance | implementation active | Audit #133; #134 merged; #135 next |
-| M5 — Multi-colony economy/logistics coherence | not audited | sustainability and bot planning |
+| M4c — Local campaign time foundation | completed | Audit #130; #131–#132 |
+| M4d — Campaign progression balance | completed | Audit #133; #134–#135 |
+| M5 — Multi-colony economy/logistics coherence | audit active | Audit #137; #138–#141 after merge |
 | M6 — Full PvE/meta systems | not audited | PvE depth, Arena, Admiral meta, services |
-| M7 — Autonomous bot parity | not audited | honest full-domain bot loop and catch-up parity |
-| M8 — Complete endgame | not audited | alliances, solar war, Obelisks, Gates, victory/defeat |
+| M7 — Autonomous bot parity | not audited | honest full-domain bot loop beyond colony economy |
+| M8 — Complete endgame | not audited | alliances, Solar War, Obelisks, Gates, victory/defeat |
 | M9 — Release candidate | not audited | balance, onboarding, QA, performance, release |
 
 ## 7. Key invariants
 
 - current `main` is the only valid baseline;
-- the next repository PR must be authorized implementation PR #135;
-- campaign settings remain immutable deterministic state;
-- wall-clock cursor/continuation remain outside `GameState` but integrity protected;
-- old saves migrate to x1 and `legacy-v1`; new campaigns use `compressed-v1`;
-- checkpoint cursor represents processed time only;
+- Audit #137 must merge before #138 starts;
+- campaign settings and progression profile remain immutable deterministic state;
 - no elapsed duration is silently skipped or capped away;
 - active and offline paths use one orchestrator;
-- pending summary survives until successful acknowledgement;
 - player and bots use ordinary commands and visibility rules;
-- no continuously running server is required for Release 1.0;
-- accepted progression constants may change only through the recorded divergence rule and full matrix rerun.
+- schema v16/save v3 remain unless an audit is replaced;
+- M5 does not alter progression constants or accepted duration gates;
+- no continuously running server is required for Release 1.0.
 
 ## 8. Immediate action
 
-Create PR #135 `COMPRESSED-CAMPAIGN-PROGRESSION-GATE` from fresh synchronized `main`. Implement only the accepted economy, reward, bot-phase and measured closure contract; do not implement alliances, Solar War, functional Gates or victory/defeat.
+Finish Audit PR #137, run CI/Browser E2E/Graphify, resolve review and squash merge. Then create only PR #138 `COLONY-PORTFOLIO-FOUNDATION` from the resulting fresh `main`.
