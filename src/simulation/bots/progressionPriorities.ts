@@ -195,7 +195,8 @@ function createPhasePrerequisiteTargets(
   const frontLoadEconomy =
     profileId === 'compressed-v1' &&
     phase !== 'foundation' &&
-    phase !== 'reconnaissance';
+    phase !== 'reconnaissance' &&
+    phase !== 'first-combat';
   if (frontLoadEconomy) addCompressedEconomyTargets();
 
   for (const unitId of phaseShipTargets(state, empireId, phase)) {
