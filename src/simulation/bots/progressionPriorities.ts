@@ -35,6 +35,7 @@ export interface BotProductionTarget {
 interface PhaseEconomyLevels {
   readonly metal: number;
   readonly crystal: number;
+  readonly crystalSecondary: number;
   readonly gas: number;
   readonly gasSecondary: number;
 }
@@ -86,15 +87,39 @@ function phaseEconomyLevels(phase: BotProgressionPhase): PhaseEconomyLevels {
   switch (phase) {
     case 'foundation':
     case 'reconnaissance':
-      return { metal: 1, crystal: 1, gas: 1, gasSecondary: 0 };
+      return {
+        metal: 1,
+        crystal: 1,
+        crystalSecondary: 0,
+        gas: 1,
+        gasSecondary: 0,
+      };
     case 'first-combat':
-      return { metal: 6, crystal: 10, gas: 10, gasSecondary: 3 };
+      return {
+        metal: 6,
+        crystal: 10,
+        crystalSecondary: 4,
+        gas: 10,
+        gasSecondary: 3,
+      };
     case 'colonization':
-      return { metal: 8, crystal: 10, gas: 10, gasSecondary: 4 };
+      return {
+        metal: 8,
+        crystal: 10,
+        crystalSecondary: 5,
+        gas: 10,
+        gasSecondary: 4,
+      };
     case 'heavy-fleet':
     case 'planet-destruction':
     case 'endgame-preparation':
-      return { metal: 10, crystal: 10, gas: 10, gasSecondary: 6 };
+      return {
+        metal: 10,
+        crystal: 10,
+        crystalSecondary: 6,
+        gas: 10,
+        gasSecondary: 6,
+      };
   }
 }
 
@@ -190,9 +215,18 @@ function createPhasePrerequisiteTargets(
     const economy = phaseEconomyLevels(phase);
     addBuilding(roles.buildings.complete.gasPrimary, economy.gas);
     addBuilding(roles.buildings.complete.crystalPrimary, economy.crystal);
+    addBuilding(roles.buildings.complete.crystalSecondary, economy.crystalSecondary);
     addBuilding(roles.buildings.complete.gasSecondary, economy.gasSecondary);
     addBuilding(roles.buildings.complete.metalPrimary, economy.metal);
   };
+
+  const compressedNeedsStableEconomy =
+    profileId === 'compressed-v1' &&
+    phase !== 'foundation' &&
+    phase !== 'reconnaissance';
+  if (compressedNeedsStableEconomy) {
+    addBuilding(roles.buildings.complete.government, 2);
+  }
 
   const frontLoadEconomy =
     profileId === 'compressed-v1' &&
