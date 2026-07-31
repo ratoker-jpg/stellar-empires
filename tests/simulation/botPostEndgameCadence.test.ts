@@ -7,7 +7,7 @@ import {
 import { getBotProgressionPhase } from '../../src/simulation/bots/progressionPhase';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
-import { AEGIS_BUILDING_CATALOG } from '../../src/simulation/planet/buildingCatalog';
+import { getBuildingCatalogForFaction } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 
 describe('post-endgame bot cadence', () => {
   it('reduces compressed bot decision frequency after endgame preparation is reached', () => {
@@ -29,7 +29,7 @@ describe('post-endgame bot cadence', () => {
         planet.ownerEmpireId === empireId
           ? {
               ...planet,
-              buildings: AEGIS_BUILDING_CATALOG.map((definition) => ({
+              buildings: getBuildingCatalogForFaction('aegis').map((definition) => ({
                 buildingId: definition.id,
                 level: definition.maxLevel,
               })),
