@@ -60,6 +60,7 @@ interface ResourceBuildingIds {
 }
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
+const COMPRESSED_MINIMUM_MARKET_RETURN_PERMILLE = 500;
 
 function buildingCommand(
   empireId: string,
@@ -178,7 +179,11 @@ function createMarketSupportPlan(
         receiveResourceId,
         giveAmount,
       );
-      if (quote.accepted && quote.receiveAmount > 0) {
+      const acceptableReturn =
+        state.campaignSettings.progressionProfile !== 'compressed-v1' ||
+        quote.receiveAmount * 1_000 >=
+          giveAmount * COMPRESSED_MINIMUM_MARKET_RETURN_PERMILLE;
+      if (quote.accepted && quote.receiveAmount > 0 && acceptableReturn) {
         return {
           empireId,
           planetId: planet.id,
@@ -305,6 +310,7 @@ function createOrderedPhasePlan(
   targets: readonly BuildingTarget[],
   catalog: readonly BuildingDefinition[],
   resourceBuildings: ResourceBuildingIds,
+  bootstrapBuildingIds: ReadonlySet<string> = new Set<string>(),
 ): BotEconomyPlan | undefined {
   const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
   const resourceBuildingIds = new Set<string>([
@@ -312,8 +318,7 @@ function createOrderedPhasePlan(
     ...resourceBuildings.crystal,
     ...resourceBuildings.gas,
   ]);
-  const milestone = targets.find((candidate) => {
-    if (resourceBuildingIds.has(candidate.buildingId)) return false;
+  const isIncomplete = (candidate: BuildingTarget): boolean => {
     const definition = definitions.get(candidate.buildingId);
     if (definition === undefined) return false;
     const targetLevel = Math.min(
@@ -321,6 +326,13 @@ function createOrderedPhasePlan(
       getBuildingMaxLevel(profileId, definition),
     );
     return getBuildingLevel(planet.buildings, candidate.buildingId) < targetLevel;
+  };
+  const bootstrap = targets.find(
+    (candidate) => bootstrapBuildingIds.has(candidate.buildingId) && isIncomplete(candidate),
+  );
+  const milestone = bootstrap ?? targets.find((candidate) => {
+    if (resourceBuildingIds.has(candidate.buildingId)) return false;
+    return isIncomplete(candidate);
   });
   if (milestone === undefined) return undefined;
 
@@ -525,6 +537,13 @@ export function planBotEconomy(
     if (plan !== undefined) return plan;
   }
 
+  const bootstrapBuildingIds = compressed && phase === 'first-combat'
+    ? new Set<string>([
+        roles.complete.government,
+        roles.complete.crystalSecondary,
+        roles.complete.gasSecondary,
+      ])
+    : new Set<string>();
   const phasePlan = createOrderedPhasePlan(
     state,
     profileId,
@@ -534,6 +553,7 @@ export function planBotEconomy(
     getBotPhaseBuildingTargets(state, empireId, phase),
     catalog,
     resourceBuildings,
+    bootstrapBuildingIds,
   );
   if (phasePlan !== undefined) return phasePlan;
 
