@@ -1,13 +1,22 @@
-import { appendCommandHistory } from '../history/stateHistory';
 import type { ResourceId } from '../economy/types';
+import { appendCommandHistory } from '../history/stateHistory';
 import type { PlanetState } from '../planet/types';
 import type { CommandLogEntry, CommandResult, GameCommand, GameState } from '../types';
-import type { LogisticsRoute, LogisticsRouteResultCode } from './types';
+import type {
+  LogisticsDepartureReceipt,
+  LogisticsRoute,
+  LogisticsRouteResultCode,
+} from './types';
 
 const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
 const MIN_INTERVAL_SECONDS = 300;
 const MAX_INTERVAL_SECONDS = 86_400;
 const MAX_AMOUNT_PER_TRIP = 100_000;
+
+export interface LogisticsDepartureProcessingResult {
+  readonly state: GameState;
+  readonly receipts: readonly LogisticsDepartureReceipt[];
+}
 
 function appendCommand(state: GameState, command: GameCommand): readonly CommandLogEntry[] {
   return appendCommandHistory(state.commandLog, command);
@@ -15,6 +24,47 @@ function appendCommand(state: GameState, command: GameCommand): readonly Command
 
 function isResourceId(value: unknown): value is ResourceId {
   return RESOURCE_IDS.includes(value as ResourceId);
+}
+
+function routeKey(route: Pick<
+  LogisticsRoute,
+  'empireId' | 'originPlanetId' | 'targetPlanetId' | 'resourceId'
+>): string {
+  return [route.empireId, route.originPlanetId, route.targetPlanetId, route.resourceId].join('\u0000');
+}
+
+function parseRouteSequence(routeId: string): number | null {
+  const match = /^logistics-(\d+)$/.exec(routeId);
+  if (match === null) return null;
+  const sequence = Number(match[1]);
+  return Number.isSafeInteger(sequence) ? sequence : null;
+}
+
+function compareLegacySurvivors(left: LogisticsRoute, right: LogisticsRoute): number {
+  const leftSequence = parseRouteSequence(left.id);
+  const rightSequence = parseRouteSequence(right.id);
+  if (leftSequence !== null && rightSequence !== null && leftSequence !== rightSequence) {
+    return leftSequence - rightSequence;
+  }
+  if (leftSequence !== null && rightSequence === null) return -1;
+  if (leftSequence === null && rightSequence !== null) return 1;
+  return left.id.localeCompare(right.id);
+}
+
+export function normalizeLogisticsRoutes(
+  routes: readonly LogisticsRoute[],
+): readonly LogisticsRoute[] {
+  const survivorByKey = new Map<string, { readonly route: LogisticsRoute; readonly index: number }>();
+  routes.forEach((route, index) => {
+    const key = routeKey(route);
+    const current = survivorByKey.get(key);
+    if (current === undefined || compareLegacySurvivors(route, current.route) < 0) {
+      survivorByKey.set(key, { route, index });
+    }
+  });
+  return [...survivorByKey.values()]
+    .sort((left, right) => left.index - right.index)
+    .map((entry) => entry.route);
 }
 
 function replacePlanets(
@@ -88,6 +138,19 @@ export function createLogisticsRoute(
       message: 'Both route endpoints must be owned by the empire.',
     };
   }
+  const key = routeKey({
+    empireId: command.empireId,
+    originPlanetId: origin.id,
+    targetPlanetId: target.id,
+    resourceId: command.resourceId,
+  });
+  if (state.logisticsRoutes.some((route) => routeKey(route) === key)) {
+    return {
+      ok: false,
+      code: 'LOGISTICS_ROUTE_DUPLICATE',
+      message: 'A route for this empire, endpoint pair and resource already exists.',
+    };
+  }
   const route: LogisticsRoute = {
     id: `logistics-${state.nextEventSequence}`,
     empireId: command.empireId,
@@ -128,6 +191,7 @@ export function updateLogisticsRoute(
   const originReserve = command.originReserve ?? route.originReserve;
   const intervalSeconds = command.intervalSeconds ?? route.intervalSeconds;
   const priority = command.priority ?? route.priority;
+  const status = command.status ?? route.status;
   const numberError = validateRouteNumbers(
     amountPerTrip,
     originReserve,
@@ -137,17 +201,20 @@ export function updateLogisticsRoute(
   if (numberError !== undefined) {
     return { ok: false, code: numberError, message: 'Route parameters are invalid.' };
   }
+  const resumed = route.status === 'paused' && status === 'active';
+  const activeIntervalChanged =
+    route.status === 'active' && status === 'active' && command.intervalSeconds !== undefined;
   const updated: LogisticsRoute = {
     ...route,
     amountPerTrip,
     originReserve,
     intervalSeconds,
     priority,
-    status: command.status ?? route.status,
+    status,
     nextDepartureAt:
-      command.intervalSeconds === undefined
-        ? route.nextDepartureAt
-        : state.clock.elapsedSeconds + intervalSeconds,
+      resumed || activeIntervalChanged
+        ? state.clock.elapsedSeconds + intervalSeconds
+        : route.nextDepartureAt,
   };
   return {
     ok: true,
@@ -185,7 +252,11 @@ function resolveRoute(
   state: GameState,
   route: LogisticsRoute,
   executedAt: number,
-): { readonly planets: readonly PlanetState[]; readonly route: LogisticsRoute } {
+): {
+  readonly planets: readonly PlanetState[];
+  readonly route: LogisticsRoute;
+  readonly receipt: LogisticsDepartureReceipt;
+} {
   const origin = findOwnedPlanet(state, route.empireId, route.originPlanetId);
   const target = findOwnedPlanet(state, route.empireId, route.targetPlanetId);
   let code: LogisticsRouteResultCode;
@@ -238,6 +309,13 @@ function resolveRoute(
       consecutiveMisses: code === 'transferred' ? 0 : route.consecutiveMisses + 1,
       lastResult: { executedAt, code, amount },
     },
+    receipt: {
+      routeId: route.id,
+      empireId: route.empireId,
+      executedAt,
+      resultCode: code,
+      amount,
+    },
   };
 }
 
@@ -256,18 +334,20 @@ export function getNextLogisticsDepartureAt(
     );
 }
 
-export function processLogisticsDeparturesAt(
+export function processLogisticsDeparturesAtWithReceipts(
   state: GameState,
   departureAt: number,
-): GameState {
+): LogisticsDepartureProcessingResult {
   const due = state.logisticsRoutes
     .filter((route) => route.status === 'active' && route.nextDepartureAt === departureAt)
     .sort((left, right) => right.priority - left.priority || left.id.localeCompare(right.id));
   let working = state;
+  const receipts: LogisticsDepartureReceipt[] = [];
   for (const dueRoute of due) {
     const route = working.logisticsRoutes.find((candidate) => candidate.id === dueRoute.id);
     if (route === undefined) continue;
     const resolved = resolveRoute(working, route, departureAt);
+    receipts.push(resolved.receipt);
     working = {
       ...working,
       planets: resolved.planets,
@@ -276,5 +356,12 @@ export function processLogisticsDeparturesAt(
       ),
     };
   }
-  return working;
+  return { state: working, receipts };
+}
+
+export function processLogisticsDeparturesAt(
+  state: GameState,
+  departureAt: number,
+): GameState {
+  return processLogisticsDeparturesAtWithReceipts(state, departureAt).state;
 }

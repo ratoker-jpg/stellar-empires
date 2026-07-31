@@ -1,64 +1,66 @@
 # Current execution state
 
 **Updated:** 2026-07-31  
-**Safe to continue:** yes, through active implementation PR #138 only
+**Safe to continue:** yes, through active implementation PR #139 only
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `4e7fd20fdc415f30bf8a1476b67c79b0b8e79166` |
-| Last merged PR | #137 Audit `MULTI-COLONY-ECONOMY-LOGISTICS-01` |
-| Runtime baseline | PR #135 · schema v16 / save format v3 / immutable `legacy-v1 | compressed-v1` |
-| Active work | PR #138 `COLONY-PORTFOLIO-FOUNDATION` |
-| Active branch | `agent/colony-portfolio-foundation` |
-| Complexity | medium batch; first of exactly four implementation PRs |
-| Next work item after merge | #139 `LOGISTICS-ROUTE-LIFECYCLE` |
-| Blockers | none known; final docs head, Browser E2E and review remain required |
+| Verified `main` baseline | `b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f` |
+| Last merged PR | #138 `COLONY-PORTFOLIO-FOUNDATION` |
+| Runtime baseline | PR #138 · schema v16 / save format v3 |
+| Active work | PR #139 `LOGISTICS-ROUTE-LIFECYCLE` |
+| Active branch | `agent/logistics-route-lifecycle` |
+| Complexity | medium batch; second of exactly four implementation PRs |
+| Next work item after merge | #140 `COLONY-OPERATIONS-UX` |
+| Blockers | none known; final workflow and review closure remain required |
 
 ## Last completed atomic action
 
-Audit PR #137 was squash-merged as:
+PR #138 was squash-merged as:
 
 ```text
-4e7fd20fdc415f30bf8a1476b67c79b0b8e79166
+b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f
 ```
 
-Audit validation:
+Validation:
 
 ```text
-CI             30653954497 — success
-Browser E2E    30653954284 — success
-Graphify       30653954501 — success
-review threads all resolved
+CI             30659596856 — success
+Browser E2E    30659596868 — success
+Graphify       30659596839 — success
+review threads none
 ```
 
-## Active PR #138 result
+## Active PR #139 result
 
-The implementation introduces one pure empire-economy portfolio selector and makes Empire Overview consume it.
+The implementation hardens the existing abstract logistics model without changing schema or save format.
 
 Delivered on the active branch:
 
-- stable colony ordering by system, position and planet ID;
-- stock, capacity, fill permille and local production per resource;
-- active-route inbound/outbound amount per hour;
-- effective net flow per colony and empire;
-- energy, population, stability, role, queue and fleet dimensions;
-- stable health codes for deficits, storage pressure and stalled routes;
-- player-facing roles, flow and health diagnostics;
-- focused selector/view-model tests and release-viewport Chromium coverage.
+- duplicate route-key rejection for active and paused routes;
+- pause without departures and resume from current game time;
+- active interval rebase and non-interval departure preservation;
+- deterministic priority-descending/route-ID ordering;
+- ephemeral receipt for every departure;
+- exact catch-up transfer counting across successes, later misses and operation-budget continuation;
+- schema-v16 load normalization for legitimate legacy duplicate save-v3 routes;
+- stable repaired save round trip after checksum validation;
+- existing endpoint destruction cleanup retained.
 
-Code head `bfeac936232bbe16a25aac26d22e3819c7cc8d60` passed:
+Code head `ab8669941d1b8e4c11c4929a697ee6eb3339de4d` passed:
 
 ```text
-CI             30659066384 — success
-Graphify       30659066387 — success
-Browser E2E    30659066404 — final result checked before merge
+asset/lint/typecheck/test/build — success
+catch-up performance            — success
+Graphify 30661187260            — success
+progression/Browser             — checked before merge
 ```
 
 ## Remaining M5 sequence
 
 ```text
-#138 COLONY-PORTFOLIO-FOUNDATION — active
-→ #139 LOGISTICS-ROUTE-LIFECYCLE
+#138 COLONY-PORTFOLIO-FOUNDATION — merged
+→ #139 LOGISTICS-ROUTE-LIFECYCLE — active
 → #140 COLONY-OPERATIONS-UX
 → #141 BOT-COLONY-LOGISTICS-GATE
 → #142 next Audit from fresh main
@@ -66,10 +68,10 @@ Browser E2E    30659066404 — final result checked before merge
 
 ## Exact next action
 
-1. Validate the latest #138 documentation head through CI, Browser E2E and Graphify.
+1. Validate the latest #139 documentation head through CI, Browser E2E and Graphify.
 2. Inspect and resolve every review thread.
-3. Mark #138 ready only when all required gates are green.
-4. Squash merge #138.
-5. Create only #139 from the resulting fresh `main`.
+3. Mark #139 ready only when all required gates are green.
+4. Squash merge #139.
+5. Create only #140 from the resulting fresh `main`.
 
-Do not absorb duplicate-route repair, pause/resume changes, catch-up receipts, market workflow, bot logistics, physical convoys, PvE/meta or endgame into #138.
+Do not absorb Operations UI, selected-colony market, bot planning, physical convoys, PvE/meta or endgame into #139.

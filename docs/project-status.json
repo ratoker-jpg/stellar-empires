@@ -1,23 +1,23 @@
 {
-  "statusVersion": 50,
+  "statusVersion": 51,
   "updatedAt": "2026-07-31",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 137,
-  "lastMergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166",
-  "verifiedMainBaseline": "Audit PR #137 MULTI-COLONY-ECONOMY-LOGISTICS-01 merged after CI 30653954497, Browser E2E 30653954284, Graphify 30653954501 and resolution of all review threads",
-  "runtimeBaselinePr": 135,
-  "runtimeBaselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
-  "activePr": 138,
+  "lastMergedPr": 138,
+  "lastMergeSha": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f",
+  "verifiedMainBaseline": "PR #138 COLONY-PORTFOLIO-FOUNDATION merged after CI 30659596856, Browser E2E 30659596868, Graphify 30659596839 and no unresolved review threads",
+  "runtimeBaselinePr": 138,
+  "runtimeBaselineSha": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f",
+  "activePr": 139,
   "activePrKind": "implementation",
-  "activeWorkItem": "COLONY-PORTFOLIO-FOUNDATION",
-  "nextPrAfterActive": 139,
+  "activeWorkItem": "LOGISTICS-ROUTE-LIFECYCLE",
+  "nextPrAfterActive": 140,
   "nextPrKind": "implementation",
-  "nextWorkItem": "LOGISTICS-ROUTE-LIFECYCLE",
-  "currentMilestone": "M5 implementation PR #138 active",
+  "nextWorkItem": "COLONY-OPERATIONS-UX",
+  "currentMilestone": "M5 implementation PR #139 active",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
@@ -29,7 +29,7 @@
     "docs/audits/evidence/multi-colony-economy-logistics-01.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastChangeDocument": "docs/changes/pr138-colony-portfolio-foundation.md",
+  "lastChangeDocument": "docs/changes/pr139-logistics-route-lifecycle.md",
   "activeBatchArchive": null,
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
@@ -66,7 +66,10 @@
     "baselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
     "implementationCount": 4,
     "implementationPrs": [138, 139, 140, 141],
-    "completedImplementationPrs": [],
+    "completedImplementationPrs": [138],
+    "implementationMergeShas": {
+      "138": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f"
+    },
     "workItems": [
       "COLONY-PORTFOLIO-FOUNDATION",
       "LOGISTICS-ROUTE-LIFECYCLE",
@@ -92,10 +95,10 @@
     "logisticsRoutesImplemented": true,
     "marketImplemented": true,
     "empirePortfolioHealthImplemented": true,
-    "hardenedLogisticsLifecycleImplemented": false,
+    "hardenedLogisticsLifecycleImplemented": true,
     "completeColonyOperationsUxImplemented": false,
     "botMultiColonyLogisticsImplemented": false,
-    "status": "pr-138-active"
+    "status": "pr-139-active"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -120,7 +123,9 @@
     "newSchemaMigration": false,
     "sharedEmpirePortfolioSelector": true,
     "duplicateRouteKeysAllowed": false,
+    "legacyDuplicateRouteRepair": true,
     "pausedTimeProducesRetroactiveTransfers": false,
+    "exactDepartureReceipts": true,
     "canonicalOperationsWorkspaceOnly": true,
     "botOrdinaryLogisticsCommands": true,
     "progressionRebalanceIncluded": false,
@@ -145,26 +150,12 @@
     "deterministic schema-v16 simulation with immutable campaign and progression-profile identity",
     "save format v3 with active/offline continuation integrity",
     "compressed finite campaign progression with 15-case deterministic matrix",
-    "multi-colony economy, specialization, logistics-route and market foundations",
     "shared pure empire economy portfolio with colony health and scheduled route flow",
+    "hardened abstract logistics lifecycle with deterministic legacy repair and exact catch-up receipts",
     "ordinary missions, fleets, combat, intelligence, PvE foundations and honest autonomous bots",
     "complete mechanical catalogs and routed release-viewport application"
   ],
   "activeDelivery": [
-    {
-      "pr": 133,
-      "kind": "audit",
-      "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
-      "status": "merged",
-      "mergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc"
-    },
-    {
-      "pr": 134,
-      "kind": "implementation",
-      "workItem": "PROGRESSION-PROFILE-FOUNDATION",
-      "status": "merged",
-      "mergeSha": "aa87e764ef40444660039dc8d6a96d7f5514cc23"
-    },
     {
       "pr": 135,
       "kind": "implementation",
@@ -190,12 +181,18 @@
       "pr": 138,
       "kind": "implementation",
       "workItem": "COLONY-PORTFOLIO-FOUNDATION",
+      "status": "merged",
+      "mergeSha": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f"
+    },
+    {
+      "pr": 139,
+      "kind": "implementation",
+      "workItem": "LOGISTICS-ROUTE-LIFECYCLE",
       "status": "active",
       "mergeSha": null
     }
   ],
   "knownLimitations": [
-    "Logistics route duplicate and pause/resume lifecycle gaps remain until PR #139",
     "Player route editing and selected-colony market context remain incomplete until PR #140",
     "Bots do not yet allocate portfolio roles or create logistics routes until PR #141",
     "PvE/meta depth and complete endgame remain later audits",
@@ -210,7 +207,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #138 code head bfeac936232bbe16a25aac26d22e3819c7cc8d60 passed Graphify run 30659066387",
+    "lastValidation": "PR #139 code head ab8669941d1b8e4c11c4929a697ee6eb3339de4d passed Graphify run 30661187260",
     "lastAuditGraph": {
       "workflowRun": "30653954501",
       "headSha": "6c0f1196066128b0de0d3fda62dc2221bd021537",
@@ -228,6 +225,7 @@
     "docs/audits/contracts/multi-colony-economy-logistics-01.md",
     "docs/audits/evidence/multi-colony-economy-logistics-01.md",
     "docs/changes/pr138-colony-portfolio-foundation.md",
+    "docs/changes/pr139-logistics-route-lifecycle.md",
     "docs/audits/completed/campaign-progression-balance-01.md",
     "docs/25a-local-campaign-world-speed-and-offline-progression.md",
     "docs/17-continuation-guide.md",
@@ -236,5 +234,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Finish and merge PR #138 COLONY-PORTFOLIO-FOUNDATION, then create only PR #139 LOGISTICS-ROUTE-LIFECYCLE from fresh main."
+  "nextAction": "Finish and merge PR #139 LOGISTICS-ROUTE-LIFECYCLE, then create only PR #140 COLONY-OPERATIONS-UX from fresh main."
 }

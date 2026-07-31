@@ -8,6 +8,7 @@ import { refreshPlanetEconomy } from '../simulation/economy/planetEconomy';
 import type { PlanetEconomyState, ResourceId } from '../simulation/economy/types';
 import { getResearchEffectsForEmpire } from '../simulation/factions/factionResearchEffects';
 import { compactGameStateHistory } from '../simulation/history/stateHistory';
+import { normalizeLogisticsRoutes } from '../simulation/logistics/routes';
 import { reconcileWorldEventSchedule } from '../simulation/pve/worldEvents';
 import type { GameState } from '../simulation/types';
 import { migrateLegacySynodAliases } from './migrateLegacySynodAliases';
@@ -139,7 +140,11 @@ function finalizeCurrentState(
   savedEconomies: ReadonlyMap<string, SavedPlanetEconomySnapshot> = new Map(),
 ): GameState {
   const aliases = migrateLegacyVeyraAliases(migrateLegacySynodAliases(state));
-  const scheduled = reconcileWorldEventSchedule(aliases);
+  const logisticsNormalized: GameState = {
+    ...aliases,
+    logisticsRoutes: normalizeLogisticsRoutes(aliases.logisticsRoutes),
+  };
+  const scheduled = reconcileWorldEventSchedule(logisticsNormalized);
   return restoreProfileEconomy(compactGameStateHistory(scheduled), savedEconomies);
 }
 

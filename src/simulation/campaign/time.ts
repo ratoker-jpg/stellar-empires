@@ -1,14 +1,15 @@
+import type { BotProfile } from '../bots/profiles';
+import { DEFAULT_BOT_PROFILES } from '../bots/profiles';
 import {
   getNextBotDecisionAt,
   runBotScheduler,
   type BotSchedulerAuditEntry,
   type BotSchedulerDiagnosticEntry,
 } from '../bots/scheduler';
-import type { BotProfile } from '../bots/profiles';
-import { DEFAULT_BOT_PROFILES } from '../bots/profiles';
 import { getNextLogisticsDepartureAt } from '../logistics/routes';
+import type { LogisticsDepartureReceipt } from '../logistics/types';
 import { getNextWorldEventEvaluationAt } from '../pve/worldEvents';
-import { executeCommand } from '../reducer';
+import { executeAdvanceTimeWithTelemetry } from '../reducer';
 import type { ExecutedGameEvent, GameState } from '../types';
 import {
   createEmptyCatchUpSummary,
@@ -132,14 +133,19 @@ function newExecutedEvents(
 function advanceNonBotTime(state: GameState, seconds: number): {
   readonly state: GameState;
   readonly events: readonly ExecutedGameEvent[];
+  readonly logisticsReceipts: readonly LogisticsDepartureReceipt[];
 } {
-  const result = executeCommand(state, { type: 'ADVANCE_TIME', seconds });
+  const result = executeAdvanceTimeWithTelemetry(state, { type: 'ADVANCE_TIME', seconds });
   if (!result.ok) throw new Error(`${result.code}: ${result.message}`);
   const advanced: GameState = {
-    ...result.value,
+    ...result.value.state,
     commandLog: state.commandLog,
   };
-  return { state: advanced, events: newExecutedEvents(state, advanced) };
+  return {
+    state: advanced,
+    events: newExecutedEvents(state, advanced),
+    logisticsReceipts: result.value.logisticsReceipts,
+  };
 }
 
 function hasDueNonBotBoundary(state: GameState, targetTime: number): boolean {
@@ -207,7 +213,13 @@ export function advanceCampaignTime(
       working = advanced.state;
       summary = mergeCatchUpSummaries(
         summary,
-        summarizeCampaignTransition(before, working, advanced.events),
+        summarizeCampaignTransition(
+          before,
+          working,
+          advanced.events,
+          [],
+          advanced.logisticsReceipts,
+        ),
       );
       operationsProcessed += 1;
       if (operationsProcessed >= operationBudget) break;
