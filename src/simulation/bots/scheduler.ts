@@ -12,14 +12,11 @@ import {
   type BotPersonality,
   type BotProfile,
 } from './profiles';
-import { getBotProgressionPhase } from './progressionPhase';
 import { planBotResearchAndProduction } from './researchProductionPlanner';
 import { planBotThreatAndRecovery } from './threatRecoveryPlanner';
 
 export type BotPlannerSource = 'economy' | 'research' | 'production' | 'fleet' | 'threat';
 export const MAX_BOT_DECISIONS_PER_RUN = 32;
-const COMPRESSED_EARLY_DECISION_INTERVAL_SECONDS = 180;
-const COMPRESSED_EARLY_COMMANDS_PER_DECISION = 6;
 
 export interface BotSchedulerAuditEntry {
   readonly empireId: string;
@@ -185,23 +182,6 @@ function runProfileDecision(
   return { state: working, audit, diagnostics };
 }
 
-function effectiveProfile(state: GameState, profile: BotProfile): BotProfile {
-  if (state.campaignSettings.progressionProfile !== 'compressed-v1') return profile;
-  const phase = getBotProgressionPhase(state, profile.empireId);
-  if (phase !== 'foundation' && phase !== 'reconnaissance') return profile;
-  return {
-    ...profile,
-    decisionIntervalSeconds: Math.min(
-      profile.decisionIntervalSeconds,
-      COMPRESSED_EARLY_DECISION_INTERVAL_SECONDS,
-    ),
-    maxCommandsPerDecision: Math.max(
-      profile.maxCommandsPerDecision,
-      COMPRESSED_EARLY_COMMANDS_PER_DECISION,
-    ),
-  };
-}
-
 function getScheduledProfiles(
   state: GameState,
   profiles: readonly BotProfile[],
@@ -209,15 +189,12 @@ function getScheduledProfiles(
   const activeEmpires = new Set(state.empires);
   return profiles
     .filter((profile) => activeEmpires.has(profile.empireId))
-    .map((profile) => {
-      const effective = effectiveProfile(state, profile);
-      return {
-        profile: effective,
-        nextDecisionAt:
-          state.botAutomation.nextDecisionAtByEmpire[effective.empireId] ??
-          state.clock.elapsedSeconds,
-      };
-    })
+    .map((profile) => ({
+      profile,
+      nextDecisionAt:
+        state.botAutomation.nextDecisionAtByEmpire[profile.empireId] ??
+        state.clock.elapsedSeconds,
+    }))
     .sort(
       (left, right) =>
         left.nextDecisionAt - right.nextDecisionAt ||
