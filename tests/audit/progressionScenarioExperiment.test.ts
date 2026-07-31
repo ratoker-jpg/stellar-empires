@@ -3,6 +3,7 @@ import { planBotEconomy } from '../../src/simulation/bots/economyPlanner';
 import { getBotProgressionPhase } from '../../src/simulation/bots/progressionPhase';
 import { planBotResearchAndProduction } from '../../src/simulation/bots/researchProductionPlanner';
 import { runProgressionScenario } from '../../src/simulation/progression/scenarioRunner';
+import type { GameState } from '../../src/simulation/types';
 
 const runtimeEnvironment = (
   globalThis as typeof globalThis & {
@@ -11,39 +12,55 @@ const runtimeEnvironment = (
 ).process?.env;
 const scenarioIt = runtimeEnvironment?.RUN_PROGRESSION_SCENARIO === '1' ? it : it.skip;
 
+function diagnosticsForState(state: GameState): Readonly<Record<string, unknown>> {
+  return Object.fromEntries(
+    state.empires.map((empireId) => {
+      const planet = state.planets.find(
+        (candidate) => candidate.ownerEmpireId === empireId,
+      );
+      const research = state.research.find(
+        (candidate) => candidate.empireId === empireId,
+      );
+      return [
+        empireId,
+        {
+          phase: getBotProgressionPhase(state, empireId),
+          economyPlan: planBotEconomy(state, empireId),
+          researchProductionPlan: planBotResearchAndProduction(state, empireId),
+          resources: planet?.economy.resources,
+          specialization: planet?.specializationId,
+          buildings: planet?.buildings,
+          buildQueue: planet?.buildQueue,
+          productionQueues: planet?.productionQueues,
+          ships: planet?.inventory.ships,
+          researchLevels: research?.levels,
+          researchQueue: research?.queue,
+        },
+      ];
+    }),
+  );
+}
+
 describe('compressed progression scenario experiment', () => {
   scenarioIt('drives the accepted baseline seed through ordinary player and bot commands', () => {
+    const reconnaissanceBoundary = runProgressionScenario({
+      seed: 'stellar-empires-m1',
+      playerFaction: 'aegis',
+      worldSpeed: 2,
+      maximumRealSeconds: 45 * 60,
+    });
+    console.info(
+      `COMPRESSED_RECONNAISSANCE_BOUNDARY=${JSON.stringify({
+        phases: reconnaissanceBoundary.phaseReachedAtRealSeconds,
+        diagnostics: diagnosticsForState(reconnaissanceBoundary.state),
+      })}`,
+    );
+
     const result = runProgressionScenario({
       seed: 'stellar-empires-m1',
       playerFaction: 'aegis',
       worldSpeed: 2,
     });
-    const diagnostics = Object.fromEntries(
-      result.state.empires.map((empireId) => {
-        const planet = result.state.planets.find(
-          (candidate) => candidate.ownerEmpireId === empireId,
-        );
-        const research = result.state.research.find(
-          (candidate) => candidate.empireId === empireId,
-        );
-        return [
-          empireId,
-          {
-            phase: getBotProgressionPhase(result.state, empireId),
-            economyPlan: planBotEconomy(result.state, empireId),
-            researchProductionPlan: planBotResearchAndProduction(result.state, empireId),
-            resources: planet?.economy.resources,
-            specialization: planet?.specializationId,
-            buildings: planet?.buildings,
-            buildQueue: planet?.buildQueue,
-            productionQueues: planet?.productionQueues,
-            ships: planet?.inventory.ships,
-            researchLevels: research?.levels,
-            researchQueue: research?.queue,
-          },
-        ];
-      }),
-    );
     console.info(
       `COMPRESSED_PROGRESSION_SCENARIO=${JSON.stringify({
         complete: result.complete,
@@ -51,7 +68,7 @@ describe('compressed progression scenario experiment', () => {
         phases: result.phaseReachedAtRealSeconds,
         acceptedPlayerCommands: result.acceptedPlayerCommands,
         rejectedPlayerCommands: result.rejectedPlayerCommands,
-        diagnostics,
+        diagnostics: diagnosticsForState(result.state),
       })}`,
     );
 
