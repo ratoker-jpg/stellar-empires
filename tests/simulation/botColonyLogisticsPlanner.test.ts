@@ -45,7 +45,7 @@ function setResource(
 
 function createTwoColonyBotState(
   seed: string,
-  empireId = 'bot-aegis',
+  empireId = 'aegis-bot',
   canonicalRoles = false,
 ): GameState {
   const initial = createInitialGameState(seed);
@@ -94,9 +94,9 @@ function createTwoColonyBotState(
 }
 
 function createPressureState(seed: string): GameState {
-  let state = createTwoColonyBotState(seed, 'bot-aegis', true);
+  let state = createTwoColonyBotState(seed, 'aegis-bot', true);
   const colonies = state.planets
-    .filter((planet) => planet.ownerEmpireId === 'bot-aegis')
+    .filter((planet) => planet.ownerEmpireId === 'aegis-bot')
     .sort((left, right) =>
       left.systemId.localeCompare(right.systemId) ||
       left.position - right.position ||
@@ -115,7 +115,7 @@ function createPressureState(seed: string): GameState {
 describe('bot colony logistics planner', () => {
   it('converges mismatched preexisting roles in canonical colony order', () => {
     let state = createTwoColonyBotState('bot-role-convergence');
-    const empireId = 'bot-aegis';
+    const empireId = 'aegis-bot';
     const acceptedCommands: string[] = [];
 
     for (let index = 0; index < 4; index += 1) {
@@ -154,7 +154,7 @@ describe('bot colony logistics planner', () => {
   it('waits for a blocking local queue instead of changing a later colony first', () => {
     const initial = createTwoColonyBotState('bot-role-queue');
     const first = initial.planets
-      .filter((planet) => planet.ownerEmpireId === 'bot-aegis')
+      .filter((planet) => planet.ownerEmpireId === 'aegis-bot')
       .sort((left, right) =>
         left.systemId.localeCompare(right.systemId) ||
         left.position - right.position ||
@@ -177,7 +177,7 @@ describe('bot colony logistics planner', () => {
           : planet),
     };
 
-    expect(planBotColonyLogistics(state, 'bot-aegis')).toMatchObject({
+    expect(planBotColonyLogistics(state, 'aegis-bot')).toMatchObject({
       reasonCode: 'role-specialization-busy',
       command: null,
       roleChange: false,
@@ -187,16 +187,16 @@ describe('bot colony logistics planner', () => {
   it('creates and updates an ordinary route from deterministic pressure', () => {
     const state = createPressureState('bot-route-create');
     const colonies = state.planets
-      .filter((planet) => planet.ownerEmpireId === 'bot-aegis')
+      .filter((planet) => planet.ownerEmpireId === 'aegis-bot')
       .sort((left, right) =>
         left.systemId.localeCompare(right.systemId) ||
         left.position - right.position ||
         left.id.localeCompare(right.id));
-    const create = planBotColonyLogistics(state, 'bot-aegis');
+    const create = planBotColonyLogistics(state, 'aegis-bot');
     expect(create).toMatchObject({ reasonCode: 'create-route', roleChange: false });
     expect(create.command).toEqual({
       type: 'CREATE_LOGISTICS_ROUTE',
-      empireId: 'bot-aegis',
+      empireId: 'aegis-bot',
       originPlanetId: colonies[0]!.id,
       targetPlanetId: colonies[1]!.id,
       resourceId: 'metal',
@@ -219,7 +219,7 @@ describe('bot colony logistics planner', () => {
       })),
     };
 
-    expect(planBotColonyLogistics(altered, 'bot-aegis')).toMatchObject({
+    expect(planBotColonyLogistics(altered, 'aegis-bot')).toMatchObject({
       reasonCode: 'update-route',
       command: {
         type: 'UPDATE_LOGISTICS_ROUTE',
@@ -233,9 +233,9 @@ describe('bot colony logistics planner', () => {
   });
 
   it('uses the ordinary market on a critical receiver with no eligible donor', () => {
-    let state = createTwoColonyBotState('bot-market-fallback', 'bot-aegis', true);
+    let state = createTwoColonyBotState('bot-market-fallback', 'aegis-bot', true);
     const colonies = state.planets
-      .filter((planet) => planet.ownerEmpireId === 'bot-aegis')
+      .filter((planet) => planet.ownerEmpireId === 'aegis-bot')
       .sort((left, right) =>
         left.systemId.localeCompare(right.systemId) ||
         left.position - right.position ||
@@ -249,13 +249,13 @@ describe('bot colony logistics planner', () => {
     state = setResource(state, receiver.id, 'metal', 8_000, 10_000, 0);
     state = setResource(state, receiver.id, 'gas', 1_000, 10_000, 0);
 
-    const plan = planBotColonyLogistics(state, 'bot-aegis');
+    const plan = planBotColonyLogistics(state, 'aegis-bot');
     expect(plan).toMatchObject({
       reasonCode: 'emergency-market',
       roleChange: false,
       command: {
         type: 'MARKET_SWAP',
-        empireId: 'bot-aegis',
+        empireId: 'aegis-bot',
         planetId: receiver.id,
         giveResourceId: 'metal',
         receiveResourceId: 'gas',
@@ -267,7 +267,7 @@ describe('bot colony logistics planner', () => {
     const state = createTwoColonyBotState('bot-scheduler-logistics');
     const profile: BotProfile = {
       id: 'test-logistics-profile',
-      empireId: 'bot-aegis',
+      empireId: 'aegis-bot',
       personality: 'industrial',
       difficulty: 'normal',
       decisionIntervalSeconds: 300,
