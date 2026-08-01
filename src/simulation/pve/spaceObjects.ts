@@ -312,7 +312,8 @@ export function startSpaceObjectMission(
   if (object.cooldownUntil > state.clock.elapsedSeconds) {
     return { ok: false, code: 'SPACE_OBJECT_COOLDOWN', message: 'Space object is unstable.' };
   }
-  const origin = state.planets.find((planet) => planet.id === fleet.location.planetId);
+  const originPlanetId = fleet.location.planetId;
+  const origin = state.planets.find((planet) => planet.id === originPlanetId);
   if (origin === undefined || origin.ownerEmpireId !== command.empireId) {
     return { ok: false, code: 'MISSION_ORIGIN_NOT_FOUND', message: 'Mission origin not found.' };
   }
@@ -367,7 +368,7 @@ export function startSpaceObjectMission(
   const updatedFleet: FleetState = {
     ...fleet,
     status: 'outbound',
-    mission: { kind: 'space-object', targetObjectId: object.id },
+    mission: { kind: 'space-object', targetPlanetId: object.id },
     location: {
       type: 'transit',
       fromPlanetId: origin.id,
