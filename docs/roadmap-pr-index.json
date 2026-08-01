@@ -6,19 +6,19 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 140,
-    "mergeSha": "01eab1366289526553cdffcb1042ee98a8a59040",
-    "runtimeBaselinePr": 140,
-    "runtimeBaselineSha": "01eab1366289526553cdffcb1042ee98a8a59040",
-    "auditBaselineSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166"
+    "lastMergedPr": 141,
+    "mergeSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
+    "runtimeBaselinePr": 141,
+    "runtimeBaselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
+    "auditBaselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39"
   },
-  "activePr": 141,
-  "activePrKind": "implementation-closure",
-  "activeBatchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
-  "activeWorkItem": "BOT-COLONY-LOGISTICS-GATE",
-  "nextPr": 142,
-  "nextPrKind": "audit",
-  "nextWorkItem": "NEXT-AUDIT",
+  "activePr": 142,
+  "activePrKind": "audit",
+  "activeBatchId": "SUSTAINABLE-PVE-OPERATIONS-01",
+  "activeWorkItem": "SUSTAINABLE-PVE-OPERATIONS-01",
+  "nextPr": 143,
+  "nextPrKind": "implementation",
+  "nextWorkItem": "PVE-TARGET-RECOVERY",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -33,7 +33,7 @@
       "startPr": 102,
       "endPr": 105,
       "status": "completed",
-      "outcome": "217 mechanical IDs resolve through 173 generated runtime images"
+      "archive": "docs/audits/completed/asset-runtime-integration-01.md"
     },
     {
       "id": "universe-navigation",
@@ -41,7 +41,7 @@
       "startPr": 107,
       "endPr": 110,
       "status": "completed",
-      "outcome": "Universe navigation, action gate and Browser E2E"
+      "archive": "docs/audits/completed/universe-navigation-01.md"
     },
     {
       "id": "coherent-ui-shell",
@@ -49,7 +49,6 @@
       "startPr": 112,
       "endPr": 115,
       "status": "completed-technical",
-      "outcome": "One application controller, nine routes and browser/accessibility gate",
       "archive": "docs/audits/completed/coherent-ui-shell-01.md"
     },
     {
@@ -108,8 +107,7 @@
         "134": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
         "135": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992"
       },
-      "archive": "docs/audits/completed/campaign-progression-balance-01.md",
-      "outcome": "Immutable dual progression profiles and measured compressed campaign closure"
+      "archive": "docs/audits/completed/campaign-progression-balance-01.md"
     },
     {
       "id": "multi-colony-economy-logistics",
@@ -117,101 +115,104 @@
       "auditMergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166",
       "startPr": 138,
       "endPr": 141,
-      "status": "closure-pending-pr-141-merge",
+      "status": "completed",
       "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
       "complexity": "medium",
-      "plannedPrs": [138, 139, 140, 141],
-      "completedPrs": [138, 139, 140],
+      "completedPrs": [138, 139, 140, 141],
       "implementationMergeShas": {
         "138": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f",
         "139": "dc8b42fc0e41b631a61dda524224145f2d8ba214",
-        "140": "01eab1366289526553cdffcb1042ee98a8a59040"
+        "140": "01eab1366289526553cdffcb1042ee98a8a59040",
+        "141": "0167ad689e299438c9d0550ee20ba53452c93d39"
       },
-      "finalImplementationPr": 141,
-      "finalValidatedHead": "bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc",
       "archive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
-      "workItems": [
-        "COLONY-PORTFOLIO-FOUNDATION",
-        "LOGISTICS-ROUTE-LIFECYCLE",
-        "COLONY-OPERATIONS-UX",
-        "BOT-COLONY-LOGISTICS-GATE"
-      ],
-      "targetStateSchema": 16,
-      "targetSaveFormat": 3,
       "outcome": "Coherent multi-colony portfolio, hardened abstract logistics, complete player workflow and honest bot planning"
     },
     {
-      "id": "pve-meta-and-bot-parity",
+      "id": "sustainable-pve-operations",
+      "auditPr": 142,
+      "startPr": 143,
+      "endPr": 146,
+      "status": "audit-active",
+      "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
+      "complexity": "medium",
+      "plannedPrs": [143, 144, 145, 146],
+      "completedPrs": [],
+      "contract": "docs/audits/contracts/sustainable-pve-operations-01.md",
+      "evidence": "docs/audits/evidence/sustainable-pve-operations-01.md",
+      "workItems": [
+        "PVE-TARGET-RECOVERY",
+        "PVE-OPERATIONS-INTELLIGENCE-UX",
+        "BOT-PVE-OPERATIONS",
+        "PVE-SUSTAINABILITY-GATE"
+      ],
+      "targetStateSchema": 16,
+      "targetSaveFormat": 3,
+      "outcome": "Repeatable existing PvE targets, canonical opportunity UX and honest bot participation before new meta systems"
+    },
+    {
+      "id": "pve-meta-systems",
       "auditPr": null,
-      "startPr": null,
-      "endPr": null,
       "status": "not-audited",
-      "outcome": "PvE/meta depth and honest autonomous bot parity outside colony economy"
+      "outcome": "Arena, Admiral services or persistent PvE meta only after sustainable foundations"
     },
     {
       "id": "alliances-and-endgame",
       "auditPr": null,
-      "startPr": null,
-      "endPr": null,
       "status": "not-audited",
       "outcome": "Alliances, Solar War, Obelisks, Gates and complete victory/defeat"
     },
     {
       "id": "release-candidate",
       "auditPr": null,
-      "startPr": null,
-      "endPr": null,
       "status": "not-audited",
       "outcome": "Balance, onboarding, QA, performance and reproducible Pages release"
     }
   ],
   "planned": [
     {
-      "number": 137,
-      "kind": "audit",
-      "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
-      "title": "Audit multi-colony economy and logistics",
-      "status": "merged",
-      "mergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166"
-    },
-    {
-      "number": 138,
-      "kind": "implementation",
-      "workItem": "COLONY-PORTFOLIO-FOUNDATION",
-      "title": "Model the colony economy portfolio",
-      "status": "merged",
-      "mergeSha": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f"
-    },
-    {
-      "number": 139,
-      "kind": "implementation",
-      "workItem": "LOGISTICS-ROUTE-LIFECYCLE",
-      "title": "Harden logistics route lifecycle",
-      "status": "merged",
-      "mergeSha": "dc8b42fc0e41b631a61dda524224145f2d8ba214"
-    },
-    {
-      "number": 140,
-      "kind": "implementation",
-      "workItem": "COLONY-OPERATIONS-UX",
-      "title": "Complete colony logistics operations",
-      "status": "merged",
-      "mergeSha": "01eab1366289526553cdffcb1042ee98a8a59040"
-    },
-    {
       "number": 141,
       "kind": "implementation-closure",
       "workItem": "BOT-COLONY-LOGISTICS-GATE",
       "title": "Complete bot colony logistics planning",
-      "status": "active",
-      "validatedHead": "bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc"
+      "status": "merged",
+      "mergeSha": "0167ad689e299438c9d0550ee20ba53452c93d39"
     },
     {
       "number": 142,
       "kind": "audit",
-      "title": "Next audit from completed M5 main",
-      "status": "blocked-until-pr-141-merge"
+      "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
+      "title": "Audit sustainable PvE operations",
+      "status": "active"
+    },
+    {
+      "number": 143,
+      "kind": "implementation",
+      "workItem": "PVE-TARGET-RECOVERY",
+      "title": "Recover depleted PvE targets",
+      "status": "blocked-until-audit-142-merge"
+    },
+    {
+      "number": 144,
+      "kind": "implementation",
+      "workItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
+      "title": "Unify PvE operations intelligence",
+      "status": "blocked-until-pr-143-merge"
+    },
+    {
+      "number": 145,
+      "kind": "implementation",
+      "workItem": "BOT-PVE-OPERATIONS",
+      "title": "Add honest bot PvE operations",
+      "status": "blocked-until-pr-144-merge"
+    },
+    {
+      "number": 146,
+      "kind": "implementation-closure",
+      "workItem": "PVE-SUSTAINABILITY-GATE",
+      "title": "Close sustainable PvE operations",
+      "status": "blocked-until-pr-145-merge"
     }
   ],
-  "nextAction": "Finish validation and squash merge PR #141 BOT-COLONY-LOGISTICS-GATE, then create only Audit PR #142 from fresh main."
+  "nextAction": "Finish and squash merge Audit PR #142, then create only PR #143 PVE-TARGET-RECOVERY from fresh main."
 }
