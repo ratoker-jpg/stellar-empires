@@ -1,10 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** PR #141 `BOT-COLONY-LOGISTICS-GATE` active closure PR  
+**Status:** Audit #142 `SUSTAINABLE-PVE-OPERATIONS-01` active  
 **Updated:** 2026-08-01  
-**Verified main:** `01eab1366289526553cdffcb1042ee98a8a59040`  
-**Last merged PR:** #140 `COLONY-OPERATIONS-UX`  
-**Active implementation:** #141 `BOT-COLONY-LOGISTICS-GATE`
+**Verified main:** `0167ad689e299438c9d0550ee20ba53452c93d39`  
+**Last merged PR:** #141 `BOT-COLONY-LOGISTICS-GATE`  
+**Active work:** docs-only Audit #142
 
 ## Authoritative files
 
@@ -13,9 +13,10 @@ AGENTS.md
 docs/28-audit-first-autonomous-delivery-protocol.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
-docs/audits/contracts/multi-colony-economy-logistics-01.md
+docs/audits/contracts/sustainable-pve-operations-01.md
+docs/audits/evidence/sustainable-pve-operations-01.md
 docs/audits/completed/multi-colony-economy-logistics-01.md
-docs/changes/pr141-bot-colony-logistics-gate.md
+docs/audits/batch-history.md
 docs/27-playable-game-roadmap-v5.md
 docs/project-status.json
 docs/roadmap-pr-index.json
@@ -30,60 +31,55 @@ docs/roadmap-pr-index.json
 - #121–#123: planet demolition, destruction and recovery;
 - #124–#129: local campaign contract and navigation/usability closure;
 - #130–#135: immutable campaign time and measured compressed progression;
-- #136: documentation continuity outside implementation counts;
-- #137: accepted M5 medium four-PR contract;
-- #138: shared colony portfolio and Empire Overview diagnostics;
-- #139: deterministic route lifecycle, exact receipts and legacy duplicate repair;
-- #140: complete routed player logistics and selected-colony market workflow.
+- #137–#141: coherent multi-colony economy/logistics, complete player workflow and honest bot logistics.
 
-## Final M5 sequence
+M5 completed at:
 
 ```text
-#137 MULTI-COLONY-ECONOMY-LOGISTICS-01 — Audit merged
-→ #138 COLONY-PORTFOLIO-FOUNDATION — merged
-→ #139 LOGISTICS-ROUTE-LIFECYCLE — merged
-→ #140 COLONY-OPERATIONS-UX — merged
-→ #141 BOT-COLONY-LOGISTICS-GATE — active closure PR
+0167ad689e299438c9d0550ee20ba53452c93d39
 ```
 
-Exactly four implementation PRs are authorized. No fifth M5 implementation PR is allowed.
+## Active Audit #142
 
-## Active result
+The current PvE layer already includes expeditions, pirate combat, space-object operations, world events, unified reports and anti-repeat/threat scaling. The verified next problem is sustainability and autonomous participation:
 
-PR #141 closes the batch with:
+- objects deplete permanently;
+- pirate targets do not recover or respawn;
+- pirate-hunt is mechanically weak;
+- bots cannot perceive or execute special PvE operations;
+- player PvE modes lack a shared opportunity selector.
 
-- deterministic canonical bot colony roles;
-- finite queue-aware role convergence;
-- ordinary logistics route create/update commands;
-- ordinary critical-receiver market support;
-- auditable `logistics` scheduler source;
-- three-faction 24-hour multi-colony gate;
-- successful route telemetry and bounded route/history state;
-- direct/chunked/save-loaded equality;
-- M5 change record, archive and status synchronization.
+Audit #142 selects exactly:
 
-Code head `bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc` passed CI `30694352999` and Graphify `30694352977`. Browser `30694352963` and the final documentation-head rerun remain mandatory before merge.
+```text
+#143 PVE-TARGET-RECOVERY
+→ #144 PVE-OPERATIONS-INTELLIGENCE-UX
+→ #145 BOT-PVE-OPERATIONS
+→ #146 PVE-SUSTAINABILITY-GATE
+```
+
+Complexity is medium. No fifth implementation PR is authorized.
+
+## Compatibility boundary
+
+- schema v16/save format v3 retained;
+- existing chronological campaign-time path retained;
+- six-hour recovery uses the 30-minute world-event evaluation boundary;
+- no persisted PvE meta currency, reputation or telemetry;
+- player and bots use ordinary commands and validators;
+- no hidden-information exception;
+- no global progression/economy rebalance;
+- no Arena, Admiral services, alliances or endgame.
 
 ## Immediate action
 
 ```text
-validate latest #141 documentation head
+finish Audit #142 docs/status
+→ open draft PR #142
 → CI + Browser E2E + Graphify
-→ resolve blocking review
-→ mark ready and squash merge #141
-→ create Audit #142 from fresh main
+→ resolve review
+→ squash merge Audit #142
+→ create only #143 PVE-TARGET-RECOVERY from fresh main
 ```
 
-## M5 boundaries
-
-- schema v16/save v3 retained;
-- abstract interval logistics retained;
-- no persisted departure receipts;
-- no cargo ships, fuel, distance, interception or route combat;
-- no progression/economy rebalance;
-- no PvE/meta expansion, alliances or endgame;
-- permanent progression and catch-up gates remain mandatory.
-
-## After M5
-
-The only authorized action after #141 is Audit PR #142 from fresh `main`. No implementation begins before that audit chooses the next batch.
+No gameplay implementation begins before Audit #142 merges.

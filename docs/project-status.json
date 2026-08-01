@@ -1,87 +1,84 @@
 {
-  "statusVersion": 53,
+  "statusVersion": 54,
   "updatedAt": "2026-08-01",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 140,
-  "lastMergeSha": "01eab1366289526553cdffcb1042ee98a8a59040",
-  "verifiedMainBaseline": "PR #140 COLONY-OPERATIONS-UX merged after CI 30663714857, Browser E2E 30663714825, Graphify 30663714856 and no unresolved review threads",
-  "runtimeBaselinePr": 140,
-  "runtimeBaselineSha": "01eab1366289526553cdffcb1042ee98a8a59040",
-  "activePr": 141,
-  "activePrKind": "implementation-closure",
-  "activeWorkItem": "BOT-COLONY-LOGISTICS-GATE",
-  "nextPrAfterActive": 142,
-  "nextPrKind": "audit",
-  "nextWorkItem": "NEXT-AUDIT",
-  "currentMilestone": "M5 closure through PR #141",
+  "lastMergedPr": 141,
+  "lastMergeSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
+  "verifiedMainBaseline": "PR #141 BOT-COLONY-LOGISTICS-GATE merged after CI 30694661125, Browser E2E 30694661120, Graphify 30694661124 and no review findings",
+  "runtimeBaselinePr": 141,
+  "runtimeBaselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
+  "activePr": 142,
+  "activePrKind": "audit",
+  "activeWorkItem": "SUSTAINABLE-PVE-OPERATIONS-01",
+  "nextPrAfterActive": 143,
+  "nextPrKind": "implementation",
+  "nextWorkItem": "PVE-TARGET-RECOVERY",
+  "currentMilestone": "M6a sustainable existing PvE operations",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
   "currentAuditContracts": [
-    "docs/audits/contracts/multi-colony-economy-logistics-01.md"
+    "docs/audits/contracts/sustainable-pve-operations-01.md"
   ],
   "currentAuditEvidence": [
-    "docs/audits/evidence/multi-colony-economy-logistics-01.md"
+    "docs/audits/evidence/sustainable-pve-operations-01.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "lastChangeDocument": "docs/changes/pr141-bot-colony-logistics-gate.md",
-  "activeBatchArchive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
+  "lastCompletedBatchArchive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
-    "batchId": "CAMPAIGN-PROGRESSION-BALANCE-01",
-    "roadmapMilestone": "M4d",
-    "complexity": "heavy",
-    "auditPr": 133,
-    "auditStatus": "completed",
-    "auditMergeSha": "989c2c0b8fc3d5cfe672af267a248b6b384331cc",
-    "baselineSha": "df56566ce6d311ecef81103dddb924b5da0148c1",
-    "implementationCount": 2,
-    "implementationPrs": [134, 135],
-    "completedImplementationPrs": [134, 135],
-    "implementationMergeShas": {
-      "134": "aa87e764ef40444660039dc8d6a96d7f5514cc23",
-      "135": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992"
-    },
-    "workItems": [
-      "PROGRESSION-PROFILE-FOUNDATION",
-      "COMPRESSED-CAMPAIGN-PROGRESSION-GATE"
-    ],
-    "status": "completed",
-    "archive": "docs/audits/completed/campaign-progression-balance-01.md",
-    "divergence": "Playable runtime envelope amended to a 15-hour x2 median and 16-hour hard maximum; gameplay constants unchanged"
-  },
-  "currentBatch": {
     "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
     "roadmapMilestone": "M5",
     "complexity": "medium",
     "auditPr": 137,
-    "auditStatus": "accepted",
     "auditMergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166",
     "baselinePr": 135,
     "baselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
     "implementationCount": 4,
     "implementationPrs": [138, 139, 140, 141],
-    "completedImplementationPrs": [138, 139, 140],
+    "completedImplementationPrs": [138, 139, 140, 141],
     "implementationMergeShas": {
       "138": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f",
       "139": "dc8b42fc0e41b631a61dda524224145f2d8ba214",
-      "140": "01eab1366289526553cdffcb1042ee98a8a59040"
+      "140": "01eab1366289526553cdffcb1042ee98a8a59040",
+      "141": "0167ad689e299438c9d0550ee20ba53452c93d39"
     },
-    "finalImplementationPr": 141,
-    "finalValidatedHead": "bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc",
     "workItems": [
       "COLONY-PORTFOLIO-FOUNDATION",
       "LOGISTICS-ROUTE-LIFECYCLE",
       "COLONY-OPERATIONS-UX",
       "BOT-COLONY-LOGISTICS-GATE"
     ],
-    "status": "closure-pending-pr-141-merge",
+    "status": "completed",
     "archive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
+    "divergence": "none"
+  },
+  "currentBatch": {
+    "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
+    "roadmapMilestone": "M6a",
+    "complexity": "medium",
+    "auditPr": 142,
+    "auditStatus": "active",
+    "baselinePr": 141,
+    "baselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
+    "implementationCount": 4,
+    "implementationPrs": [143, 144, 145, 146],
+    "completedImplementationPrs": [],
+    "workItems": [
+      "PVE-TARGET-RECOVERY",
+      "PVE-OPERATIONS-INTELLIGENCE-UX",
+      "BOT-PVE-OPERATIONS",
+      "PVE-SUSTAINABILITY-GATE"
+    ],
+    "status": "audit-active",
+    "contract": "docs/audits/contracts/sustainable-pve-operations-01.md",
+    "evidence": "docs/audits/evidence/sustainable-pve-operations-01.md",
     "targetStateSchema": 16,
     "targetSaveFormat": 3
   },
@@ -103,7 +100,11 @@
     "hardenedLogisticsLifecycleImplemented": true,
     "completeColonyOperationsUxImplemented": true,
     "botMultiColonyLogisticsImplemented": true,
-    "status": "pr-141-closure-active"
+    "pveFoundationsImplemented": true,
+    "sustainablePveTargetRecoveryImplemented": false,
+    "canonicalPveOpportunityViewImplemented": false,
+    "botPveOperationsImplemented": false,
+    "status": "audit-142-active"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -116,26 +117,28 @@
     "offlineBotsContinue": true,
     "targetCompleteCampaignWithinOneActiveDay": true,
     "abstractLogisticsRoutes": true,
-    "physicalConvoysInM5": false,
-    "marketIsEmergencyLocalSupport": true
+    "marketIsEmergencyLocalSupport": true,
+    "sustainablePveBeforeNewMeta": true,
+    "arenaAdmiralMetaInCurrentBatch": false
   },
   "auditDecisions": {
-    "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
+    "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
     "implementationCount": 4,
     "complexity": "medium",
     "targetStateSchema": 16,
     "targetSaveFormat": 3,
     "newSchemaMigration": false,
-    "sharedEmpirePortfolioSelector": true,
-    "duplicateRouteKeysAllowed": false,
-    "legacyDuplicateRouteRepair": true,
-    "pausedTimeProducesRetroactiveTransfers": false,
-    "exactDepartureReceipts": true,
-    "canonicalOperationsWorkspaceOnly": true,
-    "explicitMarketColonySelection": true,
-    "botOrdinaryLogisticsCommands": true,
+    "pveTargetRecoverySeconds": 21600,
+    "spaceObjectActiveCooldownSeconds": 300,
+    "pirateHuntRewardPermille": 1500,
+    "defaultPirateBaseCount": 3,
+    "recoveryBoundary": "world-event-evaluation-1800-seconds",
+    "ordinaryBotPveCommands": true,
+    "botPveSchedulerSource": "pve",
+    "persistedPveMetaIncluded": false,
+    "arenaIncluded": false,
+    "admiralServicesIncluded": false,
     "progressionRebalanceIncluded": false,
-    "physicalConvoysIncluded": false,
     "criticalUnknowns": 0
   },
   "batchSizing": {
@@ -156,52 +159,36 @@
     "deterministic schema-v16 simulation with immutable campaign and progression-profile identity",
     "save format v3 with active/offline continuation integrity",
     "compressed finite campaign progression with 15-case deterministic matrix",
-    "shared pure empire economy portfolio with colony health and scheduled route flow",
-    "hardened abstract logistics lifecycle with deterministic legacy repair and exact player catch-up receipts",
+    "coherent multi-colony economy and hardened abstract logistics",
     "canonical routed colony logistics and selected-colony market workflow",
     "deterministic bot colony roles and ordinary logistics/market support",
-    "ordinary missions, fleets, combat, intelligence, PvE foundations and honest autonomous bots",
+    "ordinary missions, fleets, combat, intelligence and PvE foundations",
     "complete mechanical catalogs and routed release-viewport application"
   ],
   "activeDelivery": [
     {
-      "pr": 137,
-      "kind": "audit",
-      "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
-      "status": "merged",
-      "mergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166"
-    },
-    {
-      "pr": 138,
-      "kind": "implementation",
-      "workItem": "COLONY-PORTFOLIO-FOUNDATION",
-      "status": "merged",
-      "mergeSha": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f"
-    },
-    {
-      "pr": 139,
-      "kind": "implementation",
-      "workItem": "LOGISTICS-ROUTE-LIFECYCLE",
-      "status": "merged",
-      "mergeSha": "dc8b42fc0e41b631a61dda524224145f2d8ba214"
-    },
-    {
-      "pr": 140,
-      "kind": "implementation",
-      "workItem": "COLONY-OPERATIONS-UX",
-      "status": "merged",
-      "mergeSha": "01eab1366289526553cdffcb1042ee98a8a59040"
-    },
-    {
       "pr": 141,
       "kind": "implementation-closure",
       "workItem": "BOT-COLONY-LOGISTICS-GATE",
-      "status": "active",
-      "validatedHead": "bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc"
+      "status": "merged",
+      "mergeSha": "0167ad689e299438c9d0550ee20ba53452c93d39"
+    },
+    {
+      "pr": 142,
+      "kind": "audit",
+      "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
+      "status": "active"
+    },
+    {
+      "pr": 143,
+      "kind": "implementation",
+      "workItem": "PVE-TARGET-RECOVERY",
+      "status": "blocked-until-audit-142-merge"
     }
   ],
   "knownLimitations": [
-    "PvE/meta depth and complete endgame remain later audits",
+    "Existing PvE targets are not yet sustainable across long campaigns",
+    "Arena, Admiral services and persistent PvE meta are not audited",
     "Alliances, Solar War, functional Obelisks/Gates and victory/defeat are not implemented",
     "Onboarding, final mobile layout and release hardening remain incomplete"
   ],
@@ -213,29 +200,22 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #141 code head bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc passed Graphify run 30694352977",
-    "lastAuditGraph": {
-      "workflowRun": "30653954501",
-      "headSha": "6c0f1196066128b0de0d3fda62dc2221bd021537",
-      "nodes": 2712,
-      "edges": 9177,
-      "communities": 118,
-      "evidence": "docs/audits/evidence/multi-colony-economy-logistics-01.md"
-    }
+    "lastValidation": "PR #141 final head ac961c923e985118da696c3bf7a426360d29a3ef passed Graphify run 30694661124",
+    "currentAuditEvidence": "docs/audits/evidence/sustainable-pve-operations-01.md"
   },
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
+    "docs/audits/contracts/sustainable-pve-operations-01.md",
+    "docs/audits/evidence/sustainable-pve-operations-01.md",
     "docs/audits/completed/multi-colony-economy-logistics-01.md",
-    "docs/changes/pr141-bot-colony-logistics-gate.md",
-    "docs/25a-local-campaign-world-speed-and-offline-progression.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Finish validation and squash merge PR #141 BOT-COLONY-LOGISTICS-GATE, then create only Audit PR #142 from fresh main."
+  "nextAction": "Finish and squash merge Audit PR #142, then create only PR #143 PVE-TARGET-RECOVERY from fresh main."
 }

@@ -1,123 +1,135 @@
-# Current implementation batch audit — MULTI-COLONY-ECONOMY-LOGISTICS-01
+# Current implementation batch audit — SUSTAINABLE-PVE-OPERATIONS-01
 
-**Status:** closure active in final implementation PR #141  
-**Audit PR:** #137 · `4e7fd20fdc415f30bf8a1476b67c79b0b8e79166`  
+**Status:** Audit #142 active  
 **Updated:** 2026-08-01  
-**Roadmap milestone:** M5 — Multi-colony economy/logistics coherence  
-**Accepted baseline:** PR #135 · `3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992`  
+**Roadmap milestone:** M6a — sustainable existing PvE operations  
+**Baseline:** PR #141 · `0167ad689e299438c9d0550ee20ba53452c93d39`  
 **Complexity:** medium  
 **Authorized implementation count:** exactly 4 PRs  
-**Implementation PRs:** #138–#141  
-**State schema:** v16 retained  
-**Save format:** v3 retained  
-**Divergence:** none
+**Implementation PRs:** #143–#146  
+**Target state schema:** v16  
+**Target save format:** v3
 
-## Delivered chain
+## Audit result
 
-| PR | Work item | Status |
-|---:|---|---|
-| #138 | `COLONY-PORTFOLIO-FOUNDATION` | merged · `b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f` |
-| #139 | `LOGISTICS-ROUTE-LIFECYCLE` | merged · `dc8b42fc0e41b631a61dda524224145f2d8ba214` |
-| #140 | `COLONY-OPERATIONS-UX` | merged · `01eab1366289526553cdffcb1042ee98a8a59040` |
-| #141 | `BOT-COLONY-LOGISTICS-GATE` | active closure PR · validated code head `bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc` |
+The next coherent batch is not Arena, Admiral services or endgame. The verified immediate product gap is that the already implemented PvE loops are finite and player-only:
 
-No fifth M5 implementation PR is authorized.
+- depleted space objects never replenish;
+- pirate bases have finite zero-production reserves and no recovery/respawn path;
+- `pirate-hunt` selects a target but has no targeted mechanical reward effect;
+- bots do not perceive expedition positions, objects or world events;
+- bots never issue expedition or object-operation commands;
+- player UI has working separate modes but no shared canonical PvE opportunity model.
 
-## Delivered product outcome
-
-The batch now provides one coherent multi-colony economy/logistics model:
-
-- a pure owned-empire portfolio with stable stock, capacity, production, route flow and health diagnostics;
-- hardened abstract route lifecycle with duplicate rejection, deterministic legacy repair and pause/resume rebasing;
-- immutable non-persisted departure receipts and exact player catch-up accounting;
-- one canonical routed player workflow for route create/edit/pause/resume/delete and selected-colony market support;
-- deterministic bot role convergence and ordinary logistics/market commands from the same portfolio and validators.
-
-## Final bot contract
-
-Once an autonomous empire owns at least two colonies, canonical order is system ID, position and planet ID.
+Audit #142 therefore authorizes:
 
 ```text
-1st colony  industry + industrial-hub
-2nd colony  resource + resource-hub
-3rd colony  military + fortress
-later       balanced + balanced
+#143 PVE-TARGET-RECOVERY
+→ #144 PVE-OPERATIONS-INTELLIGENCE-UX
+→ #145 BOT-PVE-OPERATIONS
+→ #146 PVE-SUSTAINABILITY-GATE
 ```
 
-The planner:
+No fifth implementation PR is authorized.
 
-- converges specialization before development template;
-- waits for blocking local queues and retries later;
-- issues at most one role/logistics command per decision;
-- selects donors at or above 55% fill and receivers at or below 35%;
-- creates or updates ordinary one-hour routes with a 40% reserve;
-- uses ordinary market support only for a critical receiver without a legal donor;
-- exposes `logistics` as an auditable scheduler source;
-- stops changing roles after stable convergence.
+## Authoritative audit files
 
-No hidden resources, requirement bypasses, privileged commands or outcome-peeking paths were added.
-
-## Closure gate
-
-Aegis, Synod and Veyra deterministic two-colony fixtures run for 24 campaign hours and prove:
-
-- four-step role convergence from preexisting resource/balanced assignments;
-- stable canonical roles after convergence;
-- successful positive route transfers through route telemetry;
-- one bounded route and no duplicate route key;
-- no retroactive departure behavior;
-- bounded command history;
-- direct, chunked and save-loaded state/summary equality.
-
-The player-facing catch-up summary remains player-only. Exact player receipt accounting continues to be protected by the #139 tests.
-
-## Closure validation
-
-Code head `bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc` passed:
+Evidence:
 
 ```text
-CI             30694352999 — success
-Graphify       30694352977 — success
-Browser E2E    30694352963 — final result checked before merge
+docs/audits/evidence/sustainable-pve-operations-01.md
 ```
 
-The CI result includes:
-
-- asset audit;
-- lint and strict TypeScript;
-- 526 unit/integration tests;
-- production build;
-- permanent 15-case progression matrix;
-- isolated seven-day catch-up below the unchanged 30-second budget.
-
-The final documentation head must pass CI, Browser E2E and Graphify again before merge.
-
-## Archive
+Exact implementation contracts:
 
 ```text
-docs/audits/completed/multi-colony-economy-logistics-01.md
+docs/audits/contracts/sustainable-pve-operations-01.md
 ```
 
-The archive contains exact merge SHAs for #138–#140 and the final validated #141 head. The future #141 squash merge SHA is authoritative in GitHub PR metadata because a commit cannot contain its own squash SHA.
+The contract file is authoritative for paths, dependency order, deterministic rules, acceptance gates and divergence handling.
 
-## Explicit exclusions
+## Accepted product decisions
 
-- physical cargo fleets, distance, fuel, interception or route combat;
-- persisted logistics telemetry or a state/save version bump;
-- auction house or inter-empire trading;
-- new resources or strategic-resource logistics;
-- progression/economy rebalance;
-- new colonization or colony-limit rules;
-- PvE/meta expansion and full bot parity outside colony economy;
+### Compatibility
+
+- retain schema v16 and save format v3;
+- use the existing chronological campaign-time path;
+- do not add persisted PvE telemetry, currency or reputation;
+- player and bots use ordinary commands and validators;
+- globally public PvE targets/events may enter bot perception; hidden player state may not.
+
+### Recovery
+
+```text
+PVE_TARGET_RECOVERY_SECONDS = 21_600
+SPACE_OBJECT_ACTIVE_COOLDOWN_SECONDS = 300
+PIRATE_HUNT_REWARD_PERMILLE = 1_500
+DEFAULT_PIRATE_BASE_COUNT = 3
+```
+
+- final object depletion recovers after six campaign hours;
+- non-final extraction retains the five-minute cooldown;
+- pirate resources/defenses recover after six campaign hours;
+- destroyed pirate bases may respawn at their original free position after six campaign hours;
+- at most one pirate recovery/respawn occurs per 30-minute world-event evaluation;
+- pirate-hunt boosts only its targeted base reward; threat is unchanged;
+- all recovery is deterministic across direct, chunked, offline and save-loaded processing.
+
+### Bot behavior
+
+Add auditable scheduler source:
+
+```text
+pve
+```
+
+Bots may issue at most one PvE command per decision through:
+
+```text
+CREATE_FLEET
+START_EXPEDITION
+START_SPACE_OBJECT_MISSION
+SEND_FLEET
+RECALL_FLEET
+```
+
+They may use only existing inventory, fuel, intelligence and public target state.
+
+## Batch acceptance
+
+The final PR must prove for Aegis, Synod and Veyra:
+
+- object depletion, exact recovery and reuse;
+- pirate raid recovery and destroyed-base respawn safety;
+- targeted pirate-hunt reward behavior;
+- accepted bot expedition, object and legal pirate-hunt operations;
+- no duplicated target IDs or occupied coordinates;
+- bounded state history and target counts;
+- direct/chunked/save-loaded equality over 48 campaign hours;
+- permanent progression matrix and catch-up performance remain green;
+- Browser E2E and Graphify pass.
+
+## Explicit non-goals
+
+- Arena, ladder or seasonal service;
+- Admiral services or temporary boosts;
+- PvE reputation, currency or skill tree;
+- new strategic resources;
+- global balance/progression changes;
+- server authority or multiplayer;
 - alliances, Solar War, Obelisks, Gates or victory/defeat;
-- server authority or multiplayer.
+- schema/save-format change.
+
+## Critical unknowns
+
+None.
+
+If implementation requires schema v17, save format v4, persisted PvE meta, a continuously running spawn service, a hidden-information exception or a fifth PR, stop and amend or replace Audit #142 before expanding.
 
 ## Exact next action
 
-1. Validate the final #141 documentation head through CI, Browser E2E and Graphify.
-2. Resolve every blocking review thread.
-3. Mark #141 ready only when all required gates are green.
-4. Squash merge #141.
-5. Create only Audit PR #142 from the resulting fresh `main`.
-
-No implementation work is authorized before Audit #142 selects the next batch.
+1. Complete Audit #142 documentation/status synchronization.
+2. Run CI, Browser E2E and Graphify on the final audit head.
+3. Resolve every review thread.
+4. Squash merge Audit #142.
+5. Create only PR #143 `PVE-TARGET-RECOVERY` from the resulting fresh `main`.

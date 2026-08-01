@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** PR #141 `BOT-COLONY-LOGISTICS-GATE` active closure PR  
+**Status:** Audit #142 `SUSTAINABLE-PVE-OPERATIONS-01` active  
 **Updated:** 2026-08-01  
-**Last merged PR:** #140 `COLONY-OPERATIONS-UX`  
-**Verified main:** `01eab1366289526553cdffcb1042ee98a8a59040`  
-**Active branch:** `agent/bot-colony-logistics-gate`  
-**Next authorized PR after merge:** Audit #142
+**Last merged PR:** #141 `BOT-COLONY-LOGISTICS-GATE`  
+**Verified main:** `0167ad689e299438c9d0550ee20ba53452c93d39`  
+**Active branch:** `agent/audit-pve-meta-bot-parity`  
+**Next authorized PR after audit merge:** #143 `PVE-TARGET-RECOVERY`
 
 ## Repository
 
@@ -19,83 +19,94 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/contracts/multi-colony-economy-logistics-01.md`
-6. `docs/audits/completed/multi-colony-economy-logistics-01.md`
-7. `docs/changes/pr141-bot-colony-logistics-gate.md`
-8. `docs/project-status.json`
-9. `docs/roadmap-pr-index.json`
-10. `docs/27-playable-game-roadmap-v5.md`
-11. latest merged PRs, open PRs and actual `main`
+5. `docs/audits/contracts/sustainable-pve-operations-01.md`
+6. `docs/audits/evidence/sustainable-pve-operations-01.md`
+7. `docs/audits/completed/multi-colony-economy-logistics-01.md`
+8. `docs/audits/batch-history.md`
+9. `docs/project-status.json`
+10. `docs/roadmap-pr-index.json`
+11. `docs/27-playable-game-roadmap-v5.md`
+12. latest merged PRs, open PRs and actual `main`
 
-## Delivered M5 chain
+## Completed M5 chain
 
 ```text
-#138 COLONY-PORTFOLIO-FOUNDATION
-b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f
-
-#139 LOGISTICS-ROUTE-LIFECYCLE
-dc8b42fc0e41b631a61dda524224145f2d8ba214
-
-#140 COLONY-OPERATIONS-UX
-01eab1366289526553cdffcb1042ee98a8a59040
-
-#141 BOT-COLONY-LOGISTICS-GATE
-active final implementation/closure PR
+#137 Audit                         4e7fd20fdc415f30bf8a1476b67c79b0b8e79166
+#138 COLONY-PORTFOLIO-FOUNDATION  b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f
+#139 LOGISTICS-ROUTE-LIFECYCLE    dc8b42fc0e41b631a61dda524224145f2d8ba214
+#140 COLONY-OPERATIONS-UX         01eab1366289526553cdffcb1042ee98a8a59040
+#141 BOT-COLONY-LOGISTICS-GATE    0167ad689e299438c9d0550ee20ba53452c93d39
 ```
 
-Audit #137 authorized exactly four implementation PRs. No fifth M5 implementation PR is allowed.
+M5 is complete and archived at:
 
-## Active PR #141 contract
+```text
+docs/audits/completed/multi-colony-economy-logistics-01.md
+```
 
-PR #141 closes M5 with:
+## Audit #142 result
 
-- canonical owned-colony order by system, position and planet ID;
-- finite role convergence through ordinary specialization/template commands;
-- queue-aware retry and no stable-state role churn;
-- donor/receiver selection from the shared owned portfolio;
-- ordinary route create/update commands;
-- critical-receiver ordinary market fallback;
-- auditable scheduler source `logistics`;
-- at most one role/logistics action per bot decision;
-- Aegis/Synod/Veyra 24-hour two-colony gate;
-- successful route telemetry, no duplicate keys and bounded history;
-- direct/chunked/save-loaded equality;
-- completed M5 archive and status synchronization.
+The next coherent step is to make the existing PvE layer sustainable before adding Arena, Admiral services or endgame.
 
-Code head `bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc` passed CI `30694352999` and Graphify `30694352977`. Browser `30694352963` and the final documentation-head rerun must be green before merge.
+Verified gaps:
 
-## M5 invariants
+- space objects permanently deplete;
+- pirate bases have finite zero-production reserves and no recovery/respawn;
+- `pirate-hunt` lacks a targeted reward effect;
+- bots do not perceive or operate expedition/object/world-event opportunities;
+- Operations lacks one canonical pure PvE opportunity model.
 
-- schema v16 and save format v3 retained;
-- abstract scheduled logistics retained;
-- no persisted route receipts;
-- no cargo fleets, fuel, distance, interception or route combat;
-- no progression constant, starting bank, profile or world-speed change;
-- market remains emergency local support;
-- player and bots use ordinary commands and validators;
-- permanent progression and catch-up gates remain mandatory.
+Accepted medium batch:
+
+```text
+#143 PVE-TARGET-RECOVERY
+→ #144 PVE-OPERATIONS-INTELLIGENCE-UX
+→ #145 BOT-PVE-OPERATIONS
+→ #146 PVE-SUSTAINABILITY-GATE
+```
+
+Exactly four implementation PRs are authorized. No fifth PR is allowed.
+
+## Accepted constants and boundaries
+
+```text
+PVE_TARGET_RECOVERY_SECONDS = 21_600
+SPACE_OBJECT_ACTIVE_COOLDOWN_SECONDS = 300
+PIRATE_HUNT_REWARD_PERMILLE = 1_500
+DEFAULT_PIRATE_BASE_COUNT = 3
+```
+
+- schema v16/save format v3 retained;
+- recovery uses the existing 1,800-second world-event evaluation boundary;
+- no persisted PvE currency, reputation or telemetry;
+- no continuously running spawn service;
+- player and bots use ordinary commands;
+- bots may use only public PvE state and existing intelligence;
+- permanent progression, determinism and catch-up gates remain mandatory.
 
 ## Exact recovery action
 
-While #141 is open:
+While Audit #142 is open:
 
-1. fetch its latest head, workflows and review threads;
-2. continue only `agent/bot-colony-logistics-gate`;
-3. keep changes inside bot colony/logistics tests and M5 closure documentation;
-4. run CI, Browser E2E and Graphify after the final head;
-5. resolve blocking review threads;
-6. squash merge #141 only when all gates are green.
+1. continue only `agent/audit-pve-meta-bot-parity`;
+2. make documentation/status corrections only;
+3. do not change runtime, UI, tests or gameplay;
+4. run CI, Browser E2E and Graphify on the final audit head;
+5. resolve all review findings;
+6. squash merge Audit #142 when all gates are green.
 
-After #141 merges:
+After Audit #142 merges:
 
-1. fetch fresh `main` and exact #141 squash SHA from GitHub;
-2. treat `docs/audits/completed/multi-colony-economy-logistics-01.md` as the completed M5 archive;
-3. create only Audit PR #142;
-4. do not begin implementation before that audit selects the next batch.
+1. fetch its exact squash SHA and fresh `main`;
+2. create only PR #143 `PVE-TARGET-RECOVERY`;
+3. implement only the accepted #143 contract;
+4. do not absorb #144–#146 or new meta systems into #143.
 
 ## Hard stops
 
-- do not create a fifth M5 implementation PR;
-- do not combine physical convoys, PvE/meta, alliances or endgame into #141;
-- do not change schema/save format without a new audit;
-- do not weaken progression, deterministic partition or performance gates.
+- no Arena, Admiral services, PvE currency or reputation in this batch;
+- no schema v17/save format v4 without a replacement audit;
+- no hidden-information exception or privileged bot path;
+- no global progression/economy rebalance;
+- no alliances or endgame;
+- no implementation inside Audit #142.
