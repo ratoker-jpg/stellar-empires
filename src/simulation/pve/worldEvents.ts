@@ -1,7 +1,8 @@
-import { retainNewest, STATE_HISTORY_LIMITS } from '../history/stateHistory';
 import { enqueueEvent } from '../eventQueue';
-import type { GameState, ScheduledGameEvent } from '../types';
+import { retainNewest, STATE_HISTORY_LIMITS } from '../history/stateHistory';
+import type { ExecutedGameEvent, GameState, ScheduledGameEvent } from '../types';
 import { PIRATE_EMPIRE_ID } from './neutralForces';
+import { recoverPveTargetsAt } from './targetRecovery';
 
 export type WorldEventDefinitionId =
   | 'solar-storm'
@@ -206,31 +207,36 @@ export function getNextWorldEventEvaluationAt(
 export function processWorldEventEvaluationAt(
   state: GameState,
   at: number,
+  recentEvents: readonly ExecutedGameEvent[] = [],
 ): GameState {
+  if (state.worldEvents.nextEvaluationAt !== at) return state;
+  const recovered = recoverPveTargetsAt(state, at, recentEvents);
   const eligible = Object.values(WORLD_EVENT_CATALOG)
-    .filter((definition) => isDefinitionEligible(state, definition, at))
+    .filter((definition) => isDefinitionEligible(recovered, definition, at))
     .sort((left, right) => left.id.localeCompare(right.id));
   const nextEvaluationAt = at + WORLD_EVENT_EVALUATION_INTERVAL_SECONDS;
   if (eligible.length === 0) {
     return {
-      ...state,
-      worldEvents: { ...state.worldEvents, nextEvaluationAt },
+      ...recovered,
+      worldEvents: { ...recovered.worldEvents, nextEvaluationAt },
     };
   }
-  const roll = hashText(`${state.seed}:${at}:${state.worldEvents.history.length}:world-event`);
+  const roll = hashText(
+    `${recovered.seed}:${at}:${recovered.worldEvents.history.length}:world-event`,
+  );
   const definition = eligible[roll % eligible.length] ?? eligible[0];
-  if (definition === undefined) return state;
-  const candidates = targetCandidates(state, definition);
+  if (definition === undefined) return recovered;
+  const candidates = targetCandidates(recovered, definition);
   const targetId = candidates[Math.floor(roll / 17) % candidates.length] ?? candidates[0];
   if (targetId === undefined) {
     return {
-      ...state,
-      worldEvents: { ...state.worldEvents, nextEvaluationAt },
+      ...recovered,
+      worldEvents: { ...recovered.worldEvents, nextEvaluationAt },
     };
   }
   const prepared: GameState = {
-    ...state,
-    worldEvents: { ...state.worldEvents, nextEvaluationAt },
+    ...recovered,
+    worldEvents: { ...recovered.worldEvents, nextEvaluationAt },
   };
   return startWorldEventAt(prepared, definition.id, definition.targetType, targetId, 0, at);
 }
