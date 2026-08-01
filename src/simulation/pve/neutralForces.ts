@@ -89,11 +89,11 @@ function createPiratePlanet(candidate: Candidate, tier: number): PlanetState {
   };
 }
 
-export function createInitialNeutralForces(
+export function createPirateBaseBaselines(
   galaxy: GalaxyModel,
   seed: number,
   count = DEFAULT_PIRATE_BASE_COUNT,
-): NeutralForcesState {
+): readonly PlanetState[] {
   const candidates: Candidate[] = [];
   for (const system of galaxy.systems) {
     for (const planet of system.planets) {
@@ -110,12 +110,20 @@ export function createInitialNeutralForces(
       left.score - right.score || left.planet.id.localeCompare(right.planet.id),
   );
 
-  const planets: PlanetState[] = [];
-  for (const [index, candidate] of candidates.slice(0, Math.max(0, count)).entries()) {
-    const tier = 1 + ((candidate.score + index) % 3);
-    planets.push(createPiratePlanet(candidate, tier));
-  }
-  return { planets, fleets: [] };
+  return candidates
+    .slice(0, Math.max(0, count))
+    .map((candidate, index) => {
+      const tier = 1 + ((candidate.score + index) % 3);
+      return createPiratePlanet(candidate, tier);
+    });
+}
+
+export function createInitialNeutralForces(
+  galaxy: GalaxyModel,
+  seed: number,
+  count = DEFAULT_PIRATE_BASE_COUNT,
+): NeutralForcesState {
+  return { planets: createPirateBaseBaselines(galaxy, seed, count), fleets: [] };
 }
 
 export function isPiratePlanet(planet: PlanetState): boolean {
