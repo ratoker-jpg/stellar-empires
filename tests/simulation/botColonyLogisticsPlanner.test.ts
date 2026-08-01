@@ -55,32 +55,41 @@ function createTwoColonyBotState(
     throw new Error('Expected bot and player colonies.');
   }
   const factionId = getFactionIdForEmpire(initial, empireId);
-  const updatedHome = {
-    ...home,
-    specializationId: canonicalRoles ? 'industry' as const : 'resource' as const,
-    developmentTemplateId: canonicalRoles ? 'industrial-hub' as const : 'resource-hub' as const,
-    buildQueue: [],
-    productionQueues: { shipyard: [], defense: [] },
-  };
-  const updatedSecondary = {
-    ...secondary,
-    ownerEmpireId: empireId,
-    factionId,
-    name: `${empireId} logistics colony`,
-    specializationId: canonicalRoles ? 'resource' as const : 'balanced' as const,
-    developmentTemplateId: canonicalRoles ? 'resource-hub' as const : 'balanced' as const,
-    buildQueue: [],
-    productionQueues: { shipyard: [], defense: [] },
-  };
+  const candidates = [
+    {
+      ...home,
+      buildQueue: [],
+      productionQueues: { shipyard: [], defense: [] },
+    },
+    {
+      ...secondary,
+      ownerEmpireId: empireId,
+      factionId,
+      name: `${empireId} logistics colony`,
+      buildQueue: [],
+      productionQueues: { shipyard: [], defense: [] },
+    },
+  ].sort((left, right) =>
+    left.systemId.localeCompare(right.systemId) ||
+    left.position - right.position ||
+    left.id.localeCompare(right.id));
+  const assignments = canonicalRoles
+    ? [
+        { specializationId: 'industry' as const, developmentTemplateId: 'industrial-hub' as const },
+        { specializationId: 'resource' as const, developmentTemplateId: 'resource-hub' as const },
+      ]
+    : [
+        { specializationId: 'resource' as const, developmentTemplateId: 'resource-hub' as const },
+        { specializationId: 'balanced' as const, developmentTemplateId: 'balanced' as const },
+      ];
+  const replacements = new Map(candidates.map((planet, index) => [
+    planet.id,
+    { ...planet, ...assignments[index]! },
+  ]));
   return {
     ...initial,
     galaxy: updateGalaxyPlanetOwner(initial.galaxy, secondary.galaxyPlanetId, empireId),
-    planets: initial.planets.map((planet) =>
-      planet.id === home.id
-        ? updatedHome
-        : planet.id === secondary.id
-          ? updatedSecondary
-          : planet),
+    planets: initial.planets.map((planet) => replacements.get(planet.id) ?? planet),
     fleets: initial.fleets.filter((fleet) =>
       fleet.originPlanetId !== secondary.id &&
       !(fleet.location.type === 'planet' && fleet.location.planetId === secondary.id)),
