@@ -21,6 +21,7 @@ import {
 const DAY_SECONDS = 86_400;
 const HALF_DAY_SECONDS = DAY_SECONDS / 2;
 const CHUNK_SECONDS = 21_600;
+const BOT_DECISION_INTERVAL_SECONDS = 14_400;
 const SAVE_TIME = '2026-07-31T18:00:00.000Z';
 
 const CASES = [
@@ -28,6 +29,15 @@ const CASES = [
   { factionId: 'synod', empireId: 'synod-bot' },
   { factionId: 'veyra', empireId: 'veyra-bot' },
 ] as const satisfies readonly { factionId: FactionId; empireId: string }[];
+
+function canonicalPlanetOrder(
+  left: GameState['planets'][number],
+  right: GameState['planets'][number],
+): number {
+  return left.systemId.localeCompare(right.systemId) ||
+    left.position - right.position ||
+    left.id.localeCompare(right.id);
+}
 
 function setAmountAtFill(
   state: GameState,
@@ -74,52 +84,43 @@ function createCanonicalTwoColonyState(
     throw new Error('Expected bot and player home colonies.');
   }
   const energyOutputPercent = getResearchEffectsForEmpire(initial, empireId).energyOutputPercent;
-  const first = {
-    ...botHome,
-    specializationId: 'industry' as const,
-    developmentTemplateId: 'industrial-hub' as const,
-    buildQueue: [],
-    productionQueues: { shipyard: [], defense: [] },
-  };
-  const second = {
-    ...playerHome,
-    ownerEmpireId: empireId,
-    factionId,
-    name: `${factionId} logistics receiver`,
-    specializationId: 'resource' as const,
-    developmentTemplateId: 'resource-hub' as const,
-    buildQueue: [],
-    productionQueues: { shipyard: [], defense: [] },
-  };
-  const refreshedFirst = {
-    ...first,
-    economy: refreshPlanetEconomy(
-      initial.campaignSettings.progressionProfile,
-      first.economy,
-      first.buildings,
-      energyOutputPercent,
-      first.specializationId,
-    ),
-  };
-  const refreshedSecond = {
-    ...second,
-    economy: refreshPlanetEconomy(
-      initial.campaignSettings.progressionProfile,
-      second.economy,
-      second.buildings,
-      energyOutputPercent,
-      second.specializationId,
-    ),
-  };
+  const candidates = [
+    {
+      ...botHome,
+      buildQueue: [],
+      productionQueues: { shipyard: [], defense: [] },
+    },
+    {
+      ...playerHome,
+      ownerEmpireId: empireId,
+      factionId,
+      name: `${factionId} logistics receiver`,
+      buildQueue: [],
+      productionQueues: { shipyard: [], defense: [] },
+    },
+  ].sort(canonicalPlanetOrder);
+  const startingAssignments = [
+    { specializationId: 'resource' as const, developmentTemplateId: 'resource-hub' as const },
+    { specializationId: 'balanced' as const, developmentTemplateId: 'balanced' as const },
+  ];
+  const prepared = candidates.map((planet, index) => {
+    const assigned = { ...planet, ...startingAssignments[index]! };
+    return {
+      ...assigned,
+      economy: refreshPlanetEconomy(
+        initial.campaignSettings.progressionProfile,
+        assigned.economy,
+        assigned.buildings,
+        energyOutputPercent,
+        assigned.specializationId,
+      ),
+    };
+  });
+  const replacements = new Map(prepared.map((planet) => [planet.id, planet]));
   let state: GameState = {
     ...initial,
     galaxy: updateGalaxyPlanetOwner(initial.galaxy, playerHome.galaxyPlanetId, empireId),
-    planets: initial.planets.map((planet) =>
-      planet.id === botHome.id
-        ? refreshedFirst
-        : planet.id === playerHome.id
-          ? refreshedSecond
-          : planet),
+    planets: initial.planets.map((planet) => replacements.get(planet.id) ?? planet),
     fleets: initial.fleets.filter((fleet) =>
       fleet.originPlanetId !== playerHome.id &&
       !(fleet.location.type === 'planet' && fleet.location.planetId === playerHome.id)),
@@ -130,13 +131,15 @@ function createCanonicalTwoColonyState(
       },
     },
   };
+  const donor = prepared[0]!;
+  const receiver = prepared[1]!;
   for (const resourceId of ['metal', 'crystal', 'gas'] as const) {
-    state = setAmountAtFill(state, refreshedFirst.id, resourceId, 500);
-    state = setAmountAtFill(state, refreshedSecond.id, resourceId, 500);
+    state = setAmountAtFill(state, donor.id, resourceId, 500);
+    state = setAmountAtFill(state, receiver.id, resourceId, 500);
   }
-  state = setAmountAtFill(state, refreshedFirst.id, 'metal', 800);
-  state = setAmountAtFill(state, refreshedSecond.id, 'metal', 100);
-  return { state, donorId: refreshedFirst.id, receiverId: refreshedSecond.id };
+  state = setAmountAtFill(state, donor.id, 'metal', 800);
+  state = setAmountAtFill(state, receiver.id, 'metal', 100);
+  return { state, donorId: donor.id, receiverId: receiver.id };
 }
 
 function profile(empireId: string): BotProfile {
@@ -145,7 +148,7 @@ function profile(empireId: string): BotProfile {
     empireId,
     personality: 'industrial',
     difficulty: 'normal',
-    decisionIntervalSeconds: 100_000,
+    decisionIntervalSeconds: BOT_DECISION_INTERVAL_SECONDS,
     maxCommandsPerDecision: 1,
   };
 }
@@ -232,10 +235,7 @@ describe('M5 multi-colony economy and logistics gate', () => {
 
       const colonies = direct.state.planets
         .filter((planet) => planet.ownerEmpireId === empireId)
-        .sort((left, right) =>
-          left.systemId.localeCompare(right.systemId) ||
-          left.position - right.position ||
-          left.id.localeCompare(right.id));
+        .sort(canonicalPlanetOrder);
       expect(colonies[0]).toMatchObject({
         id: fixture.donorId,
         specializationId: 'industry',
@@ -257,12 +257,19 @@ describe('M5 multi-colony economy and logistics gate', () => {
         consecutiveMisses: 0,
         lastResult: { code: 'transferred' },
       });
+      expect(direct.summaryDelta.world.logisticsTransfers).toBeGreaterThan(0);
       expect(new Set(routeKeys(direct.state)).size).toBe(direct.state.logisticsRoutes.length);
       expect(
         direct.state.commandLog.filter((entry) =>
           entry.command.type === 'CREATE_LOGISTICS_ROUTE' &&
           entry.command.empireId === empireId),
       ).toHaveLength(1);
+      expect(
+        direct.state.commandLog.filter((entry) =>
+          entry.command.empireId === empireId &&
+          (entry.command.type === 'SET_PLANET_SPECIALIZATION' ||
+            entry.command.type === 'SET_PLANET_DEVELOPMENT_TEMPLATE')),
+      ).toHaveLength(4);
       expect(direct.state.commandLog.length).toBeLessThanOrEqual(20);
     });
   }
