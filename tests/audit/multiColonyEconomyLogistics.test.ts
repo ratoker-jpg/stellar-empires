@@ -24,9 +24,9 @@ const CHUNK_SECONDS = 21_600;
 const SAVE_TIME = '2026-07-31T18:00:00.000Z';
 
 const CASES = [
-  { factionId: 'aegis', empireId: 'bot-aegis' },
-  { factionId: 'synod', empireId: 'bot-synod' },
-  { factionId: 'veyra', empireId: 'bot-veyra' },
+  { factionId: 'aegis', empireId: 'aegis-bot' },
+  { factionId: 'synod', empireId: 'synod-bot' },
+  { factionId: 'veyra', empireId: 'veyra-bot' },
 ] as const satisfies readonly { factionId: FactionId; empireId: string }[];
 
 function setAmountAtFill(
@@ -84,6 +84,7 @@ function createCanonicalTwoColonyState(
   const second = {
     ...playerHome,
     ownerEmpireId: empireId,
+    factionId,
     name: `${factionId} logistics receiver`,
     specializationId: 'resource' as const,
     developmentTemplateId: 'resource-hub' as const,
