@@ -143,6 +143,7 @@ function profile(empireId: string): BotProfile {
     id: `audit-logistics-${empireId}`,
     empireId,
     personality: 'industrial',
+    difficulty: 'normal',
     decisionIntervalSeconds: 100_000,
     maxCommandsPerDecision: 1,
   };
