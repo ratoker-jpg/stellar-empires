@@ -266,9 +266,9 @@ describe('M5 multi-colony economy and logistics gate', () => {
       ).toHaveLength(1);
       expect(
         direct.state.commandLog.filter((entry) =>
-          entry.command.empireId === empireId &&
           (entry.command.type === 'SET_PLANET_SPECIALIZATION' ||
-            entry.command.type === 'SET_PLANET_DEVELOPMENT_TEMPLATE')),
+            entry.command.type === 'SET_PLANET_DEVELOPMENT_TEMPLATE') &&
+          entry.command.empireId === empireId),
       ).toHaveLength(4);
       expect(direct.state.commandLog.length).toBeLessThanOrEqual(20);
     });
