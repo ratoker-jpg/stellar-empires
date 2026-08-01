@@ -269,6 +269,7 @@ describe('bot colony logistics planner', () => {
       id: 'test-logistics-profile',
       empireId: 'bot-aegis',
       personality: 'industrial',
+      difficulty: 'normal',
       decisionIntervalSeconds: 300,
       maxCommandsPerDecision: 3,
     };
