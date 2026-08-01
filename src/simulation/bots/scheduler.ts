@@ -1,6 +1,7 @@
 import type { MissionAvailabilityCode } from '../fleets/missionRules';
 import { executeCommand } from '../reducer';
 import type { GameCommand, GameState } from '../types';
+import { planBotColonyLogistics } from './colonyLogisticsPlanner';
 import { planBotEconomy } from './economyPlanner';
 import {
   planBotFleetMission,
@@ -16,7 +17,13 @@ import { getBotProgressionPhase } from './progressionPhase';
 import { planBotResearchAndProduction } from './researchProductionPlanner';
 import { planBotThreatAndRecovery } from './threatRecoveryPlanner';
 
-export type BotPlannerSource = 'economy' | 'research' | 'production' | 'fleet' | 'threat';
+export type BotPlannerSource =
+  | 'logistics'
+  | 'economy'
+  | 'research'
+  | 'production'
+  | 'fleet'
+  | 'threat';
 export const MAX_BOT_DECISIONS_PER_RUN = 32;
 export const POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS = 3_600;
 
@@ -90,8 +97,17 @@ function compressedCandidate(
   state: GameState,
   profile: BotProfile,
   attempted: readonly GameCommand[],
+  allowLogistics: boolean,
   precomputedFleet?: BotFleetMissionPlan,
 ): PlannerCandidates {
+  if (allowLogistics) {
+    const logistics = planBotColonyLogistics(state, profile.empireId);
+    const logisticsCandidate = selectCandidate('logistics', logistics.command, attempted);
+    if (logisticsCandidate !== null) {
+      return { candidates: [logisticsCandidate], fleet: precomputedFleet ?? null };
+    }
+  }
+
   const science = planBotResearchAndProduction(state, profile.empireId);
   const production = selectCandidate(
     'production',
@@ -130,6 +146,7 @@ function compressedCandidate(
 function legacyCandidatesForPersonality(
   state: GameState,
   profile: BotProfile,
+  allowLogistics: boolean,
 ): PlannerCandidates {
   const economy = planBotEconomy(state, profile.empireId);
   const science = planBotResearchAndProduction(state, profile.empireId);
@@ -139,8 +156,12 @@ function legacyCandidatesForPersonality(
     researchProduction: science,
     fleet,
   });
+  const logistics = allowLogistics
+    ? planBotColonyLogistics(state, profile.empireId).command
+    : null;
   const candidates: Readonly<Record<BotPersonality, readonly CommandCandidate[]>> = {
     industrial: [
+      { source: 'logistics', command: logistics },
       { source: 'economy', command: economy.command },
       { source: 'research', command: science.research.command },
       { source: 'production', command: science.production.command },
@@ -148,6 +169,7 @@ function legacyCandidatesForPersonality(
       { source: 'fleet', command: fleet.command },
     ],
     explorer: [
+      { source: 'logistics', command: logistics },
       { source: 'fleet', command: fleet.command },
       { source: 'economy', command: economy.command },
       { source: 'research', command: science.research.command },
@@ -155,6 +177,7 @@ function legacyCandidatesForPersonality(
       { source: 'threat', command: threat.command },
     ],
     aggressive: [
+      { source: 'logistics', command: logistics },
       { source: 'threat', command: threat.command },
       { source: 'production', command: science.production.command },
       { source: 'research', command: science.research.command },
@@ -201,6 +224,7 @@ function runProfileDecision(
   const audit: BotSchedulerAuditEntry[] = [];
   const diagnostics: BotSchedulerDiagnosticEntry[] = [];
   const attempted: GameCommand[] = [];
+  let logisticsCommandAttempted = false;
   const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
   const diagnosticFleet = planBotFleetMission(working, profile.empireId);
   const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, diagnosticFleet);
@@ -212,9 +236,14 @@ function runProfileDecision(
           working,
           profile,
           attempted,
+          !logisticsCommandAttempted,
           index === 0 ? diagnosticFleet : undefined,
         )
-      : legacyCandidatesForPersonality(working, profile);
+      : legacyCandidatesForPersonality(
+          working,
+          profile,
+          !logisticsCommandAttempted,
+        );
     const candidate = planning.candidates.find(
       (item) =>
         item.command !== null &&
@@ -222,6 +251,7 @@ function runProfileDecision(
     );
     if (candidate?.command === null || candidate === undefined) break;
     attempted.push(candidate.command);
+    if (candidate.source === 'logistics') logisticsCommandAttempted = true;
     const result = executeCommand(working, candidate.command);
     audit.push({
       empireId: profile.empireId,
