@@ -1,24 +1,24 @@
 {
   "roadmapVersion": 5,
-  "updatedAt": "2026-07-31",
+  "updatedAt": "2026-08-01",
   "releaseTarget": "1.0",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 139,
-    "mergeSha": "dc8b42fc0e41b631a61dda524224145f2d8ba214",
-    "runtimeBaselinePr": 139,
-    "runtimeBaselineSha": "dc8b42fc0e41b631a61dda524224145f2d8ba214",
+    "lastMergedPr": 140,
+    "mergeSha": "01eab1366289526553cdffcb1042ee98a8a59040",
+    "runtimeBaselinePr": 140,
+    "runtimeBaselineSha": "01eab1366289526553cdffcb1042ee98a8a59040",
     "auditBaselineSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166"
   },
-  "activePr": 140,
-  "activePrKind": "implementation",
+  "activePr": 141,
+  "activePrKind": "implementation-closure",
   "activeBatchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
-  "activeWorkItem": "COLONY-OPERATIONS-UX",
-  "nextPr": 141,
-  "nextPrKind": "implementation",
-  "nextWorkItem": "BOT-COLONY-LOGISTICS-GATE",
+  "activeWorkItem": "BOT-COLONY-LOGISTICS-GATE",
+  "nextPr": 142,
+  "nextPrKind": "audit",
+  "nextWorkItem": "NEXT-AUDIT",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -117,15 +117,19 @@
       "auditMergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166",
       "startPr": 138,
       "endPr": 141,
-      "status": "implementation-in-progress",
+      "status": "closure-pending-pr-141-merge",
       "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
       "complexity": "medium",
       "plannedPrs": [138, 139, 140, 141],
-      "completedPrs": [138, 139],
+      "completedPrs": [138, 139, 140],
       "implementationMergeShas": {
         "138": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f",
-        "139": "dc8b42fc0e41b631a61dda524224145f2d8ba214"
+        "139": "dc8b42fc0e41b631a61dda524224145f2d8ba214",
+        "140": "01eab1366289526553cdffcb1042ee98a8a59040"
       },
+      "finalImplementationPr": 141,
+      "finalValidatedHead": "bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc",
+      "archive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
       "workItems": [
         "COLONY-PORTFOLIO-FOUNDATION",
         "LOGISTICS-ROUTE-LIFECYCLE",
@@ -191,15 +195,23 @@
       "kind": "implementation",
       "workItem": "COLONY-OPERATIONS-UX",
       "title": "Complete colony logistics operations",
-      "status": "active"
+      "status": "merged",
+      "mergeSha": "01eab1366289526553cdffcb1042ee98a8a59040"
     },
     {
       "number": 141,
-      "kind": "implementation",
+      "kind": "implementation-closure",
       "workItem": "BOT-COLONY-LOGISTICS-GATE",
-      "title": "Run autonomous colony logistics",
-      "status": "blocked-until-pr-140-merge"
+      "title": "Complete bot colony logistics planning",
+      "status": "active",
+      "validatedHead": "bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc"
+    },
+    {
+      "number": 142,
+      "kind": "audit",
+      "title": "Next audit from completed M5 main",
+      "status": "blocked-until-pr-141-merge"
     }
   ],
-  "nextAction": "Finish and merge PR #140 COLONY-OPERATIONS-UX, then create only PR #141 BOT-COLONY-LOGISTICS-GATE from fresh main."
+  "nextAction": "Finish validation and squash merge PR #141 BOT-COLONY-LOGISTICS-GATE, then create only Audit PR #142 from fresh main."
 }
