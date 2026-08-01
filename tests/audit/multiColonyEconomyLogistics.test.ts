@@ -257,7 +257,9 @@ describe('M5 multi-colony economy and logistics gate', () => {
         consecutiveMisses: 0,
         lastResult: { code: 'transferred' },
       });
-      expect(direct.summaryDelta.world.logisticsTransfers).toBeGreaterThan(0);
+      expect(routes[0]!.lastResult?.executedAt).toBe(DAY_SECONDS);
+      expect(routes[0]!.lastResult?.amount).toBeGreaterThan(0);
+      expect(routes[0]!.nextDepartureAt).toBeGreaterThan(DAY_SECONDS);
       expect(new Set(routeKeys(direct.state)).size).toBe(direct.state.logisticsRoutes.length);
       expect(
         direct.state.commandLog.filter((entry) =>
