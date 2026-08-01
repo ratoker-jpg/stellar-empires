@@ -1,78 +1,83 @@
 # Current execution state
 
-**Updated:** 2026-07-31  
-**Safe to continue:** yes, through active implementation PR #140 only
+**Updated:** 2026-08-01  
+**Safe to continue:** yes, through final M5 implementation PR #141 only
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `dc8b42fc0e41b631a61dda524224145f2d8ba214` |
-| Last merged PR | #139 `LOGISTICS-ROUTE-LIFECYCLE` |
-| Runtime baseline | PR #139 · schema v16 / save format v3 |
-| Active work | PR #140 `COLONY-OPERATIONS-UX` |
-| Active branch | `agent/colony-operations-ux` |
-| Complexity | medium batch; third of exactly four implementation PRs |
-| Next work item after merge | #141 `BOT-COLONY-LOGISTICS-GATE` |
-| Blockers | none known; final Browser and review closure remain required |
+| Verified `main` baseline | `01eab1366289526553cdffcb1042ee98a8a59040` |
+| Last merged PR | #140 `COLONY-OPERATIONS-UX` |
+| Runtime baseline | PR #140 · schema v16 / save format v3 |
+| Active work | PR #141 `BOT-COLONY-LOGISTICS-GATE` |
+| Active branch | `agent/bot-colony-logistics-gate` |
+| Complexity | medium batch; fourth and final implementation PR |
+| Next work after merge | Audit PR #142 from fresh `main` |
+| Blockers | final documentation-head workflows and review closure only |
 
 ## Last completed atomic action
 
-PR #139 was squash-merged as:
+PR #140 was squash-merged as:
 
 ```text
-dc8b42fc0e41b631a61dda524224145f2d8ba214
+01eab1366289526553cdffcb1042ee98a8a59040
 ```
 
 Validation:
 
 ```text
-CI             30661645271 — success
-Browser E2E    30661645781 — success
-Graphify       30661645236 — success
+CI             30663714857 — success
+Browser E2E    30663714825 — success
+Graphify       30663714856 — success
 review threads none
 ```
 
-## Active PR #140 result
-
-The implementation completes the routed player workflow without changing simulation rules.
+## Active PR #141 result
 
 Delivered on the active branch:
 
-- one canonical Operations market/logistics surface;
-- former standalone panel modules converted to render helpers;
-- route create/edit/pause/resume/delete controls;
-- priority, next departure, configured hourly flow, last result and miss diagnostics;
-- origin/target stock pressure from the #138 portfolio;
-- endpoint links with browser-history return;
-- unsaved draft reset after route/reload;
-- explicit market colony selector and selected-colony stock/capacity;
-- `MARKET_SWAP` executed against the selected colony;
-- accessible feedback and responsive layout;
-- real Chromium workflow for both domains.
+- deterministic canonical bot colony roles;
+- specialization convergence before development templates;
+- queue-aware finite retry without role churn;
+- owned-portfolio donor/receiver selection;
+- ordinary route create/update commands;
+- ordinary critical-receiver market fallback;
+- auditable `logistics` scheduler source;
+- at most one role/logistics command per bot decision;
+- three-faction 24-hour sustainability gate;
+- real positive transfers with bounded routes/history;
+- direct/chunked/save-loaded state and summary equality;
+- M5 change record and completed-batch archive.
 
-Code head `1604b453a0f7c20817158f0f7a2461fda679fba3` passed:
+Code head `bd7c39e7a5de6641dc0f92d3be38d01e69c1a8cc` passed:
 
 ```text
-CI             30663010274 — success
-Graphify       30663010271 — success
-Browser E2E    30663010266 — final result checked before merge
+CI             30694352999 — success
+Graphify       30694352977 — success
+Browser E2E    30694352963 — final result checked before merge
 ```
 
-## Remaining M5 sequence
+## Completed M5 sequence
 
 ```text
 #138 COLONY-PORTFOLIO-FOUNDATION — merged
 → #139 LOGISTICS-ROUTE-LIFECYCLE — merged
-→ #140 COLONY-OPERATIONS-UX — active
-→ #141 BOT-COLONY-LOGISTICS-GATE
+→ #140 COLONY-OPERATIONS-UX — merged
+→ #141 BOT-COLONY-LOGISTICS-GATE — active closure PR
 → #142 next Audit from fresh main
+```
+
+Archive candidate:
+
+```text
+docs/audits/completed/multi-colony-economy-logistics-01.md
 ```
 
 ## Exact next action
 
-1. Validate the latest #140 documentation head through CI, Browser E2E and Graphify.
+1. Validate the latest #141 documentation head through CI, Browser E2E and Graphify.
 2. Inspect and resolve every review thread.
-3. Mark #140 ready only when all required gates are green.
-4. Squash merge #140.
-5. Create only #141 from the resulting fresh `main` and close M5 there.
+3. Mark #141 ready only when all required gates are green.
+4. Squash merge #141.
+5. Create only Audit PR #142 from the resulting fresh `main`.
 
-Do not absorb bot planning, physical convoys, PvE/meta or endgame into #140.
+No fifth M5 implementation PR is authorized. Do not absorb physical convoys, PvE/meta, alliances or endgame into #141.
