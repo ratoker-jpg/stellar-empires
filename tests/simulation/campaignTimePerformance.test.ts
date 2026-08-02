@@ -1,9 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { createCampaignSettings } from '../../src/simulation/campaign/settings';
 import { advanceCampaignTime } from '../../src/simulation/campaign/time';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 
 const DAY_SECONDS = 86_400;
+const WARM_UP_SECONDS = 3_600;
+const OPERATION_BUDGET = 250_000;
 
 function createCampaignState(seedSource: string) {
   return createInitialGameState(seedSource, {
@@ -21,11 +23,23 @@ function collectGarbageBeforeMeasurement(): void {
   collectGarbage?.();
 }
 
+beforeAll(() => {
+  const warmed = advanceCampaignTime(
+    createCampaignState('performance-runtime-warm-up'),
+    WARM_UP_SECONDS,
+    { operationBudget: OPERATION_BUDGET },
+  );
+  if (!warmed.complete) {
+    throw new Error('Campaign performance warm-up did not complete.');
+  }
+  collectGarbageBeforeMeasurement();
+});
+
 function measureCatchUp(seedSource: string, seconds: number) {
   const state = createCampaignState(seedSource);
   collectGarbageBeforeMeasurement();
   const startedAt = performance.now();
-  const result = advanceCampaignTime(state, seconds, { operationBudget: 250_000 });
+  const result = advanceCampaignTime(state, seconds, { operationBudget: OPERATION_BUDGET });
   return {
     result,
     durationMilliseconds: performance.now() - startedAt,
