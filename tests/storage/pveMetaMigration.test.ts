@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createStateChecksum } from '../../src/simulation/checksum';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import { executeCommand } from '../../src/simulation/reducer';
+import { prepareE2eState } from '../../src/runtime/e2eScenario';
 import { createCampaignRuntimeMetadata } from '../../src/storage/runtimeMetadata';
-import { parseSaveJson } from '../../src/storage/saveFormat';
+import {
+  createSaveEnvelope,
+  parseSaveJson,
+  serializeSave,
+} from '../../src/storage/saveFormat';
 
 const SAVED_AT = '2026-08-02T12:00:00.000Z';
 
@@ -72,6 +78,36 @@ describe('PvE meta persistence migration', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.state.pveMeta).toEqual(state.pveMeta);
+    }
+  });
+
+  it('preserves an E2E logistics route through the v4 round trip', () => {
+    const initial = prepareE2eState(createInitialGameState('pve-meta-logistics-roundtrip'));
+    const colonies = initial.planets.filter((planet) => planet.ownerEmpireId === 'player');
+    expect(colonies).toHaveLength(2);
+    const origin = colonies[0];
+    const target = colonies[1];
+    if (origin === undefined || target === undefined) return;
+
+    const created = executeCommand(initial, {
+      type: 'CREATE_LOGISTICS_ROUTE',
+      empireId: 'player',
+      originPlanetId: origin.id,
+      targetPlanetId: target.id,
+      resourceId: 'metal',
+      amountPerTrip: 500,
+      originReserve: 1_000,
+      intervalSeconds: 3_600,
+      priority: 2,
+    });
+    expect(created.ok).toBe(true);
+    if (!created.ok) return;
+
+    const save = createSaveEnvelope('logistics-v4', created.value, SAVED_AT);
+    const parsed = parseSaveJson(serializeSave(save));
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.value.state.logisticsRoutes).toEqual(created.value.logisticsRoutes);
     }
   });
 
