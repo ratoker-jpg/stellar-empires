@@ -36,6 +36,7 @@ export const ARENA_CHALLENGE_COUNT = 3;
 
 const DIFFICULTIES: readonly ArenaDifficulty[] = ['patrol', 'assault', 'elite'];
 const FACTIONS = ['aegis', 'synod', 'veyra'] as const;
+const RESOURCE_IDS: readonly ResourceId[] = ['metal', 'crystal', 'gas'];
 
 const ENTRY_COSTS: Readonly<Record<ArenaDifficulty, ResourceCost>> = {
   patrol: { metal: 500, crystal: 250, gas: 100 },
@@ -132,7 +133,7 @@ export function getArenaChallenges(
     const challengeSeed = mixSeed(
       state.seed ^ Math.imul(cycleIndex + 1, 0x9e3779b1) ^ Math.imul(slot + 1, 0x85ebca6b),
     );
-    const factionId = FACTIONS[challengeSeed % FACTIONS.length];
+    const factionId = FACTIONS[challengeSeed % FACTIONS.length]!;
     return {
       id: `arena-${cycleIndex}-${slot}`,
       cycleIndex,
@@ -240,7 +241,8 @@ export function enterArenaChallenge(
       message: 'Arena entry requires an owned idle stationed fleet.',
     };
   }
-  const origin = state.planets.find((planet) => planet.id === fleet.location.planetId);
+  const originPlanetId = fleet.location.planetId;
+  const origin = state.planets.find((planet) => planet.id === originPlanetId);
   if (origin === undefined || origin.ownerEmpireId !== command.empireId) {
     return {
       ok: false,
@@ -376,7 +378,7 @@ function grantReward(
 
   const resources = { ...target.economy.resources };
   const rewardGranted = { metal: 0, crystal: 0, gas: 0 };
-  for (const resourceId of ['metal', 'crystal', 'gas'] as const satisfies readonly ResourceId[]) {
+  for (const resourceId of RESOURCE_IDS) {
     const stock = resources[resourceId];
     const granted = Math.min(entry.challenge.reward[resourceId], stock.capacity - stock.amount);
     resources[resourceId] = { ...stock, amount: stock.amount + granted };
@@ -396,9 +398,10 @@ export function applyArenaResolutionEvent(
   event: ScheduledGameEvent,
 ): GameState {
   if (event.payload.type !== 'ARENA_RESOLVE') return state;
+  const entryId = event.payload.entryId;
   const pveMeta = getPveMeta(state);
   const entry = pveMeta.activeArenaEntries.find(
-    (candidate) => candidate.id === event.payload.entryId,
+    (candidate) => candidate.id === entryId,
   );
   if (entry === undefined) return state;
   const fleet = state.fleets.find(
