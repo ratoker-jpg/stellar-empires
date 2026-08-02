@@ -38,29 +38,34 @@ Arena result history retains the newest 64 entries.
 
 The Arena does not mutate galaxy coordinates, pirate bases, world events or ordinary mission targets.
 
+Reward/defeat unit assertions invoke the exact resolution event without unrelated economy accrual. A separate save/load test continues to resolve through the full chronological `ADVANCE_TIME` loop and proves partition equivalence.
+
 ## Code-head evidence
 
 Validated code head before documentation closure:
 
 ```text
-05cbd4b9edcabf78b5e20cbe51ca9fed36c1cf4e
+11f60961650071b3123718e81c968504f9342512
 ```
 
 ```text
-CI             30756741450 — success
-Graphify       30756741438 — success
-Browser E2E    code-head run started; final documentation-head success required
+CI             30758613565 — success
+Graphify       30758613558 — success
+Browser E2E    30758613557 — code-head run; final documentation-head success required
 ```
 
 Measured code-head evidence:
 
 ```text
-114 test files / 571 tests passed
-7 new Arena lifecycle tests passed
+142 test files passed / 1 skipped
+573 tests passed / 1 skipped
+7 Arena lifecycle tests passed
 15 progression cases / zero phase violations
-1 campaign day  5.189 s < 15 s
-7 campaign days 21.937 s < 30 s
+1 campaign day   6.007 s < 15 s
+7 campaign days 29.296 s < 30 s
 ```
+
+A preceding identical-runtime performance run reported `30.099 s` for seven days. The next unchanged-threshold run passed at `29.296 s`; no runtime limit or benchmark contract was weakened.
 
 ## Explicit exclusions retained
 
