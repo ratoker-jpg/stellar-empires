@@ -10,7 +10,7 @@
 | Active batch | `COMPLETE-ENDGAME-01` |
 | Active work | PR #153 `ALLIANCE-SOLO-FOUNDATION` |
 | Active branch | `agent/alliance-solo-foundation` |
-| Implementation code head before docs | `a49211e248ddc3a634e7112336bdee77edb2e02b` |
+| Final implementation code head before docs | `514940cae7850cb348ad500a07846569be30d4eb` |
 | Runtime target in PR #153 | schema v18 / save format v5 |
 | Next authorized work | #154 `SOLAR-WAR-PARTICIPATION`, only after #153 merges |
 | Current blockers | final code+docs CI, Browser E2E, Graphify, review and mergeability |
@@ -39,6 +39,7 @@ No fifth implementation PR is authorized.
 ### Delivered
 
 - current initial state is schema v18 and save format v5;
+- `GameState` always exposes the participation key; legacy pre-v18 states may carry `undefined` only until migration;
 - every empire has one persisted participant record and remains explicitly solo-eligible;
 - public/open alliances use stable deterministic IDs and normalized unique names;
 - `CREATE_ALLIANCE`, `JOIN_ALLIANCE` and `LEAVE_ALLIANCE` are ordinary empire-generic commands;
@@ -59,9 +60,8 @@ No fifth implementation PR is authorized.
 
 ## Exact next action
 
-1. finish authoritative documentation synchronization;
-2. run CI, Browser E2E and Graphify on the exact final code+docs head;
-3. fix only real failures without widening scope;
-4. verify zero unresolved review threads and clean mergeability;
-5. mark PR #153 ready and squash merge;
-6. record the generated #153 squash SHA in PR #154 created from fresh `main`.
+1. run CI, Browser E2E and Graphify on the exact final code+docs head;
+2. fix only real failures without widening scope;
+3. verify zero unresolved review threads and clean mergeability;
+4. mark PR #153 ready and squash merge;
+5. record the generated #153 squash SHA in PR #154 created from fresh `main`.
