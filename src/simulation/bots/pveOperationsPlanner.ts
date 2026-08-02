@@ -64,6 +64,11 @@ interface Blocker {
 
 const HIDDEN_PLAYER_EMPIRE_ID = '__hidden-player-for-bot-pve-view__';
 const ZERO_CARGO = { metal: 0, crystal: 0, gas: 0 } as const;
+const FLEET_CREATION_AVAILABILITY_CODES = new Set([
+  'scout-fleet-required',
+  'specialist-fleet-required',
+  'combat-fleet-required',
+]);
 
 const CATEGORY_ORDER: Readonly<Record<BotPersonality, readonly PveCategory[]>> = {
   explorer: ['anomaly', 'expedition', 'resource-object', 'pirate-hunt'],
@@ -134,7 +139,7 @@ function createViewerState(state: GameState, viewerEmpireId: string): GameState 
       remapEmpireId(empireId, viewerEmpireId) ?? empireId),
     planets: state.planets.map((planet) => ({
       ...planet,
-      ownerEmpireId: remapEmpireId(planet.ownerEmpireId, viewerEmpireId),
+      ownerEmpireId: remapEmpireId(planet.ownerEmpireId, viewerEmpireId) ?? planet.ownerEmpireId,
     })),
     research: state.research.map((entry) => ({
       ...entry,
@@ -181,6 +186,12 @@ function categoryFor(
     return huntTarget === undefined ? null : 'pirate-hunt';
   }
   return null;
+}
+
+function isSelectableEntry(entry: PveOpportunityEntry): boolean {
+  return entry.status === 'available' ||
+    (entry.status === 'unavailable' &&
+      FLEET_CREATION_AVAILABILITY_CODES.has(entry.availabilityCode));
 }
 
 function isPublicCandidate(candidate: Candidate, perception: BotPerception): boolean {
@@ -255,7 +266,8 @@ function gasReserveAllows(
   fuelRequired: number,
 ): boolean {
   if (fleet.location.type !== 'planet') return false;
-  const origin = perception.ownPlanets.find((planet) => planet.id === fleet.location.planetId);
+  const originPlanetId = fleet.location.planetId;
+  const origin = perception.ownPlanets.find((planet) => planet.id === originPlanetId);
   if (origin === undefined) return false;
   const reserve = Math.floor(
     (origin.resources.gasCapacity * BOT_LOGISTICS_RESERVE_PERMILLE) / 1_000,
@@ -623,7 +635,7 @@ export function planBotPveOperations(
   const viewerState = createViewerState(state, profile.empireId);
   const candidates = createPveOperationsView(viewerState)
     .flatMap((entry): readonly Candidate[] => {
-      if (entry.status !== 'available') return [];
+      if (!isSelectableEntry(entry)) return [];
       const category = categoryFor(entry, perception);
       return category === null ? [] : [{ entry, category }];
     })
