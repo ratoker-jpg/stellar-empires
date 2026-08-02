@@ -144,7 +144,7 @@
         "144": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a"
       },
       "activePr": 145,
-      "validatedCodeHead": "2b772475f79db3998932a4cf0322a5dfe757ac0e",
+      "validatedCodeHead": "db29dbe0a69ba38eea6a2f3ba838604305ec0505",
       "contract": "docs/audits/contracts/sustainable-pve-operations-01.md",
       "evidence": "docs/audits/evidence/sustainable-pve-operations-01.md",
       "workItems": [
@@ -207,12 +207,15 @@
       "workItem": "BOT-PVE-OPERATIONS",
       "title": "Add honest bot PvE operations",
       "status": "active",
-      "validatedCodeHead": "2b772475f79db3998932a4cf0322a5dfe757ac0e",
-      "ciRun": 30745970162,
-      "browserRun": 30745970161,
-      "graphifyRun": 30745970168,
-      "oneDayPerformanceMilliseconds": 8940,
-      "sevenDayPerformanceMilliseconds": 21806
+      "validatedCodeHead": "db29dbe0a69ba38eea6a2f3ba838604305ec0505",
+      "ciRun": 30746581384,
+      "browserRun": 30746581373,
+      "graphifyRun": 30746581362,
+      "oneDayPerformanceMilliseconds": 6064,
+      "sevenDayPerformanceMilliseconds": 29806,
+      "progressionMatrixCases": 15,
+      "progressionPhaseViolations": 0,
+      "routineUnlockPhase": "planet-destruction"
     },
     {
       "number": 146,
