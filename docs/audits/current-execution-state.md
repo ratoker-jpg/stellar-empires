@@ -1,86 +1,90 @@
 # Current execution state
 
 **Updated:** 2026-08-02  
-**Safe to continue:** yes, through active PR #144 only
+**Safe to continue:** yes, through active PR #145 only
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `e3d2c28385abd9772a18257eeb313bd8d45e581e` |
-| Last merged PR | #143 `PVE-TARGET-RECOVERY` |
-| Runtime baseline | PR #143 · schema v16 / save format v3 |
+| Verified `main` baseline | `dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a` |
+| Last merged PR | #144 `PVE-OPERATIONS-INTELLIGENCE-UX` |
+| Runtime baseline | PR #144 · schema v16 / save format v3 |
 | Active batch | `SUSTAINABLE-PVE-OPERATIONS-01` |
-| Active work | #144 `PVE-OPERATIONS-INTELLIGENCE-UX` |
-| Active branch | `agent/pve-operations-intelligence-ux` |
-| Complexity decision | medium · exactly four implementation PRs |
-| Ordered implementation | #143 merged → #144 active → #145 → #146 |
+| Active work | #145 `BOT-PVE-OPERATIONS` |
+| Active branch | `agent/bot-pve-operations` |
+| Complexity | medium · exactly four implementation PRs |
+| Ordered implementation | #143 merged → #144 merged → #145 active → #146 |
 | Blockers | final documentation-head gates and review |
 
 ## Last completed atomic action
 
-PR #143 was squash-merged as:
+PR #144 was squash-merged as:
 
 ```text
-e3d2c28385abd9772a18257eeb313bd8d45e581e
+dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a
 ```
 
-It delivered deterministic object/pirate recovery and targeted pirate-hunt rewards while retaining schema v16/save format v3.
+It delivered the canonical player-facing PvE opportunity model and Operations/report UX.
 
-## Active PR #144 result
+## Active PR #145 result
 
-PR #144 delivers one pure canonical PvE opportunity selector consumed by routed Operations and event-report presentation.
+PR #145 gives bots honest access to existing PvE loops:
 
-The model covers:
-
-- expedition positions;
-- space objects;
-- pirate bases, including destroyed, occupied and recovering baselines;
-- active world-event targets.
-
-Stable fields include availability reason, required role/current fleet, duration/fuel, yield/hazard/control, exact cooldown/recovery, event expiry and reward/threat multipliers. Entries sort by active event, available, active operation, recovering, unavailable, then coordinate/kind/ID.
-
-Operations `overview`, `expeditions`, `objects` and `events` consume the model without new routes or command paths. Existing expedition/object/recall/fleet-target commands remain ordinary confirmed commands. Market/logistics remain unchanged.
-
-World-event reports use catalog titles, readable targets and actual mechanical effects. Passive recovery creates no fake mission report, reward row or command history.
+- perception exposes only globally public expedition, object, event and pirate-contact data;
+- personality-aware planning consumes the canonical PvE opportunity model;
+- bots use ordinary fleet creation, expedition, object, attack and recall commands;
+- specialist/combat fleets consume only ready owned inventory;
+- expedition/object operations preserve a 40% gas reserve;
+- pirate-hunt requires an active event, current level-3 intelligence, a 120% safety margin and the normal attack validator;
+- real threat/recovery remains ahead of PvE; ordinary fleet development remains after PvE;
+- scheduler source `pve` issues at most one command per empire decision and records blocked reasons;
+- background PvE planning runs every 21,600 campaign seconds, while active `pirate-hunt` and `mineral-bloom` opportunities retain 3,600-second reaction;
+- hidden player resources, fleets, defenses and unpublished outcomes do not affect the plan;
+- inherited colony-role, logistics, partition and performance gates remain intact.
 
 ## Code-head validation
 
 Code head:
 
 ```text
-09e6dec9817437d31110862738a6c91c005a9399
+2b772475f79db3998932a4cf0322a5dfe757ac0e
 ```
 
-Passed:
+Evidence:
 
 ```text
-CI             30742965874 — success
-Browser E2E    30742965877 — success
-Graphify       30742965865 — success
+CI             30745970162 — full suite/build and performance green; progression checked before closure
+Browser E2E    30745970161 — conclusion checked before closure
+Graphify       30745970168 — success
 ```
 
-Browser coverage includes routed modes, explicit labels, presentation-only target handoff and no horizontal overflow at 1440×900, 1920×1080 and 390×844.
+Performance:
+
+```text
+1 campaign day  8.94 s < 15 s
+7 campaign days 21.81 s < 30 s
+```
 
 Change record:
 
 ```text
-docs/changes/pr144-pve-operations-intelligence-ux.md
+docs/changes/pr145-bot-pve-operations.md
 ```
 
 ## Compatibility boundary
 
 - schema v16/save format v3 retained;
-- #143 recovery truth is consumed, not reimplemented;
-- no bot PvE behavior from #145;
-- no #146 closure gate/archive work;
-- no new route family, persisted PvE meta, currency or reputation;
-- no Arena, Admiral services, alliances, endgame or global rebalance.
+- no hidden-information exception or fabricated bot assets;
+- no player UX/recovery lifecycle reimplementation;
+- no persisted PvE meta, currency or reputation;
+- no #146 closure/archive work;
+- no Arena, Admiral services, alliances or endgame.
 
 ## Exact next action
 
-1. Run CI, Browser E2E and Graphify on the final documentation head.
+1. Validate the final #145 documentation head with CI, Browser E2E and Graphify.
 2. Resolve every blocking review finding.
-3. Mark #144 ready and squash merge only with green gates.
-4. Fetch fresh `main` and exact #144 merge SHA.
-5. Create only #145 `BOT-PVE-OPERATIONS`.
+3. Mark #145 ready and squash merge only with green gates.
+4. Fetch exact #145 merge SHA and fresh `main`.
+5. Create only #146 `PVE-SUSTAINABILITY-GATE`.
 
-Do not start #146 early.
+Do not start any later batch early.
