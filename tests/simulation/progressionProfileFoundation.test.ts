@@ -21,7 +21,7 @@ describe('progression profile foundation', () => {
       campaignSettings: createCampaignSettings({ progressionProfile: 'legacy-v1' }),
     });
 
-    expect(compressed.schemaVersion).toBe(16);
+    expect(compressed.schemaVersion).toBe(17);
     expect(compressed.campaignSettings.progressionProfile).toBe('compressed-v1');
     expect(legacy.campaignSettings.progressionProfile).toBe('legacy-v1');
     expect(createStateChecksum(compressed)).not.toBe(createStateChecksum(legacy));
@@ -52,8 +52,9 @@ describe('progression profile foundation', () => {
     if (queuedItem === undefined) return;
 
     const { progressionProfile: _profile, ...legacySettings } = queued.value.campaignSettings;
+    const { pveMeta: _pveMeta, ...legacyWithoutPveMeta } = queued.value;
     const legacyState = {
-      ...queued.value,
+      ...legacyWithoutPveMeta,
       schemaVersion: 15,
       campaignSettings: legacySettings,
     };
