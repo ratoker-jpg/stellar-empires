@@ -146,7 +146,7 @@ function isObservation(value: unknown): boolean {
     typeof value.snapshot.ownerEmpireId === 'string' && (value.snapshot.level === 1 || value.snapshot.level === 2 || value.snapshot.level === 3);
 }
 function isIntelligenceAlert(value: unknown): boolean {
-  return isRecord(value) && typeof value.empireId === 'string' &&
+  return isRecord(value) && typeof value.id === 'string' && typeof value.empireId === 'string' &&
     (value.sourceEmpireId === null || typeof value.sourceEmpireId === 'string') && typeof value.targetPlanetId === 'string' &&
     isSpaceCoordinate(value.coordinate) && isNonNegativeInteger(value.detectedAt) &&
     (value.confidence === 'low' || value.confidence === 'medium' || value.confidence === 'high');
