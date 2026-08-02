@@ -337,7 +337,7 @@ describe('espionage and counter-intelligence', () => {
     ).toBe(true);
   });
 
-  it('repeats the same outcome and round-trips schema-v17 intelligence unchanged', () => {
+  it('repeats the same outcome and round-trips schema-v18 intelligence unchanged', () => {
     const fixture = prepareFixture('scout-determinism', 1, 4, 3);
     const sequence = findSequence(fixture, true);
     const first = resolveScoutArrivalOutcome(
@@ -362,7 +362,7 @@ describe('espionage and counter-intelligence', () => {
     const parsed = parseSaveJson(serializeSave(envelope));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(17);
+      expect(parsed.value.state.schemaVersion).toBe(18);
       expect(parsed.value.state.intelligence).toEqual(first.state.intelligence);
     }
   });
