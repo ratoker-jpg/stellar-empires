@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** PR #150 `PVE-META-OPERATIONS-UX` active  
+**Status:** PR #151 `BOT-PVE-META-GATE` active; final implementation in accepted batch  
 **Updated:** 2026-08-02  
-**Last merged PR:** #149 `ARENA-PVE-CHALLENGES`  
-**Verified main:** `42c484426e850b84263d4eecab63ebbb3eaafb05`  
-**Active branch:** `agent/pve-meta-operations-ux`  
-**Next authorized PR after merge:** #151 `BOT-PVE-META-GATE`
+**Last merged PR:** #150 `PVE-META-OPERATIONS-UX`  
+**Verified main:** `39b85fe057d2cbf1fcff6b949a14bc62c7dbde63`  
+**Active branch:** `agent/bot-pve-meta-gate`  
+**Next implementation:** not authorized without a new accepted Audit PR
 
 ## Repository
 
@@ -21,85 +21,79 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 4. `docs/audits/current-batch-audit.md`
 5. `docs/audits/contracts/pve-meta-foundation-01.md`
 6. `docs/audits/evidence/pve-meta-foundation-01.md`
-7. `docs/changes/pr150-pve-meta-operations-ux.md`
-8. `docs/project-status.json`
-9. `docs/roadmap-pr-index.json`
-10. `docs/27-playable-game-roadmap-v5.md`
-11. latest merged PRs, open PRs and actual `main`
+7. `docs/audits/completed/pve-meta-foundation-01.md`
+8. `docs/changes/pr151-bot-pve-meta-gate.md`
+9. `docs/project-status.json`
+10. `docs/roadmap-pr-index.json`
+11. `docs/27-playable-game-roadmap-v5.md`
+12. latest merged PRs, open PRs and actual `main`
 
-## Accepted M6b order
+## Final M6b order
 
 ```text
 #147 PVE-META-FOUNDATION-01 Audit 50835aeb2864b96e026a7202ad419368e934e47b
 → #148 PVE-REPUTATION-FOUNDATION 430265b061764145e4e3ea1470d545f2ef82d0fa
 → #149 ARENA-PVE-CHALLENGES 42c484426e850b84263d4eecab63ebbb3eaafb05
-→ #150 PVE-META-OPERATIONS-UX — active
-→ #151 BOT-PVE-META-GATE
+→ #150 PVE-META-OPERATIONS-UX 39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
+→ #151 BOT-PVE-META-GATE — active final closure
 ```
 
 Exactly four implementation PRs are authorized. No fifth PR may be added.
 
-## Completed foundations
+## Delivered before #151
 
-### #148
-
-- schema v17/save v4 and deterministic migration;
 - persistent reputation and derived tiers;
-- ordinary-PvE reputation awards and duplicate protection.
+- deterministic ordinary-PvE awards;
+- schema v17/save v4 migration;
+- three public deterministic Arena challenges;
+- existing-resource costs and deterministic combat;
+- active entries, losses, survivors, withdrawal and bounded history;
+- routed Operations Arena UX with responsive Browser evidence.
 
-### #149
+## Active #151 result
 
-- three deterministic public Arena challenges every six hours;
-- owned-fleet entry, existing-resource costs and victory rewards;
-- persistent losses/survivors, withdrawal and idempotent resolution;
-- active-entry save/load and bounded result history.
+- public-only deterministic Arena planning for bots;
+- planet-destruction capability gate;
+- owned idle stationed offensive fleet and owned origin resources only;
+- 40% gas reserve;
+- ordinary PvE and all higher scheduler priorities ahead of Arena;
+- canonical `ENTER_ARENA_CHALLENGE` execution;
+- maximum one Arena command per decision;
+- legal Aegis, Synod and Veyra evidence;
+- pure planning and hidden-player-state independence;
+- exact 48-hour direct/chunk/save/offline full-state equality.
 
-## Active #150 result
+Validated code head:
 
-Delivered:
-
-- canonical `#/operations/arena` route;
-- reputation/tier/next-tier progress;
-- exact award explanations and recent reputation ledger;
-- three current challenge cards with cycle timing and public enemy summary;
-- eligible owned idle fleets and exact validation failures;
-- active entry, withdrawal and completed results;
-- responsive/mobile/reduced-motion presentation;
-- reload and browser-history equivalence;
-- all existing Operations modes retained through an unchanged legacy boundary.
-
-Not delivered in #150:
-
-- bot Arena planning;
-- 48-hour three-faction closure;
-- final batch archive and handoff.
+```text
+016065dce161309899e0893bfa27c85bb2ba2e1c
+```
 
 ## Exact recovery action
 
-While #150 is open:
+While #151 is open:
 
-1. continue only `agent/pve-meta-operations-ux`;
-2. keep schema v17/save v4 and Arena mechanics unchanged;
-3. keep changes inside routed PvE-meta UX, tests and status docs;
-4. do not absorb #151 bot planning or closure work;
-5. run CI, Browser E2E and Graphify on the final documentation head;
-6. resolve every review finding and squash merge only when all gates are green.
+1. continue only `agent/bot-pve-meta-gate`;
+2. keep schema v17/save v4 unchanged;
+3. keep changes inside bot Arena parity, closure tests and status docs;
+4. run final CI, Browser E2E and Graphify on the documentation head;
+5. resolve every review finding;
+6. squash merge only when all gates are green.
 
-After #150 merges:
+After #151 merges:
 
-1. fetch the exact #150 squash SHA and fresh `main`;
-2. create only #151 `BOT-PVE-META-GATE`;
-3. bots must read the same public challenge model and use the same entry command;
-4. preserve recovery, defense, progression and logistics priorities ahead of Arena;
-5. prove three-faction 48-hour direct/chunk/save/offline equality and close the batch.
+1. fetch the exact #151 squash SHA and fresh `main`;
+2. create no implementation branch;
+3. the immediately following PR must be Audit-only;
+4. synchronize exact #151 SHA in the archive and machine indexes;
+5. choose the next coherent product gap and authorize work only after audit acceptance.
 
 ## Hard stops
 
-- no #151 before #150 merge;
+- no fifth implementation PR in `PVE-META-FOUNDATION-01`;
 - no second schema/save bump in this batch;
 - no separate PvE currency or Admiral services;
 - no hidden-information exception or fabricated assets/resources;
 - no multiplayer, rankings, alliances or endgame;
-- no new primary UI family for Arena;
 - no weakening of progression, determinism, performance, Browser or Graphify gates;
 - after two failed attempts, change the approach rather than repeating the same retry.
