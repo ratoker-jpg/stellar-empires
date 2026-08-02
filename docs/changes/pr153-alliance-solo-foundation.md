@@ -5,7 +5,7 @@
 **Audit squash SHA:** `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
 **Exact branch baseline:** `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
 **Branch:** `agent/alliance-solo-foundation`  
-**Validated implementation code head before documentation:** `a49211e248ddc3a634e7112336bdee77edb2e02b`  
+**Validated implementation code head before final documentation:** `514940cae7850cb348ad500a07846569be30d4eb`  
 **Runtime target:** schema v18 / save format v5
 
 ## Delivered result
