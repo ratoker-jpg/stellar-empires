@@ -14,6 +14,7 @@ export const OPERATIONS_SHELL_MODES = [
   'expeditions',
   'objects',
   'events',
+  'arena',
   'market',
   'logistics',
 ] as const;
