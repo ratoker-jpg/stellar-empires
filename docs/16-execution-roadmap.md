@@ -1,10 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** PR #146 `PVE-SUSTAINABILITY-GATE` closing M6a  
+**Status:** Audit PR #147 selecting M6b PvE meta foundation  
 **Updated:** 2026-08-02  
-**Verified main:** `62aae31e2ad5e4ad04385a5cd94f77a70579d72f`  
-**Last merged PR:** #145 `BOT-PVE-OPERATIONS`  
-**Implementation after #146:** not authorized; Audit #147 only
+**Verified main:** `392abb2bf27267fef9777ff35eb96555941a42f3`  
+**Last merged PR:** #146 `PVE-SUSTAINABILITY-GATE`  
+**Implementation:** blocked until Audit #147 acceptance
 
 ## Authoritative files
 
@@ -13,8 +13,10 @@ AGENTS.md
 docs/28-audit-first-autonomous-delivery-protocol.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
+docs/audits/contracts/pve-meta-foundation-01.md
+docs/audits/evidence/pve-meta-foundation-01.md
+docs/changes/pr147-pve-meta-foundation-audit.md
 docs/audits/completed/sustainable-pve-operations-01.md
-docs/changes/pr146-pve-sustainability-gate.md
 docs/27-playable-game-roadmap-v5.md
 docs/project-status.json
 docs/roadmap-pr-index.json
@@ -31,60 +33,67 @@ docs/roadmap-pr-index.json
 - #137–#141: coherent multi-colony economy/logistics and bot logistics;
 - #142–#146: sustainable existing PvE operations.
 
-## Closing M6a sequence
+## Completed M6a sequence
 
 ```text
-#142 SUSTAINABLE-PVE-OPERATIONS-01 Audit — merged
-→ #143 PVE-TARGET-RECOVERY — merged
-→ #144 PVE-OPERATIONS-INTELLIGENCE-UX — merged
-→ #145 BOT-PVE-OPERATIONS — merged
-→ #146 PVE-SUSTAINABILITY-GATE — closure active
+#142 SUSTAINABLE-PVE-OPERATIONS-01 Audit 81f1959b0bdbdd72d05dc21a2dce0a9e1470f010
+→ #143 PVE-TARGET-RECOVERY              e3d2c28385abd9772a18257eeb313bd8d45e581e
+→ #144 PVE-OPERATIONS-INTELLIGENCE-UX  dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a
+→ #145 BOT-PVE-OPERATIONS              62aae31e2ad5e4ad04385a5cd94f77a70579d72f
+→ #146 PVE-SUSTAINABILITY-GATE         392abb2bf27267fef9777ff35eb96555941a42f3
 ```
 
-Exactly four implementation PRs were authorized. No fifth PR exists.
-
-## PR #146 closure result
-
-The final closure gate proves across Aegis, Synod and Veyra:
-
-- 48-hour direct/chunk/save partition equality;
-- exact object recovery and ordinary reuse;
-- pirate recovery, free respawn and occupied-slot blocking;
-- target-only pirate-hunt reward;
-- world-event chain preservation;
-- stable target counts, unique coordinates and bounded histories;
-- legal ordinary bot expedition, object and pirate-hunt commands;
-- deterministic and hidden-state-isolated bot plans.
-
-Validated code head:
+Final #146 validation on head `54914d98c071b84c668af5e16b89cb851085f7ba`:
 
 ```text
-a2e466bfffa3494ae9a08e2c4250e6fc78c89290
+CI             30752151413 — success
+Browser E2E    30752151392 — success
+Graphify       30752151378 — success
+1 day           5.288 s < 15 s
+7 days         23.329 s < 30 s
 ```
+
+## Active Audit #147
+
+Actual-code findings:
+
+- sustainable PvE, deterministic combat, fleets, Operations/Reports and bot participation already exist;
+- Graphify found no Arena, Admiral, reputation, currency, alliance, Obelisk, victory or defeat domain;
+- persistence/command surfaces are highly connected and require one controlled migration;
+- a separate PvE currency duplicates the existing resource economy;
+- Admiral services have no justified service contract and remain deferred.
+
+Proposed medium batch:
 
 ```text
-CI             30747647153 — success
-Graphify       30747647145 — success
-Browser E2E    final documentation-head success required before merge
+#147 PVE-META-FOUNDATION-01 Audit — active
+→ #148 PVE-REPUTATION-FOUNDATION
+→ #149 ARENA-PVE-CHALLENGES
+→ #150 PVE-META-OPERATIONS-UX
+→ #151 BOT-PVE-META-GATE
 ```
 
-CI includes 106 test files / 557 tests, the permanent 15-case progression matrix and performance of 6.22 seconds for one day and 29.56 seconds for seven days.
+The implementation sequence becomes authorized only after #147 is accepted.
 
-## Compatibility boundary
+## Accepted batch boundary
 
-- schema v16/save format v3 retained;
-- no new gameplay or persisted state in #146;
-- no Arena, Admiral services, PvE meta/currency/reputation;
-- no server authority, alliances, Solar War, Gates or endgame;
-- no implementation after #146 without a new accepted audit.
+- target schema v17/save v4 through #148 only;
+- one persistent reputation score and derived tiers;
+- local deterministic Arena using existing fleets, resources and combat;
+- existing Operations workspace, not a new primary navigation family;
+- public-only same-command bot participation;
+- no separate currency or Admiral services;
+- no multiplayer, rankings, new catalogs, alliances or endgame;
+- unchanged 15-case progression and `<15 s` / `<30 s` performance gates.
 
 ## Immediate action
 
 ```text
-validate final #146 documentation head
+validate final Audit #147 documentation head
 → CI + Browser E2E + Graphify
 → resolve review
-→ mark ready and squash merge #146
-→ fetch fresh main and exact #146 merge SHA
-→ create Audit PR #147 only
+→ confirm mergeability
+→ squash merge Audit #147
+→ fetch exact #147 merge SHA
+→ create only #148 PVE-REPUTATION-FOUNDATION
 ```
