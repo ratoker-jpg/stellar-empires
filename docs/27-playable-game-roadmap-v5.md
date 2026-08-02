@@ -82,11 +82,12 @@ This batch makes existing PvE repeatable, understandable and honestly contested.
 - active-event/current-level-3-intelligence/120%-safety requirements for pirate-hunt;
 - true recovery/high-threat actions before PvE;
 - at most one `pve` command per decision;
-- six-hour routine cadence and one-hour response to active targeted bonuses;
+- routine scheduler PvE unlock after heavy-fleet at `planet-destruction`;
+- six-hour routine cadence and one-hour response to targeted events or active operations;
 - hidden-player-state invariance;
 - inherited logistics, determinism and performance gates.
 
-Code head `2b772475f79db3998932a4cf0322a5dfe757ac0e` passed full suite/build and measured performance in CI `30745970162`; Graphify `30745970168` passed. Browser/progression conclusions are checked before closure.
+Code head `db29dbe0a69ba38eea6a2f3ba838604305ec0505` passed CI `30746581384`, Browser `30746581373` and Graphify `30746581362`, including the permanent 15-case progression matrix. Performance: 1 day `6.06s`; 7 days `29.81s`.
 
 ## 8. Release 1.0 definition
 
