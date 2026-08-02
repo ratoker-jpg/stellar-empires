@@ -34,6 +34,7 @@ describe('unit catalog and inventory', () => {
     expect(state.pveMeta).toEqual({
       reputations: state.empires.map((empireId) => ({ empireId, reputation: 0 })),
       activeArenaEntries: [],
+      arenaHistory: [],
     });
     expect(state.market.reserves).toEqual({
       metal: 50_000,
