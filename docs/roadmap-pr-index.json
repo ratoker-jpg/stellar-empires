@@ -6,21 +6,21 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 146,
-    "mergeSha": "392abb2bf27267fef9777ff35eb96555941a42f3",
+    "lastMergedPr": 147,
+    "mergeSha": "50835aeb2864b96e026a7202ad419368e934e47b",
     "runtimeBaselinePr": 146,
     "runtimeBaselineSha": "392abb2bf27267fef9777ff35eb96555941a42f3",
-    "lastCompletedAuditPr": 142,
-    "lastCompletedAuditMergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
+    "lastCompletedAuditPr": 147,
+    "lastCompletedAuditMergeSha": "50835aeb2864b96e026a7202ad419368e934e47b"
   },
-  "activePr": 147,
-  "activePrKind": "audit",
+  "activePr": 148,
+  "activePrKind": "implementation",
   "activeBatchId": "PVE-META-FOUNDATION-01",
-  "activeWorkItem": "PVE-META-FOUNDATION-01-AUDIT",
-  "implementationAuthorized": false,
-  "nextPr": 148,
+  "activeWorkItem": "PVE-REPUTATION-FOUNDATION",
+  "implementationAuthorized": true,
+  "nextPr": 149,
   "nextPrKind": "implementation",
-  "nextWorkItem": "PVE-REPUTATION-FOUNDATION",
+  "nextWorkItem": "ARENA-PVE-CHALLENGES",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -163,13 +163,16 @@
     {
       "id": "pve-meta-foundation",
       "auditPr": 147,
+      "auditMergeSha": "50835aeb2864b96e026a7202ad419368e934e47b",
       "startPr": 148,
       "endPr": 151,
-      "status": "audit-active",
+      "status": "implementation-active",
       "batchId": "PVE-META-FOUNDATION-01",
       "complexity": "medium",
       "plannedPrs": [148, 149, 150, 151],
-      "implementationAuthorized": false,
+      "completedPrs": [],
+      "activePr": 148,
+      "implementationAuthorized": true,
       "workItems": [
         "PVE-REPUTATION-FOUNDATION",
         "ARENA-PVE-CHALLENGES",
@@ -221,15 +224,19 @@
       "batchId": "PVE-META-FOUNDATION-01",
       "workItem": "PVE-META-FOUNDATION-01-AUDIT",
       "title": "Audit PvE meta foundation",
-      "status": "active",
-      "implementationAuthorized": false
+      "status": "merged",
+      "mergeSha": "50835aeb2864b96e026a7202ad419368e934e47b",
+      "implementationAuthorized": true
     },
     {
       "number": 148,
       "kind": "implementation",
       "workItem": "PVE-REPUTATION-FOUNDATION",
       "title": "Add persistent PvE reputation",
-      "status": "blocked-until-audit-147-merge"
+      "status": "active",
+      "targetStateSchema": 17,
+      "targetSaveFormat": 4,
+      "validatedCodeHead": "820c6fa84e619fb0ebc46ca36eaaf00437daaf4e"
     },
     {
       "number": 149,
@@ -253,5 +260,5 @@
       "status": "blocked-until-pr-150-merge"
     }
   ],
-  "nextAction": "Validate, review and squash merge Audit PR #147; then fetch its exact merge SHA and create only #148 PVE-REPUTATION-FOUNDATION from fresh main."
+  "nextAction": "Validate the final PR #148 code+docs head, resolve review and squash merge; then fetch the exact merge SHA and create only #149 ARENA-PVE-CHALLENGES."
 }
