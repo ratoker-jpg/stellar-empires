@@ -21,16 +21,20 @@ describe('unit catalog and inventory', () => {
     expect(AEGIS_UNIT_CATALOG.filter((unit) => unit.kind === 'defense')).toHaveLength(5);
   });
 
-  it('initializes empty managed inventories, fleets, intelligence, debris, logistics and market', () => {
+  it('initializes empty managed inventories, fleets, intelligence, PvE meta, debris, logistics and market', () => {
     const state = createInitialGameState('unit-inventory');
     const managedPlanets = state.planets.filter((planet) =>
       state.empires.includes(planet.ownerEmpireId),
     );
-    expect(state.schemaVersion).toBe(16);
+    expect(state.schemaVersion).toBe(17);
     expect(state.campaignSettings.worldSpeed).toBe(1);
     expect(state.fleets).toEqual([]);
     expect(state.debrisFields).toEqual([]);
     expect(state.logisticsRoutes).toEqual([]);
+    expect(state.pveMeta).toEqual({
+      reputations: state.empires.map((empireId) => ({ empireId, reputation: 0 })),
+      activeArenaEntries: [],
+    });
     expect(state.market.reserves).toEqual({
       metal: 50_000,
       crystal: 50_000,
