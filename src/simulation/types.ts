@@ -100,6 +100,10 @@ export type GameEventPayload =
       readonly report: SpaceObjectMissionReport;
     }
   | {
+      readonly type: 'ARENA_RESOLVE';
+      readonly entryId: string;
+    }
+  | {
       readonly type: 'WORLD_EVENT_END';
       readonly instanceId: string;
     }
@@ -279,6 +283,17 @@ export type GameCommand =
       readonly empireId: string;
       readonly fleetId: string;
       readonly objectId: string;
+    }
+  | {
+      readonly type: 'ENTER_ARENA_CHALLENGE';
+      readonly empireId: string;
+      readonly fleetId: string;
+      readonly challengeId: string;
+    }
+  | {
+      readonly type: 'WITHDRAW_ARENA_ENTRY';
+      readonly empireId: string;
+      readonly entryId: string;
     }
   | {
       readonly type: 'RECALL_FLEET';
