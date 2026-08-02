@@ -14,6 +14,11 @@ import {
   type BotProfile,
 } from './profiles';
 import { getBotProgressionPhase } from './progressionPhase';
+import {
+  planBotPveOperations,
+  type BotPveOperationsPlan,
+  type BotPveReasonCode,
+} from './pveOperationsPlanner';
 import { planBotResearchAndProduction } from './researchProductionPlanner';
 import { planBotThreatAndRecovery } from './threatRecoveryPlanner';
 
@@ -23,7 +28,8 @@ export type BotPlannerSource =
   | 'research'
   | 'production'
   | 'fleet'
-  | 'threat';
+  | 'threat'
+  | 'pve';
 export const MAX_BOT_DECISIONS_PER_RUN = 32;
 export const POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS = 3_600;
 
@@ -38,16 +44,27 @@ export interface BotSchedulerAuditEntry {
   readonly rejectionCode: string | null;
 }
 
-export interface BotSchedulerDiagnosticEntry {
-  readonly empireId: string;
-  readonly profileId: string;
-  readonly personality: BotPersonality;
-  readonly decidedAt: number;
-  readonly source: 'fleet';
-  readonly reasonCode: BotFleetReasonCode;
-  readonly availabilityCode: MissionAvailabilityCode;
-  readonly explanation: string;
-}
+export type BotSchedulerDiagnosticEntry =
+  | {
+      readonly empireId: string;
+      readonly profileId: string;
+      readonly personality: BotPersonality;
+      readonly decidedAt: number;
+      readonly source: 'fleet';
+      readonly reasonCode: BotFleetReasonCode;
+      readonly availabilityCode: MissionAvailabilityCode;
+      readonly explanation: string;
+    }
+  | {
+      readonly empireId: string;
+      readonly profileId: string;
+      readonly personality: BotPersonality;
+      readonly decidedAt: number;
+      readonly source: 'pve';
+      readonly reasonCode: BotPveReasonCode;
+      readonly availabilityCode: string | null;
+      readonly explanation: string;
+    };
 
 export interface BotSchedulerResult {
   readonly state: GameState;
@@ -70,6 +87,7 @@ interface DueProfile {
 interface PlannerCandidates {
   readonly candidates: readonly CommandCandidate[];
   readonly fleet: BotFleetMissionPlan | null;
+  readonly pve: BotPveOperationsPlan | null;
 }
 
 function isSameCommand(left: GameCommand, right: GameCommand): boolean {
@@ -98,31 +116,36 @@ function compressedCandidate(
   profile: BotProfile,
   attempted: readonly GameCommand[],
   allowLogistics: boolean,
+  allowPve: boolean,
   precomputedFleet?: BotFleetMissionPlan,
 ): PlannerCandidates {
-  if (allowLogistics) {
-    const logistics = planBotColonyLogistics(state, profile.empireId);
-    const logisticsCandidate = selectCandidate('logistics', logistics.command, attempted);
-    if (logisticsCandidate !== null) {
-      return { candidates: [logisticsCandidate], fleet: precomputedFleet ?? null };
-    }
-  }
-
   const science = planBotResearchAndProduction(state, profile.empireId);
   const production = selectCandidate(
     'production',
     science.production.command,
     attempted,
   );
-  if (production !== null) return { candidates: [production], fleet: precomputedFleet ?? null };
+  if (production !== null) {
+    return { candidates: [production], fleet: precomputedFleet ?? null, pve: null };
+  }
 
   const research = selectCandidate('research', science.research.command, attempted);
-  if (research !== null) return { candidates: [research], fleet: precomputedFleet ?? null };
+  if (research !== null) {
+    return { candidates: [research], fleet: precomputedFleet ?? null, pve: null };
+  }
 
   const economy = planBotEconomy(state, profile.empireId);
   const economyCandidate = selectCandidate('economy', economy.command, attempted);
   if (economyCandidate !== null) {
-    return { candidates: [economyCandidate], fleet: precomputedFleet ?? null };
+    return { candidates: [economyCandidate], fleet: precomputedFleet ?? null, pve: null };
+  }
+
+  if (allowLogistics) {
+    const logistics = planBotColonyLogistics(state, profile.empireId);
+    const logisticsCandidate = selectCandidate('logistics', logistics.command, attempted);
+    if (logisticsCandidate !== null) {
+      return { candidates: [logisticsCandidate], fleet: precomputedFleet ?? null, pve: null };
+    }
   }
 
   const threat = planBotThreatAndRecovery(state, profile.empireId, {
@@ -132,7 +155,13 @@ function compressedCandidate(
   });
   const threatCandidate = selectCandidate('threat', threat.command, attempted);
   if (threatCandidate !== null) {
-    return { candidates: [threatCandidate], fleet: precomputedFleet ?? null };
+    return { candidates: [threatCandidate], fleet: precomputedFleet ?? null, pve: null };
+  }
+
+  const pve = allowPve ? planBotPveOperations(state, profile) : null;
+  const pveCandidate = selectCandidate('pve', pve?.command ?? null, attempted);
+  if (pveCandidate !== null) {
+    return { candidates: [pveCandidate], fleet: precomputedFleet ?? null, pve };
   }
 
   const fleet = precomputedFleet ?? planBotFleetMission(state, profile.empireId);
@@ -140,6 +169,7 @@ function compressedCandidate(
   return {
     candidates: fleetCandidate === null ? [] : [fleetCandidate],
     fleet,
+    pve,
   };
 }
 
@@ -147,6 +177,7 @@ function legacyCandidatesForPersonality(
   state: GameState,
   profile: BotProfile,
   allowLogistics: boolean,
+  allowPve: boolean,
 ): PlannerCandidates {
   const economy = planBotEconomy(state, profile.empireId);
   const science = planBotResearchAndProduction(state, profile.empireId);
@@ -159,6 +190,7 @@ function legacyCandidatesForPersonality(
   const logistics = allowLogistics
     ? planBotColonyLogistics(state, profile.empireId).command
     : null;
+  const pve = allowPve ? planBotPveOperations(state, profile) : null;
   const candidates: Readonly<Record<BotPersonality, readonly CommandCandidate[]>> = {
     industrial: [
       { source: 'logistics', command: logistics },
@@ -166,26 +198,29 @@ function legacyCandidatesForPersonality(
       { source: 'research', command: science.research.command },
       { source: 'production', command: science.production.command },
       { source: 'threat', command: threat.command },
+      { source: 'pve', command: pve?.command ?? null },
       { source: 'fleet', command: fleet.command },
     ],
     explorer: [
       { source: 'logistics', command: logistics },
+      { source: 'threat', command: threat.command },
+      { source: 'pve', command: pve?.command ?? null },
       { source: 'fleet', command: fleet.command },
       { source: 'economy', command: economy.command },
       { source: 'research', command: science.research.command },
       { source: 'production', command: science.production.command },
-      { source: 'threat', command: threat.command },
     ],
     aggressive: [
       { source: 'logistics', command: logistics },
       { source: 'threat', command: threat.command },
+      { source: 'pve', command: pve?.command ?? null },
       { source: 'production', command: science.production.command },
       { source: 'research', command: science.research.command },
       { source: 'fleet', command: fleet.command },
       { source: 'economy', command: economy.command },
     ],
   };
-  return { candidates: candidates[profile.personality], fleet };
+  return { candidates: candidates[profile.personality], fleet, pve };
 }
 
 function diagnosticForBlockedFleet(
@@ -211,6 +246,24 @@ function diagnosticForBlockedFleet(
   };
 }
 
+function diagnosticForBlockedPve(
+  profile: BotProfile,
+  decidedAt: number,
+  pve: BotPveOperationsPlan,
+): BotSchedulerDiagnosticEntry | null {
+  if (pve.command !== null) return null;
+  return {
+    empireId: profile.empireId,
+    profileId: profile.id,
+    personality: profile.personality,
+    decidedAt,
+    source: 'pve',
+    reasonCode: pve.reasonCode,
+    availabilityCode: pve.availabilityCode,
+    explanation: pve.explanation,
+  };
+}
+
 function runProfileDecision(
   state: GameState,
   profile: BotProfile,
@@ -225,6 +278,8 @@ function runProfileDecision(
   const diagnostics: BotSchedulerDiagnosticEntry[] = [];
   const attempted: GameCommand[] = [];
   let logisticsCommandAttempted = false;
+  let pveCommandAttempted = false;
+  let pveDiagnosticRecorded = false;
   const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
   const diagnosticFleet = planBotFleetMission(working, profile.empireId);
   const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, diagnosticFleet);
@@ -237,13 +292,20 @@ function runProfileDecision(
           profile,
           attempted,
           !logisticsCommandAttempted,
+          !pveCommandAttempted,
           index === 0 ? diagnosticFleet : undefined,
         )
       : legacyCandidatesForPersonality(
           working,
           profile,
           !logisticsCommandAttempted,
+          !pveCommandAttempted,
         );
+    if (!pveDiagnosticRecorded && planning.pve !== null) {
+      const pveDiagnostic = diagnosticForBlockedPve(profile, decidedAt, planning.pve);
+      if (pveDiagnostic !== null) diagnostics.push(pveDiagnostic);
+      pveDiagnosticRecorded = true;
+    }
     const candidate = planning.candidates.find(
       (item) =>
         item.command !== null &&
@@ -252,6 +314,7 @@ function runProfileDecision(
     if (candidate?.command === null || candidate === undefined) break;
     attempted.push(candidate.command);
     if (candidate.source === 'logistics') logisticsCommandAttempted = true;
+    if (candidate.source === 'pve') pveCommandAttempted = true;
     const result = executeCommand(working, candidate.command);
     audit.push({
       empireId: profile.empireId,
