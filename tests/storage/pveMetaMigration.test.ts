@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { createE2eFixtureState } from '../../src/runtime/e2eScenario';
 import { createStateChecksum } from '../../src/simulation/checksum';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { executeCommand } from '../../src/simulation/reducer';
-import { prepareE2eState } from '../../src/runtime/e2eScenario';
 import { createCampaignRuntimeMetadata } from '../../src/storage/runtimeMetadata';
 import {
   createSaveEnvelope,
@@ -82,7 +82,9 @@ describe('PvE meta persistence migration', () => {
   });
 
   it('preserves an E2E logistics route through the v4 round trip', () => {
-    const initial = prepareE2eState(createInitialGameState('pve-meta-logistics-roundtrip'));
+    const initial = createE2eFixtureState(
+      createInitialGameState('pve-meta-logistics-roundtrip'),
+    );
     const colonies = initial.planets.filter((planet) => planet.ownerEmpireId === 'player');
     expect(colonies).toHaveLength(2);
     const origin = colonies[0];
