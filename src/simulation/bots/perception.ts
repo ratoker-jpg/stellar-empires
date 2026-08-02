@@ -276,7 +276,7 @@ export function createBotPerception(
         definitionId: event.definitionId,
         targetType: event.targetType,
         targetId: event.targetId,
-        startsAt: event.startsAt,
+        startsAt: event.startedAt,
         endsAt: event.endsAt,
       }))
       .sort((left, right) =>
@@ -312,8 +312,8 @@ export function createBotPerception(
         id: fleet.id,
         empireId: fleet.empireId,
         originPlanetId: fleet.originPlanetId,
-        status: fleet.status,
         location: { ...fleet.location },
+        status: fleet.status,
         ships: { ...fleet.ships },
         cargo: { ...fleet.cargo },
         speed: fleet.speed,
