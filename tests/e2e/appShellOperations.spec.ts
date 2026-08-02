@@ -155,6 +155,7 @@ test('canonical logistics supports create, edit, pause, resume, endpoint return 
   await expect(card).toContainText('Маршрут приостановлен');
   await card.locator('[data-testid="logistics-toggle"]').click();
   await expect(card).toContainText('Следующий рейс через');
+  await expect(page.locator('#app-status')).toHaveText('Сохранено локально');
 
   await card.locator('[data-testid="logistics-edit"]').click();
   await expect(card.locator('.logistics-edit-form')).toHaveCount(1);

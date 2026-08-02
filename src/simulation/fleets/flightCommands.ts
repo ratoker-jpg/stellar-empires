@@ -6,6 +6,13 @@ import { enqueueEvent } from '../eventQueue';
 import { appendCommandHistory } from '../history/stateHistory';
 import { resolveScoutArrivalOutcome } from '../intelligence/resolveScout';
 import type { PlanetState } from '../planet/types';
+import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
+import { getPirateHuntRewardMultiplier } from '../pve/pveBalance';
+import {
+  awardPveReputation,
+  calculatePirateReputationAward,
+  createInitialPveMetaState,
+} from '../pveMeta/reputation';
 import type {
   CommandLogEntry,
   CommandResult,
@@ -331,7 +338,25 @@ export function applyFlightEvent(state: GameState, event: ScheduledGameEvent): G
       return scheduleReturn(state, fleet, target.id, duration);
     }
     const battle = resolveAttackMission(state, fleet, target, event.sequence);
-    const withReport = enqueueBattleReport(battle.state, battle.report);
+    const activePirateHuntTarget =
+      target.ownerEmpireId === PIRATE_EMPIRE_ID &&
+      getPirateHuntRewardMultiplier(state, target.id, battle.report.resolvedAt) > 1_000;
+    const reputationAward = calculatePirateReputationAward(
+      target.ownerEmpireId === PIRATE_EMPIRE_ID &&
+        battle.report.destruction?.planetDestroyed === true,
+      activePirateHuntTarget,
+    );
+    const battleState = reputationAward === 0
+      ? battle.state
+      : {
+          ...battle.state,
+          pveMeta: awardPveReputation(
+            battle.state.pveMeta ?? createInitialPveMetaState(battle.state.empires),
+            fleet.empireId,
+            reputationAward,
+          ),
+        };
+    const withReport = enqueueBattleReport(battleState, battle.report);
     if (
       battle.attackerFleet === undefined ||
       battle.report.destruction?.planetDestroyed === true

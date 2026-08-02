@@ -1,3 +1,9 @@
+import {
+  awardPveReputation,
+  calculateExpeditionReputationAward,
+  calculateSpaceObjectReputationAward,
+  createInitialPveMetaState,
+} from '../pveMeta/reputation';
 import type { ScheduledGameEvent, GameState } from '../types';
 import { applyExpeditionEvent } from './expeditions';
 import { applySpaceObjectMissionEvent } from './spaceObjects';
@@ -19,23 +25,48 @@ declare module './spaceObjects' {
   }
 }
 
+function awardResolvedReputation(
+  before: GameState,
+  after: GameState,
+  empireId: string,
+  amount: number,
+): GameState {
+  if (after === before || amount === 0) return after;
+  return {
+    ...after,
+    pveMeta: awardPveReputation(
+      after.pveMeta ?? createInitialPveMetaState(after.empires),
+      empireId,
+      amount,
+    ),
+  };
+}
+
 export function applyExpeditionEventWithReturn(
   state: GameState,
   event: ScheduledGameEvent,
 ): GameState {
   if (event.payload.type !== 'EXPEDITION_RESOLVE') return state;
-  const returnPlanetId = event.payload.report.returnPlanetId;
-  if (returnPlanetId === undefined) return applyExpeditionEvent(state, event);
-  return applyExpeditionEvent(state, {
-    ...event,
-    payload: {
-      type: 'EXPEDITION_RESOLVE',
-      report: {
-        ...event.payload.report,
-        originPlanetId: returnPlanetId,
-      },
-    },
-  });
+  const report = event.payload.report;
+  const returnPlanetId = report.returnPlanetId;
+  const routedEvent: ScheduledGameEvent = returnPlanetId === undefined
+    ? event
+    : {
+        ...event,
+        payload: {
+          type: 'EXPEDITION_RESOLVE',
+          report: {
+            ...report,
+            originPlanetId: returnPlanetId,
+          },
+        },
+      };
+  return awardResolvedReputation(
+    state,
+    applyExpeditionEvent(state, routedEvent),
+    report.empireId,
+    calculateExpeditionReputationAward(report.outcome, report.reward),
+  );
 }
 
 function applyResolvedObjectCooldown(
@@ -64,8 +95,9 @@ export function applySpaceObjectMissionEventWithReturn(
   event: ScheduledGameEvent,
 ): GameState {
   if (event.payload.type !== 'SPACE_OBJECT_MISSION_RESOLVE') return state;
-  const objectId = event.payload.report.objectId;
-  const returnPlanetId = event.payload.report.returnPlanetId;
+  const report = event.payload.report;
+  const objectId = report.objectId;
+  const returnPlanetId = report.returnPlanetId;
   const routedEvent: ScheduledGameEvent = returnPlanetId === undefined
     ? event
     : {
@@ -73,14 +105,20 @@ export function applySpaceObjectMissionEventWithReturn(
         payload: {
           type: 'SPACE_OBJECT_MISSION_RESOLVE',
           report: {
-            ...event.payload.report,
+            ...report,
             originPlanetId: returnPlanetId,
           },
         },
       };
-  return applyResolvedObjectCooldown(
+  const resolved = applyResolvedObjectCooldown(
     state,
     objectId,
     applySpaceObjectMissionEvent(state, routedEvent),
+  );
+  return awardResolvedReputation(
+    state,
+    resolved,
+    report.empireId,
+    calculateSpaceObjectReputationAward(report.depletion, report.reward),
   );
 }

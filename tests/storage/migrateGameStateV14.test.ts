@@ -6,15 +6,16 @@ import {
 import { createStateChecksum } from '../../src/simulation/checksum';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { replayCommands } from '../../src/simulation/replay';
-import { createSaveEnvelope, parseSaveJson, serializeSave } from '../../src/storage/saveFormat';
+import { parseSaveJson } from '../../src/storage/saveFormat';
 import { migrateGameStateV14 } from '../../src/storage/migrateGameStateV14';
 import { migrateGameStateV15 } from '../../src/storage/migrateGameStateV15';
 import { migrateGameStateV16 } from '../../src/storage/migrateGameStateV16';
+import { createCampaignRuntimeMetadata } from '../../src/storage/runtimeMetadata';
 import { createSchemaV13MigrationFixture } from '../fixtures/gameStateV13Fixture';
 
 const MIGRATION_TIME = '2026-07-27T00:00:00.000Z';
 
-describe('schema v14, v15 and v16 migration', () => {
+describe('schema v14 through v17 migration', () => {
   it('migrates the committed v13 fixture to v14 deterministically', () => {
     const fixture = createSchemaV13MigrationFixture();
     const first = migrateGameStateV14(fixture);
@@ -28,7 +29,7 @@ describe('schema v14, v15 and v16 migration', () => {
     expect(first?.spaceObjects.every((object) => object.coordinate !== undefined)).toBe(true);
   });
 
-  it('preserves the schema-v15 legacy shell and upgrades it to legacy-v1 in v16', () => {
+  it('preserves the schema-v15 legacy shell, upgrades it to v16 and imports it as v17/v4', () => {
     const legacy = migrateGameStateV15(createSchemaV13MigrationFixture(), MIGRATION_TIME);
     expect(legacy).toBeDefined();
     if (legacy === undefined) return;
@@ -52,11 +53,27 @@ describe('schema v14, v15 and v16 migration', () => {
       createdAtReal: MIGRATION_TIME,
     }));
 
-    const save = createSaveEnvelope('v13-fixture', migrated, MIGRATION_TIME);
-    expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
+    const runtimeMetadata = createCampaignRuntimeMetadata(MIGRATION_TIME);
+    const legacyEnvelope = {
+      formatVersion: 3 as const,
+      slotId: 'v13-fixture',
+      savedAt: MIGRATION_TIME,
+      runtimeMetadata,
+      state: migrated,
+    };
+    const parsed = parseSaveJson(JSON.stringify({
+      ...legacyEnvelope,
+      checksum: createStateChecksum(legacyEnvelope),
+    }));
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.value.formatVersion).toBe(4);
+      expect(parsed.value.state.schemaVersion).toBe(17);
+      expect(parsed.value.state.pveMeta?.reputations.every((entry) => entry.reputation === 0)).toBe(true);
+    }
   });
 
-  it('keeps explicit replay settings and checksum stable under schema v16', () => {
+  it('keeps explicit replay settings and checksum stable under schema v17', () => {
     const settings = createCampaignSettings({
       scenarioPreset: 'test',
       worldSpeed: 5,
@@ -67,12 +84,12 @@ describe('schema v14, v15 and v16 migration', () => {
       { type: 'ADVANCE_TIME' as const, seconds: 30 },
     ];
     const first = replayCommands({
-      seedSource: 'schema-v16-replay',
+      seedSource: 'schema-v17-replay',
       faction: 'synod',
       campaignSettings: settings,
     }, commands);
     const second = replayCommands({
-      seedSource: 'schema-v16-replay',
+      seedSource: 'schema-v17-replay',
       faction: 'synod',
       campaignSettings: settings,
     }, commands);
@@ -80,12 +97,12 @@ describe('schema v14, v15 and v16 migration', () => {
     expect(second.ok).toBe(true);
     if (!first.ok || !second.ok) return;
 
-    const direct = createInitialGameState('schema-v16-replay', {
+    const direct = createInitialGameState('schema-v17-replay', {
       playerFaction: 'synod',
       campaignSettings: settings,
     });
     expect(first.value.clock.elapsedSeconds).toBe(150);
-    expect(first.value.schemaVersion).toBe(16);
+    expect(first.value.schemaVersion).toBe(17);
     expect(first.value.campaignSettings).toEqual(settings);
     expect(createStateChecksum(first.value)).toBe(createStateChecksum(second.value));
     expect(createStateChecksum(first.value)).not.toBe(createStateChecksum(direct));

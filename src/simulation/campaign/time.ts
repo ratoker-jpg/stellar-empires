@@ -126,8 +126,12 @@ function newExecutedEvents(
   before: GameState,
   after: GameState,
 ): readonly ExecutedGameEvent[] {
-  const existingIds = new Set(before.eventLog.map((entry) => entry.event.id));
-  return after.eventLog.filter((entry) => !existingIds.has(entry.event.id));
+  const lastExistingId = before.eventLog.at(-1)?.event.id;
+  if (lastExistingId === undefined) return after.eventLog;
+  const overlapIndex = after.eventLog.findIndex(
+    (entry) => entry.event.id === lastExistingId,
+  );
+  return overlapIndex < 0 ? after.eventLog : after.eventLog.slice(overlapIndex + 1);
 }
 
 function advanceNonBotTime(state: GameState, seconds: number): {

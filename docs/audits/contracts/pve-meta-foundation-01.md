@@ -1,15 +1,16 @@
 # Accepted contract — PVE-META-FOUNDATION-01
 
-**Status:** proposed by Audit PR #147; implementation begins only after audit acceptance  
+**Status:** accepted by Audit PR #147  
+**Audit squash:** `50835aeb2864b96e026a7202ad419368e934e47b`  
 **Roadmap milestone:** M6b — bounded PvE meta foundation  
 **Complexity:** medium  
-**Baseline:** PR #146 squash `392abb2bf27267fef9777ff35eb96555941a42f3`  
+**Baseline:** PR #147 squash `50835aeb2864b96e026a7202ad419368e934e47b`  
 **Planned implementation PRs:** #148–#151  
-**Target schema/save:** v17 / v4
+**Target schema/save:** v17 / v4 through #148 only
 
 ## Product decision
 
-The next batch adds one bounded persistent PvE progression axis and a local deterministic Arena loop.
+The batch adds one bounded persistent PvE progression axis and a local deterministic Arena loop.
 
 It does **not** copy every Nemexia meta feature. The accepted product slice is:
 
@@ -33,7 +34,7 @@ A separate PvE currency and Admiral services are rejected for this batch because
 → #151 BOT-PVE-META-GATE
 ```
 
-Exactly four implementation PRs are authorized after Audit #147 merges. No fifth implementation PR may be added to this batch.
+Exactly four implementation PRs are authorized. No fifth implementation PR may be added to this batch.
 
 ## #148 — PVE-REPUTATION-FOUNDATION
 
