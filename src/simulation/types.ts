@@ -297,7 +297,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 17;
+  readonly schemaVersion: 16 | 17;
   readonly seed: number;
   readonly campaignSettings: CampaignSettings;
   readonly clock: GameClock;
@@ -316,7 +316,7 @@ export interface GameState {
   readonly spaceObjects: readonly SpaceObjectState[];
   readonly strategicResources: readonly EmpireStrategicResources[];
   readonly worldEvents: WorldEventState;
-  readonly pveMeta: PveMetaState;
+  readonly pveMeta?: PveMetaState;
   readonly botAutomation: BotAutomationState;
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
