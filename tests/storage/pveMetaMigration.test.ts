@@ -46,6 +46,7 @@ describe('PvE meta persistence migration', () => {
     expect(parsed.value.state.pveMeta).toEqual({
       reputations: legacy.current.empires.map((empireId) => ({ empireId, reputation: 0 })),
       activeArenaEntries: [],
+      arenaHistory: [],
     });
     const { schemaVersion: _schemaVersion, pveMeta: _migratedMeta, ...migratedExisting } = parsed.value.state;
     const { schemaVersion: _legacyVersion, ...legacyExisting } = legacy.state;
@@ -78,6 +79,34 @@ describe('PvE meta persistence migration', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.state.pveMeta).toEqual(state.pveMeta);
+    }
+  });
+
+  it('loads the already-released #148 v4 shape without arenaHistory', () => {
+    const current = createInitialGameState('pve-meta-pr148-compatibility');
+    const pveMeta = {
+      reputations: current.pveMeta!.reputations,
+      activeArenaEntries: [],
+    };
+    const state = { ...current, pveMeta };
+    const runtimeMetadata = createCampaignRuntimeMetadata(SAVED_AT);
+    const envelope = {
+      formatVersion: 4 as const,
+      slotId: 'pr148-v4',
+      savedAt: SAVED_AT,
+      runtimeMetadata,
+      state,
+    };
+    const parsed = parseSaveJson(JSON.stringify({
+      ...envelope,
+      checksum: createStateChecksum(envelope),
+    }));
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.value.state.pveMeta).toEqual({
+        ...pveMeta,
+        arenaHistory: [],
+      });
     }
   });
 
