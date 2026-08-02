@@ -248,17 +248,19 @@ export function createBotPerception(
       ),
     publicSpaceObjects: state.spaceObjects
       .flatMap((object): readonly BotPublicSpaceObjectPerception[] => {
-        const coordinate = object.coordinate ?? state.galaxy.systems
-          .find((system) => system.id === object.systemId)?.coordinate;
+        const system = state.galaxy.systems.find((candidate) => candidate.id === object.systemId);
+        const coordinate = object.coordinate ?? (system === undefined
+          ? undefined
+          : {
+              galaxy: system.galaxy,
+              solarSystem: system.solarSystem,
+              position: object.position,
+            });
         if (coordinate === undefined) return [];
         return [{
           id: object.id,
           systemId: object.systemId,
-          coordinate: object.coordinate ?? {
-            galaxy: coordinate.galaxy,
-            solarSystem: coordinate.solarSystem,
-            position: object.position,
-          },
+          coordinate,
           kind: object.kind,
           remainingYield: object.remainingYield,
           initialYield: object.initialYield,
