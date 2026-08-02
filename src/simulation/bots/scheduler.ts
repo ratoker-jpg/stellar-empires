@@ -21,7 +21,10 @@ import {
   type BotPveReasonCode,
 } from './pveOperationsPlanner';
 import { planBotResearchAndProduction } from './researchProductionPlanner';
-import { planBotThreatAndRecovery } from './threatRecoveryPlanner';
+import {
+  planBotThreatAndRecovery,
+  type BotThreatRecoveryPlan,
+} from './threatRecoveryPlanner';
 
 export type BotPlannerSource =
   | 'logistics'
@@ -93,6 +96,13 @@ interface PlannerCandidates {
   readonly pve: BotPveOperationsPlan | null;
 }
 
+const PRIORITY_THREAT_REASONS = new Set<BotThreatRecoveryPlan['reasonCode']>([
+  'critical-economy-recovery',
+  'economic-recovery',
+  'military-recovery',
+  'high-threat-response',
+]);
+
 function isSameCommand(left: GameCommand, right: GameCommand): boolean {
   return JSON.stringify(left) === JSON.stringify(right);
 }
@@ -112,6 +122,10 @@ function selectCandidate(
   return command === null || hasBeenAttempted(command, attempted)
     ? null
     : { source, command };
+}
+
+function priorityThreatCommand(plan: BotThreatRecoveryPlan): GameCommand | null {
+  return PRIORITY_THREAT_REASONS.has(plan.reasonCode) ? plan.command : null;
 }
 
 function compressedCandidate(
@@ -173,7 +187,11 @@ function compressedCandidate(
     researchProduction: science,
     ...(precomputedFleet === undefined ? {} : { fleet: precomputedFleet }),
   });
-  const threatCandidate = selectCandidate('threat', threat.command, attempted);
+  const threatCandidate = selectCandidate(
+    'threat',
+    priorityThreatCommand(threat),
+    attempted,
+  );
   if (threatCandidate !== null) {
     return { candidates: [threatCandidate], fleet: precomputedFleet ?? null, pve: null };
   }
@@ -211,19 +229,20 @@ function legacyCandidatesForPersonality(
     ? planBotColonyLogistics(state, profile.empireId).command
     : null;
   const pve = allowPve ? planBotPveOperations(state, profile) : null;
+  const priorityThreat = priorityThreatCommand(threat);
   const candidates: Readonly<Record<BotPersonality, readonly CommandCandidate[]>> = {
     industrial: [
       { source: 'logistics', command: logistics },
       { source: 'economy', command: economy.command },
       { source: 'research', command: science.research.command },
       { source: 'production', command: science.production.command },
-      { source: 'threat', command: threat.command },
+      { source: 'threat', command: priorityThreat },
       { source: 'pve', command: pve?.command ?? null },
       { source: 'fleet', command: fleet.command },
     ],
     explorer: [
       { source: 'logistics', command: logistics },
-      { source: 'threat', command: threat.command },
+      { source: 'threat', command: priorityThreat },
       { source: 'pve', command: pve?.command ?? null },
       { source: 'fleet', command: fleet.command },
       { source: 'economy', command: economy.command },
@@ -232,7 +251,7 @@ function legacyCandidatesForPersonality(
     ],
     aggressive: [
       { source: 'logistics', command: logistics },
-      { source: 'threat', command: threat.command },
+      { source: 'threat', command: priorityThreat },
       { source: 'pve', command: pve?.command ?? null },
       { source: 'production', command: science.production.command },
       { source: 'research', command: science.research.command },
