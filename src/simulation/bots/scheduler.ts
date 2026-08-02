@@ -32,6 +32,7 @@ export type BotPlannerSource =
   | 'pve';
 export const MAX_BOT_DECISIONS_PER_RUN = 32;
 export const POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS = 3_600;
+export const BOT_PVE_PLANNING_INTERVAL_SECONDS = 1_800;
 
 export interface BotSchedulerAuditEntry {
   readonly empireId: string;
@@ -119,6 +120,20 @@ function compressedCandidate(
   allowPve: boolean,
   precomputedFleet?: BotFleetMissionPlan,
 ): PlannerCandidates {
+  const logistics = allowLogistics
+    ? planBotColonyLogistics(state, profile.empireId)
+    : null;
+  if (logistics?.roleChange === true) {
+    const invariantCandidate = selectCandidate('logistics', logistics.command, attempted);
+    if (invariantCandidate !== null) {
+      return {
+        candidates: [invariantCandidate],
+        fleet: precomputedFleet ?? null,
+        pve: null,
+      };
+    }
+  }
+
   const science = planBotResearchAndProduction(state, profile.empireId);
   const production = selectCandidate(
     'production',
@@ -140,8 +155,7 @@ function compressedCandidate(
     return { candidates: [economyCandidate], fleet: precomputedFleet ?? null, pve: null };
   }
 
-  if (allowLogistics) {
-    const logistics = planBotColonyLogistics(state, profile.empireId);
+  if (logistics !== null) {
     const logisticsCandidate = selectCandidate('logistics', logistics.command, attempted);
     if (logisticsCandidate !== null) {
       return { candidates: [logisticsCandidate], fleet: precomputedFleet ?? null, pve: null };
@@ -264,6 +278,41 @@ function diagnosticForBlockedPve(
   };
 }
 
+function getDecisionIntervalSeconds(state: GameState, profile: BotProfile): number {
+  if (state.campaignSettings.progressionProfile === 'compressed-v1') {
+    const phase = getBotProgressionPhase(state, profile.empireId);
+    if (phase === 'endgame-preparation') {
+      return Math.max(
+        profile.decisionIntervalSeconds,
+        POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS,
+      );
+    }
+    if (
+      profile.earlyDecisionIntervalSeconds !== undefined &&
+      (phase === 'foundation' || phase === 'reconnaissance')
+    ) {
+      return Math.min(
+        profile.decisionIntervalSeconds,
+        profile.earlyDecisionIntervalSeconds,
+      );
+    }
+  }
+  return profile.decisionIntervalSeconds;
+}
+
+function isPvePlanningDue(
+  state: GameState,
+  profile: BotProfile,
+  decidedAt: number,
+): boolean {
+  if (decidedAt === 0) return true;
+  const decisionInterval = Math.min(
+    BOT_PVE_PLANNING_INTERVAL_SECONDS,
+    getDecisionIntervalSeconds(state, profile),
+  );
+  return decidedAt % BOT_PVE_PLANNING_INTERVAL_SECONDS < decisionInterval;
+}
+
 function runProfileDecision(
   state: GameState,
   profile: BotProfile,
@@ -281,6 +330,7 @@ function runProfileDecision(
   let pveCommandAttempted = false;
   let pveDiagnosticRecorded = false;
   const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
+  const pveDue = isPvePlanningDue(state, profile, decidedAt);
   const diagnosticFleet = planBotFleetMission(working, profile.empireId);
   const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, diagnosticFleet);
   if (diagnostic !== null) diagnostics.push(diagnostic);
@@ -292,14 +342,14 @@ function runProfileDecision(
           profile,
           attempted,
           !logisticsCommandAttempted,
-          !pveCommandAttempted,
+          pveDue && !pveCommandAttempted,
           index === 0 ? diagnosticFleet : undefined,
         )
       : legacyCandidatesForPersonality(
           working,
           profile,
           !logisticsCommandAttempted,
-          !pveCommandAttempted,
+          pveDue && !pveCommandAttempted,
         );
     if (!pveDiagnosticRecorded && planning.pve !== null) {
       const pveDiagnostic = diagnosticForBlockedPve(profile, decidedAt, planning.pve);
@@ -365,28 +415,6 @@ function getNextDueProfile(
 ): DueProfile | undefined {
   return getScheduledProfiles(state, profiles)
     .find((entry) => entry.nextDecisionAt <= state.clock.elapsedSeconds);
-}
-
-function getDecisionIntervalSeconds(state: GameState, profile: BotProfile): number {
-  if (state.campaignSettings.progressionProfile === 'compressed-v1') {
-    const phase = getBotProgressionPhase(state, profile.empireId);
-    if (phase === 'endgame-preparation') {
-      return Math.max(
-        profile.decisionIntervalSeconds,
-        POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS,
-      );
-    }
-    if (
-      profile.earlyDecisionIntervalSeconds !== undefined &&
-      (phase === 'foundation' || phase === 'reconnaissance')
-    ) {
-      return Math.min(
-        profile.decisionIntervalSeconds,
-        profile.earlyDecisionIntervalSeconds,
-      );
-    }
-  }
-  return profile.decisionIntervalSeconds;
 }
 
 function advanceProfileCursor(
