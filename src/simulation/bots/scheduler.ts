@@ -385,6 +385,24 @@ function hasActionablePveEvent(state: GameState): boolean {
   );
 }
 
+function hasActiveSpecialOperation(state: GameState, empireId: string): boolean {
+  return state.fleets.some(
+    (fleet) =>
+      fleet.empireId === empireId &&
+      (fleet.mission?.kind === 'expedition' || fleet.mission?.kind === 'space-object'),
+  );
+}
+
+function isRoutinePveUnlocked(
+  state: GameState,
+  profile: BotProfile,
+  decidedAt: number,
+): boolean {
+  if (decidedAt === 0) return true;
+  const phase = getBotProgressionPhase(state, profile.empireId);
+  return phase === 'planet-destruction' || phase === 'endgame-preparation';
+}
+
 function runProfileDecision(
   state: GameState,
   profile: BotProfile,
@@ -408,10 +426,12 @@ function runProfileDecision(
     decidedAt,
     BOT_PORTFOLIO_MAINTENANCE_INTERVAL_SECONDS,
   );
-  const pveCadence = hasActionablePveEvent(state)
+  const activeSpecialOperation = hasActiveSpecialOperation(state, profile.empireId);
+  const pveCadence = hasActionablePveEvent(state) || activeSpecialOperation
     ? BOT_PVE_EVENT_PLANNING_INTERVAL_SECONDS
     : BOT_PVE_PLANNING_INTERVAL_SECONDS;
-  const pveDue = isCadenceDue(
+  const pveUnlocked = isRoutinePveUnlocked(state, profile, decidedAt) || activeSpecialOperation;
+  const pveDue = pveUnlocked && isCadenceDue(
     state,
     profile,
     decidedAt,
