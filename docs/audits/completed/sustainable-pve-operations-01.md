@@ -81,7 +81,7 @@ Code-head gates:
 
 ```text
 CI             30747647153 — success
-Browser E2E    30747647147 — final code-head conclusion checked before docs closure
+Browser E2E    30747647147 — cancelled by later documentation commits; final documentation-head success required
 Graphify       30747647145 — success
 ```
 
