@@ -14,19 +14,19 @@ This file is append-only for completed batches. An active row may be updated unt
 | `CAMPAIGN-PROGRESSION-BALANCE-01` | Heavy | #133 · `989c2c0b8fc3d5cfe672af267a248b6b384331cc` | #134 · `aa87e764ef40444660039dc8d6a96d7f5514cc23`; #135 · `3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992` | completed; schema-v16 legacy/compressed identity, accepted compressed economy/rewards, deterministic phases, bounded honest bot recovery, 15/15 matrix and 9.99-second seven-day catch-up; playable runtime envelope amended without changing gameplay constants | `docs/audits/completed/campaign-progression-balance-01.md` |
 | `MULTI-COLONY-ECONOMY-LOGISTICS-01` | Medium | #137 · `4e7fd20fdc415f30bf8a1476b67c79b0b8e79166` | #138 · `b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f`; #139 · `dc8b42fc0e41b631a61dda524224145f2d8ba214`; #140 · `01eab1366289526553cdffcb1042ee98a8a59040`; #141 · `0167ad689e299438c9d0550ee20ba53452c93d39` | completed; pure empire portfolio, hardened deterministic abstract logistics, canonical player Operations workflow, honest bot colony roles/logistics and three-faction closure gate; schema v16/save v3 retained | `docs/audits/completed/multi-colony-economy-logistics-01.md` |
 | `SUSTAINABLE-PVE-OPERATIONS-01` | Medium | #142 · `81f1959b0bdbdd72d05dc21a2dce0a9e1470f010` | #143 · `e3d2c28385abd9772a18257eeb313bd8d45e581e`; #144 · `dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a`; #145 · `62aae31e2ad5e4ad04385a5cd94f77a70579d72f`; #146 · `392abb2bf27267fef9777ff35eb96555941a42f3` | completed; sustainable recovery, canonical PvE Operations intelligence, honest ordinary-command bots and three-faction 48-hour closure; schema v16/save v3 retained | `docs/audits/completed/sustainable-pve-operations-01.md` |
-| `PVE-META-FOUNDATION-01` | Medium | #147 · active | proposed #148–#151 | audit active; reputation + local Arena proposed; implementation blocked until #147 acceptance; no currency or Admiral services | pending completion |
+| `PVE-META-FOUNDATION-01` | Medium | #147 · `50835aeb2864b96e026a7202ad419368e934e47b` | #148 · `430265b061764145e4e3ea1470d545f2ef82d0fa`; #149 · `42c484426e850b84263d4eecab63ebbb3eaafb05`; #150 · `39b85fe057d2cbf1fcff6b949a14bc62c7dbde63`; #151 · final validated head `016065dce161309899e0893bfa27c85bb2ba2e1c`, squash pending | implementation complete pending final squash; reputation, local deterministic Arena, routed Operations UX, honest three-faction bot parity and 48-hour direct/chunk/save/offline closure; schema v17/save v4 | `docs/audits/completed/pve-meta-foundation-01.md` |
 
-## Active proposed sequence
+## Current closure sequence
 
 ```text
-#147 PVE-META-FOUNDATION-01 Audit — active
-→ #148 PVE-REPUTATION-FOUNDATION
-→ #149 ARENA-PVE-CHALLENGES
-→ #150 PVE-META-OPERATIONS-UX
-→ #151 BOT-PVE-META-GATE
+#147 PVE-META-FOUNDATION-01 Audit 50835aeb2864b96e026a7202ad419368e934e47b
+→ #148 PVE-REPUTATION-FOUNDATION 430265b061764145e4e3ea1470d545f2ef82d0fa
+→ #149 ARENA-PVE-CHALLENGES 42c484426e850b84263d4eecab63ebbb3eaafb05
+→ #150 PVE-META-OPERATIONS-UX 39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
+→ #151 BOT-PVE-META-GATE — final validation complete; squash pending
 ```
 
-The #148–#151 sequence is not authorized until #147 is reviewed and merged.
+No further implementation is authorized. The immediately following Audit PR must synchronize the exact #151 squash SHA before proposing another batch.
 
 ## Recording rules
 
