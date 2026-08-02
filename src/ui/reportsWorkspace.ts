@@ -1,3 +1,5 @@
+import { describeWorldEventEffect } from '../simulation/pve/pveOperationsView';
+import { WORLD_EVENT_CATALOG } from '../simulation/pve/worldEvents';
 import {
   compareEmpirePvePvp,
   createUnifiedMissionReports,
@@ -108,6 +110,7 @@ function createSelect(
   const caption = document.createElement('span');
   caption.textContent = labelText;
   const select = document.createElement('select');
+  select.setAttribute('aria-label', labelText);
   for (const option of options) {
     const element = document.createElement('option');
     element.value = option.value;
@@ -119,6 +122,37 @@ function createSelect(
   return { label, select };
 }
 
+function worldEventTargetLabel(state: GameState, targetId: string): string {
+  const planet = state.planets.find((candidate) => candidate.id === targetId);
+  if (planet !== undefined) return `${planet.name} · ${planet.coordinate.galaxy}:${planet.coordinate.solarSystem}:${planet.coordinate.position}`;
+  const object = state.spaceObjects.find((candidate) => candidate.id === targetId);
+  if (object !== undefined) {
+    const coordinate = object.coordinate;
+    return coordinate === undefined
+      ? `${object.kind} · ${object.systemId}:${object.position}`
+      : `${object.kind} · ${coordinate.galaxy}:${coordinate.solarSystem}:${coordinate.position}`;
+  }
+  const system = state.galaxy.systems.find((candidate) => candidate.id === targetId);
+  return system === undefined
+    ? targetId
+    : `${system.name} · ${system.galaxy}:${system.solarSystem}`;
+}
+
+function worldEventPresentation(
+  state: GameState,
+  report: UnifiedMissionReport,
+): { readonly title: string; readonly summary: string; readonly target: string } | undefined {
+  if (report.kind !== 'world-event') return undefined;
+  const event = state.worldEvents.history.find((candidate) => candidate.id === report.id);
+  if (event === undefined) return undefined;
+  const definition = WORLD_EVENT_CATALOG[event.definitionId];
+  return {
+    title: definition.name,
+    summary: `${describeWorldEventEffect(event)} Завершение: ${event.completion}.`,
+    target: worldEventTargetLabel(state, event.targetId),
+  };
+}
+
 function createReportCard(
   state: GameState,
   report: UnifiedMissionReport,
@@ -127,9 +161,11 @@ function createReportCard(
   const card = document.createElement('article');
   card.className = `mission-report-card is-${report.kind} is-${report.mode}`;
   card.dataset.reportId = report.id;
+  if (report.kind === 'world-event') card.dataset.testid = 'world-event-report';
+  const presentation = worldEventPresentation(state, report);
   const header = document.createElement('header');
   const title = document.createElement('strong');
-  title.textContent = report.title;
+  title.textContent = presentation?.title ?? report.title;
   const badges = document.createElement('div');
   for (const label of [KIND_LABELS[report.kind] ?? report.kind, MODE_LABELS[report.mode], report.outcome]) {
     const badge = document.createElement('span');
@@ -138,9 +174,11 @@ function createReportCard(
   }
   header.append(title, badges);
   const summary = document.createElement('p');
-  summary.textContent = report.summary;
+  summary.textContent = presentation?.summary ?? report.summary;
   const target = document.createElement('p');
-  target.textContent = `Цель: ${report.targetId} · участники ${report.primaryEmpireId ?? '—'} / ${report.secondaryEmpireId ?? '—'}`;
+  target.textContent = presentation === undefined
+    ? `Цель: ${report.targetId} · участники ${report.primaryEmpireId ?? '—'} / ${report.secondaryEmpireId ?? '—'}`
+    : `Цель: ${presentation.target}`;
   const balance = document.createElement('small');
   balance.textContent = report.kind === 'intelligence'
     ? `Время ${formatGameDuration(report.resolvedAt)} · данные получены из журнала разведки`
@@ -249,6 +287,7 @@ export function mountReportsWorkspace(options: ReportsWorkspaceOptions): Reports
     search.type = 'search';
     search.placeholder = 'Цель, империя или результат';
     search.value = searchValue;
+    search.setAttribute('aria-label', 'Поиск по отчётам');
     searchLabel.append(searchCaption, search);
     const mode = createSelect('Режим', [
       { value: 'all', label: 'Все' },
