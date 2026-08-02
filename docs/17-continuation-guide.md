@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** PR #145 `BOT-PVE-OPERATIONS` active  
+**Status:** PR #146 `PVE-SUSTAINABILITY-GATE` closing M6a  
 **Updated:** 2026-08-02  
-**Last merged PR:** #144 `PVE-OPERATIONS-INTELLIGENCE-UX`  
-**Verified main:** `dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a`  
-**Active branch:** `agent/bot-pve-operations`  
-**Next authorized PR after merge:** #146 `PVE-SUSTAINABILITY-GATE`
+**Last merged PR:** #145 `BOT-PVE-OPERATIONS`  
+**Verified main:** `62aae31e2ad5e4ad04385a5cd94f77a70579d72f`  
+**Active branch:** `agent/pve-sustainability-gate`  
+**Next authorized PR after merge:** #147 Audit only
 
 ## Repository
 
@@ -19,79 +19,75 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/contracts/sustainable-pve-operations-01.md`
-6. `docs/audits/evidence/sustainable-pve-operations-01.md`
-7. `docs/changes/pr145-bot-pve-operations.md`
-8. `docs/project-status.json`
-9. `docs/roadmap-pr-index.json`
-10. `docs/27-playable-game-roadmap-v5.md`
-11. latest merged PRs, open PRs and actual `main`
+5. `docs/audits/completed/sustainable-pve-operations-01.md`
+6. `docs/changes/pr146-pve-sustainability-gate.md`
+7. `docs/project-status.json`
+8. `docs/roadmap-pr-index.json`
+9. `docs/27-playable-game-roadmap-v5.md`
+10. latest merged PRs, open PRs and actual `main`
 
-## M6a history and order
+## Closing M6a history
 
 ```text
 #142 Sustainable PvE Audit         81f1959b0bdbdd72d05dc21a2dce0a9e1470f010
 #143 PVE-TARGET-RECOVERY            e3d2c28385abd9772a18257eeb313bd8d45e581e
 #144 PVE-OPERATIONS-INTELLIGENCE-UX dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a
-#145 BOT-PVE-OPERATIONS — active
-→ #146 PVE-SUSTAINABILITY-GATE
+#145 BOT-PVE-OPERATIONS             62aae31e2ad5e4ad04385a5cd94f77a70579d72f
+#146 PVE-SUSTAINABILITY-GATE — closure active
 ```
 
-Exactly four implementation PRs are authorized. No fifth PR is allowed.
+No fifth M6a implementation PR is authorized.
 
-## PR #145 contract result
+## PR #146 closure result
 
-Delivered perception:
+The closure gate adds no gameplay domain. It proves across Aegis, Synod and Veyra:
 
-- globally public expedition positions, objects, active event targets and pirate contacts;
-- complete own-state access;
-- no hidden foreign resources/fleets, unobserved defenses, future outcomes or unpublished reports.
+- 48-hour direct, six-hour chunked and 24-hour save-loaded equality;
+- exact six-hour object recovery and ordinary reuse;
+- pirate recovery, free respawn and occupied-slot blocking;
+- target-only pirate-hunt reward;
+- world-event chain preservation;
+- stable target counts, unique occupied coordinates and bounded histories;
+- ordinary validated bot expedition, object and legal pirate-hunt commands;
+- deterministic, non-mutating and hidden-state-isolated bot plans.
 
-Delivered planner/scheduler:
-
-- explorer, industrial and aggressive category policies over the canonical opportunity model;
-- ordinary fleet creation, expedition, object, targeted attack and recall commands;
-- ready inventory only, 40% gas reserve and no asset fabrication;
-- pirate-hunt requires active event, current level-3 intelligence, 120% safety and ordinary validation;
-- true recovery/high-threat actions remain before PvE;
-- at most one `pve` command per decision with auditable reason codes;
-- routine scheduler PvE unlocks after heavy-fleet at `planet-destruction`;
-- routine planning every 21,600 seconds; targeted events and already-running special operations react every 3,600 seconds;
-- the pure planner remains directly testable before scheduler unlock;
-- inherited colony logistics, determinism and performance preserved.
-
-Code head `db29dbe0a69ba38eea6a2f3ba838604305ec0505` passed:
+Validated code head:
 
 ```text
-CI             30746581384 — full suite/build, performance and 15-case matrix
-Browser E2E    30746581373 — success
-Graphify       30746581362 — success
+a2e466bfffa3494ae9a08e2c4250e6fc78c89290
 ```
 
-Performance: 1 day `6.06s`; 7 days `29.81s`.
+```text
+CI             30747647153 — success
+Graphify       30747647145 — success
+Browser E2E    final documentation-head success required before merge
+```
+
+CI includes 106 test files / 557 tests, 15 progression cases with zero violations, one-day catch-up in 6.22 seconds and seven-day catch-up in 29.56 seconds.
 
 ## Exact recovery action
 
-While #145 is open:
+While #146 is open:
 
-1. continue only `agent/bot-pve-operations`;
-2. keep changes inside bot PvE perception/planning/scheduler/tests/status docs;
-3. do not absorb #146 closure or later meta work;
-4. run CI, Browser E2E and Graphify on the final head;
+1. continue only `agent/pve-sustainability-gate`;
+2. keep changes inside closure tests, archive and status synchronization;
+3. do not add gameplay, meta systems or another implementation domain;
+4. run CI, Browser E2E and Graphify on the final documentation head;
 5. resolve every review finding;
 6. squash merge only when all gates are green.
 
-After #145 merges:
+After #146 merges:
 
-1. fetch exact squash SHA and fresh `main`;
-2. create only #146 `PVE-SUSTAINABILITY-GATE`;
-3. perform the authorized three-faction sustainability/closure gate;
-4. do not begin a new batch without a new audit.
+1. fetch its exact generated squash SHA and fresh `main`;
+2. create Audit PR #147 only;
+3. synchronize the exact #146 SHA into archive/history;
+4. re-audit actual code and the canonical roadmap;
+5. authorize implementation only through a new accepted contract.
 
 ## Hard stops
 
-- no fifth M6a implementation PR;
-- no schema v17/save format v4 without replacement audit;
+- no implementation after #146 without Audit #147;
+- no schema v17/save format v4 without a new audit;
 - no persisted PvE currency, reputation or telemetry;
 - no hidden-information exception or fabricated bot assets;
 - no Arena, Admiral services, alliances or endgame;
