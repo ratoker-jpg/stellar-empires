@@ -1,22 +1,22 @@
 {
-  "statusVersion": 56,
+  "statusVersion": 57,
   "updatedAt": "2026-08-02",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 143,
-  "lastMergeSha": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
-  "verifiedMainBaseline": "PR #143 PVE-TARGET-RECOVERY merged after required CI, Browser E2E, Graphify and review gates",
-  "runtimeBaselinePr": 143,
-  "runtimeBaselineSha": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
-  "activePr": 144,
+  "lastMergedPr": 144,
+  "lastMergeSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
+  "verifiedMainBaseline": "PR #144 PVE-OPERATIONS-INTELLIGENCE-UX merged after required CI, Browser E2E, Graphify and review gates",
+  "runtimeBaselinePr": 144,
+  "runtimeBaselineSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
+  "activePr": 145,
   "activePrKind": "implementation",
-  "activeWorkItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
-  "nextPrAfterActive": 145,
-  "nextPrKind": "implementation",
-  "nextWorkItem": "BOT-PVE-OPERATIONS",
+  "activeWorkItem": "BOT-PVE-OPERATIONS",
+  "nextPrAfterActive": 146,
+  "nextPrKind": "implementation-closure",
+  "nextWorkItem": "PVE-SUSTAINABILITY-GATE",
   "currentMilestone": "M6a sustainable existing PvE operations",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -29,7 +29,7 @@
     "docs/audits/evidence/sustainable-pve-operations-01.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastChangeDocument": "docs/changes/pr144-pve-operations-intelligence-ux.md",
+  "lastChangeDocument": "docs/changes/pr145-bot-pve-operations.md",
   "lastCompletedBatchArchive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
@@ -70,11 +70,12 @@
     "baselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
     "implementationCount": 4,
     "implementationPrs": [143, 144, 145, 146],
-    "completedImplementationPrs": [143],
+    "completedImplementationPrs": [143, 144],
     "implementationMergeShas": {
-      "143": "e3d2c28385abd9772a18257eeb313bd8d45e581e"
+      "143": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
+      "144": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a"
     },
-    "activeImplementationPr": 144,
+    "activeImplementationPr": 145,
     "workItems": [
       "PVE-TARGET-RECOVERY",
       "PVE-OPERATIONS-INTELLIGENCE-UX",
@@ -110,8 +111,10 @@
     "canonicalPveOpportunityViewImplemented": true,
     "routedPveOperationsUxImplemented": true,
     "worldEventMechanicalReportsImplemented": true,
-    "botPveOperationsImplemented": false,
-    "status": "pr-144-active"
+    "publicBotPvePerceptionImplemented": true,
+    "botPveOperationsImplemented": true,
+    "botPveSustainabilityGateImplemented": false,
+    "status": "pr-145-active"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -150,6 +153,10 @@
     ],
     "ordinaryBotPveCommands": true,
     "botPveSchedulerSource": "pve",
+    "botPveRoutineCadenceSeconds": 21600,
+    "botPveEventCadenceSeconds": 3600,
+    "botPveGasReservePermille": 400,
+    "botPveCommandsPerDecision": 1,
     "persistedPveMetaIncluded": false,
     "arenaIncluded": false,
     "admiralServicesIncluded": false,
@@ -179,7 +186,8 @@
     "deterministic bot colony roles and ordinary logistics/market support",
     "ordinary missions, fleets, combat, intelligence and PvE foundations",
     "merged deterministic PvE target recovery and targeted pirate-hunt reward",
-    "active-branch canonical PvE opportunity intelligence and routed player UX",
+    "merged canonical PvE opportunity intelligence and routed player UX",
+    "active-branch honest bot PvE perception, planning and ordinary command execution",
     "complete mechanical catalogs and routed release-viewport application"
   ],
   "activeDelivery": [
@@ -201,23 +209,31 @@
       "pr": 144,
       "kind": "implementation",
       "workItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
-      "status": "active",
-      "validatedCodeHead": "09e6dec9817437d31110862738a6c91c005a9399",
-      "ciRun": 30742965874,
-      "browserRun": 30742965877,
-      "graphifyRun": 30742965865
+      "status": "merged",
+      "mergeSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a"
     },
     {
       "pr": 145,
       "kind": "implementation",
       "workItem": "BOT-PVE-OPERATIONS",
-      "status": "blocked-until-pr-144-merge"
+      "status": "active",
+      "validatedCodeHead": "2b772475f79db3998932a4cf0322a5dfe757ac0e",
+      "ciRun": 30745970162,
+      "browserRun": 30745970161,
+      "graphifyRun": 30745970168,
+      "oneDayPerformanceMilliseconds": 8940,
+      "sevenDayPerformanceMilliseconds": 21806
+    },
+    {
+      "pr": 146,
+      "kind": "implementation-closure",
+      "workItem": "PVE-SUSTAINABILITY-GATE",
+      "status": "blocked-until-pr-145-merge"
     }
   ],
   "knownLimitations": [
-    "PR #144 is not merged until final documentation-head workflows and review are green",
-    "Honest bot PvE operations remain for PR #145",
-    "Final three-faction sustainability gate and archive remain for PR #146",
+    "PR #145 remains open until final documentation-head workflows and review are green",
+    "Final three-faction sustainability gate and batch archive remain for PR #146",
     "Arena, Admiral services and persistent PvE meta are not audited",
     "Alliances, Solar War, functional Obelisks/Gates and victory/defeat are not implemented",
     "Onboarding and release hardening remain incomplete"
@@ -230,7 +246,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #144 code head 09e6dec9817437d31110862738a6c91c005a9399 passed Graphify run 30742965865",
+    "lastValidation": "PR #145 code head 2b772475f79db3998932a4cf0322a5dfe757ac0e passed Graphify run 30745970168",
     "currentAuditEvidence": "docs/audits/evidence/sustainable-pve-operations-01.md"
   },
   "requiredStartupReading": [
@@ -240,12 +256,12 @@
     "docs/audits/current-batch-audit.md",
     "docs/audits/contracts/sustainable-pve-operations-01.md",
     "docs/audits/evidence/sustainable-pve-operations-01.md",
-    "docs/changes/pr144-pve-operations-intelligence-ux.md",
+    "docs/changes/pr145-bot-pve-operations.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Validate and squash merge PR #144, then create only PR #145 BOT-PVE-OPERATIONS from fresh main."
+  "nextAction": "Validate and squash merge PR #145, then create only PR #146 PVE-SUSTAINABILITY-GATE from fresh main."
 }
