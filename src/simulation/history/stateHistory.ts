@@ -45,15 +45,17 @@ export function compactGameStateHistory(state: GameState): GameState {
       ...state.worldEvents,
       history: retainNewest(state.worldEvents.history, STATE_HISTORY_LIMITS.worldEvents),
     },
-    pveMeta: state.pveMeta === undefined
-      ? undefined
+    ...(state.pveMeta === undefined
+      ? {}
       : {
-          ...state.pveMeta,
-          arenaHistory: retainNewest(
-            state.pveMeta.arenaHistory,
-            STATE_HISTORY_LIMITS.arenaResults,
-          ),
-        },
+          pveMeta: {
+            ...state.pveMeta,
+            arenaHistory: retainNewest(
+              state.pveMeta.arenaHistory,
+              STATE_HISTORY_LIMITS.arenaResults,
+            ),
+          },
+        }),
     intelligence: state.intelligence.map((entry) => ({
       ...entry,
       observations: retainNewest(
