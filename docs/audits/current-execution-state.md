@@ -1,98 +1,86 @@
 # Current execution state
 
 **Updated:** 2026-08-02  
-**Safe to continue:** yes, through active PR #143 only
+**Safe to continue:** yes, through active PR #144 only
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `81f1959b0bdbdd72d05dc21a2dce0a9e1470f010` |
-| Last merged PR | #142 `SUSTAINABLE-PVE-OPERATIONS-01` audit |
-| Runtime baseline | PR #141 · schema v16 / save format v3 |
+| Verified `main` baseline | `e3d2c28385abd9772a18257eeb313bd8d45e581e` |
+| Last merged PR | #143 `PVE-TARGET-RECOVERY` |
+| Runtime baseline | PR #143 · schema v16 / save format v3 |
 | Active batch | `SUSTAINABLE-PVE-OPERATIONS-01` |
-| Active work | #143 `PVE-TARGET-RECOVERY` |
-| Active branch | `agent/pve-target-recovery` |
+| Active work | #144 `PVE-OPERATIONS-INTELLIGENCE-UX` |
+| Active branch | `agent/pve-operations-intelligence-ux` |
 | Complexity decision | medium · exactly four implementation PRs |
-| Ordered implementation | #143 → #144 → #145 → #146 |
+| Ordered implementation | #143 merged → #144 active → #145 → #146 |
 | Blockers | final documentation-head gates and review |
 
 ## Last completed atomic action
 
-Audit #142 was squash-merged as:
+PR #143 was squash-merged as:
 
 ```text
-81f1959b0bdbdd72d05dc21a2dce0a9e1470f010
+e3d2c28385abd9772a18257eeb313bd8d45e581e
 ```
 
-It authorized exactly:
+It delivered deterministic object/pirate recovery and targeted pirate-hunt rewards while retaining schema v16/save format v3.
 
-```text
-#143 PVE-TARGET-RECOVERY
-→ #144 PVE-OPERATIONS-INTELLIGENCE-UX
-→ #145 BOT-PVE-OPERATIONS
-→ #146 PVE-SUSTAINABILITY-GATE
-```
+## Active PR #144 result
 
-No fifth implementation PR is authorized.
+PR #144 delivers one pure canonical PvE opportunity selector consumed by routed Operations and event-report presentation.
 
-## Active PR #143 result
+The model covers:
 
-PR #143 delivers the sustainable target foundation without schema or save-format changes:
+- expedition positions;
+- space objects;
+- pirate bases, including destroyed, occupied and recovering baselines;
+- active world-event targets.
 
-- non-final object extraction retains a 300-second cooldown;
-- final depletion becomes eligible after 21,600 campaign seconds;
-- eligible objects restore baseline yield and clear temporary control;
-- pirate creation and recovery share deterministic baselines;
-- surviving pirate bases restore resources/defenses after six hours;
-- destroyed bases respawn only at their original free position;
-- at most one pirate base recovers per 1,800-second evaluation;
-- battle reports executed earlier in the same long `ADVANCE_TIME` are visible to recovery;
-- targeted `pirate-hunt` combines a 1,500-permille reward multiplier with anti-repeat scaling;
-- direct, six-hour chunked and save-loaded 48-hour states are equal.
+Stable fields include availability reason, required role/current fleet, duration/fuel, yield/hazard/control, exact cooldown/recovery, event expiry and reward/threat multipliers. Entries sort by active event, available, active operation, recovering, unavailable, then coordinate/kind/ID.
 
-The verified baseline `spaceObjects.ts` mission/reward/return resolver remains intact. Recovery cooldown is applied only after successful ordinary mission resolution.
+Operations `overview`, `expeditions`, `objects` and `events` consume the model without new routes or command paths. Existing expedition/object/recall/fleet-target commands remain ordinary confirmed commands. Market/logistics remain unchanged.
+
+World-event reports use catalog titles, readable targets and actual mechanical effects. Passive recovery creates no fake mission report, reward row or command history.
 
 ## Code-head validation
 
 Code head:
 
 ```text
-ad23459708d6b7dab57c29c898e5772ba96e8917
+09e6dec9817437d31110862738a6c91c005a9399
 ```
 
 Passed:
 
 ```text
-CI             30741354763 — success
-Graphify       30741354825 — success
-Browser E2E    30741354743 — final result required before merge
+CI             30742965874 — success
+Browser E2E    30742965877 — success
+Graphify       30742965865 — success
 ```
 
-The final documentation head must rerun CI, Browser E2E and Graphify. All review threads must be resolved before ready/merge.
+Browser coverage includes routed modes, explicit labels, presentation-only target handoff and no horizontal overflow at 1440×900, 1920×1080 and 390×844.
 
 Change record:
 
 ```text
-docs/changes/pr143-pve-target-recovery.md
+docs/changes/pr144-pve-operations-intelligence-ux.md
 ```
 
 ## Compatibility boundary
 
 - schema v16/save format v3 retained;
-- no new persisted event payload or state field;
-- no new PvE currency, reputation or telemetry;
-- no continuously running target service;
-- no player UX work from #144;
-- no bot PvE work from #145;
-- no final batch gate/archive work from #146;
-- no Arena, Admiral services, alliances or endgame.
+- #143 recovery truth is consumed, not reimplemented;
+- no bot PvE behavior from #145;
+- no #146 closure gate/archive work;
+- no new route family, persisted PvE meta, currency or reputation;
+- no Arena, Admiral services, alliances, endgame or global rebalance.
 
 ## Exact next action
 
-1. Synchronize PR #143 status/change documentation only.
-2. Run CI, Browser E2E and Graphify on the final documentation head.
-3. Resolve every blocking review finding.
-4. Mark #143 ready and squash merge when all gates are green.
-5. Fetch fresh `main` and exact #143 merge SHA.
-6. Create only #144 `PVE-OPERATIONS-INTELLIGENCE-UX`.
+1. Run CI, Browser E2E and Graphify on the final documentation head.
+2. Resolve every blocking review finding.
+3. Mark #144 ready and squash merge only with green gates.
+4. Fetch fresh `main` and exact #144 merge SHA.
+5. Create only #145 `BOT-PVE-OPERATIONS`.
 
-Do not start #145 or #146 early.
+Do not start #146 early.
