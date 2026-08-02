@@ -5,6 +5,12 @@ import type {
   IntelligenceAlert,
 } from '../intelligence/types';
 import type { PlanetState } from '../planet/types';
+import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
+import type { SpaceObjectKind } from '../pve/spaceObjects';
+import type {
+  WorldEventDefinitionId,
+  WorldEventTargetType,
+} from '../pve/worldEvents';
 import type { SpaceCoordinate } from '../space/coordinates';
 import { getEmpireResearch } from '../research/researchState';
 import type { GameState } from '../types';
@@ -20,6 +26,7 @@ export interface BotOwnPlanetPerception {
     readonly metal: number;
     readonly crystal: number;
     readonly gas: number;
+    readonly gasCapacity: number;
     readonly energyProduced: number;
     readonly energyConsumed: number;
   };
@@ -51,6 +58,41 @@ export interface BotPublicContactPerception {
   readonly expiresAt: number | null;
 }
 
+export interface BotPublicExpeditionPositionPerception {
+  readonly galaxyPlanetId: string;
+  readonly systemId: string;
+  readonly coordinate: SpaceCoordinate;
+  readonly label: string;
+}
+
+export interface BotPublicSpaceObjectPerception {
+  readonly id: string;
+  readonly systemId: string;
+  readonly coordinate: SpaceCoordinate;
+  readonly kind: SpaceObjectKind;
+  readonly remainingYield: number;
+  readonly initialYield: number;
+  readonly controllerEmpireId: string | null;
+  readonly controlExpiresAt: number | null;
+  readonly cooldownUntil: number;
+}
+
+export interface BotPublicWorldEventPerception {
+  readonly id: string;
+  readonly definitionId: WorldEventDefinitionId;
+  readonly targetType: WorldEventTargetType;
+  readonly targetId: string;
+  readonly startsAt: number;
+  readonly endsAt: number;
+}
+
+export interface BotPublicPirateBasePerception {
+  readonly planetId: string;
+  readonly galaxyPlanetId: string;
+  readonly coordinate: SpaceCoordinate;
+  readonly label: string;
+}
+
 export interface BotPerception {
   readonly empireId: string;
   readonly perceivedAt: number;
@@ -58,6 +100,10 @@ export interface BotPerception {
   readonly foreignPlanets: readonly BotForeignPlanetPerception[];
   readonly publicContacts: readonly BotPublicContactPerception[];
   readonly publicColonyIds: readonly string[];
+  readonly publicExpeditionPositions: readonly BotPublicExpeditionPositionPerception[];
+  readonly publicSpaceObjects: readonly BotPublicSpaceObjectPerception[];
+  readonly activeWorldEvents: readonly BotPublicWorldEventPerception[];
+  readonly publicPirateBases: readonly BotPublicPirateBasePerception[];
   readonly ownDebrisFields: readonly {
     readonly planetId: string;
     readonly coordinate?: SpaceCoordinate;
@@ -83,6 +129,12 @@ export interface BotPerception {
 
 const perceptionCache = new WeakMap<GameState, Map<string, BotPerception>>();
 
+function compareCoordinates(left: SpaceCoordinate, right: SpaceCoordinate): number {
+  return left.galaxy - right.galaxy ||
+    left.solarSystem - right.solarSystem ||
+    left.position - right.position;
+}
+
 function createOwnPlanetPerception(planet: PlanetState): BotOwnPlanetPerception {
   return {
     id: planet.id,
@@ -95,6 +147,7 @@ function createOwnPlanetPerception(planet: PlanetState): BotOwnPlanetPerception 
       metal: planet.economy.resources.metal.amount,
       crystal: planet.economy.resources.crystal.amount,
       gas: planet.economy.resources.gas.amount,
+      gasCapacity: planet.economy.resources.gas.capacity,
       energyProduced: planet.economy.energy.produced,
       energyConsumed: planet.economy.energy.consumed,
     },
@@ -132,6 +185,9 @@ export function createBotPerception(
       .filter((planet) => planet.ownerEmpireId === empireId)
       .map((planet) => planet.id),
   );
+  const occupiedGalaxyPlanetIds = new Set(
+    state.planets.map((planet) => planet.galaxyPlanetId),
+  );
   const publicContacts = createGalaxyIntelligenceView(state, empireId)
     .filter(
       (planet) =>
@@ -151,9 +207,7 @@ export function createBotPerception(
       expiresAt: planet.expiresAt,
     }))
     .sort((left, right) =>
-      left.coordinate.galaxy - right.coordinate.galaxy ||
-      left.coordinate.solarSystem - right.coordinate.solarSystem ||
-      left.coordinate.position - right.coordinate.position ||
+      compareCoordinates(left.coordinate, right.coordinate) ||
       left.planetId.localeCompare(right.planetId),
     );
 
@@ -162,7 +216,8 @@ export function createBotPerception(
     perceivedAt: state.clock.elapsedSeconds,
     ownPlanets: state.planets
       .filter((planet) => planet.ownerEmpireId === empireId)
-      .map(createOwnPlanetPerception),
+      .map(createOwnPlanetPerception)
+      .sort((left, right) => compareCoordinates(left.coordinate, right.coordinate) || left.id.localeCompare(right.id)),
     foreignPlanets: [...latestByPlanet.values()].map((observation) => {
       const coordinate = observation.coordinate ?? observation.snapshot.coordinate;
       return {
@@ -178,6 +233,65 @@ export function createBotPerception(
     }),
     publicContacts,
     publicColonyIds: publicContacts.map((contact) => contact.planetId),
+    publicExpeditionPositions: state.galaxy.systems
+      .flatMap((system) => system.planets
+        .filter((planet) => !occupiedGalaxyPlanetIds.has(planet.id))
+        .map((planet): BotPublicExpeditionPositionPerception => ({
+          galaxyPlanetId: planet.id,
+          systemId: system.id,
+          coordinate: planet.coordinate,
+          label: `${system.name}:${planet.position}`,
+        })))
+      .sort((left, right) =>
+        compareCoordinates(left.coordinate, right.coordinate) ||
+        left.galaxyPlanetId.localeCompare(right.galaxyPlanetId),
+      ),
+    publicSpaceObjects: state.spaceObjects
+      .flatMap((object): readonly BotPublicSpaceObjectPerception[] => {
+        const coordinate = object.coordinate ?? state.galaxy.systems
+          .find((system) => system.id === object.systemId)?.coordinate;
+        if (coordinate === undefined) return [];
+        return [{
+          id: object.id,
+          systemId: object.systemId,
+          coordinate: object.coordinate ?? {
+            galaxy: coordinate.galaxy,
+            solarSystem: coordinate.solarSystem,
+            position: object.position,
+          },
+          kind: object.kind,
+          remainingYield: object.remainingYield,
+          initialYield: object.initialYield,
+          controllerEmpireId: object.controllerEmpireId,
+          controlExpiresAt: object.controlExpiresAt,
+          cooldownUntil: object.cooldownUntil,
+        }];
+      })
+      .sort((left, right) => compareCoordinates(left.coordinate, right.coordinate) || left.id.localeCompare(right.id)),
+    activeWorldEvents: state.worldEvents.active
+      .map((event): BotPublicWorldEventPerception => ({
+        id: event.id,
+        definitionId: event.definitionId,
+        targetType: event.targetType,
+        targetId: event.targetId,
+        startsAt: event.startsAt,
+        endsAt: event.endsAt,
+      }))
+      .sort((left, right) =>
+        left.startsAt - right.startsAt ||
+        left.definitionId.localeCompare(right.definitionId) ||
+        left.targetId.localeCompare(right.targetId) ||
+        left.id.localeCompare(right.id),
+      ),
+    publicPirateBases: state.planets
+      .filter((planet) => planet.ownerEmpireId === PIRATE_EMPIRE_ID)
+      .map((planet): BotPublicPirateBasePerception => ({
+        planetId: planet.id,
+        galaxyPlanetId: planet.galaxyPlanetId,
+        coordinate: planet.coordinate,
+        label: planet.name,
+      }))
+      .sort((left, right) => compareCoordinates(left.coordinate, right.coordinate) || left.planetId.localeCompare(right.planetId)),
     ownDebrisFields: state.debrisFields
       .filter((field) => ownPlanetIds.has(field.planetId))
       .map((field) => ({
@@ -203,7 +317,8 @@ export function createBotPerception(
         speed: fleet.speed,
         cargoCapacity: fleet.cargoCapacity,
         mission: fleet.mission === null ? null : { ...fleet.mission },
-      })),
+      }))
+      .sort((left, right) => left.id.localeCompare(right.id)),
   };
 
   const byEmpire = perceptionCache.get(state) ?? new Map<string, BotPerception>();
