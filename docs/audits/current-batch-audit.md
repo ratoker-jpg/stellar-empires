@@ -55,26 +55,28 @@ They cannot perceive hidden player resources/fleets, unobserved defenses, future
 - real recovery/high-threat work stays ahead of PvE; ordinary fleet development stays after PvE;
 - source `pve` emits at most one command per decision and records deterministic blocked reasons;
 - inherited colony role/route maintenance remains authoritative;
-- background planning is bounded to 21,600 seconds, with 3,600-second reaction for active `pirate-hunt` and `mineral-bloom`.
+- routine scheduler PvE unlocks after heavy-fleet at `planet-destruction`, preserving the permanent progression matrix;
+- routine planning is bounded to 21,600 seconds; targeted bonus events and already-running special operations retain 3,600-second reaction;
+- the pure planner remains directly testable before scheduler unlock.
 
 ### Validation
 
-Code head `2b772475f79db3998932a4cf0322a5dfe757ac0e`:
+Code head `db29dbe0a69ba38eea6a2f3ba838604305ec0505`:
 
 ```text
-CI             30745970162 — full suite/build + performance green; progression checked before closure
-Browser E2E    30745970161 — checked before closure
-Graphify       30745970168 — success
+CI             30746581384 — full suite/build, performance and 15-case progression matrix success
+Browser E2E    30746581373 — success
+Graphify       30746581362 — success
 ```
 
 Measured performance:
 
 ```text
-1 day  8.94 s < 15 s
-7 days 21.81 s < 30 s
+1 day   6.06 s < 15 s
+7 days 29.81 s < 30 s
 ```
 
-Focused tests cover expedition, object, fleet creation, legal pirate-hunt, one-command limit and information redaction. Existing multi-colony, deterministic partition and progression gates remain mandatory.
+Focused tests cover expedition, object, fleet creation, legal pirate-hunt, one-command limit and information redaction. Existing multi-colony, deterministic partition and progression gates remain mandatory. All 15 compressed progression cases complete with zero phase violations.
 
 ## Remaining ordered batch
 
