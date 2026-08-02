@@ -57,10 +57,19 @@ Exactly four implementation PRs are authorized. No fifth PR is allowed.
 - current level-3 intelligence plus 120% safety for pirate-hunt;
 - real recovery/high-threat work ahead of PvE;
 - at most one `pve` command per decision;
-- six-hour routine cadence and one-hour reaction to active targeted bonuses;
+- routine scheduler PvE unlock after heavy-fleet at `planet-destruction`;
+- six-hour routine cadence and one-hour reaction to targeted events or active operations;
 - inherited role/logistics, determinism and performance gates retained.
 
-Code head `2b772475f79db3998932a4cf0322a5dfe757ac0e` passed full suite/build and measured performance in CI `30745970162`; Graphify `30745970168` passed. Browser/progression conclusions are checked before final docs closure.
+Code head `db29dbe0a69ba38eea6a2f3ba838604305ec0505` passed:
+
+```text
+CI             30746581384 — full suite/build, performance and 15-case progression matrix
+Browser E2E    30746581373 — success
+Graphify       30746581362 — success
+```
+
+Performance: 1 day `6.06s`; 7 days `29.81s`.
 
 ## Compatibility boundary
 
