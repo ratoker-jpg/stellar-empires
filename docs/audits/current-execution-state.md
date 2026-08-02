@@ -1,70 +1,68 @@
 # Current execution state
 
 **Updated:** 2026-08-02  
-**Safe to continue:** yes, through PR #149 only
+**Safe to continue:** yes, through PR #150 only
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `430265b061764145e4e3ea1470d545f2ef82d0fa` |
-| Last merged PR | #148 `PVE-REPUTATION-FOUNDATION` |
+| Verified `main` baseline | `42c484426e850b84263d4eecab63ebbb3eaafb05` |
+| Last merged PR | #149 `ARENA-PVE-CHALLENGES` |
 | Audit | #147 `PVE-META-FOUNDATION-01` · accepted |
-| Active work | #149 `ARENA-PVE-CHALLENGES` |
-| Active branch | `agent/arena-pve-challenges` |
-| Active code head | `11f60961650071b3123718e81c968504f9342512` |
+| Active work | #150 `PVE-META-OPERATIONS-UX` |
+| Active branch | `agent/pve-meta-operations-ux` |
+| Active code head | `0e14f5058a872c2bc2d7c810b8c1eee1098d7924` |
 | Runtime baseline | schema v17 / save format v4 |
-| Next authorized PR after merge | #150 `PVE-META-OPERATIONS-UX` |
+| Next authorized PR after merge | #151 `BOT-PVE-META-GATE` |
 | Blockers | final code+docs CI, Browser E2E, Graphify, review and mergeability |
 
 ## Last completed atomic action
 
-PR #148 was squash-merged as:
+PR #149 was squash-merged as:
 
 ```text
-430265b061764145e4e3ea1470d545f2ef82d0fa
+42c484426e850b84263d4eecab63ebbb3eaafb05
 ```
 
-PR #149 then implemented the accepted local deterministic Arena slice without a second schema/save bump.
+PR #150 then implemented the accepted routed PvE-meta Operations presentation without changing runtime persistence or Arena mechanics.
 
-## PR #149 delivered scope
+## PR #150 delivered scope
 
-- exactly three public challenges per six-hour campaign cycle;
-- deterministic identity and enemy composition from campaign seed, cycle and slot;
-- fixed `patrol`, `assault` and `elite` difficulties;
-- existing faction ship definitions and existing deterministic combat resolver;
-- one active entry per empire using an owned idle stationed fleet;
-- canonical existing-resource entry cost and victory reward;
-- fleet held until resolution or withdrawal;
-- persistent combat losses and survivors;
-- victory-only resource and reputation rewards;
-- zero rewards for defeat, draw or withdrawal;
-- atomic idempotent resolution through a reserved domain event;
-- active-entry save/load compatibility in save v4;
-- compatibility with #148 v4 saves lacking `arenaHistory`;
-- Arena result history bounded to 64 entries.
+- `#/operations/arena` inside the canonical Operations route family;
+- current reputation, tier and next-tier progress;
+- exact ordinary-PvE and Arena award explanations;
+- one recent reputation ledger derived from existing event and Arena histories;
+- three current public challenges with cycle timing and enemy summary;
+- existing-resource cost, duration, victory reward and reputation reward;
+- eligible owned idle stationed fleets only;
+- deterministic validation through the same Arena entry contract;
+- active entry, resolution timing and withdrawal;
+- completed Arena results with losses and rewards;
+- responsive/mobile/reduced-motion layout;
+- route, reload, browser-history and release-mobile Browser evidence;
+- all previous Operations modes retained through an unchanged legacy workspace boundary.
 
 ## Code-head evidence
 
 Code head before documentation closure:
 
 ```text
-11f60961650071b3123718e81c968504f9342512
+0e14f5058a872c2bc2d7c810b8c1eee1098d7924
 ```
-
-At that head:
 
 ```text
-CI             30758613565 — success
-Graphify       30758613558 — success
-Browser E2E    30758613557 — code-head run; final docs-head success required
+CI             30760083734 — success
+Browser E2E    30760083727 — success
+Graphify       30760083753 — success
+1 day             6.071 s < 15 s
+7 days           29.683 s < 30 s
 ```
-
-The code-head passed assets, lint, typecheck, full tests, build, the 15-case progression scenario and unchanged one-day `<15 s` / seven-day `<30 s` performance gates. A single seven-day runner result of `30.099 s` was followed by a successful unchanged-head run; no threshold was weakened.
 
 ## Compatibility boundary
 
 - schema remains v17 and save format remains v4;
-- no Operations UI or new primary navigation family in #149;
-- no bot Arena planning in #149;
+- challenge generation remains public and read-only;
+- UI validation cannot mutate state;
+- no bot Arena planning in #150;
 - no separate PvE currency or Admiral services;
 - no multiplayer, matchmaking, rankings or seasons;
 - no new mechanical catalog entries;
@@ -77,16 +75,16 @@ The code-head passed assets, lint, typecheck, full tests, build, the 15-case pro
 ```text
 docs/audits/contracts/pve-meta-foundation-01.md
 docs/audits/evidence/pve-meta-foundation-01.md
-docs/changes/pr149-arena-pve-challenges.md
+docs/changes/pr150-pve-meta-operations-ux.md
 ```
 
 ## Exact next action
 
-1. synchronize all remaining #149 status documents and machine indexes;
+1. synchronize the remaining #150 status documents and machine indexes;
 2. validate the final code+docs head with CI, Browser E2E and Graphify;
 3. resolve review and confirm mergeability;
-4. mark ready and squash merge #149 only when all gates are green;
-5. record the exact #149 squash SHA from fresh `main`;
-6. create only #150 `PVE-META-OPERATIONS-UX`.
+4. mark ready and squash merge #150 only when all gates are green;
+5. record the exact #150 squash SHA from fresh `main`;
+6. create only #151 `BOT-PVE-META-GATE`.
 
-Do not start #150 before #149 merges.
+Do not start #151 before #150 merges.
