@@ -99,6 +99,14 @@ function successfulMutation(
   };
 }
 
+function unavailableParticipation(): CommandResult<never> {
+  return {
+    ok: false,
+    code: 'ENDGAME_PARTICIPATION_UNAVAILABLE',
+    message: 'The campaign state has not been migrated to endgame participation.',
+  };
+}
+
 function findParticipant(
   state: EndgameParticipationState,
   empireId: string,
@@ -244,7 +252,9 @@ export function createAlliance(
   state: GameState,
   command: Extract<GameCommand, { readonly type: 'CREATE_ALLIANCE' }>,
 ): CommandResult<GameState> {
-  const participant = findParticipant(state.endgameParticipation, command.empireId);
+  const current = state.endgameParticipation;
+  if (current === undefined) return unavailableParticipation();
+  const participant = findParticipant(current, command.empireId);
   if (participant === undefined || !state.empires.includes(command.empireId)) {
     return { ok: false, code: 'EMPIRE_NOT_FOUND', message: 'The requested empire does not exist.' };
   }
@@ -264,9 +274,7 @@ export function createAlliance(
     };
   }
   const nameKey = allianceNameKey(name);
-  if (state.endgameParticipation.alliances.some(
-    (alliance) => allianceNameKey(alliance.name) === nameKey,
-  )) {
+  if (current.alliances.some((alliance) => allianceNameKey(alliance.name) === nameKey)) {
     return {
       ok: false,
       code: 'ALLIANCE_NAME_TAKEN',
@@ -274,7 +282,7 @@ export function createAlliance(
     };
   }
 
-  const allianceId = `alliance-${state.endgameParticipation.nextAllianceSequence}`;
+  const allianceId = `alliance-${current.nextAllianceSequence}`;
   const alliance: EndgameAlliance = {
     id: allianceId,
     name,
@@ -282,23 +290,23 @@ export function createAlliance(
     createdAt: state.clock.elapsedSeconds,
   };
   const history = appendMembershipHistory(
-    state.endgameParticipation,
+    current,
     'created',
     command.empireId,
     allianceId,
     state.clock.elapsedSeconds,
   );
   return successfulMutation(state, command, {
-    ...state.endgameParticipation,
-    alliances: [...state.endgameParticipation.alliances, alliance],
+    ...current,
+    alliances: [...current.alliances, alliance],
     participants: updateParticipant(
-      state.endgameParticipation.participants,
+      current.participants,
       command.empireId,
       allianceId,
       state.clock.elapsedSeconds,
     ),
     ...history,
-    nextAllianceSequence: state.endgameParticipation.nextAllianceSequence + 1,
+    nextAllianceSequence: current.nextAllianceSequence + 1,
   });
 }
 
@@ -306,7 +314,9 @@ export function joinAlliance(
   state: GameState,
   command: Extract<GameCommand, { readonly type: 'JOIN_ALLIANCE' }>,
 ): CommandResult<GameState> {
-  const participant = findParticipant(state.endgameParticipation, command.empireId);
+  const current = state.endgameParticipation;
+  if (current === undefined) return unavailableParticipation();
+  const participant = findParticipant(current, command.empireId);
   if (participant === undefined || !state.empires.includes(command.empireId)) {
     return { ok: false, code: 'EMPIRE_NOT_FOUND', message: 'The requested empire does not exist.' };
   }
@@ -321,24 +331,22 @@ export function joinAlliance(
         : 'An empire cannot belong to more than one alliance.',
     };
   }
-  const alliance = state.endgameParticipation.alliances.find(
-    (candidate) => candidate.id === command.allianceId,
-  );
+  const alliance = current.alliances.find((candidate) => candidate.id === command.allianceId);
   if (alliance === undefined) {
     return { ok: false, code: 'ALLIANCE_NOT_FOUND', message: 'The requested alliance does not exist.' };
   }
 
   const history = appendMembershipHistory(
-    state.endgameParticipation,
+    current,
     'joined',
     command.empireId,
     alliance.id,
     state.clock.elapsedSeconds,
   );
   return successfulMutation(state, command, {
-    ...state.endgameParticipation,
+    ...current,
     participants: updateParticipant(
-      state.endgameParticipation.participants,
+      current.participants,
       command.empireId,
       alliance.id,
       state.clock.elapsedSeconds,
@@ -351,7 +359,9 @@ export function leaveAlliance(
   state: GameState,
   command: Extract<GameCommand, { readonly type: 'LEAVE_ALLIANCE' }>,
 ): CommandResult<GameState> {
-  const participant = findParticipant(state.endgameParticipation, command.empireId);
+  const current = state.endgameParticipation;
+  if (current === undefined) return unavailableParticipation();
+  const participant = findParticipant(current, command.empireId);
   if (participant === undefined || !state.empires.includes(command.empireId)) {
     return { ok: false, code: 'EMPIRE_NOT_FOUND', message: 'The requested empire does not exist.' };
   }
@@ -364,7 +374,7 @@ export function leaveAlliance(
   }
   const allianceId = participant.allianceId;
   const participants = updateParticipant(
-    state.endgameParticipation.participants,
+    current.participants,
     command.empireId,
     null,
     null,
@@ -373,17 +383,17 @@ export function leaveAlliance(
     (candidate) => candidate.allianceId === allianceId,
   );
   const history = appendMembershipHistory(
-    state.endgameParticipation,
+    current,
     'left',
     command.empireId,
     allianceId,
     state.clock.elapsedSeconds,
   );
   return successfulMutation(state, command, {
-    ...state.endgameParticipation,
+    ...current,
     alliances: allianceStillOccupied
-      ? state.endgameParticipation.alliances
-      : state.endgameParticipation.alliances.filter((alliance) => alliance.id !== allianceId),
+      ? current.alliances
+      : current.alliances.filter((alliance) => alliance.id !== allianceId),
     participants,
     ...history,
   });
