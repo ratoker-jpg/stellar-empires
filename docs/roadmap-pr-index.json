@@ -6,19 +6,19 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 144,
-    "mergeSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
-    "runtimeBaselinePr": 144,
-    "runtimeBaselineSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
+    "lastMergedPr": 145,
+    "mergeSha": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f",
+    "runtimeBaselinePr": 145,
+    "runtimeBaselineSha": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f",
     "auditBaselineSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
   },
-  "activePr": 145,
-  "activePrKind": "implementation",
+  "activePr": 146,
+  "activePrKind": "implementation-closure",
   "activeBatchId": "SUSTAINABLE-PVE-OPERATIONS-01",
-  "activeWorkItem": "BOT-PVE-OPERATIONS",
-  "nextPr": 146,
-  "nextPrKind": "implementation-closure",
-  "nextWorkItem": "PVE-SUSTAINABILITY-GATE",
+  "activeWorkItem": "PVE-SUSTAINABILITY-GATE",
+  "nextPr": 147,
+  "nextPrKind": "audit",
+  "nextWorkItem": "NEXT-PLAYABLE-GAME-BATCH-AUDIT",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -134,19 +134,19 @@
       "auditMergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010",
       "startPr": 143,
       "endPr": 146,
-      "status": "implementation-active",
+      "status": "completed-at-pr-146-merge",
       "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
       "complexity": "medium",
       "plannedPrs": [143, 144, 145, 146],
-      "completedPrs": [143, 144],
+      "completedPrs": [143, 144, 145, 146],
       "implementationMergeShas": {
         "143": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
-        "144": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a"
+        "144": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
+        "145": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f"
       },
-      "activePr": 145,
-      "validatedCodeHead": "db29dbe0a69ba38eea6a2f3ba838604305ec0505",
-      "contract": "docs/audits/contracts/sustainable-pve-operations-01.md",
-      "evidence": "docs/audits/evidence/sustainable-pve-operations-01.md",
+      "finalImplementationCodeHead": "a2e466bfffa3494ae9a08e2c4250e6fc78c89290",
+      "finalMergeShaSynchronization": "required-by-next-audit-pr",
+      "archive": "docs/audits/completed/sustainable-pve-operations-01.md",
       "workItems": [
         "PVE-TARGET-RECOVERY",
         "PVE-OPERATIONS-INTELLIGENCE-UX",
@@ -155,13 +155,13 @@
       ],
       "targetStateSchema": 16,
       "targetSaveFormat": 3,
-      "outcome": "Repeatable existing PvE targets, canonical opportunity UX and honest bot participation before new meta systems"
+      "outcome": "Repeatable targets, canonical PvE Operations intelligence, honest bot participation and three-faction 48-hour closure"
     },
     {
       "id": "pve-meta-systems",
       "auditPr": null,
       "status": "not-audited",
-      "outcome": "Arena, Admiral services or persistent PvE meta only after sustainable foundations"
+      "outcome": "Arena, Admiral services or persistent PvE meta only after a new audit"
     },
     {
       "id": "alliances-and-endgame",
@@ -206,24 +206,35 @@
       "kind": "implementation",
       "workItem": "BOT-PVE-OPERATIONS",
       "title": "Add honest bot PvE operations",
-      "status": "active",
-      "validatedCodeHead": "db29dbe0a69ba38eea6a2f3ba838604305ec0505",
-      "ciRun": 30746581384,
-      "browserRun": 30746581373,
-      "graphifyRun": 30746581362,
-      "oneDayPerformanceMilliseconds": 6064,
-      "sevenDayPerformanceMilliseconds": 29806,
-      "progressionMatrixCases": 15,
-      "progressionPhaseViolations": 0,
-      "routineUnlockPhase": "planet-destruction"
+      "status": "merged",
+      "mergeSha": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f"
     },
     {
       "number": 146,
       "kind": "implementation-closure",
       "workItem": "PVE-SUSTAINABILITY-GATE",
       "title": "Close sustainable PvE operations",
-      "status": "blocked-until-pr-145-merge"
+      "status": "active",
+      "validatedCodeHead": "a2e466bfffa3494ae9a08e2c4250e6fc78c89290",
+      "ciRun": 30747647153,
+      "browserRun": 30747647147,
+      "browserCodeHeadStatus": "cancelled-by-documentation-commits-final-head-required",
+      "graphifyRun": 30747647145,
+      "testFiles": 106,
+      "tests": 557,
+      "closureTests": 13,
+      "oneDayPerformanceMilliseconds": 6222,
+      "sevenDayPerformanceMilliseconds": 29561,
+      "progressionMatrixCases": 15,
+      "progressionPhaseViolations": 0
+    },
+    {
+      "number": 147,
+      "kind": "audit",
+      "workItem": "NEXT-PLAYABLE-GAME-BATCH-AUDIT",
+      "title": "Audit the next playable-game batch",
+      "status": "blocked-until-pr-146-merge"
     }
   ],
-  "nextAction": "Validate and squash merge PR #145, then create only PR #146 PVE-SUSTAINABILITY-GATE from fresh main."
+  "nextAction": "Validate and squash merge PR #146, then create Audit PR #147 only and synchronize the exact #146 merge SHA before authorizing implementation."
 }
