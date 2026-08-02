@@ -94,7 +94,7 @@ describe('bot PvE information boundary', () => {
       definitionId: 'pirate-hunt',
       targetType: 'planet',
       targetId: pirate.id,
-      startedAt: 0,
+      startsAt: 0,
       endsAt: 3_600,
     }]);
 
