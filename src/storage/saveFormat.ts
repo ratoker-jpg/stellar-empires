@@ -11,10 +11,11 @@ import {
   isPlanetSpecializationId,
 } from '../simulation/planet/specialization';
 import { PLANET_ZONE_IDS } from '../simulation/planet/zones';
+import { normalizePveMetaState } from '../simulation/pveMeta/reputation';
 import { isSpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
 import { isUniverseModel } from '../simulation/universe/model';
-import { migrateGameStateV16 } from './migrateGameStateV16';
+import { migrateGameStateV17 } from './migrateGameStateV17';
 import {
   createCampaignRuntimeMetadata,
   isCampaignRuntimeMetadata,
@@ -31,7 +32,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 function isNonNegativeInteger(value: unknown): value is number {
-  return typeof value === 'number' && Number.isInteger(value) && value >= 0;
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
 }
 function isPositiveInteger(value: unknown): value is number {
   return isNonNegativeInteger(value) && value > 0;
@@ -45,7 +46,7 @@ function isResourceCost(value: unknown): boolean {
 }
 function isStateShell(value: unknown): value is Record<string, unknown> {
   return isRecord(value) &&
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
       .includes(value.schemaVersion as number) &&
     typeof value.seed === 'number' && Number.isInteger(value.seed) && isRecord(value.clock) &&
     typeof value.clock.startedAt === 'string' && isNonNegativeInteger(value.clock.elapsedSeconds) &&
@@ -241,7 +242,7 @@ function isBotAutomationState(
     normalizeBotAutomationState(value, validEmpireIds, elapsedSeconds) !== undefined;
 }
 function isGameState(value: unknown): value is GameState {
-  return isStateShell(value) && value.schemaVersion === 16 &&
+  return isStateShell(value) && value.schemaVersion === 17 &&
     isCampaignSettings(value.campaignSettings) && isUniverseModel(value.universe) &&
     value.campaignSettings.scenarioPreset === value.universe.presetId &&
     Array.isArray(value.commandLog) && value.commandLog.length <= STATE_HISTORY_LIMITS.commands &&
@@ -259,6 +260,7 @@ function isGameState(value: unknown): value is GameState {
     Array.isArray(value.spaceObjects) && value.spaceObjects.every(isSpaceObject) &&
     Array.isArray(value.strategicResources) && value.strategicResources.every(isStrategicResourceState) &&
     value.strategicResources.length === value.empires.length && isWorldEventState(value.worldEvents) &&
+    normalizePveMetaState(value.pveMeta, value.empires) !== undefined &&
     isRecord(value.clock) && isNonNegativeInteger(value.clock.elapsedSeconds) &&
     isBotAutomationState(value.botAutomation, value.empires, value.clock.elapsedSeconds);
 }
@@ -282,6 +284,9 @@ export function createSaveEnvelope(
   runtimeMetadata: CampaignRuntimeMetadata = createCampaignRuntimeMetadata(savedAt),
 ): SaveEnvelope {
   if (slotId.trim().length === 0) throw new Error('Save slot id must not be empty.');
+  if (state.schemaVersion !== 17 || state.pveMeta === undefined) {
+    throw new Error('Only schema-v17 game state can be saved.');
+  }
   const canonicalSavedAt = normalizeRealTimestamp(savedAt);
   if (!isCampaignRuntimeMetadata(runtimeMetadata)) {
     throw new Error('Campaign runtime metadata is invalid.');
@@ -312,7 +317,7 @@ export function parseSaveJson(json: string): SaveParseResult {
       details: error instanceof Error ? error.message : error,
     };
   }
-  if (!isRecord(parsed) || ![1, 2, SAVE_FORMAT_VERSION].includes(parsed.formatVersion as number) ||
+  if (!isRecord(parsed) || ![1, 2, 3, SAVE_FORMAT_VERSION].includes(parsed.formatVersion as number) ||
     typeof parsed.slotId !== 'string' || parsed.slotId.trim().length === 0 ||
     typeof parsed.savedAt !== 'string' || typeof parsed.checksum !== 'string' ||
     !isStateShell(parsed.state)) {
@@ -330,9 +335,10 @@ export function parseSaveJson(json: string): SaveParseResult {
     };
   }
 
+  const formatVersion = parsed.formatVersion as number;
   let runtimeMetadata: CampaignRuntimeMetadata;
   let actualChecksum: string;
-  if (parsed.formatVersion === SAVE_FORMAT_VERSION) {
+  if (formatVersion >= 3) {
     if (!isCampaignRuntimeMetadata(parsed.runtimeMetadata)) {
       return {
         ok: false,
@@ -341,12 +347,12 @@ export function parseSaveJson(json: string): SaveParseResult {
       };
     }
     runtimeMetadata = parsed.runtimeMetadata;
-    actualChecksum = createSaveChecksum({
-      formatVersion: SAVE_FORMAT_VERSION,
+    actualChecksum = createStateChecksum({
+      formatVersion,
       slotId: parsed.slotId,
       savedAt: parsed.savedAt,
       runtimeMetadata,
-      state: parsed.state as unknown as GameState,
+      state: parsed.state,
     });
   } else {
     runtimeMetadata = createCampaignRuntimeMetadata(parsed.savedAt);
@@ -360,7 +366,7 @@ export function parseSaveJson(json: string): SaveParseResult {
       message: 'Save data checksum does not match its state or runtime metadata.',
     };
   }
-  const state = migrateGameStateV16(parsed.state, parsed.savedAt);
+  const state = migrateGameStateV17(parsed.state, parsed.savedAt);
   if (!isGameState(state)) {
     return {
       ok: false,
