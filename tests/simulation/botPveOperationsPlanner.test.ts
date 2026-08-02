@@ -116,6 +116,60 @@ function objectFixture(seed: string, empireId = 'aegis-bot'): GameState {
   return { ...state, spaceObjects: [object] };
 }
 
+function pirateFixture(seed: string, empireId = 'veyra-bot'): GameState {
+  let state = createInitialGameState(seed);
+  const origin = state.planets.find((planet) => planet.ownerEmpireId === empireId)!;
+  const pirate = state.planets.find((planet) => planet.ownerEmpireId === 'pirate-neutral');
+  if (pirate === undefined) throw new Error('Pirate fixture missing.');
+  const roles = getFactionMechanicalRoles(origin.factionId);
+  state = prepareOrigin(state, empireId);
+  state = addFleet(state, empireId, 'bot-pve-pirate', { [roles.ships.fighter]: 100 });
+  return {
+    ...state,
+    intelligence: state.intelligence.map((entry) =>
+      entry.empireId === empireId
+        ? {
+            ...entry,
+            observations: [
+              ...entry.observations,
+              {
+                id: 'bot-pve-pirate-intel',
+                observerEmpireId: empireId,
+                targetPlanetId: pirate.id,
+                coordinate: pirate.coordinate,
+                observedAt: 0,
+                expiresAt: 10_000,
+                detected: false,
+                snapshot: {
+                  planetId: pirate.id,
+                  coordinate: pirate.coordinate,
+                  name: pirate.name,
+                  ownerEmpireId: 'pirate-neutral',
+                  factionId: pirate.factionId,
+                  level: 3 as const,
+                  defenses: {},
+                  stationedFleets: [],
+                },
+              },
+            ],
+          }
+        : entry,
+    ),
+    worldEvents: {
+      ...state.worldEvents,
+      active: [{
+        id: 'bot-pve-pirate-hunt',
+        definitionId: 'pirate-hunt',
+        targetType: 'planet',
+        targetId: pirate.id,
+        startedAt: 0,
+        endsAt: 3_600,
+        chainDepth: 0,
+      }],
+    },
+  };
+}
+
 describe('honest bot PvE operations planner', () => {
   it('starts an expedition through the ordinary command without mutating input', () => {
     const state = expeditionFixture('bot-pve-expedition-plan');
@@ -174,6 +228,25 @@ describe('honest bot PvE operations planner', () => {
         ships: { [unitId]: 1 },
       },
     });
+  });
+
+  it('attacks an active pirate hunt only with current full intelligence', () => {
+    const state = pirateFixture('bot-pve-pirate-plan');
+    const plan = planBotPveOperations(state, profile('veyra-bot', 'aggressive'));
+
+    expect(plan).toMatchObject({
+      reasonCode: 'pirate-hunt-selected',
+      command: {
+        type: 'SEND_FLEET',
+        empireId: 'veyra-bot',
+        fleetId: 'bot-pve-pirate',
+        mission: 'attack',
+      },
+    });
+    expect(plan.command).not.toBeNull();
+    if (plan.command !== null) {
+      expect(executeCommand(state, plan.command).ok).toBe(true);
+    }
   });
 
   it('records at most one accepted PvE command in one scheduler decision', () => {
