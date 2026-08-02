@@ -125,15 +125,16 @@ function expectLegalArenaPlan(fixture: ArenaFixture): void {
     empireId: fixture.profile.empireId,
     fleetId: fixture.arenaFleetId,
   });
-  if (first.command === null || first.command.type !== 'ENTER_ARENA_CHALLENGE') return;
+  const command = first.command;
+  if (command === null || command.type !== 'ENTER_ARENA_CHALLENGE') return;
   expect(getArenaChallenges(fixture.state).some(
-    (challenge) => challenge.id === first.command?.challengeId,
+    (challenge) => challenge.id === command.challengeId,
   )).toBe(true);
-  expect(executeCommand(fixture.state, first.command).ok).toBe(true);
+  expect(executeCommand(fixture.state, command).ok).toBe(true);
 
   const integrated = planBotPveOperations(fixture.state, fixture.profile);
   expect(integrated.reasonCode).toBe('arena-selected');
-  expect(integrated.command).toEqual(first.command);
+  expect(integrated.command).toEqual(command);
 }
 
 describe('honest bot Arena participation', () => {
