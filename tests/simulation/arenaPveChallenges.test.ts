@@ -34,18 +34,21 @@ function createArenaState(
       resources: {
         metal: {
           ...origin.economy.resources.metal,
-          amount: 1_000_000,
-          capacity: 2_000_000,
+          amount: 40_000,
+          productionPerHour: 0,
+          productionRemainder: 0,
         },
         crystal: {
           ...origin.economy.resources.crystal,
-          amount: 1_000_000,
-          capacity: 2_000_000,
+          amount: 40_000,
+          productionPerHour: 0,
+          productionRemainder: 0,
         },
         gas: {
           ...origin.economy.resources.gas,
-          amount: 1_000_000,
-          capacity: 2_000_000,
+          amount: 40_000,
+          productionPerHour: 0,
+          productionRemainder: 0,
         },
       },
     },
