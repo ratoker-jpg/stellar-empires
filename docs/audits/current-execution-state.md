@@ -1,79 +1,100 @@
 # Current execution state
 
 **Updated:** 2026-08-02  
-**Safe to continue:** yes, through final PR #151 only
+**Safe to continue:** yes, audit work only
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `39b85fe057d2cbf1fcff6b949a14bc62c7dbde63` |
-| Last merged PR | #150 `PVE-META-OPERATIONS-UX` |
-| Audit | #147 `PVE-META-FOUNDATION-01` · accepted |
-| Active work | #151 `BOT-PVE-META-GATE` |
-| Active branch | `agent/bot-pve-meta-gate` |
-| Active code head | `016065dce161309899e0893bfa27c85bb2ba2e1c` |
+| Verified `main` baseline | `73ed5536cb994a78fe7cdd45a41e0240901d7fe1` |
+| Last merged PR | #151 `BOT-PVE-META-GATE` |
+| Last completed batch | #147–#151 `PVE-META-FOUNDATION-01` |
+| Active work | draft Audit PR #152 `COMPLETE-ENDGAME-01` |
+| Active branch | `agent/audit-complete-endgame` |
 | Runtime baseline | schema v17 / save format v4 |
-| Next implementation | blocked pending a new accepted Audit PR |
-| Blockers | final code+docs CI, Browser E2E, Graphify, review and mergeability |
+| Implementation authorization | none |
+| Candidate milestone | M8 — Complete endgame |
+| Blockers | critical endgame unknowns, exact file map, batch-size decision and final audit gates |
 
 ## Last completed atomic action
 
-PR #150 was squash-merged as:
+PR #151 was squash-merged as:
 
 ```text
-39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
+73ed5536cb994a78fe7cdd45a41e0240901d7fe1
 ```
 
-PR #151 then delivered the final honest bot participation and partition closure required by Audit #147.
-
-## PR #151 delivered scope
-
-- public-only deterministic bot Arena planning;
-- routine unlock only at planet-destruction capability;
-- owned idle stationed offensive fleets and owned origin resources only;
-- existing Arena costs and canonical `ENTER_ARENA_CHALLENGE` command;
-- 40% gas reserve protection;
-- ordinary PvE planner retained unchanged and prioritized before Arena;
-- one Arena command maximum per bot decision;
-- legal Aegis, Synod and Veyra participation;
-- pure planning and hidden-player-state independence;
-- 48-hour complete-state equality across direct, six-hour chunked, save/load and offline runtime partitions;
-- bounded Arena, reputation, command and event histories.
-
-## Code-head evidence
+Final pre-squash documentation head:
 
 ```text
-Head           016065dce161309899e0893bfa27c85bb2ba2e1c
-CI             30762140802 — success
-Graphify       30762140796 — success
-Browser E2E    30762140792 — code-head run; final documentation-head success required
+088644aeaba88a8e8d95b0d9a1684752517fdf35
+```
+
+Final validation:
+
+```text
+CI             30762531028 — success
+Browser E2E    30762531023 — success
+Graphify       30762531017 — success
 1 day              6.099 s < 15 s
 7 days            28.838 s < 30 s
 ```
 
-## Compatibility boundary
-
-- schema remains v17 and save format remains v4;
-- no separate PvE currency or Admiral services;
-- no multiplayer, matchmaking, rankings or seasons;
-- no new mechanical catalog entries;
-- no global economy/progression rebalance;
-- no alliances, Solar War, Obelisks, Gates or victory/defeat;
-- no weakening of CI, Browser, Graphify, progression or performance gates.
-
-## Authoritative sources
+Review state before merge:
 
 ```text
-docs/audits/contracts/pve-meta-foundation-01.md
-docs/audits/evidence/pve-meta-foundation-01.md
-docs/audits/completed/pve-meta-foundation-01.md
-docs/changes/pr151-bot-pve-meta-gate.md
+mergeable        true
+review threads   0
+reviews          0
 ```
+
+## Completed product state
+
+- M6b persistent PvE reputation, local deterministic Arena and routed Operations UX;
+- honest Aegis/Synod/Veyra Arena participation through ordinary commands;
+- planet-destruction capability gate and 40% gas reserve;
+- ordinary PvE and higher scheduler priorities retained ahead of Arena;
+- 48-hour exact full-state equality across direct, chunked, save/load and offline partitions;
+- schema v17/save v4 unchanged after #148.
+
+## Active audit scaffold
+
+Candidate audit:
+
+```text
+COMPLETE-ENDGAME-01
+```
+
+Current documents:
+
+```text
+docs/audits/contracts/complete-endgame-01.md
+docs/audits/evidence/complete-endgame-01.md
+docs/handoffs/2026-08-02-post-pve-meta-handoff.md
+```
+
+The scaffold records M8 as the next roadmap gap but does not assume that alliances, Solar War, Obelisks, Gates and victory/defeat safely fit in one batch.
+
+## Compatibility boundary
+
+Until Audit #152 is accepted:
+
+- do not implement alliances or diplomacy;
+- do not implement Solar War, Obelisks or Gates;
+- do not add victory/defeat state or campaign termination;
+- do not change schema/save format;
+- do not add bot endgame behavior;
+- do not absorb M9 onboarding/release polish;
+- do not weaken deterministic, progression, performance, Browser or Graphify gates.
 
 ## Exact next action
 
-1. synchronize all remaining #151 status documents and machine indexes;
-2. validate final code+docs head with CI, Browser E2E and Graphify;
-3. resolve review and confirm mergeability;
-4. mark ready and squash merge #151 only when all gates are green;
-5. record the exact #151 squash SHA from fresh `main` in the immediately following Audit PR;
-6. do not start another implementation without a new accepted audit.
+1. verify current `main` and recent merged PRs from exact baseline `73ed5536...`;
+2. read the audit protocol, this execution state and the post-PvE-meta handoff;
+3. inspect authoritative endgame/product contracts;
+4. run Graphify and direct code searches for alliance, Solar War, Obelisk, Gate, victory and defeat surfaces;
+5. resolve all critical unknowns in the evidence file;
+6. decide whether M8 is one heavy batch or multiple sequential audits;
+7. define stable work-item IDs, exact paths, persistence impact, tests and implementation count;
+8. synchronize machine indexes and roadmap only after the audit decision is evidence-backed;
+9. validate final audit documentation head with CI, Browser E2E and Graphify;
+10. merge Audit #152 before creating any implementation PR.
