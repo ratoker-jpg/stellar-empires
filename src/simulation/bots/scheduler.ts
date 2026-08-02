@@ -1,6 +1,7 @@
 import type { MissionAvailabilityCode } from '../fleets/missionRules';
 import { executeCommand } from '../reducer';
 import type { GameCommand, GameState } from '../types';
+import { getUnitDefinition } from '../units/catalog';
 import { planBotColonyLogistics } from './colonyLogisticsPlanner';
 import { planBotEconomy } from './economyPlanner';
 import {
@@ -32,7 +33,8 @@ export type BotPlannerSource =
   | 'pve';
 export const MAX_BOT_DECISIONS_PER_RUN = 32;
 export const POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS = 3_600;
-export const BOT_PVE_PLANNING_INTERVAL_SECONDS = 1_800;
+export const BOT_PVE_PLANNING_INTERVAL_SECONDS = 3_600;
+export const BOT_PORTFOLIO_MAINTENANCE_INTERVAL_SECONDS = 3_600;
 
 export interface BotSchedulerAuditEntry {
   readonly empireId: string;
@@ -117,13 +119,17 @@ function compressedCandidate(
   profile: BotProfile,
   attempted: readonly GameCommand[],
   allowLogistics: boolean,
+  prioritizePortfolioMaintenance: boolean,
   allowPve: boolean,
   precomputedFleet?: BotFleetMissionPlan,
 ): PlannerCandidates {
   const logistics = allowLogistics
     ? planBotColonyLogistics(state, profile.empireId)
     : null;
-  if (logistics?.roleChange === true) {
+  if (
+    logistics !== null &&
+    (logistics.roleChange || prioritizePortfolioMaintenance)
+  ) {
     const invariantCandidate = selectCandidate('logistics', logistics.command, attempted);
     if (invariantCandidate !== null) {
       return {
@@ -300,17 +306,55 @@ function getDecisionIntervalSeconds(state: GameState, profile: BotProfile): numb
   return profile.decisionIntervalSeconds;
 }
 
-function isPvePlanningDue(
+function isCadenceDue(
   state: GameState,
   profile: BotProfile,
   decidedAt: number,
+  cadenceSeconds: number,
 ): boolean {
   if (decidedAt === 0) return true;
   const decisionInterval = Math.min(
-    BOT_PVE_PLANNING_INTERVAL_SECONDS,
+    cadenceSeconds,
     getDecisionIntervalSeconds(state, profile),
   );
-  return decidedAt % BOT_PVE_PLANNING_INTERVAL_SECONDS < decisionInterval;
+  return decidedAt % cadenceSeconds < decisionInterval;
+}
+
+function hasRelevantPveAsset(state: GameState, empireId: string): boolean {
+  const pirateHuntActive = state.worldEvents.active.some(
+    (event) => event.definitionId === 'pirate-hunt',
+  );
+  const relevantUnit = (unitId: string, quantity: number): boolean => {
+    if (quantity <= 0) return false;
+    const definition = getUnitDefinition(unitId);
+    if (definition?.kind !== 'ship') return false;
+    if (
+      definition.role === 'scout' ||
+      definition.role === 'recycler' ||
+      definition.role === 'transport'
+    ) {
+      return true;
+    }
+    return pirateHuntActive && definition.stats.attack > 0;
+  };
+  if (
+    state.fleets.some(
+      (fleet) =>
+        fleet.empireId === empireId &&
+        (fleet.mission?.kind === 'expedition' ||
+          fleet.mission?.kind === 'space-object' ||
+          Object.entries(fleet.ships).some(([unitId, quantity]) =>
+            relevantUnit(unitId, quantity))),
+    )
+  ) {
+    return true;
+  }
+  return state.planets
+    .filter((planet) => planet.ownerEmpireId === empireId)
+    .some((planet) =>
+      Object.entries(planet.inventory.ships).some(([unitId, quantity]) =>
+        relevantUnit(unitId, quantity)),
+    );
 }
 
 function runProfileDecision(
@@ -330,7 +374,18 @@ function runProfileDecision(
   let pveCommandAttempted = false;
   let pveDiagnosticRecorded = false;
   const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
-  const pveDue = isPvePlanningDue(state, profile, decidedAt);
+  const portfolioMaintenanceDue = isCadenceDue(
+    state,
+    profile,
+    decidedAt,
+    BOT_PORTFOLIO_MAINTENANCE_INTERVAL_SECONDS,
+  );
+  const pveDue = isCadenceDue(
+    state,
+    profile,
+    decidedAt,
+    BOT_PVE_PLANNING_INTERVAL_SECONDS,
+  ) && hasRelevantPveAsset(state, profile.empireId);
   const diagnosticFleet = planBotFleetMission(working, profile.empireId);
   const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, diagnosticFleet);
   if (diagnostic !== null) diagnostics.push(diagnostic);
@@ -342,6 +397,7 @@ function runProfileDecision(
           profile,
           attempted,
           !logisticsCommandAttempted,
+          portfolioMaintenanceDue,
           pveDue && !pveCommandAttempted,
           index === 0 ? diagnosticFleet : undefined,
         )
