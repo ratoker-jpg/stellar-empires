@@ -16,8 +16,14 @@ function createCampaignState(seedSource: string) {
   });
 }
 
+function collectGarbageBeforeMeasurement(): void {
+  const collectGarbage = (globalThis as typeof globalThis & { gc?: () => void }).gc;
+  collectGarbage?.();
+}
+
 function measureCatchUp(seedSource: string, seconds: number) {
   const state = createCampaignState(seedSource);
+  collectGarbageBeforeMeasurement();
   const startedAt = performance.now();
   const result = advanceCampaignTime(state, seconds, { operationBudget: 250_000 });
   return {
