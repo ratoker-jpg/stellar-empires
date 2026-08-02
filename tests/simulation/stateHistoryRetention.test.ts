@@ -66,6 +66,8 @@ describe('long-session history retention', () => {
 
   it('compacts every documented historical collection without touching pending state', () => {
     const current = createInitialGameState('history-compaction');
+    const participation = current.endgameParticipation;
+    if (participation === undefined) throw new Error('Participation state missing.');
     const oversized = {
       ...current,
       commandLog: Array.from(
@@ -76,6 +78,20 @@ describe('long-session history retention', () => {
         { length: STATE_HISTORY_LIMITS.executedEvents + 3 },
         (_, index) => eventEntry(index),
       ),
+      endgameParticipation: {
+        ...participation,
+        membershipHistory: Array.from(
+          { length: STATE_HISTORY_LIMITS.allianceMembership + 3 },
+          (_, index) => ({
+            sequence: index,
+            action: 'joined' as const,
+            empireId: 'player',
+            allianceId: `alliance-${index + 1}`,
+            occurredAt: index,
+          }),
+        ),
+        nextMembershipHistorySequence: STATE_HISTORY_LIMITS.allianceMembership + 3,
+      },
       worldEvents: {
         ...current.worldEvents,
         history: Array.from(
@@ -129,6 +145,9 @@ describe('long-session history retention', () => {
     const compacted = compactGameStateHistory(oversized);
     expect(compacted.commandLog).toHaveLength(STATE_HISTORY_LIMITS.commands);
     expect(compacted.eventLog).toHaveLength(STATE_HISTORY_LIMITS.executedEvents);
+    expect(compacted.endgameParticipation?.membershipHistory).toHaveLength(
+      STATE_HISTORY_LIMITS.allianceMembership,
+    );
     expect(compacted.worldEvents.history).toHaveLength(STATE_HISTORY_LIMITS.worldEvents);
     expect(compacted.intelligence.every(
       (entry) => entry.observations.length === STATE_HISTORY_LIMITS.intelligenceObservationsPerEmpire,

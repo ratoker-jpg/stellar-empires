@@ -5,6 +5,7 @@ import {
   queueDefenseRepair,
 } from './defense/planetaryDefense';
 import { accrueAllPlanetEconomies } from './economy/planetEconomy';
+import { createAlliance, joinAlliance, leaveAlliance } from './endgame/participation';
 import { enqueueEvent } from './eventQueue';
 import { getEnergyOutputByEmpire, getResearchEffectsForEmpire } from './factions/factionResearchEffects';
 import { canUseMechanicalDefinition } from './factions/sharedMechanicalCatalog';
@@ -446,6 +447,9 @@ function advanceTime(
 export function executeCommand(state: GameState, command: GameCommand): CommandResult<GameState> {
   switch (command.type) {
     case 'SCHEDULE_EVENT': return scheduleEvent(state, command);
+    case 'CREATE_ALLIANCE': return createAlliance(state, command);
+    case 'JOIN_ALLIANCE': return joinAlliance(state, command);
+    case 'LEAVE_ALLIANCE': return leaveAlliance(state, command);
     case 'QUEUE_BUILDING': return queueBuilding(state, command);
     case 'CANCEL_BUILDING': return cancelBuilding(state, command);
     case 'SET_PLANET_SPECIALIZATION': return setPlanetSpecialization(state, command);

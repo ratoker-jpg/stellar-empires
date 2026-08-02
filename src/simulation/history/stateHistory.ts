@@ -1,3 +1,4 @@
+import { ENDGAME_PARTICIPATION_HISTORY_LIMIT } from '../endgame/types';
 import type { GameCommand, GameState, CommandLogEntry, ExecutedGameEvent } from '../types';
 
 export const STATE_HISTORY_LIMITS = {
@@ -6,6 +7,7 @@ export const STATE_HISTORY_LIMITS = {
   marketTrades: 50,
   worldEvents: 128,
   arenaResults: 64,
+  allianceMembership: ENDGAME_PARTICIPATION_HISTORY_LIMIT,
   intelligenceObservationsPerEmpire: 64,
   intelligenceAlertsPerEmpire: 128,
 } as const;
@@ -37,6 +39,17 @@ export function compactGameStateHistory(state: GameState): GameState {
     ...state,
     commandLog: retainNewest(state.commandLog, STATE_HISTORY_LIMITS.commands),
     eventLog: retainNewest(state.eventLog, STATE_HISTORY_LIMITS.executedEvents),
+    ...(state.endgameParticipation === undefined
+      ? {}
+      : {
+          endgameParticipation: {
+            ...state.endgameParticipation,
+            membershipHistory: retainNewest(
+              state.endgameParticipation.membershipHistory,
+              STATE_HISTORY_LIMITS.allianceMembership,
+            ),
+          },
+        }),
     market: {
       ...state.market,
       trades: retainNewest(state.market.trades, STATE_HISTORY_LIMITS.marketTrades),

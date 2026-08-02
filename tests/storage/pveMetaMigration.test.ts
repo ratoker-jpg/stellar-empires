@@ -14,8 +14,12 @@ const SAVED_AT = '2026-08-02T12:00:00.000Z';
 
 function legacyV3Save() {
   const current = createInitialGameState('pve-meta-v16-migration');
-  const { pveMeta: _pveMeta, ...withoutPveMeta } = current;
-  const state = { ...withoutPveMeta, schemaVersion: 16 as const };
+  const {
+    pveMeta: _pveMeta,
+    endgameParticipation: _endgameParticipation,
+    ...withoutCurrentDomains
+  } = current;
+  const state = { ...withoutCurrentDomains, schemaVersion: 16 as const };
   const runtimeMetadata = createCampaignRuntimeMetadata(SAVED_AT);
   const envelope = {
     formatVersion: 3 as const,
@@ -35,25 +39,33 @@ function legacyV3Save() {
 }
 
 describe('PvE meta persistence migration', () => {
-  it('migrates v16/v3 to v17/v4 without changing existing campaign data', () => {
+  it('migrates v16/v3 to v18/v5 without changing existing campaign data', () => {
     const legacy = legacyV3Save();
     const parsed = parseSaveJson(JSON.stringify(legacy.save));
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
 
-    expect(parsed.value.formatVersion).toBe(4);
-    expect(parsed.value.state.schemaVersion).toBe(17);
+    expect(parsed.value.formatVersion).toBe(5);
+    expect(parsed.value.state.schemaVersion).toBe(18);
     expect(parsed.value.state.pveMeta).toEqual({
       reputations: legacy.current.empires.map((empireId) => ({ empireId, reputation: 0 })),
       activeArenaEntries: [],
       arenaHistory: [],
     });
-    const { schemaVersion: _schemaVersion, pveMeta: _migratedMeta, ...migratedExisting } = parsed.value.state;
+    expect(parsed.value.state.endgameParticipation?.participants.every(
+      (entry) => entry.allianceId === null && entry.soloEligible,
+    )).toBe(true);
+    const {
+      schemaVersion: _schemaVersion,
+      pveMeta: _migratedMeta,
+      endgameParticipation: _migratedParticipation,
+      ...migratedExisting
+    } = parsed.value.state;
     const { schemaVersion: _legacyVersion, ...legacyExisting } = legacy.state;
     expect(migratedExisting).toEqual(legacyExisting);
   });
 
-  it('preserves existing v17 reputation through a v4 round trip', () => {
+  it('preserves existing reputation through a v4 compatibility import', () => {
     const current = createInitialGameState('pve-meta-v17-roundtrip');
     const state = {
       ...current,
@@ -110,7 +122,7 @@ describe('PvE meta persistence migration', () => {
     }
   });
 
-  it('preserves an E2E logistics route through the v4 round trip', () => {
+  it('preserves an E2E logistics route through the current save round trip', () => {
     const initial = createE2eFixtureState(
       createInitialGameState('pve-meta-logistics-roundtrip'),
     );
@@ -134,7 +146,7 @@ describe('PvE meta persistence migration', () => {
     expect(created.ok).toBe(true);
     if (!created.ok) return;
 
-    const save = createSaveEnvelope('logistics-v4', created.value, SAVED_AT);
+    const save = createSaveEnvelope('logistics-v5', created.value, SAVED_AT);
     const parsed = parseSaveJson(serializeSave(save));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
@@ -145,7 +157,7 @@ describe('PvE meta persistence migration', () => {
   it('rejects future save and simulation versions instead of guessing', () => {
     const current = createInitialGameState('pve-meta-future-rejection');
     expect(parseSaveJson(JSON.stringify({
-      formatVersion: 5,
+      formatVersion: 6,
       slotId: 'future-format',
       savedAt: SAVED_AT,
       runtimeMetadata: createCampaignRuntimeMetadata(SAVED_AT),
@@ -154,12 +166,12 @@ describe('PvE meta persistence migration', () => {
     }))).toMatchObject({ ok: false, code: 'INVALID_SAVE_SHAPE' });
 
     expect(parseSaveJson(JSON.stringify({
-      formatVersion: 4,
+      formatVersion: 5,
       slotId: 'future-schema',
       savedAt: SAVED_AT,
       runtimeMetadata: createCampaignRuntimeMetadata(SAVED_AT),
       checksum: 'unused',
-      state: { ...current, schemaVersion: 18 },
+      state: { ...current, schemaVersion: 19 },
     }))).toMatchObject({ ok: false, code: 'INVALID_SAVE_SHAPE' });
   });
 });

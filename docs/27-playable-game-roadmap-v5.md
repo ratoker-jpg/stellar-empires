@@ -1,10 +1,9 @@
 # Stellar Empires — canonical roadmap to a complete playable game v5
 
-**Status:** Audit #152 complete; M8 stage 1 ready for validation/merge  
+**Status:** PR #153 `ALLIANCE-SOLO-FOUNDATION` active; implementation complete, final validation pending  
 **Updated:** 2026-08-02  
-**Last merged PR:** #151 `BOT-PVE-META-GATE` · `73ed5536cb994a78fe7cdd45a41e0240901d7fe1`  
-**Merged runtime baseline:** schema v17 / save format v4  
-**Active work:** Audit #152 `COMPLETE-ENDGAME-01`  
+**Last merged PR:** #152 `COMPLETE-ENDGAME-01` Audit · `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
+**Active runtime target:** schema v18 / save format v5  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -34,9 +33,11 @@ Nemexia references define systemic depth only. Stellar Empires keeps original te
 6. canonical product contracts;
 7. completed audits and old handoffs as history.
 
-## 3. Delivered baseline
+## 3. Delivered merged baseline
 
-The merged product includes deterministic schema-v17/save-v4 campaigns, immutable active/offline time, compressed finite progression, complete catalogs/runtime art, ordinary missions/intelligence/combat, demolition/destruction/recovery, coherent multi-colony economy/logistics, sustainable PvE, persistent reputation, local Arena mechanics, routed Operations UX and honest three-faction bot participation.
+Through PR #151 the product includes deterministic schema-v17/save-v4 campaigns, immutable active/offline time, compressed finite progression, complete catalogs/runtime art, ordinary missions/intelligence/combat, demolition/destruction/recovery, multi-colony economy/logistics, sustainable PvE, persistent reputation, local Arena mechanics, routed Operations UX and honest three-faction bot participation.
+
+Audit #152 accepted M8 stage 1 and split final objects and bot closure into later audits.
 
 ## 4. Completed batches
 
@@ -54,86 +55,76 @@ The merged product includes deterministic schema-v17/save-v4 campaigns, immutabl
 | M6a — Sustainable existing PvE | Audit #142; #143–#146 |
 | M6b — PvE meta foundation | Audit #147; #148–#151 |
 
-## 5. Exact M6b closure
+## 5. M8 staged delivery
 
-```text
-#147 Audit                         50835aeb2864b96e026a7202ad419368e934e47b
-→ #148 PVE-REPUTATION-FOUNDATION  430265b061764145e4e3ea1470d545f2ef82d0fa
-→ #149 ARENA-PVE-CHALLENGES       42c484426e850b84263d4eecab63ebbb3eaafb05
-→ #150 PVE-META-OPERATIONS-UX     39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
-→ #151 BOT-PVE-META-GATE          73ed5536cb994a78fe7cdd45a41e0240901d7fe1
-```
-
-Delivered:
-
-- PvE reputation and Recruit/Ranger/Vanguard/Warden tiers;
-- three public deterministic Arena challenges per six-hour cycle;
-- existing-resource entry, withdrawal, losses, survivors and rewards;
-- Operations Arena UX;
-- honest public-only bot entry through ordinary commands;
-- planet-destruction capability and 40% gas reserve;
-- exact 48-hour direct/chunk/save/offline equality.
-
-## 6. Release 1.0 definition
-
-A player can create and resume a deterministic campaign, build and understand a multi-colony economy, configure reliable logistics, unlock the catalog, execute sustainable missions, fight and recover colonies, use bounded PvE/meta systems, remain solo or participate in an alliance, participate in Solar War and reach a persisted victory or defeat.
-
-Bots must use the same commands, resources, timing and information classes. Save/load/offline partitions must preserve deterministic outcomes.
-
-## 7. M8 audit decision
-
-M8 is split because three risk surfaces are not safely reviewable as one batch:
+M8 is split because persistence/participation, terminal closure and bot information parity are distinct high-risk surfaces.
 
 ### Stage 1 — `COMPLETE-ENDGAME-01`
 
-Audit #152 authorizes exactly four implementation PRs:
-
 ```text
-#153 ALLIANCE-SOLO-FOUNDATION
+#152 Audit d777a619109d4a9bfc8e5129bf4c525f3327b9b6
+→ #153 ALLIANCE-SOLO-FOUNDATION — active
 → #154 SOLAR-WAR-PARTICIPATION
 → #155 ENDGAME-OPERATIONS-UX
 → #156 ENDGAME-PARTICIPATION-GATE
 ```
 
-Outcome:
+Exactly four implementation PRs are authorized.
 
-- optional public/open local alliance membership;
-- explicit valid solo path;
+PR #153 delivers:
+
 - one controlled schema v18/save v5 migration;
-- deterministic 24-hour Solar War cycle using existing fleets, combat and catalogs;
+- one persisted solo-eligible participant per empire;
+- optional public/open local alliance membership;
+- stable deterministic alliance IDs and normalized names;
+- ordinary create/join/leave commands for every empire;
+- deterministic empty-alliance removal;
+- checksum-covered 64-entry membership history;
+- no Solar War, UI, bot planning or final-object behavior.
+
+Stage-1 outcome after #156:
+
+- optional alliance/solo participation;
+- deterministic 24-hour Solar War using existing fleets, combat and catalogs;
 - Operations/Reports/HUD presentation;
 - exact migration/partition/Browser/performance closure.
 
 ### Stage 2 — `COMPLETE-ENDGAME-02`
 
-Not yet audited. Must cover existing locked Obelisks/Gates, resource contributions, ownership, attacks, destruction, persisted victory/defeat, exact terminal boundary, autosave/offline/reload and terminal UI.
+Not audited. Must cover existing locked Obelisks/Gates, resource contributions, ownership, attacks, destruction, persisted victory/defeat, exact terminal boundary, autosave/offline/reload and terminal UI.
 
 ### Stage 3 — `COMPLETE-ENDGAME-03`
 
-Not yet audited. Must cover bot public/allied/owned/hidden perception, ordinary-command alliance/Solar War/final-object behavior and final three-faction closure.
+Not audited. Must cover bot public/allied/owned/hidden perception, ordinary-command alliance/Solar War/final-object behavior and final three-faction closure.
 
-## 8. Milestone map
+## 6. Release 1.0 definition
+
+A player can create and resume a deterministic campaign, build and understand a multi-colony economy, configure logistics, unlock the catalog, execute sustainable missions, fight and recover colonies, use bounded PvE/meta systems, remain solo or participate in an alliance, participate in Solar War and reach a persisted victory or defeat.
+
+Bots must use the same commands, resources, timing and information classes. Save/load/offline partitions must preserve deterministic outcomes.
+
+## 7. Milestone map
 
 | Milestone | Status | Delivery |
 |---|---|---|
 | M1–M6b | completed | through PR #151 |
 | M7 — Autonomous bot parity | substantially delivered | economy/logistics/PvE/meta delivered; endgame parity deferred to M8 stage 3 |
-| M8.1 — Participation foundation | audited | Audit #152; #153–#156 after merge |
+| M8.1 — Participation foundation | implementation active | Audit #152; PR #153 active; #154–#156 authorized |
 | M8.2 — Final objects and terminal result | not audited | `COMPLETE-ENDGAME-02` |
 | M8.3 — Bot endgame closure | not audited | `COMPLETE-ENDGAME-03` |
-| M9 — Release candidate | not audited | balance, onboarding, QA, performance, release |
+| M9 — Release candidate | not audited | balance, onboarding, QA, performance and release |
 
-## 9. Key invariants
+## 8. Key invariants
 
 - current `main` is the only valid merged runtime baseline;
 - alliance membership is optional and solo completion remains legal;
 - exactly four implementation PRs are authorized by Audit #152;
-- schema v18/save v5 may be introduced only by #153 in this batch;
+- schema v18/save v5 is introduced only by #153 in this batch;
 - player and future bots use ordinary commands, owned resources and explicit visibility classes;
 - no new endgame catalog/assets are assumed necessary because faction Obelisk/Gate entries already exist;
 - no final-object or terminal mechanics enter stage 1;
 - progression, determinism, Browser, Graphify and performance gates remain mandatory.
 
-## 10. Immediate action
+## 9. Immediate action
 
-Validate the final Audit #152 documentation head, resolve review, squash merge and create only #153 from fresh `main`. Record exact Audit #152 squash SHA in #153.
+Validate the final PR #153 code+docs head, resolve review, squash merge, then create only PR #154 from fresh `main` and record the exact #153 squash SHA.
