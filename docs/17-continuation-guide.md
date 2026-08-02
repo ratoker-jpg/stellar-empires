@@ -1,17 +1,17 @@
 # AI Continuation Guide
 
-**Status:** PR #144 `PVE-OPERATIONS-INTELLIGENCE-UX` active  
+**Status:** PR #145 `BOT-PVE-OPERATIONS` active  
 **Updated:** 2026-08-02  
-**Last merged PR:** #143 `PVE-TARGET-RECOVERY`  
-**Verified main:** `e3d2c28385abd9772a18257eeb313bd8d45e581e`  
-**Active branch:** `agent/pve-operations-intelligence-ux`  
-**Next authorized PR after merge:** #145 `BOT-PVE-OPERATIONS`
+**Last merged PR:** #144 `PVE-OPERATIONS-INTELLIGENCE-UX`  
+**Verified main:** `dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a`  
+**Active branch:** `agent/bot-pve-operations`  
+**Next authorized PR after merge:** #146 `PVE-SUSTAINABILITY-GATE`
 
 ## Repository
 
-`ratoker-jpg/stellar-empires` · default branch `main` · GitHub Pages deployment.
+`ratoker-jpg/stellar-empires` · default branch `main`.
 
-Actual `main` and merged GitHub history override stale prose, abandoned branches and private chat memory.
+Actual `main` and merged GitHub history override stale prose, abandoned branches and chat memory.
 
 ## Required startup reading
 
@@ -21,7 +21,7 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 4. `docs/audits/current-batch-audit.md`
 5. `docs/audits/contracts/sustainable-pve-operations-01.md`
 6. `docs/audits/evidence/sustainable-pve-operations-01.md`
-7. `docs/changes/pr144-pve-operations-intelligence-ux.md`
+7. `docs/changes/pr145-bot-pve-operations.md`
 8. `docs/project-status.json`
 9. `docs/roadmap-pr-index.json`
 10. `docs/27-playable-game-roadmap-v5.md`
@@ -30,61 +30,69 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 ## M6a history and order
 
 ```text
-#142 Sustainable PvE Audit        81f1959b0bdbdd72d05dc21a2dce0a9e1470f010
-#143 PVE-TARGET-RECOVERY           e3d2c28385abd9772a18257eeb313bd8d45e581e
-#144 PVE-OPERATIONS-INTELLIGENCE-UX — active
-→ #145 BOT-PVE-OPERATIONS
+#142 Sustainable PvE Audit         81f1959b0bdbdd72d05dc21a2dce0a9e1470f010
+#143 PVE-TARGET-RECOVERY            e3d2c28385abd9772a18257eeb313bd8d45e581e
+#144 PVE-OPERATIONS-INTELLIGENCE-UX dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a
+#145 BOT-PVE-OPERATIONS — active
 → #146 PVE-SUSTAINABILITY-GATE
 ```
 
 Exactly four implementation PRs are authorized. No fifth PR is allowed.
 
-## PR #144 contract result
+## PR #145 contract result
 
-Delivered shared model:
+Delivered perception:
 
-- expedition positions;
-- space objects;
-- deterministic pirate-base baselines and current occupants;
-- active world-event targets;
-- stable availability/status/reason and coordinate ordering;
-- role/fleet, duration/fuel, yield/hazard/control, recovery, expiry and multiplier dimensions.
+- globally public expedition positions, objects, active event targets and pirate contacts;
+- complete own-state access;
+- no hidden foreign resources/fleets, unobserved defenses, future outcomes or unpublished reports.
 
-Delivered presentation:
+Delivered planner/scheduler:
 
-- Operations overview prioritizes actionable opportunities;
-- expedition/object/event routes consume the same selector;
-- controls have explicit labels;
-- ordinary commands and confirmation remain unchanged;
-- event reports use catalog names, human targets and mechanical effects;
-- passive recovery produces no fake reports or rewards;
-- Browser gates cover desktop/release/mobile viewports without horizontal overflow.
+- explorer, industrial and aggressive category policies over the canonical opportunity model;
+- ordinary fleet creation, expedition, object, targeted attack and recall commands;
+- ready inventory only, 40% gas reserve and no asset fabrication;
+- pirate-hunt requires active event, current level-3 intelligence, 120% safety and ordinary validation;
+- true recovery/high-threat actions remain before PvE;
+- at most one `pve` command per decision with auditable reason codes;
+- routine scheduler PvE unlocks after heavy-fleet at `planet-destruction`;
+- routine planning every 21,600 seconds; targeted events and already-running special operations react every 3,600 seconds;
+- the pure planner remains directly testable before scheduler unlock;
+- inherited colony logistics, determinism and performance preserved.
 
-Code head `09e6dec9817437d31110862738a6c91c005a9399` passed CI `30742965874`, Browser `30742965877` and Graphify `30742965865`.
+Code head `db29dbe0a69ba38eea6a2f3ba838604305ec0505` passed:
+
+```text
+CI             30746581384 — full suite/build, performance and 15-case matrix
+Browser E2E    30746581373 — success
+Graphify       30746581362 — success
+```
+
+Performance: 1 day `6.06s`; 7 days `29.81s`.
 
 ## Exact recovery action
 
-While #144 is open:
+While #145 is open:
 
-1. continue only `agent/pve-operations-intelligence-ux`;
-2. keep changes inside #144 selector, player UX, reports, tests and status docs;
-3. do not absorb #145 bot planning or #146 closure;
+1. continue only `agent/bot-pve-operations`;
+2. keep changes inside bot PvE perception/planning/scheduler/tests/status docs;
+3. do not absorb #146 closure or later meta work;
 4. run CI, Browser E2E and Graphify on the final head;
-5. resolve all review findings;
-6. squash merge #144 only when all gates are green.
+5. resolve every review finding;
+6. squash merge only when all gates are green.
 
-After #144 merges:
+After #145 merges:
 
 1. fetch exact squash SHA and fresh `main`;
-2. create only #145 `BOT-PVE-OPERATIONS`;
-3. make bots consume ordinary perception/commands and shared PvE truth;
-4. do not start #146 early.
+2. create only #146 `PVE-SUSTAINABILITY-GATE`;
+3. perform the authorized three-faction sustainability/closure gate;
+4. do not begin a new batch without a new audit.
 
 ## Hard stops
 
 - no fifth M6a implementation PR;
-- no schema v17/save format v4 without a replacement audit;
+- no schema v17/save format v4 without replacement audit;
 - no persisted PvE currency, reputation or telemetry;
-- no hidden-information exception for bots;
+- no hidden-information exception or fabricated bot assets;
 - no Arena, Admiral services, alliances or endgame;
 - no weakening of progression, determinism, performance or Browser gates.

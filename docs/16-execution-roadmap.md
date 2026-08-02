@@ -1,10 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** PR #144 `PVE-OPERATIONS-INTELLIGENCE-UX` active  
+**Status:** PR #145 `BOT-PVE-OPERATIONS` active  
 **Updated:** 2026-08-02  
-**Verified main:** `e3d2c28385abd9772a18257eeb313bd8d45e581e`  
-**Last merged PR:** #143 `PVE-TARGET-RECOVERY`  
-**Active implementation:** #144 `PVE-OPERATIONS-INTELLIGENCE-UX`
+**Verified main:** `dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a`  
+**Last merged PR:** #144 `PVE-OPERATIONS-INTELLIGENCE-UX`  
+**Active implementation:** #145 `BOT-PVE-OPERATIONS`
 
 ## Authoritative files
 
@@ -15,7 +15,7 @@ docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
 docs/audits/contracts/sustainable-pve-operations-01.md
 docs/audits/evidence/sustainable-pve-operations-01.md
-docs/changes/pr144-pve-operations-intelligence-ux.md
+docs/changes/pr145-bot-pve-operations.md
 docs/27-playable-game-roadmap-v5.md
 docs/project-status.json
 docs/roadmap-pr-index.json
@@ -26,58 +26,67 @@ docs/roadmap-pr-index.json
 - #101–#105: complete catalog runtime art;
 - #106–#110: Universe navigation/action gate;
 - #111–#115: coherent application shell;
-- #116–#120: ordinary missions, intelligence and honest bots;
-- #121–#123: planet demolition, destruction and recovery;
-- #124–#129: local campaign contract and navigation/usability closure;
-- #130–#135: immutable campaign time and compressed progression;
-- #137–#141: coherent multi-colony economy/logistics and honest bot logistics;
-- #142: sustainable existing-PvE audit;
-- #143: deterministic object/pirate recovery and mechanical pirate-hunt.
+- #116–#120: ordinary missions and intelligence;
+- #121–#123: demolition, destruction and recovery;
+- #124–#135: local campaign contract, immutable time and compressed progression;
+- #137–#141: coherent multi-colony economy/logistics and bot logistics;
+- #142: sustainable PvE audit;
+- #143: deterministic target recovery;
+- #144: canonical PvE opportunity intelligence and routed player UX.
 
 ## Active M6a sequence
 
 ```text
 #142 Audit — merged
 → #143 PVE-TARGET-RECOVERY — merged
-→ #144 PVE-OPERATIONS-INTELLIGENCE-UX — active
-→ #145 BOT-PVE-OPERATIONS
+→ #144 PVE-OPERATIONS-INTELLIGENCE-UX — merged
+→ #145 BOT-PVE-OPERATIONS — active
 → #146 PVE-SUSTAINABILITY-GATE
 ```
 
-Exactly four implementation PRs are authorized; no fifth PR is allowed.
+Exactly four implementation PRs are authorized. No fifth PR is allowed.
 
-## Active PR #144 result
+## Active PR #145 result
 
-#144 creates a pure canonical opportunity model for expeditions, objects, pirate bases and active events. It exposes deterministic availability, current operation, recovery, role/fleet, duration/fuel, yield/hazard/control and reward/threat truth.
+#145 lets bots compete in existing PvE loops without privileged state:
 
-Existing routed Operations modes consume this model without new routes or command paths. World-event reports use catalog titles, readable targets and real mechanical effects. Passive recovery produces no fake reports or rewards.
+- public-only PvE perception;
+- personality-aware canonical opportunity selection;
+- ordinary fleet creation, expedition, object, legal pirate attack and recall commands;
+- ready-inventory-only fleet formation and 40% gas reserve;
+- current level-3 intelligence plus 120% safety for pirate-hunt;
+- real recovery/high-threat work ahead of PvE;
+- at most one `pve` command per decision;
+- routine scheduler PvE unlock after heavy-fleet at `planet-destruction`;
+- six-hour routine cadence and one-hour reaction to targeted events or active operations;
+- inherited role/logistics, determinism and performance gates retained.
 
-Code head `09e6dec9817437d31110862738a6c91c005a9399` passed:
+Code head `db29dbe0a69ba38eea6a2f3ba838604305ec0505` passed:
 
 ```text
-CI             30742965874
-Browser E2E    30742965877
-Graphify       30742965865
+CI             30746581384 — full suite/build, performance and 15-case progression matrix
+Browser E2E    30746581373 — success
+Graphify       30746581362 — success
 ```
 
-Browser gates cover 1440×900, 1920×1080 and 390×844 with no horizontal overflow.
+Performance: 1 day `6.06s`; 7 days `29.81s`.
 
 ## Compatibility boundary
 
 - schema v16/save format v3 retained;
-- #143 lifecycle consumed, not changed;
-- no bot mission selection from #145;
-- no #146 closure work;
-- no new route family, persisted PvE meta, currency or reputation;
+- no hidden-information exception or fabricated assets;
+- no recovery/player UX duplication;
+- no persisted PvE meta, currency or reputation;
+- no #146 closure absorption;
 - no Arena, Admiral services, alliances, endgame or global rebalance.
 
 ## Immediate action
 
 ```text
-validate final #144 documentation head
+validate final #145 documentation head
 → CI + Browser E2E + Graphify
 → resolve review
-→ mark ready and squash merge #144
+→ mark ready and squash merge #145
 → fetch fresh main and exact merge SHA
-→ create only #145 BOT-PVE-OPERATIONS
+→ create only #146 PVE-SUSTAINABILITY-GATE
 ```

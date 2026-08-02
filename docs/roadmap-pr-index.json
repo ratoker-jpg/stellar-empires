@@ -6,19 +6,19 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 143,
-    "mergeSha": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
-    "runtimeBaselinePr": 143,
-    "runtimeBaselineSha": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
+    "lastMergedPr": 144,
+    "mergeSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
+    "runtimeBaselinePr": 144,
+    "runtimeBaselineSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
     "auditBaselineSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
   },
-  "activePr": 144,
+  "activePr": 145,
   "activePrKind": "implementation",
   "activeBatchId": "SUSTAINABLE-PVE-OPERATIONS-01",
-  "activeWorkItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
-  "nextPr": 145,
-  "nextPrKind": "implementation",
-  "nextWorkItem": "BOT-PVE-OPERATIONS",
+  "activeWorkItem": "BOT-PVE-OPERATIONS",
+  "nextPr": 146,
+  "nextPrKind": "implementation-closure",
+  "nextWorkItem": "PVE-SUSTAINABILITY-GATE",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -138,12 +138,13 @@
       "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
       "complexity": "medium",
       "plannedPrs": [143, 144, 145, 146],
-      "completedPrs": [143],
+      "completedPrs": [143, 144],
       "implementationMergeShas": {
-        "143": "e3d2c28385abd9772a18257eeb313bd8d45e581e"
+        "143": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
+        "144": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a"
       },
-      "activePr": 144,
-      "validatedCodeHead": "09e6dec9817437d31110862738a6c91c005a9399",
+      "activePr": 145,
+      "validatedCodeHead": "db29dbe0a69ba38eea6a2f3ba838604305ec0505",
       "contract": "docs/audits/contracts/sustainable-pve-operations-01.md",
       "evidence": "docs/audits/evidence/sustainable-pve-operations-01.md",
       "workItems": [
@@ -197,18 +198,24 @@
       "kind": "implementation",
       "workItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
       "title": "Unify PvE operations intelligence",
-      "status": "active",
-      "validatedCodeHead": "09e6dec9817437d31110862738a6c91c005a9399",
-      "ciRun": 30742965874,
-      "browserRun": 30742965877,
-      "graphifyRun": 30742965865
+      "status": "merged",
+      "mergeSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a"
     },
     {
       "number": 145,
       "kind": "implementation",
       "workItem": "BOT-PVE-OPERATIONS",
       "title": "Add honest bot PvE operations",
-      "status": "blocked-until-pr-144-merge"
+      "status": "active",
+      "validatedCodeHead": "db29dbe0a69ba38eea6a2f3ba838604305ec0505",
+      "ciRun": 30746581384,
+      "browserRun": 30746581373,
+      "graphifyRun": 30746581362,
+      "oneDayPerformanceMilliseconds": 6064,
+      "sevenDayPerformanceMilliseconds": 29806,
+      "progressionMatrixCases": 15,
+      "progressionPhaseViolations": 0,
+      "routineUnlockPhase": "planet-destruction"
     },
     {
       "number": 146,
@@ -218,5 +225,5 @@
       "status": "blocked-until-pr-145-merge"
     }
   ],
-  "nextAction": "Validate and squash merge PR #144, then create only PR #145 BOT-PVE-OPERATIONS from fresh main."
+  "nextAction": "Validate and squash merge PR #145, then create only PR #146 PVE-SUSTAINABILITY-GATE from fresh main."
 }

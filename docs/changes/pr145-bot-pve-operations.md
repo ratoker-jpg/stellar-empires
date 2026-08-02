@@ -1,0 +1,63 @@
+# PR #145 — BOT-PVE-OPERATIONS
+
+**Status:** implementation complete; final documentation-head validation pending  
+**Baseline:** PR #144 · `dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a`  
+**Code head:** `db29dbe0a69ba38eea6a2f3ba838604305ec0505`  
+**Schema/save:** v16 / v3 unchanged
+
+## Delivered
+
+- bot perception exposes only globally public PvE data: free expedition positions, public space-object fields, active event targets and pirate contacts;
+- `planBotPveOperations` consumes the canonical PvE opportunity model with explorer, industrial and aggressive policies;
+- bots use ordinary `CREATE_FLEET`, `START_EXPEDITION`, `START_SPACE_OBJECT_MISSION`, targeted `SEND_FLEET` and invalid-operation `RECALL_FLEET` commands;
+- fleet creation consumes only ready owned inventory and never fabricates hulls, fuel or resources;
+- expedition/object missions preserve a 40% colony gas reserve;
+- pirate-hunt attacks require an active event, current level-3 intelligence, the ordinary 120% safety threshold and the normal attack validator;
+- real recovery/high-threat actions remain ahead of PvE, while ordinary fleet development stays after PvE;
+- scheduler source `pve` emits at most one command per empire decision and records auditable blocked reasons;
+- inherited colony-role and route maintenance remain deterministic;
+- routine scheduler PvE unlocks after heavy-fleet at the `planet-destruction` phase, protecting the permanent compressed-progression matrix;
+- routine PvE planning is bounded to six campaign hours; active `pirate-hunt`, `mineral-bloom` and already-running special operations retain hourly reaction;
+- the pure planner remains directly testable before that scheduler unlock;
+- hidden player resources, fleets, defenses and unpublished outcomes do not affect bot PvE plans.
+
+## Validation
+
+Code-head evidence:
+
+```text
+CI             30746581384 — full suite/build, performance and 15-case progression matrix success
+Browser E2E    30746581373 — success
+Graphify       30746581362 — success
+```
+
+Measured catch-up:
+
+```text
+1 campaign day   6.06 s < 15 s budget
+7 campaign days 29.81 s < 30 s budget
+```
+
+Focused gates cover:
+
+- expedition and space-object ordinary command execution;
+- specialist fleet creation from ready inventory;
+- legal aggressive pirate-hunt attack;
+- at most one accepted `pve` command per scheduler decision;
+- public perception redaction;
+- hidden-player-state invariance;
+- inherited multi-colony logistics and campaign partition gates;
+- all 15 compressed progression cases with zero phase violations.
+
+## Exclusions
+
+- no schema/save-format change;
+- no new production authority or hidden-information exception;
+- no target lifecycle or player UX reimplementation;
+- no persisted PvE telemetry, currency or reputation;
+- no Arena, Admiral services, alliances or endgame;
+- no #146 batch-closure work.
+
+## Next authorized action
+
+Validate the final documentation head, resolve review and squash merge #145. Then create only #146 `PVE-SUSTAINABILITY-GATE` from fresh `main`.
