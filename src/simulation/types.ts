@@ -5,6 +5,7 @@ import type { FleetFormation, FleetTargetPriority } from './combat/fleetDoctrine
 import type { BattleReport } from './combat/types';
 import type { CommandDoctrineId, EmpireCommandState } from './command/types';
 import type { ResourceCost, ResourceId } from './economy/types';
+import type { EndgameParticipationState } from './endgame/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
 import type { EmpireIntelligenceState } from './intelligence/types';
@@ -128,6 +129,20 @@ export type GameCommand =
       readonly type: 'SCHEDULE_EVENT';
       readonly executeAt: number;
       readonly payload: GameEventPayload;
+    }
+  | {
+      readonly type: 'CREATE_ALLIANCE';
+      readonly empireId: string;
+      readonly name: string;
+    }
+  | {
+      readonly type: 'JOIN_ALLIANCE';
+      readonly empireId: string;
+      readonly allianceId: string;
+    }
+  | {
+      readonly type: 'LEAVE_ALLIANCE';
+      readonly empireId: string;
     }
   | {
       readonly type: 'QUEUE_BUILDING';
@@ -312,7 +327,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 16 | 17;
+  readonly schemaVersion: 16 | 17 | 18;
   readonly seed: number;
   readonly campaignSettings: CampaignSettings;
   readonly clock: GameClock;
@@ -332,6 +347,7 @@ export interface GameState {
   readonly strategicResources: readonly EmpireStrategicResources[];
   readonly worldEvents: WorldEventState;
   readonly pveMeta?: PveMetaState;
+  readonly endgameParticipation: EndgameParticipationState;
   readonly botAutomation: BotAutomationState;
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
