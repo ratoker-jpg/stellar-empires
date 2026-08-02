@@ -6,98 +6,33 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 150,
-    "mergeSha": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63",
-    "runtimeBaselinePr": 150,
-    "runtimeBaselineSha": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63",
+    "lastMergedPr": 151,
+    "mergeSha": "73ed5536cb994a78fe7cdd45a41e0240901d7fe1",
+    "runtimeBaselinePr": 151,
+    "runtimeBaselineSha": "73ed5536cb994a78fe7cdd45a41e0240901d7fe1",
     "lastCompletedAuditPr": 147,
     "lastCompletedAuditMergeSha": "50835aeb2864b96e026a7202ad419368e934e47b"
   },
-  "activePr": 151,
-  "activePrKind": "implementation-closure",
-  "activeBatchId": "PVE-META-FOUNDATION-01",
-  "activeWorkItem": "BOT-PVE-META-GATE",
-  "activeBranch": "agent/bot-pve-meta-gate",
-  "activeCodeHead": "016065dce161309899e0893bfa27c85bb2ba2e1c",
-  "implementationAuthorized": true,
-  "nextPr": null,
-  "nextPrKind": "audit",
-  "nextWorkItem": "NEXT-BATCH-AUDIT",
+  "activePr": 152,
+  "activePrKind": "audit",
+  "activeBatchId": "COMPLETE-ENDGAME-01",
+  "activeWorkItem": "COMPLETE-ENDGAME-01-AUDIT",
+  "activeBranch": "agent/audit-complete-endgame",
+  "activeCodeHead": null,
+  "implementationAuthorized": false,
+  "nextPr": 153,
+  "nextPrKind": "implementation",
+  "nextWorkItem": "ALLIANCE-SOLO-FOUNDATION",
   "phases": [
-    {
-      "id": "delivered-foundation-and-catalogs",
-      "startPr": 1,
-      "endPr": 100,
-      "status": "completed",
-      "outcome": "Deterministic PvE foundation, complete mechanical catalogs, canonical roadmap and audit-first delivery protocol"
-    },
-    {
-      "id": "catalog-runtime-integration",
-      "auditPr": 101,
-      "startPr": 102,
-      "endPr": 105,
-      "status": "completed",
-      "archive": "docs/audits/completed/asset-runtime-integration-01.md"
-    },
-    {
-      "id": "universe-navigation",
-      "auditPr": 106,
-      "startPr": 107,
-      "endPr": 110,
-      "status": "completed",
-      "archive": "docs/audits/completed/universe-navigation-01.md"
-    },
-    {
-      "id": "coherent-ui-shell",
-      "auditPr": 111,
-      "startPr": 112,
-      "endPr": 115,
-      "status": "completed-technical",
-      "archive": "docs/audits/completed/coherent-ui-shell-01.md"
-    },
-    {
-      "id": "ordinary-missions-intelligence",
-      "auditPr": 116,
-      "startPr": 117,
-      "endPr": 120,
-      "status": "completed",
-      "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01",
-      "archive": "docs/audits/completed/ordinary-missions-intelligence-01.md"
-    },
-    {
-      "id": "planet-demolition-destruction",
-      "auditPr": 121,
-      "startPr": 122,
-      "endPr": 123,
-      "status": "completed",
-      "batchId": "PLANET-DEMOLITION-DESTRUCTION-01",
-      "archive": "docs/audits/completed/planet-demolition-destruction-01.md"
-    },
-    {
-      "id": "local-campaign-product-contract",
-      "documentationPr": 124,
-      "status": "completed",
-      "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152"
-    },
-    {
-      "id": "navigation-usability-repair",
-      "auditPr": 125,
-      "startPr": 126,
-      "endPr": 129,
-      "status": "completed",
-      "batchId": "NAVIGATION-USABILITY-01",
-      "archive": "docs/audits/completed/navigation-usability-01.md"
-    },
-    {
-      "id": "local-campaign-time-pacing",
-      "auditPr": 130,
-      "startPr": 131,
-      "endPr": 132,
-      "status": "completed",
-      "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01",
-      "complexity": "heavy",
-      "archive": "docs/audits/completed/local-campaign-time-pacing-01.md"
-    },
+    {"id": "delivered-foundation-and-catalogs", "startPr": 1, "endPr": 100, "status": "completed", "outcome": "Deterministic PvE foundation, catalogs, roadmap and audit-first protocol"},
+    {"id": "catalog-runtime-integration", "auditPr": 101, "startPr": 102, "endPr": 105, "status": "completed", "archive": "docs/audits/completed/asset-runtime-integration-01.md"},
+    {"id": "universe-navigation", "auditPr": 106, "startPr": 107, "endPr": 110, "status": "completed", "archive": "docs/audits/completed/universe-navigation-01.md"},
+    {"id": "coherent-ui-shell", "auditPr": 111, "startPr": 112, "endPr": 115, "status": "completed-technical", "archive": "docs/audits/completed/coherent-ui-shell-01.md"},
+    {"id": "ordinary-missions-intelligence", "auditPr": 116, "startPr": 117, "endPr": 120, "status": "completed", "batchId": "ORDINARY-MISSIONS-INTELLIGENCE-01", "archive": "docs/audits/completed/ordinary-missions-intelligence-01.md"},
+    {"id": "planet-demolition-destruction", "auditPr": 121, "startPr": 122, "endPr": 123, "status": "completed", "batchId": "PLANET-DEMOLITION-DESTRUCTION-01", "complexity": "heavy", "archive": "docs/audits/completed/planet-demolition-destruction-01.md"},
+    {"id": "local-campaign-product-contract", "documentationPr": 124, "status": "completed", "mergeSha": "cdd112c544ce8d37af17e938867d4588bedcf152"},
+    {"id": "navigation-usability-repair", "auditPr": 125, "startPr": 126, "endPr": 129, "status": "completed", "batchId": "NAVIGATION-USABILITY-01", "archive": "docs/audits/completed/navigation-usability-01.md"},
+    {"id": "local-campaign-time-pacing", "auditPr": 130, "startPr": 131, "endPr": 132, "status": "completed", "batchId": "LOCAL-CAMPAIGN-TIME-PACING-01", "complexity": "heavy", "archive": "docs/audits/completed/local-campaign-time-pacing-01.md"},
     {
       "id": "campaign-progression-balance",
       "auditPr": 133,
@@ -155,94 +90,47 @@
       "auditMergeSha": "50835aeb2864b96e026a7202ad419368e934e47b",
       "startPr": 148,
       "endPr": 151,
-      "status": "final-pr-active",
+      "status": "completed",
       "batchId": "PVE-META-FOUNDATION-01",
       "complexity": "medium",
-      "plannedPrs": [148, 149, 150, 151],
-      "completedPrs": [148, 149, 150],
+      "completedPrs": [148, 149, 150, 151],
       "implementationMergeShas": {
         "148": "430265b061764145e4e3ea1470d545f2ef82d0fa",
         "149": "42c484426e850b84263d4eecab63ebbb3eaafb05",
-        "150": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63"
+        "150": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63",
+        "151": "73ed5536cb994a78fe7cdd45a41e0240901d7fe1"
       },
-      "activePr": 151,
-      "activeValidatedHead": "016065dce161309899e0893bfa27c85bb2ba2e1c",
-      "implementationAuthorized": true,
-      "workItems": [
-        "PVE-REPUTATION-FOUNDATION",
-        "ARENA-PVE-CHALLENGES",
-        "PVE-META-OPERATIONS-UX",
-        "BOT-PVE-META-GATE"
-      ],
-      "targetStateSchema": 17,
-      "targetSaveFormat": 4,
-      "contract": "docs/audits/contracts/pve-meta-foundation-01.md",
-      "evidence": "docs/audits/evidence/pve-meta-foundation-01.md",
-      "archive": "docs/audits/completed/pve-meta-foundation-01.md",
-      "outcome": "Persistent reputation, local deterministic Arena, routed Operations UX, honest bot parity and exact 48-hour partition closure"
+      "archive": "docs/audits/completed/pve-meta-foundation-01.md"
     },
     {
-      "id": "alliances-and-endgame",
-      "auditPr": null,
-      "status": "not-audited",
-      "outcome": "Alliances, Solar War, Obelisks, Gates and complete victory/defeat"
+      "id": "complete-endgame-participation",
+      "auditPr": 152,
+      "auditMergeSha": null,
+      "startPr": 153,
+      "endPr": 156,
+      "status": "audit-validation",
+      "batchId": "COMPLETE-ENDGAME-01",
+      "complexity": "medium",
+      "plannedPrs": [153, 154, 155, 156],
+      "completedPrs": [],
+      "implementationAuthorized": false,
+      "workItems": ["ALLIANCE-SOLO-FOUNDATION", "SOLAR-WAR-PARTICIPATION", "ENDGAME-OPERATIONS-UX", "ENDGAME-PARTICIPATION-GATE"],
+      "targetStateSchema": 18,
+      "targetSaveFormat": 5,
+      "contract": "docs/audits/contracts/complete-endgame-01.md",
+      "evidence": "docs/audits/evidence/complete-endgame-01.md",
+      "archive": "docs/audits/completed/complete-endgame-01.md"
     },
-    {
-      "id": "release-candidate",
-      "auditPr": null,
-      "status": "not-audited",
-      "outcome": "Balance, onboarding, QA, performance and reproducible Pages release"
-    }
+    {"id": "complete-endgame-final-objects-terminal", "auditPr": null, "status": "not-audited", "batchId": "COMPLETE-ENDGAME-02", "outcome": "Obelisks, Gates, final-object combat and persisted terminal victory/defeat"},
+    {"id": "complete-endgame-bot-closure", "auditPr": null, "status": "not-audited", "batchId": "COMPLETE-ENDGAME-03", "outcome": "Allied visibility, ordinary-command bot endgame parity and final closure"},
+    {"id": "release-candidate", "auditPr": null, "status": "not-audited", "outcome": "Balance, onboarding, QA, performance and Pages release"}
   ],
   "planned": [
-    {
-      "number": 147,
-      "kind": "audit",
-      "batchId": "PVE-META-FOUNDATION-01",
-      "workItem": "PVE-META-FOUNDATION-01-AUDIT",
-      "title": "Audit PvE meta foundation",
-      "status": "merged",
-      "mergeSha": "50835aeb2864b96e026a7202ad419368e934e47b",
-      "implementationAuthorized": true
-    },
-    {
-      "number": 148,
-      "kind": "implementation",
-      "workItem": "PVE-REPUTATION-FOUNDATION",
-      "title": "Add persistent PvE reputation",
-      "status": "merged",
-      "mergeSha": "430265b061764145e4e3ea1470d545f2ef82d0fa",
-      "targetStateSchema": 17,
-      "targetSaveFormat": 4
-    },
-    {
-      "number": 149,
-      "kind": "implementation",
-      "workItem": "ARENA-PVE-CHALLENGES",
-      "title": "Add local Arena PvE challenges",
-      "status": "merged",
-      "mergeSha": "42c484426e850b84263d4eecab63ebbb3eaafb05"
-    },
-    {
-      "number": 150,
-      "kind": "implementation",
-      "workItem": "PVE-META-OPERATIONS-UX",
-      "title": "Expose PvE meta in Operations",
-      "status": "merged",
-      "mergeSha": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63"
-    },
-    {
-      "number": 151,
-      "kind": "implementation-closure",
-      "workItem": "BOT-PVE-META-GATE",
-      "title": "Close honest PvE meta participation",
-      "status": "active",
-      "validatedCodeHead": "016065dce161309899e0893bfa27c85bb2ba2e1c",
-      "ciRun": 30762140802,
-      "browserRun": 30762140792,
-      "graphifyRun": 30762140796,
-      "finalDocumentationHeadRequired": true
-    }
+    {"number": 152, "kind": "audit", "batchId": "COMPLETE-ENDGAME-01", "workItem": "COMPLETE-ENDGAME-01-AUDIT", "title": "Audit complete campaign endgame", "status": "validation", "implementationAuthorized": false},
+    {"number": 153, "kind": "implementation", "workItem": "ALLIANCE-SOLO-FOUNDATION", "title": "Add optional alliance and solo foundation", "status": "blocked-until-audit-merge", "targetStateSchema": 18, "targetSaveFormat": 5},
+    {"number": 154, "kind": "implementation", "workItem": "SOLAR-WAR-PARTICIPATION", "title": "Add deterministic Solar War participation", "status": "planned"},
+    {"number": 155, "kind": "implementation", "workItem": "ENDGAME-OPERATIONS-UX", "title": "Expose endgame participation in Operations", "status": "planned"},
+    {"number": 156, "kind": "implementation-closure", "workItem": "ENDGAME-PARTICIPATION-GATE", "title": "Close endgame participation foundation", "status": "planned"}
   ],
-  "nextAction": "Validate final PR #151 code+docs head, resolve review and squash merge. The immediately following PR must be Audit-only, synchronize exact #151 squash SHA and authorize no implementation until accepted."
+  "nextAction": "Validate and squash merge Audit #152, then create only PR #153 from fresh main and record the exact Audit #152 squash SHA."
 }
