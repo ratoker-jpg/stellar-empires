@@ -18,7 +18,7 @@
   "activeBatchId": "COMPLETE-ENDGAME-01",
   "activeWorkItem": "ALLIANCE-SOLO-FOUNDATION",
   "activeBranch": "agent/alliance-solo-foundation",
-  "activeCodeHead": "a49211e248ddc3a634e7112336bdee77edb2e02b",
+  "activeCodeHead": "514940cae7850cb348ad500a07846569be30d4eb",
   "implementationAuthorized": true,
   "nextPr": 154,
   "nextPrKind": "implementation",
@@ -114,7 +114,7 @@
       "plannedPrs": [153, 154, 155, 156],
       "completedPrs": [],
       "activePr": 153,
-      "activeValidatedCodeHead": "a49211e248ddc3a634e7112336bdee77edb2e02b",
+      "activeValidatedCodeHead": "514940cae7850cb348ad500a07846569be30d4eb",
       "implementationAuthorized": true,
       "workItems": ["ALLIANCE-SOLO-FOUNDATION", "SOLAR-WAR-PARTICIPATION", "ENDGAME-OPERATIONS-UX", "ENDGAME-PARTICIPATION-GATE"],
       "targetStateSchema": 18,
@@ -129,7 +129,7 @@
   ],
   "planned": [
     {"number": 152, "kind": "audit", "batchId": "COMPLETE-ENDGAME-01", "workItem": "COMPLETE-ENDGAME-01-AUDIT", "title": "Audit complete campaign endgame", "status": "merged", "mergeSha": "d777a619109d4a9bfc8e5129bf4c525f3327b9b6", "implementationAuthorized": true},
-    {"number": 153, "kind": "implementation", "workItem": "ALLIANCE-SOLO-FOUNDATION", "title": "Add optional alliance and solo foundation", "status": "active", "validatedCodeHead": "a49211e248ddc3a634e7112336bdee77edb2e02b", "targetStateSchema": 18, "targetSaveFormat": 5},
+    {"number": 153, "kind": "implementation", "workItem": "ALLIANCE-SOLO-FOUNDATION", "title": "Add optional alliance and solo foundation", "status": "active", "validatedCodeHead": "514940cae7850cb348ad500a07846569be30d4eb", "targetStateSchema": 18, "targetSaveFormat": 5},
     {"number": 154, "kind": "implementation", "workItem": "SOLAR-WAR-PARTICIPATION", "title": "Add deterministic Solar War participation", "status": "blocked-until-153-merge"},
     {"number": 155, "kind": "implementation", "workItem": "ENDGAME-OPERATIONS-UX", "title": "Expose endgame participation in Operations", "status": "planned"},
     {"number": 156, "kind": "implementation-closure", "workItem": "ENDGAME-PARTICIPATION-GATE", "title": "Close endgame participation foundation", "status": "planned"}
