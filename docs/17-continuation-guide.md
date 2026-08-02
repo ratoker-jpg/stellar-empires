@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** Audit PR #147 active; no implementation yet  
+**Status:** PR #148 `PVE-REPUTATION-FOUNDATION` active  
 **Updated:** 2026-08-02  
-**Last merged PR:** #146 `PVE-SUSTAINABILITY-GATE`  
-**Verified main:** `392abb2bf27267fef9777ff35eb96555941a42f3`  
-**Active branch:** `agent/audit-next-playable-batch`  
-**Next proposed PR after audit acceptance:** #148 `PVE-REPUTATION-FOUNDATION`
+**Last merged PR:** #147 `PVE-META-FOUNDATION-01` Audit  
+**Verified main:** `50835aeb2864b96e026a7202ad419368e934e47b`  
+**Active branch:** `agent/pve-reputation-foundation`  
+**Next authorized PR after merge:** #149 `ARENA-PVE-CHALLENGES`
 
 ## Repository
 
@@ -21,92 +21,71 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 4. `docs/audits/current-batch-audit.md`
 5. `docs/audits/contracts/pve-meta-foundation-01.md`
 6. `docs/audits/evidence/pve-meta-foundation-01.md`
-7. `docs/changes/pr147-pve-meta-foundation-audit.md`
-8. `docs/audits/completed/sustainable-pve-operations-01.md`
-9. `docs/project-status.json`
-10. `docs/roadmap-pr-index.json`
-11. `docs/27-playable-game-roadmap-v5.md`
-12. latest merged PRs, open PRs and actual `main`
+7. `docs/changes/pr148-pve-reputation-foundation.md`
+8. `docs/project-status.json`
+9. `docs/roadmap-pr-index.json`
+10. `docs/27-playable-game-roadmap-v5.md`
+11. latest merged PRs, open PRs and actual `main`
 
-## Exact completed M6a history
-
-```text
-#142 Sustainable PvE Audit         81f1959b0bdbdd72d05dc21a2dce0a9e1470f010
-#143 PVE-TARGET-RECOVERY            e3d2c28385abd9772a18257eeb313bd8d45e581e
-#144 PVE-OPERATIONS-INTELLIGENCE-UX dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a
-#145 BOT-PVE-OPERATIONS             62aae31e2ad5e4ad04385a5cd94f77a70579d72f
-#146 PVE-SUSTAINABILITY-GATE        392abb2bf27267fef9777ff35eb96555941a42f3
-```
-
-Final #146 gates:
+## Accepted M6b order
 
 ```text
-CI             30752151413 — success
-Browser E2E    30752151392 — success
-Graphify       30752151378 — success
-1 day           5.288 s < 15 s
-7 days         23.329 s < 30 s
-```
-
-## Audit #147 result
-
-The audit proposes a bounded M6b batch rather than a broad meta-system clone.
-
-Accepted:
-
-- persisted PvE reputation and derived tiers;
-- one controlled schema v17/save v4 migration;
-- public local Arena challenges using existing fleets, resources and deterministic combat;
-- extension of the canonical Operations workspace;
-- same-command honest bot participation;
-- 48-hour three-faction closure.
-
-Rejected/deferred:
-
-- separate PvE currency;
-- Admiral services;
-- multiplayer/PvP Arena, rankings or seasons;
-- new mechanical catalog entries;
-- alliances, Solar War, Obelisks, Gates or victory/defeat;
-- global economy/progression rebalance.
-
-## Proposed order
-
-```text
-#147 PVE-META-FOUNDATION-01 Audit — active
-→ #148 PVE-REPUTATION-FOUNDATION
+#147 PVE-META-FOUNDATION-01 Audit 50835aeb2864b96e026a7202ad419368e934e47b
+→ #148 PVE-REPUTATION-FOUNDATION — active
 → #149 ARENA-PVE-CHALLENGES
 → #150 PVE-META-OPERATIONS-UX
 → #151 BOT-PVE-META-GATE
 ```
 
-Exactly four implementation PRs are proposed. None is authorized until #147 is accepted.
+Exactly four implementation PRs are authorized. No fifth PR may be added.
+
+## PR #148 implementation result
+
+Delivered:
+
+- `pveMeta` domain with one reputation score per empire;
+- Recruit/Ranger/Vanguard/Warden tiers at 0/100/300/700;
+- expedition +10, positive-yield object mission +15, pirate destruction +30 and active target bonus +20;
+- zero awards for empty, failed, recalled, passive and duplicate transitions;
+- schema v17 and save format v4;
+- deterministic v16/v3 migration with zero reputation and no active Arena entry;
+- legacy v1/v2 state checksums and v3 envelope checksums retained;
+- malformed future versions rejected;
+- existing rewards, combat, mission timing, progression and performance limits unchanged.
+
+Not delivered in #148:
+
+- Arena challenge generation or entry commands;
+- Arena combat lifecycle or rewards;
+- Operations reputation/Arena UX;
+- bot Arena planning;
+- final batch closure gate.
 
 ## Exact recovery action
 
-While #147 is open:
+While #148 is open:
 
-1. continue only `agent/audit-next-playable-batch`;
-2. keep changes documentation-only;
-3. do not create #148 or modify runtime/tests/assets/schema/save;
-4. validate CI, Browser E2E and Graphify on final documentation head;
+1. continue only `agent/pve-reputation-foundation`;
+2. keep changes inside reputation, v17/v4 migration, tests and status docs;
+3. do not absorb #149 Arena mechanics;
+4. run CI, Browser E2E and Graphify on the final documentation head;
 5. resolve every review finding;
 6. squash merge only when all gates are green.
 
-After #147 merges:
+After #148 merges:
 
-1. fetch exact #147 squash SHA and fresh `main`;
-2. create only #148 `PVE-REPUTATION-FOUNDATION`;
-3. implement only the accepted migration/reputation contract;
-4. do not absorb Arena, UX or final bot/gate work early;
-5. preserve all permanent progression, performance, Browser and Graphify gates.
+1. fetch exact #148 squash SHA and fresh `main`;
+2. create only #149 `ARENA-PVE-CHALLENGES`;
+3. keep schema v17/save v4 unchanged;
+4. implement the accepted deterministic three-challenge Arena contract only;
+5. do not absorb #150 UX or #151 bot/closure work.
 
 ## Hard stops
 
-- no implementation before Audit #147 acceptance;
-- no second schema/save bump after #148;
+- no #149 before #148 merge;
+- no second schema/save bump in this batch;
 - no separate PvE currency or Admiral services;
-- no hidden-information exception or fabricated bot assets/resources;
+- no hidden-information exception or fabricated assets/resources;
 - no multiplayer, rankings, alliances or endgame;
 - no new primary UI family for Arena;
 - no weakening of progression, determinism, performance, Browser or Graphify gates;
