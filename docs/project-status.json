@@ -1,22 +1,24 @@
 {
-  "statusVersion": 61,
+  "statusVersion": 62,
   "updatedAt": "2026-08-02",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 147,
-  "lastMergeSha": "50835aeb2864b96e026a7202ad419368e934e47b",
-  "verifiedMainBaseline": "Audit PR #147 PVE-META-FOUNDATION-01 squash-merged after final CI, Browser E2E, Graphify and review gates",
-  "runtimeBaselinePr": 146,
-  "runtimeBaselineSha": "392abb2bf27267fef9777ff35eb96555941a42f3",
-  "activePr": 148,
+  "lastMergedPr": 148,
+  "lastMergeSha": "430265b061764145e4e3ea1470d545f2ef82d0fa",
+  "verifiedMainBaseline": "PR #148 PVE-REPUTATION-FOUNDATION squash-merged after final CI, Browser E2E, Graphify and review gates",
+  "runtimeBaselinePr": 148,
+  "runtimeBaselineSha": "430265b061764145e4e3ea1470d545f2ef82d0fa",
+  "activePr": 149,
   "activePrKind": "implementation",
-  "activeWorkItem": "PVE-REPUTATION-FOUNDATION",
-  "nextPrAfterActive": 149,
+  "activeWorkItem": "ARENA-PVE-CHALLENGES",
+  "activeBranch": "agent/arena-pve-challenges",
+  "activeCodeHead": "11f60961650071b3123718e81c968504f9342512",
+  "nextPrAfterActive": 150,
   "nextPrKind": "implementation",
-  "nextWorkItem": "ARENA-PVE-CHALLENGES",
+  "nextWorkItem": "PVE-META-OPERATIONS-UX",
   "currentMilestone": "M6b bounded PvE meta foundation implementation",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -29,7 +31,7 @@
     "docs/audits/evidence/pve-meta-foundation-01.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastChangeDocument": "docs/changes/pr148-pve-reputation-foundation.md",
+  "lastChangeDocument": "docs/changes/pr149-arena-pve-challenges.md",
   "lastCompletedBatchArchive": "docs/audits/completed/sustainable-pve-operations-01.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
@@ -49,15 +51,6 @@
       "145": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f",
       "146": "392abb2bf27267fef9777ff35eb96555941a42f3"
     },
-    "finalImplementationPr": 146,
-    "finalImplementationCodeHead": "54914d98c071b84c668af5e16b89cb851085f7ba",
-    "finalMergeShaSynchronization": "completed-by-audit-pr-147",
-    "workItems": [
-      "PVE-TARGET-RECOVERY",
-      "PVE-OPERATIONS-INTELLIGENCE-UX",
-      "BOT-PVE-OPERATIONS",
-      "PVE-SUSTAINABILITY-GATE"
-    ],
     "status": "completed",
     "archive": "docs/audits/completed/sustainable-pve-operations-01.md",
     "divergence": "none"
@@ -73,8 +66,11 @@
     "baselineSha": "50835aeb2864b96e026a7202ad419368e934e47b",
     "implementationCount": 4,
     "plannedImplementationPrs": [148, 149, 150, 151],
-    "completedImplementationPrs": [],
-    "activeImplementationPr": 148,
+    "completedImplementationPrs": [148],
+    "implementationMergeShas": {
+      "148": "430265b061764145e4e3ea1470d545f2ef82d0fa"
+    },
+    "activeImplementationPr": 149,
     "workItems": [
       "PVE-REPUTATION-FOUNDATION",
       "ARENA-PVE-CHALLENGES",
@@ -116,10 +112,11 @@
     "pveMetaStateImplemented": true,
     "pveReputationImplemented": true,
     "pveReputationMigrationImplemented": true,
-    "arenaPveChallengesImplemented": false,
+    "arenaPveChallengesImplemented": true,
+    "arenaOperationsUxImplemented": false,
     "pveMetaOperationsUxImplemented": false,
     "botPveMetaGateImplemented": false,
-    "status": "pr-148-active"
+    "status": "pr-149-active"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -136,7 +133,7 @@
     "sustainablePveBeforeNewMeta": true,
     "boundedPveMetaNext": true,
     "persistentPveReputationIncluded": true,
-    "localArenaPlanned": true,
+    "localArenaIncluded": true,
     "separatePveCurrencyRejected": true,
     "admiralServicesDeferred": true,
     "multiplayerArenaRejected": true
@@ -168,6 +165,7 @@
     "arenaChallengeCount": 3,
     "arenaCycleSeconds": 21600,
     "arenaActiveEntriesPerEmpire": 1,
+    "arenaHistoryLimit": 64,
     "arenaUsesExistingResources": true,
     "arenaUsesExistingCombat": true,
     "arenaMultiplayer": false,
@@ -194,36 +192,17 @@
     "catalogRuntimeTextures": 173
   },
   "deliveredDomains": [
-    "deterministic schema-v16 simulation with immutable campaign and progression identity",
-    "save format v3 with active/offline continuation integrity",
+    "deterministic schema-v17 simulation with immutable campaign and progression identity",
+    "save format v4 with active/offline continuation integrity and v16/v3 migration",
     "compressed finite campaign progression with permanent 15-case matrix",
     "coherent multi-colony economy and hardened abstract logistics",
-    "canonical routed colony logistics and selected-colony market workflow",
-    "deterministic bot colony roles and ordinary logistics/market support",
     "ordinary missions, fleets, combat and intelligence",
-    "sustainable PvE target recovery and target-only pirate-hunt reward",
-    "canonical PvE opportunity intelligence and routed player Operations UX",
+    "sustainable PvE target recovery and routed Operations intelligence",
     "honest public-only bot PvE planning through ordinary commands",
-    "three-faction 48-hour PvE sustainability closure"
+    "persistent PvE reputation with deterministic awards",
+    "local deterministic Arena challenge and entry mechanics"
   ],
   "activeDelivery": [
-    {
-      "pr": 146,
-      "kind": "implementation-closure",
-      "workItem": "PVE-SUSTAINABILITY-GATE",
-      "status": "merged",
-      "mergeSha": "392abb2bf27267fef9777ff35eb96555941a42f3",
-      "validatedHead": "54914d98c071b84c668af5e16b89cb851085f7ba",
-      "ciRun": 30752151413,
-      "browserRun": 30752151392,
-      "graphifyRun": 30752151378,
-      "testFiles": 106,
-      "tests": 557,
-      "oneDayPerformanceMilliseconds": 5288,
-      "sevenDayPerformanceMilliseconds": 23329,
-      "progressionMatrixCases": 15,
-      "progressionPhaseViolations": 0
-    },
     {
       "pr": 147,
       "kind": "audit",
@@ -237,17 +216,27 @@
       "pr": 148,
       "kind": "implementation",
       "workItem": "PVE-REPUTATION-FOUNDATION",
-      "status": "active",
-      "validatedCodeHead": "820c6fa84e619fb0ebc46ca36eaaf00437daaf4e",
+      "status": "merged",
+      "mergeSha": "430265b061764145e4e3ea1470d545f2ef82d0fa",
       "targetStateSchema": 17,
-      "targetSaveFormat": 4,
+      "targetSaveFormat": 4
+    },
+    {
+      "pr": 149,
+      "kind": "implementation",
+      "workItem": "ARENA-PVE-CHALLENGES",
+      "status": "active",
+      "validatedCodeHead": "11f60961650071b3123718e81c968504f9342512",
+      "ciRun": 30758613565,
+      "browserRun": 30758613557,
+      "graphifyRun": 30758613558,
       "finalDocumentationHeadRequired": true
     }
   ],
   "knownLimitations": [
-    "PR #148 remains open until final code+docs CI, Browser E2E, Graphify and review are green",
-    "Arena challenges are authorized for #149 but not implemented",
-    "PvE meta Operations UX and bot Arena participation remain for #150 and #151",
+    "PR #149 remains open until final code+docs CI, Browser E2E, Graphify and review are green",
+    "Arena and reputation Operations UX remains for #150",
+    "Bot Arena participation and final batch closure remain for #151",
     "Admiral services and separate PvE currency are intentionally excluded",
     "Alliances, Solar War, functional Obelisks/Gates and victory/defeat are not implemented",
     "Onboarding and release hardening remain incomplete"
@@ -260,7 +249,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #148 code head 820c6fa84e619fb0ebc46ca36eaaf00437daaf4e passed Graphify; final documentation-head run required",
+    "lastValidation": "PR #149 code head 11f60961650071b3123718e81c968504f9342512 passed Graphify; final documentation-head run required",
     "currentAuditEvidence": "docs/audits/evidence/pve-meta-foundation-01.md"
   },
   "requiredStartupReading": [
@@ -270,12 +259,12 @@
     "docs/audits/current-batch-audit.md",
     "docs/audits/contracts/pve-meta-foundation-01.md",
     "docs/audits/evidence/pve-meta-foundation-01.md",
-    "docs/changes/pr148-pve-reputation-foundation.md",
+    "docs/changes/pr149-arena-pve-challenges.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Validate final PR #148 code+docs CI, Browser E2E and Graphify, resolve review and squash merge; then record exact merge SHA and create only #149 ARENA-PVE-CHALLENGES."
+  "nextAction": "Validate final PR #149 code+docs CI, Browser E2E and Graphify, resolve review and squash merge; then record exact merge SHA and create only #150 PVE-META-OPERATIONS-UX."
 }

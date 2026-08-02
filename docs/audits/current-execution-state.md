@@ -1,77 +1,75 @@
 # Current execution state
 
 **Updated:** 2026-08-02  
-**Safe to continue:** yes, through PR #148 only
+**Safe to continue:** yes, through PR #149 only
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `50835aeb2864b96e026a7202ad419368e934e47b` |
-| Last merged PR | #147 `PVE-META-FOUNDATION-01` Audit |
-| Audit status | accepted |
-| Active work | #148 `PVE-REPUTATION-FOUNDATION` |
-| Active branch | `agent/pve-reputation-foundation` |
-| Runtime target | schema v17 / save format v4 |
-| Next authorized PR after merge | #149 `ARENA-PVE-CHALLENGES` |
+| Verified `main` baseline | `430265b061764145e4e3ea1470d545f2ef82d0fa` |
+| Last merged PR | #148 `PVE-REPUTATION-FOUNDATION` |
+| Audit | #147 `PVE-META-FOUNDATION-01` · accepted |
+| Active work | #149 `ARENA-PVE-CHALLENGES` |
+| Active branch | `agent/arena-pve-challenges` |
+| Active code head | `11f60961650071b3123718e81c968504f9342512` |
+| Runtime baseline | schema v17 / save format v4 |
+| Next authorized PR after merge | #150 `PVE-META-OPERATIONS-UX` |
 | Blockers | final code+docs CI, Browser E2E, Graphify, review and mergeability |
 
 ## Last completed atomic action
 
-Audit PR #147 was squash-merged as:
+PR #148 was squash-merged as:
 
 ```text
-50835aeb2864b96e026a7202ad419368e934e47b
+430265b061764145e4e3ea1470d545f2ef82d0fa
 ```
 
-Accepted batch order:
+PR #149 then implemented the accepted local deterministic Arena slice without a second schema/save bump.
 
-```text
-#148 PVE-REPUTATION-FOUNDATION — active
-→ #149 ARENA-PVE-CHALLENGES
-→ #150 PVE-META-OPERATIONS-UX
-→ #151 BOT-PVE-META-GATE
-```
+## PR #149 delivered scope
 
-Exactly four implementation PRs are authorized. No fifth PR may be added.
-
-## PR #148 delivered scope
-
-- dedicated `pveMeta` state boundary;
-- one persisted non-negative reputation score per empire;
-- derived Recruit/Ranger/Vanguard/Warden tiers at 0/100/300/700;
-- ordinary awards: expedition +10, positive-yield object mission +15, destroyed pirate base +30 and active `pirate-hunt` target bonus +20;
-- zero awards for empty, failed, recalled, passive and duplicate resolution paths;
-- simulation schema v17 and save format v4;
-- deterministic v16/v3 migration with zero reputation and no active Arena entry;
-- v3 envelope checksum compatibility plus v1/v2 legacy checksum compatibility;
-- future schema/save rejection;
-- no Arena implementation, UI or bot planning.
+- exactly three public challenges per six-hour campaign cycle;
+- deterministic identity and enemy composition from campaign seed, cycle and slot;
+- fixed `patrol`, `assault` and `elite` difficulties;
+- existing faction ship definitions and existing deterministic combat resolver;
+- one active entry per empire using an owned idle stationed fleet;
+- canonical existing-resource entry cost and victory reward;
+- fleet held until resolution or withdrawal;
+- persistent combat losses and survivors;
+- victory-only resource and reputation rewards;
+- zero rewards for defeat, draw or withdrawal;
+- atomic idempotent resolution through a reserved domain event;
+- active-entry save/load compatibility in save v4;
+- compatibility with #148 v4 saves lacking `arenaHistory`;
+- Arena result history bounded to 64 entries.
 
 ## Code-head evidence
 
 Code head before documentation closure:
 
 ```text
-820c6fa84e619fb0ebc46ca36eaaf00437daaf4e
+11f60961650071b3123718e81c968504f9342512
 ```
 
 At that head:
 
-- assets, lint and typecheck passed;
-- full unit/integration suite and build passed;
-- isolated one-day/seven-day performance gate passed;
-- Graphify passed;
-- final code+docs CI, Browser E2E and Graphify are required after status synchronization.
+```text
+CI             30758613565 — success
+Graphify       30758613558 — success
+Browser E2E    30758613557 — code-head run; final docs-head success required
+```
+
+The code-head passed assets, lint, typecheck, full tests, build, the 15-case progression scenario and unchanged one-day `<15 s` / seven-day `<30 s` performance gates. A single seven-day runner result of `30.099 s` was followed by a successful unchanged-head run; no threshold was weakened.
 
 ## Compatibility boundary
 
-- no second schema/save bump after #148;
-- no Arena commands, challenge generation, entry state or rewards in #148;
-- no Operations UX changes in #148;
-- no bot Arena planning in #148;
+- schema remains v17 and save format remains v4;
+- no Operations UI or new primary navigation family in #149;
+- no bot Arena planning in #149;
 - no separate PvE currency or Admiral services;
-- no hidden-information exception or fabricated resources;
+- no multiplayer, matchmaking, rankings or seasons;
+- no new mechanical catalog entries;
 - no global economy/progression rebalance;
-- no alliances, Solar War, Obelisks, Gates or endgame;
+- no alliances, Solar War, Obelisks, Gates or victory/defeat;
 - no weakening of CI, Browser, Graphify, progression or performance gates.
 
 ## Authoritative sources
@@ -79,16 +77,16 @@ At that head:
 ```text
 docs/audits/contracts/pve-meta-foundation-01.md
 docs/audits/evidence/pve-meta-foundation-01.md
-docs/changes/pr148-pve-reputation-foundation.md
+docs/changes/pr149-arena-pve-challenges.md
 ```
 
 ## Exact next action
 
-1. validate the final #148 documentation head with CI, Browser E2E and Graphify;
-2. resolve every blocking review finding;
-3. confirm mergeability;
-4. mark ready and squash merge only when all gates are green;
-5. record exact #148 squash SHA from fresh `main`;
-6. create only #149 `ARENA-PVE-CHALLENGES`.
+1. synchronize all remaining #149 status documents and machine indexes;
+2. validate the final code+docs head with CI, Browser E2E and Graphify;
+3. resolve review and confirm mergeability;
+4. mark ready and squash merge #149 only when all gates are green;
+5. record the exact #149 squash SHA from fresh `main`;
+6. create only #150 `PVE-META-OPERATIONS-UX`.
 
-Do not start #149 before #148 merges.
+Do not start #150 before #149 merges.
