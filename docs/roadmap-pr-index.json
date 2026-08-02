@@ -6,23 +6,23 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 149,
-    "mergeSha": "42c484426e850b84263d4eecab63ebbb3eaafb05",
-    "runtimeBaselinePr": 149,
-    "runtimeBaselineSha": "42c484426e850b84263d4eecab63ebbb3eaafb05",
+    "lastMergedPr": 150,
+    "mergeSha": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63",
+    "runtimeBaselinePr": 150,
+    "runtimeBaselineSha": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63",
     "lastCompletedAuditPr": 147,
     "lastCompletedAuditMergeSha": "50835aeb2864b96e026a7202ad419368e934e47b"
   },
-  "activePr": 150,
-  "activePrKind": "implementation",
+  "activePr": 151,
+  "activePrKind": "implementation-closure",
   "activeBatchId": "PVE-META-FOUNDATION-01",
-  "activeWorkItem": "PVE-META-OPERATIONS-UX",
-  "activeBranch": "agent/pve-meta-operations-ux",
-  "activeCodeHead": "0e14f5058a872c2bc2d7c810b8c1eee1098d7924",
+  "activeWorkItem": "BOT-PVE-META-GATE",
+  "activeBranch": "agent/bot-pve-meta-gate",
+  "activeCodeHead": "016065dce161309899e0893bfa27c85bb2ba2e1c",
   "implementationAuthorized": true,
-  "nextPr": 151,
-  "nextPrKind": "implementation-closure",
-  "nextWorkItem": "BOT-PVE-META-GATE",
+  "nextPr": null,
+  "nextPrKind": "audit",
+  "nextWorkItem": "NEXT-BATCH-AUDIT",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -155,16 +155,18 @@
       "auditMergeSha": "50835aeb2864b96e026a7202ad419368e934e47b",
       "startPr": 148,
       "endPr": 151,
-      "status": "implementation-active",
+      "status": "final-pr-active",
       "batchId": "PVE-META-FOUNDATION-01",
       "complexity": "medium",
       "plannedPrs": [148, 149, 150, 151],
-      "completedPrs": [148, 149],
+      "completedPrs": [148, 149, 150],
       "implementationMergeShas": {
         "148": "430265b061764145e4e3ea1470d545f2ef82d0fa",
-        "149": "42c484426e850b84263d4eecab63ebbb3eaafb05"
+        "149": "42c484426e850b84263d4eecab63ebbb3eaafb05",
+        "150": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63"
       },
-      "activePr": 150,
+      "activePr": 151,
+      "activeValidatedHead": "016065dce161309899e0893bfa27c85bb2ba2e1c",
       "implementationAuthorized": true,
       "workItems": [
         "PVE-REPUTATION-FOUNDATION",
@@ -176,7 +178,8 @@
       "targetSaveFormat": 4,
       "contract": "docs/audits/contracts/pve-meta-foundation-01.md",
       "evidence": "docs/audits/evidence/pve-meta-foundation-01.md",
-      "outcome": "Bounded reputation and local deterministic Arena using existing resources/combat; no currency or Admiral services"
+      "archive": "docs/audits/completed/pve-meta-foundation-01.md",
+      "outcome": "Persistent reputation, local deterministic Arena, routed Operations UX, honest bot parity and exact 48-hour partition closure"
     },
     {
       "id": "alliances-and-endgame",
@@ -225,19 +228,21 @@
       "kind": "implementation",
       "workItem": "PVE-META-OPERATIONS-UX",
       "title": "Expose PvE meta in Operations",
-      "status": "active",
-      "validatedCodeHead": "0e14f5058a872c2bc2d7c810b8c1eee1098d7924",
-      "ciRun": 30760083734,
-      "browserRun": 30760083727,
-      "graphifyRun": 30760083753
+      "status": "merged",
+      "mergeSha": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63"
     },
     {
       "number": 151,
       "kind": "implementation-closure",
       "workItem": "BOT-PVE-META-GATE",
       "title": "Close honest PvE meta participation",
-      "status": "blocked-until-pr-150-merge"
+      "status": "active",
+      "validatedCodeHead": "016065dce161309899e0893bfa27c85bb2ba2e1c",
+      "ciRun": 30762140802,
+      "browserRun": 30762140792,
+      "graphifyRun": 30762140796,
+      "finalDocumentationHeadRequired": true
     }
   ],
-  "nextAction": "Validate the final PR #150 code+docs head, resolve review and squash merge; then fetch the exact merge SHA and create only #151 BOT-PVE-META-GATE."
+  "nextAction": "Validate final PR #151 code+docs head, resolve review and squash merge. The immediately following PR must be Audit-only, synchronize exact #151 squash SHA and authorize no implementation until accepted."
 }

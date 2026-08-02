@@ -1,68 +1,58 @@
 # Current execution state
 
 **Updated:** 2026-08-02  
-**Safe to continue:** yes, through PR #150 only
+**Safe to continue:** yes, through final PR #151 only
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `42c484426e850b84263d4eecab63ebbb3eaafb05` |
-| Last merged PR | #149 `ARENA-PVE-CHALLENGES` |
+| Verified `main` baseline | `39b85fe057d2cbf1fcff6b949a14bc62c7dbde63` |
+| Last merged PR | #150 `PVE-META-OPERATIONS-UX` |
 | Audit | #147 `PVE-META-FOUNDATION-01` · accepted |
-| Active work | #150 `PVE-META-OPERATIONS-UX` |
-| Active branch | `agent/pve-meta-operations-ux` |
-| Active code head | `0e14f5058a872c2bc2d7c810b8c1eee1098d7924` |
+| Active work | #151 `BOT-PVE-META-GATE` |
+| Active branch | `agent/bot-pve-meta-gate` |
+| Active code head | `016065dce161309899e0893bfa27c85bb2ba2e1c` |
 | Runtime baseline | schema v17 / save format v4 |
-| Next authorized PR after merge | #151 `BOT-PVE-META-GATE` |
+| Next implementation | blocked pending a new accepted Audit PR |
 | Blockers | final code+docs CI, Browser E2E, Graphify, review and mergeability |
 
 ## Last completed atomic action
 
-PR #149 was squash-merged as:
+PR #150 was squash-merged as:
 
 ```text
-42c484426e850b84263d4eecab63ebbb3eaafb05
+39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
 ```
 
-PR #150 then implemented the accepted routed PvE-meta Operations presentation without changing runtime persistence or Arena mechanics.
+PR #151 then delivered the final honest bot participation and partition closure required by Audit #147.
 
-## PR #150 delivered scope
+## PR #151 delivered scope
 
-- `#/operations/arena` inside the canonical Operations route family;
-- current reputation, tier and next-tier progress;
-- exact ordinary-PvE and Arena award explanations;
-- one recent reputation ledger derived from existing event and Arena histories;
-- three current public challenges with cycle timing and enemy summary;
-- existing-resource cost, duration, victory reward and reputation reward;
-- eligible owned idle stationed fleets only;
-- deterministic validation through the same Arena entry contract;
-- active entry, resolution timing and withdrawal;
-- completed Arena results with losses and rewards;
-- responsive/mobile/reduced-motion layout;
-- route, reload, browser-history and release-mobile Browser evidence;
-- all previous Operations modes retained through an unchanged legacy workspace boundary.
+- public-only deterministic bot Arena planning;
+- routine unlock only at planet-destruction capability;
+- owned idle stationed offensive fleets and owned origin resources only;
+- existing Arena costs and canonical `ENTER_ARENA_CHALLENGE` command;
+- 40% gas reserve protection;
+- ordinary PvE planner retained unchanged and prioritized before Arena;
+- one Arena command maximum per bot decision;
+- legal Aegis, Synod and Veyra participation;
+- pure planning and hidden-player-state independence;
+- 48-hour complete-state equality across direct, six-hour chunked, save/load and offline runtime partitions;
+- bounded Arena, reputation, command and event histories.
 
 ## Code-head evidence
 
-Code head before documentation closure:
-
 ```text
-0e14f5058a872c2bc2d7c810b8c1eee1098d7924
-```
-
-```text
-CI             30760083734 — success
-Browser E2E    30760083727 — success
-Graphify       30760083753 — success
-1 day             6.071 s < 15 s
-7 days           29.683 s < 30 s
+Head           016065dce161309899e0893bfa27c85bb2ba2e1c
+CI             30762140802 — success
+Graphify       30762140796 — success
+Browser E2E    30762140792 — code-head run; final documentation-head success required
+1 day              6.099 s < 15 s
+7 days            28.838 s < 30 s
 ```
 
 ## Compatibility boundary
 
 - schema remains v17 and save format remains v4;
-- challenge generation remains public and read-only;
-- UI validation cannot mutate state;
-- no bot Arena planning in #150;
 - no separate PvE currency or Admiral services;
 - no multiplayer, matchmaking, rankings or seasons;
 - no new mechanical catalog entries;
@@ -75,16 +65,15 @@ Graphify       30760083753 — success
 ```text
 docs/audits/contracts/pve-meta-foundation-01.md
 docs/audits/evidence/pve-meta-foundation-01.md
-docs/changes/pr150-pve-meta-operations-ux.md
+docs/audits/completed/pve-meta-foundation-01.md
+docs/changes/pr151-bot-pve-meta-gate.md
 ```
 
 ## Exact next action
 
-1. synchronize the remaining #150 status documents and machine indexes;
-2. validate the final code+docs head with CI, Browser E2E and Graphify;
+1. synchronize all remaining #151 status documents and machine indexes;
+2. validate final code+docs head with CI, Browser E2E and Graphify;
 3. resolve review and confirm mergeability;
-4. mark ready and squash merge #150 only when all gates are green;
-5. record the exact #150 squash SHA from fresh `main`;
-6. create only #151 `BOT-PVE-META-GATE`.
-
-Do not start #151 before #150 merges.
+4. mark ready and squash merge #151 only when all gates are green;
+5. record the exact #151 squash SHA from fresh `main` in the immediately following Audit PR;
+6. do not start another implementation without a new accepted audit.
