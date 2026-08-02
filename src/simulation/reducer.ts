@@ -58,6 +58,11 @@ import {
   getNextWorldEventEvaluationAt,
   processWorldEventEvaluationAt,
 } from './pve/worldEvents';
+import {
+  applyArenaResolutionEvent,
+  enterArenaChallenge,
+  withdrawArenaEntry,
+} from './pveMeta/arena';
 import { applySpeedPercent } from './research/progression';
 import {
   cancelResearch,
@@ -118,6 +123,7 @@ function scheduleEvent(
     command.payload.type === 'FLEET_RETURN' ||
     command.payload.type === 'EXPEDITION_RESOLVE' ||
     command.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE' ||
+    command.payload.type === 'ARENA_RESOLVE' ||
     command.payload.type === 'WORLD_EVENT_END' ||
     command.payload.type === 'WORLD_EVENT_START'
   ) {
@@ -301,6 +307,9 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
   if (event.payload.type === 'WORLD_EVENT_END' || event.payload.type === 'WORLD_EVENT_START') {
     return applyWorldEventEvent(state, event);
   }
+  if (event.payload.type === 'ARENA_RESOLVE') {
+    return applyArenaResolutionEvent(state, event);
+  }
   if (event.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
     return applySpaceObjectMissionEventWithReturn(state, event);
   }
@@ -461,6 +470,8 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
     case 'SEND_FLEET': return sendFleetWithExpeditionGuard(state, command);
     case 'START_EXPEDITION': return startExpedition(state, command);
     case 'START_SPACE_OBJECT_MISSION': return startSpaceObjectMission(state, command);
+    case 'ENTER_ARENA_CHALLENGE': return enterArenaChallenge(state, command);
+    case 'WITHDRAW_ARENA_ENTRY': return withdrawArenaEntry(state, command);
     case 'RECALL_FLEET': return recallFleetWithExpeditionSupport(state, command);
     case 'ADVANCE_TIME': return advanceTime(state, command);
   }
