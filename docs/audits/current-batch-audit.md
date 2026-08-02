@@ -1,81 +1,112 @@
 # Current implementation batch audit
 
-**Status:** accepted batch; final PR #151 active  
+**Status:** draft Audit #152; implementation blocked  
 **Updated:** 2026-08-02  
-**Batch:** `PVE-META-FOUNDATION-01`  
-**Roadmap milestone:** M6b — bounded PvE meta foundation  
-**Complexity:** medium  
-**Audit PR:** #147 · `50835aeb2864b96e026a7202ad419368e934e47b`  
-**Implementation order:** #148–#151  
+**Candidate batch:** `COMPLETE-ENDGAME-01`  
+**Roadmap milestone:** M8 — Complete endgame  
+**Complexity:** undecided  
+**Audit PR:** #152 candidate  
+**Baseline:** `73ed5536cb994a78fe7cdd45a41e0240901d7fe1`  
 **Runtime baseline:** schema v17 / save format v4
 
-## Accepted implementation sequence
+## Previous batch closure
+
+`PVE-META-FOUNDATION-01` is complete:
 
 ```text
-#147 PVE-META-FOUNDATION-01 Audit 50835aeb2864b96e026a7202ad419368e934e47b
-→ #148 PVE-REPUTATION-FOUNDATION 430265b061764145e4e3ea1470d545f2ef82d0fa
-→ #149 ARENA-PVE-CHALLENGES 42c484426e850b84263d4eecab63ebbb3eaafb05
-→ #150 PVE-META-OPERATIONS-UX 39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
-→ #151 BOT-PVE-META-GATE — final active PR
+#147 Audit                         50835aeb2864b96e026a7202ad419368e934e47b
+→ #148 PVE-REPUTATION-FOUNDATION  430265b061764145e4e3ea1470d545f2ef82d0fa
+→ #149 ARENA-PVE-CHALLENGES       42c484426e850b84263d4eecab63ebbb3eaafb05
+→ #150 PVE-META-OPERATIONS-UX     39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
+→ #151 BOT-PVE-META-GATE          73ed5536cb994a78fe7cdd45a41e0240901d7fe1
 ```
 
-Exactly four implementation PRs were authorized. No fifth implementation PR may be added.
+The exact final #151 validation evidence is recorded in:
 
-## Delivered batch result
+```text
+docs/handoffs/2026-08-02-post-pve-meta-handoff.md
+```
 
-### #148 — reputation foundation
+## Candidate audit purpose
 
-- schema v17/save v4 and deterministic v16/v3 migration;
-- persisted reputation and derived tiers;
-- deterministic ordinary-PvE awards;
-- duplicate and zero-award protection.
+Investigate the smallest coherent implementation sequence for a complete deterministic local-campaign endgame, potentially including:
 
-### #149 — local Arena mechanics
+- alliances or explicit solo participation;
+- Solar War;
+- Obelisks and final Gates;
+- final-object construction and destruction;
+- deterministic victory and defeat;
+- endgame bot parity;
+- terminal-state UI, reports, save/load and offline behavior.
 
-- three public deterministic challenges every six hours;
-- existing fleets, resources and combat;
-- one active entry per empire;
-- persistent losses/survivors and victory-only rewards;
-- atomic idempotent resolution;
-- save compatibility and bounded result history.
+This list is an investigation scope, not accepted implementation scope.
 
-### #150 — Operations UX
+## Current classification
 
-- canonical `#/operations/arena` route;
-- reputation, tier, progress and exact award rules;
-- challenge cards, fleet eligibility, active entry and result history;
-- responsive/mobile/reload/history/reduced-motion evidence.
+### VERIFIED
 
-### #151 — honest bot parity and closure
+- M6b is merged and validated on `main`.
+- Runtime baseline is schema v17/save v4.
+- M7 bot parity is substantially delivered except endgame parity.
+- M8 is marked not audited in the canonical roadmap.
+- No implementation is authorized by this draft.
 
-- public challenge data plus owned state only;
-- planet-destruction capability gate;
-- ordinary PvE and higher scheduler priorities remain ahead of Arena;
-- owned idle stationed offensive fleets only;
-- canonical Arena entry costs and ordinary command execution;
-- mandatory 40% gas reserve;
-- one Arena command maximum per decision;
-- Aegis, Synod and Veyra legal-command evidence;
-- pure planning and hidden-state independence;
-- complete GameState equality after 48 hours across direct, six-hour chunked, save/load and offline partitions.
+### UNKNOWN
 
-## Permanent gates
+- whether any alliance, Solar War, Obelisk, Gate, victory or defeat mechanics already exist;
+- whether related catalog IDs/assets are mechanical or presentation-only;
+- whether M8 requires schema/save migration;
+- whether campaign terminal state belongs in `GameState`, runtime metadata or both;
+- whether alliance mechanics and final victory safely fit one batch;
+- exact bot visibility and command rules;
+- exact UI route ownership;
+- endgame partition and performance cost.
 
-- schema v17/save v4 unchanged after #148;
-- no separate PvE currency or Admiral services;
-- local deterministic PvE Arena only;
-- same commands, costs, fleets and timing for player and bots;
-- public-only bot perception;
-- bounded histories;
-- 15-case progression matrix with zero violations;
-- one-day `<15 s` and seven-day `<30 s` performance limits unchanged;
-- CI, Browser E2E and Graphify on the final documentation head.
+### DECISION
 
-## Exact next action
+No batch size, implementation count, stable work-item sequence or schema change is decided until the unknowns above are resolved from current code, tests, Graphify and authoritative contracts.
 
-1. finish #151 documentation and machine-index synchronization;
-2. run final CI, Browser E2E and Graphify on the final head;
-3. resolve review and confirm mergeability;
-4. squash merge #151 only when green;
-5. require the immediately following Audit PR to record exact #151 squash SHA;
-6. authorize no further implementation until that audit is accepted.
+## Required audit work
+
+1. reconcile exact `main`, PRs #147–#151 and status documents;
+2. inspect authoritative endgame/product contracts;
+3. search current code and Graphify for alliance, diplomacy, Solar War, Obelisk, Gate, victory, defeat and terminal-state surfaces;
+4. map persistence, reducer, campaign-time, autosave and migration impact;
+5. map player commands, bot consumers, UI routes and reports;
+6. verify catalog and asset reuse opportunities;
+7. define deterministic direct/chunk/save/offline closure requirements;
+8. retain permanent progression and performance limits;
+9. decide whether M8 is heavy, medium or split across multiple audits;
+10. write exact implementation contracts only after evidence is complete.
+
+## Audit documents
+
+```text
+docs/audits/contracts/complete-endgame-01.md
+docs/audits/evidence/complete-endgame-01.md
+docs/handoffs/2026-08-02-post-pve-meta-handoff.md
+```
+
+## Permanent boundaries during audit
+
+- documentation and project-scoped analysis only;
+- no gameplay implementation;
+- no schema/save change;
+- no new commands/events/state;
+- no alliance, endgame or bot behavior changes;
+- no unrelated balance/catalog expansion;
+- no weakening CI, Browser E2E, Graphify, progression or performance gates.
+
+## Acceptance gate
+
+Audit #152 may merge only after:
+
+- critical unknowns are resolved;
+- exact file maps and dependency flows are recorded;
+- stable work-item IDs and implementation count are chosen;
+- migration and compatibility impact are explicit;
+- unit, integration, audit and Browser gates are defined;
+- final audit documentation head passes CI, Browser E2E and Graphify;
+- review is clean and mergeability is confirmed.
+
+Until the audit merges, no implementation PR is authorized.
