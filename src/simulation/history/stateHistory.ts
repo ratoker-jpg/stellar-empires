@@ -5,6 +5,7 @@ export const STATE_HISTORY_LIMITS = {
   executedEvents: 512,
   marketTrades: 50,
   worldEvents: 128,
+  arenaResults: 64,
   intelligenceObservationsPerEmpire: 64,
   intelligenceAlertsPerEmpire: 128,
 } as const;
@@ -44,6 +45,15 @@ export function compactGameStateHistory(state: GameState): GameState {
       ...state.worldEvents,
       history: retainNewest(state.worldEvents.history, STATE_HISTORY_LIMITS.worldEvents),
     },
+    pveMeta: state.pveMeta === undefined
+      ? undefined
+      : {
+          ...state.pveMeta,
+          arenaHistory: retainNewest(
+            state.pveMeta.arenaHistory,
+            STATE_HISTORY_LIMITS.arenaResults,
+          ),
+        },
     intelligence: state.intelligence.map((entry) => ({
       ...entry,
       observations: retainNewest(
