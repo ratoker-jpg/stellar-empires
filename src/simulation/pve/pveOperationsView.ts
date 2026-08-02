@@ -192,6 +192,7 @@ function expeditionEntries(state: GameState): readonly PveOpportunityEntry[] {
             targetId: planet.id,
           };
         }
+        const originPlanetId = fleet.location.planetId;
         try {
           const estimate = estimateFlightToGalaxyPlanet(
             state.galaxy,
@@ -201,7 +202,7 @@ function expeditionEntries(state: GameState): readonly PveOpportunityEntry[] {
             fleetSpeedBonus(state, fleet.empireId),
           );
           const origin = state.planets.find(
-            (candidate) => candidate.id === fleet.location.planetId,
+            (candidate) => candidate.id === originPlanetId,
           );
           const fuelRequired = estimate.fuelCost * 2;
           const enoughFuel = (origin?.economy.resources.gas.amount ?? 0) >= fuelRequired;
@@ -366,9 +367,16 @@ function pirateNeedsRecovery(current: PlanetState, baseline: PlanetState): boole
     current.defense.repairQueue.length > 0;
 }
 
+function withRecoveryAt(
+  entry: PveOpportunityEntry,
+  recoveryAt: number | undefined,
+): PveOpportunityEntry {
+  return recoveryAt === undefined ? entry : { ...entry, recoveryAt };
+}
+
 function pirateEntries(state: GameState): readonly PveOpportunityEntry[] {
   const originalGalaxy = materializeGalaxy(state.universe, state.galaxy.galaxy);
-  return createPirateBaseBaselines(originalGalaxy, state.seed).map((baseline) => {
+  return createPirateBaseBaselines(originalGalaxy, state.seed).map((baseline): PveOpportunityEntry => {
     const occupant = state.planets.find(
       (planet) => planet.galaxyPlanetId === baseline.galaxyPlanetId,
     );
@@ -394,37 +402,35 @@ function pirateEntries(state: GameState): readonly PveOpportunityEntry[] {
     if (activeFleet !== undefined) {
       return {
         ...base,
-        status: 'active-operation' as const,
-        availabilityCode: 'active-operation' as const,
+        status: 'active-operation',
+        availabilityCode: 'active-operation',
         availabilityExplanation: `Атаку выполняет ${activeFleet.id}.`,
         activeFleetId: activeFleet.id,
       };
     }
     if (occupant === undefined) {
-      return {
+      return withRecoveryAt({
         ...base,
-        status: 'recovering' as const,
-        availabilityCode: 'recovering' as const,
+        status: 'recovering',
+        availabilityCode: 'recovering',
         availabilityExplanation: recoveryAt === undefined
           ? 'Пиратская база отсутствует.'
           : `Пиратская база может вернуться не раньше ${recoveryAt}.`,
-        recoveryAt,
-      };
+      }, recoveryAt);
     }
     if (occupant.id !== baseline.id || occupant.ownerEmpireId !== PIRATE_EMPIRE_ID) {
-      return {
+      return withRecoveryAt({
         ...base,
-        status: 'unavailable' as const,
-        availabilityCode: 'target-occupied' as const,
+        status: 'unavailable',
+        availabilityCode: 'target-occupied',
         availabilityExplanation: 'Исходная позиция пиратской базы занята.',
-        recoveryAt,
-      };
+      }, recoveryAt);
     }
     if (pirateNeedsRecovery(occupant, baseline) && recoveryAt !== undefined && recoveryAt > state.clock.elapsedSeconds) {
       return {
         ...base,
-        status: 'recovering' as const,
-        availabilityCode: 'recovering' as const,
+        status: 'recovering',
+        availabilityCode: 'recovering',
         availabilityExplanation: `База восстанавливается до ${recoveryAt}.`,
         recoveryAt,
       };
@@ -435,14 +441,14 @@ function pirateEntries(state: GameState): readonly PveOpportunityEntry[] {
     );
     return {
       ...base,
-      status: combatFleet === undefined ? 'unavailable' as const : 'available' as const,
+      status: combatFleet === undefined ? 'unavailable' : 'available',
       availabilityCode: combatFleet === undefined
-        ? 'combat-fleet-required' as const
-        : 'available' as const,
+        ? 'combat-fleet-required'
+        : 'available',
       availabilityExplanation: combatFleet === undefined
         ? 'Нужен станционированный боевой флот.'
         : `Доступно для атаки флотом ${combatFleet.id}.`,
-      activeFleetId: combatFleet?.id,
+      ...(combatFleet === undefined ? {} : { activeFleetId: combatFleet.id }),
     };
   });
 }
@@ -501,6 +507,10 @@ function worldEventEntries(state: GameState): readonly PveOpportunityEntry[] {
   });
 }
 
+function objectEntries(state: GameState): readonly PveOpportunityEntry[] {
+  return state.spaceObjects.map((object) => objectEntry(state, object));
+}
+
 export function createPveOperationsView(
   state: GameState,
 ): readonly PveOpportunityEntry[] {
@@ -510,10 +520,6 @@ export function createPveOperationsView(
     ...pirateEntries(state),
     ...expeditionEntries(state),
   ].sort(compareEntries);
-}
-
-function objectEntries(state: GameState): readonly PveOpportunityEntry[] {
-  return state.spaceObjects.map((object) => objectEntry(state, object));
 }
 
 export function filterPveOperationsView(
