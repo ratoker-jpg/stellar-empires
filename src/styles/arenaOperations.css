@@ -1,0 +1,257 @@
+.arena-meta-header {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 12px;
+  margin: 10px 22px;
+}
+
+.arena-reputation,
+.arena-award-rules,
+.arena-active-entry,
+.arena-challenges,
+.arena-history,
+.arena-reputation-ledger {
+  min-width: 0;
+  margin: 10px 22px;
+  padding: 16px;
+  border: 1px solid rgba(89, 203, 246, 0.18);
+  border-radius: 10px;
+  background: rgba(3, 14, 24, 0.82);
+}
+
+.arena-meta-header > .arena-reputation,
+.arena-meta-header > .arena-award-rules {
+  margin: 0;
+}
+
+.arena-reputation h2,
+.arena-award-rules h2,
+.arena-active-entry h2,
+.arena-challenges h2,
+.arena-history h2,
+.arena-reputation-ledger h2 {
+  margin: 0 0 12px;
+}
+
+.arena-reputation-score {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.arena-reputation-score strong {
+  color: #f0fbff;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1;
+}
+
+.arena-reputation-score span,
+.arena-challenge header span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #bfeeff;
+  background: rgba(89, 203, 246, 0.14);
+  font-size: 0.75rem;
+}
+
+.arena-reputation progress {
+  width: 100%;
+  height: 12px;
+  accent-color: #62cff9;
+}
+
+.arena-reputation p,
+.arena-cycle,
+.arena-validation,
+.arena-history article p,
+.arena-ledger-list article p {
+  color: #91aaba;
+}
+
+.arena-award-rules ul {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.arena-award-rules li > div,
+.arena-active-entry article > div,
+.arena-challenge-details > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.arena-award-rules span,
+.arena-active-entry span,
+.arena-challenge-details span {
+  color: #91aaba;
+}
+
+.arena-award-rules strong,
+.arena-active-entry strong,
+.arena-challenge-details strong {
+  color: #edf9ff;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.arena-active-entry article {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(235, 185, 72, 0.34);
+  border-radius: 9px;
+  background: rgba(40, 30, 10, 0.28);
+}
+
+.arena-challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.arena-challenge {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(95, 203, 245, 0.2);
+  border-radius: 9px;
+  background: linear-gradient(145deg, rgba(8, 27, 42, 0.92), rgba(3, 13, 23, 0.92));
+}
+
+.arena-challenge.is-assault {
+  border-color: rgba(235, 185, 72, 0.42);
+}
+
+.arena-challenge.is-elite {
+  border-color: rgba(188, 154, 255, 0.48);
+}
+
+.arena-challenge header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.arena-challenge h3,
+.arena-challenge p {
+  margin: 0;
+}
+
+.arena-challenge-details {
+  display: grid;
+  gap: 7px;
+  font-size: 0.78rem;
+}
+
+.arena-fleet-control {
+  display: grid;
+  gap: 5px;
+  color: #9db4c3;
+  font-size: 0.78rem;
+}
+
+.arena-fleet-control select {
+  width: 100%;
+  min-width: 0;
+}
+
+.arena-validation {
+  min-height: 2.5em;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.arena-history-list,
+.arena-ledger-list {
+  display: grid;
+  gap: 8px;
+}
+
+.arena-history-list article,
+.arena-ledger-list article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 12px;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid rgba(95, 203, 245, 0.14);
+  border-radius: 8px;
+  background: rgba(7, 24, 37, 0.7);
+}
+
+.arena-history-list article p,
+.arena-ledger-list article p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.arena-history-list article small {
+  grid-column: 1 / -1;
+  color: #7892a4;
+}
+
+.arena-ledger-list article > span {
+  align-self: start;
+  color: #78e0ad;
+  font-weight: 700;
+}
+
+@media (max-width: 1040px) {
+  .arena-challenge-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .arena-meta-header,
+  .arena-challenge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .arena-meta-header,
+  .arena-reputation,
+  .arena-award-rules,
+  .arena-active-entry,
+  .arena-challenges,
+  .arena-history,
+  .arena-reputation-ledger {
+    margin-inline: 0;
+    padding-inline: 10px;
+  }
+
+  .arena-meta-header > .arena-reputation,
+  .arena-meta-header > .arena-award-rules {
+    margin: 0;
+  }
+
+  .arena-award-rules li > div,
+  .arena-active-entry article > div,
+  .arena-challenge-details > div {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .arena-award-rules strong,
+  .arena-active-entry strong,
+  .arena-challenge-details strong {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arena-challenge,
+  .arena-active-entry,
+  .arena-reputation progress {
+    scroll-behavior: auto;
+    transition: none;
+    animation: none;
+  }
+}

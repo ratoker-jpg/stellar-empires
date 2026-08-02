@@ -6,23 +6,23 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 148,
-    "mergeSha": "430265b061764145e4e3ea1470d545f2ef82d0fa",
-    "runtimeBaselinePr": 148,
-    "runtimeBaselineSha": "430265b061764145e4e3ea1470d545f2ef82d0fa",
+    "lastMergedPr": 149,
+    "mergeSha": "42c484426e850b84263d4eecab63ebbb3eaafb05",
+    "runtimeBaselinePr": 149,
+    "runtimeBaselineSha": "42c484426e850b84263d4eecab63ebbb3eaafb05",
     "lastCompletedAuditPr": 147,
     "lastCompletedAuditMergeSha": "50835aeb2864b96e026a7202ad419368e934e47b"
   },
-  "activePr": 149,
+  "activePr": 150,
   "activePrKind": "implementation",
   "activeBatchId": "PVE-META-FOUNDATION-01",
-  "activeWorkItem": "ARENA-PVE-CHALLENGES",
-  "activeBranch": "agent/arena-pve-challenges",
-  "activeCodeHead": "11f60961650071b3123718e81c968504f9342512",
+  "activeWorkItem": "PVE-META-OPERATIONS-UX",
+  "activeBranch": "agent/pve-meta-operations-ux",
+  "activeCodeHead": "0e14f5058a872c2bc2d7c810b8c1eee1098d7924",
   "implementationAuthorized": true,
-  "nextPr": 150,
-  "nextPrKind": "implementation",
-  "nextWorkItem": "PVE-META-OPERATIONS-UX",
+  "nextPr": 151,
+  "nextPrKind": "implementation-closure",
+  "nextWorkItem": "BOT-PVE-META-GATE",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -159,11 +159,12 @@
       "batchId": "PVE-META-FOUNDATION-01",
       "complexity": "medium",
       "plannedPrs": [148, 149, 150, 151],
-      "completedPrs": [148],
+      "completedPrs": [148, 149],
       "implementationMergeShas": {
-        "148": "430265b061764145e4e3ea1470d545f2ef82d0fa"
+        "148": "430265b061764145e4e3ea1470d545f2ef82d0fa",
+        "149": "42c484426e850b84263d4eecab63ebbb3eaafb05"
       },
-      "activePr": 149,
+      "activePr": 150,
       "implementationAuthorized": true,
       "workItems": [
         "PVE-REPUTATION-FOUNDATION",
@@ -216,18 +217,19 @@
       "kind": "implementation",
       "workItem": "ARENA-PVE-CHALLENGES",
       "title": "Add local Arena PvE challenges",
-      "status": "active",
-      "validatedCodeHead": "11f60961650071b3123718e81c968504f9342512",
-      "ciRun": 30758613565,
-      "browserRun": 30758613557,
-      "graphifyRun": 30758613558
+      "status": "merged",
+      "mergeSha": "42c484426e850b84263d4eecab63ebbb3eaafb05"
     },
     {
       "number": 150,
       "kind": "implementation",
       "workItem": "PVE-META-OPERATIONS-UX",
       "title": "Expose PvE meta in Operations",
-      "status": "blocked-until-pr-149-merge"
+      "status": "active",
+      "validatedCodeHead": "0e14f5058a872c2bc2d7c810b8c1eee1098d7924",
+      "ciRun": 30760083734,
+      "browserRun": 30760083727,
+      "graphifyRun": 30760083753
     },
     {
       "number": 151,
@@ -237,5 +239,5 @@
       "status": "blocked-until-pr-150-merge"
     }
   ],
-  "nextAction": "Validate the final PR #149 code+docs head, resolve review and squash merge; then fetch the exact merge SHA and create only #150 PVE-META-OPERATIONS-UX."
+  "nextAction": "Validate the final PR #150 code+docs head, resolve review and squash merge; then fetch the exact merge SHA and create only #151 BOT-PVE-META-GATE."
 }
