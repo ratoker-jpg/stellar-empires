@@ -6,21 +6,23 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 147,
-    "mergeSha": "50835aeb2864b96e026a7202ad419368e934e47b",
-    "runtimeBaselinePr": 146,
-    "runtimeBaselineSha": "392abb2bf27267fef9777ff35eb96555941a42f3",
+    "lastMergedPr": 148,
+    "mergeSha": "430265b061764145e4e3ea1470d545f2ef82d0fa",
+    "runtimeBaselinePr": 148,
+    "runtimeBaselineSha": "430265b061764145e4e3ea1470d545f2ef82d0fa",
     "lastCompletedAuditPr": 147,
     "lastCompletedAuditMergeSha": "50835aeb2864b96e026a7202ad419368e934e47b"
   },
-  "activePr": 148,
+  "activePr": 149,
   "activePrKind": "implementation",
   "activeBatchId": "PVE-META-FOUNDATION-01",
-  "activeWorkItem": "PVE-REPUTATION-FOUNDATION",
+  "activeWorkItem": "ARENA-PVE-CHALLENGES",
+  "activeBranch": "agent/arena-pve-challenges",
+  "activeCodeHead": "11f60961650071b3123718e81c968504f9342512",
   "implementationAuthorized": true,
-  "nextPr": 149,
+  "nextPr": 150,
   "nextPrKind": "implementation",
-  "nextWorkItem": "ARENA-PVE-CHALLENGES",
+  "nextWorkItem": "PVE-META-OPERATIONS-UX",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -127,8 +129,7 @@
         "140": "01eab1366289526553cdffcb1042ee98a8a59040",
         "141": "0167ad689e299438c9d0550ee20ba53452c93d39"
       },
-      "archive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
-      "outcome": "Coherent multi-colony portfolio, hardened abstract logistics, complete player workflow and honest bot planning"
+      "archive": "docs/audits/completed/multi-colony-economy-logistics-01.md"
     },
     {
       "id": "sustainable-pve-operations",
@@ -139,7 +140,6 @@
       "status": "completed",
       "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
       "complexity": "medium",
-      "plannedPrs": [143, 144, 145, 146],
       "completedPrs": [143, 144, 145, 146],
       "implementationMergeShas": {
         "143": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
@@ -147,18 +147,7 @@
         "145": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f",
         "146": "392abb2bf27267fef9777ff35eb96555941a42f3"
       },
-      "finalImplementationCodeHead": "54914d98c071b84c668af5e16b89cb851085f7ba",
-      "finalMergeShaSynchronization": "completed-by-audit-pr-147",
-      "archive": "docs/audits/completed/sustainable-pve-operations-01.md",
-      "workItems": [
-        "PVE-TARGET-RECOVERY",
-        "PVE-OPERATIONS-INTELLIGENCE-UX",
-        "BOT-PVE-OPERATIONS",
-        "PVE-SUSTAINABILITY-GATE"
-      ],
-      "targetStateSchema": 16,
-      "targetSaveFormat": 3,
-      "outcome": "Repeatable targets, canonical PvE Operations intelligence, honest bot participation and three-faction 48-hour closure"
+      "archive": "docs/audits/completed/sustainable-pve-operations-01.md"
     },
     {
       "id": "pve-meta-foundation",
@@ -170,8 +159,11 @@
       "batchId": "PVE-META-FOUNDATION-01",
       "complexity": "medium",
       "plannedPrs": [148, 149, 150, 151],
-      "completedPrs": [],
-      "activePr": 148,
+      "completedPrs": [148],
+      "implementationMergeShas": {
+        "148": "430265b061764145e4e3ea1470d545f2ef82d0fa"
+      },
+      "activePr": 149,
       "implementationAuthorized": true,
       "workItems": [
         "PVE-REPUTATION-FOUNDATION",
@@ -200,25 +192,6 @@
   ],
   "planned": [
     {
-      "number": 146,
-      "kind": "implementation-closure",
-      "workItem": "PVE-SUSTAINABILITY-GATE",
-      "title": "Close sustainable PvE operations",
-      "status": "merged",
-      "mergeSha": "392abb2bf27267fef9777ff35eb96555941a42f3",
-      "validatedHead": "54914d98c071b84c668af5e16b89cb851085f7ba",
-      "ciRun": 30752151413,
-      "browserRun": 30752151392,
-      "graphifyRun": 30752151378,
-      "testFiles": 106,
-      "tests": 557,
-      "closureTests": 13,
-      "oneDayPerformanceMilliseconds": 5288,
-      "sevenDayPerformanceMilliseconds": 23329,
-      "progressionMatrixCases": 15,
-      "progressionPhaseViolations": 0
-    },
-    {
       "number": 147,
       "kind": "audit",
       "batchId": "PVE-META-FOUNDATION-01",
@@ -233,17 +206,21 @@
       "kind": "implementation",
       "workItem": "PVE-REPUTATION-FOUNDATION",
       "title": "Add persistent PvE reputation",
-      "status": "active",
+      "status": "merged",
+      "mergeSha": "430265b061764145e4e3ea1470d545f2ef82d0fa",
       "targetStateSchema": 17,
-      "targetSaveFormat": 4,
-      "validatedCodeHead": "820c6fa84e619fb0ebc46ca36eaaf00437daaf4e"
+      "targetSaveFormat": 4
     },
     {
       "number": 149,
       "kind": "implementation",
       "workItem": "ARENA-PVE-CHALLENGES",
       "title": "Add local Arena PvE challenges",
-      "status": "blocked-until-pr-148-merge"
+      "status": "active",
+      "validatedCodeHead": "11f60961650071b3123718e81c968504f9342512",
+      "ciRun": 30758613565,
+      "browserRun": 30758613557,
+      "graphifyRun": 30758613558
     },
     {
       "number": 150,
@@ -260,5 +237,5 @@
       "status": "blocked-until-pr-150-merge"
     }
   ],
-  "nextAction": "Validate the final PR #148 code+docs head, resolve review and squash merge; then fetch the exact merge SHA and create only #149 ARENA-PVE-CHALLENGES."
+  "nextAction": "Validate the final PR #149 code+docs head, resolve review and squash merge; then fetch the exact merge SHA and create only #150 PVE-META-OPERATIONS-UX."
 }
