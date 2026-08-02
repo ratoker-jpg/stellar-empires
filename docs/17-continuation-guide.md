@@ -55,10 +55,20 @@ Delivered planner/scheduler:
 - pirate-hunt requires active event, current level-3 intelligence, 120% safety and ordinary validation;
 - true recovery/high-threat actions remain before PvE;
 - at most one `pve` command per decision with auditable reason codes;
-- routine planning every 21,600 seconds and active targeted-event reaction every 3,600 seconds;
+- routine scheduler PvE unlocks after heavy-fleet at `planet-destruction`;
+- routine planning every 21,600 seconds; targeted events and already-running special operations react every 3,600 seconds;
+- the pure planner remains directly testable before scheduler unlock;
 - inherited colony logistics, determinism and performance preserved.
 
-Code head `2b772475f79db3998932a4cf0322a5dfe757ac0e` passed full suite/build and performance in CI `30745970162`; Graphify `30745970168` passed. Browser/progression conclusions are checked before final closure.
+Code head `db29dbe0a69ba38eea6a2f3ba838604305ec0505` passed:
+
+```text
+CI             30746581384 — full suite/build, performance and 15-case matrix
+Browser E2E    30746581373 — success
+Graphify       30746581362 — success
+```
+
+Performance: 1 day `6.06s`; 7 days `29.81s`.
 
 ## Exact recovery action
 
