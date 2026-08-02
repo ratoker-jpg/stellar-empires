@@ -1,6 +1,6 @@
 # Completed batch — SUSTAINABLE-PVE-OPERATIONS-01
 
-**Status:** completed by PR #146 after final gates  
+**Status:** completed and synchronized by Audit PR #147  
 **Roadmap milestone:** M6a — sustainable existing PvE operations  
 **Complexity:** medium  
 **Audit PR:** #142  
@@ -15,10 +15,10 @@
 → #143 PVE-TARGET-RECOVERY         e3d2c28385abd9772a18257eeb313bd8d45e581e
 → #144 PVE-OPERATIONS-INTELLIGENCE dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a
 → #145 BOT-PVE-OPERATIONS          62aae31e2ad5e4ad04385a5cd94f77a70579d72f
-→ #146 PVE-SUSTAINABILITY-GATE     code head a2e466bfffa3494ae9a08e2c4250e6fc78c89290
+→ #146 PVE-SUSTAINABILITY-GATE     392abb2bf27267fef9777ff35eb96555941a42f3
 ```
 
-The exact #146 squash merge SHA does not exist until GitHub performs the merge. The next Audit PR must synchronize that generated SHA before selecting another implementation batch. No fifth M6a implementation PR is authorized.
+PR #146 was the fourth and final implementation/closure PR. No fifth M6a implementation PR was authorized or created.
 
 ## Delivered outcome
 
@@ -77,23 +77,31 @@ It proves:
 - legal ordinary bot expedition, object and pirate-hunt commands;
 - deterministic, non-mutating and hidden-state-isolated bot plans.
 
-Code-head gates:
+Final validated head:
 
 ```text
-CI             30747647153 — success
-Browser E2E    30747647147 — cancelled by later documentation commits; final documentation-head success required
-Graphify       30747647145 — success
+54914d98c071b84c668af5e16b89cb851085f7ba
+```
+
+Final gates:
+
+```text
+CI             30752151413 — success
+Browser E2E    30752151392 — success, 28 tests
+Graphify       30752151378 — success
 ```
 
 Measured evidence:
 
 ```text
 106 test files / 557 tests passed
-13 new closure tests passed
+13 closure tests passed
 15 progression cases / zero phase violations
-1 campaign day  6.22 s < 15 s
-7 campaign days 29.56 s < 30 s
+1 campaign day   5.288 s < 15 s
+7 campaign days 23.329 s < 30 s
 ```
+
+The performance gate remains `<15 s` / `<30 s`; PR #146 only stabilized measurement by collecting garbage immediately before the timed section.
 
 ## Explicit exclusions retained
 
@@ -106,11 +114,11 @@ Measured evidence:
 - no physical logistics/convoy combat;
 - no alliances, Solar War, functional Gates or endgame.
 
-## Post-closure rule
+## Post-closure rule fulfilled
 
-M6a implementation is closed. The next repository change may only be a new Audit PR that:
+Audit PR #147:
 
-1. synchronizes the exact #146 squash merge SHA;
-2. re-reads actual `main` and the canonical roadmap;
-3. selects and sizes the next batch;
-4. authorizes implementation only through a new accepted contract.
+1. synchronized the exact #146 squash SHA;
+2. re-read actual `main` and the canonical roadmap;
+3. selected and sized the next proposed batch;
+4. kept implementation blocked until the new audit is accepted.

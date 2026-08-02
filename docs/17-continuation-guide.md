@@ -1,11 +1,11 @@
 # AI Continuation Guide
 
-**Status:** PR #146 `PVE-SUSTAINABILITY-GATE` closing M6a  
+**Status:** Audit PR #147 active; no implementation yet  
 **Updated:** 2026-08-02  
-**Last merged PR:** #145 `BOT-PVE-OPERATIONS`  
-**Verified main:** `62aae31e2ad5e4ad04385a5cd94f77a70579d72f`  
-**Active branch:** `agent/pve-sustainability-gate`  
-**Next authorized PR after merge:** #147 Audit only
+**Last merged PR:** #146 `PVE-SUSTAINABILITY-GATE`  
+**Verified main:** `392abb2bf27267fef9777ff35eb96555941a42f3`  
+**Active branch:** `agent/audit-next-playable-batch`  
+**Next proposed PR after audit acceptance:** #148 `PVE-REPUTATION-FOUNDATION`
 
 ## Repository
 
@@ -19,76 +19,95 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/completed/sustainable-pve-operations-01.md`
-6. `docs/changes/pr146-pve-sustainability-gate.md`
-7. `docs/project-status.json`
-8. `docs/roadmap-pr-index.json`
-9. `docs/27-playable-game-roadmap-v5.md`
-10. latest merged PRs, open PRs and actual `main`
+5. `docs/audits/contracts/pve-meta-foundation-01.md`
+6. `docs/audits/evidence/pve-meta-foundation-01.md`
+7. `docs/changes/pr147-pve-meta-foundation-audit.md`
+8. `docs/audits/completed/sustainable-pve-operations-01.md`
+9. `docs/project-status.json`
+10. `docs/roadmap-pr-index.json`
+11. `docs/27-playable-game-roadmap-v5.md`
+12. latest merged PRs, open PRs and actual `main`
 
-## Closing M6a history
+## Exact completed M6a history
 
 ```text
 #142 Sustainable PvE Audit         81f1959b0bdbdd72d05dc21a2dce0a9e1470f010
 #143 PVE-TARGET-RECOVERY            e3d2c28385abd9772a18257eeb313bd8d45e581e
 #144 PVE-OPERATIONS-INTELLIGENCE-UX dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a
 #145 BOT-PVE-OPERATIONS             62aae31e2ad5e4ad04385a5cd94f77a70579d72f
-#146 PVE-SUSTAINABILITY-GATE — closure active
+#146 PVE-SUSTAINABILITY-GATE        392abb2bf27267fef9777ff35eb96555941a42f3
 ```
 
-No fifth M6a implementation PR is authorized.
-
-## PR #146 closure result
-
-The closure gate adds no gameplay domain. It proves across Aegis, Synod and Veyra:
-
-- 48-hour direct, six-hour chunked and 24-hour save-loaded equality;
-- exact six-hour object recovery and ordinary reuse;
-- pirate recovery, free respawn and occupied-slot blocking;
-- target-only pirate-hunt reward;
-- world-event chain preservation;
-- stable target counts, unique occupied coordinates and bounded histories;
-- ordinary validated bot expedition, object and legal pirate-hunt commands;
-- deterministic, non-mutating and hidden-state-isolated bot plans.
-
-Validated code head:
+Final #146 gates:
 
 ```text
-a2e466bfffa3494ae9a08e2c4250e6fc78c89290
+CI             30752151413 — success
+Browser E2E    30752151392 — success
+Graphify       30752151378 — success
+1 day           5.288 s < 15 s
+7 days         23.329 s < 30 s
 ```
+
+## Audit #147 result
+
+The audit proposes a bounded M6b batch rather than a broad meta-system clone.
+
+Accepted:
+
+- persisted PvE reputation and derived tiers;
+- one controlled schema v17/save v4 migration;
+- public local Arena challenges using existing fleets, resources and deterministic combat;
+- extension of the canonical Operations workspace;
+- same-command honest bot participation;
+- 48-hour three-faction closure.
+
+Rejected/deferred:
+
+- separate PvE currency;
+- Admiral services;
+- multiplayer/PvP Arena, rankings or seasons;
+- new mechanical catalog entries;
+- alliances, Solar War, Obelisks, Gates or victory/defeat;
+- global economy/progression rebalance.
+
+## Proposed order
 
 ```text
-CI             30747647153 — success
-Graphify       30747647145 — success
-Browser E2E    final documentation-head success required before merge
+#147 PVE-META-FOUNDATION-01 Audit — active
+→ #148 PVE-REPUTATION-FOUNDATION
+→ #149 ARENA-PVE-CHALLENGES
+→ #150 PVE-META-OPERATIONS-UX
+→ #151 BOT-PVE-META-GATE
 ```
 
-CI includes 106 test files / 557 tests, 15 progression cases with zero violations, one-day catch-up in 6.22 seconds and seven-day catch-up in 29.56 seconds.
+Exactly four implementation PRs are proposed. None is authorized until #147 is accepted.
 
 ## Exact recovery action
 
-While #146 is open:
+While #147 is open:
 
-1. continue only `agent/pve-sustainability-gate`;
-2. keep changes inside closure tests, archive and status synchronization;
-3. do not add gameplay, meta systems or another implementation domain;
-4. run CI, Browser E2E and Graphify on the final documentation head;
+1. continue only `agent/audit-next-playable-batch`;
+2. keep changes documentation-only;
+3. do not create #148 or modify runtime/tests/assets/schema/save;
+4. validate CI, Browser E2E and Graphify on final documentation head;
 5. resolve every review finding;
 6. squash merge only when all gates are green.
 
-After #146 merges:
+After #147 merges:
 
-1. fetch its exact generated squash SHA and fresh `main`;
-2. create Audit PR #147 only;
-3. synchronize the exact #146 SHA into archive/history;
-4. re-audit actual code and the canonical roadmap;
-5. authorize implementation only through a new accepted contract.
+1. fetch exact #147 squash SHA and fresh `main`;
+2. create only #148 `PVE-REPUTATION-FOUNDATION`;
+3. implement only the accepted migration/reputation contract;
+4. do not absorb Arena, UX or final bot/gate work early;
+5. preserve all permanent progression, performance, Browser and Graphify gates.
 
 ## Hard stops
 
-- no implementation after #146 without Audit #147;
-- no schema v17/save format v4 without a new audit;
-- no persisted PvE currency, reputation or telemetry;
-- no hidden-information exception or fabricated bot assets;
-- no Arena, Admiral services, alliances or endgame;
-- no weakening of progression, determinism, performance or Browser gates.
+- no implementation before Audit #147 acceptance;
+- no second schema/save bump after #148;
+- no separate PvE currency or Admiral services;
+- no hidden-information exception or fabricated bot assets/resources;
+- no multiplayer, rankings, alliances or endgame;
+- no new primary UI family for Arena;
+- no weakening of progression, determinism, performance, Browser or Graphify gates;
+- after two failed attempts, change the approach rather than repeating the same retry.

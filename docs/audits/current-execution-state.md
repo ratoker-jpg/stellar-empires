@@ -1,83 +1,99 @@
 # Current execution state
 
 **Updated:** 2026-08-02  
-**Safe to continue:** yes, through Audit PR #147 only after #146 merges
+**Safe to continue:** yes, through Audit PR #147 only
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `62aae31e2ad5e4ad04385a5cd94f77a70579d72f` |
-| Last merged PR | #145 `BOT-PVE-OPERATIONS` |
-| Runtime baseline | PR #145 · schema v16 / save format v3 |
-| Closing batch | `SUSTAINABLE-PVE-OPERATIONS-01` |
-| Active work | #146 `PVE-SUSTAINABILITY-GATE` closure |
-| Active branch | `agent/pve-sustainability-gate` |
-| Implementation authorization after merge | none |
-| Next authorized PR | #147 Audit only |
-| Blockers | final documentation-head gates and review |
+| Verified `main` baseline | `392abb2bf27267fef9777ff35eb96555941a42f3` |
+| Last merged PR | #146 `PVE-SUSTAINABILITY-GATE` |
+| Runtime baseline | PR #146 · schema v16 / save format v3 |
+| Last completed batch | `SUSTAINABLE-PVE-OPERATIONS-01` |
+| Active work | #147 `PVE-META-FOUNDATION-01` Audit |
+| Active branch | `agent/audit-next-playable-batch` |
+| Implementation authorization | blocked until #147 acceptance |
+| Proposed first implementation PR | #148 `PVE-REPUTATION-FOUNDATION` |
+| Blockers | Audit #147 final gates, review and merge |
 
 ## Last completed atomic action
 
-PR #145 was squash-merged as:
+PR #146 was squash-merged as:
 
 ```text
-62aae31e2ad5e4ad04385a5cd94f77a70579d72f
+392abb2bf27267fef9777ff35eb96555941a42f3
 ```
 
-## PR #146 closure result
+The exact SHA is synchronized in the completed archive and batch history by Audit #147.
 
-PR #146 adds no gameplay domain. It composes permanent evidence across the delivered M6a mechanics:
-
-- Aegis/Synod/Veyra 48-hour direct, six-hour chunked and 24-hour save-loaded equality;
-- exact six-hour object recovery and ordinary mission reuse;
-- surviving pirate recovery, free-slot respawn and occupied-slot blocking;
-- target-only pirate-hunt reward;
-- `solar-storm` → `anomaly-aftershock` chain preservation;
-- stable target counts, unique IDs/occupied coordinates and bounded histories;
-- legal ordinary bot expedition, object and pirate-hunt commands;
-- deterministic, non-mutating and hidden-state-isolated bot plans.
-
-Validated code head:
+Final PR #146 evidence from head `54914d98c071b84c668af5e16b89cb851085f7ba`:
 
 ```text
-a2e466bfffa3494ae9a08e2c4250e6fc78c89290
+CI             30752151413 — success
+Browser E2E    30752151392 — success, 28 tests
+Graphify       30752151378 — success
+1 campaign day   5.288 s < 15 s
+7 campaign days 23.329 s < 30 s
 ```
 
-Evidence:
+## Active audit decision
+
+Audit #147 proposes `PVE-META-FOUNDATION-01`, a medium four-PR batch:
 
 ```text
-CI             30747647153 — success
-Browser E2E    30747647147 — cancelled by later documentation commits; final documentation-head success required
-Graphify       30747647145 — success
-106 test files / 557 tests
-15 progression cases / zero phase violations
-1 campaign day  6.22 s < 15 s
-7 campaign days 29.56 s < 30 s
+#148 PVE-REPUTATION-FOUNDATION
+→ #149 ARENA-PVE-CHALLENGES
+→ #150 PVE-META-OPERATIONS-UX
+→ #151 BOT-PVE-META-GATE
 ```
 
-Archive:
+Implementation is not active. The sequence becomes authorized only after #147 is accepted and squash-merged.
+
+## Scope rationale
+
+Accepted:
+
+- persistent PvE reputation and derived tiers;
+- one controlled schema v17/save v4 migration;
+- local deterministic Arena challenges using existing fleets/resources/combat;
+- canonical Operations UX;
+- honest same-command bot participation;
+- three-faction partition and closure evidence.
+
+Rejected/deferred:
+
+- separate PvE currency;
+- Admiral services;
+- multiplayer/PvP Arena, rankings and seasons;
+- alliances, Solar War, Obelisks, Gates and endgame;
+- global progression/economy rebalance.
+
+## Audit sources
 
 ```text
-docs/audits/completed/sustainable-pve-operations-01.md
+docs/audits/contracts/pve-meta-foundation-01.md
+docs/audits/evidence/pve-meta-foundation-01.md
+docs/changes/pr147-pve-meta-foundation-audit.md
 ```
 
-## Post-merge state
+Graphify confirms no existing Arena, Admiral, reputation or currency domain. The batch must create a separate PvE-meta boundary instead of extending the current PvE import cycle.
 
-When #146 lands, M6a is completed and there is no active implementation contract. The exact generated #146 squash SHA cannot exist inside its own pre-merge content; Audit #147 must synchronize it before selecting another batch.
+## Compatibility boundary while #147 is open
 
-## Compatibility boundary
-
-- schema v16/save format v3 retained;
-- no new persisted state or server authority;
-- no Arena, Admiral services, PvE currency/reputation or meta progression;
-- no alliances, Solar War, Gates or endgame;
-- no fifth M6a implementation PR.
+- runtime remains schema v16/save v3;
+- no source, test, asset, schema or save implementation changes;
+- no #148 branch or implementation PR;
+- no separate currency or Admiral services;
+- no hidden-information exception;
+- no alliances or endgame;
+- no weakening of CI, Browser, Graphify, progression or performance gates.
 
 ## Exact next action
 
-1. Validate final #146 documentation head with CI, Browser E2E and Graphify.
-2. Resolve every blocking review finding.
-3. Mark #146 ready and squash merge only with green gates.
-4. Fetch fresh `main` and exact #146 merge SHA.
-5. Create Audit PR #147 only and synchronize closure history.
+1. run CI, Browser E2E and Graphify on final Audit #147 head;
+2. resolve every blocking review finding;
+3. confirm PR #147 mergeability;
+4. mark ready and squash merge only when all gates are green;
+5. fetch exact #147 squash SHA and fresh `main`;
+6. create #148 only from that baseline.
 
 No implementation work is authorized until Audit #147 is accepted.
