@@ -36,7 +36,8 @@ export type BotPlannerSource =
   | 'pve';
 export const MAX_BOT_DECISIONS_PER_RUN = 32;
 export const POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS = 3_600;
-export const BOT_PVE_PLANNING_INTERVAL_SECONDS = 3_600;
+export const BOT_PVE_PLANNING_INTERVAL_SECONDS = 21_600;
+export const BOT_PVE_EVENT_PLANNING_INTERVAL_SECONDS = 3_600;
 export const BOT_PORTFOLIO_MAINTENANCE_INTERVAL_SECONDS = 3_600;
 
 export interface BotSchedulerAuditEntry {
@@ -376,6 +377,14 @@ function hasRelevantPveAsset(state: GameState, empireId: string): boolean {
     );
 }
 
+function hasActionablePveEvent(state: GameState): boolean {
+  return state.worldEvents.active.some(
+    (event) =>
+      event.definitionId === 'pirate-hunt' ||
+      event.definitionId === 'mineral-bloom',
+  );
+}
+
 function runProfileDecision(
   state: GameState,
   profile: BotProfile,
@@ -399,11 +408,14 @@ function runProfileDecision(
     decidedAt,
     BOT_PORTFOLIO_MAINTENANCE_INTERVAL_SECONDS,
   );
+  const pveCadence = hasActionablePveEvent(state)
+    ? BOT_PVE_EVENT_PLANNING_INTERVAL_SECONDS
+    : BOT_PVE_PLANNING_INTERVAL_SECONDS;
   const pveDue = isCadenceDue(
     state,
     profile,
     decidedAt,
-    BOT_PVE_PLANNING_INTERVAL_SECONDS,
+    pveCadence,
   ) && hasRelevantPveAsset(state, profile.empireId);
   const diagnosticFleet = planBotFleetMission(working, profile.empireId);
   const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, diagnosticFleet);
