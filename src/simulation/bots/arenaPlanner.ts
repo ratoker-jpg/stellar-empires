@@ -3,14 +3,11 @@ import { getBotProgressionPhase } from './progressionPhase';
 import type { BotPersonality, BotProfile } from './profiles';
 import type { FleetState } from '../fleets/types';
 import { canAfford } from '../planet/buildingProgression';
-import {
-  getArenaChallenges,
-} from '../pveMeta/arena';
+import { getArenaChallenges } from '../pveMeta/arena';
 import type {
   ArenaChallenge,
   ArenaDifficulty,
 } from '../pveMeta/reputation';
-import { executeCommand } from '../reducer';
 import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
 
@@ -21,8 +18,7 @@ export type BotArenaReasonCode =
   | 'arena-no-ready-fleet'
   | 'arena-safety-threshold'
   | 'arena-gas-reserve-protected'
-  | 'arena-entry-cost-unaffordable'
-  | 'arena-validator-rejected';
+  | 'arena-entry-cost-unaffordable';
 
 export interface BotArenaParticipationPlan {
   readonly empireId: string;
@@ -120,15 +116,20 @@ function isSafeMatchup(fleetPower: number, challenge: ArenaChallenge): boolean {
   return fleetPower * 1_000 >= Math.max(1, enemyPower) * ARENA_SAFETY_PERMILLE;
 }
 
+function findOrigin(state: GameState, fleet: FleetState) {
+  const location = fleet.location;
+  if (location.type !== 'planet') return undefined;
+  return state.planets.find((planet) =>
+    planet.id === location.planetId && planet.ownerEmpireId === fleet.empireId,
+  );
+}
+
 function gasReserveAllows(
   state: GameState,
   fleet: FleetState,
   challenge: ArenaChallenge,
 ): boolean {
-  if (fleet.location.type !== 'planet') return false;
-  const origin = state.planets.find((planet) =>
-    planet.id === fleet.location.planetId && planet.ownerEmpireId === fleet.empireId,
-  );
+  const origin = findOrigin(state, fleet);
   if (origin === undefined) return false;
   const gas = origin.economy.resources.gas;
   const reserve = Math.floor(
@@ -142,10 +143,7 @@ function canPayEntry(
   fleet: FleetState,
   challenge: ArenaChallenge,
 ): boolean {
-  if (fleet.location.type !== 'planet') return false;
-  const origin = state.planets.find((planet) =>
-    planet.id === fleet.location.planetId && planet.ownerEmpireId === fleet.empireId,
-  );
+  const origin = findOrigin(state, fleet);
   return origin !== undefined && canAfford(origin.economy, challenge.entryCost);
 }
 
@@ -153,8 +151,13 @@ function selectedPlan(
   profile: BotProfile,
   challenge: ArenaChallenge,
   fleet: FleetState,
-  command: GameCommand,
 ): BotArenaParticipationPlan {
+  const command: GameCommand = {
+    type: 'ENTER_ARENA_CHALLENGE',
+    empireId: profile.empireId,
+    fleetId: fleet.id,
+    challengeId: challenge.id,
+  };
   return {
     empireId: profile.empireId,
     personality: profile.personality,
@@ -207,7 +210,6 @@ export function planBotArenaParticipation(
   let sawSafeMatchup = false;
   let sawGasReserveBlock = false;
   let sawEntryCostBlock = false;
-  let lastValidation: { readonly code: string; readonly message: string } | null = null;
 
   for (const challenge of orderedChallenges(state, profile.personality)) {
     for (const candidate of fleets) {
@@ -221,18 +223,7 @@ export function planBotArenaParticipation(
         sawGasReserveBlock = true;
         continue;
       }
-
-      const command: GameCommand = {
-        type: 'ENTER_ARENA_CHALLENGE',
-        empireId: profile.empireId,
-        fleetId: candidate.fleet.id,
-        challengeId: challenge.id,
-      };
-      const validation = executeCommand(state, command);
-      if (validation.ok) {
-        return selectedPlan(profile, challenge, candidate.fleet, command);
-      }
-      lastValidation = { code: validation.code, message: validation.message };
+      return selectedPlan(profile, challenge, candidate.fleet);
     }
   }
 
@@ -252,18 +243,12 @@ export function planBotArenaParticipation(
       'Arena entry would reduce the origin colony below the mandatory 40% gas reserve.',
     );
   }
-  if (sawEntryCostBlock) {
-    return blockedPlan(
-      profile,
-      'arena-entry-cost-unaffordable',
-      'ARENA_ENTRY_COST_UNAFFORDABLE',
-      'No safe Arena challenge can be paid from the selected fleet origin.',
-    );
-  }
   return blockedPlan(
     profile,
-    'arena-validator-rejected',
-    lastValidation?.code ?? 'ARENA_CHALLENGE_UNAVAILABLE',
-    lastValidation?.message ?? 'Arena entry was rejected by the ordinary command validator.',
+    'arena-entry-cost-unaffordable',
+    'ARENA_ENTRY_COST_UNAFFORDABLE',
+    sawEntryCostBlock
+      ? 'No safe Arena challenge can be paid from the selected fleet origin.'
+      : 'No Arena challenge is currently actionable.',
   );
 }
