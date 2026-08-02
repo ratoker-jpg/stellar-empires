@@ -2,9 +2,9 @@
 
 **Status:** active canonical product roadmap  
 **Updated:** 2026-08-02  
-**Last merged PR:** #149 `ARENA-PVE-CHALLENGES` · `42c484426e850b84263d4eecab63ebbb3eaafb05`  
+**Last merged PR:** #150 `PVE-META-OPERATIONS-UX` · `39b85fe057d2cbf1fcff6b949a14bc62c7dbde63`  
 **Merged runtime baseline:** schema v17 / save format v4  
-**Active work:** #150 `PVE-META-OPERATIONS-UX`  
+**Active work:** #151 `BOT-PVE-META-GATE` · final M6b closure  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -35,9 +35,9 @@ Nemexia references define systemic depth only. Stellar Empires keeps original te
 
 ## 3. Delivered baseline
 
-The merged product includes deterministic schema-v17/save-v4 campaigns, immutable active/offline time, compressed finite progression, complete catalogs/runtime art, ordinary missions/intelligence/combat, destruction/recovery, coherent multi-colony economy, hardened logistics, player colony operations, honest bot colony/PvE participation, persistent PvE reputation and deterministic local Arena mechanics.
+The merged product includes deterministic schema-v17/save-v4 campaigns, immutable active/offline time, compressed finite progression, complete catalogs/runtime art, ordinary missions/intelligence/combat, destruction/recovery, coherent multi-colony economy, hardened logistics, player colony operations, sustainable PvE, persistent reputation, local deterministic Arena mechanics and routed Arena Operations UX.
 
-## 4. Completed M5
+## 4. Completed M5 — multi-colony economy/logistics
 
 ```text
 #137 Audit
@@ -61,21 +61,9 @@ Archive: `docs/audits/completed/multi-colony-economy-logistics-01.md`.
 
 Archive: `docs/audits/completed/sustainable-pve-operations-01.md`.
 
-Delivered outcome:
+## 6. Final M6b — bounded PvE meta foundation
 
-- deterministic six-hour recovery for depleted objects and pirate targets;
-- occupied-position protection and stable target identity;
-- target-only pirate-hunt reward scaling;
-- one canonical opportunity model and routed Operations/report UX;
-- public-only bot perception and ordinary-command participation;
-- 40% gas reserve and legal intelligence/safety checks for bot missions;
-- three-faction 48-hour direct/chunk/save equality;
-- world-event chain preservation and bounded histories;
-- permanent progression and performance protection.
-
-## 6. Active M6b — bounded PvE meta foundation
-
-Audit #147 was accepted and squash-merged as:
+Audit #147 was accepted as:
 
 ```text
 50835aeb2864b96e026a7202ad419368e934e47b
@@ -86,48 +74,34 @@ Authorized sequence:
 ```text
 #148 PVE-REPUTATION-FOUNDATION 430265b061764145e4e3ea1470d545f2ef82d0fa
 → #149 ARENA-PVE-CHALLENGES 42c484426e850b84263d4eecab63ebbb3eaafb05
-→ #150 PVE-META-OPERATIONS-UX — active
-→ #151 BOT-PVE-META-GATE
+→ #150 PVE-META-OPERATIONS-UX 39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
+→ #151 BOT-PVE-META-GATE — active final closure
 ```
 
-Exactly four implementation PRs are authorized. No fifth PR may be added.
+Exactly four implementation PRs are authorized. No fifth implementation PR may be added.
 
-### #148 completed
+### Delivered M6b outcome
 
-- one persisted non-purchasable reputation score per empire;
+- one persisted non-purchasable PvE reputation score per empire;
 - Recruit/Ranger/Vanguard/Warden tiers;
-- deterministic ordinary-PvE awards;
-- schema v17/save v4 migration and duplicate protection.
-
-### #149 completed
-
-- three public deterministic challenges per six-hour campaign cycle;
-- existing faction ships, resources and deterministic combat;
-- one active entry per empire, withdrawal, persistent losses/survivors;
-- victory-only rewards and +10/+20/+35 reputation;
-- save-v4 active-entry compatibility and bounded history.
-
-### #150 active
-
-- canonical `#/operations/arena` route;
-- reputation/tier/progress and exact award explanations;
-- recent reputation ledger from existing histories;
-- three challenge cards with cycle timing, public enemy summary, cost, duration and rewards;
-- eligible owned fleets and exact deterministic validation;
-- active entry, withdrawal and completed results;
-- responsive/mobile/reduced-motion presentation;
-- reload and browser-history equivalence;
-- unchanged prior Operations modes.
-
-Bot participation and final closure remain for #151.
+- deterministic ordinary-PvE and Arena awards;
+- one controlled schema v17/save v4 migration;
+- three public local deterministic Arena challenges every six hours;
+- existing faction ships, resources and combat;
+- active entry, withdrawal, losses, survivors, rewards and bounded history;
+- routed Operations reputation/Arena UX;
+- public-only bot planning through the same Arena command;
+- planet-destruction capability gate and 40% gas reserve;
+- ordinary PvE and higher scheduler priorities ahead of Arena;
+- legal Aegis, Synod and Veyra participation;
+- 48-hour direct/chunk/save/offline exact full-state equality.
 
 Accepted product decision:
 
 - local deterministic Arena, not multiplayer or asynchronous PvP;
 - existing-resource costs/rewards, no separate PvE currency;
 - extension of Operations, not another primary route;
-- public-only same-command bot participation;
-- 48-hour three-faction direct/chunk/save/offline gate.
+- public-only same-command bot participation.
 
 Deferred/rejected:
 
@@ -137,12 +111,7 @@ Deferred/rejected:
 - global economy/progression rebalance;
 - alliances and endgame.
 
-Contract and evidence:
-
-```text
-docs/audits/contracts/pve-meta-foundation-01.md
-docs/audits/evidence/pve-meta-foundation-01.md
-```
+Archive: `docs/audits/completed/pve-meta-foundation-01.md`.
 
 ## 7. Release 1.0 definition
 
@@ -164,8 +133,8 @@ Bots must use the same commands, resources, timing and intelligence limits. Save
 | M4d — Campaign progression balance | completed | Audit #133; #134–#135 |
 | M5 — Multi-colony economy/logistics | completed | Audit #137; #138–#141 |
 | M6a — Sustainable existing PvE | completed | Audit #142; #143–#146 |
-| M6b — PvE meta foundation | implementation active | Audit #147; #148–#149 merged; #150 active; #151 ordered |
-| M7 — Autonomous bot parity | partial | colony logistics and sustainable PvE parity delivered; meta parity in #151 |
+| M6b — PvE meta foundation | final implementation active | Audit #147; #148–#150 merged; #151 closure |
+| M7 — Autonomous bot parity | substantially delivered | economy, logistics, sustainable PvE and meta parity delivered; endgame parity remains |
 | M8 — Complete endgame | not audited | alliances, Solar War, Obelisks, Gates, victory/defeat |
 | M9 — Release candidate | not audited | balance, onboarding, QA, performance, release |
 
@@ -174,7 +143,6 @@ Bots must use the same commands, resources, timing and intelligence limits. Save
 - current `main` is the only valid merged runtime baseline;
 - exactly four implementation PRs are authorized for `PVE-META-FOUNDATION-01`;
 - schema v17/save v4 was introduced only by #148 and remains unchanged;
-- #151 cannot start before #150 merges;
 - player and bots use ordinary commands, owned resources and public visibility rules;
 - no separate PvE currency, Admiral services or multiplayer Arena;
 - campaign identity and one active/offline orchestrator remain unchanged;
@@ -183,4 +151,4 @@ Bots must use the same commands, resources, timing and intelligence limits. Save
 
 ## 10. Immediate action
 
-Validate the final #150 code+docs head, resolve review and squash merge. Then fetch its exact merge SHA and create only #151 `BOT-PVE-META-GATE` from fresh `main`.
+Validate final #151 code+docs head, resolve review and squash merge. The immediately following PR must be Audit-only, record exact #151 squash SHA and authorize no implementation until accepted.
