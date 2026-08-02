@@ -1,5 +1,5 @@
 {
-  "statusVersion": 57,
+  "statusVersion": 58,
   "updatedAt": "2026-08-02",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -153,6 +153,7 @@
     ],
     "ordinaryBotPveCommands": true,
     "botPveSchedulerSource": "pve",
+    "botPveRoutineUnlockPhase": "planet-destruction",
     "botPveRoutineCadenceSeconds": 21600,
     "botPveEventCadenceSeconds": 3600,
     "botPveGasReservePermille": 400,
@@ -217,12 +218,14 @@
       "kind": "implementation",
       "workItem": "BOT-PVE-OPERATIONS",
       "status": "active",
-      "validatedCodeHead": "2b772475f79db3998932a4cf0322a5dfe757ac0e",
-      "ciRun": 30745970162,
-      "browserRun": 30745970161,
-      "graphifyRun": 30745970168,
-      "oneDayPerformanceMilliseconds": 8940,
-      "sevenDayPerformanceMilliseconds": 21806
+      "validatedCodeHead": "db29dbe0a69ba38eea6a2f3ba838604305ec0505",
+      "ciRun": 30746581384,
+      "browserRun": 30746581373,
+      "graphifyRun": 30746581362,
+      "oneDayPerformanceMilliseconds": 6064,
+      "sevenDayPerformanceMilliseconds": 29806,
+      "progressionMatrixCases": 15,
+      "progressionPhaseViolations": 0
     },
     {
       "pr": 146,
@@ -246,7 +249,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #145 code head 2b772475f79db3998932a4cf0322a5dfe757ac0e passed Graphify run 30745970168",
+    "lastValidation": "PR #145 code head db29dbe0a69ba38eea6a2f3ba838604305ec0505 passed Graphify run 30746581362",
     "currentAuditEvidence": "docs/audits/evidence/sustainable-pve-operations-01.md"
   },
   "requiredStartupReading": [
