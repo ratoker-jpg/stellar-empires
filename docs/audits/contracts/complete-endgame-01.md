@@ -195,7 +195,6 @@ Reuse without replacement:
 ```text
 src/simulation/pveMeta/arena.ts
 src/simulation/units/catalog.ts
-src/simulation/units/completeShipCatalog.ts
 src/simulation/fleets/types.ts
 src/simulation/combat/types.ts
 ```
