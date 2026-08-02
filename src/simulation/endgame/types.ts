@@ -1,6 +1,6 @@
 export const ALLIANCE_NAME_MIN_LENGTH = 3;
 export const ALLIANCE_NAME_MAX_LENGTH = 40;
-export const ENDGAME_PARTICIPATION_HISTORY_LIMIT = 128;
+export const ENDGAME_PARTICIPATION_HISTORY_LIMIT = 64;
 
 export interface EndgameAlliance {
   readonly id: string;
