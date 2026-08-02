@@ -20,6 +20,13 @@ import {
 
 const SAVE_TIME = '2026-08-02T15:00:00.000Z';
 
+type ArenaResolutionEvent = ScheduledGameEvent & {
+  readonly payload: {
+    readonly type: 'ARENA_RESOLVE';
+    readonly entryId: string;
+  };
+};
+
 function createArenaState(
   seed: string,
   ships: Readonly<Record<string, number>>,
@@ -32,24 +39,9 @@ function createArenaState(
     economy: {
       ...origin.economy,
       resources: {
-        metal: {
-          ...origin.economy.resources.metal,
-          amount: 40_000,
-          productionPerHour: 0,
-          productionRemainder: 0,
-        },
-        crystal: {
-          ...origin.economy.resources.crystal,
-          amount: 40_000,
-          productionPerHour: 0,
-          productionRemainder: 0,
-        },
-        gas: {
-          ...origin.economy.resources.gas,
-          amount: 40_000,
-          productionPerHour: 0,
-          productionRemainder: 0,
-        },
+        metal: { ...origin.economy.resources.metal, amount: 40_000 },
+        crystal: { ...origin.economy.resources.crystal, amount: 40_000 },
+        gas: { ...origin.economy.resources.gas, amount: 40_000 },
       },
     },
   };
@@ -99,6 +91,28 @@ function advance(state: GameState, seconds: number): GameState {
   expect(advanced.ok).toBe(true);
   if (!advanced.ok) throw new Error(advanced.code);
   return advanced.value;
+}
+
+function findResolutionEvent(state: GameState): ArenaResolutionEvent {
+  const event = state.pendingEvents.find(
+    (candidate): candidate is ArenaResolutionEvent => candidate.payload.type === 'ARENA_RESOLVE',
+  );
+  if (event === undefined) throw new Error('Arena resolution event missing.');
+  return event;
+}
+
+function resolveArenaWithoutEconomyAccrual(
+  state: GameState,
+  event: ArenaResolutionEvent,
+): GameState {
+  return applyArenaResolutionEvent(
+    {
+      ...state,
+      clock: { ...state.clock, elapsedSeconds: event.executeAt },
+      pendingEvents: state.pendingEvents.filter((candidate) => candidate.id !== event.id),
+    },
+    event,
+  );
 }
 
 function resourcesAt(state: GameState, planetId: string) {
@@ -222,13 +236,9 @@ describe('local deterministic Arena challenges', () => {
     });
     const challenge = getArenaChallenges(fixture.state)[0]!;
     const entered = enter(fixture.state, fixture.fleet.id, challenge.id);
-    const resolutionEvent = entered.pendingEvents.find(
-      (event): event is ScheduledGameEvent & { readonly payload: { readonly type: 'ARENA_RESOLVE'; readonly entryId: string } } =>
-        event.payload.type === 'ARENA_RESOLVE',
-    );
-    if (resolutionEvent === undefined) throw new Error('Arena resolution event missing.');
+    const resolutionEvent = findResolutionEvent(entered);
     const beforeResolution = resourcesAt(entered, fixture.originId);
-    const resolved = advance(entered, challenge.durationSeconds);
+    const resolved = resolveArenaWithoutEconomyAccrual(entered, resolutionEvent);
     const result = resolved.pveMeta?.arenaHistory.at(-1);
 
     expect(resolved.pveMeta?.activeArenaEntries).toEqual([]);
@@ -257,8 +267,9 @@ describe('local deterministic Arena challenges', () => {
     const fixture = createArenaState('arena-defeat', { [roles.scout]: 1 });
     const challenge = getArenaChallenges(fixture.state)[2]!;
     const entered = enter(fixture.state, fixture.fleet.id, challenge.id);
+    const resolutionEvent = findResolutionEvent(entered);
     const beforeResolution = resourcesAt(entered, fixture.originId);
-    const resolved = advance(entered, challenge.durationSeconds);
+    const resolved = resolveArenaWithoutEconomyAccrual(entered, resolutionEvent);
     const result = resolved.pveMeta?.arenaHistory.at(-1);
 
     expect(result?.outcome).not.toBe('victory');
