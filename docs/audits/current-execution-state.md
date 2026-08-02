@@ -37,7 +37,9 @@ PR #145 gives bots honest access to existing PvE loops:
 - pirate-hunt requires an active event, current level-3 intelligence, a 120% safety margin and the normal attack validator;
 - real threat/recovery remains ahead of PvE; ordinary fleet development remains after PvE;
 - scheduler source `pve` issues at most one command per empire decision and records blocked reasons;
-- background PvE planning runs every 21,600 campaign seconds, while active `pirate-hunt` and `mineral-bloom` opportunities retain 3,600-second reaction;
+- routine scheduler PvE unlocks after heavy-fleet at the `planet-destruction` phase, preserving the permanent progression matrix;
+- routine planning runs every 21,600 campaign seconds; targeted bonus events and already-running special operations retain 3,600-second reaction;
+- the pure planner remains directly testable before scheduler unlock;
 - hidden player resources, fleets, defenses and unpublished outcomes do not affect the plan;
 - inherited colony-role, logistics, partition and performance gates remain intact.
 
@@ -46,22 +48,22 @@ PR #145 gives bots honest access to existing PvE loops:
 Code head:
 
 ```text
-2b772475f79db3998932a4cf0322a5dfe757ac0e
+db29dbe0a69ba38eea6a2f3ba838604305ec0505
 ```
 
 Evidence:
 
 ```text
-CI             30745970162 — full suite/build and performance green; progression checked before closure
-Browser E2E    30745970161 — conclusion checked before closure
-Graphify       30745970168 — success
+CI             30746581384 — full suite/build, performance and 15-case progression matrix success
+Browser E2E    30746581373 — success
+Graphify       30746581362 — success
 ```
 
 Performance:
 
 ```text
-1 campaign day  8.94 s < 15 s
-7 campaign days 21.81 s < 30 s
+1 campaign day   6.06 s < 15 s
+7 campaign days 29.81 s < 30 s
 ```
 
 Change record:
