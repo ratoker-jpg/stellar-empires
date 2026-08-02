@@ -11,7 +11,6 @@ import {
 } from './types';
 
 const ALLIANCE_ID_PATTERN = /^alliance-([1-9]\d*)$/;
-const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001f\u007f]/u;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -19,6 +18,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isNonNegativeInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
+function containsControlCharacter(value: string): boolean {
+  for (const character of value) {
+    const codePoint = character.codePointAt(0);
+    if (codePoint !== undefined && (codePoint <= 0x1f || codePoint === 0x7f)) return true;
+  }
+  return false;
 }
 
 function allianceSequence(allianceId: string): number | undefined {
@@ -35,7 +42,7 @@ export function normalizeAllianceName(value: string): string {
 function isValidAllianceName(value: string): boolean {
   return value.length >= ALLIANCE_NAME_MIN_LENGTH &&
     value.length <= ALLIANCE_NAME_MAX_LENGTH &&
-    !CONTROL_CHARACTER_PATTERN.test(value) &&
+    !containsControlCharacter(value) &&
     normalizeAllianceName(value) === value;
 }
 
