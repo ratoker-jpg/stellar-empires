@@ -2,10 +2,10 @@
 
 **Status:** active canonical product roadmap  
 **Updated:** 2026-08-02  
-**Last merged PR:** #144 `PVE-OPERATIONS-INTELLIGENCE-UX` · `dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a`  
+**Last merged PR:** #145 `BOT-PVE-OPERATIONS` · `62aae31e2ad5e4ad04385a5cd94f77a70579d72f`  
 **Runtime baseline:** schema v16 / save format v3 / immutable dual progression profiles  
-**Last completed batch:** `MULTI-COLONY-ECONOMY-LOGISTICS-01`  
-**Current authorized work:** #145 `BOT-PVE-OPERATIONS`  
+**Closing batch:** `SUSTAINABLE-PVE-OPERATIONS-01` through PR #146  
+**Next authorized work:** Audit PR #147 only  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -36,9 +36,7 @@ Nemexia references define systemic depth only. Stellar Empires keeps original te
 
 ## 3. Delivered baseline
 
-The merged product includes deterministic schema-v16/save-v3 campaigns, immutable active/offline time, compressed finite progression, complete catalogs/runtime art, ordinary missions/intelligence/combat, destruction/recovery, coherent multi-colony economy, hardened logistics, player colony operations and honest bot colony logistics.
-
-M5 completed through #141. Audit #142 authorized the current four-PR sustainable-PvE batch. #143 and #144 are merged.
+The product includes deterministic schema-v16/save-v3 campaigns, immutable active/offline time, compressed finite progression, complete catalogs/runtime art, ordinary missions/intelligence/combat, destruction/recovery, coherent multi-colony economy, hardened logistics, player colony operations and honest bot colony/PvE participation.
 
 ## 4. Completed M5
 
@@ -52,50 +50,41 @@ M5 completed through #141. Audit #142 authorized the current four-PR sustainable
 
 Archive: `docs/audits/completed/multi-colony-economy-logistics-01.md`.
 
-## 5. Active M6a — sustainable PvE before new meta
+## 5. Closing M6a — sustainable existing PvE
 
 ```text
 #142 SUSTAINABLE-PVE-OPERATIONS-01 — Audit merged
 → #143 PVE-TARGET-RECOVERY — merged
 → #144 PVE-OPERATIONS-INTELLIGENCE-UX — merged
-→ #145 BOT-PVE-OPERATIONS — active
-→ #146 PVE-SUSTAINABILITY-GATE
+→ #145 BOT-PVE-OPERATIONS — merged
+→ #146 PVE-SUSTAINABILITY-GATE — closure active
 ```
 
-This batch makes existing PvE repeatable, understandable and honestly contested. It does not add Arena, Admiral services, reputation or endgame.
+Archive: `docs/audits/completed/sustainable-pve-operations-01.md`.
 
-## 6. Delivered #143–#144 foundation
+The batch makes existing PvE repeatable, understandable and honestly contested without adding Arena, Admiral services, reputation or endgame.
 
-#143 delivered deterministic object/pirate recovery, occupied-position protection, chronological offline recovery, targeted pirate-hunt rewards and 48-hour partition equality.
+## 6. M6a delivered outcome
 
-#144 delivered one pure opportunity model for expeditions, objects, pirate bases and active events, plus routed Operations/report presentation without new routes or command paths.
+- deterministic six-hour recovery for depleted objects and pirate targets;
+- occupied-position protection and stable target identity;
+- target-only pirate-hunt reward scaling;
+- one canonical opportunity model and routed Operations/report UX;
+- public-only bot perception and ordinary-command participation;
+- 40% gas reserve and legal intelligence/safety checks for bot missions;
+- three-faction 48-hour direct/chunk/save equality;
+- world-event chain preservation and bounded histories;
+- permanent progression and performance protection.
 
-## 7. Active #145 bot PvE parity
+PR #146 code head `a2e466bfffa3494ae9a08e2c4250e6fc78c89290` passed CI `30747647153` and Graphify `30747647145`. Browser E2E must pass on the final documentation head before merge. CI contains 106 test files / 557 tests, 15 progression cases with zero violations, one-day catch-up in 6.22 seconds and seven-day catch-up in 29.56 seconds.
 
-#145 lets autonomous empires participate under the same information and command rules:
-
-- public-only PvE perception;
-- personality-aware canonical opportunity selection;
-- ordinary fleet creation, expedition, object, legal pirate attack and recall commands;
-- ready-owned-inventory-only fleet formation;
-- 40% gas reserve for special operations;
-- active-event/current-level-3-intelligence/120%-safety requirements for pirate-hunt;
-- true recovery/high-threat actions before PvE;
-- at most one `pve` command per decision;
-- routine scheduler PvE unlock after heavy-fleet at `planet-destruction`;
-- six-hour routine cadence and one-hour response to targeted events or active operations;
-- hidden-player-state invariance;
-- inherited logistics, determinism and performance gates.
-
-Code head `db29dbe0a69ba38eea6a2f3ba838604305ec0505` passed CI `30746581384`, Browser `30746581373` and Graphify `30746581362`, including the permanent 15-case progression matrix. Performance: 1 day `6.06s`; 7 days `29.81s`.
-
-## 8. Release 1.0 definition
+## 7. Release 1.0 definition
 
 A player can create and resume a deterministic campaign, build and understand a multi-colony economy, configure reliable logistics, unlock the catalog, execute sustainable missions, fight and recover colonies, interact with complete PvE/meta systems, join or avoid alliances and reach victory or defeat.
 
 Bots must use the same commands, resources, timing and intelligence limits. Save/load/offline partitions must preserve deterministic outcomes.
 
-## 9. Milestone map
+## 8. Milestone map
 
 | Milestone | Status | Delivery |
 |---|---|---|
@@ -108,24 +97,22 @@ Bots must use the same commands, resources, timing and intelligence limits. Save
 | M4c — Local campaign time | completed | Audit #130; #131–#132 |
 | M4d — Campaign progression balance | completed | Audit #133; #134–#135 |
 | M5 — Multi-colony economy/logistics | completed | Audit #137; #138–#141 |
-| M6a — Sustainable existing PvE | implementation active | Audit #142; #143–#144 merged; #145 active; #146 ordered |
+| M6a — Sustainable existing PvE | closure active | Audit #142; #143–#145 merged; #146 closure |
 | M6b — PvE meta systems | not audited | Arena, Admiral meta/services/reputation only if later justified |
-| M7 — Autonomous bot parity | partial | colony logistics merged; PvE parity active in #145 |
+| M7 — Autonomous bot parity | partial | colony logistics and sustainable PvE parity delivered |
 | M8 — Complete endgame | not audited | alliances, Solar War, Obelisks, Gates, victory/defeat |
 | M9 — Release candidate | not audited | balance, onboarding, QA, performance, release |
 
-## 10. Key invariants
+## 9. Key invariants
 
 - current `main` is the only valid baseline;
-- exactly four M6a implementation PRs are authorized;
-- #143 owns lifecycle recovery;
-- #144 owns player opportunity intelligence/UX;
-- #145 owns honest bot PvE operations;
-- #146 owns final sustainability evidence and closure;
+- #146 is the fourth and final M6a implementation/closure PR;
+- no fifth M6a implementation PR is authorized;
 - player and bots use ordinary commands and visibility rules;
 - campaign identity, schema v16/save v3 and one active/offline orchestrator remain unchanged;
-- progression, determinism, Browser and performance gates remain mandatory.
+- progression, determinism, Browser and performance gates remain mandatory;
+- the next implementation batch requires a new accepted audit.
 
-## 11. Immediate action
+## 10. Immediate action
 
-Validate final #145 documentation head, resolve review and squash merge. Then create only #146 `PVE-SUSTAINABILITY-GATE` from fresh `main`; do not begin a new batch early.
+Validate final #146 documentation head, resolve review and squash merge. Then create Audit PR #147 only, synchronize the exact #146 merge SHA and select the next batch from actual `main` and this roadmap.

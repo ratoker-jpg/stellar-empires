@@ -1,93 +1,63 @@
 {
-  "statusVersion": 58,
+  "statusVersion": 59,
   "updatedAt": "2026-08-02",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 144,
-  "lastMergeSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
-  "verifiedMainBaseline": "PR #144 PVE-OPERATIONS-INTELLIGENCE-UX merged after required CI, Browser E2E, Graphify and review gates",
-  "runtimeBaselinePr": 144,
-  "runtimeBaselineSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
-  "activePr": 145,
-  "activePrKind": "implementation",
-  "activeWorkItem": "BOT-PVE-OPERATIONS",
-  "nextPrAfterActive": 146,
-  "nextPrKind": "implementation-closure",
-  "nextWorkItem": "PVE-SUSTAINABILITY-GATE",
-  "currentMilestone": "M6a sustainable existing PvE operations",
+  "lastMergedPr": 145,
+  "lastMergeSha": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f",
+  "verifiedMainBaseline": "PR #145 BOT-PVE-OPERATIONS merged after CI, Browser E2E, Graphify, progression and review gates",
+  "runtimeBaselinePr": 145,
+  "runtimeBaselineSha": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f",
+  "activePr": 146,
+  "activePrKind": "implementation-closure",
+  "activeWorkItem": "PVE-SUSTAINABILITY-GATE",
+  "nextPrAfterActive": 147,
+  "nextPrKind": "audit",
+  "nextWorkItem": "NEXT-PLAYABLE-GAME-BATCH-AUDIT",
+  "currentMilestone": "M6a sustainable existing PvE operations closure",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
-  "currentAuditContracts": [
-    "docs/audits/contracts/sustainable-pve-operations-01.md"
-  ],
-  "currentAuditEvidence": [
-    "docs/audits/evidence/sustainable-pve-operations-01.md"
-  ],
+  "currentAuditContracts": [],
+  "currentAuditEvidence": [],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastChangeDocument": "docs/changes/pr145-bot-pve-operations.md",
-  "lastCompletedBatchArchive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
+  "lastChangeDocument": "docs/changes/pr146-pve-sustainability-gate.md",
+  "lastCompletedBatchArchive": "docs/audits/completed/sustainable-pve-operations-01.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
-    "batchId": "MULTI-COLONY-ECONOMY-LOGISTICS-01",
-    "roadmapMilestone": "M5",
-    "complexity": "medium",
-    "auditPr": 137,
-    "auditMergeSha": "4e7fd20fdc415f30bf8a1476b67c79b0b8e79166",
-    "baselinePr": 135,
-    "baselineSha": "3bcd5c0ae67d17f8e6159a19091fe1b6b4e62992",
-    "implementationCount": 4,
-    "implementationPrs": [138, 139, 140, 141],
-    "completedImplementationPrs": [138, 139, 140, 141],
-    "implementationMergeShas": {
-      "138": "b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f",
-      "139": "dc8b42fc0e41b631a61dda524224145f2d8ba214",
-      "140": "01eab1366289526553cdffcb1042ee98a8a59040",
-      "141": "0167ad689e299438c9d0550ee20ba53452c93d39"
-    },
-    "workItems": [
-      "COLONY-PORTFOLIO-FOUNDATION",
-      "LOGISTICS-ROUTE-LIFECYCLE",
-      "COLONY-OPERATIONS-UX",
-      "BOT-COLONY-LOGISTICS-GATE"
-    ],
-    "status": "completed",
-    "archive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
-    "divergence": "none"
-  },
-  "currentBatch": {
     "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
     "roadmapMilestone": "M6a",
     "complexity": "medium",
     "auditPr": 142,
-    "auditStatus": "merged",
     "auditMergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010",
     "baselinePr": 141,
     "baselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
     "implementationCount": 4,
     "implementationPrs": [143, 144, 145, 146],
-    "completedImplementationPrs": [143, 144],
+    "completedImplementationPrs": [143, 144, 145, 146],
     "implementationMergeShas": {
       "143": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
-      "144": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a"
+      "144": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
+      "145": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f"
     },
-    "activeImplementationPr": 145,
+    "finalImplementationPr": 146,
+    "finalImplementationCodeHead": "a2e466bfffa3494ae9a08e2c4250e6fc78c89290",
+    "finalMergeShaSynchronization": "required-by-next-audit-pr",
     "workItems": [
       "PVE-TARGET-RECOVERY",
       "PVE-OPERATIONS-INTELLIGENCE-UX",
       "BOT-PVE-OPERATIONS",
       "PVE-SUSTAINABILITY-GATE"
     ],
-    "status": "implementation-active",
-    "contract": "docs/audits/contracts/sustainable-pve-operations-01.md",
-    "evidence": "docs/audits/evidence/sustainable-pve-operations-01.md",
-    "targetStateSchema": 16,
-    "targetSaveFormat": 3
+    "status": "completed-at-pr-146-merge",
+    "archive": "docs/audits/completed/sustainable-pve-operations-01.md",
+    "divergence": "none"
   },
+  "currentBatch": null,
   "activeImplementationState": {
     "stateSchema": 16,
     "saveFormat": 3,
@@ -113,8 +83,8 @@
     "worldEventMechanicalReportsImplemented": true,
     "publicBotPvePerceptionImplemented": true,
     "botPveOperationsImplemented": true,
-    "botPveSustainabilityGateImplemented": false,
-    "status": "pr-145-active"
+    "botPveSustainabilityGateImplemented": true,
+    "status": "m6a-closure-active"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -129,7 +99,7 @@
     "abstractLogisticsRoutes": true,
     "marketIsEmergencyLocalSupport": true,
     "sustainablePveBeforeNewMeta": true,
-    "arenaAdmiralMetaInCurrentBatch": false
+    "arenaAdmiralMetaInCompletedBatch": false
   },
   "auditDecisions": {
     "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
@@ -143,14 +113,6 @@
     "pirateHuntRewardPermille": 1500,
     "defaultPirateBaseCount": 3,
     "recoveryBoundary": "world-event-evaluation-1800-seconds",
-    "opportunityOrder": [
-      "event-active",
-      "available",
-      "active-operation",
-      "recovering",
-      "unavailable",
-      "coordinate-kind-id"
-    ],
     "ordinaryBotPveCommands": true,
     "botPveSchedulerSource": "pve",
     "botPveRoutineUnlockPhase": "planet-destruction",
@@ -158,6 +120,9 @@
     "botPveEventCadenceSeconds": 3600,
     "botPveGasReservePermille": 400,
     "botPveCommandsPerDecision": 1,
+    "threeFactionClosureHours": 48,
+    "closureSaveSplitHours": 24,
+    "closureChunkHours": 6,
     "persistedPveMetaIncluded": false,
     "arenaIncluded": false,
     "admiralServicesIncluded": false,
@@ -179,17 +144,17 @@
     "catalogRuntimeTextures": 173
   },
   "deliveredDomains": [
-    "deterministic schema-v16 simulation with immutable campaign and progression-profile identity",
+    "deterministic schema-v16 simulation with immutable campaign and progression identity",
     "save format v3 with active/offline continuation integrity",
-    "compressed finite campaign progression with 15-case deterministic matrix",
+    "compressed finite campaign progression with permanent 15-case matrix",
     "coherent multi-colony economy and hardened abstract logistics",
     "canonical routed colony logistics and selected-colony market workflow",
     "deterministic bot colony roles and ordinary logistics/market support",
-    "ordinary missions, fleets, combat, intelligence and PvE foundations",
-    "merged deterministic PvE target recovery and targeted pirate-hunt reward",
-    "merged canonical PvE opportunity intelligence and routed player UX",
-    "active-branch honest bot PvE perception, planning and ordinary command execution",
-    "complete mechanical catalogs and routed release-viewport application"
+    "ordinary missions, fleets, combat and intelligence",
+    "sustainable PvE target recovery and target-only pirate-hunt reward",
+    "canonical PvE opportunity intelligence and routed player Operations UX",
+    "honest public-only bot PvE planning through ordinary commands",
+    "three-faction 48-hour PvE sustainability closure"
   ],
   "activeDelivery": [
     {
@@ -217,26 +182,37 @@
       "pr": 145,
       "kind": "implementation",
       "workItem": "BOT-PVE-OPERATIONS",
-      "status": "active",
-      "validatedCodeHead": "db29dbe0a69ba38eea6a2f3ba838604305ec0505",
-      "ciRun": 30746581384,
-      "browserRun": 30746581373,
-      "graphifyRun": 30746581362,
-      "oneDayPerformanceMilliseconds": 6064,
-      "sevenDayPerformanceMilliseconds": 29806,
-      "progressionMatrixCases": 15,
-      "progressionPhaseViolations": 0
+      "status": "merged",
+      "mergeSha": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f"
     },
     {
       "pr": 146,
       "kind": "implementation-closure",
       "workItem": "PVE-SUSTAINABILITY-GATE",
-      "status": "blocked-until-pr-145-merge"
+      "status": "active",
+      "validatedCodeHead": "a2e466bfffa3494ae9a08e2c4250e6fc78c89290",
+      "ciRun": 30747647153,
+      "browserRun": 30747647147,
+      "browserCodeHeadStatus": "cancelled-by-documentation-commits-final-head-required",
+      "graphifyRun": 30747647145,
+      "testFiles": 106,
+      "tests": 557,
+      "closureTests": 13,
+      "oneDayPerformanceMilliseconds": 6222,
+      "sevenDayPerformanceMilliseconds": 29561,
+      "progressionMatrixCases": 15,
+      "progressionPhaseViolations": 0
+    },
+    {
+      "pr": 147,
+      "kind": "audit",
+      "workItem": "NEXT-PLAYABLE-GAME-BATCH-AUDIT",
+      "status": "blocked-until-pr-146-merge"
     }
   ],
   "knownLimitations": [
-    "PR #145 remains open until final documentation-head workflows and review are green",
-    "Final three-faction sustainability gate and batch archive remain for PR #146",
+    "PR #146 remains open until final documentation-head CI, Browser E2E, Graphify and review are green",
+    "Exact #146 squash SHA must be synchronized by Audit PR #147",
     "Arena, Admiral services and persistent PvE meta are not audited",
     "Alliances, Solar War, functional Obelisks/Gates and victory/defeat are not implemented",
     "Onboarding and release hardening remain incomplete"
@@ -249,22 +225,21 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #145 code head db29dbe0a69ba38eea6a2f3ba838604305ec0505 passed Graphify run 30746581362",
-    "currentAuditEvidence": "docs/audits/evidence/sustainable-pve-operations-01.md"
+    "lastValidation": "PR #146 code head a2e466bfffa3494ae9a08e2c4250e6fc78c89290 passed Graphify run 30747647145",
+    "currentAuditEvidence": "docs/audits/completed/sustainable-pve-operations-01.md"
   },
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
-    "docs/audits/contracts/sustainable-pve-operations-01.md",
-    "docs/audits/evidence/sustainable-pve-operations-01.md",
-    "docs/changes/pr145-bot-pve-operations.md",
+    "docs/audits/completed/sustainable-pve-operations-01.md",
+    "docs/changes/pr146-pve-sustainability-gate.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Validate and squash merge PR #145, then create only PR #146 PVE-SUSTAINABILITY-GATE from fresh main."
+  "nextAction": "Validate and squash merge PR #146, then create Audit PR #147 only and synchronize the exact #146 merge SHA before authorizing implementation."
 }

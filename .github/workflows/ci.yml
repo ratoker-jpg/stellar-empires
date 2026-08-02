@@ -64,7 +64,7 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Run isolated catch-up performance gate
-        run: npx vitest run tests/simulation/campaignTimePerformance.test.ts --maxWorkers=1 --no-file-parallelism
+        run: node --expose-gc ./node_modules/vitest/vitest.mjs run tests/simulation/campaignTimePerformance.test.ts --maxWorkers=1 --no-file-parallelism
 
   progression-scenario:
     name: Compressed progression scenario
