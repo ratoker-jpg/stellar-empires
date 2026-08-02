@@ -1,88 +1,65 @@
 # PR #153 — ALLIANCE-SOLO-FOUNDATION
 
-**Status:** draft implementation scaffold; runtime work not started  
+**Status:** implementation complete; final code+docs validation pending  
 **Authorized by Audit PR:** #152 `COMPLETE-ENDGAME-01`  
 **Audit squash SHA:** `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
 **Exact branch baseline:** `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
 **Branch:** `agent/alliance-solo-foundation`  
-**Runtime baseline:** schema v17 / save format v4  
-**Target:** schema v18 / save format v5
+**Validated implementation code head before documentation:** `a49211e248ddc3a634e7112336bdee77edb2e02b`  
+**Runtime target:** schema v18 / save format v5
 
-## Authorized result
+## Delivered result
 
-Add the minimal persisted local participation foundation required by the accepted audit:
+- added required persisted `GameState.endgameParticipation` for current schema-v18 states;
+- initialized exactly one explicit solo-eligible participant record per empire;
+- added stable public/open alliance records and deterministic `alliance-N` sequencing;
+- added ordinary empire-generic `CREATE_ALLIANCE`, `JOIN_ALLIANCE` and `LEAVE_ALLIANCE` commands;
+- normalized alliance names with NFKC, trimmed/collapsed whitespace, length limits and control-character rejection;
+- enforced one membership per empire, unique normalized names and deterministic empty-alliance removal;
+- retained a checksum-covered 64-entry membership history with monotonic sequence numbers;
+- migrated valid schema-v17/save-v4 campaigns to schema v18/save v5 with every empire independent and no synthesized elapsed-time event;
+- retained active/offline runtime metadata, campaign settings and legacy save checksum semantics;
+- rejected malformed v18/v5 participation instead of silently repairing it.
 
-- every empire remains a valid independent/solo participant by default;
-- an empire may create, join or leave one public/open local alliance;
-- empty alliances dissolve deterministically;
-- alliance membership and bounded membership history persist through save/load;
-- all mutations use ordinary empire-generic `GameCommand` validation;
-- valid schema-v17/save-v4 campaigns migrate deterministically to schema v18/save v5 with all empires independent.
-
-## Expected implementation paths
-
-Create:
+## Main implementation paths
 
 ```text
-src/simulation/endgame/participation.ts
 src/simulation/endgame/types.ts
+src/simulation/endgame/participation.ts
 src/storage/migrateGameStateV18.ts
-tests/simulation/endgameParticipation.test.ts
-tests/storage/endgameParticipationMigration.test.ts
-```
-
-Modify:
-
-```text
 src/simulation/types.ts
 src/simulation/createInitialGameState.ts
 src/simulation/reducer.ts
 src/simulation/history/stateHistory.ts
 src/storage/types.ts
 src/storage/saveFormat.ts
-src/storage/runtimeMetadata.ts
-tests/storage/saveFormat.test.ts
-tests/simulation/stateHistoryRetention.test.ts
 ```
 
-## Ordinary commands
+## Test coverage
 
 ```text
-CREATE_ALLIANCE
-JOIN_ALLIANCE
-LEAVE_ALLIANCE
+tests/simulation/endgameParticipation.test.ts
+tests/storage/endgameParticipationMigration.test.ts
+tests/simulation/stateHistoryRetention.test.ts
+tests/storage/saveFormat.test.ts
 ```
 
-## Required gates
+Covered:
 
-- normalized alliance IDs/names and deterministic sequence;
-- exactly one membership per empire;
-- duplicate/invalid membership rejection without mutation;
-- solo eligibility preserved before, during and after alliance membership;
-- valid v17/v4 → v18/v5 migration and checksum round trip;
-- malformed v18/v5 saves rejected;
-- bounded history;
-- existing 15-case progression matrix;
-- one-day `<15 s` and seven-day `<30 s` performance limits;
-- CI, Browser E2E and Graphify on final code+docs head.
+- default solo eligibility for all empires;
+- create/join/leave/dissolve legality through ordinary commands;
+- generic player/Aegis/Synod/Veyra command authority;
+- duplicate, missing and conflicting membership rejection without mutation;
+- deterministic normalized names and stable IDs;
+- exact 64-entry history retention;
+- v17/v4 → v18/v5 migration;
+- current round trip and malformed-save rejection;
+- legacy migration compatibility and future-version rejection.
 
-## Explicit non-goals
+## Explicit non-goals preserved
 
-- Solar War mechanics or UI;
-- invitations, closed alliances, ranks, roles, chat or general diplomacy matrix;
-- Obelisks, Gates, resource contributions, attacks or destruction;
-- victory, defeat or terminal campaign behavior;
-- bot alliance planning or allied perception;
-- new mechanical catalogs/assets, global rebalance or M9 work.
+No Solar War, UI, invitations, closed alliances, ranks, chat, general diplomacy matrix, Obelisks/Gates, victory/defeat, terminal campaign state, bot alliance planning, allied perception, new catalogs/assets, global rebalance or M9 work.
 
-## Ordered implementation
+## Final gate
 
-1. define normalized participation types and pure selectors;
-2. add required state initialization and v18/v5 migration;
-3. extend strict save validation and checksum coverage;
-4. add ordinary commands and reducer cases;
-5. add bounded history and migration/domain tests;
-6. synchronize authoritative docs;
-7. run final CI, Browser E2E, Graphify, review and mergeability gates.
-
-No runtime implementation is included in this scaffold commit.
+PR remains draft until the final documentation head passes CI, Browser E2E and Graphify, review threads are zero and mergeability is clean.
