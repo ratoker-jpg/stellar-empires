@@ -6,19 +6,21 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 145,
-    "mergeSha": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f",
-    "runtimeBaselinePr": 145,
-    "runtimeBaselineSha": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f",
-    "auditBaselineSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
+    "lastMergedPr": 146,
+    "mergeSha": "392abb2bf27267fef9777ff35eb96555941a42f3",
+    "runtimeBaselinePr": 146,
+    "runtimeBaselineSha": "392abb2bf27267fef9777ff35eb96555941a42f3",
+    "lastCompletedAuditPr": 142,
+    "lastCompletedAuditMergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
   },
-  "activePr": 146,
-  "activePrKind": "implementation-closure",
-  "activeBatchId": "SUSTAINABLE-PVE-OPERATIONS-01",
-  "activeWorkItem": "PVE-SUSTAINABILITY-GATE",
-  "nextPr": 147,
-  "nextPrKind": "audit",
-  "nextWorkItem": "NEXT-PLAYABLE-GAME-BATCH-AUDIT",
+  "activePr": 147,
+  "activePrKind": "audit",
+  "activeBatchId": "PVE-META-FOUNDATION-01",
+  "activeWorkItem": "PVE-META-FOUNDATION-01-AUDIT",
+  "implementationAuthorized": false,
+  "nextPr": 148,
+  "nextPrKind": "implementation",
+  "nextWorkItem": "PVE-REPUTATION-FOUNDATION",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -134,7 +136,7 @@
       "auditMergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010",
       "startPr": 143,
       "endPr": 146,
-      "status": "completed-at-pr-146-merge",
+      "status": "completed",
       "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
       "complexity": "medium",
       "plannedPrs": [143, 144, 145, 146],
@@ -142,10 +144,11 @@
       "implementationMergeShas": {
         "143": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
         "144": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a",
-        "145": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f"
+        "145": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f",
+        "146": "392abb2bf27267fef9777ff35eb96555941a42f3"
       },
-      "finalImplementationCodeHead": "a2e466bfffa3494ae9a08e2c4250e6fc78c89290",
-      "finalMergeShaSynchronization": "required-by-next-audit-pr",
+      "finalImplementationCodeHead": "54914d98c071b84c668af5e16b89cb851085f7ba",
+      "finalMergeShaSynchronization": "completed-by-audit-pr-147",
       "archive": "docs/audits/completed/sustainable-pve-operations-01.md",
       "workItems": [
         "PVE-TARGET-RECOVERY",
@@ -158,10 +161,26 @@
       "outcome": "Repeatable targets, canonical PvE Operations intelligence, honest bot participation and three-faction 48-hour closure"
     },
     {
-      "id": "pve-meta-systems",
-      "auditPr": null,
-      "status": "not-audited",
-      "outcome": "Arena, Admiral services or persistent PvE meta only after a new audit"
+      "id": "pve-meta-foundation",
+      "auditPr": 147,
+      "startPr": 148,
+      "endPr": 151,
+      "status": "audit-active",
+      "batchId": "PVE-META-FOUNDATION-01",
+      "complexity": "medium",
+      "plannedPrs": [148, 149, 150, 151],
+      "implementationAuthorized": false,
+      "workItems": [
+        "PVE-REPUTATION-FOUNDATION",
+        "ARENA-PVE-CHALLENGES",
+        "PVE-META-OPERATIONS-UX",
+        "BOT-PVE-META-GATE"
+      ],
+      "targetStateSchema": 17,
+      "targetSaveFormat": 4,
+      "contract": "docs/audits/contracts/pve-meta-foundation-01.md",
+      "evidence": "docs/audits/evidence/pve-meta-foundation-01.md",
+      "outcome": "Bounded reputation and local deterministic Arena using existing resources/combat; no currency or Admiral services"
     },
     {
       "id": "alliances-and-endgame",
@@ -178,63 +197,61 @@
   ],
   "planned": [
     {
-      "number": 142,
-      "kind": "audit",
-      "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
-      "title": "Audit sustainable PvE operations",
-      "status": "merged",
-      "mergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
-    },
-    {
-      "number": 143,
-      "kind": "implementation",
-      "workItem": "PVE-TARGET-RECOVERY",
-      "title": "Recover depleted PvE targets",
-      "status": "merged",
-      "mergeSha": "e3d2c28385abd9772a18257eeb313bd8d45e581e"
-    },
-    {
-      "number": 144,
-      "kind": "implementation",
-      "workItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
-      "title": "Unify PvE operations intelligence",
-      "status": "merged",
-      "mergeSha": "dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a"
-    },
-    {
-      "number": 145,
-      "kind": "implementation",
-      "workItem": "BOT-PVE-OPERATIONS",
-      "title": "Add honest bot PvE operations",
-      "status": "merged",
-      "mergeSha": "62aae31e2ad5e4ad04385a5cd94f77a70579d72f"
-    },
-    {
       "number": 146,
       "kind": "implementation-closure",
       "workItem": "PVE-SUSTAINABILITY-GATE",
       "title": "Close sustainable PvE operations",
-      "status": "active",
-      "validatedCodeHead": "a2e466bfffa3494ae9a08e2c4250e6fc78c89290",
-      "ciRun": 30747647153,
-      "browserRun": 30747647147,
-      "browserCodeHeadStatus": "cancelled-by-documentation-commits-final-head-required",
-      "graphifyRun": 30747647145,
+      "status": "merged",
+      "mergeSha": "392abb2bf27267fef9777ff35eb96555941a42f3",
+      "validatedHead": "54914d98c071b84c668af5e16b89cb851085f7ba",
+      "ciRun": 30752151413,
+      "browserRun": 30752151392,
+      "graphifyRun": 30752151378,
       "testFiles": 106,
       "tests": 557,
       "closureTests": 13,
-      "oneDayPerformanceMilliseconds": 6222,
-      "sevenDayPerformanceMilliseconds": 29561,
+      "oneDayPerformanceMilliseconds": 5288,
+      "sevenDayPerformanceMilliseconds": 23329,
       "progressionMatrixCases": 15,
       "progressionPhaseViolations": 0
     },
     {
       "number": 147,
       "kind": "audit",
-      "workItem": "NEXT-PLAYABLE-GAME-BATCH-AUDIT",
-      "title": "Audit the next playable-game batch",
-      "status": "blocked-until-pr-146-merge"
+      "batchId": "PVE-META-FOUNDATION-01",
+      "workItem": "PVE-META-FOUNDATION-01-AUDIT",
+      "title": "Audit PvE meta foundation",
+      "status": "active",
+      "implementationAuthorized": false
+    },
+    {
+      "number": 148,
+      "kind": "implementation",
+      "workItem": "PVE-REPUTATION-FOUNDATION",
+      "title": "Add persistent PvE reputation",
+      "status": "blocked-until-audit-147-merge"
+    },
+    {
+      "number": 149,
+      "kind": "implementation",
+      "workItem": "ARENA-PVE-CHALLENGES",
+      "title": "Add local Arena PvE challenges",
+      "status": "blocked-until-pr-148-merge"
+    },
+    {
+      "number": 150,
+      "kind": "implementation",
+      "workItem": "PVE-META-OPERATIONS-UX",
+      "title": "Expose PvE meta in Operations",
+      "status": "blocked-until-pr-149-merge"
+    },
+    {
+      "number": 151,
+      "kind": "implementation-closure",
+      "workItem": "BOT-PVE-META-GATE",
+      "title": "Close honest PvE meta participation",
+      "status": "blocked-until-pr-150-merge"
     }
   ],
-  "nextAction": "Validate and squash merge PR #146, then create Audit PR #147 only and synchronize the exact #146 merge SHA before authorizing implementation."
+  "nextAction": "Validate, review and squash merge Audit PR #147; then fetch its exact merge SHA and create only #148 PVE-REPUTATION-FOUNDATION from fresh main."
 }
