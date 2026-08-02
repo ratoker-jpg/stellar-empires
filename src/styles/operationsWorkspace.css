@@ -74,16 +74,15 @@
 
 .operations-launchers {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   padding: 10px 22px 18px;
 }
 
 .operations-launcher {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
+  gap: 7px;
+  min-width: 0;
   min-height: 86px;
   padding: 14px;
   border: 1px solid rgba(95, 203, 245, 0.2);
@@ -99,17 +98,6 @@
   border-color: rgba(95, 203, 245, 0.74);
   outline: none;
   transform: translateY(-1px);
-}
-
-.operations-launcher > span:first-child {
-  color: #65d6ff;
-  font-size: 1.55rem;
-  text-align: center;
-}
-
-.operations-launcher > span:last-child {
-  display: grid;
-  gap: 5px;
 }
 
 .operations-launcher small {
@@ -132,13 +120,142 @@
   background: rgba(3, 14, 24, 0.82);
 }
 
+.pve-opportunity-intelligence,
+.expedition-launch,
+.expedition-active,
+.expedition-reports,
+.space-objects-launch,
+.world-events-status {
+  min-width: 0;
+  margin: 10px 22px;
+  padding: 16px;
+  border: 1px solid rgba(89, 203, 246, 0.18);
+  border-radius: 10px;
+  background: rgba(3, 14, 24, 0.82);
+}
+
+.pve-opportunity-intelligence h2,
+.expedition-launch h2,
+.expedition-active h2,
+.expedition-reports h2,
+.space-objects-launch h2,
+.world-events-status h2 {
+  margin: 0 0 12px;
+}
+
+.pve-opportunity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pve-opportunity-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+  overflow-wrap: anywhere;
+  border: 1px solid rgba(95, 203, 245, 0.18);
+  border-radius: 9px;
+  background: rgba(8, 27, 42, 0.82);
+}
+
+.pve-opportunity-card.is-event-active {
+  border-color: rgba(235, 185, 72, 0.55);
+}
+
+.pve-opportunity-card.is-available {
+  border-color: rgba(94, 211, 161, 0.48);
+}
+
+.pve-opportunity-card.is-recovering {
+  border-color: rgba(188, 154, 255, 0.42);
+}
+
+.pve-opportunity-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pve-opportunity-card p,
+.pve-opportunity-card ul {
+  margin: 0;
+}
+
+.pve-opportunity-status {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #bfeeff;
+  background: rgba(89, 203, 246, 0.12);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.pve-opportunity-details {
+  display: grid;
+  gap: 4px;
+  padding: 0;
+  list-style: none;
+  color: #91aaba;
+  font-size: 0.78rem;
+}
+
+.pve-opportunity-details strong {
+  color: #e9f8ff;
+  font-weight: 600;
+}
+
+.pve-form-control {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  margin: 8px 0;
+  color: #9db4c3;
+  font-size: 0.78rem;
+}
+
+.pve-form-control select,
+.galaxy-intel-control input,
+.galaxy-intel-control select {
+  width: 100%;
+  min-width: 0;
+}
+
+.expedition-active,
+.expedition-reports {
+  display: grid;
+  gap: 8px;
+}
+
+.expedition-active article,
+.expedition-reports article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(95, 203, 245, 0.14);
+  border-radius: 8px;
+  background: rgba(7, 24, 37, 0.7);
+}
+
+.expedition-reports article {
+  display: grid;
+}
+
 @media (max-width: 1040px) {
   .operations-summary {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .operations-launchers,
-  .operations-core-grid {
+  .operations-core-grid,
+  .pve-opportunity-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -146,7 +263,30 @@
 @media (max-width: 700px) {
   .operations-summary,
   .operations-launchers,
-  .operations-core-grid {
+  .operations-core-grid,
+  .pve-opportunity-grid {
     grid-template-columns: 1fr;
+  }
+
+  .operations-summary,
+  .operations-launchers,
+  .pve-opportunity-intelligence,
+  .expedition-launch,
+  .expedition-active,
+  .expedition-reports,
+  .space-objects-launch,
+  .world-events-status {
+    margin-inline: 0;
+    padding-inline: 10px;
+  }
+
+  .pve-opportunity-card header,
+  .expedition-active article {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pve-opportunity-status {
+    align-self: flex-start;
   }
 }
