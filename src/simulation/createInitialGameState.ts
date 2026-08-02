@@ -14,6 +14,7 @@ import {
   createInitialStrategicResources,
 } from './pve/spaceObjects';
 import { createInitialWorldEventState } from './pve/worldEvents';
+import { createInitialPveMetaState } from './pveMeta/reputation';
 import { createInitialResearchStates } from './research/researchState';
 import { normalizeSeed } from './seed';
 import type { GameState } from './types';
@@ -61,7 +62,7 @@ export function createInitialGameState(
   );
   const neutralForces = createInitialNeutralForces(galaxy, seed);
   return {
-    schemaVersion: 16,
+    schemaVersion: 17,
     seed,
     campaignSettings,
     clock: {
@@ -83,6 +84,7 @@ export function createInitialGameState(
     spaceObjects: createInitialSpaceObjects(galaxy, seed),
     strategicResources: createInitialStrategicResources(empires),
     worldEvents: createInitialWorldEventState(),
+    pveMeta: createInitialPveMetaState(empires),
     botAutomation: createInitialBotAutomationState(empires, 0),
     nextEventSequence: 0,
     pendingEvents: [],
