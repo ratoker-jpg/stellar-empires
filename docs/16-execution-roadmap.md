@@ -1,10 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** PR #143 `PVE-TARGET-RECOVERY` active  
+**Status:** PR #144 `PVE-OPERATIONS-INTELLIGENCE-UX` active  
 **Updated:** 2026-08-02  
-**Verified main:** `81f1959b0bdbdd72d05dc21a2dce0a9e1470f010`  
-**Last merged PR:** #142 `SUSTAINABLE-PVE-OPERATIONS-01` audit  
-**Active implementation:** #143 `PVE-TARGET-RECOVERY`
+**Verified main:** `e3d2c28385abd9772a18257eeb313bd8d45e581e`  
+**Last merged PR:** #143 `PVE-TARGET-RECOVERY`  
+**Active implementation:** #144 `PVE-OPERATIONS-INTELLIGENCE-UX`
 
 ## Authoritative files
 
@@ -15,8 +15,7 @@ docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
 docs/audits/contracts/sustainable-pve-operations-01.md
 docs/audits/evidence/sustainable-pve-operations-01.md
-docs/changes/pr143-pve-target-recovery.md
-docs/audits/completed/multi-colony-economy-logistics-01.md
+docs/changes/pr144-pve-operations-intelligence-ux.md
 docs/27-playable-game-roadmap-v5.md
 docs/project-status.json
 docs/roadmap-pr-index.json
@@ -30,57 +29,55 @@ docs/roadmap-pr-index.json
 - #116–#120: ordinary missions, intelligence and honest bots;
 - #121–#123: planet demolition, destruction and recovery;
 - #124–#129: local campaign contract and navigation/usability closure;
-- #130–#135: immutable campaign time and measured compressed progression;
-- #137–#141: coherent multi-colony economy/logistics, complete player workflow and honest bot logistics;
-- #142: accepted sustainable existing-PvE batch.
+- #130–#135: immutable campaign time and compressed progression;
+- #137–#141: coherent multi-colony economy/logistics and honest bot logistics;
+- #142: sustainable existing-PvE audit;
+- #143: deterministic object/pirate recovery and mechanical pirate-hunt.
 
 ## Active M6a sequence
 
 ```text
-#142 SUSTAINABLE-PVE-OPERATIONS-01 — Audit merged
-→ #143 PVE-TARGET-RECOVERY — active
-→ #144 PVE-OPERATIONS-INTELLIGENCE-UX — next after #143
+#142 Audit — merged
+→ #143 PVE-TARGET-RECOVERY — merged
+→ #144 PVE-OPERATIONS-INTELLIGENCE-UX — active
 → #145 BOT-PVE-OPERATIONS
 → #146 PVE-SUSTAINABILITY-GATE
 ```
 
-Complexity is medium. Exactly four implementation PRs are authorized; no fifth PR is allowed.
+Exactly four implementation PRs are authorized; no fifth PR is allowed.
 
-## Active PR #143 result
+## Active PR #144 result
 
-#143 establishes the deterministic lifecycle consumed by later M6a work:
+#144 creates a pure canonical opportunity model for expeditions, objects, pirate bases and active events. It exposes deterministic availability, current operation, recovery, role/fleet, duration/fuel, yield/hazard/control and reward/threat truth.
 
-- final object depletion recovers after 21,600 campaign seconds;
-- non-final extraction retains 300 seconds;
-- recovery runs at the existing 1,800-second world-event boundary;
-- object identity and baseline properties remain stable;
-- pirate resources/defenses recover from deterministic baselines;
-- destroyed pirate bases respawn only at a free original position;
-- at most one pirate base recovers per evaluation;
-- long offline advances see battle reports executed earlier in the same call;
-- targeted pirate-hunt reward is 1,500 permille combined with anti-repeat scaling;
-- schema v16/save format v3 remain unchanged;
-- direct/chunked/save-loaded 48-hour equality is gated.
+Existing routed Operations modes consume this model without new routes or command paths. World-event reports use catalog titles, readable targets and real mechanical effects. Passive recovery produces no fake reports or rewards.
 
-Code head `ad23459708d6b7dab57c29c898e5772ba96e8917` passed CI `30741354763` and Graphify `30741354825`; Browser `30741354743` is checked before merge. Final documentation-head workflows remain mandatory.
+Code head `09e6dec9817437d31110862738a6c91c005a9399` passed:
+
+```text
+CI             30742965874
+Browser E2E    30742965877
+Graphify       30742965865
+```
+
+Browser gates cover 1440×900, 1920×1080 and 390×844 with no horizontal overflow.
 
 ## Compatibility boundary
 
-- no new persisted event or state field;
-- no player UX redesign from #144;
+- schema v16/save format v3 retained;
+- #143 lifecycle consumed, not changed;
 - no bot mission selection from #145;
-- no batch archive/closure absorption from #146;
-- no PvE currency, reputation, Arena or Admiral services;
-- no global progression/economy rebalance;
-- no alliances or endgame.
+- no #146 closure work;
+- no new route family, persisted PvE meta, currency or reputation;
+- no Arena, Admiral services, alliances, endgame or global rebalance.
 
 ## Immediate action
 
 ```text
-validate final #143 documentation head
+validate final #144 documentation head
 → CI + Browser E2E + Graphify
 → resolve review
-→ mark ready and squash merge #143
+→ mark ready and squash merge #144
 → fetch fresh main and exact merge SHA
-→ create only #144 PVE-OPERATIONS-INTELLIGENCE-UX
+→ create only #145 BOT-PVE-OPERATIONS
 ```

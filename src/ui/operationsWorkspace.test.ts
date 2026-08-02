@@ -1,20 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import { createInitialGameState } from '../simulation/createInitialGameState';
+import { createPveOperationsView } from '../simulation/pve/pveOperationsView';
 import { createOperationsSummary } from './operationsWorkspace';
 
 describe('operations workspace summary', () => {
   it('summarizes the initial living-galaxy state without mutating it', () => {
     const state = createInitialGameState('operations-summary');
+    const before = JSON.stringify(state);
+    const opportunities = createPveOperationsView(state);
     const summary = createOperationsSummary(state);
     expect(summary.activeRoutes).toBe(0);
     expect(summary.totalRoutes).toBe(0);
     expect(summary.marketTrades).toBe(0);
     expect(summary.activeExpeditions).toBe(0);
     expect(summary.activeObjectOperations).toBe(0);
-    expect(summary.availableObjects).toBeGreaterThan(0);
+    expect(summary.availableObjects).toBe(
+      opportunities.filter(
+        (entry) => entry.kind === 'space-object' && entry.status === 'available',
+      ).length,
+    );
     expect(summary.activeEvents).toBe(0);
     expect(summary.reports).toBe(0);
     expect(summary.exoticMatter).toBe(0);
+    expect(JSON.stringify(state)).toBe(before);
   });
 
   it('counts only active player operations', () => {
