@@ -89,6 +89,7 @@ const OPERATIONS_MODE_LABELS = {
   expeditions: 'Экспедиции',
   objects: 'Объекты',
   events: 'События',
+  arena: 'Арена и репутация',
   market: 'Рынок',
   logistics: 'Логистика',
 } as const;
