@@ -6,19 +6,19 @@
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 142,
-    "mergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010",
-    "runtimeBaselinePr": 141,
-    "runtimeBaselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
+    "lastMergedPr": 143,
+    "mergeSha": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
+    "runtimeBaselinePr": 143,
+    "runtimeBaselineSha": "e3d2c28385abd9772a18257eeb313bd8d45e581e",
     "auditBaselineSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
   },
-  "activePr": 143,
+  "activePr": 144,
   "activePrKind": "implementation",
   "activeBatchId": "SUSTAINABLE-PVE-OPERATIONS-01",
-  "activeWorkItem": "PVE-TARGET-RECOVERY",
-  "nextPr": 144,
+  "activeWorkItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
+  "nextPr": 145,
   "nextPrKind": "implementation",
-  "nextWorkItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
+  "nextWorkItem": "BOT-PVE-OPERATIONS",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -138,9 +138,12 @@
       "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
       "complexity": "medium",
       "plannedPrs": [143, 144, 145, 146],
-      "completedPrs": [],
-      "activePr": 143,
-      "validatedCodeHead": "ad23459708d6b7dab57c29c898e5772ba96e8917",
+      "completedPrs": [143],
+      "implementationMergeShas": {
+        "143": "e3d2c28385abd9772a18257eeb313bd8d45e581e"
+      },
+      "activePr": 144,
+      "validatedCodeHead": "09e6dec9817437d31110862738a6c91c005a9399",
       "contract": "docs/audits/contracts/sustainable-pve-operations-01.md",
       "evidence": "docs/audits/evidence/sustainable-pve-operations-01.md",
       "workItems": [
@@ -186,18 +189,19 @@
       "kind": "implementation",
       "workItem": "PVE-TARGET-RECOVERY",
       "title": "Recover depleted PvE targets",
-      "status": "active",
-      "validatedCodeHead": "ad23459708d6b7dab57c29c898e5772ba96e8917",
-      "ciRun": 30741354763,
-      "browserRun": 30741354743,
-      "graphifyRun": 30741354825
+      "status": "merged",
+      "mergeSha": "e3d2c28385abd9772a18257eeb313bd8d45e581e"
     },
     {
       "number": 144,
       "kind": "implementation",
       "workItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
       "title": "Unify PvE operations intelligence",
-      "status": "blocked-until-pr-143-merge"
+      "status": "active",
+      "validatedCodeHead": "09e6dec9817437d31110862738a6c91c005a9399",
+      "ciRun": 30742965874,
+      "browserRun": 30742965877,
+      "graphifyRun": 30742965865
     },
     {
       "number": 145,
@@ -214,5 +218,5 @@
       "status": "blocked-until-pr-145-merge"
     }
   ],
-  "nextAction": "Validate and squash merge PR #143, then create only PR #144 PVE-OPERATIONS-INTELLIGENCE-UX from fresh main."
+  "nextAction": "Validate and squash merge PR #144, then create only PR #145 BOT-PVE-OPERATIONS from fresh main."
 }
