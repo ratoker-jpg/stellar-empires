@@ -25,10 +25,6 @@ import { findShipIdByRole } from '../units/shipCapabilities';
 import type { ShipRole } from '../units/types';
 import { calculatePveRewardMultiplier } from './pveBalance';
 import {
-  PVE_TARGET_RECOVERY_SECONDS,
-  SPACE_OBJECT_ACTIVE_COOLDOWN_SECONDS,
-} from './targetRecovery';
-import {
   getWorldEventHazardModifier,
   getWorldEventYieldPermille,
 } from './worldEvents';
@@ -302,6 +298,11 @@ export function startSpaceObjectMission(
   if (fleet.status !== 'stationed' || fleet.location.type !== 'planet') {
     return { ok: false, code: 'FLEET_NOT_STATIONED', message: 'Fleet is not ready for a space object mission.' };
   }
+  const originPlanetId = fleet.location.planetId;
+  const origin = state.planets.find((planet) => planet.id === originPlanetId);
+  if (origin === undefined || origin.ownerEmpireId !== command.empireId) {
+    return { ok: false, code: 'SPACE_OBJECT_ORIGIN_UNAVAILABLE', message: 'Mission origin is unavailable.' };
+  }
   const object = state.spaceObjects.find((candidate) => candidate.id === command.objectId);
   if (object === undefined) {
     return { ok: false, code: 'SPACE_OBJECT_NOT_FOUND', message: 'Space object not found.' };
@@ -310,33 +311,48 @@ export function startSpaceObjectMission(
     return { ok: false, code: 'SPACE_OBJECT_DEPLETED', message: 'Space object is depleted.' };
   }
   if (object.cooldownUntil > state.clock.elapsedSeconds) {
-    return { ok: false, code: 'SPACE_OBJECT_COOLDOWN', message: 'Space object is unstable.' };
+    return {
+      ok: false,
+      code: 'SPACE_OBJECT_COOLDOWN',
+      message: 'Space object is temporarily unstable after the previous operation.',
+    };
   }
-  const originPlanetId = fleet.location.planetId;
-  const origin = state.planets.find((planet) => planet.id === originPlanetId);
-  if (origin === undefined || origin.ownerEmpireId !== command.empireId) {
-    return { ok: false, code: 'MISSION_ORIGIN_NOT_FOUND', message: 'Mission origin not found.' };
+  if (
+    state.pendingEvents.some(
+      (event) =>
+        event.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE' &&
+        event.payload.report.objectId === object.id,
+    )
+  ) {
+    return {
+      ok: false,
+      code: 'SPACE_OBJECT_OPERATION_ACTIVE',
+      message: 'Another operation is already active at this space object.',
+    };
   }
   const requiredRole = REQUIRED_SHIP_ROLE_BY_KIND[object.kind];
-  const specialistShipId = findShipIdByRole(fleet.ships, requiredRole);
-  if (specialistShipId === undefined) {
+  const requiredShipId = findShipIdByRole(fleet.ships, requiredRole);
+  if (requiredShipId === undefined) {
     return {
       ok: false,
       code: 'SPACE_OBJECT_SPECIALIST_REQUIRED',
-      message: `Mission requires a ${requiredRole} ship.`,
-      details: { requiredRole, requiredShipId: getRequiredSpaceObjectShipId(object.kind, origin.factionId) },
+      message: `Mission requires a ${requiredRole} hull.`,
+      details: { requiredRole, kind: object.kind },
     };
   }
   const estimate = estimateSpaceObjectMission(state, fleet, object);
   if (origin.economy.resources.gas.amount < estimate.totalFuelCost) {
     return {
       ok: false,
-      code: 'INSUFFICIENT_FUEL',
-      message: 'Not enough gas for the complete object operation.',
-      details: { required: estimate.totalFuelCost, available: origin.economy.resources.gas.amount },
+      code: 'INSUFFICIENT_SPACE_OBJECT_FUEL',
+      message: 'Origin planet does not have enough gas for the full mission cycle.',
+      details: {
+        required: estimate.totalFuelCost,
+        available: origin.economy.resources.gas.amount,
+      },
     };
   }
-  const sequence = state.nextEventSequence;
+
   const resolvesAt = state.clock.elapsedSeconds + estimate.totalDurationSeconds;
   const report = createMissionReport(
     state,
@@ -344,13 +360,25 @@ export function startSpaceObjectMission(
     object,
     origin.id,
     resolvesAt,
-    specialistShipId,
+    requiredShipId,
   );
   const event: ScheduledGameEvent = {
-    id: `event-${sequence}`,
+    id: `event-${state.nextEventSequence}`,
     executeAt: resolvesAt,
-    sequence,
+    sequence: state.nextEventSequence,
     payload: { type: 'SPACE_OBJECT_MISSION_RESOLVE', report },
+  };
+  const updatedFleet: FleetState = {
+    ...fleet,
+    status: 'outbound',
+    mission: { kind: 'space-object', targetPlanetId: object.id },
+    location: {
+      type: 'transit',
+      fromPlanetId: origin.id,
+      toPlanetId: object.id,
+      departedAt: state.clock.elapsedSeconds,
+      arrivesAt: resolvesAt,
+    },
   };
   const updatedOrigin: PlanetState = {
     ...origin,
@@ -365,25 +393,13 @@ export function startSpaceObjectMission(
       },
     },
   };
-  const updatedFleet: FleetState = {
-    ...fleet,
-    status: 'outbound',
-    mission: { kind: 'space-object', targetPlanetId: object.id },
-    location: {
-      type: 'transit',
-      fromPlanetId: origin.id,
-      toPlanetId: origin.id,
-      departedAt: state.clock.elapsedSeconds,
-      arrivesAt: resolvesAt,
-    },
-  };
   return {
     ok: true,
     value: {
       ...state,
       planets: replacePlanet(state.planets, updatedOrigin),
       fleets: replaceFleet(state.fleets, updatedFleet),
-      nextEventSequence: sequence + 1,
+      nextEventSequence: state.nextEventSequence + 1,
       pendingEvents: enqueueEvent(state.pendingEvents, event),
       commandLog: appendCommand(state, command),
     },
@@ -396,28 +412,14 @@ function applyLosses(
 ): Readonly<Record<string, number>> {
   return Object.fromEntries(
     Object.entries(ships)
-      .map(([unitId, count]) => [unitId, Math.max(0, count - (losses[unitId] ?? 0))] as const)
-      .filter(([, count]) => count > 0),
+      .map(([unitId, quantity]) => [unitId, Math.max(0, quantity - (losses[unitId] ?? 0))] as const)
+      .filter(([, quantity]) => quantity > 0),
   );
 }
 
-function addStrategicReward(
-  resources: readonly EmpireStrategicResources[],
-  empireId: string,
-  amount: number,
-): readonly EmpireStrategicResources[] {
-  let found = false;
-  const updated = resources.map((entry) => {
-    if (entry.empireId !== empireId) return entry;
-    found = true;
-    return { ...entry, exoticMatter: entry.exoticMatter + amount };
-  });
-  return found ? updated : [...updated, { empireId, exoticMatter: amount }];
-}
-
-function depositReward(
+function addPlanetReward(
   planet: PlanetState,
-  reward: ResourceCost,
+  report: SpaceObjectMissionReport,
 ): PlanetState {
   return {
     ...planet,
@@ -428,21 +430,21 @@ function depositReward(
           ...planet.economy.resources.metal,
           amount: Math.min(
             planet.economy.resources.metal.capacity,
-            planet.economy.resources.metal.amount + reward.metal,
+            planet.economy.resources.metal.amount + report.reward.metal,
           ),
         },
         crystal: {
           ...planet.economy.resources.crystal,
           amount: Math.min(
             planet.economy.resources.crystal.capacity,
-            planet.economy.resources.crystal.amount + reward.crystal,
+            planet.economy.resources.crystal.amount + report.reward.crystal,
           ),
         },
         gas: {
           ...planet.economy.resources.gas,
           amount: Math.min(
             planet.economy.resources.gas.capacity,
-            planet.economy.resources.gas.amount + reward.gas,
+            planet.economy.resources.gas.amount + report.reward.gas,
           ),
         },
       },
@@ -456,55 +458,49 @@ export function applySpaceObjectMissionEvent(
 ): GameState {
   if (event.payload.type !== 'SPACE_OBJECT_MISSION_RESOLVE') return state;
   const report = event.payload.report;
-  const object = state.spaceObjects.find((candidate) => candidate.id === report.objectId);
   const fleet = state.fleets.find((candidate) => candidate.id === report.fleetId);
-  const origin = state.planets.find((planet) => planet.id === report.originPlanetId);
-  if (object === undefined || fleet === undefined || origin === undefined) return state;
+  const object = state.spaceObjects.find((candidate) => candidate.id === report.objectId);
   if (
-    !state.pendingEvents.some(
-      (candidate) =>
-        candidate.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE' &&
-        candidate.payload.report.id === report.id,
-    )
-  ) return state;
-
-  const remainingYield = Math.max(0, object.remainingYield - report.depletion);
-  const cooldownSeconds = remainingYield <= 0
-    ? PVE_TARGET_RECOVERY_SECONDS
-    : SPACE_OBJECT_ACTIVE_COOLDOWN_SECONDS;
+    fleet === undefined ||
+    object === undefined ||
+    fleet.mission?.kind !== 'space-object' ||
+    fleet.mission.targetPlanetId !== object.id
+  ) {
+    return state;
+  }
+  const origin = state.planets.find((planet) => planet.id === report.originPlanetId);
+  const depletion = Math.min(object.remainingYield, report.depletion);
+  const ships = applyLosses(fleet.ships, report.losses);
+  const survived = Object.keys(ships).length > 0;
   const updatedObject: SpaceObjectState = {
     ...object,
-    remainingYield,
-    controllerEmpireId: report.empireId,
-    controlExpiresAt: report.controllerUntil,
-    cooldownUntil: state.clock.elapsedSeconds + cooldownSeconds,
+    remainingYield: Math.max(0, object.remainingYield - depletion),
+    controllerEmpireId: survived ? report.empireId : object.controllerEmpireId,
+    controlExpiresAt: survived ? report.controllerUntil : object.controlExpiresAt,
+    cooldownUntil: state.clock.elapsedSeconds + 300,
   };
-  const survivingShips = applyLosses(fleet.ships, report.losses);
-  const fleets = Object.keys(survivingShips).length === 0
-    ? state.fleets.filter((candidate) => candidate.id !== fleet.id)
-    : replaceFleet(state.fleets, {
+  const fleets = survived
+    ? replaceFleet(state.fleets, {
         ...fleet,
-        ships: survivingShips,
+        ships,
         status: 'stationed',
         mission: null,
-        location: { type: 'planet', planetId: origin.id },
-      });
+        location: { type: 'planet', planetId: report.originPlanetId },
+      })
+    : state.fleets.filter((candidate) => candidate.id !== fleet.id);
+  const strategicResources = state.strategicResources.map((entry) =>
+    entry.empireId === report.empireId
+      ? { ...entry, exoticMatter: entry.exoticMatter + report.reward.exoticMatter }
+      : entry,
+  );
   return {
     ...state,
-    planets: replacePlanet(
-      state.planets,
-      depositReward(origin, {
-        metal: report.reward.metal,
-        crystal: report.reward.crystal,
-        gas: report.reward.gas,
-      }),
-    ),
-    fleets,
     spaceObjects: replaceSpaceObject(state.spaceObjects, updatedObject),
-    strategicResources: addStrategicReward(
-      state.strategicResources,
-      report.empireId,
-      report.reward.exoticMatter,
-    ),
+    strategicResources,
+    fleets,
+    planets:
+      origin === undefined
+        ? state.planets
+        : replacePlanet(state.planets, addPlanetReward(origin, report)),
   };
 }
