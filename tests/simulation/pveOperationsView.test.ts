@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import {
   createPveOperationsView,
+  describeWorldEventEffect,
   filterPveOperationsView,
 } from '../../src/simulation/pve/pveOperationsView';
 import { startWorldEventAt } from '../../src/simulation/pve/worldEvents';
@@ -61,6 +62,31 @@ describe('canonical PvE operations view', () => {
       yieldInitial: object.initialYield,
       recoveryAt: recoveringAt,
     });
+  });
+
+  it('describes world-event mechanics without revealing future outcomes', () => {
+    const initial = createInitialGameState('pve-event-effects');
+    const pirate = initial.planets.find((planet) => planet.ownerEmpireId === 'pirate-neutral');
+    const object = initial.spaceObjects[0];
+    const system = initial.galaxy.systems[0];
+    if (pirate === undefined || object === undefined || system === undefined) {
+      throw new Error('Missing event targets.');
+    }
+    const mineral = startWorldEventAt(initial, 'mineral-bloom', 'space-object', object.id, 0, 0)
+      .worldEvents.active[0];
+    const hunt = startWorldEventAt(initial, 'pirate-hunt', 'planet', pirate.id, 0, 0)
+      .worldEvents.active[0];
+    const storm = startWorldEventAt(initial, 'solar-storm', 'system', system.id, 0, 0)
+      .worldEvents.active[0];
+    if (mineral === undefined || hunt === undefined || storm === undefined) {
+      throw new Error('Missing active events.');
+    }
+    expect(describeWorldEventEffect(mineral)).toContain('30%');
+    expect(describeWorldEventEffect(hunt)).toContain('150%');
+    expect(describeWorldEventEffect(storm)).toContain('20%');
+    for (const description of [mineral, hunt, storm].map(describeWorldEventEffect)) {
+      expect(description).not.toMatch(/победит|проиграет|получит/i);
+    }
   });
 
   it('filters the shared model without changing stable order', () => {
