@@ -347,7 +347,7 @@ export interface GameState {
   readonly strategicResources: readonly EmpireStrategicResources[];
   readonly worldEvents: WorldEventState;
   readonly pveMeta?: PveMetaState;
-  readonly endgameParticipation?: EndgameParticipationState;
+  readonly endgameParticipation: EndgameParticipationState | undefined;
   readonly botAutomation: BotAutomationState;
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
