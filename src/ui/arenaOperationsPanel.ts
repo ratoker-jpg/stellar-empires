@@ -179,15 +179,15 @@ function createReputationProgress(score: number): ReputationProgressView {
 }
 
 function eligibleArenaFleets(state: GameState, empireId: string): readonly ArenaFleetOptionView[] {
-  return state.fleets
-    .filter(
-      (fleet) =>
-        fleet.empireId === empireId &&
-        fleet.status === 'stationed' &&
-        fleet.location.type === 'planet' &&
-        fleet.mission === null &&
-        totalUnits(fleet.ships) > 0,
-    )
+  const fleets: readonly FleetState[] = state.fleets.filter(
+    (fleet) =>
+      fleet.empireId === empireId &&
+      fleet.status === 'stationed' &&
+      fleet.location.type === 'planet' &&
+      fleet.mission === null &&
+      totalUnits(fleet.ships) > 0,
+  );
+  return [...fleets]
     .sort((left, right) => left.id.localeCompare(right.id))
     .map((fleet): ArenaFleetOptionView => {
       const originPlanetId = fleet.location.type === 'planet'
