@@ -2,10 +2,8 @@ import { describe, expect, it } from 'vitest';
 import type { BattleReport, PlanetDestructionReport } from '../../src/simulation/combat/types';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { PIRATE_EMPIRE_ID } from '../../src/simulation/pve/neutralForces';
-import {
-  applySpaceObjectMissionEvent,
-  type SpaceObjectMissionReport,
-} from '../../src/simulation/pve/spaceObjects';
+import { applySpaceObjectMissionEventWithReturn } from '../../src/simulation/pve/specialMissionReturn';
+import type { SpaceObjectMissionReport } from '../../src/simulation/pve/spaceObjects';
 import {
   PVE_TARGET_RECOVERY_SECONDS,
   SPACE_OBJECT_ACTIVE_COOLDOWN_SECONDS,
@@ -137,14 +135,14 @@ function objectEvent(
 describe('PvE target recovery', () => {
   it('uses five minutes for non-final extraction and six hours for final depletion', () => {
     const active = objectEvent(createInitialGameState('object-active-cooldown'), 1_000, 100);
-    const activeResult = applySpaceObjectMissionEvent(active.state, active.event);
+    const activeResult = applySpaceObjectMissionEventWithReturn(active.state, active.event);
     expect(activeResult.spaceObjects.find((item) => item.id === active.objectId)).toMatchObject({
       remainingYield: 900,
       cooldownUntil: 100 + SPACE_OBJECT_ACTIVE_COOLDOWN_SECONDS,
     });
 
     const final = objectEvent(createInitialGameState('object-final-cooldown'), 10, 10);
-    const finalResult = applySpaceObjectMissionEvent(final.state, final.event);
+    const finalResult = applySpaceObjectMissionEventWithReturn(final.state, final.event);
     expect(finalResult.spaceObjects.find((item) => item.id === final.objectId)).toMatchObject({
       remainingYield: 0,
       cooldownUntil: 100 + PVE_TARGET_RECOVERY_SECONDS,
