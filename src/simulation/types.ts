@@ -26,6 +26,7 @@ import type {
   WorldEventState,
   WorldEventTargetType,
 } from './pve/worldEvents';
+import type { PveMetaState } from './pveMeta/reputation';
 import type { EmpireResearchState } from './research/types';
 import type { UnitKind } from './units/types';
 import type { UniverseModel } from './universe/model';
@@ -296,7 +297,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 16;
+  readonly schemaVersion: 17;
   readonly seed: number;
   readonly campaignSettings: CampaignSettings;
   readonly clock: GameClock;
@@ -315,6 +316,7 @@ export interface GameState {
   readonly spaceObjects: readonly SpaceObjectState[];
   readonly strategicResources: readonly EmpireStrategicResources[];
   readonly worldEvents: WorldEventState;
+  readonly pveMeta: PveMetaState;
   readonly botAutomation: BotAutomationState;
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];
