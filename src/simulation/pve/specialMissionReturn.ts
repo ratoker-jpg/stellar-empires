@@ -40,13 +40,11 @@ export function applyExpeditionEventWithReturn(
 
 function applyResolvedObjectCooldown(
   state: GameState,
-  event: Extract<ScheduledGameEvent, { readonly payload: { readonly type: 'SPACE_OBJECT_MISSION_RESOLVE' } }>,
+  objectId: string,
   resolved: GameState,
 ): GameState {
   if (resolved === state) return resolved;
-  const object = resolved.spaceObjects.find(
-    (candidate) => candidate.id === event.payload.report.objectId,
-  );
+  const object = resolved.spaceObjects.find((candidate) => candidate.id === objectId);
   if (object === undefined) return resolved;
   const cooldownSeconds = object.remainingYield === 0
     ? PVE_TARGET_RECOVERY_SECONDS
@@ -66,13 +64,14 @@ export function applySpaceObjectMissionEventWithReturn(
   event: ScheduledGameEvent,
 ): GameState {
   if (event.payload.type !== 'SPACE_OBJECT_MISSION_RESOLVE') return state;
+  const objectId = event.payload.report.objectId;
   const returnPlanetId = event.payload.report.returnPlanetId;
-  const routedEvent = returnPlanetId === undefined
+  const routedEvent: ScheduledGameEvent = returnPlanetId === undefined
     ? event
     : {
         ...event,
         payload: {
-          type: 'SPACE_OBJECT_MISSION_RESOLVE' as const,
+          type: 'SPACE_OBJECT_MISSION_RESOLVE',
           report: {
             ...event.payload.report,
             originPlanetId: returnPlanetId,
@@ -81,7 +80,7 @@ export function applySpaceObjectMissionEventWithReturn(
       };
   return applyResolvedObjectCooldown(
     state,
-    routedEvent,
+    objectId,
     applySpaceObjectMissionEvent(state, routedEvent),
   );
 }
