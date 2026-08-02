@@ -39,13 +39,17 @@ export function compactGameStateHistory(state: GameState): GameState {
     ...state,
     commandLog: retainNewest(state.commandLog, STATE_HISTORY_LIMITS.commands),
     eventLog: retainNewest(state.eventLog, STATE_HISTORY_LIMITS.executedEvents),
-    endgameParticipation: {
-      ...state.endgameParticipation,
-      membershipHistory: retainNewest(
-        state.endgameParticipation.membershipHistory,
-        STATE_HISTORY_LIMITS.allianceMembership,
-      ),
-    },
+    ...(state.endgameParticipation === undefined
+      ? {}
+      : {
+          endgameParticipation: {
+            ...state.endgameParticipation,
+            membershipHistory: retainNewest(
+              state.endgameParticipation.membershipHistory,
+              STATE_HISTORY_LIMITS.allianceMembership,
+            ),
+          },
+        }),
     market: {
       ...state.market,
       trades: retainNewest(state.market.trades, STATE_HISTORY_LIMITS.marketTrades),
