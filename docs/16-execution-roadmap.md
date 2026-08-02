@@ -1,9 +1,9 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** PR #151 `BOT-PVE-META-GATE` active; final implementation in accepted batch  
+**Status:** Audit PR #152 `COMPLETE-ENDGAME-01` complete; final validation/merge pending  
 **Updated:** 2026-08-02  
-**Verified main:** `39b85fe057d2cbf1fcff6b949a14bc62c7dbde63`  
-**Last merged PR:** #150 `PVE-META-OPERATIONS-UX`  
+**Verified main:** `73ed5536cb994a78fe7cdd45a41e0240901d7fe1`  
+**Last merged PR:** #151 `BOT-PVE-META-GATE`  
 **Runtime baseline:** schema v17 / save format v4
 
 ## Authoritative files
@@ -13,13 +13,11 @@ AGENTS.md
 docs/28-audit-first-autonomous-delivery-protocol.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
-docs/audits/contracts/pve-meta-foundation-01.md
-docs/audits/evidence/pve-meta-foundation-01.md
-docs/audits/completed/pve-meta-foundation-01.md
-docs/changes/pr151-bot-pve-meta-gate.md
-docs/27-playable-game-roadmap-v5.md
+docs/audits/contracts/complete-endgame-01.md
+docs/audits/evidence/complete-endgame-01.md
 docs/project-status.json
 docs/roadmap-pr-index.json
+docs/27-playable-game-roadmap-v5.md
 ```
 
 ## Delivered merged state
@@ -30,56 +28,58 @@ docs/roadmap-pr-index.json
 - #116–#120: ordinary missions and intelligence;
 - #121–#123: demolition, destruction and recovery;
 - #124–#135: local campaign contract, immutable time and compressed progression;
-- #137–#141: coherent multi-colony economy/logistics and bot logistics;
-- #142–#146: sustainable existing PvE operations;
-- #147: accepted `PVE-META-FOUNDATION-01` contract;
-- #148: schema-v17/save-v4 reputation foundation;
-- #149: deterministic local Arena mechanics;
-- #150: routed PvE-meta Operations UX.
+- #137–#141: multi-colony economy/logistics and bot logistics;
+- #142–#146: sustainable existing PvE;
+- #147–#151: persistent PvE reputation, local Arena, Operations UX, honest bot participation and exact 48-hour closure.
 
-## Final M6b sequence
+## Exact previous batch closure
 
 ```text
-#147 PVE-META-FOUNDATION-01 Audit 50835aeb2864b96e026a7202ad419368e934e47b
-→ #148 PVE-REPUTATION-FOUNDATION 430265b061764145e4e3ea1470d545f2ef82d0fa
-→ #149 ARENA-PVE-CHALLENGES 42c484426e850b84263d4eecab63ebbb3eaafb05
-→ #150 PVE-META-OPERATIONS-UX 39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
-→ #151 BOT-PVE-META-GATE — active final closure
+#147 Audit                         50835aeb2864b96e026a7202ad419368e934e47b
+→ #148 PVE-REPUTATION-FOUNDATION  430265b061764145e4e3ea1470d545f2ef82d0fa
+→ #149 ARENA-PVE-CHALLENGES       42c484426e850b84263d4eecab63ebbb3eaafb05
+→ #150 PVE-META-OPERATIONS-UX     39b85fe057d2cbf1fcff6b949a14bc62c7dbde63
+→ #151 BOT-PVE-META-GATE          73ed5536cb994a78fe7cdd45a41e0240901d7fe1
 ```
 
-Exactly four implementation PRs are authorized. No fifth implementation PR is allowed.
+## M8 audit decision
 
-## PR #151 scope
+M8 is split into three risk-separated stages:
 
-- public-only deterministic bot Arena participation;
-- planet-destruction capability gate;
-- owned idle stationed fleets and existing resources only;
-- mandatory 40% gas reserve;
-- ordinary PvE and all higher scheduler priorities ahead of Arena;
-- canonical Arena commands with one command maximum per decision;
-- Aegis, Synod and Veyra legal evidence;
-- hidden-state independence;
-- 48-hour direct/chunk/save/offline complete-state equality;
-- batch archive and final documentation closure.
+1. `COMPLETE-ENDGAME-01` — optional alliance/solo participation and Solar War;
+2. `COMPLETE-ENDGAME-02` — existing Obelisks/Gates, final-object combat and terminal victory/defeat;
+3. `COMPLETE-ENDGAME-03` — allied/public/owned bot perception, ordinary-command parity and closure.
+
+Audit #152 authorizes exactly four implementation PRs after it merges:
+
+```text
+#153 ALLIANCE-SOLO-FOUNDATION
+→ #154 SOLAR-WAR-PARTICIPATION
+→ #155 ENDGAME-OPERATIONS-UX
+→ #156 ENDGAME-PARTICIPATION-GATE
+```
+
+Target after #153: schema v18 / save format v5.
 
 ## Permanent boundary
 
-- no second schema/save bump after #148;
-- no separate PvE currency or Admiral services;
-- no multiplayer, rankings or account authority;
-- no new mechanical catalogs;
+- no mandatory alliance;
+- no final Obelisk/Gate mechanics in #153–#156;
+- no victory/defeat or terminal campaign state;
+- no bot endgame planner or allied visibility;
+- no new mechanical catalogs/assets by default;
 - no global economy/progression rebalance;
-- no alliances or endgame;
-- unchanged progression and performance gates.
+- no M9 onboarding/release polish;
+- unchanged 15-case progression and `<15 s` / `<30 s` performance gates.
 
 ## Immediate action
 
 ```text
-finish #151 code+docs synchronization
-→ final CI + Browser E2E + Graphify
-→ resolve review
-→ confirm mergeability
-→ squash merge #151
-→ record exact #151 squash SHA in the immediately following Audit PR
-→ no further implementation until a new audit is accepted
+final Audit #152 diff review
+→ CI + Browser E2E + Graphify
+→ clean review and mergeability
+→ mark ready
+→ squash merge #152
+→ create only #153 from fresh main
+→ record exact #152 squash SHA in #153
 ```
