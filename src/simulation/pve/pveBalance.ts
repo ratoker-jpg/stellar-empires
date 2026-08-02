@@ -11,6 +11,7 @@ export const PVE_MIN_REWARD_MULTIPLIER_PERMILLE = 250;
 export const PVE_REPEAT_PENALTY_PERMILLE = 250;
 export const PVE_MAX_THREAT_MULTIPLIER_PERMILLE = 2_000;
 export const PVE_THREAT_STEP_PERMILLE = 100;
+export const PIRATE_HUNT_REWARD_PERMILLE = 1_500;
 
 export function countRecentPveCompletions(
   state: GameState,
@@ -44,6 +45,22 @@ export function countRecentPveCompletions(
   }).length;
 }
 
+export function getPirateHuntRewardMultiplier(
+  state: GameState,
+  targetId: string,
+  at = state.clock.elapsedSeconds,
+): number {
+  return state.worldEvents.active.some((event) =>
+    event.definitionId === 'pirate-hunt' &&
+    event.targetType === 'planet' &&
+    event.targetId === targetId &&
+    event.startedAt <= at &&
+    event.endsAt > at,
+  )
+    ? PIRATE_HUNT_REWARD_PERMILLE
+    : 1_000;
+}
+
 export function calculatePveRewardMultiplier(
   state: GameState,
   empireId: string,
@@ -52,10 +69,14 @@ export function calculatePveRewardMultiplier(
   at = state.clock.elapsedSeconds,
 ): number {
   const repeats = countRecentPveCompletions(state, empireId, activity, targetId, at);
-  return Math.max(
+  const repeatMultiplier = Math.max(
     PVE_MIN_REWARD_MULTIPLIER_PERMILLE,
     1_000 - repeats * PVE_REPEAT_PENALTY_PERMILLE,
   );
+  const eventMultiplier = activity === 'pirate-raid'
+    ? getPirateHuntRewardMultiplier(state, targetId, at)
+    : 1_000;
+  return Math.floor((repeatMultiplier * eventMultiplier) / 1_000);
 }
 
 export function countPirateVictories(

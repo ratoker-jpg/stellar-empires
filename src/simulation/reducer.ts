@@ -405,7 +405,7 @@ export function executeAdvanceTimeWithTelemetry(
       executedEvents.push({ event: nextEvent, executedAt: nextAt });
     }
     if (nextWorldEventAt === nextAt) {
-      working = processWorldEventEvaluationAt(working, nextAt);
+      working = processWorldEventEvaluationAt(working, nextAt, executedEvents);
     }
     cursor = nextAt;
   }

@@ -1,22 +1,22 @@
 {
-  "statusVersion": 54,
-  "updatedAt": "2026-08-01",
+  "statusVersion": 55,
+  "updatedAt": "2026-08-02",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 141,
-  "lastMergeSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
-  "verifiedMainBaseline": "PR #141 BOT-COLONY-LOGISTICS-GATE merged after CI 30694661125, Browser E2E 30694661120, Graphify 30694661124 and no review findings",
+  "lastMergedPr": 142,
+  "lastMergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010",
+  "verifiedMainBaseline": "Audit PR #142 SUSTAINABLE-PVE-OPERATIONS-01 merged after required CI, Browser E2E, Graphify and review gates",
   "runtimeBaselinePr": 141,
   "runtimeBaselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
-  "activePr": 142,
-  "activePrKind": "audit",
-  "activeWorkItem": "SUSTAINABLE-PVE-OPERATIONS-01",
-  "nextPrAfterActive": 143,
+  "activePr": 143,
+  "activePrKind": "implementation",
+  "activeWorkItem": "PVE-TARGET-RECOVERY",
+  "nextPrAfterActive": 144,
   "nextPrKind": "implementation",
-  "nextWorkItem": "PVE-TARGET-RECOVERY",
+  "nextWorkItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
   "currentMilestone": "M6a sustainable existing PvE operations",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -29,7 +29,7 @@
     "docs/audits/evidence/sustainable-pve-operations-01.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastChangeDocument": "docs/changes/pr141-bot-colony-logistics-gate.md",
+  "lastChangeDocument": "docs/changes/pr143-pve-target-recovery.md",
   "lastCompletedBatchArchive": "docs/audits/completed/multi-colony-economy-logistics-01.md",
   "assetBacklog": "docs/asset-prompts/master-runtime-asset-backlog.md",
   "lastCompletedBatch": {
@@ -64,19 +64,21 @@
     "roadmapMilestone": "M6a",
     "complexity": "medium",
     "auditPr": 142,
-    "auditStatus": "active",
+    "auditStatus": "merged",
+    "auditMergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010",
     "baselinePr": 141,
     "baselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
     "implementationCount": 4,
     "implementationPrs": [143, 144, 145, 146],
     "completedImplementationPrs": [],
+    "activeImplementationPr": 143,
     "workItems": [
       "PVE-TARGET-RECOVERY",
       "PVE-OPERATIONS-INTELLIGENCE-UX",
       "BOT-PVE-OPERATIONS",
       "PVE-SUSTAINABILITY-GATE"
     ],
-    "status": "audit-active",
+    "status": "implementation-active",
     "contract": "docs/audits/contracts/sustainable-pve-operations-01.md",
     "evidence": "docs/audits/evidence/sustainable-pve-operations-01.md",
     "targetStateSchema": 16,
@@ -101,10 +103,10 @@
     "completeColonyOperationsUxImplemented": true,
     "botMultiColonyLogisticsImplemented": true,
     "pveFoundationsImplemented": true,
-    "sustainablePveTargetRecoveryImplemented": false,
+    "sustainablePveTargetRecoveryImplemented": true,
     "canonicalPveOpportunityViewImplemented": false,
     "botPveOperationsImplemented": false,
-    "status": "audit-142-active"
+    "status": "pr-143-active"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -163,31 +165,38 @@
     "canonical routed colony logistics and selected-colony market workflow",
     "deterministic bot colony roles and ordinary logistics/market support",
     "ordinary missions, fleets, combat, intelligence and PvE foundations",
+    "active-branch deterministic PvE target recovery and targeted pirate-hunt reward",
     "complete mechanical catalogs and routed release-viewport application"
   ],
   "activeDelivery": [
     {
-      "pr": 141,
-      "kind": "implementation-closure",
-      "workItem": "BOT-COLONY-LOGISTICS-GATE",
-      "status": "merged",
-      "mergeSha": "0167ad689e299438c9d0550ee20ba53452c93d39"
-    },
-    {
       "pr": 142,
       "kind": "audit",
       "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
-      "status": "active"
+      "status": "merged",
+      "mergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
     },
     {
       "pr": 143,
       "kind": "implementation",
       "workItem": "PVE-TARGET-RECOVERY",
-      "status": "blocked-until-audit-142-merge"
+      "status": "active",
+      "validatedCodeHead": "ad23459708d6b7dab57c29c898e5772ba96e8917",
+      "ciRun": 30741354763,
+      "browserRun": 30741354743,
+      "graphifyRun": 30741354825
+    },
+    {
+      "pr": 144,
+      "kind": "implementation",
+      "workItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
+      "status": "blocked-until-pr-143-merge"
     }
   ],
   "knownLimitations": [
-    "Existing PvE targets are not yet sustainable across long campaigns",
+    "PR #143 is not merged until final documentation-head workflows and review are green",
+    "Canonical player PvE opportunity intelligence/UX remains for PR #144",
+    "Honest bot PvE operations remain for PR #145",
     "Arena, Admiral services and persistent PvE meta are not audited",
     "Alliances, Solar War, functional Obelisks/Gates and victory/defeat are not implemented",
     "Onboarding, final mobile layout and release hardening remain incomplete"
@@ -200,7 +209,7 @@
     "runner": "scripts/graphify-audit.sh",
     "ownerLocalSetupRequired": false,
     "status": "active",
-    "lastValidation": "PR #141 final head ac961c923e985118da696c3bf7a426360d29a3ef passed Graphify run 30694661124",
+    "lastValidation": "PR #143 code head ad23459708d6b7dab57c29c898e5772ba96e8917 passed Graphify run 30741354825",
     "currentAuditEvidence": "docs/audits/evidence/sustainable-pve-operations-01.md"
   },
   "requiredStartupReading": [
@@ -210,12 +219,12 @@
     "docs/audits/current-batch-audit.md",
     "docs/audits/contracts/sustainable-pve-operations-01.md",
     "docs/audits/evidence/sustainable-pve-operations-01.md",
-    "docs/audits/completed/multi-colony-economy-logistics-01.md",
+    "docs/changes/pr143-pve-target-recovery.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
     "latest merged pull requests and actual main"
   ],
-  "nextAction": "Finish and squash merge Audit PR #142, then create only PR #143 PVE-TARGET-RECOVERY from fresh main."
+  "nextAction": "Validate and squash merge PR #143, then create only PR #144 PVE-OPERATIONS-INTELLIGENCE-UX from fresh main."
 }

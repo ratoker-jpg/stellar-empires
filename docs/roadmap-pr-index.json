@@ -1,24 +1,24 @@
 {
   "roadmapVersion": 5,
-  "updatedAt": "2026-08-01",
+  "updatedAt": "2026-08-02",
   "releaseTarget": "1.0",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 141,
-    "mergeSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
+    "lastMergedPr": 142,
+    "mergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010",
     "runtimeBaselinePr": 141,
     "runtimeBaselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39",
-    "auditBaselineSha": "0167ad689e299438c9d0550ee20ba53452c93d39"
+    "auditBaselineSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
   },
-  "activePr": 142,
-  "activePrKind": "audit",
+  "activePr": 143,
+  "activePrKind": "implementation",
   "activeBatchId": "SUSTAINABLE-PVE-OPERATIONS-01",
-  "activeWorkItem": "SUSTAINABLE-PVE-OPERATIONS-01",
-  "nextPr": 143,
+  "activeWorkItem": "PVE-TARGET-RECOVERY",
+  "nextPr": 144,
   "nextPrKind": "implementation",
-  "nextWorkItem": "PVE-TARGET-RECOVERY",
+  "nextWorkItem": "PVE-OPERATIONS-INTELLIGENCE-UX",
   "phases": [
     {
       "id": "delivered-foundation-and-catalogs",
@@ -131,13 +131,16 @@
     {
       "id": "sustainable-pve-operations",
       "auditPr": 142,
+      "auditMergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010",
       "startPr": 143,
       "endPr": 146,
-      "status": "audit-active",
+      "status": "implementation-active",
       "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
       "complexity": "medium",
       "plannedPrs": [143, 144, 145, 146],
       "completedPrs": [],
+      "activePr": 143,
+      "validatedCodeHead": "ad23459708d6b7dab57c29c898e5772ba96e8917",
       "contract": "docs/audits/contracts/sustainable-pve-operations-01.md",
       "evidence": "docs/audits/evidence/sustainable-pve-operations-01.md",
       "workItems": [
@@ -171,26 +174,23 @@
   ],
   "planned": [
     {
-      "number": 141,
-      "kind": "implementation-closure",
-      "workItem": "BOT-COLONY-LOGISTICS-GATE",
-      "title": "Complete bot colony logistics planning",
-      "status": "merged",
-      "mergeSha": "0167ad689e299438c9d0550ee20ba53452c93d39"
-    },
-    {
       "number": 142,
       "kind": "audit",
       "batchId": "SUSTAINABLE-PVE-OPERATIONS-01",
       "title": "Audit sustainable PvE operations",
-      "status": "active"
+      "status": "merged",
+      "mergeSha": "81f1959b0bdbdd72d05dc21a2dce0a9e1470f010"
     },
     {
       "number": 143,
       "kind": "implementation",
       "workItem": "PVE-TARGET-RECOVERY",
       "title": "Recover depleted PvE targets",
-      "status": "blocked-until-audit-142-merge"
+      "status": "active",
+      "validatedCodeHead": "ad23459708d6b7dab57c29c898e5772ba96e8917",
+      "ciRun": 30741354763,
+      "browserRun": 30741354743,
+      "graphifyRun": 30741354825
     },
     {
       "number": 144,
@@ -214,5 +214,5 @@
       "status": "blocked-until-pr-145-merge"
     }
   ],
-  "nextAction": "Finish and squash merge Audit PR #142, then create only PR #143 PVE-TARGET-RECOVERY from fresh main."
+  "nextAction": "Validate and squash merge PR #143, then create only PR #144 PVE-OPERATIONS-INTELLIGENCE-UX from fresh main."
 }
