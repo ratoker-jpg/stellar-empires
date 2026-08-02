@@ -15,7 +15,7 @@
   "activePrKind": "implementation",
   "activeWorkItem": "ALLIANCE-SOLO-FOUNDATION",
   "activeBranch": "agent/alliance-solo-foundation",
-  "activeCodeHead": "a49211e248ddc3a634e7112336bdee77edb2e02b",
+  "activeCodeHead": "514940cae7850cb348ad500a07846569be30d4eb",
   "nextPrAfterActive": 154,
   "nextPrKind": "implementation",
   "nextWorkItem": "SOLAR-WAR-PARTICIPATION",
@@ -67,7 +67,7 @@
     "completedImplementationPrs": [],
     "implementationMergeShas": {},
     "activeImplementationPr": 153,
-    "activeValidatedCodeHead": "a49211e248ddc3a634e7112336bdee77edb2e02b",
+    "activeValidatedCodeHead": "514940cae7850cb348ad500a07846569be30d4eb",
     "workItems": [
       "ALLIANCE-SOLO-FOUNDATION",
       "SOLAR-WAR-PARTICIPATION",
@@ -191,7 +191,7 @@
     {"pr": 150, "kind": "implementation", "workItem": "PVE-META-OPERATIONS-UX", "status": "merged", "mergeSha": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63"},
     {"pr": 151, "kind": "implementation-closure", "workItem": "BOT-PVE-META-GATE", "status": "merged", "mergeSha": "73ed5536cb994a78fe7cdd45a41e0240901d7fe1"},
     {"pr": 152, "kind": "audit", "batchId": "COMPLETE-ENDGAME-01", "workItem": "COMPLETE-ENDGAME-01-AUDIT", "status": "merged", "mergeSha": "d777a619109d4a9bfc8e5129bf4c525f3327b9b6", "implementationAuthorized": true},
-    {"pr": 153, "kind": "implementation", "workItem": "ALLIANCE-SOLO-FOUNDATION", "status": "active", "validatedCodeHead": "a49211e248ddc3a634e7112336bdee77edb2e02b", "targetStateSchema": 18, "targetSaveFormat": 5}
+    {"pr": 153, "kind": "implementation", "workItem": "ALLIANCE-SOLO-FOUNDATION", "status": "active", "validatedCodeHead": "514940cae7850cb348ad500a07846569be30d4eb", "targetStateSchema": 18, "targetSaveFormat": 5}
   ],
   "knownLimitations": [
     "PR #153 remains draft until final code+docs CI, Browser E2E, Graphify and review gates pass",
