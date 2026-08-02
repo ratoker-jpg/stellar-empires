@@ -1,98 +1,77 @@
 # Current implementation batch audit
 
-**Status:** Audit PR #147 active; implementation blocked until acceptance  
+**Status:** accepted batch; PR #148 active  
 **Updated:** 2026-08-02  
-**Proposed batch:** `PVE-META-FOUNDATION-01`  
+**Batch:** `PVE-META-FOUNDATION-01`  
 **Roadmap milestone:** M6b — bounded PvE meta foundation  
 **Complexity:** medium  
-**Verified main baseline:** PR #146 squash `392abb2bf27267fef9777ff35eb96555941a42f3`  
+**Audit PR:** #147 · `50835aeb2864b96e026a7202ad419368e934e47b`  
+**Implementation order:** #148–#151  
 **Target schema/save:** v17 / v4 through #148 only
 
-## Closure synchronized
-
-The completed M6a sequence is now exact:
+## Accepted implementation sequence
 
 ```text
-#142 SUSTAINABLE-PVE-OPERATIONS-01 Audit
-→ #143 PVE-TARGET-RECOVERY
-→ #144 PVE-OPERATIONS-INTELLIGENCE-UX
-→ #145 BOT-PVE-OPERATIONS
-→ #146 PVE-SUSTAINABILITY-GATE 392abb2bf27267fef9777ff35eb96555941a42f3
-```
-
-Final #146 gates on head `54914d98c071b84c668af5e16b89cb851085f7ba`:
-
-```text
-CI             30752151413 — success
-Browser E2E    30752151392 — success
-Graphify       30752151378 — success
-1 day           5.288 s < 15 s
-7 days         23.329 s < 30 s
-```
-
-Archive:
-
-```text
-docs/audits/completed/sustainable-pve-operations-01.md
-```
-
-## Audit findings
-
-- M6a already supplies sustainable targets, deterministic combat, ordinary fleets, routed Operations/Reports and honest bot PvE participation;
-- Graphify extracted 2,932 nodes / 9,980 edges and found no Arena, Admiral, reputation, currency, alliance, Obelisk, victory or defeat domain nodes;
-- `GameState`, `createInitialGameState()` and `executeCommand()` are highly connected, so persistence and command changes require a controlled migration;
-- the existing PvE import cycle must not absorb the new meta domain;
-- a separate PvE currency duplicates the resource economy;
-- Admiral services lack a justified service contract and are deferred.
-
-Evidence and accepted implementation contract:
-
-```text
-docs/audits/evidence/pve-meta-foundation-01.md
-docs/audits/contracts/pve-meta-foundation-01.md
-```
-
-## Proposed implementation sequence
-
-Implementation becomes authorized only after Audit PR #147 merges:
-
-```text
-#148 PVE-REPUTATION-FOUNDATION
+#147 PVE-META-FOUNDATION-01 Audit 50835aeb2864b96e026a7202ad419368e934e47b
+→ #148 PVE-REPUTATION-FOUNDATION — active
 → #149 ARENA-PVE-CHALLENGES
 → #150 PVE-META-OPERATIONS-UX
 → #151 BOT-PVE-META-GATE
 ```
 
-Exactly four implementation PRs are proposed. No fifth PR may be added to the batch.
+Exactly four implementation PRs are authorized. No fifth implementation PR may be added.
 
-## Accepted product slice
+## Active PR #148 result
 
-- persisted non-purchasable PvE reputation and derived tiers;
-- one deterministic v16/v3 → v17/v4 migration;
-- local public Arena challenges using existing fleets, resources and combat;
-- no separate currency;
-- one canonical Operations presentation;
-- same-command, public-only bot participation;
-- 48-hour three-faction direct/chunk/save/offline closure;
-- unchanged progression, Browser, Graphify and performance gates.
+#148 establishes the only persistence migration in the batch:
 
-## Explicit exclusions
+- schema v16 → v17;
+- save format v3 → v4;
+- zero-reputation deterministic migration preserving existing campaign state;
+- one reputation record per empire and an empty Arena-entry container;
+- derived tiers Recruit 0, Ranger 100, Vanguard 300 and Warden 700;
+- expedition +10, positive-yield object mission +15, pirate destruction +30 and active target bonus +20;
+- existing mission/combat resolution remains the source of truth;
+- duplicate, failed, empty, recalled and passive paths award zero;
+- v1/v2 state-checksum and v3 envelope-checksum imports remain supported;
+- future schema/save versions remain rejected.
 
+Dedicated domain:
+
+```text
+src/simulation/pveMeta/reputation.ts
+```
+
+The new domain consumes stable mission/combat results and does not extend the existing PvE import cycle.
+
+## Explicit exclusions for #148
+
+- Arena challenges, commands, entry lifecycle and battle resolution;
+- reputation/Arena Operations UX;
+- bot Arena participation;
+- separate PvE currency;
 - Admiral services;
-- PvP/multiplayer Arena, matchmaking, rankings or seasons;
-- new ship/building/research catalog entries;
-- server authority or account identity;
-- global economy/progression rebalance;
-- alliances, Solar War, Obelisks, Gates, victory or defeat;
-- physical logistics/convoy combat;
-- scope absorption from M8 or M9.
+- new catalog entries;
+- global economy or progression rebalance;
+- alliances, Solar War, Obelisks, Gates, victory or defeat.
+
+## Permanent gates
+
+- valid v16/v3 migration without state loss;
+- v17/v4 reputation round trip;
+- deterministic award and zero-award paths;
+- duplicate prevention;
+- ordinary mission/intelligence/save gates retained;
+- 15-case progression matrix with zero violations;
+- one-day `<15 s` and seven-day `<30 s` performance limits unchanged;
+- CI, Browser E2E and Graphify on final documentation head.
 
 ## Exact next action
 
-1. validate Audit #147 docs with CI, Browser E2E and Graphify;
+1. finish final code+docs gates for #148;
 2. resolve review and confirm mergeability;
-3. squash merge Audit #147 only when green;
-4. fetch its exact merge SHA and fresh `main`;
-5. create only #148 `PVE-REPUTATION-FOUNDATION` from that baseline.
+3. squash merge #148 only when green;
+4. fetch exact #148 squash SHA and fresh `main`;
+5. create only #149 `ARENA-PVE-CHALLENGES`.
 
-Until Audit #147 is accepted, no implementation work is authorized.
+No Arena implementation may begin before #148 merges.
