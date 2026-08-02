@@ -1,6 +1,6 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
-async function expectArenaWorkspace(page: import('@playwright/test').Page): Promise<void> {
+async function expectArenaWorkspace(page: Page): Promise<void> {
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page).toHaveURL(/#\/operations\/arena$/);
   await expect(page.locator('[data-operations-mode="arena"]')).toHaveAttribute(
