@@ -43,11 +43,29 @@ test('Fleet, Operations and Reports are canonical routed workspaces', async ({ p
   await expect(page).toHaveURL(/#\/operations\/overview$/);
   await expect(page.locator('#operations-view')).toBeVisible();
   await expect(page.locator('.galaxy-intel-workspace')).toBeVisible();
+  await expect(page.locator('[data-testid="pve-opportunity-intelligence"]')).toBeVisible();
   for (const mode of ['expeditions', 'objects', 'events', 'market', 'logistics', 'overview'] as const) {
     await page.locator(`[data-operations-mode="${mode}"]`).click();
     await expect(page).toHaveURL(new RegExp(`#\\/operations\\/${mode}$`));
     await expect(page.locator('html')).toHaveAttribute('data-operations-route-mode', mode);
     await expect(page.locator(`[data-operations-mode="${mode}"]`)).toHaveAttribute('aria-selected', 'true');
+    if (mode === 'expeditions') {
+      await expect(page.getByLabel('Флот экспедиции')).toHaveCount(1);
+      await expect(page.getByLabel('Цель экспедиции')).toHaveCount(1);
+      await expect(page.locator('[data-testid="pve-opportunity-intelligence"]')).toBeVisible();
+      await expect(page.locator('[data-opportunity-kind="expedition"]').first()).toBeVisible();
+    }
+    if (mode === 'objects') {
+      await expect(page.getByLabel('Космический объект')).toHaveCount(1);
+      await expect(page.getByLabel('Флот операции')).toHaveCount(1);
+      await expect(page.locator('[data-testid="pve-opportunity-intelligence"]')).toBeVisible();
+      await expect(page.locator('[data-opportunity-kind="space-object"]').first()).toBeVisible();
+    }
+    if (mode === 'events') {
+      await expect(page.locator('[data-testid="pve-opportunity-intelligence"]')).toBeVisible();
+      await expect(page.locator('[data-opportunity-kind="pirate-base"]').first()).toBeVisible();
+      await expect(page.locator('[data-opportunity-kind="pirate-base"]').first()).toContainText('Множитель');
+    }
   }
 
   await page.locator('#nav-reports').click();
@@ -176,16 +194,23 @@ test('market executes on the explicitly selected colony', async ({ page }) => {
   await expect(page.locator('[data-testid="market-feedback"]')).toHaveCount(1);
 });
 
-test('operation workspaces fit release viewports', async ({ page }) => {
-  for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
+test('operation workspaces fit release and mobile viewports', async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+    { width: 1920, height: 1080 },
+  ]) {
     await page.setViewportSize(viewport);
     for (const route of [
       '#/fleets/compose',
       '#/operations/overview',
+      '#/operations/expeditions',
       '#/operations/objects',
+      '#/operations/events',
       '#/operations/market',
       '#/operations/logistics',
       '#/reports/all',
+      '#/reports/event',
     ]) {
       await page.goto(`/?e2e=1${route}`);
       await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
