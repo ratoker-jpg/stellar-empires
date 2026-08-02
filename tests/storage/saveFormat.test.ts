@@ -18,7 +18,7 @@ import {
 const SAVE_TIME = '2026-07-18T12:00:00.000Z';
 
 describe('save format', () => {
-  it.each(WORLD_SPEED_PRESETS)('round-trips schema v15 at world speed x%s', (worldSpeed) => {
+  it.each(WORLD_SPEED_PRESETS)('round-trips schema v17 at world speed x%s', (worldSpeed) => {
     const settings = createCampaignSettings({
       scenarioPreset: 'test',
       worldSpeed,
@@ -33,7 +33,7 @@ describe('save format', () => {
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
-  it('migrates a schema-v8 save to schema v15 with x1 and envelope creation time', () => {
+  it('migrates a schema-v8 save to schema v17 with x1 and envelope creation time', () => {
     const current = createInitialGameState('legacy-save');
     const {
       campaignSettings: _campaignSettings,
@@ -42,6 +42,7 @@ describe('save format', () => {
       market: _market,
       shipUpgrades: _shipUpgrades,
       commanders: _commanders,
+      pveMeta: _pveMeta,
       ...withoutNewCollections
     } = current;
     const legacyState = {
@@ -62,8 +63,8 @@ describe('save format', () => {
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
 
-    expect(parsed.value.formatVersion).toBe(3);
-    expect(parsed.value.state.schemaVersion).toBe(16);
+    expect(parsed.value.formatVersion).toBe(4);
+    expect(parsed.value.state.schemaVersion).toBe(17);
     expect(parsed.value.state.campaignSettings).toEqual(createCampaignSettings({
       scenarioPreset: parsed.value.state.universe.presetId,
       worldSpeed: 1,
@@ -84,6 +85,8 @@ describe('save format', () => {
     expect(parsed.value.state.commanders).toHaveLength(parsed.value.state.empires.length);
     expect(parsed.value.state.planets[0]?.specializationId).toBe('balanced');
     expect(parsed.value.state.planets[0]?.developmentTemplateId).toBe('balanced');
+    expect(parsed.value.state.pveMeta?.reputations.every((entry) => entry.reputation === 0)).toBe(true);
+    expect(parsed.value.state.pveMeta?.activeArenaEntries).toEqual([]);
   });
 
   it('round-trips an active ship-upgrade queue', () => {
@@ -205,6 +208,7 @@ describe('save format', () => {
       campaignSettings: _campaignSettings,
       shipUpgrades: _shipUpgrades,
       commanders: _commanders,
+      pveMeta: _pveMeta,
       ...legacyBase
     } = current;
     const legacyState = { ...legacyBase, schemaVersion: 6, fleets: [olderFleet] };
@@ -219,7 +223,7 @@ describe('save format', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.state.fleets[0]?.mission).toBeNull();
-      expect(parsed.value.state.schemaVersion).toBe(16);
+      expect(parsed.value.state.schemaVersion).toBe(17);
       expect(parsed.value.state.campaignSettings.worldSpeed).toBe(1);
     }
   });
@@ -233,6 +237,7 @@ describe('save format', () => {
     const {
       campaignSettings: _campaignSettings,
       botAutomation: _botAutomation,
+      pveMeta: _pveMeta,
       ...legacyBase
     } = advanced;
     const legacyState = { ...legacyBase, schemaVersion: 13 };
@@ -259,6 +264,7 @@ describe('save format', () => {
     const {
       campaignSettings: _campaignSettings,
       commanders: _commanders,
+      pveMeta: _pveMeta,
       ...legacyBase
     } = current;
     const legacyState = { ...legacyBase, schemaVersion: 13 };
