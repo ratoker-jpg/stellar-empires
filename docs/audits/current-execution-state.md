@@ -46,7 +46,7 @@ Evidence:
 
 ```text
 CI             30747647153 — success
-Browser E2E    30747647147 — checked before final documentation closure
+Browser E2E    30747647147 — cancelled by later documentation commits; final documentation-head success required
 Graphify       30747647145 — success
 106 test files / 557 tests
 15 progression cases / zero phase violations
