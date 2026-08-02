@@ -1,92 +1,83 @@
 # Current execution state
 
 **Updated:** 2026-08-02  
-**Safe to continue:** yes, through active PR #145 only
+**Safe to continue:** yes, through Audit PR #147 only after #146 merges
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a` |
-| Last merged PR | #144 `PVE-OPERATIONS-INTELLIGENCE-UX` |
-| Runtime baseline | PR #144 · schema v16 / save format v3 |
-| Active batch | `SUSTAINABLE-PVE-OPERATIONS-01` |
-| Active work | #145 `BOT-PVE-OPERATIONS` |
-| Active branch | `agent/bot-pve-operations` |
-| Complexity | medium · exactly four implementation PRs |
-| Ordered implementation | #143 merged → #144 merged → #145 active → #146 |
+| Verified `main` baseline | `62aae31e2ad5e4ad04385a5cd94f77a70579d72f` |
+| Last merged PR | #145 `BOT-PVE-OPERATIONS` |
+| Runtime baseline | PR #145 · schema v16 / save format v3 |
+| Closing batch | `SUSTAINABLE-PVE-OPERATIONS-01` |
+| Active work | #146 `PVE-SUSTAINABILITY-GATE` closure |
+| Active branch | `agent/pve-sustainability-gate` |
+| Implementation authorization after merge | none |
+| Next authorized PR | #147 Audit only |
 | Blockers | final documentation-head gates and review |
 
 ## Last completed atomic action
 
-PR #144 was squash-merged as:
+PR #145 was squash-merged as:
 
 ```text
-dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a
+62aae31e2ad5e4ad04385a5cd94f77a70579d72f
 ```
 
-It delivered the canonical player-facing PvE opportunity model and Operations/report UX.
+## PR #146 closure result
 
-## Active PR #145 result
+PR #146 adds no gameplay domain. It composes permanent evidence across the delivered M6a mechanics:
 
-PR #145 gives bots honest access to existing PvE loops:
+- Aegis/Synod/Veyra 48-hour direct, six-hour chunked and 24-hour save-loaded equality;
+- exact six-hour object recovery and ordinary mission reuse;
+- surviving pirate recovery, free-slot respawn and occupied-slot blocking;
+- target-only pirate-hunt reward;
+- `solar-storm` → `anomaly-aftershock` chain preservation;
+- stable target counts, unique IDs/occupied coordinates and bounded histories;
+- legal ordinary bot expedition, object and pirate-hunt commands;
+- deterministic, non-mutating and hidden-state-isolated bot plans.
 
-- perception exposes only globally public expedition, object, event and pirate-contact data;
-- personality-aware planning consumes the canonical PvE opportunity model;
-- bots use ordinary fleet creation, expedition, object, attack and recall commands;
-- specialist/combat fleets consume only ready owned inventory;
-- expedition/object operations preserve a 40% gas reserve;
-- pirate-hunt requires an active event, current level-3 intelligence, a 120% safety margin and the normal attack validator;
-- real threat/recovery remains ahead of PvE; ordinary fleet development remains after PvE;
-- scheduler source `pve` issues at most one command per empire decision and records blocked reasons;
-- routine scheduler PvE unlocks after heavy-fleet at the `planet-destruction` phase, preserving the permanent progression matrix;
-- routine planning runs every 21,600 campaign seconds; targeted bonus events and already-running special operations retain 3,600-second reaction;
-- the pure planner remains directly testable before scheduler unlock;
-- hidden player resources, fleets, defenses and unpublished outcomes do not affect the plan;
-- inherited colony-role, logistics, partition and performance gates remain intact.
-
-## Code-head validation
-
-Code head:
+Validated code head:
 
 ```text
-db29dbe0a69ba38eea6a2f3ba838604305ec0505
+a2e466bfffa3494ae9a08e2c4250e6fc78c89290
 ```
 
 Evidence:
 
 ```text
-CI             30746581384 — full suite/build, performance and 15-case progression matrix success
-Browser E2E    30746581373 — success
-Graphify       30746581362 — success
+CI             30747647153 — success
+Browser E2E    30747647147 — checked before final documentation closure
+Graphify       30747647145 — success
+106 test files / 557 tests
+15 progression cases / zero phase violations
+1 campaign day  6.22 s < 15 s
+7 campaign days 29.56 s < 30 s
 ```
 
-Performance:
+Archive:
 
 ```text
-1 campaign day   6.06 s < 15 s
-7 campaign days 29.81 s < 30 s
+docs/audits/completed/sustainable-pve-operations-01.md
 ```
 
-Change record:
+## Post-merge state
 
-```text
-docs/changes/pr145-bot-pve-operations.md
-```
+When #146 lands, M6a is completed and there is no active implementation contract. The exact generated #146 squash SHA cannot exist inside its own pre-merge content; Audit #147 must synchronize it before selecting another batch.
 
 ## Compatibility boundary
 
 - schema v16/save format v3 retained;
-- no hidden-information exception or fabricated bot assets;
-- no player UX/recovery lifecycle reimplementation;
-- no persisted PvE meta, currency or reputation;
-- no #146 closure/archive work;
-- no Arena, Admiral services, alliances or endgame.
+- no new persisted state or server authority;
+- no Arena, Admiral services, PvE currency/reputation or meta progression;
+- no alliances, Solar War, Gates or endgame;
+- no fifth M6a implementation PR.
 
 ## Exact next action
 
-1. Validate the final #145 documentation head with CI, Browser E2E and Graphify.
+1. Validate final #146 documentation head with CI, Browser E2E and Graphify.
 2. Resolve every blocking review finding.
-3. Mark #145 ready and squash merge only with green gates.
-4. Fetch exact #145 merge SHA and fresh `main`.
-5. Create only #146 `PVE-SUSTAINABILITY-GATE`.
+3. Mark #146 ready and squash merge only with green gates.
+4. Fetch fresh `main` and exact #146 merge SHA.
+5. Create Audit PR #147 only and synchronize closure history.
 
-Do not start any later batch early.
+No implementation work is authorized until Audit #147 is accepted.
