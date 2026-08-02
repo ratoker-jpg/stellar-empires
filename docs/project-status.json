@@ -1,24 +1,24 @@
 {
-  "statusVersion": 65,
+  "statusVersion": 66,
   "updatedAt": "2026-08-02",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 151,
-  "lastMergeSha": "73ed5536cb994a78fe7cdd45a41e0240901d7fe1",
-  "verifiedMainBaseline": "PR #151 BOT-PVE-META-GATE squash-merged after final CI, Browser E2E, Graphify, performance and review gates",
+  "lastMergedPr": 152,
+  "lastMergeSha": "d777a619109d4a9bfc8e5129bf4c525f3327b9b6",
+  "verifiedMainBaseline": "Audit PR #152 COMPLETE-ENDGAME-01 squash-merged after CI, Browser E2E, Graphify, performance and review gates",
   "runtimeBaselinePr": 151,
   "runtimeBaselineSha": "73ed5536cb994a78fe7cdd45a41e0240901d7fe1",
-  "activePr": 152,
-  "activePrKind": "audit",
-  "activeWorkItem": "COMPLETE-ENDGAME-01-AUDIT",
-  "activeBranch": "agent/audit-complete-endgame",
-  "activeCodeHead": null,
-  "nextPrAfterActive": 153,
+  "activePr": 153,
+  "activePrKind": "implementation",
+  "activeWorkItem": "ALLIANCE-SOLO-FOUNDATION",
+  "activeBranch": "agent/alliance-solo-foundation",
+  "activeCodeHead": "a49211e248ddc3a634e7112336bdee77edb2e02b",
+  "nextPrAfterActive": 154,
   "nextPrKind": "implementation",
-  "nextWorkItem": "ALLIANCE-SOLO-FOUNDATION",
+  "nextWorkItem": "SOLAR-WAR-PARTICIPATION",
   "currentMilestone": "M8.1 complete endgame participation foundation",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -31,7 +31,7 @@
     "docs/audits/evidence/complete-endgame-01.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastChangeDocument": "docs/changes/pr151-bot-pve-meta-gate.md",
+  "lastChangeDocument": "docs/changes/pr153-alliance-solo-foundation.md",
   "lastCompletedBatchArchive": "docs/audits/completed/pve-meta-foundation-01.md",
   "currentBatchArchive": "docs/audits/completed/complete-endgame-01.md",
   "lastCompletedBatch": {
@@ -58,15 +58,16 @@
     "roadmapMilestone": "M8.1",
     "complexity": "medium",
     "auditPr": 152,
-    "auditMergeSha": null,
-    "auditStatus": "complete-merge-pending",
-    "baselinePr": 151,
-    "baselineSha": "73ed5536cb994a78fe7cdd45a41e0240901d7fe1",
+    "auditMergeSha": "d777a619109d4a9bfc8e5129bf4c525f3327b9b6",
+    "auditStatus": "accepted",
+    "baselinePr": 152,
+    "baselineSha": "d777a619109d4a9bfc8e5129bf4c525f3327b9b6",
     "implementationCount": 4,
     "plannedImplementationPrs": [153, 154, 155, 156],
     "completedImplementationPrs": [],
     "implementationMergeShas": {},
-    "activeImplementationPr": null,
+    "activeImplementationPr": 153,
+    "activeValidatedCodeHead": "a49211e248ddc3a634e7112336bdee77edb2e02b",
     "workItems": [
       "ALLIANCE-SOLO-FOUNDATION",
       "SOLAR-WAR-PARTICIPATION",
@@ -75,15 +76,15 @@
     ],
     "targetStateSchema": 18,
     "targetSaveFormat": 5,
-    "implementationAuthorized": false,
+    "implementationAuthorized": true,
     "contract": "docs/audits/contracts/complete-endgame-01.md",
     "evidence": "docs/audits/evidence/complete-endgame-01.md",
     "archive": "docs/audits/completed/complete-endgame-01.md",
-    "status": "audit-validation"
+    "status": "first-implementation-active"
   },
   "activeImplementationState": {
-    "stateSchema": 17,
-    "saveFormat": 4,
+    "stateSchema": 18,
+    "saveFormat": 5,
     "campaignSettingsImplemented": true,
     "campaignTimeImplemented": true,
     "offlineCatchUpImplemented": true,
@@ -98,13 +99,17 @@
     "arenaOperationsUxImplemented": true,
     "botArenaPlanningImplemented": true,
     "pveMetaFortyEightHourClosureImplemented": true,
-    "allianceDomainImplemented": false,
+    "allianceDomainImplemented": true,
+    "soloParticipationImplemented": true,
+    "allianceCommandsImplemented": true,
+    "allianceMigrationImplemented": true,
+    "allianceHistoryLimit": 64,
     "solarWarImplemented": false,
     "functionalObelisksImplemented": false,
     "functionalGatesImplemented": false,
     "campaignTerminalStateImplemented": false,
     "botEndgameParityImplemented": false,
-    "status": "audit-152-no-runtime-change"
+    "status": "pr-153-final-validation"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -126,6 +131,7 @@
     "multiplayerArenaRejected": true,
     "allianceOptional": true,
     "soloEndgameRequired": true,
+    "allianceModel": "public-open-membership",
     "m8SplitAcrossSequentialAudits": true
   },
   "auditDecisions": {
@@ -152,7 +158,7 @@
     "functionalGatesIncluded": false,
     "terminalStateIncluded": false,
     "botEndgamePlannerIncluded": false,
-    "implementationAuthorized": false,
+    "implementationAuthorized": true,
     "criticalUnknowns": 0,
     "futureAudits": ["COMPLETE-ENDGAME-02", "COMPLETE-ENDGAME-03"]
   },
@@ -171,14 +177,12 @@
     "catalogRuntimeTextures": 173
   },
   "deliveredDomains": [
-    "deterministic schema-v17 simulation with immutable campaign and progression identity",
-    "save format v4 with active/offline continuation integrity and v16/v3 migration",
-    "compressed finite campaign progression with permanent 15-case matrix",
-    "coherent multi-colony economy and hardened abstract logistics",
-    "ordinary missions, fleets, combat, intelligence, demolition and planet destruction",
-    "sustainable PvE target recovery and routed Operations intelligence",
-    "persistent PvE reputation and local deterministic Arena",
-    "honest three-faction bot Arena participation and exact 48-hour partition closure"
+    "deterministic campaign with immutable settings, active/offline time and compressed progression",
+    "complete three-faction catalogs and runtime assets",
+    "ordinary missions, intelligence, combat, demolition and planet destruction",
+    "multi-colony economy, logistics, sustainable PvE and PvE meta",
+    "honest three-faction bot Arena participation and exact 48-hour closure",
+    "schema-v18/save-v5 optional alliance and explicit solo participation foundation"
   ],
   "activeDelivery": [
     {"pr": 147, "kind": "audit", "batchId": "PVE-META-FOUNDATION-01", "status": "merged", "mergeSha": "50835aeb2864b96e026a7202ad419368e934e47b"},
@@ -186,12 +190,13 @@
     {"pr": 149, "kind": "implementation", "workItem": "ARENA-PVE-CHALLENGES", "status": "merged", "mergeSha": "42c484426e850b84263d4eecab63ebbb3eaafb05"},
     {"pr": 150, "kind": "implementation", "workItem": "PVE-META-OPERATIONS-UX", "status": "merged", "mergeSha": "39b85fe057d2cbf1fcff6b949a14bc62c7dbde63"},
     {"pr": 151, "kind": "implementation-closure", "workItem": "BOT-PVE-META-GATE", "status": "merged", "mergeSha": "73ed5536cb994a78fe7cdd45a41e0240901d7fe1"},
-    {"pr": 152, "kind": "audit", "batchId": "COMPLETE-ENDGAME-01", "workItem": "COMPLETE-ENDGAME-01-AUDIT", "status": "validation", "implementationAuthorized": false}
+    {"pr": 152, "kind": "audit", "batchId": "COMPLETE-ENDGAME-01", "workItem": "COMPLETE-ENDGAME-01-AUDIT", "status": "merged", "mergeSha": "d777a619109d4a9bfc8e5129bf4c525f3327b9b6", "implementationAuthorized": true},
+    {"pr": 153, "kind": "implementation", "workItem": "ALLIANCE-SOLO-FOUNDATION", "status": "active", "validatedCodeHead": "a49211e248ddc3a634e7112336bdee77edb2e02b", "targetStateSchema": 18, "targetSaveFormat": 5}
   ],
   "knownLimitations": [
-    "Audit #152 remains open until final CI, Browser E2E, Graphify and review gates pass",
-    "Alliance, Solar War, functional Obelisks/Gates and victory/defeat are not implemented on main",
-    "Audit #152 authorizes only stage-1 implementation after merge",
+    "PR #153 remains draft until final code+docs CI, Browser E2E, Graphify and review gates pass",
+    "Solar War is deferred to authorized PR #154",
+    "Operations participation UI is deferred to authorized PR #155",
     "Obelisks/Gates/terminal state require COMPLETE-ENDGAME-02",
     "Bot endgame parity requires COMPLETE-ENDGAME-03",
     "M9 onboarding and release hardening remain incomplete"
@@ -206,9 +211,6 @@
     "status": "active",
     "baselineRun": 30762531017,
     "baselineHead": "088644aeaba88a8e8d95b0d9a1684752517fdf35",
-    "nodes": 3083,
-    "edges": 10564,
-    "communities": 136,
     "currentAuditEvidence": "docs/audits/evidence/complete-endgame-01.md"
   },
   "requiredStartupReading": [
@@ -218,11 +220,12 @@
     "docs/audits/current-batch-audit.md",
     "docs/audits/contracts/complete-endgame-01.md",
     "docs/audits/evidence/complete-endgame-01.md",
+    "docs/changes/pr153-alliance-solo-foundation.md",
     "docs/17-continuation-guide.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
-    "PR #152 and actual main"
+    "PR #153 and actual main"
   ],
-  "nextAction": "Validate final Audit #152 documentation head with CI, Browser E2E and Graphify, resolve review, squash merge, then create only PR #153 ALLIANCE-SOLO-FOUNDATION from fresh main and record the exact #152 squash SHA."
+  "nextAction": "Validate the final PR #153 code+docs head, resolve review, squash merge, then create only PR #154 SOLAR-WAR-PARTICIPATION from fresh main and record the exact #153 squash SHA."
 }
