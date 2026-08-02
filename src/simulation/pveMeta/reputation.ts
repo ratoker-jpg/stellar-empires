@@ -24,8 +24,16 @@ export const PVE_REPUTATION_AWARDS = {
   pirateHuntTargetDestroyed: 20,
 } as const;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isReputation(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0;
+}
+
 function assertReputation(value: number, label: string): void {
-  if (!Number.isSafeInteger(value) || value < 0) {
+  if (!isReputation(value)) {
     throw new Error(`${label} must be a non-negative safe integer.`);
   }
 }
@@ -37,6 +45,32 @@ export function createInitialPveMetaState(
     reputations: empireIds.map((empireId) => ({ empireId, reputation: 0 })),
     activeArenaEntries: [],
   };
+}
+
+export function normalizePveMetaState(
+  value: unknown,
+  empireIds: readonly string[],
+): PveMetaState | undefined {
+  if (!isRecord(value) || !Array.isArray(value.reputations) ||
+    !Array.isArray(value.activeArenaEntries) || value.activeArenaEntries.length !== 0) {
+    return undefined;
+  }
+  const expected = [...empireIds].sort();
+  const reputations = value.reputations.map((entry) => {
+    if (!isRecord(entry) || typeof entry.empireId !== 'string' || !isReputation(entry.reputation)) {
+      return undefined;
+    }
+    return { empireId: entry.empireId, reputation: entry.reputation } as const;
+  });
+  if (reputations.some((entry) => entry === undefined)) return undefined;
+  const normalized = reputations.filter(
+    (entry): entry is EmpirePveReputationState => entry !== undefined,
+  );
+  const actual = normalized.map((entry) => entry.empireId).sort();
+  if (actual.length !== expected.length || actual.some((empireId, index) => empireId !== expected[index])) {
+    return undefined;
+  }
+  return { reputations: normalized, activeArenaEntries: [] };
 }
 
 export function getPveReputationTier(reputation: number): PveReputationTier {
