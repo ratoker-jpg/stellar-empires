@@ -105,6 +105,10 @@ export type GameEventPayload =
       readonly entryId: string;
     }
   | {
+      readonly type: 'SOLAR_WAR_RESOLVE';
+      readonly cycleId: string;
+    }
+  | {
       readonly type: 'WORLD_EVENT_END';
       readonly instanceId: string;
     }
@@ -309,6 +313,11 @@ export type GameCommand =
       readonly type: 'WITHDRAW_ARENA_ENTRY';
       readonly empireId: string;
       readonly entryId: string;
+    }
+  | {
+      readonly type: 'ENTER_SOLAR_WAR';
+      readonly empireId: string;
+      readonly fleetId: string;
     }
   | {
       readonly type: 'RECALL_FLEET';
