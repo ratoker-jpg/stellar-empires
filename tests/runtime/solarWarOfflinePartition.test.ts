@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advanceCampaignRuntimeCheckpoint } from '../../src/runtime/campaignTimeRuntime';
+import { runCampaignCatchUp } from '../../src/runtime/campaignTimeRuntime';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { SOLAR_WAR_CYCLE_SECONDS } from '../../src/simulation/endgame/types';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
@@ -68,22 +68,22 @@ function projection(state: GameState) {
 }
 
 describe('Solar War offline runtime partition', () => {
-  it('matches direct campaign time at the exact cycle boundary', () => {
+  it('matches direct campaign time at the exact cycle boundary', async () => {
     const entered = createSolarWarState();
     const direct = execute(entered, {
       type: 'ADVANCE_TIME',
       seconds: SOLAR_WAR_CYCLE_SECONDS,
     });
-    const offline = advanceCampaignRuntimeCheckpoint(
-      entered,
-      createCampaignRuntimeMetadata(START_TIME),
-      TARGET_TIME,
-      'offline',
-    );
+    const offline = await runCampaignCatchUp({
+      state: entered,
+      runtimeMetadata: createCampaignRuntimeMetadata(START_TIME),
+      targetAtReal: TARGET_TIME,
+      checkpoint: async () => undefined,
+      yieldControl: async () => undefined,
+    });
 
-    expect(offline.complete).toBe(true);
-    expect(offline.advance.processedGameSeconds).toBe(SOLAR_WAR_CYCLE_SECONDS);
-    expect(projection(offline.state)).toEqual(projection(direct));
+    expect(offline.runtimeMetadata.pendingCatchUp).toBeUndefined();
     expect(offline.runtimeMetadata.lastActiveAtReal).toBe(TARGET_TIME);
+    expect(projection(offline.state)).toEqual(projection(direct));
   });
 });
