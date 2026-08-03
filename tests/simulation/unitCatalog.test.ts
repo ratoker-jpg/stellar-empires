@@ -47,6 +47,7 @@ describe('unit catalog and inventory', () => {
       membershipHistory: [],
       nextAllianceSequence: 1,
       nextMembershipHistorySequence: 0,
+      solarWar: { activeEntries: [], history: [] },
     });
     expect(state.market.reserves).toEqual({
       metal: 50_000,
