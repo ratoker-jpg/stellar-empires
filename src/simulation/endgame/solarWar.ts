@@ -411,15 +411,12 @@ function calculateScore(
 function resolveEntry(
   state: GameState,
   entry: SolarWarEntry,
-  event: ScheduledGameEvent,
 ): { readonly state: GameState; readonly result: SolarWarResult } {
   const fleet = state.fleets.find(
     (candidate) => candidate.id === entry.fleetId && candidate.empireId === entry.empireId,
   );
   const attackerInitial = fleet?.ships ?? {};
-  const seed = mixSeed(
-    entry.cycle.combatSeed ^ hashString(entry.empireId) ^ event.sequence,
-  );
+  const seed = mixSeed(entry.cycle.combatSeed ^ hashString(entry.empireId));
 
   if (fleet === undefined) {
     const battleReport: BattleReport = {
@@ -588,7 +585,7 @@ export function applySolarWarResolutionEvent(
   let working = state;
   const results: SolarWarResult[] = [];
   for (const entry of entries) {
-    const resolved = resolveEntry(working, entry, event);
+    const resolved = resolveEntry(working, entry);
     working = resolved.state;
     results.push(resolved.result);
   }
