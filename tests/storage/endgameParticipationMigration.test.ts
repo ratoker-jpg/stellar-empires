@@ -50,6 +50,38 @@ describe('endgame participation persistence migration', () => {
       membershipHistory: [],
       nextAllianceSequence: 1,
       nextMembershipHistorySequence: 0,
+      solarWar: { activeEntries: [], history: [] },
+    });
+  });
+
+  it('same-schema migrates pre-Solar-War v18/v5 saves without changing membership', () => {
+    let state = createInitialGameState('endgame-participation-v18-upgrade');
+    const created = executeCommand(state, {
+      type: 'CREATE_ALLIANCE',
+      empireId: 'player',
+      name: 'Legacy V18 Union',
+    });
+    expect(created.ok).toBe(true);
+    if (!created.ok || created.value.endgameParticipation === undefined) return;
+    state = created.value;
+    const save = createSaveEnvelope('legacy-v18', state, SAVE_TIME);
+    const { solarWar: _solarWar, ...legacyParticipation } = state.endgameParticipation;
+    const legacyState = { ...state, endgameParticipation: legacyParticipation };
+    const unsigned = {
+      formatVersion: save.formatVersion,
+      slotId: save.slotId,
+      savedAt: save.savedAt,
+      runtimeMetadata: save.runtimeMetadata,
+      state: legacyState,
+    };
+    const legacy = { ...unsigned, checksum: createStateChecksum(unsigned) };
+
+    const parsed = parseSaveJson(JSON.stringify(legacy));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.state.endgameParticipation).toEqual({
+      ...state.endgameParticipation,
+      solarWar: { activeEntries: [], history: [] },
     });
   });
 
@@ -100,6 +132,30 @@ describe('endgame participation persistence migration', () => {
       checksum: createStateChecksum(unsigned),
     };
 
+    expect(parseSaveJson(JSON.stringify(malformed))).toMatchObject({
+      ok: false,
+      code: 'SAVE_MIGRATION_FAILED',
+    });
+  });
+
+  it('rejects malformed Solar War state instead of repairing current saves', () => {
+    const state = createInitialGameState('solar-war-malformed-save');
+    const save = createSaveEnvelope('solar-war-malformed', state, SAVE_TIME);
+    const malformedState = {
+      ...state,
+      endgameParticipation: {
+        ...state.endgameParticipation!,
+        solarWar: { activeEntries: 'not-an-array', history: [] },
+      },
+    };
+    const unsigned = {
+      formatVersion: save.formatVersion,
+      slotId: save.slotId,
+      savedAt: save.savedAt,
+      runtimeMetadata: save.runtimeMetadata,
+      state: malformedState,
+    };
+    const malformed = { ...unsigned, checksum: createStateChecksum(unsigned) };
     expect(parseSaveJson(JSON.stringify(malformed))).toMatchObject({
       ok: false,
       code: 'SAVE_MIGRATION_FAILED',
