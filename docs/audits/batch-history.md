@@ -15,14 +15,14 @@ This file is append-only for completed batches. An active row may be updated unt
 | `MULTI-COLONY-ECONOMY-LOGISTICS-01` | Medium | #137 · `4e7fd20fdc415f30bf8a1476b67c79b0b8e79166` | #138 · `b6a598e1a2d9b4ec30cfaf82c2c21773ea0cea1f`; #139 · `dc8b42fc0e41b631a61dda524224145f2d8ba214`; #140 · `01eab1366289526553cdffcb1042ee98a8a59040`; #141 · `0167ad689e299438c9d0550ee20ba53452c93d39` | completed; multi-colony economy, logistics, UX and bot parity | `docs/audits/completed/multi-colony-economy-logistics-01.md` |
 | `SUSTAINABLE-PVE-OPERATIONS-01` | Medium | #142 · `81f1959b0bdbdd72d05dc21a2dce0a9e1470f010` | #143 · `e3d2c28385abd9772a18257eeb313bd8d45e581e`; #144 · `dbc5bdf0bce439efa5f0c61c8846bbd9960ba43a`; #145 · `62aae31e2ad5e4ad04385a5cd94f77a70579d72f`; #146 · `392abb2bf27267fef9777ff35eb96555941a42f3` | completed; sustainable PvE, Operations intelligence and honest bots | `docs/audits/completed/sustainable-pve-operations-01.md` |
 | `PVE-META-FOUNDATION-01` | Medium | #147 · `50835aeb2864b96e026a7202ad419368e934e47b` | #148 · `430265b061764145e4e3ea1470d545f2ef82d0fa`; #149 · `42c484426e850b84263d4eecab63ebbb3eaafb05`; #150 · `39b85fe057d2cbf1fcff6b949a14bc62c7dbde63`; #151 · `73ed5536cb994a78fe7cdd45a41e0240901d7fe1` | completed; reputation, local Arena, Operations UX, honest bot parity and exact 48-hour closure; schema v17/save v4 | `docs/audits/completed/pve-meta-foundation-01.md` |
-| `COMPLETE-ENDGAME-01` | Medium | #152 · `d777a619109d4a9bfc8e5129bf4c525f3327b9b6` | #153 `ALLIANCE-SOLO-FOUNDATION` active; #154 `SOLAR-WAR-PARTICIPATION`; #155 `ENDGAME-OPERATIONS-UX`; #156 `ENDGAME-PARTICIPATION-GATE` | accepted stage 1; #153 implements optional alliance/solo state with schema v18/save v5; batch remains active | archive at #156 |
+| `COMPLETE-ENDGAME-01` | Medium | #152 · `d777a619109d4a9bfc8e5129bf4c525f3327b9b6` | #153 · `c567675c506d55a14a73757afa80c704fb079fc7`; #154 `SOLAR-WAR-PARTICIPATION` active; #155 `ENDGAME-OPERATIONS-UX`; #156 `ENDGAME-PARTICIPATION-GATE` | accepted stage 1; alliance/solo foundation merged; deterministic Solar War runtime implemented in active #154; batch remains active | archive at #156 |
 
 ## Current authorized sequence
 
 ```text
 #152 COMPLETE-ENDGAME-01 Audit d777a619109d4a9bfc8e5129bf4c525f3327b9b6
-→ #153 ALLIANCE-SOLO-FOUNDATION — active
-→ #154 SOLAR-WAR-PARTICIPATION
+→ #153 ALLIANCE-SOLO-FOUNDATION c567675c506d55a14a73757afa80c704fb079fc7
+→ #154 SOLAR-WAR-PARTICIPATION — active
 → #155 ENDGAME-OPERATIONS-UX
 → #156 ENDGAME-PARTICIPATION-GATE
 ```
