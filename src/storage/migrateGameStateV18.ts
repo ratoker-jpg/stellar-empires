@@ -1,6 +1,6 @@
 import {
   createInitialEndgameParticipationState,
-  isEndgameParticipationState,
+  normalizeEndgameParticipationState,
 } from '../simulation/endgame/participation';
 import type { GameState } from '../simulation/types';
 import { migrateGameStateV17 } from './migrateGameStateV17';
@@ -19,14 +19,16 @@ export function migrateGameStateV18(
       { ...legacyShell, schemaVersion: 17 },
       legacySavedAt,
     );
-    if (migrated === undefined ||
-      !isEndgameParticipationState(savedParticipation, migrated.empires)) {
-      return undefined;
-    }
+    if (migrated === undefined) return undefined;
+    const participation = normalizeEndgameParticipationState(
+      savedParticipation,
+      migrated.empires,
+    );
+    if (participation === undefined) return undefined;
     return {
       ...migrated,
       schemaVersion: 18,
-      endgameParticipation: savedParticipation,
+      endgameParticipation: participation,
     };
   }
 
