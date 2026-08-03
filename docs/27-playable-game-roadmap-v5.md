@@ -1,9 +1,9 @@
 # Stellar Empires — canonical roadmap to a complete playable game v5
 
-**Status:** PR #153 `ALLIANCE-SOLO-FOUNDATION` active; implementation complete, final validation pending  
-**Updated:** 2026-08-02  
-**Last merged PR:** #152 `COMPLETE-ENDGAME-01` Audit · `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
-**Active runtime target:** schema v18 / save format v5  
+**Status:** PR #154 `SOLAR-WAR-PARTICIPATION` active; runtime complete, final validation pending  
+**Updated:** 2026-08-03  
+**Last merged PR:** #153 `ALLIANCE-SOLO-FOUNDATION` · `c567675c506d55a14a73757afa80c704fb079fc7`  
+**Runtime:** schema v18 / save format v5  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
@@ -35,9 +35,9 @@ Nemexia references define systemic depth only. Stellar Empires keeps original te
 
 ## 3. Delivered merged baseline
 
-Through PR #151 the product includes deterministic schema-v17/save-v4 campaigns, immutable active/offline time, compressed finite progression, complete catalogs/runtime art, ordinary missions/intelligence/combat, demolition/destruction/recovery, multi-colony economy/logistics, sustainable PvE, persistent reputation, local Arena mechanics, routed Operations UX and honest three-faction bot participation.
+Through PR #151 the product includes deterministic campaign time, compressed progression, complete catalogs/runtime art, ordinary missions/intelligence/combat, demolition/destruction/recovery, multi-colony economy/logistics, sustainable PvE, reputation, Arena and honest bot participation.
 
-Audit #152 accepted M8 stage 1 and split final objects and bot closure into later audits.
+Audit #152 accepted M8 stage 1. PR #153 added optional public/open alliances, explicit solo participation and the controlled schema v18/save v5 migration.
 
 ## 4. Completed batches
 
@@ -63,29 +63,38 @@ M8 is split because persistence/participation, terminal closure and bot informat
 
 ```text
 #152 Audit d777a619109d4a9bfc8e5129bf4c525f3327b9b6
-→ #153 ALLIANCE-SOLO-FOUNDATION — active
-→ #154 SOLAR-WAR-PARTICIPATION
+→ #153 ALLIANCE-SOLO-FOUNDATION c567675c506d55a14a73757afa80c704fb079fc7
+→ #154 SOLAR-WAR-PARTICIPATION — active
 → #155 ENDGAME-OPERATIONS-UX
 → #156 ENDGAME-PARTICIPATION-GATE
 ```
 
 Exactly four implementation PRs are authorized.
 
-PR #153 delivers:
+Delivered through #153:
 
 - one controlled schema v18/save v5 migration;
 - one persisted solo-eligible participant per empire;
 - optional public/open local alliance membership;
-- stable deterministic alliance IDs and normalized names;
-- ordinary create/join/leave commands for every empire;
-- deterministic empty-alliance removal;
-- checksum-covered 64-entry membership history;
-- no Solar War, UI, bot planning or final-object behavior.
+- stable alliance IDs, normalized names and ordinary create/join/leave commands;
+- deterministic empty-alliance removal and 64-entry membership history.
+
+PR #154 delivers:
+
+- deterministic 24-hour public Solar War cycles;
+- existing faction fleets, combat, research, upgrades, doctrines and commander systems;
+- ordinary solo/alliance entry with one held owned combat fleet;
+- one shared exact-resolution event per cycle and stable empire order;
+- persisted losses, survivors, battle report and score;
+- redacted public result, owner detail and deterministic alliance/solo aggregation;
+- same-schema migration for old v18/v5 saves;
+- 64-result retention and direct/chunk/save/load/resumable-offline equality;
+- no UI or bot endgame planner.
 
 Stage-1 outcome after #156:
 
 - optional alliance/solo participation;
-- deterministic 24-hour Solar War using existing fleets, combat and catalogs;
+- deterministic Solar War;
 - Operations/Reports/HUD presentation;
 - exact migration/partition/Browser/performance closure.
 
@@ -108,8 +117,8 @@ Bots must use the same commands, resources, timing and information classes. Save
 | Milestone | Status | Delivery |
 |---|---|---|
 | M1–M6b | completed | through PR #151 |
-| M7 — Autonomous bot parity | substantially delivered | economy/logistics/PvE/meta delivered; endgame parity deferred to M8 stage 3 |
-| M8.1 — Participation foundation | implementation active | Audit #152; PR #153 active; #154–#156 authorized |
+| M7 — Autonomous bot parity | substantially delivered | endgame parity deferred to M8 stage 3 |
+| M8.1 — Participation foundation | implementation active | Audit #152; #153 merged; #154 active; #155–#156 authorized |
 | M8.2 — Final objects and terminal result | not audited | `COMPLETE-ENDGAME-02` |
 | M8.3 — Bot endgame closure | not audited | `COMPLETE-ENDGAME-03` |
 | M9 — Release candidate | not audited | balance, onboarding, QA, performance and release |
@@ -119,12 +128,12 @@ Bots must use the same commands, resources, timing and information classes. Save
 - current `main` is the only valid merged runtime baseline;
 - alliance membership is optional and solo completion remains legal;
 - exactly four implementation PRs are authorized by Audit #152;
-- schema v18/save v5 is introduced only by #153 in this batch;
-- player and future bots use ordinary commands, owned resources and explicit visibility classes;
-- no new endgame catalog/assets are assumed necessary because faction Obelisk/Gate entries already exist;
+- schema v18/save v5 was introduced only by #153 in this batch;
+- Solar War uses ordinary commands, owned fleets, existing combat and explicit public/owner views;
+- no new endgame catalog/assets are required for stage 1;
 - no final-object or terminal mechanics enter stage 1;
 - progression, determinism, Browser, Graphify and performance gates remain mandatory.
 
 ## 9. Immediate action
 
-Validate the final PR #153 code+docs head, resolve review, squash merge, then create only PR #154 from fresh `main` and record the exact #153 squash SHA.
+Validate the exact final PR #154 code+docs head, resolve review, squash merge, then create only PR #155 from fresh `main` and record the exact #154 squash SHA.
