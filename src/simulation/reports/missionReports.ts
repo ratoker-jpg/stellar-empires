@@ -314,6 +314,27 @@ function createWorldEventReports(state: GameState): UnifiedMissionReport[] {
   }));
 }
 
+function createSolarWarReports(state: GameState): UnifiedMissionReport[] {
+  return (state.endgameParticipation?.solarWar.history ?? []).map((result): UnifiedMissionReport => ({
+    id: result.id,
+    resolvedAt: result.resolvedAt,
+    kind: 'solar-war',
+    mode: 'pve',
+    title: 'Солнечная война',
+    summary: `${result.cycleId} · ${result.participationKind} ${result.participationId} · ${result.outcome} · очки ${result.score}`,
+    targetId: result.cycleId,
+    primaryEmpireId: result.empireId,
+    secondaryEmpireId: null,
+    outcome: battleOutcome(result.battleReport.winner),
+    reward: ZERO_REWARD,
+    primaryLosses: unitLosses(result.attackerInitial, result.attackerRemaining),
+    secondaryLosses: unitLosses(result.enemyInitial, result.enemyRemaining),
+    threatMultiplierPermille: 1_000,
+    rewardMultiplierPermille: 1_000,
+    combatBreakdown: createCombatBreakdown(result.battleReport.rounds),
+  }));
+}
+
 function freshnessLabel(state: GameState, expiresAt: number): string {
   const remaining = expiresAt - state.clock.elapsedSeconds;
   return remaining > 0 ? `актуально ещё ${remaining}с` : `устарело ${Math.abs(remaining)}с назад`;
@@ -367,6 +388,7 @@ export function createUnifiedMissionReports(
   return [
     ...createEventReports(state),
     ...createWorldEventReports(state),
+    ...createSolarWarReports(state),
     ...createIntelligenceReports(state),
   ].sort((left, right) => right.resolvedAt - left.resolvedAt || left.id.localeCompare(right.id));
 }

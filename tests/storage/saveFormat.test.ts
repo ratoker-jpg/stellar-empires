@@ -99,6 +99,7 @@ describe('save format', () => {
       membershipHistory: [],
       nextAllianceSequence: 1,
       nextMembershipHistorySequence: 0,
+      solarWar: { activeEntries: [], history: [] },
     });
   });
 

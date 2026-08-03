@@ -6,6 +6,7 @@ import {
 } from './defense/planetaryDefense';
 import { accrueAllPlanetEconomies } from './economy/planetEconomy';
 import { createAlliance, joinAlliance, leaveAlliance } from './endgame/participation';
+import { applySolarWarResolutionEvent, enterSolarWar } from './endgame/solarWar';
 import { enqueueEvent } from './eventQueue';
 import { getEnergyOutputByEmpire, getResearchEffectsForEmpire } from './factions/factionResearchEffects';
 import { canUseMechanicalDefinition } from './factions/sharedMechanicalCatalog';
@@ -125,6 +126,7 @@ function scheduleEvent(
     command.payload.type === 'EXPEDITION_RESOLVE' ||
     command.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE' ||
     command.payload.type === 'ARENA_RESOLVE' ||
+    command.payload.type === 'SOLAR_WAR_RESOLVE' ||
     command.payload.type === 'WORLD_EVENT_END' ||
     command.payload.type === 'WORLD_EVENT_START'
   ) {
@@ -311,6 +313,9 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
   if (event.payload.type === 'ARENA_RESOLVE') {
     return applyArenaResolutionEvent(state, event);
   }
+  if (event.payload.type === 'SOLAR_WAR_RESOLVE') {
+    return applySolarWarResolutionEvent(state, event);
+  }
   if (event.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
     return applySpaceObjectMissionEventWithReturn(state, event);
   }
@@ -450,6 +455,7 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
     case 'CREATE_ALLIANCE': return createAlliance(state, command);
     case 'JOIN_ALLIANCE': return joinAlliance(state, command);
     case 'LEAVE_ALLIANCE': return leaveAlliance(state, command);
+    case 'ENTER_SOLAR_WAR': return enterSolarWar(state, command);
     case 'QUEUE_BUILDING': return queueBuilding(state, command);
     case 'CANCEL_BUILDING': return cancelBuilding(state, command);
     case 'SET_PLANET_SPECIALIZATION': return setPlanetSpecialization(state, command);

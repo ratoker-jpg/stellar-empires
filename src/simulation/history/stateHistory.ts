@@ -1,4 +1,7 @@
-import { ENDGAME_PARTICIPATION_HISTORY_LIMIT } from '../endgame/types';
+import {
+  ENDGAME_PARTICIPATION_HISTORY_LIMIT,
+  SOLAR_WAR_HISTORY_LIMIT,
+} from '../endgame/types';
 import type { GameCommand, GameState, CommandLogEntry, ExecutedGameEvent } from '../types';
 
 export const STATE_HISTORY_LIMITS = {
@@ -8,6 +11,7 @@ export const STATE_HISTORY_LIMITS = {
   worldEvents: 128,
   arenaResults: 64,
   allianceMembership: ENDGAME_PARTICIPATION_HISTORY_LIMIT,
+  solarWarResults: SOLAR_WAR_HISTORY_LIMIT,
   intelligenceObservationsPerEmpire: 64,
   intelligenceAlertsPerEmpire: 128,
 } as const;
@@ -48,6 +52,13 @@ export function compactGameStateHistory(state: GameState): GameState {
               state.endgameParticipation.membershipHistory,
               STATE_HISTORY_LIMITS.allianceMembership,
             ),
+            solarWar: {
+              ...state.endgameParticipation.solarWar,
+              history: retainNewest(
+                state.endgameParticipation.solarWar.history,
+                STATE_HISTORY_LIMITS.solarWarResults,
+              ),
+            },
           },
         }),
     market: {
