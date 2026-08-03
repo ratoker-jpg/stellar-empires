@@ -72,8 +72,9 @@ export function getEligibleSolarWarFleets(
       !isCombatFleet(fleet)) {
       return false;
     }
+    const planetId = fleet.location.planetId;
     return state.planets.some(
-      (planet) => planet.id === fleet.location.planetId && planet.ownerEmpireId === empireId,
+      (planet) => planet.id === planetId && planet.ownerEmpireId === empireId,
     );
   });
 }
