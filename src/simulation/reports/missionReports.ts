@@ -13,8 +13,7 @@ export type BuiltInMissionReportKind =
   | 'battle'
   | 'expedition'
   | 'space-object'
-  | 'world-event'
-  | 'solar-war';
+  | 'world-event';
 export type MissionReportKind =
   | BuiltInMissionReportKind
   | (string & Record<never, never>);
