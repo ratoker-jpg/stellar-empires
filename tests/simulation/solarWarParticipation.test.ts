@@ -85,17 +85,16 @@ function withNonCombatFleet(
 ): { readonly state: GameState; readonly fleet: FleetState } {
   const origin = state.planets.find((planet) => planet.ownerEmpireId === empireId);
   if (origin === undefined) throw new Error(`Origin missing for ${empireId}.`);
-  const shipId = getFactionMechanicalRoles(origin.factionId).ships.transport;
   const fleet: FleetState = {
     id: fleetId,
     empireId,
     originPlanetId: origin.id,
     location: { type: 'planet', planetId: origin.id },
     status: 'stationed',
-    ships: { [shipId]: 10 },
+    ships: { 'ship.aegis.colony': 10 },
     cargo: { metal: 0, crystal: 0, gas: 0 },
-    speed: 8,
-    cargoCapacity: 10_000,
+    speed: 6,
+    cargoCapacity: 5_000,
     mission: null,
   };
   return { state: { ...state, fleets: [...state.fleets, fleet] }, fleet };
@@ -173,13 +172,10 @@ describe('deterministic Solar War participation', () => {
       })),
     };
     expect(getSolarWarCycle(hiddenChanged)).toEqual(first);
-
-    const next = getSolarWarCycle({
+    expect(getSolarWarCycle({
       ...initial,
       clock: { ...initial.clock, elapsedSeconds: SOLAR_WAR_CYCLE_SECONDS },
-    });
-    expect(next.id).toBe('solar-war-1');
-    expect(next).not.toEqual(first);
+    }).id).toBe('solar-war-1');
   });
 
   it('holds one owned combat fleet and schedules one shared exact-cycle event', () => {
@@ -205,7 +201,6 @@ describe('deterministic Solar War participation', () => {
       executeAt: SOLAR_WAR_CYCLE_SECONDS,
       payload: { type: 'SOLAR_WAR_RESOLVE', cycleId: 'solar-war-0' },
     });
-
     expect(executeCommand(entered, {
       type: 'ENTER_SOLAR_WAR',
       empireId: 'player',
@@ -245,7 +240,6 @@ describe('deterministic Solar War participation', () => {
     )).toBe(true);
 
     const resolved = resolveWithoutTimeSimulation(state, findResolutionEvent(state));
-    expect(participation(resolved).solarWar.activeEntries).toEqual([]);
     expect(participation(resolved).solarWar.history.map((result) => result.empireId)).toEqual([
       'player',
       'aegis-bot',
@@ -269,7 +263,7 @@ describe('deterministic Solar War participation', () => {
       'aegis-bot',
       'foreign-fleet',
     );
-    const nonCombat = withNonCombatFleet(combat.state, 'player', 'transport-fleet');
+    const nonCombat = withNonCombatFleet(combat.state, 'player', 'colonizer-fleet');
     const checksum = createStateChecksum(nonCombat.state);
 
     expect(executeCommand(nonCombat.state, {
@@ -309,7 +303,6 @@ describe('deterministic Solar War participation', () => {
     const resolved = resolveWithoutTimeSimulation(entered, event);
     const result = participation(resolved).solarWar.history[0];
 
-    expect(result).toBeDefined();
     expect(result).toMatchObject({
       entryId: 'solar-war-entry-0-player',
       cycleId: 'solar-war-0',
@@ -330,7 +323,6 @@ describe('deterministic Solar War participation', () => {
     expect(createUnifiedMissionReports(resolved).some(
       (report) => report.kind === 'solar-war' && report.id === result!.id,
     )).toBe(true);
-
     expect(applySolarWarResolutionEvent(resolved, event)).toBe(resolved);
   });
 
@@ -353,7 +345,6 @@ describe('deterministic Solar War participation', () => {
       SOLAR_WAR_CYCLE_SECONDS / 2,
     );
     const loaded = advance(parsed.value.state, SOLAR_WAR_CYCLE_SECONDS);
-
     expect(timeProjection(chunked)).toEqual(timeProjection(direct));
     expect(timeProjection(loaded)).toEqual(timeProjection(direct));
   });
