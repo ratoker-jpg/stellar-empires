@@ -335,7 +335,8 @@ export function enterSolarWar(
       message: 'Solar War entry requires at least one combat-capable ship.',
     };
   }
-  const origin = state.planets.find((planet) => planet.id === fleet.location.planetId);
+  const originPlanetId = fleet.location.planetId;
+  const origin = state.planets.find((planet) => planet.id === originPlanetId);
   if (origin === undefined || origin.ownerEmpireId !== command.empireId) {
     return {
       ok: false,
@@ -573,10 +574,11 @@ export function applySolarWarResolutionEvent(
   event: ScheduledGameEvent,
 ): GameState {
   if (event.payload.type !== 'SOLAR_WAR_RESOLVE') return state;
+  const cycleId = event.payload.cycleId;
   const participation = state.endgameParticipation;
   if (participation === undefined) return state;
   const entries = participation.solarWar.activeEntries
-    .filter((entry) => entry.cycle.id === event.payload.cycleId)
+    .filter((entry) => entry.cycle.id === cycleId)
     .sort((left, right) =>
       empireOrder(state, left.empireId) - empireOrder(state, right.empireId) ||
       left.empireId.localeCompare(right.empireId),
@@ -597,7 +599,7 @@ export function applySolarWarResolutionEvent(
       ...current,
       solarWar: {
         activeEntries: current.solarWar.activeEntries.filter(
-          (entry) => entry.cycle.id !== event.payload.cycleId,
+          (entry) => entry.cycle.id !== cycleId,
         ),
         history: retainNewest(
           [...current.solarWar.history, ...results],
