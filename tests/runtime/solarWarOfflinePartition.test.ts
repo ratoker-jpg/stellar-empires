@@ -39,11 +39,18 @@ function createSolarWarState(): GameState {
     cargoCapacity: 10_000,
     mission: null,
   };
-  const fast = {
+  const fast: GameState = {
     ...initial,
     fleets: [fleet],
     pendingEvents: [],
     logisticsRoutes: [],
+    botAutomation: {
+      nextDecisionAtByEmpire: Object.fromEntries(
+        initial.empires
+          .filter((empireId) => empireId !== 'player')
+          .map((empireId) => [empireId, Number.MAX_SAFE_INTEGER]),
+      ),
+    },
     worldEvents: {
       ...initial.worldEvents,
       active: [],
