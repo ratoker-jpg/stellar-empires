@@ -1,5 +1,6 @@
 import { appendCommandHistory } from '../history/stateHistory';
 import type { CommandResult, GameCommand, GameState } from '../types';
+import { createInitialSolarWarState, isSolarWarState } from './solarWar';
 import {
   ALLIANCE_NAME_MAX_LENGTH,
   ALLIANCE_NAME_MIN_LENGTH,
@@ -135,6 +136,7 @@ export function createInitialEndgameParticipationState(
     membershipHistory: [],
     nextAllianceSequence: 1,
     nextMembershipHistorySequence: 0,
+    solarWar: createInitialSolarWarState(),
   };
 }
 
@@ -171,7 +173,8 @@ export function isEndgameParticipationState(
     value.nextAllianceSequence < 1 ||
     !isNonNegativeInteger(value.nextMembershipHistorySequence) ||
     value.participants.length !== empireIds.length ||
-    value.membershipHistory.length > ENDGAME_PARTICIPATION_HISTORY_LIMIT) {
+    value.membershipHistory.length > ENDGAME_PARTICIPATION_HISTORY_LIMIT ||
+    !isSolarWarState(value.solarWar, empireIds)) {
     return false;
   }
 
@@ -253,6 +256,21 @@ export function isEndgameParticipationState(
   }
 
   return true;
+}
+
+export function normalizeEndgameParticipationState(
+  value: unknown,
+  empireIds: readonly string[],
+): EndgameParticipationState | undefined {
+  if (!isRecord(value)) return undefined;
+  if (Object.prototype.hasOwnProperty.call(value, 'solarWar')) {
+    return isEndgameParticipationState(value, empireIds) ? value : undefined;
+  }
+  const candidate = {
+    ...value,
+    solarWar: createInitialSolarWarState(),
+  };
+  return isEndgameParticipationState(candidate, empireIds) ? candidate : undefined;
 }
 
 export function createAlliance(
