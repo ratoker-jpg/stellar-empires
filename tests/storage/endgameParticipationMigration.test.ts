@@ -62,10 +62,12 @@ describe('endgame participation persistence migration', () => {
       name: 'Legacy V18 Union',
     });
     expect(created.ok).toBe(true);
-    if (!created.ok || created.value.endgameParticipation === undefined) return;
+    if (!created.ok) return;
+    const currentParticipation = created.value.endgameParticipation;
+    if (currentParticipation === undefined) return;
     state = created.value;
     const save = createSaveEnvelope('legacy-v18', state, SAVE_TIME);
-    const { solarWar: _solarWar, ...legacyParticipation } = state.endgameParticipation;
+    const { solarWar: _solarWar, ...legacyParticipation } = currentParticipation;
     const legacyState = { ...state, endgameParticipation: legacyParticipation };
     const unsigned = {
       formatVersion: save.formatVersion,
@@ -80,7 +82,7 @@ describe('endgame participation persistence migration', () => {
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
     expect(parsed.value.state.endgameParticipation).toEqual({
-      ...state.endgameParticipation,
+      ...currentParticipation,
       solarWar: { activeEntries: [], history: [] },
     });
   });
