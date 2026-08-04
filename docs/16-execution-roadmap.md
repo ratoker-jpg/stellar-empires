@@ -1,10 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** PR #154 `SOLAR-WAR-PARTICIPATION` active; runtime complete, final validation pending  
-**Updated:** 2026-08-03  
-**Verified main:** `c567675c506d55a14a73757afa80c704fb079fc7`  
-**Last merged PR:** #153 `ALLIANCE-SOLO-FOUNDATION`  
-**Active runtime:** schema v18 / save format v5
+**Status:** PR #155 `ENDGAME-OPERATIONS-UX` active; implementation complete, final docs validation pending  
+**Updated:** 2026-08-04  
+**Verified main:** `b62d8b739c27cf1616b33302886e565d88c04a42`  
+**Last merged PR:** #154 `SOLAR-WAR-PARTICIPATION`  
+**Active runtime:** schema v18 / save format v5 unchanged
 
 ## Authoritative files
 
@@ -15,7 +15,7 @@ docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
 docs/audits/contracts/complete-endgame-01.md
 docs/audits/evidence/complete-endgame-01.md
-docs/changes/pr154-solar-war-participation.md
+docs/changes/pr155-endgame-operations-ux.md
 docs/project-status.json
 docs/roadmap-pr-index.json
 docs/27-playable-game-roadmap-v5.md
@@ -23,45 +23,33 @@ docs/27-playable-game-roadmap-v5.md
 
 ## Delivered merged state
 
-- #101–#105: complete catalog runtime art;
-- #106–#110: Universe navigation/action gate;
-- #111–#115: coherent application shell;
-- #116–#120: ordinary missions and intelligence;
-- #121–#123: demolition, destruction and recovery;
-- #124–#135: local campaign contract, immutable time and compressed progression;
-- #137–#141: multi-colony economy/logistics and bot logistics;
-- #142–#146: sustainable existing PvE;
-- #147–#151: reputation, local Arena, Operations UX, honest bot participation and exact 48-hour closure;
+- #101–#151: production catalogs/assets, navigable shell, ordinary missions/intelligence/combat, campaign time/progression, multi-colony economy/logistics, sustainable PvE and PvE meta;
 - #152: accepted M8 stage-1 contract;
-- #153: optional public/open alliances, explicit solo participation and schema v18/save v5 migration.
+- #153: optional public/open alliances, explicit solo participation and schema v18/save v5 migration;
+- #154: deterministic Solar War mechanics using existing fleets, combat and exact partition equality.
 
 ## Active accepted sequence
 
 ```text
 #152 COMPLETE-ENDGAME-01 Audit d777a619109d4a9bfc8e5129bf4c525f3327b9b6
 → #153 ALLIANCE-SOLO-FOUNDATION c567675c506d55a14a73757afa80c704fb079fc7
-→ #154 SOLAR-WAR-PARTICIPATION — active
-→ #155 ENDGAME-OPERATIONS-UX
+→ #154 SOLAR-WAR-PARTICIPATION b62d8b739c27cf1616b33302886e565d88c04a42
+→ #155 ENDGAME-OPERATIONS-UX — active
 → #156 ENDGAME-PARTICIPATION-GATE
 ```
 
 Exactly four implementation PRs are authorized.
 
-## PR #154 result
+## PR #155 result
 
-- deterministic 24-hour public Solar War cycles;
-- existing faction fleets and combat systems reused;
-- ordinary solo/alliance entry command;
-- one held owned combat fleet per empire;
-- one shared exact-resolution event per cycle;
-- stable empire-order combat with seed independent of event-queue ordering;
-- persisted losses, survivors, battle report and result;
-- redacted public result and owner detail selectors;
-- deterministic alliance/solo scoreboard aggregation;
-- same-schema v18/v5 migration for pre-Solar-War saves;
-- 64-result history;
-- direct/chunk/save/load/resumable-offline equality;
-- no #155 UI, bot planning or final-object behavior.
+- canonical Operations modes for alliances and Solar War;
+- solo eligibility, public roster and ordinary membership actions;
+- cycle timing, opposing force, legal fleet selection, validation and active entry;
+- redacted public results/scoreboard and owner-only loss/survivor detail;
+- owner-only Reports `endgame` filter;
+- compact Solar War HUD indicator;
+- canonical reload/history, keyboard order, release/mobile viewports and reduced motion;
+- no schema/save migration, bot planning or final-object behavior.
 
 ## Permanent boundary
 
@@ -76,11 +64,9 @@ Exactly four implementation PRs are authorized.
 ## Immediate action
 
 ```text
-finish #154 documentation synchronization
-→ CI + Browser E2E + Graphify on exact code+docs head
-→ isolated performance retry if required
+CI + Browser E2E + Graphify on exact final code+docs head
 → clean review and mergeability
-→ squash merge #154
-→ create only #155 from fresh main
-→ record exact #154 squash SHA in #155
+→ squash merge #155
+→ create only draft #156 from fresh main
+→ record exact #155 squash SHA in #156
 ```
