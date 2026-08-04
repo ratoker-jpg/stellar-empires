@@ -69,11 +69,24 @@ function renderActivity(id: string, label: string, text: string, count: number):
   activity.title = 'Информационный индикатор. Открой соответствующий раздел в основной навигации.';
 }
 
+function ensureSolarWarActivity(): HTMLElement {
+  const existing = document.querySelector<HTMLElement>('#hud-endgame-badge');
+  if (existing !== null) return existing;
+  const container = requireElement<HTMLElement>('.hud-activity-badges');
+  const badge = document.createElement('span');
+  badge.id = 'hud-endgame-badge';
+  badge.dataset.testid = 'hud-solar-war-indicator';
+  badge.title = 'Состояние текущего цикла Солнечной войны.';
+  container.append(badge);
+  return badge;
+}
+
 export function mountGlobalHud(options: GlobalHudOptions): GlobalHudController {
   const selector = requireElement<HTMLSelectElement>('#hud-planet-selector');
   const coordinate = requireElement<HTMLElement>('#hud-active-coordinate');
   const worldTime = requireElement<HTMLElement>('#hud-world-time');
   const saveState = requireElement<HTMLElement>('#hud-save-state');
+  const solarWarActivity = ensureSolarWarActivity();
 
   const refresh = (): void => {
     const state = options.getState();
@@ -120,10 +133,26 @@ export function mountGlobalHud(options: GlobalHudOptions): GlobalHudController {
       missionCount,
     );
     renderActivity('hud-report-badge', 'Доступные отчёты', `Отчёты ${view.reportCount}`, view.reportCount);
+    solarWarActivity.textContent = view.solarWar.activeEntry
+      ? `Солнечная война · цикл ${view.solarWar.cycleIndex} · флот ${view.solarWar.fleetId}`
+      : `Солнечная война · цикл ${view.solarWar.cycleIndex} · ${formatWorldTime(view.solarWar.remainingSeconds)}`;
+    solarWarActivity.dataset.activeEntry = String(view.solarWar.activeEntry);
+    solarWarActivity.dataset.cycleIndex = String(view.solarWar.cycleIndex);
+    solarWarActivity.dataset.resultCount = String(view.solarWar.resultCount);
+    solarWarActivity.setAttribute(
+      'aria-label',
+      view.solarWar.activeEntry
+        ? `Солнечная война: активный вход, цикл ${view.solarWar.cycleIndex}, флот ${view.solarWar.fleetId}`
+        : `Солнечная война: цикл ${view.solarWar.cycleIndex}, до завершения ${formatWorldTime(view.solarWar.remainingSeconds)}`,
+    );
     renderBadge('nav-planet-badge', 'Активные очереди', view.queueCount);
     renderBadge('nav-fleet-badge', 'Активные и входящие миссии', missionCount);
     renderBadge('nav-research-badge', 'Активные исследования', state.research.find((item) => item.empireId === 'player')?.queue.length ?? 0);
-    renderBadge('nav-operations-badge', 'Активные события', state.worldEvents.active.length);
+    renderBadge(
+      'nav-operations-badge',
+      'Активные события и входы в Солнечную войну',
+      state.worldEvents.active.length + (view.solarWar.activeEntry ? 1 : 0),
+    );
     renderBadge('nav-reports-badge', 'Отчёты', view.reportCount);
   };
 
@@ -144,6 +173,9 @@ export function mountGlobalHud(options: GlobalHudOptions): GlobalHudController {
       saveState.dataset.savePhase = status.phase;
       renderBadge('nav-system-badge', 'Состояние сохранения', status.phase === 'error' ? 1 : 0);
     },
-    dispose: () => selector.replaceChildren(),
+    dispose: () => {
+      selector.replaceChildren();
+      solarWarActivity.remove();
+    },
   };
 }
