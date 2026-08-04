@@ -1,7 +1,7 @@
 # Current implementation batch audit
 
-**Status:** accepted batch; PR #154 active  
-**Updated:** 2026-08-03  
+**Status:** accepted batch; PR #155 active  
+**Updated:** 2026-08-04  
 **Batch:** `COMPLETE-ENDGAME-01`  
 **Roadmap milestone:** M8 — Complete endgame, stage 1 of 3  
 **Complexity:** medium  
@@ -11,80 +11,77 @@
 
 ## Accepted product contract
 
-- alliance membership is optional;
-- independent empires remain explicit valid solo participants;
-- no alliance is required for Solar War or later completion;
-- alliance membership is the only allied relation in this batch;
+- alliance membership is optional and solo participation remains valid;
 - all mutations use ordinary `GameCommand` validation;
-- public alliance identity, roster, Solar War cycle and redacted results are public information;
-- owner fleet losses and survivor details remain owner-visible;
-- no bot endgame planner or allied perception is authorized yet;
-- no final Obelisk/Gate or terminal result mechanics enter this batch.
+- public alliance identity/roster and redacted Solar War result are public information;
+- exact owned fleet losses, survivors and detailed battle report remain owner-visible;
+- stage 1 adds participation, Solar War and presentation only;
+- no bot endgame planner, final objects or terminal campaign state enter this batch.
 
 ## Authorized implementation order
 
 | PR | Stable work item | Player-visible result | Status |
 |---:|---|---|---|
 | #153 | `ALLIANCE-SOLO-FOUNDATION` | optional open alliance or solo participation; save migration | merged · `c567675c506d55a14a73757afa80c704fb079fc7` |
-| #154 | `SOLAR-WAR-PARTICIPATION` | deterministic public Solar War entry and persistent result | active; runtime complete, final validation pending |
-| #155 | `ENDGAME-OPERATIONS-UX` | participation and Solar War in Operations/Reports/HUD | blocked until #154 merges |
-| #156 | `ENDGAME-PARTICIPATION-GATE` | partition, Browser, history and performance closure | planned |
+| #154 | `SOLAR-WAR-PARTICIPATION` | deterministic public Solar War entry and persistent result | merged · `b62d8b739c27cf1616b33302886e565d88c04a42` |
+| #155 | `ENDGAME-OPERATIONS-UX` | participation and Solar War in Operations/Reports/HUD | active; implementation complete, final docs validation pending |
+| #156 | `ENDGAME-PARTICIPATION-GATE` | partition, Browser, history and performance closure | blocked until #155 merges |
 
 No fifth implementation PR is authorized.
 
-## PR #154 accepted implementation
+## PR #155 accepted implementation
 
-### Cycle and opposing force
+### Operations
 
-- cycles align to integer 86,400-second campaign windows;
-- cycle identity, faction, opposing fleet and combat seed derive from campaign seed, cycle and empire only;
-- no hidden campaign state or unrelated event sequence affects the public challenge or result;
-- existing faction ship definitions are reused; no new catalog is added.
+- modes `alliances` and `solar-war` extend the existing Operations route family;
+- solo eligibility, current membership and public roster are visible;
+- create/join/leave actions call ordinary domain commands;
+- cycle identity, timing, opposing fleet and legal owned fleet choices are shown;
+- `ENTER_SOLAR_WAR` uses the ordinary command path;
+- active held-fleet state and validation failures are explicit;
+- public scoreboard/results are redacted; owner result detail remains private.
 
-### Entry and fleet lifecycle
+### Reports and HUD
 
-- `ENTER_SOLAR_WAR` is ordinary and empire-generic;
-- one active entry per empire;
-- one owned idle stationed combat fleet is required;
-- a shared reserved `SOLAR_WAR_RESOLVE` event resolves all cycle entries once in stable empire order;
-- fleets are held until the exact boundary;
-- survivors return to the original owned planet and destroyed fleets are removed;
-- solo/alliance participation is snapshotted at entry.
+- canonical `#/reports/endgame` filter exposes only player-owned Solar War reports;
+- existing intelligence privacy and keyboard endpoint order remain intact;
+- the HUD shows a compact Solar War cycle/entry indicator and avoids release-viewport overflow;
+- Operations navigation badge includes an active Solar War entry.
 
-### Result and persistence
+### Browser and accessibility
 
-- battle losses, survivors and complete battle report are persisted inside schema v18/save v5;
-- public selectors expose redacted outcome/score only;
-- owner selectors expose fleet detail;
-- alliance score is the deterministic sum of member results; solo score belongs to the empire;
-- unified mission reports include Solar War results without implementing #155 UI routes or filters;
-- history retains the newest 64 results;
-- old v18/v5 saves without Solar War state migrate to an empty state;
-- malformed present Solar War state fails parsing.
+- canonical URLs survive reload and browser back/forward;
+- release and mobile viewports have no horizontal overflow;
+- reduced-motion presentation remains equivalent;
+- actions use labelled controls and route tabs preserve keyboard order.
 
-### Determinism gates
+### Persistence
 
-- direct and chunked resolution equality;
-- active-save round trip and post-load equality;
-- resumable offline catch-up equality across the exact cycle boundary;
-- idempotent resolution;
-- stable multi-empire order;
-- no per-tick scan beyond the existing event queue.
+No schema/save migration and no persisted UI state. PR #155 only consumes merged schema-v18/save-v5 participation data.
+
+## Validation evidence on code head
+
+- CI `30937397081` — success;
+- Browser E2E `30937396760` — success, 32 tests;
+- Graphify `30937396789` — success;
+- asset audit, lint, strict TypeScript, all 609 tests and build — success;
+- permanent compressed progression scenario — success;
+- one day `4.693 s < 15 s`;
+- seven days `23.236 s < 30 s`.
 
 ## Permanent gates
 
 - schema v18/save v5 remains unchanged;
 - permanent 15-case progression matrix;
-- one campaign day `<15 s`;
-- seven campaign days `<30 s`;
+- one campaign day `<15 s`, seven campaign days `<30 s`;
 - asset audit, lint, strict TypeScript, full tests and build;
 - Browser E2E and Graphify on the final documentation head;
 - zero unresolved review threads and clean mergeability.
 
 ## Explicit non-goals
 
-No Operations/HUD UI, bot Solar War planner, allied perception, invitations/private alliance features, Obelisks/Gates, victory/defeat, terminal state, multiplayer, seasons, new currency, new catalogs/assets, global rebalance or M9 work.
+No bot Solar War planner, allied perception, invitations/private alliance features, Obelisks/Gates, victory/defeat, terminal state, multiplayer, seasons, new currency, new catalogs/assets, global rebalance or M9 work.
 
 ## Next action
 
-Finish PR #154 code+docs validation and merge it before creating only PR #155 from fresh `main`.
+Finish PR #155 final code+docs validation and squash merge it before creating only draft PR #156 from fresh `main`.
