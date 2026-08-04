@@ -68,6 +68,7 @@ function ensureReportTab(
   tabs: HTMLElement,
   filter: ReportShellFilter,
   label: string,
+  beforeSelector?: string,
 ): void {
   if (tabs.querySelector(`[data-report-filter="${filter}"]`) !== null) return;
   const button = document.createElement('button');
@@ -75,12 +76,18 @@ function ensureReportTab(
   button.setAttribute('role', 'tab');
   button.dataset.reportFilter = filter;
   button.textContent = label;
-  tabs.append(button);
+  const before = beforeSelector === undefined ? null : tabs.querySelector(beforeSelector);
+  tabs.insertBefore(button, before);
 }
 
 function ensureExtendedTabs(tabs: HTMLElement): void {
+  ensureReportTab(tabs, 'endgame', 'Эндгейм', '[data-report-filter="intelligence"]');
   ensureReportTab(tabs, 'intelligence', 'Разведка');
-  ensureReportTab(tabs, 'endgame', 'Эндгейм');
+  const endgame = tabs.querySelector('[data-report-filter="endgame"]');
+  const intelligence = tabs.querySelector('[data-report-filter="intelligence"]');
+  if (endgame !== null && intelligence !== null && endgame.nextElementSibling !== intelligence) {
+    tabs.insertBefore(endgame, intelligence);
+  }
 }
 
 function rewardText(reward: MissionReportReward): string {
