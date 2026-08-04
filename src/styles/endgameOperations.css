@@ -1,0 +1,116 @@
+.endgame-overview,
+.endgame-alliance-list,
+.endgame-solar-cycle,
+.endgame-solar-entry,
+.endgame-scoreboard,
+.endgame-public-results,
+.endgame-owned-results,
+.endgame-empty-state {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border-subtle, rgba(138, 195, 255, 0.2));
+  border-radius: 0.75rem;
+  background: rgba(4, 12, 24, 0.72);
+}
+
+.endgame-alliance-list,
+.endgame-public-results,
+.endgame-owned-results,
+.endgame-scoreboard {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+
+.endgame-alliance-list > h2,
+.endgame-public-results > h2,
+.endgame-owned-results > h2,
+.endgame-scoreboard > h2 {
+  grid-column: 1 / -1;
+}
+
+.endgame-alliance-card,
+.endgame-public-results article,
+.endgame-scoreboard article,
+.endgame-owned-results details {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.8rem;
+  border: 1px solid rgba(138, 195, 255, 0.18);
+  border-radius: 0.65rem;
+  background: rgba(9, 22, 39, 0.82);
+}
+
+.endgame-alliance-card.is-current {
+  border-color: rgba(103, 216, 255, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(103, 216, 255, 0.18);
+}
+
+.endgame-alliance-card header,
+.endgame-scoreboard article {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.endgame-alliance-card ul {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.endgame-action-form,
+.endgame-solar-entry {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.endgame-action-form label,
+.endgame-solar-entry label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.endgame-action-form input,
+.endgame-solar-entry select {
+  width: 100%;
+  min-width: 0;
+}
+
+.endgame-muted {
+  color: var(--color-text-muted, #9db1c7);
+}
+
+.endgame-feedback {
+  min-height: 1.35em;
+  margin: 0;
+}
+
+.endgame-feedback[data-valid="true"] {
+  color: var(--color-success, #8ce3b0);
+}
+
+.endgame-feedback[data-valid="false"] {
+  color: var(--color-warning, #ffd08a);
+}
+
+@media (max-width: 720px) {
+  .endgame-overview,
+  .endgame-alliance-list,
+  .endgame-solar-cycle,
+  .endgame-solar-entry,
+  .endgame-scoreboard,
+  .endgame-public-results,
+  .endgame-owned-results {
+    padding: 0.75rem;
+  }
+
+  .endgame-alliance-card header,
+  .endgame-scoreboard article {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
