@@ -148,8 +148,8 @@ describe('endgame Operations view model', () => {
     expect(view.publicResults[0]).not.toHaveProperty('fleetId');
     expect(view.ownedResults[0]).toMatchObject({
       fleetId: 'fleet-ui-result',
-      ownLosses: 'Истребитель ×1',
-      ownSurvivors: 'Истребитель ×2',
+      ownLosses: 'Истребитель «Пика» ×1',
+      ownSurvivors: 'Истребитель «Пика» ×2',
     });
     expect(view.scoreboard[0]).toMatchObject({
       participationId: 'player',
