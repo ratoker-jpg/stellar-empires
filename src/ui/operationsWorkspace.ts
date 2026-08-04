@@ -2,6 +2,10 @@ import '../styles/arenaOperations.css';
 import { renderArenaOperationsPanel } from './arenaOperationsPanel';
 import type { OperationsShellMode } from './appShellRoute';
 import {
+  renderEndgameOperationsPanel,
+  type EndgameOperationsPanelMode,
+} from './endgameOperationsPanel';
+import {
   createOperationsSummary,
   mountOperationsWorkspace as mountLegacyOperationsWorkspace,
   type OperationsWorkspace,
@@ -17,15 +21,30 @@ function requireElement<T extends HTMLElement>(selector: string): T {
   return element;
 }
 
-function ensureArenaTab(tabs: HTMLElement): void {
-  if (tabs.querySelector('[data-operations-mode="arena"]') !== null) return;
+function ensureTab(
+  tabs: HTMLElement,
+  mode: OperationsShellMode,
+  label: string,
+  beforeSelector: string,
+): void {
+  if (tabs.querySelector(`[data-operations-mode="${mode}"]`) !== null) return;
   const button = document.createElement('button');
   button.type = 'button';
   button.setAttribute('role', 'tab');
-  button.dataset.operationsMode = 'arena';
-  button.textContent = 'Арена и репутация';
-  const market = tabs.querySelector('[data-operations-mode="market"]');
-  tabs.insertBefore(button, market);
+  button.dataset.operationsMode = mode;
+  button.textContent = label;
+  const before = tabs.querySelector(beforeSelector);
+  tabs.insertBefore(button, before);
+}
+
+function ensureExtendedTabs(tabs: HTMLElement): void {
+  ensureTab(tabs, 'arena', 'Арена и репутация', '[data-operations-mode="market"]');
+  ensureTab(tabs, 'alliances', 'Альянсы', '[data-operations-mode="market"]');
+  ensureTab(tabs, 'solar-war', 'Солнечная война', '[data-operations-mode="market"]');
+}
+
+function isEndgameMode(mode: OperationsShellMode): mode is EndgameOperationsPanelMode {
+  return mode === 'alliances' || mode === 'solar-war';
 }
 
 export function mountOperationsWorkspace(
@@ -33,43 +52,53 @@ export function mountOperationsWorkspace(
 ): OperationsWorkspace {
   const host = requireElement<HTMLElement>('#operations-workspace-host');
   const tabs = requireElement<HTMLElement>('#operations-route-tabs');
-  ensureArenaTab(tabs);
+  ensureExtendedTabs(tabs);
   const legacy = mountLegacyOperationsWorkspace(options);
   let mode: OperationsShellMode = 'overview';
   let active = false;
 
-  const refreshArenaTabs = (): void => {
+  const refreshExtendedTabs = (): void => {
     for (const button of tabs.querySelectorAll<HTMLButtonElement>('[data-operations-mode]')) {
-      const selected = button.dataset.operationsMode === 'arena';
+      const selected = button.dataset.operationsMode === mode;
       button.setAttribute('aria-selected', String(selected));
       button.tabIndex = selected ? 0 : -1;
     }
   };
 
-  const renderArena = (): void => {
-    if (!active || mode !== 'arena') return;
-    refreshArenaTabs();
-    renderArenaOperationsPanel(host, {
-      getState: options.getState,
-      execute: options.execute,
-      refresh: renderArena,
-    });
+  const renderExtended = (): void => {
+    if (!active) return;
+    refreshExtendedTabs();
+    if (mode === 'arena') {
+      renderArenaOperationsPanel(host, {
+        getState: options.getState,
+        execute: options.execute,
+        refresh: renderExtended,
+      });
+      return;
+    }
+    if (isEndgameMode(mode)) {
+      renderEndgameOperationsPanel(host, mode, {
+        getState: options.getState,
+        execute: options.execute,
+        refresh: renderExtended,
+      });
+    }
   };
 
   return {
     activate: (nextMode) => {
       mode = nextMode;
       active = true;
-      if (nextMode === 'arena') {
+      if (nextMode === 'arena' || isEndgameMode(nextMode)) {
         legacy.deactivate();
-        renderArena();
+        renderExtended();
       } else {
         legacy.activate(nextMode);
       }
     },
     refresh: () => {
       if (!active) return;
-      if (mode === 'arena') renderArena();
+      if (mode === 'arena' || isEndgameMode(mode)) renderExtended();
       else legacy.refresh();
     },
     deactivate: () => {
