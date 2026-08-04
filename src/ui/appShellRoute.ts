@@ -15,6 +15,8 @@ export const OPERATIONS_SHELL_MODES = [
   'objects',
   'events',
   'arena',
+  'alliances',
+  'solar-war',
   'market',
   'logistics',
 ] as const;
@@ -30,6 +32,7 @@ export const REPORT_SHELL_FILTERS = [
   'object',
   'event',
   'intelligence',
+  'endgame',
 ] as const;
 export type ReportShellFilter = (typeof REPORT_SHELL_FILTERS)[number];
 
