@@ -46,7 +46,17 @@ describe('application shell routes', () => {
   });
 
   it('serializes and restores every Operations route mode', () => {
-    for (const mode of ['overview', 'expeditions', 'objects', 'events', 'market', 'logistics'] as const) {
+    for (const mode of [
+      'overview',
+      'expeditions',
+      'objects',
+      'events',
+      'arena',
+      'alliances',
+      'solar-war',
+      'market',
+      'logistics',
+    ] as const) {
       const route = { family: 'operations', mode } as const;
       const hash = `#/operations/${mode}`;
       expect(serializeAppShellRoute(route)).toBe(hash);
@@ -64,7 +74,15 @@ describe('application shell routes', () => {
   });
 
   it('serializes and restores every Reports filter', () => {
-    for (const filter of ['all', 'combat', 'expedition', 'object', 'event'] as const) {
+    for (const filter of [
+      'all',
+      'combat',
+      'expedition',
+      'object',
+      'event',
+      'intelligence',
+      'endgame',
+    ] as const) {
       const route = { family: 'reports', filter } as const;
       const hash = `#/reports/${filter}`;
       expect(serializeAppShellRoute(route)).toBe(hash);

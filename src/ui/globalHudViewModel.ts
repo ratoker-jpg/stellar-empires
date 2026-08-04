@@ -1,4 +1,9 @@
 import type { ResourceId } from '../simulation/economy/types';
+import {
+  getCurrentSolarWarCycle,
+  getSolarWarEntryForEmpire,
+  getSolarWarResultsForEmpire,
+} from '../simulation/endgame/solarWarView';
 import { createIncomingFlightContacts } from '../simulation/intelligence/incomingFlights';
 import { createUnifiedMissionReports } from '../simulation/reports/missionReports';
 import type { GameState } from '../simulation/types';
@@ -33,6 +38,14 @@ export interface HudEnergyViewModel {
   readonly label: string;
 }
 
+export interface HudSolarWarViewModel {
+  readonly cycleIndex: number;
+  readonly remainingSeconds: number;
+  readonly activeEntry: boolean;
+  readonly fleetId: string | null;
+  readonly resultCount: number;
+}
+
 export interface GlobalHudViewModel {
   readonly planetId: string;
   readonly planetName: string;
@@ -46,6 +59,7 @@ export interface GlobalHudViewModel {
   readonly activeMissionCount: number;
   readonly incomingContactCount: number;
   readonly reportCount: number;
+  readonly solarWar: HudSolarWarViewModel;
 }
 
 export function getCapacityWarningLevel(used: number, capacity: number): HudWarningLevel {
@@ -86,7 +100,9 @@ function createCapacity(used: number, capacity: number): HudCapacityViewModel {
 function isReportVisibleToPlayer(
   report: ReturnType<typeof createUnifiedMissionReports>[number],
 ): boolean {
-  if (report.kind === 'intelligence') return report.primaryEmpireId === 'player';
+  if (report.kind === 'intelligence' || report.kind === 'solar-war') {
+    return report.primaryEmpireId === 'player';
+  }
   return report.primaryEmpireId === 'player' || report.secondaryEmpireId === 'player';
 }
 
@@ -123,6 +139,8 @@ export function createGlobalHudViewModel(
       candidate.defense.repairQueue.length,
     0,
   ) + (playerResearch?.queue.length ?? 0) + (playerUpgrades?.queue.length ?? 0);
+  const cycle = getCurrentSolarWarCycle(state);
+  const activeSolarWarEntry = getSolarWarEntryForEmpire(state, 'player');
 
   return {
     planetId: planet.id,
@@ -149,5 +167,12 @@ export function createGlobalHudViewModel(
     ).length,
     incomingContactCount: createIncomingFlightContacts(state, 'player').length,
     reportCount: createUnifiedMissionReports(state).filter(isReportVisibleToPlayer).length,
+    solarWar: {
+      cycleIndex: cycle.cycleIndex,
+      remainingSeconds: Math.max(0, cycle.resolvesAt - state.clock.elapsedSeconds),
+      activeEntry: activeSolarWarEntry !== undefined,
+      fleetId: activeSolarWarEntry?.fleetId ?? null,
+      resultCount: getSolarWarResultsForEmpire(state, 'player').length,
+    },
   };
 }

@@ -42,6 +42,7 @@ const FILTERS: readonly ReportShellFilter[] = [
   'object',
   'event',
   'intelligence',
+  'endgame',
 ];
 const KIND_LABELS: Readonly<Record<MissionReportKind, string>> = {
   battle: 'Бой',
@@ -49,6 +50,7 @@ const KIND_LABELS: Readonly<Record<MissionReportKind, string>> = {
   'space-object': 'Космический объект',
   'world-event': 'Мировое событие',
   intelligence: 'Разведка',
+  'solar-war': 'Солнечная война',
 };
 const MODE_LABELS: Readonly<Record<MissionReportMode, string>> = {
   pve: 'PvE',
@@ -62,14 +64,30 @@ function requireElement<T extends HTMLElement>(selector: string): T {
   return element;
 }
 
-function ensureIntelligenceTab(tabs: HTMLElement): void {
-  if (tabs.querySelector('[data-report-filter="intelligence"]') !== null) return;
+function ensureReportTab(
+  tabs: HTMLElement,
+  filter: ReportShellFilter,
+  label: string,
+  beforeSelector?: string,
+): void {
+  if (tabs.querySelector(`[data-report-filter="${filter}"]`) !== null) return;
   const button = document.createElement('button');
   button.type = 'button';
   button.setAttribute('role', 'tab');
-  button.dataset.reportFilter = 'intelligence';
-  button.textContent = 'Разведка';
-  tabs.append(button);
+  button.dataset.reportFilter = filter;
+  button.textContent = label;
+  const before = beforeSelector === undefined ? null : tabs.querySelector(beforeSelector);
+  tabs.insertBefore(button, before);
+}
+
+function ensureExtendedTabs(tabs: HTMLElement): void {
+  ensureReportTab(tabs, 'endgame', 'Эндгейм', '[data-report-filter="intelligence"]');
+  ensureReportTab(tabs, 'intelligence', 'Разведка');
+  const endgame = tabs.querySelector('[data-report-filter="endgame"]');
+  const intelligence = tabs.querySelector('[data-report-filter="intelligence"]');
+  if (endgame !== null && intelligence !== null && endgame.nextElementSibling !== intelligence) {
+    tabs.insertBefore(endgame, intelligence);
+  }
 }
 
 function rewardText(reward: MissionReportReward): string {
@@ -89,6 +107,7 @@ function filterKind(filter: ReportShellFilter): MissionReportKind | 'all' {
   if (filter === 'object') return 'space-object';
   if (filter === 'event') return 'world-event';
   if (filter === 'intelligence') return 'intelligence';
+  if (filter === 'endgame') return 'solar-war';
   return 'all';
 }
 
@@ -96,7 +115,9 @@ export function isMissionReportVisibleToEmpire(
   report: UnifiedMissionReport,
   empireId: string,
 ): boolean {
-  if (report.kind === 'intelligence') return report.primaryEmpireId === empireId;
+  if (report.kind === 'intelligence' || report.kind === 'solar-war') {
+    return report.primaryEmpireId === empireId;
+  }
   return report.primaryEmpireId === empireId || report.secondaryEmpireId === empireId;
 }
 
@@ -162,6 +183,7 @@ function createReportCard(
   card.className = `mission-report-card is-${report.kind} is-${report.mode}`;
   card.dataset.reportId = report.id;
   if (report.kind === 'world-event') card.dataset.testid = 'world-event-report';
+  if (report.kind === 'solar-war') card.dataset.testid = 'solar-war-report';
   const presentation = worldEventPresentation(state, report);
   const header = document.createElement('header');
   const title = document.createElement('strong');
@@ -236,7 +258,7 @@ function createReportCard(
 export function mountReportsWorkspace(options: ReportsWorkspaceOptions): ReportsWorkspace {
   const host = requireElement<HTMLElement>('#mission-reports-view');
   const tabs = requireElement<HTMLElement>('#reports-route-tabs');
-  ensureIntelligenceTab(tabs);
+  ensureExtendedTabs(tabs);
   let filter: ReportShellFilter = 'all';
   let active = false;
   let searchValue = '';
@@ -256,8 +278,9 @@ export function mountReportsWorkspace(options: ReportsWorkspaceOptions): Reports
     if (!active) return;
     refreshTabs();
     const state = options.getState();
-    const visible = createUnifiedMissionReports(state).filter(
-      (report) => report.kind !== 'intelligence' || isMissionReportVisibleToEmpire(report, 'player'),
+    const visible = createUnifiedMissionReports(state).filter((report) =>
+      (report.kind !== 'intelligence' && report.kind !== 'solar-war') ||
+      isMissionReportVisibleToEmpire(report, 'player'),
     );
     const filtered = filterMissionReports(visible, {
       search: searchValue,

@@ -90,6 +90,8 @@ const OPERATIONS_MODE_LABELS = {
   objects: 'Объекты',
   events: 'События',
   arena: 'Арена и репутация',
+  alliances: 'Альянсы',
+  'solar-war': 'Солнечная война',
   market: 'Рынок',
   logistics: 'Логистика',
 } as const;
@@ -108,6 +110,7 @@ const REPORT_FILTER_LABELS = {
   object: 'Объекты',
   event: 'События',
   intelligence: 'Разведка',
+  endgame: 'Эндгейм',
 } as const;
 
 const SYSTEM_MODE_LABELS = {

@@ -1,28 +1,28 @@
 {
   "roadmapVersion": 5,
-  "updatedAt": "2026-08-03",
+  "updatedAt": "2026-08-04",
   "releaseTarget": "1.0",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 153,
-    "mergeSha": "c567675c506d55a14a73757afa80c704fb079fc7",
-    "runtimeBaselinePr": 153,
-    "runtimeBaselineSha": "c567675c506d55a14a73757afa80c704fb079fc7",
+    "lastMergedPr": 154,
+    "mergeSha": "b62d8b739c27cf1616b33302886e565d88c04a42",
+    "runtimeBaselinePr": 154,
+    "runtimeBaselineSha": "b62d8b739c27cf1616b33302886e565d88c04a42",
     "lastCompletedAuditPr": 152,
     "lastCompletedAuditMergeSha": "d777a619109d4a9bfc8e5129bf4c525f3327b9b6"
   },
-  "activePr": 154,
+  "activePr": 155,
   "activePrKind": "implementation",
   "activeBatchId": "COMPLETE-ENDGAME-01",
-  "activeWorkItem": "SOLAR-WAR-PARTICIPATION",
-  "activeBranch": "agent/solar-war-participation",
-  "activeCodeHead": "bce01c580fa8daf14c19718598c1c2abba0c46c2",
+  "activeWorkItem": "ENDGAME-OPERATIONS-UX",
+  "activeBranch": "agent/endgame-operations-ux",
+  "activeCodeHead": "03e2ce8b4a6cc563d837d0b89b5976add83d094c",
   "implementationAuthorized": true,
-  "nextPr": 155,
-  "nextPrKind": "implementation",
-  "nextWorkItem": "ENDGAME-OPERATIONS-UX",
+  "nextPr": 156,
+  "nextPrKind": "implementation-closure",
+  "nextWorkItem": "ENDGAME-PARTICIPATION-GATE",
   "phases": [
     {"id": "delivered-foundation-and-catalogs", "startPr": 1, "endPr": 100, "status": "completed", "outcome": "Deterministic PvE foundation, catalogs, roadmap and audit-first protocol"},
     {"id": "catalog-runtime-integration", "auditPr": 101, "startPr": 102, "endPr": 105, "status": "completed", "archive": "docs/audits/completed/asset-runtime-integration-01.md"},
@@ -108,16 +108,17 @@
       "auditMergeSha": "d777a619109d4a9bfc8e5129bf4c525f3327b9b6",
       "startPr": 153,
       "endPr": 156,
-      "status": "second-implementation-active",
+      "status": "third-implementation-active",
       "batchId": "COMPLETE-ENDGAME-01",
       "complexity": "medium",
       "plannedPrs": [153, 154, 155, 156],
-      "completedPrs": [153],
+      "completedPrs": [153, 154],
       "implementationMergeShas": {
-        "153": "c567675c506d55a14a73757afa80c704fb079fc7"
+        "153": "c567675c506d55a14a73757afa80c704fb079fc7",
+        "154": "b62d8b739c27cf1616b33302886e565d88c04a42"
       },
-      "activePr": 154,
-      "activeValidatedCodeHead": "bce01c580fa8daf14c19718598c1c2abba0c46c2",
+      "activePr": 155,
+      "activeValidatedCodeHead": "03e2ce8b4a6cc563d837d0b89b5976add83d094c",
       "implementationAuthorized": true,
       "workItems": ["ALLIANCE-SOLO-FOUNDATION", "SOLAR-WAR-PARTICIPATION", "ENDGAME-OPERATIONS-UX", "ENDGAME-PARTICIPATION-GATE"],
       "targetStateSchema": 18,
@@ -133,9 +134,9 @@
   "planned": [
     {"number": 152, "kind": "audit", "batchId": "COMPLETE-ENDGAME-01", "workItem": "COMPLETE-ENDGAME-01-AUDIT", "title": "Audit complete campaign endgame", "status": "merged", "mergeSha": "d777a619109d4a9bfc8e5129bf4c525f3327b9b6", "implementationAuthorized": true},
     {"number": 153, "kind": "implementation", "workItem": "ALLIANCE-SOLO-FOUNDATION", "title": "Add optional alliance and solo foundation", "status": "merged", "mergeSha": "c567675c506d55a14a73757afa80c704fb079fc7", "targetStateSchema": 18, "targetSaveFormat": 5},
-    {"number": 154, "kind": "implementation", "workItem": "SOLAR-WAR-PARTICIPATION", "title": "Add deterministic Solar War participation", "status": "active", "validatedCodeHead": "bce01c580fa8daf14c19718598c1c2abba0c46c2", "targetStateSchema": 18, "targetSaveFormat": 5},
-    {"number": 155, "kind": "implementation", "workItem": "ENDGAME-OPERATIONS-UX", "title": "Expose endgame participation in Operations", "status": "blocked-until-154-merge"},
-    {"number": 156, "kind": "implementation-closure", "workItem": "ENDGAME-PARTICIPATION-GATE", "title": "Close endgame participation foundation", "status": "planned"}
+    {"number": 154, "kind": "implementation", "workItem": "SOLAR-WAR-PARTICIPATION", "title": "Add deterministic Solar War participation", "status": "merged", "mergeSha": "b62d8b739c27cf1616b33302886e565d88c04a42", "targetStateSchema": 18, "targetSaveFormat": 5},
+    {"number": 155, "kind": "implementation", "workItem": "ENDGAME-OPERATIONS-UX", "title": "Expose endgame participation in Operations", "status": "active", "validatedCodeHead": "03e2ce8b4a6cc563d837d0b89b5976add83d094c", "targetStateSchema": 18, "targetSaveFormat": 5},
+    {"number": 156, "kind": "implementation-closure", "workItem": "ENDGAME-PARTICIPATION-GATE", "title": "Close endgame participation foundation", "status": "blocked-until-155-merge"}
   ],
-  "nextAction": "Validate and squash merge PR #154, then create only PR #155 from fresh main and record the exact #154 squash SHA."
+  "nextAction": "Validate and squash merge PR #155, then create only draft PR #156 from fresh main and record the exact #155 squash SHA."
 }

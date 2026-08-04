@@ -12,6 +12,7 @@ import {
 
 export const E2E_RUNTIME_ENABLED = import.meta.env.VITE_E2E === '1';
 export const E2E_FLEET_ID = 'fleet-e2e-player';
+export const E2E_SOLAR_WAR_FLEET_ID = 'fleet-e2e-solar-war';
 export const E2E_INCOMING_FLEET_ID = 'fleet-e2e-incoming';
 export const E2E_REPORT_ID = 'report-e2e-map-backlink';
 export const E2E_SECONDARY_PLANET_ID = 'planet-e2e-secondary';
@@ -159,6 +160,18 @@ export function createE2eFixtureState(state: GameState): GameState {
     cargoCapacity: 100,
     mission: null,
   };
+  const solarWarFleet: FleetState = {
+    id: E2E_SOLAR_WAR_FLEET_ID,
+    empireId: 'player',
+    originPlanetId: origin.id,
+    location: { type: 'planet', planetId: origin.id },
+    status: 'stationed',
+    ships: { 'ship.aegis.fighter': 24 },
+    cargo: { metal: 0, crystal: 0, gas: 0 },
+    speed: 12,
+    cargoCapacity: 2_000,
+    mission: null,
+  };
   const incomingFleet: FleetState = {
     id: E2E_INCOMING_FLEET_ID,
     empireId: target.ownerEmpireId,
@@ -247,6 +260,7 @@ export function createE2eFixtureState(state: GameState): GameState {
   const stableBotDecisionAt = fixtureElapsedSeconds + E2E_BOT_IDLE_SECONDS;
   const fleets = [...fixtureState.fleets];
   if (!fleets.some((entry) => entry.id === E2E_FLEET_ID)) fleets.push(fleet);
+  if (!fleets.some((entry) => entry.id === E2E_SOLAR_WAR_FLEET_ID)) fleets.push(solarWarFleet);
   if (!fleets.some((entry) => entry.id === E2E_INCOMING_FLEET_ID)) fleets.push(incomingFleet);
   const planetsWithFuel = fixtureState.planets.map(
     (planet) => planet.id === origin.id ? originWithFuel : planet,
@@ -309,6 +323,7 @@ export function updateE2eRuntimeDiagnostics(state: GameState): void {
   document.documentElement.dataset.e2eTargetSystem = String(target.coordinate.solarSystem);
   document.documentElement.dataset.e2eTargetPosition = String(target.coordinate.position);
   document.documentElement.dataset.e2eSecondaryPlanetId = E2E_SECONDARY_PLANET_ID;
+  document.documentElement.dataset.e2eSolarWarFleetId = E2E_SOLAR_WAR_FLEET_ID;
   document.documentElement.dataset.stateChecksum = createStateChecksum(state);
   document.documentElement.dataset.sendFleetCommandCount = String(
     state.commandLog.filter((entry) => entry.command.type === 'SEND_FLEET').length,
