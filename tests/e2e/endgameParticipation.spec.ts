@@ -49,7 +49,7 @@ test('endgame participation closes through canonical Operations, HUD and Reports
     'data-active-entry',
     'true',
   );
-  await expect(page.locator('[data-testid="solar-war-enter"]')).toBeDisabled();
+  await expect(page.locator('[data-testid="solar-war-enter"]')).toHaveCount(0);
   await expect(page.locator('#app-status')).toHaveText('Сохранено локально');
 
   await page.goto('/?e2e=1#/reports/endgame');
