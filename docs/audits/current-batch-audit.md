@@ -1,75 +1,66 @@
-# Current implementation batch audit
+# Current audit boundary
 
-**Status:** accepted batch; PR #156 closure complete pending final documentation-head gates  
+**Status:** Audit PR #157 `COMPLETE-ENDGAME-02` scaffold active; implementation is **not authorized**  
 **Updated:** 2026-08-18  
-**Batch:** `COMPLETE-ENDGAME-01`  
-**Roadmap milestone:** M8.1 — Complete endgame participation foundation  
-**Complexity:** medium  
-**Audit PR:** #152 · `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
-**Implementation order:** #153–#156  
+**Verified runtime baseline:** PR #156 squash · `c2fcaf39402392f0ebbad297d88f9689f4165e4c`  
 **Current runtime:** schema v18 / save format v5
 
-## Accepted product contract
+## Closed batch
 
-- alliance membership is optional and solo participation remains first-class;
-- all mutations use ordinary `GameCommand` validation;
-- public alliance identity/roster and redacted Solar War results are public information;
-- exact owned fleet losses, survivors and detailed battle report remain owner-visible;
-- stage 1 adds participation, Solar War and its existing-shell presentation only;
-- no bot endgame planner, final objects or terminal campaign state enter this batch.
+`COMPLETE-ENDGAME-01` is complete with divergence **none**.
 
-## Authorized implementation order
+```text
+#152 Audit d777a619109d4a9bfc8e5129bf4c525f3327b9b6
+→ #153 c567675c506d55a14a73757afa80c704fb079fc7
+→ #154 b62d8b739c27cf1616b33302886e565d88c04a42
+→ #155 a5c72562200c2a6dfdc49f1e4f07e8a869a6558d
+→ #156 c2fcaf39402392f0ebbad297d88f9689f4165e4c
+```
 
-| PR | Work item | Status |
-|---:|---|---|
-| #153 | `ALLIANCE-SOLO-FOUNDATION` | merged · `c567675c506d55a14a73757afa80c704fb079fc7` |
-| #154 | `SOLAR-WAR-PARTICIPATION` | merged · `b62d8b739c27cf1616b33302886e565d88c04a42` |
-| #155 | `ENDGAME-OPERATIONS-UX` | merged · `a5c72562200c2a6dfdc49f1e4f07e8a869a6558d` |
-| #156 | `ENDGAME-PARTICIPATION-GATE` | closure complete; final docs-head validation pending |
+The closed stage delivers optional alliance/solo participation, deterministic Solar War, canonical Operations/Reports/HUD presentation and exact three-faction 48-hour partition closure. No fifth implementation PR is authorized.
 
-Exactly four implementation PRs were authorized. No fifth implementation PR is permitted.
+## Active Audit #157
 
-## Closure evidence
+`COMPLETE-ENDGAME-02` must audit, not implement:
 
-PR #156 adds no product mechanic. Its accepted matrix proves:
+- existing locked Obelisks and Supreme Galactic Gates;
+- current catalog prerequisites, costs and assets;
+- contribution and ownership semantics while preserving legal solo completion;
+- final-object construction/unlock timing;
+- attack/destruction behavior and ordinary-combat reuse;
+- exact persisted victory/defeat and terminal timestamp/event ordering;
+- player-command behavior after terminal state;
+- autosave, reload, save/load and resumable offline catch-up across the terminal boundary;
+- terminal presentation in the existing application shell;
+- schema/save migration implications;
+- three-faction asymmetries;
+- bounded implementation sequence and permanent determinism/Browser/Graphify/performance gates.
 
-- valid v17/v4 → v18/v5 migration for Aegis, Synod and Veyra;
-- explicit solo eligibility for every empire after migration;
-- legal solo and alliance-member Solar War entry for each player faction;
-- one active entry maximum per empire;
-- exact whole-state equality after 48 campaign hours across direct, six-hour chunks, save/load and resumable offline runtime paths;
-- newest-64 bounds for alliance membership and Solar War result histories;
-- strict malformed-current-state rejection;
-- compressed progression partition equivalence including endgame state;
-- canonical Operations/Reports/HUD Browser closure.
+## Hard authorization boundary
 
-The matrix exposed **no runtime production defect**, so #156 changes no simulation/runtime mechanic, schema or save format.
+`implementationAuthorized: false`
 
-## Validated code head before docs
+Audit #157 does not authorize:
 
-`54cf966bd1058adad667450c0bf5f32f23ae18b9`
+- Obelisk/Gate mechanics;
+- resource contribution commands;
+- final-object attacks/destruction;
+- victory/defeat or terminal freeze/state;
+- terminal overlay/navigation changes;
+- bot final-object planning or allied perception;
+- new currency, catalogs/assets, global rebalance, multiplayer, seasons or M9 work.
 
-- CI `32146644545` — success;
-- Graphify `32146644566` — success;
-- 621 tests passed, 1 skipped;
-- closure matrix 13/13 passed;
-- production build and permanent compressed progression scenario — success;
-- one day `6.261 s < 15 s`;
-- seven days `29.846 s < 30 s`.
+## Required audit completion criteria
 
-## Divergence
+Before any stage-2 implementation PR may exist, Audit #157 must:
 
-**None.** All stage-1 behavior stays within Audit #152. No bot Solar War planner, allied perception, private alliance expansion, functional Obelisks/Gates, victory/defeat, terminal state, new currency/catalog/assets or M9 work was added.
+1. cite concrete existing code/test/catalog/UI paths;
+2. resolve all critical product and persistence unknowns;
+3. explicitly decide solo/alliance ownership and victory semantics;
+4. explicitly decide schema/save migration requirements;
+5. bind exact event ordering and terminal runtime behavior;
+6. define a bounded implementation PR count and file map;
+7. define deterministic partition, Browser, Graphify, progression and performance acceptance gates;
+8. be explicitly accepted/merged with implementation authorization.
 
-## Permanent boundary
-
-After #156 merges, `COMPLETE-ENDGAME-01` is closed. The next work is a **new Audit only**:
-
-- `COMPLETE-ENDGAME-02`: existing locked Obelisks/Gates, contributions, ownership, attacks/destruction and persisted terminal victory/defeat;
-- `COMPLETE-ENDGAME-03`: later bot allied/public/owned/hidden perception and endgame parity.
-
-Neither audit currently authorizes implementation.
-
-## Next action
-
-Finish #156 code+docs validation, review and squash merge. Then record the generated #156 squash SHA in the immediately following Audit scaffold before any new implementation is authorized.
+Until then, the only valid work is audit/recon documentation on `agent/complete-endgame-02-audit`.
