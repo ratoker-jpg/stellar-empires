@@ -18,6 +18,7 @@
   "activeBatchId": "COMPLETE-ENDGAME-02",
   "activeWorkItem": "FINAL-OBJECT-FOUNDATION",
   "activeBranch": "agent/final-object-foundation",
+  "activeProductCodeHead": "93be3b90bf46409fe257c3819c3f6a1c8e9fcb2a",
   "implementationAuthorized": true,
   "nextPr": 159,
   "nextPrKind": "implementation-after-pr158-merge",
@@ -63,7 +64,7 @@
       "id": "complete-endgame-final-objects-terminal",
       "auditPr": 157,
       "auditMergeSha": "7750cdb83b58e95f790351b306e9cf5b344bd780",
-      "status": "implementation-open-pr158-scaffold",
+      "status": "implementation-pr158-complete-awaiting-final-gates",
       "batchId": "COMPLETE-ENDGAME-02",
       "complexity": "medium",
       "implementationAuthorized": true,
@@ -92,10 +93,10 @@
     {"number":155,"kind":"implementation","workItem":"ENDGAME-OPERATIONS-UX","status":"merged","mergeSha":"a5c72562200c2a6dfdc49f1e4f07e8a869a6558d"},
     {"number":156,"kind":"implementation-closure","workItem":"ENDGAME-PARTICIPATION-GATE","title":"Close endgame participation foundation","status":"merged","mergeSha":"c2fcaf39402392f0ebbad297d88f9689f4165e4c"},
     {"number":157,"kind":"audit","batchId":"COMPLETE-ENDGAME-02","workItem":"COMPLETE-ENDGAME-02-AUDIT","title":"Audit final objects and terminal campaign result","status":"merged","mergeSha":"7750cdb83b58e95f790351b306e9cf5b344bd780","implementationAuthorized":true},
-    {"number":158,"kind":"implementation","workItem":"FINAL-OBJECT-FOUNDATION","title":"Build final-object foundation","status":"draft-scaffold","implementationStarted":false},
+    {"number":158,"kind":"implementation","workItem":"FINAL-OBJECT-FOUNDATION","title":"Build final-object foundation","status":"implementation-complete-awaiting-final-gates","implementationStarted":true,"productCodeHead":"93be3b90bf46409fe257c3819c3f6a1c8e9fcb2a"},
     {"number":159,"kind":"implementation","workItem":"FINAL-GATE-VULNERABILITY","status":"planned-after-pr158-merge"},
     {"number":160,"kind":"implementation","workItem":"TERMINAL-RUNTIME-UX","status":"planned"},
     {"number":161,"kind":"implementation-closure","workItem":"ENDGAME-TERMINAL-GATE","status":"planned"}
   ],
-  "nextAction": "Verify main remains 7750cdb83b58e95f790351b306e9cf5b344bd780 and implement only draft PR #158 FINAL-OBJECT-FOUNDATION. Do not start #159 before #158 is validated and squash-merged."
+  "nextAction": "Validate and squash-merge PR #158 FINAL-OBJECT-FOUNDATION. After fetching its generated squash SHA, create only the #159 FINAL-GATE-VULNERABILITY draft scaffold from fresh main; do not implement #159 in the same closeout step."
 }
