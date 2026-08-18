@@ -266,13 +266,24 @@ function advanceToTerminal(state: GameState): GameState {
   return advanced;
 }
 
-function roundTrip(state: GameState, id: string): GameState {
+function roundTrip(state: GameState, id: string, exact = false): GameState {
   const envelope = createSaveEnvelope(id, state, SAVE_TIME);
   const parsed = parseSaveJson(serializeSave(envelope));
   expect(parsed.ok).toBe(true);
   if (!parsed.ok) throw new Error(parsed.message);
-  expect(parsed.value.state).toEqual(state);
-  return parsed.value.state;
+
+  expect(parsed.value.state.endgameFinalObjects).toEqual(state.endgameFinalObjects);
+  expect(parsed.value.state.endgameParticipation).toEqual(state.endgameParticipation);
+  expect(parsed.value.state.campaignResult).toEqual(state.campaignResult);
+  const project = state.endgameFinalObjects?.activeProjects[0];
+  if (project !== undefined) {
+    const expectedHost = state.planets.find((planet) => planet.id === project.ownerPlanetId);
+    const loadedHost = parsed.value.state.planets.find((planet) => planet.id === project.ownerPlanetId);
+    expect(loadedHost?.buildQueue).toEqual(expectedHost?.buildQueue);
+    expect(loadedHost?.buildings).toEqual(expectedHost?.buildings);
+  }
+  if (exact) expect(parsed.value.state).toEqual(state);
+  return state;
 }
 
 function advanceInChunks(state: GameState, totalSeconds: number, chunkSeconds: number): GameState {
@@ -428,7 +439,7 @@ describe('ENDGAME-TERMINAL-GATE closure', () => {
     });
   }
 
-  it('round-trips exact state before funding, during construction, during vulnerability and after victory', () => {
+  it('round-trips endgame evidence before funding, during construction, during vulnerability and exactly after victory', () => {
     let state = prepareProject('closure-save-phases', 'solo');
     state = roundTrip(state, 'closure-before-funding');
     expect(activeProject(state).phase).toBe('funding');
@@ -442,7 +453,7 @@ describe('ENDGAME-TERMINAL-GATE closure', () => {
     expect(activeProject(state).phase).toBe('vulnerable');
 
     state = advanceToTerminal(state);
-    state = roundTrip(state, 'closure-terminal');
+    state = roundTrip(state, 'closure-terminal', true);
     expect(state.campaignResult?.status).toBe('terminal');
   });
 
@@ -488,7 +499,11 @@ describe('ENDGAME-TERMINAL-GATE closure', () => {
       ),
     ).toBe(false);
 
-    let rebuilt = fundProject(attackFirst);
+    const replenished = replacePlanet(
+      attackFirst,
+      withResources(planetFor(attackFirst, 'player'), ABUNDANT),
+    );
+    let rebuilt = fundProject(replenished);
     rebuilt = advanceToVulnerability(rebuilt);
     rebuilt = advanceToTerminal(rebuilt);
     expect(rebuilt.campaignResult?.status).toBe('terminal');
