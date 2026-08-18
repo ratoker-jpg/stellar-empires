@@ -171,11 +171,18 @@ export function showCampaignReturnSummary(
   const dialog = createDialog('campaign-return-summary', 'campaign-time-dialog campaign-return-summary');
   const body = document.createElement('div');
   body.className = 'campaign-time-dialog__body';
+  const terminalOutcome = summary.result.status === 'victory' || summary.result.status === 'defeat'
+    ? summary.result.status
+    : null;
   const eyebrow = document.createElement('p');
   eyebrow.className = 'campaign-time-eyebrow';
-  eyebrow.textContent = 'Возвращение в кампанию';
+  eyebrow.textContent = terminalOutcome === null ? 'Возвращение в кампанию' : 'Кампания завершена';
   const title = document.createElement('h1');
-  title.textContent = 'Что произошло в ваше отсутствие';
+  title.textContent = terminalOutcome === 'victory'
+    ? 'Победа'
+    : terminalOutcome === 'defeat'
+      ? 'Поражение'
+      : 'Что произошло в ваше отсутствие';
   const description = document.createElement('p');
   description.textContent = `Обработано ${formatDuration(summary.absence.realDurationSeconds)} реального времени · ${formatDuration(summary.absence.gameDurationSeconds)} игрового времени.`;
   const metrics = document.createElement('dl');
@@ -190,11 +197,20 @@ export function showCampaignReturnSummary(
   );
   const note = document.createElement('p');
   note.className = 'campaign-time-note';
-  note.textContent = 'Сводка показывает только доступные игроку итоги и не раскрывает скрытые решения других империй.';
+  note.textContent = terminalOutcome === null
+    ? 'Сводка показывает только доступные игроку итоги и не раскрывает скрытые решения других империй.'
+    : 'Терминальный результат сохранён. Игровое время и все мутации кампании остановлены; доступен только просмотр итогового состояния.';
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'se-button';
-  button.textContent = 'Продолжить кампанию';
+  button.textContent = terminalOutcome === null ? 'Продолжить кампанию' : 'Закрыть сводку';
+  if (terminalOutcome !== null) {
+    dialog.dataset.terminal = 'true';
+    dialog.dataset.outcome = terminalOutcome;
+  } else {
+    delete dialog.dataset.terminal;
+    delete dialog.dataset.outcome;
+  }
   button.addEventListener('click', (event) => {
     event.preventDefault();
     event.stopImmediatePropagation();
