@@ -19,9 +19,9 @@
   "activeWorkItem": "COMPLETE-ENDGAME-02-AUDIT",
   "activeBranch": "agent/complete-endgame-02-audit",
   "implementationAuthorized": false,
-  "nextPr": null,
-  "nextPrKind": "implementation-only-if-audit-accepted",
-  "nextWorkItem": null,
+  "nextPr": 158,
+  "nextPrKind": "implementation-after-audit-merge",
+  "nextWorkItem": "FINAL-OBJECT-FOUNDATION",
   "phases": [
     {"id":"delivered-foundation-and-catalogs","startPr":1,"endPr":100,"status":"completed"},
     {"id":"catalog-runtime-integration","auditPr":101,"startPr":102,"endPr":105,"status":"completed","archive":"docs/audits/completed/asset-runtime-integration-01.md"},
@@ -60,13 +60,23 @@
       "divergence": "none"
     },
     {
-      "id":"complete-endgame-final-objects-terminal",
-      "auditPr":157,
-      "status":"audit-scaffold",
-      "batchId":"COMPLETE-ENDGAME-02",
-      "implementationAuthorized":false,
-      "baselineSha":"c2fcaf39402392f0ebbad297d88f9689f4165e4c",
-      "outcome":"Audit Obelisks, Gates, final-object combat and persisted terminal victory/defeat before implementation"
+      "id": "complete-endgame-final-objects-terminal",
+      "auditPr": 157,
+      "status": "audit-complete-merge-pending",
+      "batchId": "COMPLETE-ENDGAME-02",
+      "complexity": "medium",
+      "implementationAuthorized": false,
+      "baselineSha": "c2fcaf39402392f0ebbad297d88f9689f4165e4c",
+      "startPr": 158,
+      "endPr": 161,
+      "plannedPrs": [158,159,160,161],
+      "workItems": ["FINAL-OBJECT-FOUNDATION","FINAL-GATE-VULNERABILITY","TERMINAL-RUNTIME-UX","ENDGAME-TERMINAL-GATE"],
+      "targetStateSchema": 19,
+      "targetSaveFormat": 6,
+      "contract": "docs/audits/contracts/complete-endgame-02.md",
+      "evidence": "docs/audits/evidence/complete-endgame-02.md",
+      "criticalUnknowns": 0,
+      "outcome": "Existing final objects plus Solar War qualification, contributions, ordinary combat vulnerability and persisted exact terminal campaign boundary"
     },
     {"id":"complete-endgame-bot-closure","auditPr":null,"status":"not-audited","batchId":"COMPLETE-ENDGAME-03","outcome":"Allied visibility, ordinary-command bot endgame parity and final closure"},
     {"id":"release-candidate","auditPr":null,"status":"not-audited","outcome":"Balance, onboarding, QA, performance and Pages release"}
@@ -77,7 +87,11 @@
     {"number":154,"kind":"implementation","workItem":"SOLAR-WAR-PARTICIPATION","status":"merged","mergeSha":"b62d8b739c27cf1616b33302886e565d88c04a42"},
     {"number":155,"kind":"implementation","workItem":"ENDGAME-OPERATIONS-UX","status":"merged","mergeSha":"a5c72562200c2a6dfdc49f1e4f07e8a869a6558d"},
     {"number":156,"kind":"implementation-closure","workItem":"ENDGAME-PARTICIPATION-GATE","title":"Close endgame participation foundation","status":"merged","mergeSha":"c2fcaf39402392f0ebbad297d88f9689f4165e4c"},
-    {"number":157,"kind":"audit","batchId":"COMPLETE-ENDGAME-02","workItem":"COMPLETE-ENDGAME-02-AUDIT","title":"Audit final objects and terminal campaign result","status":"draft-scaffold","implementationAuthorized":false}
+    {"number":157,"kind":"audit","batchId":"COMPLETE-ENDGAME-02","workItem":"COMPLETE-ENDGAME-02-AUDIT","title":"Audit final objects and terminal campaign result","status":"complete-merge-pending","implementationAuthorized":false},
+    {"number":158,"kind":"implementation","workItem":"FINAL-OBJECT-FOUNDATION","title":"Build final-object foundation","status":"planned-after-audit-merge"},
+    {"number":159,"kind":"implementation","workItem":"FINAL-GATE-VULNERABILITY","status":"planned"},
+    {"number":160,"kind":"implementation","workItem":"TERMINAL-RUNTIME-UX","status":"planned"},
+    {"number":161,"kind":"implementation-closure","workItem":"ENDGAME-TERMINAL-GATE","status":"planned"}
   ],
-  "nextAction": "Complete Audit PR #157 using real code/test evidence. Do not create an implementation PR or modify final-object/terminal mechanics until Audit #157 is explicitly accepted and merged with implementationAuthorized=true."
+  "nextAction": "Validate the final Audit #157 documentation head with CI, Browser E2E and Graphify, inspect review/mergeability, squash merge, then create only draft PR #158 FINAL-OBJECT-FOUNDATION from fresh main and record the exact #157 squash SHA before implementation."
 }
