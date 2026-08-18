@@ -16,7 +16,7 @@ function createEndgameFixture() {
     ownerEmpireId: 'player',
     ownerPlanetId: playerPlanet.id,
     factionId: playerPlanet.factionId,
-    obeliskBuildingId: roles.buildings.complete.aksumObelisk,
+    obeliskBuildingId: roles.buildings.complete.galacticObelisk,
     gateBuildingId: roles.buildings.complete.supremeGalacticGates,
     participationKind: 'alliance',
     participationId: 'alliance-1',
