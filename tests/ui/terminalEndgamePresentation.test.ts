@@ -22,7 +22,7 @@ function terminalViewState(seed = 'terminal-ui'): GameState {
   }
   const ids = getCompleteBuildingIds(host.factionId);
   const project: FinalObjectProject = {
-    id: 'ui-final-project',
+    id: 'final-project-1',
     ownerEmpireId: 'player',
     ownerPlanetId: host.id,
     factionId: host.factionId,
@@ -39,6 +39,7 @@ function terminalViewState(seed = 'terminal-ui'): GameState {
     contributionByEmpire: [{ empireId: 'player', resources: FULL }],
     startedAt: 0,
     fundedAt: 10,
+    gateQueueItemId: 'ui-terminal-gate-queue',
     gateCompletesAt: 20,
     vulnerabilityStartedAt: 20,
     stabilizesAt: 100,
@@ -46,6 +47,17 @@ function terminalViewState(seed = 'terminal-ui'): GameState {
   return {
     ...state,
     clock: { ...state.clock, elapsedSeconds: 100 },
+    planets: state.planets.map((planet) =>
+      planet.id === host.id
+        ? {
+            ...planet,
+            buildings: [
+              ...planet.buildings.filter((building) => building.buildingId !== ids.supremeGalacticGates),
+              { buildingId: ids.supremeGalacticGates, level: 1 },
+            ],
+          }
+        : planet,
+    ),
     endgameFinalObjects: {
       ...state.endgameFinalObjects,
       activeProjects: [project],
@@ -81,7 +93,7 @@ describe('terminal endgame presentation', () => {
       ownerEmpireId: 'player',
     });
     expect(project).toMatchObject({
-      id: 'ui-final-project',
+      id: 'final-project-1',
       hostPlanetId: terminal.hostPlanetId,
       phase: 'vulnerable',
       phaseLabel: 'Уязвимость Врат',
