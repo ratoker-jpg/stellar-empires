@@ -37,12 +37,36 @@ src/simulation/planet/buildingQueue.ts
 src/simulation/types.ts
 src/simulation/createInitialGameState.ts
 src/simulation/reducer.ts
+src/simulation/campaign/time.ts
+src/simulation/campaign/catchUpAccumulator.ts
+src/simulation/bots/perception.ts
+src/simulation/galaxy/intelligenceView.ts
+src/simulation/history/stateHistory.ts
 src/storage/migrateGameStateV19.ts
 src/storage/types.ts
 src/storage/saveFormat.ts
 ```
 
 The shared `buildingQueue.ts` helper preserves the existing construction duration, research-speed and specialization-speed pipeline for both ordinary paid construction and the pre-funded Gate transition.
+
+## Performance blocker resolution
+
+The permanent seven-day campaign gate was initially unstable around the 30-second limit. The threshold, bot cadence, event ordering, operation budget and gameplay balance were not changed.
+
+Profiling isolated the real cost: a seven-day run without bot profiles completed in under one second, while the normal run executed about 2,600 additional bot decisions. Generic bot perception rebuilt the full galaxy intelligence surface for every decision even though planners only needed occupied foreign contacts plus the already persisted intelligence snapshot.
+
+The performance-only fix therefore:
+
+- removes repeated campaign-boundary array allocation/scanning hot paths;
+- preserves bounded event/history semantics while avoiding empty-history copies;
+- keeps the canonical next bot decision ordering (`nextDecisionAt`, then `empireId`) without re-sorting the same candidate set inside the scheduler;
+- caches immutable galaxy topology derived from the existing `state.galaxy` object;
+- builds bot public contacts directly from foreign colonies plus the same current/stale intelligence evidence instead of materializing the complete galaxy UI intelligence view on every bot decision;
+- preserves the existing bot-facing labels, contact visibility, commands, decision cadence and diagnostics.
+
+A profiling head with the optimized perception produced approximately 4.6 seconds for one campaign day and 23.0 seconds for seven campaign days while keeping the same operation, audit and diagnostic counts as the slower state. Final report timings are taken only from the exact final PR head after cleanup and all gates.
+
+This is a generic calculation-path optimization only. It does not add final-object bot planning, allied privileged knowledge or any `COMPLETE-ENDGAME-03` perception capability.
 
 ## Validation added/updated
 
