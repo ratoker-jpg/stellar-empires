@@ -1,75 +1,95 @@
-# Current implementation batch audit
+# Current audit boundary
 
-**Status:** accepted batch; PR #156 closure complete pending final documentation-head gates  
+**Status:** Audit PR #157 `COMPLETE-ENDGAME-02` complete; exact-head validation and squash merge pending; implementation is **not authorized until merge**  
 **Updated:** 2026-08-18  
-**Batch:** `COMPLETE-ENDGAME-01`  
-**Roadmap milestone:** M8.1 — Complete endgame participation foundation  
-**Complexity:** medium  
-**Audit PR:** #152 · `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
-**Implementation order:** #153–#156  
-**Current runtime:** schema v18 / save format v5
+**Verified runtime baseline:** PR #156 squash · `c2fcaf39402392f0ebbad297d88f9689f4165e4c`  
+**Current runtime on `main`:** schema v18 / save format v5  
+**Accepted Stage-2 target:** schema v19 / save format v6  
+**Critical unknowns:** 0
 
-## Accepted product contract
+## Closed batch
 
-- alliance membership is optional and solo participation remains first-class;
-- all mutations use ordinary `GameCommand` validation;
-- public alliance identity/roster and redacted Solar War results are public information;
-- exact owned fleet losses, survivors and detailed battle report remain owner-visible;
-- stage 1 adds participation, Solar War and its existing-shell presentation only;
-- no bot endgame planner, final objects or terminal campaign state enter this batch.
+`COMPLETE-ENDGAME-01` is complete with divergence **none**.
 
-## Authorized implementation order
+```text
+#152 Audit d777a619109d4a9bfc8e5129bf4c525f3327b9b6
+→ #153 c567675c506d55a14a73757afa80c704fb079fc7
+→ #154 b62d8b739c27cf1616b33302886e565d88c04a42
+→ #155 a5c72562200c2a6dfdc49f1e4f07e8a869a6558d
+→ #156 c2fcaf39402392f0ebbad297d88f9689f4165e4c
+```
 
-| PR | Work item | Status |
-|---:|---|---|
-| #153 | `ALLIANCE-SOLO-FOUNDATION` | merged · `c567675c506d55a14a73757afa80c704fb079fc7` |
-| #154 | `SOLAR-WAR-PARTICIPATION` | merged · `b62d8b739c27cf1616b33302886e565d88c04a42` |
-| #155 | `ENDGAME-OPERATIONS-UX` | merged · `a5c72562200c2a6dfdc49f1e4f07e8a869a6558d` |
-| #156 | `ENDGAME-PARTICIPATION-GATE` | closure complete; final docs-head validation pending |
+The closed stage delivers optional alliance/solo participation, deterministic Solar War, canonical Operations/Reports/HUD presentation and exact three-faction 48-hour partition closure. No fifth implementation PR belongs to that batch.
 
-Exactly four implementation PRs were authorized. No fifth implementation PR is permitted.
+## Audit #157 evidence and contract
 
-## Closure evidence
+The recon is complete and recorded in:
 
-PR #156 adds no product mechanic. Its accepted matrix proves:
+- `docs/audits/evidence/complete-endgame-02.md`;
+- `docs/audits/contracts/complete-endgame-02.md`.
 
-- valid v17/v4 → v18/v5 migration for Aegis, Synod and Veyra;
-- explicit solo eligibility for every empire after migration;
-- legal solo and alliance-member Solar War entry for each player faction;
-- one active entry maximum per empire;
-- exact whole-state equality after 48 campaign hours across direct, six-hour chunks, save/load and resumable offline runtime paths;
-- newest-64 bounds for alliance membership and Solar War result histories;
-- strict malformed-current-state rejection;
-- compressed progression partition equivalence including endgame state;
-- canonical Operations/Reports/HUD Browser closure.
+The audit found that existing final-building catalogs/assets, ordinary build queue, ordinary combat/planet destruction, event queue, campaign runtime and current endgame UI shell are sufficient for a bounded implementation. No gameplay/runtime code is changed by Audit #157.
 
-The matrix exposed **no runtime production defect**, so #156 changes no simulation/runtime mechanic, schema or save format.
+## Accepted Stage-2 contract
 
-## Validated code head before docs
+- use existing faction Obelisk and Supreme Galactic Gates definitions, costs, prerequisites, timings and assets;
+- use positive scored Solar War result as qualification snapshot; no new meta-currency;
+- preserve legal solo completion;
+- alliance project has one owner empire/planet and immutable eligible-cohort snapshot;
+- contribute existing metal/crystal/gas through a dedicated endgame command; ordinary transport stays own-colony-only;
+- reuse ordinary Gate construction timing/queue rather than creating a second builder;
+- Gate completion starts a public `86,400` campaign-second vulnerability/stabilization window;
+- reuse ordinary `ATTACK` and combat; attacker win plus surviving existing planet-destroyer role destroys a vulnerable Gate deterministically;
+- keep Obelisk/Gate excluded from ordinary random building demolition;
+- reuse existing whole-planet destruction reconciliation to lose/cancel a hosted project;
+- use deterministic rebuild rather than a new Gate HP/repair subsystem;
+- persist final-project and campaign-result state in schema v19/save v6 with controlled v18/v5 migration;
+- keep existing `executeAt` then `sequence` event order authoritative;
+- final stabilization writes immutable victory/defeat identity and exact terminal campaign second;
+- freeze game time at terminal and leave future queues/events/fleets inert;
+- reject all later gameplay mutations with `CAMPAIGN_TERMINAL`;
+- active/offline runtime clears remaining real-time backlog without advancing terminal game state;
+- present final-project/terminal state through existing Operations/Reports/HUD/catch-up shell;
+- defer bot final-object/Solar-War perception and planning to `COMPLETE-ENDGAME-03`.
 
-`54cf966bd1058adad667450c0bf5f32f23ae18b9`
+## Bounded implementation sequence
 
-- CI `32146644545` — success;
-- Graphify `32146644566` — success;
-- 621 tests passed, 1 skipped;
-- closure matrix 13/13 passed;
-- production build and permanent compressed progression scenario — success;
-- one day `6.261 s < 15 s`;
-- seven days `29.846 s < 30 s`.
+Exactly four implementation PRs belong to `COMPLETE-ENDGAME-02`, and only after this Audit is squash-merged:
 
-## Divergence
+```text
+#158 FINAL-OBJECT-FOUNDATION
+→ #159 FINAL-GATE-VULNERABILITY
+→ #160 TERMINAL-RUNTIME-UX
+→ #161 ENDGAME-TERMINAL-GATE
+```
 
-**None.** All stage-1 behavior stays within Audit #152. No bot Solar War planner, allied perception, private alliance expansion, functional Obelisks/Gates, victory/defeat, terminal state, new currency/catalog/assets or M9 work was added.
+No fifth implementation PR is authorized.
 
-## Permanent boundary
+## Hard authorization boundary
 
-After #156 merges, `COMPLETE-ENDGAME-01` is closed. The next work is a **new Audit only**:
+`implementationAuthorized: false`
 
-- `COMPLETE-ENDGAME-02`: existing locked Obelisks/Gates, contributions, ownership, attacks/destruction and persisted terminal victory/defeat;
-- `COMPLETE-ENDGAME-03`: later bot allied/public/owned/hidden perception and endgame parity.
+While Audit #157 remains open, it does **not** authorize:
 
-Neither audit currently authorizes implementation.
+- functional Obelisk/Gate mechanics;
+- resource contribution commands;
+- final-object attacks/destruction;
+- persisted victory/defeat or terminal freeze;
+- terminal UI implementation;
+- bot final-object planning or allied perception;
+- new currency, catalogs/assets, global rebalance, multiplayer, seasons or M9 work.
 
-## Next action
+## Audit completion criteria status
 
-Finish #156 code+docs validation, review and squash merge. Then record the generated #156 squash SHA in the immediately following Audit scaffold before any new implementation is authorized.
+1. concrete existing code/test/catalog/UI paths cited — **done**;
+2. critical product/persistence unknowns resolved — **done**;
+3. solo/alliance ownership and victory semantics explicit — **done**;
+4. schema/save migration decision explicit — **done: v19/v6**;
+5. exact event ordering and terminal runtime behavior bound — **done**;
+6. bounded implementation count/file map — **done: exactly four PRs**;
+7. deterministic partition, Browser, Graphify, progression and performance gates — **done**;
+8. Audit exact-head validation/review/squash merge — **pending**.
+
+## Exact next action
+
+Validate the final docs-only #157 head with CI, Browser E2E and Graphify, resolve any review issues, mark ready, squash merge, re-fetch fresh `main`, record the generated #157 squash SHA, then create **only** draft scaffold #158 `FINAL-OBJECT-FOUNDATION`. Do not implement Stage 2 before that merge.

@@ -1,8 +1,8 @@
 # Stellar Empires — canonical roadmap to a complete playable game v5
 
-**Status:** M8 stage 1 closure in PR #156; final documentation-head validation pending  
+**Status:** M8.1 completed; draft Audit PR #157 `COMPLETE-ENDGAME-02` active with implementation unauthorized  
 **Updated:** 2026-08-18  
-**Last merged PR:** #155 `ENDGAME-OPERATIONS-UX` · `a5c72562200c2a6dfdc49f1e4f07e8a869a6558d`  
+**Last merged PR:** #156 `ENDGAME-PARTICIPATION-GATE` · `c2fcaf39402392f0ebbad297d88f9689f4165e4c`  
 **Runtime:** schema v18 / save format v5  
 **Release target:** complete local PvE browser campaign with autonomous bot empires
 
@@ -37,7 +37,7 @@ Nemexia references define systemic depth only. Stellar Empires keeps original te
 
 Through PR #151 the product includes deterministic campaign time, compressed progression, complete catalogs/runtime art, ordinary missions/intelligence/combat, demolition/destruction/recovery, multi-colony economy/logistics, sustainable PvE, reputation, Arena and honest bot participation.
 
-M8 stage 1 then delivered optional alliance/solo participation, deterministic Solar War and its canonical Operations/Reports/HUD presentation. PR #156 closes this stage with three-faction migration, exact 48-hour partition, bounded-history and Browser evidence.
+M8 stage 1 added optional alliance/solo participation, deterministic Solar War, canonical Operations/Reports/HUD presentation and exact three-faction 48-hour closure. It is fully merged through PR #156.
 
 ## 4. Completed batches
 
@@ -54,26 +54,25 @@ M8 stage 1 then delivered optional alliance/solo participation, deterministic So
 | M5 — Multi-colony economy/logistics | Audit #137; #138–#141 |
 | M6a — Sustainable existing PvE | Audit #142; #143–#146 |
 | M6b — PvE meta foundation | Audit #147; #148–#151 |
+| M8.1 — Endgame participation foundation | Audit #152; #153–#156 |
 
 ## 5. M8 staged delivery
 
 M8 is split because participation/persistence, terminal closure and bot information parity are distinct high-risk surfaces.
 
-### Stage 1 — `COMPLETE-ENDGAME-01`
+### Stage 1 — `COMPLETE-ENDGAME-01` — completed
 
 ```text
 #152 Audit d777a619109d4a9bfc8e5129bf4c525f3327b9b6
-→ #153 ALLIANCE-SOLO-FOUNDATION c567675c506d55a14a73757afa80c704fb079fc7
-→ #154 SOLAR-WAR-PARTICIPATION b62d8b739c27cf1616b33302886e565d88c04a42
-→ #155 ENDGAME-OPERATIONS-UX a5c72562200c2a6dfdc49f1e4f07e8a869a6558d
-→ #156 ENDGAME-PARTICIPATION-GATE — closure pending squash merge
+→ #153 c567675c506d55a14a73757afa80c704fb079fc7
+→ #154 b62d8b739c27cf1616b33302886e565d88c04a42
+→ #155 a5c72562200c2a6dfdc49f1e4f07e8a869a6558d
+→ #156 c2fcaf39402392f0ebbad297d88f9689f4165e4c
 ```
 
-Exactly four implementation PRs were authorized. No fifth implementation PR belongs to stage 1.
+Stage-1 outcome:
 
-Stage-1 delivered outcome:
-
-- one controlled schema v17/save v4 → schema v18/save v5 migration;
+- controlled schema v17/save v4 → schema v18/save v5 migration;
 - explicit solo eligibility and optional public/open alliance membership;
 - ordinary alliance create/join/leave commands and newest-64 membership history;
 - deterministic 86,400-second Solar War cycles using existing fleets, combat and catalogs;
@@ -83,19 +82,26 @@ Stage-1 delivered outcome:
 - Aegis, Synod and Veyra each proven for solo and alliance-member entry;
 - exact whole-`GameState` equality after 48 campaign hours across direct, six-hour chunks, save/load and resumable offline runtime paths;
 - strict malformed-current-state rejection and permanent progression/performance/Browser/Graphify gates;
-- no runtime production defect exposed by the final closure matrix.
+- divergence none.
 
-### Stage 2 — `COMPLETE-ENDGAME-02`
+### Stage 2 — `COMPLETE-ENDGAME-02` — Audit #157 scaffold
 
-**Not audited and not authorized for implementation.** A new Audit must investigate and bind:
+**Implementation is not authorized.** Audit #157 must inspect and bind:
 
 - existing locked Obelisks and Supreme Galactic Gates;
-- resource contributions and ownership;
-- final-object attack/destruction rules;
-- exact terminal timestamp and deterministic victory/defeat state;
-- autosave, reload and offline catch-up at the terminal boundary;
-- terminal UI and post-terminal command behavior;
-- schema/save implications and migration risk.
+- current prerequisites, costs and assets;
+- contribution and ownership semantics with legal solo completion;
+- final-object construction/unlock timing;
+- final-object attack/destruction rules and ordinary-combat reuse;
+- exact persisted terminal timestamp and deterministic victory/defeat state;
+- post-terminal command behavior;
+- autosave, reload, save/load and offline catch-up at the terminal boundary;
+- terminal UI inside the existing shell;
+- schema/save implications and migration risk;
+- three-faction asymmetries;
+- bounded implementation sequence and permanent acceptance gates.
+
+No stage-2 implementation PR may exist until Audit #157 resolves its critical unknowns and is explicitly accepted/merged with implementation authorization.
 
 ### Stage 3 — `COMPLETE-ENDGAME-03`
 
@@ -113,8 +119,8 @@ Bots must use the same commands, resources, timing and information classes. Save
 |---|---|---|
 | M1–M6b | completed | through PR #151 |
 | M7 — Autonomous bot parity | substantially delivered | endgame parity deferred to M8 stage 3 |
-| M8.1 — Participation foundation | closure pending #156 squash | Audit #152; #153–#155 merged; #156 final gate |
-| M8.2 — Final objects and terminal result | not audited | `COMPLETE-ENDGAME-02` |
+| M8.1 — Participation foundation | completed | Audit #152; #153–#156 |
+| M8.2 — Final objects and terminal result | audit scaffold active; implementation unauthorized | Audit #157 `COMPLETE-ENDGAME-02` |
 | M8.3 — Bot endgame closure | not audited | `COMPLETE-ENDGAME-03` |
 | M9 — Release candidate | not audited | balance, onboarding, QA, performance and release |
 
@@ -125,9 +131,10 @@ Bots must use the same commands, resources, timing and information classes. Save
 - schema v18/save v5 was introduced only by #153 in stage 1;
 - Solar War uses ordinary commands, owned fleets, existing combat and explicit public/owner views;
 - no final-object or terminal mechanics entered stage 1;
+- Audit #157 is documentation/recon only until explicitly accepted;
 - no implementation from stage 2 or 3 begins without its own accepted Audit PR;
 - progression, determinism, Browser, Graphify and performance gates remain mandatory.
 
 ## 9. Immediate action
 
-Validate the exact final PR #156 code+docs head, resolve review, squash merge, record the generated #156 squash SHA, then create only a `COMPLETE-ENDGAME-02` Audit scaffold from fresh `main`. Do not implement final objects or terminal state until that audit is accepted.
+Complete Audit PR #157 against exact baseline `c2fcaf39402392f0ebbad297d88f9689f4165e4c`: inspect real final-object/persistence/runtime/UI code, record evidence, resolve ownership/victory/terminal/schema decisions and define a bounded implementation sequence. Do not implement final objects or terminal state until that audit is accepted.

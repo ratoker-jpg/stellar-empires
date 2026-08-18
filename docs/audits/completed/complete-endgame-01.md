@@ -1,13 +1,14 @@
 # Completed audit — COMPLETE-ENDGAME-01
 
-**Status:** implementation complete pending PR #156 squash merge  
+**Status:** completed  
 **Updated:** 2026-08-18  
 **Audit PR:** #152 · `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
 **Complexity:** medium  
 **Roadmap milestone:** M8.1 — endgame participation foundation  
-**Runtime:** schema v18 / save format v5
+**Runtime:** schema v18 / save format v5  
+**Divergence:** none
 
-## Accepted sequence
+## Exact merged sequence
 
 ```text
 #153 ALLIANCE-SOLO-FOUNDATION
@@ -20,7 +21,7 @@ b62d8b739c27cf1616b33302886e565d88c04a42
 a5c72562200c2a6dfdc49f1e4f07e8a869a6558d
 
 #156 ENDGAME-PARTICIPATION-GATE
-final validated code head before docs: 54cf966bd1058adad667450c0bf5f32f23ae18b9
+c2fcaf39402392f0ebbad297d88f9689f4165e4c
 ```
 
 Exactly four implementation PRs were authorized and delivered. No fifth implementation PR belongs to this batch.
@@ -71,19 +72,21 @@ Exactly four implementation PRs were authorized and delivered. No fifth implemen
 - dedicated Browser closure covers Operations, Reports and HUD integration;
 - the closure matrix found no simulation/runtime production defect, so #156 required no runtime mechanic change.
 
-## Code-head evidence
+## Final closure evidence
 
 ```text
-Head              54cf966bd1058adad667450c0bf5f32f23ae18b9
-CI                32146644545 — success
-Graphify          32146644566 — success
-Tests             621 passed / 1 skipped
-Closure matrix    13 passed
-1 campaign day       6.261 s < 15 s
-7 campaign days     29.846 s < 30 s
+Final head         d3a6162a27ca0659ce0a41446336799d4767ea5f
+CI                 32148417714 — success
+Browser E2E        32148417635 — success · 33/33
+Graphify           32148417649 — success
+Tests              621 passed / 1 skipped
+Closure matrix     13/13 passed
+1 campaign day        6.111 s < 15 s
+7 campaign days      29.527 s < 30 s
+Squash SHA         c2fcaf39402392f0ebbad297d88f9689f4165e4c
 ```
 
-Browser E2E and all permanent gates must also be green on the final documentation head before #156 merges.
+Asset audit, lint, strict TypeScript, production build and permanent compressed progression all passed on the exact final head. Review threads and submitted reviews were both zero; PR #156 was mergeable before squash.
 
 ## Divergence
 
@@ -97,6 +100,6 @@ Browser E2E and all permanent gates must also be green on the final documentatio
 
 None of these are authorized by this archive.
 
-## Exact squash synchronization
+## Stage-2 boundary
 
-The generated squash SHA for final PR #156 cannot be embedded in its own commit. The immediately following Audit PR must record the exact #156 squash SHA in this archive, `docs/project-status.json`, `docs/roadmap-pr-index.json` and batch history before authorizing any new implementation.
+Audit PR #157 may investigate `COMPLETE-ENDGAME-02`, but `implementationAuthorized` remains false until that audit is completed, its critical unknowns are resolved, and the audit is explicitly accepted/merged.
