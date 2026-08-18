@@ -43,7 +43,12 @@ function execute(
 
 function legacyV4Save(seed: string, factionId: FactionId) {
   const current = createInitialGameState(seed, factionId);
-  const { endgameParticipation: _participation, ...legacyShell } = current;
+  const {
+    endgameParticipation: _participation,
+    endgameFinalObjects: _finalObjects,
+    campaignResult: _campaignResult,
+    ...legacyShell
+  } = current;
   const state = { ...legacyShell, schemaVersion: 17 as const };
   const runtimeMetadata = createCampaignRuntimeMetadata(STARTED_AT_REAL);
   const unsigned = {
@@ -65,8 +70,8 @@ function migrateLegacyState(seed: string, factionId: FactionId): GameState {
   expect(parsed.ok).toBe(true);
   if (!parsed.ok) throw new Error(parsed.message);
 
-  expect(parsed.value.formatVersion).toBe(5);
-  expect(parsed.value.state.schemaVersion).toBe(18);
+  expect(parsed.value.formatVersion).toBe(6);
+  expect(parsed.value.state.schemaVersion).toBe(19);
   expect(parsed.value.runtimeMetadata).toEqual(legacy.runtimeMetadata);
   const playerPlanet = parsed.value.state.planets.find(
     (planet) => planet.ownerEmpireId === 'player',
@@ -80,6 +85,8 @@ function migrateLegacyState(seed: string, factionId: FactionId): GameState {
       soloEligible: true,
     })),
   );
+  expect(parsed.value.state.endgameFinalObjects?.activeProjects).toEqual([]);
+  expect(parsed.value.state.campaignResult).toEqual({ status: 'ongoing' });
   return parsed.value.state;
 }
 
@@ -296,7 +303,7 @@ describe('COMPLETE-ENDGAME-01 closure matrix', () => {
   }, 120_000);
 
   for (const factionId of FACTIONS) {
-    it(`${factionId} rejects malformed current v18/v5 endgame state with a valid checksum`, () => {
+    it(`${factionId} rejects malformed current v19/v6 endgame state with a valid checksum`, () => {
       const state = createInitialGameState(`endgame-malformed-${factionId}`, factionId);
       const save = createSaveEnvelope(
         `malformed-${factionId}`,
