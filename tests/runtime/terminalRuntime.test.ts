@@ -24,7 +24,7 @@ function terminalPendingState(seed = 'terminal-runtime'): GameState {
   const ids = getCompleteBuildingIds(host.factionId);
   const stabilizesAt = 10;
   const project: FinalObjectProject = {
-    id: 'runtime-terminal-project',
+    id: 'final-project-1',
     ownerEmpireId: 'player',
     ownerPlanetId: host.id,
     factionId: host.factionId,
@@ -41,6 +41,7 @@ function terminalPendingState(seed = 'terminal-runtime'): GameState {
     contributionByEmpire: [{ empireId: 'player', resources: FULL }],
     startedAt: 0,
     fundedAt: 0,
+    gateQueueItemId: 'runtime-terminal-gate-queue',
     gateCompletesAt: 0,
     vulnerabilityStartedAt: 0,
     stabilizesAt,
@@ -104,6 +105,7 @@ describe('terminal campaign runtime', () => {
       remainingRealDurationMilliseconds: 10_000,
       gameTimeFractionNumerator: 0,
     });
+    expect(first.runtimeMetadata.pendingCatchUp?.accumulatedSummary.result.status).toBe('victory');
 
     const second = advanceCampaignRuntimeCheckpoint(
       first.state,
@@ -116,9 +118,10 @@ describe('terminal campaign runtime', () => {
     expect(second.state).toBe(first.state);
     expect(second.state.clock.elapsedSeconds).toBe(10);
     expect(second.advance.processedGameSeconds).toBe(0);
+    expect(second.advance.summaryDelta.result.status).toBe('victory');
     expect(second.runtimeMetadata.lastActiveAtReal).toBe(target);
     expect(second.runtimeMetadata.pendingCatchUp).toBeUndefined();
-    expect(second.runtimeMetadata.pendingReturnSummary?.result.status).toBe('victory');
+    expect(second.runtimeMetadata.pendingReturnSummary).toBeUndefined();
   });
 
   it('offline catch-up reaches the same terminal fixed point and consumes the entire wall-clock target', async () => {
