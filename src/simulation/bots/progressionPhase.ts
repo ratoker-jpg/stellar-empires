@@ -33,6 +33,19 @@ interface EmpireCapabilitySnapshot {
   readonly shipCounts: Readonly<Record<string, number>>;
 }
 
+interface ProgressionPhaseCacheEntry {
+  readonly empireId: string;
+  readonly fleets: GameState['fleets'];
+  readonly research: GameState['research'];
+  readonly progressionProfile: GameState['campaignSettings']['progressionProfile'];
+  readonly phase: BotProgressionPhase;
+}
+
+const progressionPhaseCache = new WeakMap<
+  GameState['planets'],
+  readonly ProgressionPhaseCacheEntry[]
+>();
+
 function createCapabilitySnapshot(
   state: GameState,
   empireId: string,
@@ -135,7 +148,7 @@ function hasEndgamePreparationInfrastructure(state: GameState, empireId: string)
     .some((planet) => hasResolvedBuildingPrerequisites(state, planet, gatesId));
 }
 
-export function getBotProgressionPhase(
+function computeBotProgressionPhase(
   state: GameState,
   empireId: string,
 ): BotProgressionPhase {
@@ -167,6 +180,34 @@ export function getBotProgressionPhase(
   return hasEndgamePreparationInfrastructure(state, empireId)
     ? 'endgame-preparation'
     : 'planet-destruction';
+}
+
+export function getBotProgressionPhase(
+  state: GameState,
+  empireId: string,
+): BotProgressionPhase {
+  const cached = progressionPhaseCache.get(state.planets)?.find(
+    (entry) =>
+      entry.empireId === empireId &&
+      entry.fleets === state.fleets &&
+      entry.research === state.research &&
+      entry.progressionProfile === state.campaignSettings.progressionProfile,
+  );
+  if (cached !== undefined) return cached.phase;
+
+  const phase = computeBotProgressionPhase(state, empireId);
+  const entries = progressionPhaseCache.get(state.planets) ?? [];
+  progressionPhaseCache.set(state.planets, [
+    ...entries,
+    {
+      empireId,
+      fleets: state.fleets,
+      research: state.research,
+      progressionProfile: state.campaignSettings.progressionProfile,
+      phase,
+    },
+  ]);
+  return phase;
 }
 
 export function getAllBotProgressionPhases(
