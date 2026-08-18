@@ -31,7 +31,7 @@ function createState(): GameState {
 }
 
 describe('compressed progression partition equivalence', () => {
-  it('preserves state, profile and phases across direct, chunked and save-loaded time', () => {
+  it('preserves state, profile, endgame participation and phases across direct, chunked and save-loaded time', () => {
     const initial = createState();
     const direct = advance(initial, 7_200);
     const midpoint = advance(initial, 3_600);
@@ -49,6 +49,8 @@ describe('compressed progression partition equivalence', () => {
     expect(direct.campaignSettings.progressionProfile).toBe('compressed-v1');
     expect(chunked.campaignSettings).toEqual(direct.campaignSettings);
     expect(resumed.campaignSettings).toEqual(direct.campaignSettings);
+    expect(chunked.endgameParticipation).toEqual(direct.endgameParticipation);
+    expect(resumed.endgameParticipation).toEqual(direct.endgameParticipation);
     expect(createStateChecksum(chunked)).toBe(createStateChecksum(direct));
     expect(createStateChecksum(resumed)).toBe(createStateChecksum(direct));
     expect(getAllBotProgressionPhases(chunked)).toEqual(getAllBotProgressionPhases(direct));
