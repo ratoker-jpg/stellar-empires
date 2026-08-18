@@ -127,12 +127,47 @@ export interface BotPerception {
   }[];
 }
 
+interface GalaxyTopologyIndex {
+  readonly planetById: ReadonlyMap<string, GameState['galaxy']['systems'][number]['planets'][number]>;
+  readonly systemById: ReadonlyMap<string, GameState['galaxy']['systems'][number]>;
+  readonly expeditionPositions: readonly BotPublicExpeditionPositionPerception[];
+}
+
 const perceptionCache = new WeakMap<GameState, Map<string, BotPerception>>();
+const galaxyTopologyCache = new WeakMap<GameState['galaxy'], GalaxyTopologyIndex>();
 
 function compareCoordinates(left: SpaceCoordinate, right: SpaceCoordinate): number {
   return left.galaxy - right.galaxy ||
     left.solarSystem - right.solarSystem ||
     left.position - right.position;
+}
+
+function getGalaxyTopologyIndex(galaxy: GameState['galaxy']): GalaxyTopologyIndex {
+  const cached = galaxyTopologyCache.get(galaxy);
+  if (cached !== undefined) return cached;
+
+  const planetById = new Map<string, GameState['galaxy']['systems'][number]['planets'][number]>();
+  const systemById = new Map<string, GameState['galaxy']['systems'][number]>();
+  const expeditionPositions: BotPublicExpeditionPositionPerception[] = [];
+  for (const system of galaxy.systems) {
+    systemById.set(system.id, system);
+    for (const planet of system.planets) {
+      planetById.set(planet.id, planet);
+      expeditionPositions.push({
+        galaxyPlanetId: planet.id,
+        systemId: system.id,
+        coordinate: planet.coordinate,
+        label: `${system.name}:${planet.position}`,
+      });
+    }
+  }
+  expeditionPositions.sort((left, right) =>
+    compareCoordinates(left.coordinate, right.coordinate) ||
+    left.galaxyPlanetId.localeCompare(right.galaxyPlanetId),
+  );
+  const index = { planetById, systemById, expeditionPositions };
+  galaxyTopologyCache.set(galaxy, index);
+  return index;
 }
 
 function createOwnPlanetPerception(planet: PlanetState): BotOwnPlanetPerception {
@@ -171,6 +206,7 @@ export function createBotPerception(
 
   const intelligence = getEmpireIntelligence(state.intelligence, empireId);
   const research = getEmpireResearch(state.research, empireId);
+  const topology = getGalaxyTopologyIndex(state.galaxy);
   const observations = [...(intelligence?.observations ?? [])].sort(
     (left, right) => right.observedAt - left.observedAt || left.id.localeCompare(right.id),
   );
@@ -198,9 +234,7 @@ export function createBotPerception(
     .map((planet): BotPublicContactPerception => ({
       planetId: planet.colonyId!,
       galaxyPlanetId: planet.galaxyPlanetId,
-      coordinate: state.galaxy.systems
-        .flatMap((system) => system.planets)
-        .find((candidate) => candidate.id === planet.galaxyPlanetId)!.coordinate,
+      coordinate: topology.planetById.get(planet.galaxyPlanetId)!.coordinate,
       label: planet.displayName,
       visibility: planet.visibility as BotPublicContactPerception['visibility'],
       observedAt: planet.observedAt,
@@ -233,22 +267,12 @@ export function createBotPerception(
     }),
     publicContacts,
     publicColonyIds: publicContacts.map((contact) => contact.planetId),
-    publicExpeditionPositions: state.galaxy.systems
-      .flatMap((system) => system.planets
-        .filter((planet) => !occupiedGalaxyPlanetIds.has(planet.id))
-        .map((planet): BotPublicExpeditionPositionPerception => ({
-          galaxyPlanetId: planet.id,
-          systemId: system.id,
-          coordinate: planet.coordinate,
-          label: `${system.name}:${planet.position}`,
-        })))
-      .sort((left, right) =>
-        compareCoordinates(left.coordinate, right.coordinate) ||
-        left.galaxyPlanetId.localeCompare(right.galaxyPlanetId),
-      ),
+    publicExpeditionPositions: topology.expeditionPositions.filter(
+      (position) => !occupiedGalaxyPlanetIds.has(position.galaxyPlanetId),
+    ),
     publicSpaceObjects: state.spaceObjects
       .flatMap((object): readonly BotPublicSpaceObjectPerception[] => {
-        const system = state.galaxy.systems.find((candidate) => candidate.id === object.systemId);
+        const system = topology.systemById.get(object.systemId);
         const coordinate = object.coordinate ?? (system === undefined
           ? undefined
           : {
