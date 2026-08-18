@@ -128,6 +128,7 @@ export interface BotPerception {
 
 interface GalaxyTopologyIndex {
   readonly systemById: ReadonlyMap<string, GameState['galaxy']['systems'][number]>;
+  readonly systemNameByGalaxyPlanetId: ReadonlyMap<string, string>;
   readonly expeditionPositions: readonly BotPublicExpeditionPositionPerception[];
 }
 
@@ -145,10 +146,12 @@ function getGalaxyTopologyIndex(galaxy: GameState['galaxy']): GalaxyTopologyInde
   if (cached !== undefined) return cached;
 
   const systemById = new Map<string, GameState['galaxy']['systems'][number]>();
+  const systemNameByGalaxyPlanetId = new Map<string, string>();
   const expeditionPositions: BotPublicExpeditionPositionPerception[] = [];
   for (const system of galaxy.systems) {
     systemById.set(system.id, system);
     for (const planet of system.planets) {
+      systemNameByGalaxyPlanetId.set(planet.id, system.name);
       expeditionPositions.push({
         galaxyPlanetId: planet.id,
         systemId: system.id,
@@ -161,7 +164,7 @@ function getGalaxyTopologyIndex(galaxy: GameState['galaxy']): GalaxyTopologyInde
     compareCoordinates(left.coordinate, right.coordinate) ||
     left.galaxyPlanetId.localeCompare(right.galaxyPlanetId),
   );
-  const index = { systemById, expeditionPositions };
+  const index = { systemById, systemNameByGalaxyPlanetId, expeditionPositions };
   galaxyTopologyCache.set(galaxy, index);
   return index;
 }
@@ -225,11 +228,13 @@ export function createBotPerception(
     .map((planet): BotPublicContactPerception => {
       const observation = latestByPlanet.get(planet.id);
       if (observation === undefined) {
+        const systemName = topology.systemNameByGalaxyPlanetId.get(planet.galaxyPlanetId) ??
+          `${planet.coordinate.galaxy}:${planet.coordinate.solarSystem}`;
         return {
           planetId: planet.id,
           galaxyPlanetId: planet.galaxyPlanetId,
           coordinate: planet.coordinate,
-          label: `${planet.coordinate.galaxy}:${planet.coordinate.solarSystem} · неизвестный контакт`,
+          label: `${systemName} · неизвестный контакт`,
           visibility: 'contact',
           observedAt: null,
           expiresAt: null,
