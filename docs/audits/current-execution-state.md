@@ -1,19 +1,22 @@
 # Current execution state
 
 **Updated:** 2026-08-18  
-**Safe to continue:** yes, only Audit PR #157 `COMPLETE-ENDGAME-02`; implementation is not authorized
+**Safe to continue:** yes, only validation/merge of Audit PR #157 `COMPLETE-ENDGAME-02`; implementation remains unauthorized until Audit squash merge
 
 | Field | Current value |
 |---|---|
 | Verified `main` baseline | `c2fcaf39402392f0ebbad297d88f9689f4165e4c` |
 | Last merged PR | #156 `ENDGAME-PARTICIPATION-GATE` |
 | Last completed batch | `COMPLETE-ENDGAME-01` · divergence none |
-| Active work | draft Audit PR #157 `COMPLETE-ENDGAME-02` |
+| Active work | Audit PR #157 `COMPLETE-ENDGAME-02` · audit complete, validation/merge pending |
 | Active branch | `agent/complete-endgame-02-audit` |
 | Initial audit scaffold head | `96ebe386e648804afe30b9431aeb916c9e6b3af9` |
-| Runtime | schema v18 / save format v5 unchanged |
-| Implementation authorized | **no** |
-| Current blocker | audit evidence, critical decisions and bounded implementation contract are not yet complete |
+| Runtime on `main` | schema v18 / save format v5 unchanged |
+| Accepted Stage-2 target | schema v19 / save format v6 |
+| Critical unknowns | **0** |
+| Bounded implementation sequence | **#158 → #159 → #160 → #161** |
+| Implementation authorized while #157 is open | **no** |
+| Current blocker | final exact-head CI, Browser E2E, Graphify, review and squash merge of Audit #157 |
 
 ## Exact closed stage-1 sequence
 
@@ -25,7 +28,7 @@
 → #156 ENDGAME-PARTICIPATION-GATE c2fcaf39402392f0ebbad297d88f9689f4165e4c
 ```
 
-`COMPLETE-ENDGAME-01` is closed. No fifth implementation PR is authorized.
+`COMPLETE-ENDGAME-01` is closed. No fifth implementation PR belongs to that batch.
 
 ## Final #156 evidence
 
@@ -41,26 +44,56 @@
 - unresolved review threads 0; submitted reviews 0;
 - squash SHA `c2fcaf39402392f0ebbad297d88f9689f4165e4c`.
 
-## Current Audit #157 boundary
+## Audit #157 result
 
-Audit #157 may inspect and document only:
+Concrete evidence is recorded in:
 
-- existing locked Obelisks/Gates and their current prerequisites/assets;
-- contributions, ownership and solo/alliance semantics;
-- final-object attack/destruction reuse of ordinary combat;
-- exact persisted terminal victory/defeat and event ordering;
-- active/offline/save-load/autosave behavior at the terminal boundary;
-- canonical terminal presentation;
-- schema/save implications;
-- bounded implementation sequence and acceptance gates.
+- `docs/audits/evidence/complete-endgame-02.md`;
+- `docs/audits/contracts/complete-endgame-02.md`.
 
-It may not implement any of those mechanics.
+The audit resolved all critical questions without gameplay/runtime implementation.
+
+Accepted Stage-2 decisions include:
+
+- existing faction Obelisk + Supreme Galactic Gates definitions/assets remain canonical;
+- no new currency, mechanical catalog, asset batch or combat engine;
+- positive scored Solar War result qualifies the final-object path and is snapshotted into the project;
+- solo completion remains first-class;
+- alliance project uses one owner empire/planet plus immutable eligible-cohort snapshot;
+- contributions spend existing metal/crystal/gas through a dedicated final-object command, not ordinary transport;
+- Gate funding target and construction time reuse existing catalog/calculation/build-queue machinery;
+- Gate completion begins a public `86,400` campaign-second vulnerability window rather than immediate victory;
+- ordinary `ATTACK` remains canonical combat; attacker victory plus a surviving existing planet-destroyer role destroys a vulnerable Gate deterministically;
+- final objects remain excluded from ordinary random demolition;
+- host-planet destruction reuses existing planet reconciliation and loses the project;
+- persisted final-project/result state requires schema v19/save v6;
+- exact existing `executeAt` + `sequence` ordering decides same-second attack/stabilization races;
+- final stabilization writes one immutable terminal result and freezes game time at the exact terminal second;
+- all later gameplay mutations reject `CAMPAIGN_TERMINAL`; pending events/queues/fleets remain inert terminal evidence;
+- active/offline runtime consumes remaining real-time backlog without advancing the terminal GameState;
+- Operations/Reports/HUD/catch-up reuse existing shell routes;
+- bot endgame perception/planning remains deferred to `COMPLETE-ENDGAME-03`.
+
+## Accepted Stage-2 implementation sequence
+
+Exactly four implementation PRs are defined **but none may exist until #157 is merged**:
+
+```text
+#158 FINAL-OBJECT-FOUNDATION
+→ #159 FINAL-GATE-VULNERABILITY
+→ #160 TERMINAL-RUNTIME-UX
+→ #161 ENDGAME-TERMINAL-GATE
+```
+
+No fifth implementation PR is authorized.
 
 ## Exact next action
 
-1. continue only Audit #157 from baseline `c2fcaf39402392f0ebbad297d88f9689f4165e4c`;
-2. inspect real code/tests/catalogs and record concrete evidence;
-3. resolve all critical unknowns and decide schema/save implications;
-4. write a bounded implementation sequence with explicit non-goals and gates;
-5. keep `implementationAuthorized: false` until the audit itself is explicitly accepted/merged;
-6. do not create an implementation PR for stage 2 before that acceptance.
+1. synchronize final Audit #157 source-of-truth docs;
+2. run CI, Browser E2E and Graphify on the exact final documentation head;
+3. inspect review threads, reviews and mergeability;
+4. mark #157 ready only after all gates are green;
+5. squash merge #157 with exact-head protection;
+6. re-fetch fresh `main` and record the generated #157 squash SHA;
+7. create only draft scaffold #158 `FINAL-OBJECT-FOUNDATION` from that fresh main;
+8. do **not** implement #158 during the Audit closeout.
