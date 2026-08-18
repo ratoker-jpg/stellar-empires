@@ -1,93 +1,100 @@
 # PR #158 — FINAL-OBJECT-FOUNDATION
 
-**Status:** draft scaffold only; implementation not started  
+**Status:** implementation complete; final exact-head validation pending  
 **Authorized by Audit PR:** #157 `COMPLETE-ENDGAME-02`  
 **Audit squash SHA:** `7750cdb83b58e95f790351b306e9cf5b344bd780`  
 **Exact branch baseline:** `7750cdb83b58e95f790351b306e9cf5b344bd780`  
 **Branch:** `agent/final-object-foundation`  
-**Runtime baseline:** schema v18 / save format v5  
-**Runtime target:** schema v19 / save format v6
+**Runtime baseline on `main`:** schema v18 / save format v5  
+**Delivered branch runtime:** schema v19 / save format v6
 
-## Authorized purpose
+## Delivered foundation
 
-Implement only the first bounded work item from the accepted `COMPLETE-ENDGAME-02` contract:
+PR #158 implements only the first bounded work item from the accepted `COMPLETE-ENDGAME-02` contract:
 
-- schema v19/save v6 final-project/result foundation and controlled v18/v5 migration;
-- persisted final-object state with bounded history and strict current-state validation;
-- positive Solar War qualification lookup and immutable qualification snapshot;
-- qualified ordinary Obelisk queueing through the existing building path;
-- final project start/cancel lifecycle;
-- immutable solo/alliance eligible-cohort snapshot;
-- contributions using only existing metal/crystal/gas from contributor-owned planets;
-- exact Gate funding target using existing calculated level-1 Gate cost;
-- automatic pre-funded transition into the existing Supreme Gate build queue/timing;
-- one active project per participation and host planet;
-- no ordinary transport widening.
+- schema v19/save v6 with controlled v18/v5 migration;
+- persisted final-object project state and persisted campaign-result shape with default `{ status: 'ongoing' }`;
+- strict malformed-current final-object/result rejection;
+- positive Solar War score qualification lookup and immutable qualification snapshot;
+- qualified faction Obelisk queueing through the ordinary construction command/path;
+- Supreme Galactic Gates remain unavailable through ordinary direct queueing;
+- one owner empire and host planet per project;
+- immutable sorted solo/alliance eligible-cohort snapshot at project start;
+- project start/cancel commands;
+- dedicated contribution command using only existing metal/crystal/gas from contributor-owned planets;
+- exact Gate funding target calculated from the existing faction Gate level-1 definition/profile;
+- bounded per-empire contribution totals plus newest-64 contribution/project histories;
+- exact fully-funded transition into the ordinary building queue, ordinary timing calculation and existing `BUILDING_COMPLETE` event machinery without double charging;
+- ordinary `CANCEL_BUILDING` cannot refund a pooled Gate; project cancellation removes funded construction without refunding contributed resources;
+- ordinary fleet transport/deploy semantics are unchanged.
 
-Authoritative contract:
-
-- `docs/audits/contracts/complete-endgame-02.md`
-
-Audit evidence:
-
-- `docs/audits/evidence/complete-endgame-02.md`
-
-## Expected implementation paths
-
-Create or equivalent bounded paths:
+## Implementation paths
 
 ```text
 src/simulation/endgame/finalObjects.ts
-src/simulation/endgame/finalObjectView.ts
-src/storage/migrateGameStateV19.ts
-tests/simulation/finalObjectFoundation.test.ts
-tests/storage/finalObjectMigration.test.ts
-```
-
-Expected modifications may include:
-
-```text
 src/simulation/endgame/types.ts
+src/simulation/planet/buildingQueue.ts
 src/simulation/types.ts
 src/simulation/createInitialGameState.ts
 src/simulation/reducer.ts
-src/simulation/planet/buildingOperations.ts
-src/simulation/history/stateHistory.ts
+src/storage/migrateGameStateV19.ts
 src/storage/types.ts
 src/storage/saveFormat.ts
-src/storage/runtimeMetadata.ts
-tests/simulation/buildingQueue.test.ts
-tests/storage/saveFormat.test.ts
-tests/simulation/stateHistoryRetention.test.ts
 ```
 
-The exact file map may narrow during implementation but may not widen beyond the #158 foundation contract.
+The shared `buildingQueue.ts` helper preserves the existing construction duration, research-speed and specialization-speed pipeline for both ordinary paid construction and the pre-funded Gate transition.
+
+## Validation added/updated
+
+New dedicated coverage:
+
+```text
+tests/simulation/finalObjectFoundation.test.ts
+tests/storage/finalObjectMigration.test.ts
+tests/audit/finalObjectFoundationGate.test.ts
+```
+
+The closure matrix explicitly proves all six player cases:
+
+```text
+Aegis solo
+Aegis alliance
+Synod solo
+Synod alliance
+Veyra solo
+Veyra alliance
+```
+
+Each case reaches exact pre-funded ordinary Gate construction and round-trips through the current save format. Alliance cases use a real second cohort member contribution before the owner completes funding.
+
+Existing migration/current-version tests were advanced from the previous schema v18/save v5 baseline to schema v19/save v6 without rewriting historical migration-stage assertions.
 
 ## Acceptance boundary
 
-Before #158 can leave draft, all three factions must reach funded Gate construction under both solo and alliance project snapshots through the same deterministic command/state path, with:
+Before #158 leaves draft, its exact final head must pass:
 
-- exact v18/v5 → v19/v6 migration;
-- save/load round trip and strict malformed-current rejection;
-- existing catalog costs/prerequisites/timing reused rather than copied;
-- bounded contribution/history state;
-- ordinary transport semantics unchanged;
-- existing gameplay/regression gates green.
+- CI including lint, typecheck, full tests, build and permanent progression;
+- campaign catch-up performance gates;
+- Browser E2E;
+- Graphify;
+- review-thread/review/mergeability inspection.
 
-## Explicit non-goals
+Only then may #158 be squash-merged and #159 be created as a draft scaffold from the generated fresh `main`.
 
-Not authorized in #158:
+## Explicit non-goals preserved
+
+Not implemented in #158:
 
 - Gate vulnerability/stabilization window;
 - Gate attack/destruction/rebuild combat integration;
 - terminal victory/defeat transition;
-- campaign clock freeze or `CAMPAIGN_TERMINAL` enforcement;
+- campaign clock freeze or global `CAMPAIGN_TERMINAL` enforcement;
 - terminal autosave/runtime backlog handling;
 - final-object Operations/Reports/HUD terminal UX;
 - bot endgame planning/perception;
 - new currency, alliance treasury, assets/catalogs, balance overhaul, multiplayer, seasons or M9 work.
 
-Those remain bound to later work items:
+Those remain sequentially reserved for:
 
 ```text
 #159 FINAL-GATE-VULNERABILITY
@@ -97,6 +104,6 @@ Those remain bound to later work items:
 
 No fifth implementation PR is authorized.
 
-## Current scaffold rule
+## Current next action
 
-This commit only records the first implementation boundary from fresh main after Audit #157. No simulation, storage, runtime or UI implementation is included yet.
+Complete exact-head gates and review/mergeability inspection for PR #158. Do not implement #159 before the generated #158 squash is on `main`.
