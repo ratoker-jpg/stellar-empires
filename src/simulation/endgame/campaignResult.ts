@@ -15,11 +15,12 @@ export function applyFinalGateStabilization(
   state: GameState,
   event: ScheduledGameEvent,
 ): GameState {
-  if (event.payload.type !== 'FINAL_GATE_STABILIZE') return state;
+  const payload = event.payload;
+  if (payload.type !== 'FINAL_GATE_STABILIZE') return state;
   if (state.campaignResult?.status !== 'ongoing') return state;
 
   const project = state.endgameFinalObjects?.activeProjects.find(
-    (candidate) => candidate.id === event.payload.projectId,
+    (candidate) => candidate.id === payload.projectId,
   );
   if (
     project === undefined ||
