@@ -17,7 +17,7 @@ This is the fourth and final bounded implementation-closure PR for `COMPLETE-END
 
 1. solo project: start → funding → ordinary Gate construction → vulnerable → stabilize → terminal victory;
 2. alliance project: member contribution → funding → construction → vulnerable → stabilize → immutable winning cohort victory;
-3. save/load evidence before funding, during construction and vulnerability, plus exact whole-state equality after terminal victory;
+3. save/load evidence before funding, during construction and vulnerability, plus persisted terminal result/final-project evidence and exact frozen clock after victory;
 4. exact direct/chunk equality before, at and after the terminal boundary;
 5. actual scheduled `FLEET_ARRIVE` versus `FINAL_GATE_STABILIZE` at the same second in both sequence orders;
 6. attack-first vulnerable Gate destruction → zero-contribution funding reset → rebuild → later stabilization victory;
@@ -25,9 +25,9 @@ This is the fourth and final bounded implementation-closure PR for `COMPLETE-END
 8. ordinary random demolition at the exact 20-point threshold cannot select the final Obelisk or Gate;
 9. post-terminal gameplay rejection and higher-level zero-step time freeze remain intact.
 
-Permanent #160 tests continue to cover due pending events/logistics/world/bot inactivity, all gameplay command families returning `CAMPAIGN_TERMINAL`, active/offline wall-clock backlog consumption, resumable partition equality, immediate durable terminal autosave and existing terminal UI/reload behavior. #159 Gate vulnerability/destruction regression tests remain in the full suite.
+Permanent #160 tests continue to cover due pending events/logistics/world/bot inactivity, all gameplay command families returning `CAMPAIGN_TERMINAL`, active/offline wall-clock backlog consumption, resumable partition equality, immediate durable terminal autosave, **exact whole-state terminal save/load equality**, and existing terminal UI/reload behavior. #159 Gate vulnerability/destruction regression tests remain in the full suite.
 
-The initial closure-suite run exposed two **test-fixture** issues only: save normalization correctly canonicalized artificially inflated test economy, and the reconstructed Gate host needed explicit test-resource replenishment before a second full Gate funding cycle. The fixtures were corrected. No simulation/runtime production defect or accepted-contract divergence was found.
+Closure development exposed three **test-fixture** assumptions only: save normalization canonicalized artificially inflated test economy; the reconstructed Gate host needed explicit test-resource replenishment before a second full Gate funding cycle; and a synthetic world event happened to end exactly at the closure fixture's terminal second, so save loading legitimately normalized that unrelated world-event snapshot. The closure test now asserts persisted endgame evidence plus the exact frozen terminal clock, while the dedicated #160 whole-state terminal round-trip remains the canonical exact-state proof. No simulation/runtime production defect or accepted-contract divergence was found.
 
 ## Browser evidence
 
