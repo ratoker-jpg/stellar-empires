@@ -113,6 +113,10 @@ export type GameEventPayload =
       readonly cycleId: string;
     }
   | {
+      readonly type: 'FINAL_GATE_STABILIZE';
+      readonly projectId: string;
+    }
+  | {
       readonly type: 'WORLD_EVENT_END';
       readonly instanceId: string;
     }
