@@ -218,12 +218,13 @@ export function advanceCampaignRuntimeCheckpoint(
     mapping.wholeGameSeconds,
     operationBudget === undefined ? {} : { operationBudget },
   );
+  const terminal = advance.state.campaignResult?.status === 'terminal';
 
   let processedRealDurationMilliseconds: number;
   let finalFractionNumerator: number;
   if (advance.complete) {
     processedRealDurationMilliseconds = pending.remainingRealDurationMilliseconds;
-    finalFractionNumerator = mapping.gameTimeFractionNumerator;
+    finalFractionNumerator = terminal ? 0 : mapping.gameTimeFractionNumerator;
   } else {
     const processed = mapProcessedGameTimeToRealDuration(
       advance.processedGameSeconds,
