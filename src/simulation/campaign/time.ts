@@ -10,10 +10,9 @@ import type { LogisticsDepartureReceipt } from '../logistics/types';
 import { getNextWorldEventEvaluationAt } from '../pve/worldEvents';
 import { executeAdvanceTimeWithTelemetry } from '../reducer';
 import type { ExecutedGameEvent, GameState } from '../types';
+import { accumulateCampaignTransition } from './catchUpAccumulator';
 import {
   createEmptyCatchUpSummary,
-  mergeCatchUpSummaries,
-  summarizeCampaignTransition,
   type CampaignCatchUpSummary,
 } from './catchUpSummary';
 import type { WorldSpeed } from './settings';
@@ -22,7 +21,6 @@ export const GAME_TIME_FRACTION_DENOMINATOR = 1_000;
 export const DEFAULT_CAMPAIGN_OPERATION_BUDGET = 256;
 
 const NO_EXECUTED_EVENTS: readonly ExecutedGameEvent[] = [];
-const NO_BOT_AUDIT: readonly BotSchedulerAuditEntry[] = [];
 const NO_COMMAND_LOG: GameState['commandLog'] = [];
 
 interface ScheduledBotDecision {
@@ -237,7 +235,7 @@ export function advanceCampaignTime(
 
   let working = state;
   let operationsProcessed = 0;
-  let summary = createEmptyCatchUpSummary();
+  const summary = createEmptyCatchUpSummary();
   const botAudit: BotSchedulerAuditEntry[] = [];
   const botDiagnostics: BotSchedulerDiagnosticEntry[] = [];
 
@@ -272,15 +270,12 @@ export function advanceCampaignTime(
       const before = working;
       const advanced = advanceNonBotTime(working, nextBoundaryAt - currentTime);
       working = advanced.state;
-      summary = mergeCatchUpSummaries(
+      accumulateCampaignTransition(
         summary,
-        summarizeCampaignTransition(
-          before,
-          working,
-          advanced.events,
-          NO_BOT_AUDIT,
-          advanced.logisticsReceipts,
-        ),
+        before,
+        working,
+        advanced.events,
+        advanced.logisticsReceipts,
       );
       operationsProcessed += 1;
       if (operationsProcessed >= operationBudget) break;
