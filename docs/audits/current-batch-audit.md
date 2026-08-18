@@ -2,7 +2,7 @@
 
 **Status:** `COMPLETE-ENDGAME-02` is in its authorized final closure PR #161 `ENDGAME-TERMINAL-GATE`  
 **Updated:** 2026-08-19  
-**Audit #157 squash:** `7750cdb83b58e95f790351b306e9cf5b34400f8fa6d`  
+**Audit #157 squash:** `7750cdb83b58e95f790351b306e9cf5b344bd780`  
 **Fresh main / #161 baseline:** `8ad44509426e4bb9555a8a6133e1dbdb899dccae`  
 **Runtime:** schema v19 / save format v6  
 **Critical unknowns:** 0
