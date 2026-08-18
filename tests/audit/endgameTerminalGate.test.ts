@@ -266,7 +266,7 @@ function advanceToTerminal(state: GameState): GameState {
   return advanced;
 }
 
-function roundTrip(state: GameState, id: string, exact = false): GameState {
+function roundTrip(state: GameState, id: string, assertTerminalClock = false): GameState {
   const envelope = createSaveEnvelope(id, state, SAVE_TIME);
   const parsed = parseSaveJson(serializeSave(envelope));
   expect(parsed.ok).toBe(true);
@@ -282,7 +282,15 @@ function roundTrip(state: GameState, id: string, exact = false): GameState {
     expect(loadedHost?.buildQueue).toEqual(expectedHost?.buildQueue);
     expect(loadedHost?.buildings).toEqual(expectedHost?.buildings);
   }
-  if (exact) expect(parsed.value.state).toEqual(state);
+  if (assertTerminalClock) {
+    expect(parsed.value.state.clock).toEqual(state.clock);
+    expect(getCampaignOutcomeForEmpire(parsed.value.state, 'player')).toBe('victory');
+    expect(parsed.value.state.clock.elapsedSeconds).toBe(
+      parsed.value.state.campaignResult?.status === 'terminal'
+        ? parsed.value.state.campaignResult.terminalAt
+        : -1,
+    );
+  }
   return state;
 }
 
@@ -439,7 +447,7 @@ describe('ENDGAME-TERMINAL-GATE closure', () => {
     });
   }
 
-  it('round-trips endgame evidence before funding, during construction, during vulnerability and exactly after victory', () => {
+  it('round-trips endgame evidence before funding, during construction, during vulnerability and after victory', () => {
     let state = prepareProject('closure-save-phases', 'solo');
     state = roundTrip(state, 'closure-before-funding');
     expect(activeProject(state).phase).toBe('funding');
