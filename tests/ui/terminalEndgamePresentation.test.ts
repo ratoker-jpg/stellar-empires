@@ -67,6 +67,10 @@ function terminalViewState(seed = 'terminal-ui'): GameState {
 describe('terminal endgame presentation', () => {
   it('shows project identity, host, funding, deadline and terminal victory without offering gameplay actions', () => {
     const state = terminalViewState();
+    const terminal = state.campaignResult;
+    if (terminal?.status !== 'terminal') throw new Error('Terminal UI result missing.');
+    const host = state.planets.find((planet) => planet.id === terminal.hostPlanetId);
+    if (host === undefined) throw new Error('Terminal UI host planet missing.');
     const operations = createEndgameOperationsViewModel(state);
     const project = operations.finalProjects[0];
 
@@ -78,6 +82,7 @@ describe('terminal endgame presentation', () => {
     });
     expect(project).toMatchObject({
       id: 'ui-final-project',
+      hostPlanetId: terminal.hostPlanetId,
       phase: 'vulnerable',
       phaseLabel: 'Уязвимость Врат',
       fundingPercent: 100,
@@ -86,22 +91,19 @@ describe('terminal endgame presentation', () => {
       viewerEligible: true,
       terminalWinner: true,
     });
-    expect(project?.hostLabel).toContain(state.campaignResult!.status === 'terminal'
-      ? state.campaignResult.hostPlanetId
-      : '');
+    expect(project?.hostLabel).toContain(host.name);
     expect(operations.canCreateAlliance).toBe(false);
     expect(operations.canLeaveAlliance).toBe(false);
     expect(operations.eligibleFleets).toEqual([]);
     expect(createEndgamePanelSummary(operations, 'solar-war').primaryAction).toBeNull();
-    expect(createGlobalHudViewModel(state, state.campaignResult!.status === 'terminal'
-      ? state.campaignResult.hostPlanetId
-      : '').terminal?.outcome).toBe('victory');
+    expect(createGlobalHudViewModel(state, terminal.hostPlanetId).terminal?.outcome).toBe('victory');
   });
 
   it('shows defeat strictly from persisted winningEmpireIds', () => {
     const initial = createInitialGameState('terminal-ui-defeat');
     const winnerHost = initial.planets.find((planet) => planet.ownerEmpireId === 'aegis-bot');
-    if (winnerHost === undefined) throw new Error('Bot host missing.');
+    const playerHost = initial.planets.find((planet) => planet.ownerEmpireId === 'player');
+    if (winnerHost === undefined || playerHost === undefined) throw new Error('Terminal UI fixture host missing.');
     const state: GameState = {
       ...initial,
       campaignResult: {
@@ -116,7 +118,7 @@ describe('terminal endgame presentation', () => {
       },
     };
     expect(createCampaignTerminalPresentation(state)?.outcome).toBe('defeat');
-    expect(createGlobalHudViewModel(state, initial.planets.find((planet) => planet.ownerEmpireId === 'player')!.id).terminal?.outcomeLabel).toBe('Поражение');
+    expect(createGlobalHudViewModel(state, playerHost.id).terminal?.outcomeLabel).toBe('Поражение');
   });
 
   it('reconstructs identical terminal presentation after save/load', () => {
