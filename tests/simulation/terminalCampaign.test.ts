@@ -25,7 +25,7 @@ function vulnerableFixture(seed = 'terminal-campaign') {
   const queueItemId = 'build-terminal-gate';
   const completesAt = initial.clock.elapsedSeconds + 5;
   const project: FinalObjectProject = {
-    id: 'terminal-project-1',
+    id: 'final-project-1',
     ownerEmpireId: 'player',
     ownerPlanetId: host.id,
     factionId: host.factionId,
@@ -100,7 +100,7 @@ function stabilize(seed = 'terminal-stabilize') {
   });
   const terminal = result.state.campaignResult;
   if (terminal?.status !== 'terminal') throw new Error('Fixture did not terminate.');
-  return { ...fixture, result, terminal, remaining };
+  return { ...fixture, state: result.state, result, terminal, remaining };
 }
 
 function terminalCommands(): readonly GameCommand[] {
