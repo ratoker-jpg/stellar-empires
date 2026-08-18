@@ -177,16 +177,18 @@ describe('terminal campaign contract', () => {
 
   it('keeps stale stabilization inert', () => {
     const fixture = vulnerableFixture('terminal-stale');
+    const {
+      vulnerabilityStartedAt,
+      stabilizesAt,
+      ...fundingProject
+    } = fixture.project;
+    void vulnerabilityStartedAt;
+    void stabilizesAt;
     const staleState: GameState = {
       ...fixture.state,
       endgameFinalObjects: {
         ...fixture.state.endgameFinalObjects!,
-        activeProjects: [{
-          ...fixture.project,
-          phase: 'funding',
-          vulnerabilityStartedAt: undefined,
-          stabilizesAt: undefined,
-        }],
+        activeProjects: [{ ...fundingProject, phase: 'funding' }],
       },
     };
     const remaining = fixture.project.stabilizesAt! - staleState.clock.elapsedSeconds;
