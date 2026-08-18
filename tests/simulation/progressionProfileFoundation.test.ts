@@ -21,7 +21,7 @@ describe('progression profile foundation', () => {
       campaignSettings: createCampaignSettings({ progressionProfile: 'legacy-v1' }),
     });
 
-    expect(compressed.schemaVersion).toBe(18);
+    expect(compressed.schemaVersion).toBe(19);
     expect(compressed.campaignSettings.progressionProfile).toBe('compressed-v1');
     expect(legacy.campaignSettings.progressionProfile).toBe('legacy-v1');
     expect(createStateChecksum(compressed)).not.toBe(createStateChecksum(legacy));
