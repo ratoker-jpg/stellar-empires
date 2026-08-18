@@ -82,7 +82,7 @@ The closure PR adds no gameplay mechanic. Its dedicated audit suite composes the
 
 - solo start → funding → construction → vulnerability → stabilization → terminal victory;
 - alliance start → contributed funding → construction → vulnerability → stabilization → terminal victory with immutable winning cohort;
-- save/load evidence before funding, during construction, during vulnerability and exact whole-state equality after victory;
+- save/load evidence before funding, during construction and vulnerability, plus persisted terminal result/final-project evidence and exact frozen clock after victory;
 - exact direct/chunk equality before, at and after the terminal boundary;
 - actual scheduled `FLEET_ARRIVE` versus `FINAL_GATE_STABILIZE` same-second races in both sequence orders;
 - attack-first Gate destruction followed by funding/build/re-stabilization recovery;
@@ -90,7 +90,7 @@ The closure PR adds no gameplay mechanic. Its dedicated audit suite composes the
 - ordinary random demolition isolation at the exact 20-point qualifying threshold;
 - post-terminal gameplay rejection and zero-step time freeze.
 
-Permanent #160 coverage remains part of the combined gate for due events/logistics/world/bots, active/offline backlog consumption, autosave, UI/reload and Gate vulnerability/destruction regressions.
+Permanent #160 coverage remains part of the combined gate for exact whole-state terminal save/load equality, due events/logistics/world/bots, active/offline backlog consumption, autosave, UI/reload and Gate vulnerability/destruction regressions.
 
 Browser E2E remains the canonical UI evidence. PR #161 also retains the Playwright report as an Actions artifact on successful runs so the closure has a downloadable success artifact rather than failure-only evidence.
 
