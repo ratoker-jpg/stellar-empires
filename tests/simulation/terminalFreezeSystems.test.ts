@@ -5,9 +5,10 @@ import type { GameState, ScheduledGameEvent } from '../../src/simulation/types';
 
 function createTerminalStateWithDueSystems(): GameState {
   const initial = createInitialGameState('terminal-freeze-due-systems');
-  const playerPlanets = initial.planets.filter((planet) => planet.ownerEmpireId === 'player');
-  if (playerPlanets.length < 2) {
-    throw new Error('Terminal freeze fixture requires two player planets.');
+  const playerPlanet = initial.planets.find((planet) => planet.ownerEmpireId === 'player');
+  const otherPlanet = initial.planets.find((planet) => planet.id !== playerPlanet?.id);
+  if (playerPlanet === undefined || otherPlanet === undefined) {
+    throw new Error('Terminal freeze fixture requires two planets.');
   }
   const terminalAt = initial.clock.elapsedSeconds;
   const pendingEvent: ScheduledGameEvent = {
@@ -24,7 +25,7 @@ function createTerminalStateWithDueSystems(): GameState {
       winningParticipationId: 'player',
       winningEmpireIds: ['player'],
       ownerEmpireId: 'player',
-      hostPlanetId: playerPlanets[0]!.id,
+      hostPlanetId: playerPlanet.id,
       terminalAt,
       reason: 'final-gate-stabilized',
     },
@@ -33,8 +34,8 @@ function createTerminalStateWithDueSystems(): GameState {
     logisticsRoutes: [{
       id: 'route-terminal-due',
       empireId: 'player',
-      originPlanetId: playerPlanets[0]!.id,
-      targetPlanetId: playerPlanets[1]!.id,
+      originPlanetId: playerPlanet.id,
+      targetPlanetId: otherPlanet.id,
       resourceId: 'metal',
       amountPerTrip: 1,
       originReserve: 0,
