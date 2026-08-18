@@ -45,7 +45,7 @@ No fifth implementation PR is authorized.
 - ordinary transport behavior unchanged;
 - all three factions × solo/alliance funded-Gate construction acceptance matrix.
 
-Product-code/test closure head before final documentation: `93be3b90bf46409fe257c3819c3f6a1c8e9fcb2a`.
+Implementation/test closure head before final source-of-truth sync: `a3e191bac4ced5402507d887fd182d9e33830d25`.
 
 ## Explicitly still not authorized/delivered in #158
 
