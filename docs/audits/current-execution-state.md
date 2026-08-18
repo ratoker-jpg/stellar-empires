@@ -1,85 +1,98 @@
 # Current execution state
 
-**Updated:** 2026-08-18  
-**Safe to continue:** yes, only final validation/merge of PR #160 `TERMINAL-RUNTIME-UX`; #161 implementation must not start before #160 squash merge
+**Updated:** 2026-08-19  
+**Safe to continue:** yes, only PR #161 `ENDGAME-TERMINAL-GATE` closure inside accepted `COMPLETE-ENDGAME-02`
 
 | Field | Current value |
 |---|---|
-| Verified `main` baseline | `466e5ea161a005eeb792d5440dc27d960b37b2f2` |
-| Last merged PR | #159 `FINAL-GATE-VULNERABILITY` |
+| Verified fresh `main` baseline | `8ad44509426e4bb9555a8a6133e1dbdb899dccae` |
+| Last merged PR | #160 `TERMINAL-RUNTIME-UX` |
 | #158 squash SHA | `a66a05fd433893f4a6f15cd8d9fd53ea31d793f9` |
-| #159 squash SHA / current `main` | `466e5ea161a005eeb792d5440dc27d960b37b2f2` |
-| Active work | #160 `TERMINAL-RUNTIME-UX` implementation and acceptance coverage complete; final exact-head validation pending |
-| Active branch | `agent/terminal-runtime-ux` |
-| Exact #160 branch baseline | `466e5ea161a005eeb792d5440dc27d960b37b2f2` |
-| Last fully validated code/UX head before source-of-truth sync | `554c4a1caf6e24f4d84a285ba426a39e95d7dd87` |
-| Implementation/test closure head before source-of-truth sync | `2cffc2800298ef8b57c9f1fa049561d0da540ddd` |
-| Runtime on `main` and #160 | schema v19 / save format v6 |
-| Current implementation authorized | **yes, #160 only** |
-| #160 implementation complete | **yes; final exact-head gates still required** |
-| Next authorized PR | #161 `ENDGAME-TERMINAL-GATE`, scaffold only after #160 merge |
+| #159 squash SHA | `466e5ea161a005eeb792d5440dc27d960b37b2f2` |
+| #160 final validated head | `ceacdb2b8d2ab71f359def00d5113057fbab49eb` |
+| #160 squash SHA / current `main` | `8ad44509426e4bb9555a8a6133e1dbdb899dccae` |
+| Active work | #161 `ENDGAME-TERMINAL-GATE` closure tests/evidence/docs only |
+| Active branch | `agent/endgame-terminal-gate` |
+| Exact #161 branch baseline | `8ad44509426e4bb9555a8a6133e1dbdb899dccae` |
+| Runtime | schema v19 / save format v6 |
+| Current implementation authorized | **yes, #161 closure only** |
+| New gameplay mechanics authorized in #161 | **no** |
+| Next implementation after #161 | **none until a new Audit is accepted** |
+| Next required Audit | `COMPLETE-ENDGAME-03` |
 
 ## Audit #157 authority
 
-`COMPLETE-ENDGAME-02` remains authoritative:
+`COMPLETE-ENDGAME-02` remains authoritative until #161 squash merge:
 
 - contract: `docs/audits/contracts/complete-endgame-02.md`;
 - evidence: `docs/audits/evidence/complete-endgame-02.md`;
-- Audit squash SHA: `7750cdb83b58e95f790351b306e9cf5b344bd780`.
-
-Critical unknowns: **0**.
+- Audit squash SHA: `7750cdb83b58e95f790351b306e9cf5b344bd780`;
+- critical unknowns: **0**.
 
 ## Accepted Stage-2 sequence
 
 ```text
-#158 FINAL-OBJECT-FOUNDATION          merged → a66a05fd433893f4a6f15cd8d9fd53ea31d793f9
-→ #159 FINAL-GATE-VULNERABILITY      merged → 466e5ea161a005eeb792d5440dc27d960b37b2f2
-→ #160 TERMINAL-RUNTIME-UX           active, implementation complete
-→ #161 ENDGAME-TERMINAL-GATE         planned closure scaffold after #160 merge
+#158 FINAL-OBJECT-FOUNDATION       merged → a66a05fd433893f4a6f15cd8d9fd53ea31d793f9
+→ #159 FINAL-GATE-VULNERABILITY   merged → 466e5ea161a005eeb792d5440dc27d960b37b2f2
+→ #160 TERMINAL-RUNTIME-UX        merged → 8ad44509426e4bb9555a8a6133e1dbdb899dccae
+→ #161 ENDGAME-TERMINAL-GATE      active closure PR
 ```
 
-No fifth implementation PR is authorized.
+No fifth `COMPLETE-ENDGAME-02` implementation PR is authorized.
 
-## Delivered through #159
+## Delivered through #160
 
-- persisted schema-v19/save-v6 final-project foundation and qualification/contribution ledger;
-- existing Gate build queue/timing integration;
-- exact 86,400-second vulnerable window;
-- canonical `executeAt → sequence` stabilization ordering;
-- ordinary `ATTACK` Gate destruction requiring a surviving planet destroyer;
-- destroyed Gate project reset/rebuild with no contribution refund;
-- save/load and direct/chunk determinism for vulnerability/destruction.
+- schema v19/save v6 final-project persistence and controlled migration;
+- immutable Solar War qualification, solo/alliance participation identity and eligible cohort snapshot;
+- functional existing Obelisks and Gate funding/construction using existing resources and ordinary building timing;
+- exact 86,400-second Gate vulnerability;
+- ordinary `ATTACK` + surviving Planet Destroyer Gate destruction, no-refund reset/rebuild and host-loss cancellation;
+- canonical same-second `executeAt → sequence` ordering;
+- immutable persisted terminal campaign result from valid stabilization;
+- exact permanent terminal clock freeze with pending queues/events/fleets retained as inert evidence;
+- global `CAMPAIGN_TERMINAL` gameplay mutation rejection;
+- active/offline wall-clock backlog consumption without post-terminal GameState advance;
+- immediate durable terminal autosave/checkpoint and exact reload;
+- terminal victory/defeat sourced only from persisted winning cohort;
+- final-project and terminal presentation in existing Operations, Reports, HUD and return-summary surfaces;
+- mobile/reduced-motion/reload Browser coverage.
 
-## Delivered on #160
+#160 exact-head closeout evidence:
 
-- persisted immutable terminal `campaignResult` from valid `FINAL_GATE_STABILIZE`;
-- stale stabilization inert and exact terminal timestamp;
-- winning participation/cohort/owner/host persisted as terminal source of truth;
-- global `CAMPAIGN_TERMINAL` gameplay-command guard;
-- exact terminal simulation freeze with pending queues retained as inert evidence;
-- no post-terminal events, logistics, world events, bots or fleet movement;
-- already-terminal higher-level advance completes with zero processed game seconds and unchanged state;
-- active/offline terminal catch-up consumes remaining real-time backlog without further GameState advance;
-- fixed-point remainder normalization, cursor-to-target completion and resumable partition equality;
-- immediate durable terminal autosave/checkpoint and reload-safe state;
-- victory/defeat from persisted winning cohort only;
-- existing Operations, Reports, Global HUD and return-summary terminal/final-project presentation;
-- mobile/reduced-motion/reload Browser coverage;
-- explicit already-due system freeze test plus #159 vulnerability/destruction regression coverage.
+```text
+head               ceacdb2b8d2ab71f359def00d5113057fbab49eb
+CI                 32183750544 — success
+Browser E2E        32183750392 — success · 34/34
+Graphify           32183750396 — success
+Tests              663 passed / 1 skipped
+1 campaign day        4.620 s < 15 s
+7 campaign days      22.971 s < 30 s
+Squash/main        8ad44509426e4bb9555a8a6133e1dbdb899dccae
+```
 
-Bot final-object planning/perception is **not** part of #160 and remains reserved for `COMPLETE-ENDGAME-03`.
+## PR #161 closure scope
 
-## Pre-sync validation evidence
+#161 must not invent mechanics. It composes the delivered system and closes missing acceptance proof for:
 
-Exact head `554c4a1caf6e24f4d84a285ba426a39e95d7dd87` passed CI, 161 test files / 662 tests, build, Graphify, compressed progression and permanent performance (`5.657 s` one day / `28.882 s` seven days). Browser E2E concluded success with all terminal Gate checks passing; one unrelated existing mobile-overflow assertion passed on retry.
+- solo and alliance full Gate-to-terminal paths;
+- save/load across funding/building/vulnerable/terminal phases;
+- direct/chunk equality before, at and after terminal;
+- actual same-second attack/stabilization order in both sequence directions;
+- Gate destruction → rebuild → later victory;
+- host loss → fresh surviving-host project → later victory;
+- ordinary random demolition isolation for final buildings;
+- permanent terminal command/event/logistics/world/bot/time freeze regressions;
+- Browser terminal/reload/mobile/reduced-motion evidence plus retained success artifact;
+- batch archive/status/continuation synchronization.
 
-An additional explicit due-system terminal-freeze test was added at `2cffc2800298ef8b57c9f1fa049561d0da540ddd`. This source-of-truth sync changes the head again, so all merge gates must be evaluated only on the final exact PR #160 SHA.
+Bot final-object/Solar-War planning and allied-information perception remain explicitly outside #161 and belong to `COMPLETE-ENDGAME-03`.
 
 ## Exact next action
 
-1. Fetch the final exact #160 head after source-of-truth sync.
-2. Require Main CI, Browser E2E, Graphify, compressed progression and permanent performance all green on that exact SHA.
-3. Require no unresolved review threads/blocking reviews, unchanged exact base `466e5ea161a005eeb792d5440dc27d960b37b2f2`, and mergeable PR.
-4. Mark #160 Ready and squash-merge using the expected exact head SHA.
-5. Verify the generated squash SHA is the new exact `main`.
-6. Create **only** Draft scaffold #161 `ENDGAME-TERMINAL-GATE` from fresh `main`; do not begin #161 implementation in this closeout step.
+1. Finish the #161 closure suite and documentation without widening scope.
+2. Freeze one exact final #161 head.
+3. Require Main CI, Browser E2E with retained Playwright artifact, Graphify, compressed progression and permanent performance green on that same SHA.
+4. Require unresolved review threads = 0, submitted/blocking reviews = 0, exact base still `8ad44509426e4bb9555a8a6133e1dbdb899dccae`, and mergeable = true.
+5. Mark #161 Ready and squash-merge with expected-head protection.
+6. Verify the generated squash is fresh `main`.
+7. Do **not** start bot endgame implementation. The next gameplay work must begin with a separate `COMPLETE-ENDGAME-03` Audit from the generated #161 squash.
