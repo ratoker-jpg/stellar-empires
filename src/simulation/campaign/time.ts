@@ -21,6 +21,9 @@ import type { WorldSpeed } from './settings';
 export const GAME_TIME_FRACTION_DENOMINATOR = 1_000;
 export const DEFAULT_CAMPAIGN_OPERATION_BUDGET = 256;
 
+const NO_EXECUTED_EVENTS: readonly ExecutedGameEvent[] = [];
+const NO_BOT_AUDIT: readonly BotSchedulerAuditEntry[] = [];
+
 export interface RealToGameTimeMapping {
   readonly wholeGameSeconds: number;
   readonly gameTimeFractionNumerator: number;
@@ -154,7 +157,11 @@ function newExecutedEvents(
 ): readonly ExecutedGameEvent[] {
   const lastExistingId = before.eventLog.at(-1)?.event.id;
   if (lastExistingId === undefined) return after.eventLog;
-  for (let index = after.eventLog.length - 1; index >= 0; index -= 1) {
+  const afterLength = after.eventLog.length;
+  if (after.eventLog[afterLength - 1]?.event.id === lastExistingId) {
+    return NO_EXECUTED_EVENTS;
+  }
+  for (let index = afterLength - 2; index >= 0; index -= 1) {
     if (after.eventLog[index]?.event.id === lastExistingId) {
       return after.eventLog.slice(index + 1);
     }
@@ -258,7 +265,7 @@ export function advanceCampaignTime(
           before,
           working,
           advanced.events,
-          [],
+          NO_BOT_AUDIT,
           advanced.logisticsReceipts,
         ),
       );
