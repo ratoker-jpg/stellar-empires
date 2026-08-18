@@ -4,6 +4,10 @@ import {
   type CampaignSettings,
 } from './campaign/settings';
 import { createInitialCommandStates } from './command/commandDoctrine';
+import {
+  createInitialCampaignResult,
+  createInitialEndgameFinalObjectState,
+} from './endgame/finalObjects';
 import { createInitialEndgameParticipationState } from './endgame/participation';
 import { createInitialIntelligenceStates } from './intelligence/intelligenceState';
 import { createInitialMarketState } from './market/market';
@@ -63,7 +67,7 @@ export function createInitialGameState(
   );
   const neutralForces = createInitialNeutralForces(galaxy, seed);
   return {
-    schemaVersion: 18,
+    schemaVersion: 19,
     seed,
     campaignSettings,
     clock: {
@@ -87,6 +91,8 @@ export function createInitialGameState(
     worldEvents: createInitialWorldEventState(),
     pveMeta: createInitialPveMetaState(empires),
     endgameParticipation: createInitialEndgameParticipationState(empires),
+    endgameFinalObjects: createInitialEndgameFinalObjectState(),
+    campaignResult: createInitialCampaignResult(),
     botAutomation: createInitialBotAutomationState(empires, 0),
     nextEventSequence: 0,
     pendingEvents: [],
