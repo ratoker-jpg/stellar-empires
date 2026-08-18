@@ -13,7 +13,12 @@ const SAVE_TIME = '2026-08-02T20:00:00.000Z';
 
 function legacyV4Save(seed: string) {
   const current = createInitialGameState(seed);
-  const { endgameParticipation: _participation, ...legacyShell } = current;
+  const {
+    endgameParticipation: _participation,
+    endgameFinalObjects: _endgameFinalObjects,
+    campaignResult: _campaignResult,
+    ...legacyShell
+  } = current;
   const state = { ...legacyShell, schemaVersion: 17 as const };
   const runtimeMetadata = createCampaignRuntimeMetadata(SAVE_TIME);
   const envelope = {
@@ -30,14 +35,14 @@ function legacyV4Save(seed: string) {
 }
 
 describe('endgame participation persistence migration', () => {
-  it('migrates valid schema-v17/save-v4 campaigns with every empire independent', () => {
+  it('migrates valid schema-v17/save-v4 campaigns to current v19/v6 with every empire independent', () => {
     const legacy = legacyV4Save('endgame-participation-migration');
     const parsed = parseSaveJson(JSON.stringify(legacy));
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
 
-    expect(parsed.value.formatVersion).toBe(5);
-    expect(parsed.value.state.schemaVersion).toBe(18);
+    expect(parsed.value.formatVersion).toBe(6);
+    expect(parsed.value.state.schemaVersion).toBe(19);
     expect(parsed.value.runtimeMetadata).toEqual(legacy.runtimeMetadata);
     expect(parsed.value.state.endgameParticipation).toEqual({
       alliances: [],
@@ -52,9 +57,11 @@ describe('endgame participation persistence migration', () => {
       nextMembershipHistorySequence: 0,
       solarWar: { activeEntries: [], history: [] },
     });
+    expect(parsed.value.state.endgameFinalObjects?.activeProjects).toEqual([]);
+    expect(parsed.value.state.campaignResult).toEqual({ status: 'ongoing' });
   });
 
-  it('same-schema migrates pre-Solar-War v18/v5 saves without changing membership', () => {
+  it('same-schema migrates pre-Solar-War participation without changing membership', () => {
     let state = createInitialGameState('endgame-participation-v18-upgrade');
     const created = executeCommand(state, {
       type: 'CREATE_ALLIANCE',
@@ -87,7 +94,7 @@ describe('endgame participation persistence migration', () => {
     });
   });
 
-  it('round-trips alliance membership and checksum-covered history in save format v5', () => {
+  it('round-trips alliance membership and checksum-covered history in save format v6', () => {
     let state = createInitialGameState('endgame-participation-round-trip');
     const created = executeCommand(state, {
       type: 'CREATE_ALLIANCE',
@@ -106,14 +113,14 @@ describe('endgame participation persistence migration', () => {
     if (!joined.ok) return;
     state = joined.value;
 
-    const save = createSaveEnvelope('participation-v5', state, SAVE_TIME);
-    expect(save.formatVersion).toBe(5);
+    const save = createSaveEnvelope('participation-v6', state, SAVE_TIME);
+    expect(save.formatVersion).toBe(6);
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
-  it('rejects malformed schema-v18 participation even with a matching checksum', () => {
+  it('rejects malformed current participation even with a matching checksum', () => {
     const state = createInitialGameState('endgame-participation-malformed');
-    const save = createSaveEnvelope('malformed-v5', state, SAVE_TIME);
+    const save = createSaveEnvelope('malformed-v6', state, SAVE_TIME);
     const participants = state.endgameParticipation?.participants ?? [];
     const malformedState = {
       ...state,
