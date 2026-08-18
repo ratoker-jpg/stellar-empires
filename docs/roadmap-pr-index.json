@@ -18,7 +18,7 @@
   "activeBatchId": "COMPLETE-ENDGAME-02",
   "activeWorkItem": "FINAL-OBJECT-FOUNDATION",
   "activeBranch": "agent/final-object-foundation",
-  "activeProductCodeHead": "93be3b90bf46409fe257c3819c3f6a1c8e9fcb2a",
+  "activeProductCodeHead": "a3e191bac4ced5402507d887fd182d9e33830d25",
   "implementationAuthorized": true,
   "nextPr": 159,
   "nextPrKind": "implementation-after-pr158-merge",
@@ -93,7 +93,7 @@
     {"number":155,"kind":"implementation","workItem":"ENDGAME-OPERATIONS-UX","status":"merged","mergeSha":"a5c72562200c2a6dfdc49f1e4f07e8a869a6558d"},
     {"number":156,"kind":"implementation-closure","workItem":"ENDGAME-PARTICIPATION-GATE","title":"Close endgame participation foundation","status":"merged","mergeSha":"c2fcaf39402392f0ebbad297d88f9689f4165e4c"},
     {"number":157,"kind":"audit","batchId":"COMPLETE-ENDGAME-02","workItem":"COMPLETE-ENDGAME-02-AUDIT","title":"Audit final objects and terminal campaign result","status":"merged","mergeSha":"7750cdb83b58e95f790351b306e9cf5b344bd780","implementationAuthorized":true},
-    {"number":158,"kind":"implementation","workItem":"FINAL-OBJECT-FOUNDATION","title":"Build final-object foundation","status":"implementation-complete-awaiting-final-gates","implementationStarted":true,"productCodeHead":"93be3b90bf46409fe257c3819c3f6a1c8e9fcb2a"},
+    {"number":158,"kind":"implementation","workItem":"FINAL-OBJECT-FOUNDATION","title":"Build final-object foundation","status":"implementation-complete-awaiting-final-gates","implementationStarted":true,"productCodeHead":"a3e191bac4ced5402507d887fd182d9e33830d25"},
     {"number":159,"kind":"implementation","workItem":"FINAL-GATE-VULNERABILITY","status":"planned-after-pr158-merge"},
     {"number":160,"kind":"implementation","workItem":"TERMINAL-RUNTIME-UX","status":"planned"},
     {"number":161,"kind":"implementation-closure","workItem":"ENDGAME-TERMINAL-GATE","status":"planned"}
