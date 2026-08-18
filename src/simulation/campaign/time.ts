@@ -118,8 +118,13 @@ export function mapProcessedGameTimeToRealDuration(
 }
 
 function earliest(values: readonly (number | undefined)[]): number | undefined {
-  const defined = values.filter((value): value is number => value !== undefined);
-  return defined.length === 0 ? undefined : Math.min(...defined);
+  let result: number | undefined;
+  for (const value of values) {
+    if (value !== undefined && (result === undefined || value < result)) {
+      result = value;
+    }
+  }
+  return result;
 }
 
 function newExecutedEvents(
@@ -193,7 +198,7 @@ export function advanceCampaignTime(
   const botAudit: BotSchedulerAuditEntry[] = [];
   const botDiagnostics: BotSchedulerDiagnosticEntry[] = [];
 
-  while (operationsProcessed < operationBudget && !isCompleteAtTarget(working, targetTime, botProfiles)) {
+  while (operationsProcessed < operationBudget) {
     const currentTime = working.clock.elapsedSeconds;
     const nextEventAt = working.pendingEvents[0]?.executeAt;
     const boundedEventAt = nextEventAt !== undefined && nextEventAt <= targetTime
@@ -206,6 +211,15 @@ export function advanceCampaignTime(
       ? Math.max(currentTime, scheduledBotAt)
       : undefined;
     const nextNonBotAt = earliest([boundedEventAt, nextRouteAt, nextWorldEventAt]);
+
+    if (
+      currentTime >= targetTime &&
+      nextNonBotAt === undefined &&
+      nextBotAt === undefined
+    ) {
+      break;
+    }
+
     const nextBoundaryAt = earliest([nextNonBotAt, nextBotAt, targetTime]);
     if (nextBoundaryAt === undefined) break;
 
