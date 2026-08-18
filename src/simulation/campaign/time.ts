@@ -23,6 +23,7 @@ export const DEFAULT_CAMPAIGN_OPERATION_BUDGET = 256;
 
 const NO_EXECUTED_EVENTS: readonly ExecutedGameEvent[] = [];
 const NO_BOT_AUDIT: readonly BotSchedulerAuditEntry[] = [];
+const NO_COMMAND_LOG: GameState['commandLog'] = [];
 
 export interface RealToGameTimeMapping {
   readonly wholeGameSeconds: number;
@@ -174,7 +175,10 @@ function advanceNonBotTime(state: GameState, seconds: number): {
   readonly events: readonly ExecutedGameEvent[];
   readonly logisticsReceipts: readonly LogisticsDepartureReceipt[];
 } {
-  const result = executeAdvanceTimeWithTelemetry(state, { type: 'ADVANCE_TIME', seconds });
+  const result = executeAdvanceTimeWithTelemetry(
+    { ...state, commandLog: NO_COMMAND_LOG },
+    { type: 'ADVANCE_TIME', seconds },
+  );
   if (!result.ok) throw new Error(`${result.code}: ${result.message}`);
   const advanced: GameState = {
     ...result.value.state,
