@@ -1,7 +1,6 @@
 import type { BotProfile } from '../bots/profiles';
 import { DEFAULT_BOT_PROFILES } from '../bots/profiles';
 import {
-  getNextBotDecisionAt,
   runBotScheduler,
   type BotSchedulerAuditEntry,
   type BotSchedulerDiagnosticEntry,
@@ -127,6 +126,23 @@ function earliest(values: readonly (number | undefined)[]): number | undefined {
   return result;
 }
 
+function getNextScheduledBotDecisionAt(
+  state: GameState,
+  profiles: readonly BotProfile[],
+): number | undefined {
+  let nextDecisionAt: number | undefined;
+  for (const profile of profiles) {
+    if (!state.empires.includes(profile.empireId)) continue;
+    const candidate =
+      state.botAutomation.nextDecisionAtByEmpire[profile.empireId] ??
+      state.clock.elapsedSeconds;
+    if (nextDecisionAt === undefined || candidate < nextDecisionAt) {
+      nextDecisionAt = candidate;
+    }
+  }
+  return nextDecisionAt;
+}
+
 function newExecutedEvents(
   before: GameState,
   after: GameState,
@@ -171,7 +187,7 @@ function isCompleteAtTarget(
 ): boolean {
   if (state.clock.elapsedSeconds < targetTime) return false;
   if (hasDueNonBotBoundary(state, targetTime)) return false;
-  const nextBotAt = getNextBotDecisionAt(state, botProfiles);
+  const nextBotAt = getNextScheduledBotDecisionAt(state, botProfiles);
   return nextBotAt === undefined || nextBotAt > targetTime;
 }
 
@@ -206,7 +222,7 @@ export function advanceCampaignTime(
       : undefined;
     const nextRouteAt = getNextLogisticsDepartureAt(working, targetTime);
     const nextWorldEventAt = getNextWorldEventEvaluationAt(working, targetTime);
-    const scheduledBotAt = getNextBotDecisionAt(working, botProfiles);
+    const scheduledBotAt = getNextScheduledBotDecisionAt(working, botProfiles);
     const nextBotAt = scheduledBotAt !== undefined && scheduledBotAt <= targetTime
       ? Math.max(currentTime, scheduledBotAt)
       : undefined;
@@ -243,7 +259,7 @@ export function advanceCampaignTime(
       if (operationsProcessed >= operationBudget) break;
     }
 
-    const dueBotAt = getNextBotDecisionAt(working, botProfiles);
+    const dueBotAt = getNextScheduledBotDecisionAt(working, botProfiles);
     if (dueBotAt !== undefined && dueBotAt <= working.clock.elapsedSeconds && dueBotAt <= targetTime) {
       const botResult = runBotScheduler(working, botProfiles, 1);
       working = botResult.state;
