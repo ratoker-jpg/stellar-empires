@@ -138,24 +138,38 @@ export function mountGlobalHud(options: GlobalHudOptions): GlobalHudController {
       missionCount,
     );
     renderActivity('hud-report-badge', 'Доступные отчёты', `Отчёты ${view.reportCount}`, view.reportCount);
-    const fullSolarWarLabel = view.solarWar.activeEntry
-      ? `Солнечная война: активный вход, цикл ${view.solarWar.cycleIndex}, флот ${view.solarWar.fleetId}`
-      : `Солнечная война: цикл ${view.solarWar.cycleIndex}, до завершения ${formatWorldTime(view.solarWar.remainingSeconds)}`;
-    solarWarActivity.textContent = view.solarWar.activeEntry
-      ? `СВ · вход · цикл ${view.solarWar.cycleIndex}`
-      : `СВ · цикл ${view.solarWar.cycleIndex}`;
-    solarWarActivity.title = fullSolarWarLabel;
-    solarWarActivity.dataset.activeEntry = String(view.solarWar.activeEntry);
-    solarWarActivity.dataset.cycleIndex = String(view.solarWar.cycleIndex);
-    solarWarActivity.dataset.resultCount = String(view.solarWar.resultCount);
-    solarWarActivity.setAttribute('aria-label', fullSolarWarLabel);
+    if (view.terminal !== null) {
+      const terminalLabel = `${view.terminal.outcomeLabel} · ${view.terminal.winningParticipationLabel} · ${view.terminal.hostLabel}`;
+      solarWarActivity.textContent = `Кампания · ${view.terminal.outcomeLabel}`;
+      solarWarActivity.title = terminalLabel;
+      solarWarActivity.dataset.terminal = 'true';
+      solarWarActivity.dataset.outcome = view.terminal.outcome;
+      solarWarActivity.dataset.activeEntry = 'false';
+      solarWarActivity.setAttribute('aria-label', terminalLabel);
+    } else {
+      const fullSolarWarLabel = view.solarWar.activeEntry
+        ? `Солнечная война: активный вход, цикл ${view.solarWar.cycleIndex}, флот ${view.solarWar.fleetId}`
+        : `Солнечная война: цикл ${view.solarWar.cycleIndex}, до завершения ${formatWorldTime(view.solarWar.remainingSeconds)}`;
+      solarWarActivity.textContent = view.solarWar.activeEntry
+        ? `СВ · вход · цикл ${view.solarWar.cycleIndex}`
+        : `СВ · цикл ${view.solarWar.cycleIndex}`;
+      solarWarActivity.title = fullSolarWarLabel;
+      delete solarWarActivity.dataset.terminal;
+      delete solarWarActivity.dataset.outcome;
+      solarWarActivity.dataset.activeEntry = String(view.solarWar.activeEntry);
+      solarWarActivity.dataset.cycleIndex = String(view.solarWar.cycleIndex);
+      solarWarActivity.dataset.resultCount = String(view.solarWar.resultCount);
+      solarWarActivity.setAttribute('aria-label', fullSolarWarLabel);
+    }
     renderBadge('nav-planet-badge', 'Активные очереди', view.queueCount);
     renderBadge('nav-fleet-badge', 'Активные и входящие миссии', missionCount);
     renderBadge('nav-research-badge', 'Активные исследования', state.research.find((item) => item.empireId === 'player')?.queue.length ?? 0);
     renderBadge(
       'nav-operations-badge',
-      'Активные события и входы в Солнечную войну',
-      state.worldEvents.active.length + (view.solarWar.activeEntry ? 1 : 0),
+      view.terminal === null ? 'Активные события и входы в Солнечную войну' : 'Завершённая кампания',
+      view.terminal === null
+        ? state.worldEvents.active.length + (view.solarWar.activeEntry ? 1 : 0)
+        : 1,
     );
     renderBadge('nav-reports-badge', 'Отчёты', view.reportCount);
   };
