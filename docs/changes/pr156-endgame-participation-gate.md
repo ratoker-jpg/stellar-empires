@@ -1,105 +1,53 @@
 # PR #156 — ENDGAME-PARTICIPATION-GATE
 
-**Status:** draft closure scaffold; gate implementation not started  
-**Updated:** 2026-08-04  
+**Status:** implementation closure complete; final documentation-head validation pending  
+**Updated:** 2026-08-18  
 **Authorized by Audit PR:** #152 `COMPLETE-ENDGAME-01`  
 **Audit squash SHA:** `d777a619109d4a9bfc8e5129bf4c525f3327b9b6`  
 **PR #155 squash / exact branch baseline:** `a5c72562200c2a6dfdc49f1e4f07e8a869a6558d`  
+**Validated closure code head before docs:** `54cf966bd1058adad667450c0bf5f32f23ae18b9`  
 **Branch:** `agent/endgame-participation-gate`  
-**Runtime baseline:** schema v18 / save format v5
+**Runtime:** schema v18 / save format v5 unchanged
 
-## Purpose
+## Closure delivered
 
-Close `COMPLETE-ENDGAME-01` with exact migration, deterministic partition, bounded-history, Browser and performance evidence for optional alliance/solo participation, Solar War mechanics and the merged Operations/Reports/HUD presentation.
+- Aegis, Synod and Veyra each migrate from a valid schema-v17/save-v4 envelope through the production parser to schema v18/save v5;
+- migration preserves player faction and gives every empire explicit independent participation with `soloEligible: true`;
+- every player faction enters Solar War both solo and as an alliance member through ordinary commands;
+- duplicate active entry is rejected with `SOLAR_WAR_ENTRY_ACTIVE`;
+- all six faction/participation scenarios advance 48 campaign hours by direct, six-hour chunks, save/load and resumable offline runtime paths;
+- the four paths require exact equality of the complete `GameState`, not a reduced projection;
+- alliance membership and Solar War histories remain bounded to the newest 64 entries;
+- malformed current schema-v18/save-v5 Solar War state remains rejected for all three factions;
+- compressed progression partition coverage explicitly includes endgame participation state;
+- Browser closure covers canonical Operations, HUD and Reports routes, invalid/legal actions, persistence, back/forward, reload and mobile overflow;
+- no simulation/runtime production defect was exposed, so #156 adds no product mechanic and changes no runtime code.
 
-This is a closure PR. It may add tests, evidence and documentation, and may correct only defects exposed by the accepted gates. It must not add a new product mechanic.
+## Code-head evidence
 
-## Required closure matrix
+Exact code head: `54cf966bd1058adad667450c0bf5f32f23ae18b9`
 
-For player factions Aegis, Synod and Veyra, prove:
+- CI `32146644545` — success;
+- Graphify `32146644566` — success;
+- asset audit — success for 747 audited files;
+- lint and strict TypeScript — success;
+- 153 test files passed, 1 skipped;
+- 621 tests passed, 1 skipped;
+- new closure matrix: 13/13 passed;
+- production build — success;
+- permanent compressed progression scenario — success;
+- one campaign day `6.261 s < 15 s`;
+- seven campaign days `29.846 s < 30 s`;
+- Browser E2E code-head run `32146644549` is part of the final pre-doc evidence and must be green before merge.
 
-- valid schema-v17/save-v4 migration to schema v18/save v5;
-- explicit solo eligibility after migration;
-- legal solo Solar War entry;
-- legal alliance-member Solar War entry;
-- direct 48-hour advance;
-- deterministic six-hour chunk partition;
-- save/load continuation across Solar War resolution;
-- resumable offline runtime continuation;
-- exact complete-state equality across direct, chunked, save/load and offline paths;
-- at most one active Solar War entry per empire;
-- alliance membership history bounded to 64 entries;
-- Solar War result history bounded to 64 entries;
-- strict malformed current-state rejection;
-- canonical Operations alliance/Solar War routes and Reports `endgame` visibility;
-- responsive Browser flow, reload, back/forward, keyboard and reduced-motion behavior.
+## Divergence
 
-## Permanent regression gates
+**None.** Closure work is tests/evidence/documentation plus a stronger assertion in the existing progression partition gate. Schema, save format, balance, bots, catalogs, final objects and terminal behavior are unchanged.
 
-- permanent five-seed × three-faction progression matrix;
-- one campaign day `<15 s`;
-- seven campaign days `<30 s`;
-- asset pipeline validation;
-- lint and strict TypeScript;
-- complete unit/integration/runtime test suite;
-- production build;
-- Browser E2E;
-- Graphify audit;
-- zero unresolved review threads and clean mergeability.
+## Hard boundary after merge
 
-## Expected paths
+`COMPLETE-ENDGAME-01` is closed by this PR. No fifth implementation PR is authorized.
 
-Create:
+The next work may only be a separate Audit `COMPLETE-ENDGAME-02` covering the already-locked Obelisks/Gates, contributions, final-object combat and persisted terminal victory/defeat. No such mechanic is authorized until that audit is accepted.
 
-```text
-tests/audit/endgameParticipationGate.test.ts
-tests/e2e/endgameParticipation.spec.ts
-docs/audits/completed/complete-endgame-01.md
-```
-
-Modify only as required by closure evidence or defects:
-
-```text
-tests/audit/campaignProgressionBaseline.test.ts
-tests/audit/compressedProgressionPartition.test.ts
-tests/simulation/campaignTimePerformance.test.ts
-docs/audits/current-batch-audit.md
-docs/audits/current-execution-state.md
-docs/audits/batch-history.md
-docs/project-status.json
-docs/roadmap-pr-index.json
-docs/16-execution-roadmap.md
-docs/17-continuation-guide.md
-docs/27-playable-game-roadmap-v5.md
-```
-
-## Exact delivered baseline to close
-
-```text
-#153 ALLIANCE-SOLO-FOUNDATION
-c567675c506d55a14a73757afa80c704fb079fc7
-
-#154 SOLAR-WAR-PARTICIPATION
-b62d8b739c27cf1616b33302886e565d88c04a42
-
-#155 ENDGAME-OPERATIONS-UX
-a5c72562200c2a6dfdc49f1e4f07e8a869a6558d
-```
-
-## Explicit non-goals
-
-No new alliance features, bot Solar War planner, allied perception, Obelisks/Gates, final-object ownership or combat, victory/defeat, terminal campaign state, multiplayer, seasons, new currency, new mechanical catalogs/assets, global rebalance, onboarding, release polish or M9 work.
-
-## Acceptance gate
-
-All required matrix rows and permanent gates pass on the exact final code+docs head, `COMPLETE-ENDGAME-01` is archived with exact PR squash SHAs and divergence, and the next authorized work is a new Audit PR `COMPLETE-ENDGAME-02` only.
-
-## Ordered work
-
-1. inspect merged #153–#155 contracts and permanent gate helpers;
-2. build the three-faction migration/solo/alliance partition matrix;
-3. add the dedicated Browser closure flow;
-4. correct only defects exposed by those gates;
-5. archive `COMPLETE-ENDGAME-01` and synchronize status/index documents;
-6. run exact-head CI, Browser E2E, Graphify, performance, review and mergeability gates;
-7. squash merge #156 and stop implementation work until `COMPLETE-ENDGAME-02` is separately audited and accepted.
+The generated #156 squash SHA cannot be embedded in its own commit. The immediately following Audit PR must record that exact SHA before authorizing any new implementation.
