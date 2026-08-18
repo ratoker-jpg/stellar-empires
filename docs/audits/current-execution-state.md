@@ -11,7 +11,7 @@
 | Active work | #158 `FINAL-OBJECT-FOUNDATION` implementation complete, final exact-head validation pending |
 | Active branch | `agent/final-object-foundation` |
 | Exact #158 branch baseline | `7750cdb83b58e95f790351b306e9cf5b344bd780` |
-| Product-code/test closure head before final docs | `93be3b90bf46409fe257c3819c3f6a1c8e9fcb2a` |
+| Implementation/test closure head before final source-of-truth sync | `a3e191bac4ced5402507d887fd182d9e33830d25` |
 | Runtime on `main` | schema v18 / save format v5 |
 | Runtime on #158 branch | schema v19 / save format v6 |
 | Current implementation authorized | **yes, #158 only** |
