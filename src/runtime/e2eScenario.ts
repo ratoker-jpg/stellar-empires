@@ -145,7 +145,7 @@ function createE2eTerminalState(state: GameState): GameState {
   const terminalAt = state.clock.elapsedSeconds;
   const resources = { metal: 1_000, crystal: 750, gas: 500 } as const;
   const project: FinalObjectProject = {
-    id: 'e2e-terminal-final-project',
+    id: 'final-project-1',
     ownerEmpireId: 'player',
     ownerPlanetId: host.id,
     factionId: host.factionId,
@@ -167,6 +167,7 @@ function createE2eTerminalState(state: GameState): GameState {
     contributionByEmpire: [{ empireId: 'player', resources }],
     startedAt: Math.max(0, terminalAt - 86_500),
     fundedAt: Math.max(0, terminalAt - 86_450),
+    gateQueueItemId: 'e2e-terminal-gate-queue',
     gateCompletesAt: Math.max(0, terminalAt - 86_400),
     vulnerabilityStartedAt: Math.max(0, terminalAt - 86_400),
     stabilizesAt: terminalAt,
