@@ -94,10 +94,11 @@ function qualificationResult(
   participationId: string,
   allianceId: string | null,
 ): SolarWarResult {
+  const cycleId = 'solar-war-9';
   return {
     id: `foundation-result-${participationId}`,
     entryId: `foundation-entry-${participationId}`,
-    cycleId: 'foundation-qualified-cycle',
+    cycleId,
     cycleIndex: 9,
     empireId: 'player',
     fleetId: 'foundation-fleet-player',
@@ -116,7 +117,7 @@ function qualificationResult(
       id: `foundation-battle-${participationId}`,
       seed: 9,
       resolvedAt: 900,
-      targetPlanetId: 'foundation-solar-war-target',
+      targetPlanetId: cycleId,
       attackerEmpireId: 'player',
       defenderEmpireId: 'solar-war-defender',
       winner: 'attacker',
