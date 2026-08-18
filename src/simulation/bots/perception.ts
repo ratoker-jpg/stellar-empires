@@ -1,4 +1,3 @@
-import { createGalaxyIntelligenceView } from '../galaxy/intelligenceView';
 import { getEmpireIntelligence } from '../intelligence/intelligenceState';
 import type {
   IntelPlanetSnapshot,
@@ -128,7 +127,6 @@ export interface BotPerception {
 }
 
 interface GalaxyTopologyIndex {
-  readonly planetById: ReadonlyMap<string, GameState['galaxy']['systems'][number]['planets'][number]>;
   readonly systemById: ReadonlyMap<string, GameState['galaxy']['systems'][number]>;
   readonly expeditionPositions: readonly BotPublicExpeditionPositionPerception[];
 }
@@ -146,13 +144,11 @@ function getGalaxyTopologyIndex(galaxy: GameState['galaxy']): GalaxyTopologyInde
   const cached = galaxyTopologyCache.get(galaxy);
   if (cached !== undefined) return cached;
 
-  const planetById = new Map<string, GameState['galaxy']['systems'][number]['planets'][number]>();
   const systemById = new Map<string, GameState['galaxy']['systems'][number]>();
   const expeditionPositions: BotPublicExpeditionPositionPerception[] = [];
   for (const system of galaxy.systems) {
     systemById.set(system.id, system);
     for (const planet of system.planets) {
-      planetById.set(planet.id, planet);
       expeditionPositions.push({
         galaxyPlanetId: planet.id,
         systemId: system.id,
@@ -165,7 +161,7 @@ function getGalaxyTopologyIndex(galaxy: GameState['galaxy']): GalaxyTopologyInde
     compareCoordinates(left.coordinate, right.coordinate) ||
     left.galaxyPlanetId.localeCompare(right.galaxyPlanetId),
   );
-  const index = { planetById, systemById, expeditionPositions };
+  const index = { systemById, expeditionPositions };
   galaxyTopologyCache.set(galaxy, index);
   return index;
 }
@@ -224,22 +220,31 @@ export function createBotPerception(
   const occupiedGalaxyPlanetIds = new Set(
     state.planets.map((planet) => planet.galaxyPlanetId),
   );
-  const publicContacts = createGalaxyIntelligenceView(state, empireId)
-    .filter(
-      (planet) =>
-        planet.colonyId !== null &&
-        planet.visibility !== 'owned' &&
-        planet.visibility !== 'unclaimed',
-    )
-    .map((planet): BotPublicContactPerception => ({
-      planetId: planet.colonyId!,
-      galaxyPlanetId: planet.galaxyPlanetId,
-      coordinate: topology.planetById.get(planet.galaxyPlanetId)!.coordinate,
-      label: planet.displayName,
-      visibility: planet.visibility as BotPublicContactPerception['visibility'],
-      observedAt: planet.observedAt,
-      expiresAt: planet.expiresAt,
-    }))
+  const publicContacts = state.planets
+    .filter((planet) => planet.ownerEmpireId !== empireId)
+    .map((planet): BotPublicContactPerception => {
+      const observation = latestByPlanet.get(planet.id);
+      if (observation === undefined) {
+        return {
+          planetId: planet.id,
+          galaxyPlanetId: planet.galaxyPlanetId,
+          coordinate: planet.coordinate,
+          label: `${planet.coordinate.galaxy}:${planet.coordinate.solarSystem} · неизвестный контакт`,
+          visibility: 'contact',
+          observedAt: null,
+          expiresAt: null,
+        };
+      }
+      return {
+        planetId: planet.id,
+        galaxyPlanetId: planet.galaxyPlanetId,
+        coordinate: planet.coordinate,
+        label: observation.snapshot.name,
+        visibility: observation.expiresAt > state.clock.elapsedSeconds ? 'current' : 'stale',
+        observedAt: observation.observedAt,
+        expiresAt: observation.expiresAt,
+      };
+    })
     .sort((left, right) =>
       compareCoordinates(left.coordinate, right.coordinate) ||
       left.planetId.localeCompare(right.planetId),
