@@ -49,6 +49,7 @@ export interface GalaxyIntelSummary {
 function latestObservations(
   state: GameState,
   empireId: string,
+  colonyById: ReadonlyMap<string, GameState['planets'][number]>,
 ): ReadonlyMap<string, IntelObservation> {
   const intelligence = getEmpireIntelligence(state.intelligence, empireId);
   const result = new Map<string, IntelObservation>();
@@ -56,7 +57,7 @@ function latestObservations(
     (left, right) => right.observedAt - left.observedAt || left.id.localeCompare(right.id),
   );
   for (const observation of sorted) {
-    const planet = state.planets.find((candidate) => candidate.id === observation.targetPlanetId);
+    const planet = colonyById.get(observation.targetPlanetId);
     if (planet !== undefined && !result.has(planet.galaxyPlanetId)) {
       result.set(planet.galaxyPlanetId, observation);
     }
@@ -68,13 +69,27 @@ export function createGalaxyIntelligenceView(
   state: GameState,
   empireId: string,
 ): readonly GalaxyIntelPlanet[] {
-  const observations = latestObservations(state, empireId);
+  const colonyById = new Map(state.planets.map((planet) => [planet.id, planet] as const));
+  const colonyByGalaxyPlanetId = new Map(
+    state.planets.map((planet) => [planet.galaxyPlanetId, planet] as const),
+  );
+  const stationedFleetsByPlanetId = new Map<string, GameState['fleets']>();
+  for (const fleet of state.fleets) {
+    if (
+      fleet.empireId !== empireId ||
+      fleet.status !== 'stationed' ||
+      fleet.location.type !== 'planet'
+    ) {
+      continue;
+    }
+    const existing = stationedFleetsByPlanetId.get(fleet.location.planetId) ?? [];
+    stationedFleetsByPlanetId.set(fleet.location.planetId, [...existing, fleet]);
+  }
+  const observations = latestObservations(state, empireId, colonyById);
   return state.galaxy.systems
     .flatMap((system) =>
       system.planets.map((planet): GalaxyIntelPlanet => {
-        const colony = state.planets.find(
-          (candidate) => candidate.galaxyPlanetId === planet.id,
-        );
+        const colony = colonyByGalaxyPlanetId.get(planet.id);
         if (colony === undefined) {
           return {
             galaxyPlanetId: planet.id,
@@ -129,15 +144,10 @@ export function createGalaxyIntelligenceView(
               colony.buildings.map((building) => [building.buildingId, building.level]),
             ),
             defenses: { ...colony.inventory.defenses },
-            fleets: state.fleets
-              .filter(
-                (fleet) =>
-                  fleet.empireId === empireId &&
-                  fleet.status === 'stationed' &&
-                  fleet.location.type === 'planet' &&
-                  fleet.location.planetId === colony.id,
-              )
-              .map((fleet) => ({ fleetId: fleet.id, ships: { ...fleet.ships } })),
+            fleets: (stationedFleetsByPlanetId.get(colony.id) ?? []).map((fleet) => ({
+              fleetId: fleet.id,
+              ships: { ...fleet.ships },
+            })),
           };
         }
 
