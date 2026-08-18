@@ -1,98 +1,68 @@
 # Current execution state
 
 **Updated:** 2026-08-19  
-**Safe to continue:** yes, only PR #161 `ENDGAME-TERMINAL-GATE` closure inside accepted `COMPLETE-ENDGAME-02`
+**Safe to continue:** yes, only Audit PR #162 `COMPLETE-ENDGAME-03` until it is squash-merged
 
 | Field | Current value |
 |---|---|
-| Verified fresh `main` baseline | `8ad44509426e4bb9555a8a6133e1dbdb899dccae` |
-| Last merged PR | #160 `TERMINAL-RUNTIME-UX` |
-| #158 squash SHA | `a66a05fd433893f4a6f15cd8d9fd53ea31d793f9` |
-| #159 squash SHA | `466e5ea161a005eeb792d5440dc27d960b37b2f2` |
-| #160 final validated head | `ceacdb2b8d2ab71f359def00d5113057fbab49eb` |
-| #160 squash SHA / current `main` | `8ad44509426e4bb9555a8a6133e1dbdb899dccae` |
-| Active work | #161 `ENDGAME-TERMINAL-GATE` closure tests/evidence/docs only |
-| Active branch | `agent/endgame-terminal-gate` |
-| Exact #161 branch baseline | `8ad44509426e4bb9555a8a6133e1dbdb899dccae` |
+| Verified fresh `main` baseline | `8f05d22b3475ee99e9af8652d385c956e0acd7c7` |
+| Last merged PR | #161 `ENDGAME-TERMINAL-GATE` |
+| #161 squash SHA / current `main` | `8f05d22b3475ee99e9af8652d385c956e0acd7c7` |
+| Completed batch | `COMPLETE-ENDGAME-02` / M8.2 |
+| Active work | #162 `COMPLETE-ENDGAME-03` Audit |
+| Active branch | `agent/complete-endgame-03-audit` |
 | Runtime | schema v19 / save format v6 |
-| Current implementation authorized | **yes, #161 closure only** |
-| New gameplay mechanics authorized in #161 | **no** |
-| Next implementation after #161 | **none until a new Audit is accepted** |
-| Next required Audit | `COMPLETE-ENDGAME-03` |
+| Current implementation authorized | **no while Audit #162 is open** |
+| Critical unknowns | **0** |
+| Complexity | **medium** |
+| Target persistence | **unchanged v19/v6** |
 
-## Audit #157 authority
-
-`COMPLETE-ENDGAME-02` remains authoritative until #161 squash merge:
-
-- contract: `docs/audits/contracts/complete-endgame-02.md`;
-- evidence: `docs/audits/evidence/complete-endgame-02.md`;
-- Audit squash SHA: `7750cdb83b58e95f790351b306e9cf5b344bd780`;
-- critical unknowns: **0**.
-
-## Accepted Stage-2 sequence
+## Completed M8.2
 
 ```text
-#158 FINAL-OBJECT-FOUNDATION       merged → a66a05fd433893f4a6f15cd8d9fd53ea31d793f9
-→ #159 FINAL-GATE-VULNERABILITY   merged → 466e5ea161a005eeb792d5440dc27d960b37b2f2
-→ #160 TERMINAL-RUNTIME-UX        merged → 8ad44509426e4bb9555a8a6133e1dbdb899dccae
-→ #161 ENDGAME-TERMINAL-GATE      active closure PR
+#157 COMPLETE-ENDGAME-02 Audit    → 7750cdb83b58e95f790351b306e9cf5b344bd780
+#158 FINAL-OBJECT-FOUNDATION      → a66a05fd433893f4a6f15cd8d9fd53ea31d793f9
+#159 FINAL-GATE-VULNERABILITY    → 466e5ea161a005eeb792d5440dc27d960b37b2f2
+#160 TERMINAL-RUNTIME-UX         → 8ad44509426e4bb9555a8a6133e1dbdb899dccae
+#161 ENDGAME-TERMINAL-GATE       → 8f05d22b3475ee99e9af8652d385c956e0acd7c7
 ```
 
-No fifth `COMPLETE-ENDGAME-02` implementation PR is authorized.
+Stage 2 is complete. Player/system final-object, vulnerable Gate and persisted terminal campaign behavior are accepted and closed.
 
-## Delivered through #160
+## Active Audit authority
 
-- schema v19/save v6 final-project persistence and controlled migration;
-- immutable Solar War qualification, solo/alliance participation identity and eligible cohort snapshot;
-- functional existing Obelisks and Gate funding/construction using existing resources and ordinary building timing;
-- exact 86,400-second Gate vulnerability;
-- ordinary `ATTACK` + surviving Planet Destroyer Gate destruction, no-refund reset/rebuild and host-loss cancellation;
-- canonical same-second `executeAt → sequence` ordering;
-- immutable persisted terminal campaign result from valid stabilization;
-- exact permanent terminal clock freeze with pending queues/events/fleets retained as inert evidence;
-- global `CAMPAIGN_TERMINAL` gameplay mutation rejection;
-- active/offline wall-clock backlog consumption without post-terminal GameState advance;
-- immediate durable terminal autosave/checkpoint and exact reload;
-- terminal victory/defeat sourced only from persisted winning cohort;
-- final-project and terminal presentation in existing Operations, Reports, HUD and return-summary surfaces;
-- mobile/reduced-motion/reload Browser coverage.
+`COMPLETE-ENDGAME-03` is governed by:
 
-#160 exact-head closeout evidence:
+- `docs/audits/complete-endgame-03-scaffold.md`;
+- `docs/audits/evidence/complete-endgame-03.md`;
+- `docs/audits/contracts/complete-endgame-03.md`.
+
+Recon conclusion:
+
+- bot scheduler already emits ordinary commands on deterministic persisted cadence;
+- endgame player/system commands already exist;
+- explicit endgame perception is the missing information boundary;
+- bots must use public/owned/allied data and existing intelligence, never raw hidden foreign state;
+- alliance/Solar War/final-object/Gate response can reuse ordinary commands and mechanics;
+- no new persistent bot field is required;
+- critical unknowns are zero.
+
+## Exactly accepted M8.3 sequence after Audit merge
 
 ```text
-head               ceacdb2b8d2ab71f359def00d5113057fbab49eb
-CI                 32183750544 — success
-Browser E2E        32183750392 — success · 34/34
-Graphify           32183750396 — success
-Tests              663 passed / 1 skipped
-1 campaign day        4.620 s < 15 s
-7 campaign days      22.971 s < 30 s
-Squash/main        8ad44509426e4bb9555a8a6133e1dbdb899dccae
+#163 ENDGAME-BOT-PERCEPTION
+→ #164 ENDGAME-BOT-PARTICIPATION
+→ #165 ENDGAME-BOT-FINAL-OBJECTS
+→ #166 ENDGAME-BOT-CLOSURE-GATE
 ```
 
-## PR #161 closure scope
-
-#161 must not invent mechanics. It composes the delivered system and closes missing acceptance proof for:
-
-- solo and alliance full Gate-to-terminal paths;
-- save/load across funding/building/vulnerable/terminal phases;
-- direct/chunk equality before, at and after terminal;
-- actual same-second attack/stabilization order in both sequence directions;
-- Gate destruction → rebuild → later victory;
-- host loss → fresh surviving-host project → later victory;
-- ordinary random demolition isolation for final buildings;
-- permanent terminal command/event/logistics/world/bot/time freeze regressions;
-- Browser terminal/reload/mobile/reduced-motion evidence plus retained success artifact;
-- batch archive/status/continuation synchronization.
-
-Bot final-object/Solar-War planning and allied-information perception remain explicitly outside #161 and belong to `COMPLETE-ENDGAME-03`.
+No fifth M8.3 implementation PR is authorized.
 
 ## Exact next action
 
-1. Finish the #161 closure suite and documentation without widening scope.
-2. Freeze one exact final #161 head.
-3. Require Main CI, Browser E2E with retained Playwright artifact, Graphify, compressed progression and permanent performance green on that same SHA.
-4. Require unresolved review threads = 0, submitted/blocking reviews = 0, exact base still `8ad44509426e4bb9555a8a6133e1dbdb899dccae`, and mergeable = true.
-5. Mark #161 Ready and squash-merge with expected-head protection.
-6. Verify the generated squash is fresh `main`.
-7. Do **not** start bot endgame implementation. The next gameplay work must begin with a separate `COMPLETE-ENDGAME-03` Audit from the generated #161 squash.
+1. Freeze one exact final #162 documentation head.
+2. Require Main CI, Browser E2E, Graphify, compressed progression/performance and review/mergeability green on that same SHA.
+3. Mark #162 Ready and squash-merge with expected-head protection.
+4. Verify the generated squash is fresh `main`.
+5. Only then create/implement #163 from that generated main, followed sequentially by #164–#166 from each preceding generated squash.
+6. Do not start M9 until #166 closes M8.3 and a separate release-candidate Audit authorizes M9.
