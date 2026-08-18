@@ -1,60 +1,51 @@
 # Current audit boundary
 
-**Status:** Audit PR #157 `COMPLETE-ENDGAME-02` complete; exact-head validation and squash merge pending; implementation is **not authorized until merge**  
+**Status:** Audit PR #157 `COMPLETE-ENDGAME-02` squash-merged; bounded implementation sequence active; only PR #158 is currently allowed  
 **Updated:** 2026-08-18  
-**Verified runtime baseline:** PR #156 squash · `c2fcaf39402392f0ebbad297d88f9689f4165e4c`  
+**Audit squash / fresh `main`:** `7750cdb83b58e95f790351b306e9cf5b344bd780`  
 **Current runtime on `main`:** schema v18 / save format v5  
 **Accepted Stage-2 target:** schema v19 / save format v6  
 **Critical unknowns:** 0
 
-## Closed batch
+## Audit closeout
 
-`COMPLETE-ENDGAME-01` is complete with divergence **none**.
+Audit #157 completed with no gameplay/runtime implementation and passed exact-head gates on `d45f97b50d8f518ea01ad160e6e9a34500f8fa6d`:
 
-```text
-#152 Audit d777a619109d4a9bfc8e5129bf4c525f3327b9b6
-→ #153 c567675c506d55a14a73757afa80c704fb079fc7
-→ #154 b62d8b739c27cf1616b33302886e565d88c04a42
-→ #155 a5c72562200c2a6dfdc49f1e4f07e8a869a6558d
-→ #156 c2fcaf39402392f0ebbad297d88f9689f4165e4c
-```
+- CI `32156043266` — success; 621 tests passed, 1 skipped; build/progression green;
+- one campaign day `4.316 s < 15 s`;
+- seven campaign days `21.087 s < 30 s`;
+- Browser E2E `32156043231` — success, 33/33;
+- Graphify `32156043235` — success;
+- unresolved review threads 0; submitted reviews 0; mergeable true;
+- squash/new `main`: `7750cdb83b58e95f790351b306e9cf5b344bd780`.
 
-The closed stage delivers optional alliance/solo participation, deterministic Solar War, canonical Operations/Reports/HUD presentation and exact three-faction 48-hour partition closure. No fifth implementation PR belongs to that batch.
-
-## Audit #157 evidence and contract
-
-The recon is complete and recorded in:
+Authoritative evidence and contract:
 
 - `docs/audits/evidence/complete-endgame-02.md`;
 - `docs/audits/contracts/complete-endgame-02.md`.
 
-The audit found that existing final-building catalogs/assets, ordinary build queue, ordinary combat/planet destruction, event queue, campaign runtime and current endgame UI shell are sufficient for a bounded implementation. No gameplay/runtime code is changed by Audit #157.
-
 ## Accepted Stage-2 contract
 
 - use existing faction Obelisk and Supreme Galactic Gates definitions, costs, prerequisites, timings and assets;
-- use positive scored Solar War result as qualification snapshot; no new meta-currency;
-- preserve legal solo completion;
+- positive scored Solar War result is the qualification snapshot; no new meta-currency;
+- solo completion remains first-class;
 - alliance project has one owner empire/planet and immutable eligible-cohort snapshot;
-- contribute existing metal/crystal/gas through a dedicated endgame command; ordinary transport stays own-colony-only;
-- reuse ordinary Gate construction timing/queue rather than creating a second builder;
-- Gate completion starts a public `86,400` campaign-second vulnerability/stabilization window;
-- reuse ordinary `ATTACK` and combat; attacker win plus surviving existing planet-destroyer role destroys a vulnerable Gate deterministically;
-- keep Obelisk/Gate excluded from ordinary random building demolition;
-- reuse existing whole-planet destruction reconciliation to lose/cancel a hosted project;
-- use deterministic rebuild rather than a new Gate HP/repair subsystem;
-- persist final-project and campaign-result state in schema v19/save v6 with controlled v18/v5 migration;
-- keep existing `executeAt` then `sequence` event order authoritative;
-- final stabilization writes immutable victory/defeat identity and exact terminal campaign second;
-- freeze game time at terminal and leave future queues/events/fleets inert;
-- reject all later gameplay mutations with `CAMPAIGN_TERMINAL`;
-- active/offline runtime clears remaining real-time backlog without advancing terminal game state;
-- present final-project/terminal state through existing Operations/Reports/HUD/catch-up shell;
-- defer bot final-object/Solar-War perception and planning to `COMPLETE-ENDGAME-03`.
+- contributions spend existing metal/crystal/gas through a dedicated endgame command; ordinary transport stays own-colony-only;
+- Gate funding target and construction reuse existing catalog calculations and building queue;
+- Gate completion later starts a public `86,400` campaign-second vulnerability window;
+- ordinary `ATTACK` remains canonical combat; vulnerable Gate destruction later reuses the existing planet-destroyer role;
+- final objects remain outside random demolition;
+- host-planet destruction reuses existing reconciliation;
+- no Gate HP/new repair queue; recovery is rebuild;
+- final-project/result persistence target is schema v19/save v6 with controlled v18/v5 migration;
+- existing `executeAt` then `sequence` event order remains authoritative;
+- terminal campaign freezes at the exact result second and later gameplay mutations reject `CAMPAIGN_TERMINAL`;
+- existing Operations/Reports/HUD/catch-up shell is reused;
+- bot final-object/Solar-War perception and planning remain deferred to `COMPLETE-ENDGAME-03`.
 
 ## Bounded implementation sequence
 
-Exactly four implementation PRs belong to `COMPLETE-ENDGAME-02`, and only after this Audit is squash-merged:
+Exactly four implementation PRs belong to `COMPLETE-ENDGAME-02`:
 
 ```text
 #158 FINAL-OBJECT-FOUNDATION
@@ -65,31 +56,39 @@ Exactly four implementation PRs belong to `COMPLETE-ENDGAME-02`, and only after 
 
 No fifth implementation PR is authorized.
 
-## Hard authorization boundary
+## Current authorization boundary
 
-`implementationAuthorized: false`
+`implementationAuthorized: true`
 
-While Audit #157 remains open, it does **not** authorize:
+Authorization is **sequential**, not parallel. The only current implementation item is:
 
-- functional Obelisk/Gate mechanics;
-- resource contribution commands;
-- final-object attacks/destruction;
-- persisted victory/defeat or terminal freeze;
-- terminal UI implementation;
-- bot final-object planning or allied perception;
-- new currency, catalogs/assets, global rebalance, multiplayer, seasons or M9 work.
+```text
+#158 FINAL-OBJECT-FOUNDATION
+```
 
-## Audit completion criteria status
+#158 may implement only:
 
-1. concrete existing code/test/catalog/UI paths cited — **done**;
-2. critical product/persistence unknowns resolved — **done**;
-3. solo/alliance ownership and victory semantics explicit — **done**;
-4. schema/save migration decision explicit — **done: v19/v6**;
-5. exact event ordering and terminal runtime behavior bound — **done**;
-6. bounded implementation count/file map — **done: exactly four PRs**;
-7. deterministic partition, Browser, Graphify, progression and performance gates — **done**;
-8. Audit exact-head validation/review/squash merge — **pending**.
+- schema v19/save v6 foundation and strict v18/v5 migration;
+- persisted final-object/result foundation;
+- positive Solar War qualification snapshot;
+- qualified ordinary Obelisk queueing;
+- immutable solo/alliance project cohort;
+- project start/cancel;
+- existing metal/crystal/gas contribution ledger;
+- exact calculated Gate funding target;
+- pre-funded transition into existing Gate construction timing/queue;
+- one active project per participation/host planet;
+- bounded histories and save/load validation.
+
+Not authorized in #158:
+
+- Gate vulnerability/stabilization;
+- Gate attack/destruction/rebuild combat integration;
+- terminal victory/defeat/freeze;
+- terminal runtime/autosave/UI;
+- bot endgame planning/perception;
+- new currency/assets/catalogs or wider transport behavior.
 
 ## Exact next action
 
-Validate the final docs-only #157 head with CI, Browser E2E and Graphify, resolve any review issues, mark ready, squash merge, re-fetch fresh `main`, record the generated #157 squash SHA, then create **only** draft scaffold #158 `FINAL-OBJECT-FOUNDATION`. Do not implement Stage 2 before that merge.
+PR #158 starts as a draft scaffold from fresh `main` `7750cdb83b58e95f790351b306e9cf5b344bd780`. Do not create or implement #159 until #158 is fully validated and squash-merged.
