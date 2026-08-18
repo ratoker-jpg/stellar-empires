@@ -1,20 +1,21 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** draft Audit PR #157 `COMPLETE-ENDGAME-02`; implementation is not authorized  
+**Status:** Audit #157 `COMPLETE-ENDGAME-02` merged; PR #158 `FINAL-OBJECT-FOUNDATION` implemented and awaiting exact-head closure gates  
 **Updated:** 2026-08-18  
-**Verified main:** `c2fcaf39402392f0ebbad297d88f9689f4165e4c`  
-**Last merged PR:** #156 `ENDGAME-PARTICIPATION-GATE`  
-**Active runtime:** schema v18 / save format v5 unchanged
+**Verified main:** `7750cdb83b58e95f790351b306e9cf5b344bd780`  
+**Last merged PR:** #157 `COMPLETE-ENDGAME-02` Audit  
+**Runtime on `main`:** schema v18 / save format v5  
+**Runtime delivered by #158:** schema v19 / save format v6
 
 ## Authoritative files
 
 ```text
 AGENTS.md
 docs/28-audit-first-autonomous-delivery-protocol.md
+docs/audits/contracts/complete-endgame-02.md
+docs/audits/evidence/complete-endgame-02.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
-docs/audits/complete-endgame-02-scaffold.md
-docs/audits/completed/complete-endgame-01.md
 docs/project-status.json
 docs/roadmap-pr-index.json
 docs/27-playable-game-roadmap-v5.md
@@ -32,38 +33,63 @@ docs/27-playable-game-roadmap-v5.md
 
 Stage 1 is complete with divergence **none**. It delivers optional alliance/solo participation, deterministic Solar War, canonical Operations/Reports/HUD presentation and exact three-faction 48-hour partition closure.
 
-## Active stage-2 audit
+## Active stage 2 — COMPLETE-ENDGAME-02
 
-PR #157 may only investigate and document:
+Audit #157 closed all critical unknowns and was squash-merged as:
 
-- existing locked Obelisks and Supreme Galactic Gates;
-- prerequisites, costs, contributions and ownership;
-- final-object construction/unlock and attack/destruction semantics;
-- exact persisted terminal victory/defeat and event ordering;
-- active/offline/save-load/autosave terminal-boundary behavior;
-- terminal presentation in the existing shell;
-- schema/save migration implications;
-- three-faction asymmetries;
-- bounded implementation sequence and permanent acceptance gates.
+`7750cdb83b58e95f790351b306e9cf5b344bd780`
 
-`implementationAuthorized: false`
+It authorizes exactly this sequential implementation chain:
+
+```text
+#158 FINAL-OBJECT-FOUNDATION
+→ #159 FINAL-GATE-VULNERABILITY
+→ #160 TERMINAL-RUNTIME-UX
+→ #161 ENDGAME-TERMINAL-GATE
+```
+
+No fifth implementation PR is authorized. Each next PR may start only after the previous one is squash-merged and the generated fresh `main` SHA is verified.
+
+## PR #158 delivered scope
+
+`FINAL-OBJECT-FOUNDATION` contains only the accepted foundation:
+
+- schema v19/save v6 with controlled v18/v5 migration;
+- persisted final-project state and ongoing campaign result;
+- strict malformed-current-state rejection;
+- positive Solar War qualification snapshot;
+- qualified ordinary Obelisk construction while direct Gate queueing stays locked;
+- immutable solo/alliance project cohort;
+- dedicated metal/crystal/gas contributions;
+- exact existing level-1 Gate funding target;
+- fully funded transition into the ordinary Gate build queue and `BUILDING_COMPLETE` path;
+- bounded project/contribution history and deterministic three-faction × solo/alliance acceptance coverage;
+- campaign-time hot-path optimizations needed to preserve the permanent performance gates without changing ordering, semantics or thresholds.
+
+Still reserved for later PRs:
+
+- #159: Gate vulnerability, stabilization event scheduling and ordinary ATTACK/planet-destroyer destruction/rebuild path;
+- #160: immutable terminal result, exact freeze/runtime backlog/autosave behavior and terminal UX;
+- #161: complete three-faction × solo/alliance terminal integration/closure evidence.
+
+Bot final-object planning/perception remains deferred to `COMPLETE-ENDGAME-03`.
 
 ## Permanent boundary
 
-- no functional Obelisk/Gate mechanics yet;
-- no contribution commands or final-object combat yet;
-- no persisted victory/defeat or terminal campaign state yet;
-- no bot final-object planner or allied visibility changes;
-- no new currency, catalogs/assets, multiplayer, global rebalance or M9 work;
-- progression, determinism, Browser, Graphify and `<15 s` / `<30 s` performance gates remain mandatory.
+- no new final-building catalogs/assets or meta currency;
+- no alliance treasury or transport widening for contributions;
+- no separate final-object combat engine;
+- no post-victory sandbox in Stage 2;
+- no bot endgame planner/perception in `COMPLETE-ENDGAME-02`;
+- no multiplayer, seasons, global rebalance or M9 work;
+- progression, deterministic partition equality, Browser E2E, Graphify and `<15 s` / `<30 s` campaign performance gates remain mandatory on each exact final head.
 
 ## Immediate action
 
 ```text
-inspect real final-object/persistence/runtime/UI code in Audit #157
-→ record concrete evidence
-→ resolve ownership/victory/terminal/schema unknowns
-→ define bounded implementation PR sequence and gates
-→ accept/merge Audit #157 only when critical unknowns are closed
-→ only then may implementation be authorized
+finish exact-head #158 CI / Browser / Graphify / performance / review gates
+→ squash-merge #158 with expected_head_sha
+→ verify generated fresh main SHA
+→ create #159 FINAL-GATE-VULNERABILITY only from that exact main
+→ continue sequentially through #160 and #161
 ```
