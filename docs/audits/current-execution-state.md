@@ -1,44 +1,31 @@
 # Current execution state
 
 **Updated:** 2026-08-18  
-**Safe to continue:** yes, only PR #158 `FINAL-OBJECT-FOUNDATION` within the accepted `COMPLETE-ENDGAME-02` contract
+**Safe to continue:** yes, only validation/merge of PR #158 `FINAL-OBJECT-FOUNDATION`; #159 implementation is not allowed before #158 squash merge
 
 | Field | Current value |
 |---|---|
 | Verified `main` baseline | `7750cdb83b58e95f790351b306e9cf5b344bd780` |
 | Last merged PR | #157 `COMPLETE-ENDGAME-02` Audit |
-| Audit #157 final head | `d45f97b50d8f518ea01ad160e6e9a34500f8fa6d` |
 | Audit #157 squash SHA | `7750cdb83b58e95f790351b306e9cf5b344bd780` |
-| Active work | draft scaffold #158 `FINAL-OBJECT-FOUNDATION` |
+| Active work | #158 `FINAL-OBJECT-FOUNDATION` implementation complete, final exact-head validation pending |
 | Active branch | `agent/final-object-foundation` |
 | Exact #158 branch baseline | `7750cdb83b58e95f790351b306e9cf5b344bd780` |
+| Product-code/test closure head before final docs | `93be3b90bf46409fe257c3819c3f6a1c8e9fcb2a` |
 | Runtime on `main` | schema v18 / save format v5 |
-| #158 target | schema v19 / save format v6 foundation |
+| Runtime on #158 branch | schema v19 / save format v6 |
 | Current implementation authorized | **yes, #158 only** |
-| Implementation started in scaffold | **no** |
+| #158 implementation started | **yes** |
+| #158 implementation complete | **yes; exact-head gates still required** |
 | Later authorized PRs | #159 → #160 → #161, sequentially only after the preceding merge |
 
-## Audit #157 closeout
+## Audit #157 authority
 
-`COMPLETE-ENDGAME-02` Audit is merged and its contract is now authoritative.
+`COMPLETE-ENDGAME-02` Audit remains authoritative. Its generated squash/new main is:
 
-Exact Audit gates on final head `d45f97b50d8f518ea01ad160e6e9a34500f8fa6d`:
+`7750cdb83b58e95f790351b306e9cf5b344bd780`
 
-- CI `32156043266` — success;
-- 153 test files passed, 1 skipped;
-- 621 tests passed, 1 skipped;
-- production build — success;
-- permanent compressed progression — success;
-- one campaign day `4.316 s < 15 s`;
-- seven campaign days `21.087 s < 30 s`;
-- Browser E2E `32156043231` — success, **33/33 (7.1m)**;
-- Graphify `32156043235` — success;
-- unresolved review threads 0;
-- submitted reviews 0;
-- mergeable true;
-- squash/new main `7750cdb83b58e95f790351b306e9cf5b344bd780`.
-
-Authoritative Audit artifacts:
+Authoritative artifacts:
 
 - `docs/audits/evidence/complete-endgame-02.md`;
 - `docs/audits/contracts/complete-endgame-02.md`.
@@ -58,30 +45,33 @@ Exactly four implementation PRs belong to `COMPLETE-ENDGAME-02`:
 
 No fifth implementation PR is authorized.
 
-## Current #158 boundary
+## Delivered in #158
 
-Only the foundation may be implemented next:
-
-- schema v19/save v6 and strict v18/v5 migration;
-- persisted final-project/result foundation;
-- Solar War positive-score qualification snapshot;
-- qualified ordinary Obelisk queueing;
+- schema v19/save v6 and controlled v18/v5 migration;
+- persisted final-project state plus ongoing campaign-result foundation;
+- strict malformed-current final-object/result rejection;
+- positive Solar War qualification snapshot;
+- qualified ordinary Obelisk queueing while direct Gate queueing remains locked;
 - immutable solo/alliance project cohort;
-- project start/cancel;
-- metal/crystal/gas contribution ledger;
-- exact existing Gate cost target;
-- pre-funded transition into existing Gate build queue/timing;
-- one active project per participation/host planet;
-- bounded history and save/load validation.
+- project start/cancel lifecycle;
+- dedicated metal/crystal/gas contribution ledger from contributor-owned planets;
+- exact existing level-1 Gate cost target;
+- fully-funded transition into existing Gate build queue/timing/`BUILDING_COMPLETE` machinery without double charge;
+- pooled Gate ordinary refund cancellation blocked; project cancellation sinks contributed resources;
+- bounded project/contribution histories;
+- all three factions × solo/alliance funded-Gate construction closure coverage;
+- ordinary transport semantics unchanged.
 
-Not allowed in #158:
+## Still excluded from #158
 
-- Gate vulnerability or attack/destruction;
+- Gate vulnerability/stabilization;
+- Gate attack/destruction/rebuild combat integration;
 - terminal victory/defeat/freeze;
+- global terminal command enforcement;
 - terminal runtime/autosave/UI;
 - bot endgame planning/perception;
 - new currency/assets/catalogs or wider transport semantics.
 
 ## Exact next action
 
-PR #158 is intentionally only a draft scaffold from fresh `main`. On the next implementation pass, verify `main` is still `7750cdb83b58e95f790351b306e9cf5b344bd780` or inspect anything above it, re-read the Audit contract/evidence and implement only `FINAL-OBJECT-FOUNDATION`.
+Finish CI, Browser E2E, Graphify, permanent progression/performance and review/mergeability gates on the exact final #158 head. If all are green, mark #158 ready and squash-merge it. Then fetch the generated squash SHA and create only the #159 draft scaffold from fresh `main`; do not implement #159 in the same closeout step.
