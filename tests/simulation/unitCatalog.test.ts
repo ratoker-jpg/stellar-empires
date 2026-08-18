@@ -26,7 +26,7 @@ describe('unit catalog and inventory', () => {
     const managedPlanets = state.planets.filter((planet) =>
       state.empires.includes(planet.ownerEmpireId),
     );
-    expect(state.schemaVersion).toBe(18);
+    expect(state.schemaVersion).toBe(19);
     expect(state.campaignSettings.worldSpeed).toBe(1);
     expect(state.fleets).toEqual([]);
     expect(state.debrisFields).toEqual([]);
@@ -49,6 +49,15 @@ describe('unit catalog and inventory', () => {
       nextMembershipHistorySequence: 0,
       solarWar: { activeEntries: [], history: [] },
     });
+    expect(state.endgameFinalObjects).toEqual({
+      activeProjects: [],
+      history: [],
+      contributionHistory: [],
+      nextProjectSequence: 1,
+      nextHistorySequence: 0,
+      nextContributionSequence: 0,
+    });
+    expect(state.campaignResult).toEqual({ status: 'ongoing' });
     expect(state.market.reserves).toEqual({
       metal: 50_000,
       crystal: 50_000,

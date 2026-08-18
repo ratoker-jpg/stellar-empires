@@ -5,7 +5,11 @@ import type { FleetFormation, FleetTargetPriority } from './combat/fleetDoctrine
 import type { BattleReport } from './combat/types';
 import type { CommandDoctrineId, EmpireCommandState } from './command/types';
 import type { ResourceCost, ResourceId } from './economy/types';
-import type { EndgameParticipationState } from './endgame/types';
+import type {
+  CampaignResult,
+  EndgameFinalObjectState,
+  EndgameParticipationState,
+} from './endgame/types';
 import type { FleetMissionKind, FleetState } from './fleets/types';
 import type { GalaxyModel } from './galaxy/types';
 import type { EmpireIntelligenceState } from './intelligence/types';
@@ -147,6 +151,23 @@ export type GameCommand =
   | {
       readonly type: 'LEAVE_ALLIANCE';
       readonly empireId: string;
+    }
+  | {
+      readonly type: 'START_FINAL_OBJECT_PROJECT';
+      readonly empireId: string;
+      readonly planetId: string;
+    }
+  | {
+      readonly type: 'CONTRIBUTE_FINAL_OBJECT_PROJECT';
+      readonly empireId: string;
+      readonly projectId: string;
+      readonly sourcePlanetId: string;
+      readonly resources: ResourceCost;
+    }
+  | {
+      readonly type: 'CANCEL_FINAL_OBJECT_PROJECT';
+      readonly empireId: string;
+      readonly projectId: string;
     }
   | {
       readonly type: 'QUEUE_BUILDING';
@@ -336,7 +357,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 16 | 17 | 18;
+  readonly schemaVersion: 16 | 17 | 18 | 19;
   readonly seed: number;
   readonly campaignSettings: CampaignSettings;
   readonly clock: GameClock;
@@ -357,6 +378,8 @@ export interface GameState {
   readonly worldEvents: WorldEventState;
   readonly pveMeta?: PveMetaState;
   readonly endgameParticipation: EndgameParticipationState | undefined;
+  readonly endgameFinalObjects: EndgameFinalObjectState | undefined;
+  readonly campaignResult: CampaignResult | undefined;
   readonly botAutomation: BotAutomationState;
   readonly nextEventSequence: number;
   readonly pendingEvents: readonly ScheduledGameEvent[];

@@ -5,10 +5,17 @@ import {
   queueDefenseRepair,
 } from './defense/planetaryDefense';
 import { accrueAllPlanetEconomies } from './economy/planetEconomy';
+import {
+  canQueueQualifiedObelisk,
+  cancelFinalObjectProject,
+  contributeFinalObjectProject,
+  isFinalProjectGateQueueItem,
+  startFinalObjectProject,
+} from './endgame/finalObjects';
 import { createAlliance, joinAlliance, leaveAlliance } from './endgame/participation';
 import { applySolarWarResolutionEvent, enterSolarWar } from './endgame/solarWar';
 import { enqueueEvent } from './eventQueue';
-import { getEnergyOutputByEmpire, getResearchEffectsForEmpire } from './factions/factionResearchEffects';
+import { getEnergyOutputByEmpire } from './factions/factionResearchEffects';
 import { canUseMechanicalDefinition } from './factions/sharedMechanicalCatalog';
 import { createFleet, disbandFleet } from './fleets/fleetCommands';
 import { setFleetCombatDoctrine } from './fleets/fleetDoctrineCommands';
@@ -25,20 +32,15 @@ import type { LogisticsDepartureReceipt } from './logistics/types';
 import { executeMarketSwap } from './market/market';
 import { getBuildingDefinition } from './planet/buildingCatalog';
 import { isBuildingEndgameLocked } from './planet/buildingOperations';
+import { queueBuildingConstruction } from './planet/buildingQueue';
 import {
   calculateBuildingCost,
-  calculateBuildSeconds,
   canAfford,
   completeBuilding,
   findMissingRequirements,
   getBuildingLevel,
   refundResources,
-  spendResources,
 } from './planet/buildingProgression';
-import {
-  applySpecializationPercent,
-  getPlanetSpecializationEffects,
-} from './planet/specialization';
 import {
   setPlanetDevelopmentTemplate,
   setPlanetSpecialization,
@@ -65,7 +67,6 @@ import {
   enterArenaChallenge,
   withdrawArenaEntry,
 } from './pveMeta/arena';
-import { applySpeedPercent } from './research/progression';
 import {
   cancelResearch,
   completeResearch,
@@ -189,11 +190,14 @@ function queueBuilding(
   if (!canUseMechanicalDefinition(definition.factionId, planet.factionId)) {
     return { ok: false, code: 'WRONG_FACTION_BUILDING', message: 'The building belongs to another faction.' };
   }
-  if (isBuildingEndgameLocked(definition.id)) {
+  if (
+    isBuildingEndgameLocked(definition.id) &&
+    !canQueueQualifiedObelisk(state, command.empireId, planet, definition.id)
+  ) {
     return {
       ok: false,
       code: 'BUILDING_FEATURE_LOCKED',
-      message: 'This galactic structure is reserved for the later alliance endgame.',
+      message: 'This galactic structure requires the final-object progression path.',
     };
   }
   const profileId = state.campaignSettings.progressionProfile;
@@ -222,51 +226,19 @@ function queueBuilding(
   if (!canAfford(planet.economy, cost)) {
     return { ok: false, code: 'INSUFFICIENT_RESOURCES', message: 'The planet does not have enough resources.' };
   }
-  const sequence = state.nextEventSequence;
-  const queueItemId = `build-${sequence}`;
-  const effects = getResearchEffectsForEmpire(state, command.empireId);
-  const researchDuration = applySpeedPercent(
-    calculateBuildSeconds(definition, targetLevel, profileId, planet),
-    effects?.constructionSpeedPercent ?? 0,
-  );
-  const specialization = getPlanetSpecializationEffects(planet.specializationId);
-  const duration = applySpecializationPercent(
-    researchDuration,
-    specialization.constructionSpeedPercent,
-  );
-  const completesAt = state.clock.elapsedSeconds + duration;
-  const queueItem = {
-    id: queueItemId,
-    buildingId: definition.id,
+  const queued = queueBuildingConstruction(
+    state,
+    planet,
+    command.empireId,
+    definition,
     targetLevel,
-    startedAt: state.clock.elapsedSeconds,
-    completesAt,
     cost,
-  } as const;
-  const event: ScheduledGameEvent = {
-    id: `event-${sequence}`,
-    executeAt: completesAt,
-    sequence,
-    payload: {
-      type: 'BUILDING_COMPLETE',
-      planetId: planet.id,
-      queueItemId,
-      buildingId: definition.id,
-      targetLevel,
-    },
-  };
-  const updatedPlanet: PlanetState = {
-    ...planet,
-    buildQueue: [queueItem],
-    economy: spendResources(planet.economy, cost),
-  };
+    false,
+  );
   return {
     ok: true,
     value: {
-      ...state,
-      planets: replacePlanet(state.planets, planet.id, updatedPlanet),
-      nextEventSequence: sequence + 1,
-      pendingEvents: enqueueEvent(state.pendingEvents, event),
+      ...queued.state,
       commandLog: appendCommand(state, command),
     },
   };
@@ -283,6 +255,13 @@ function cancelBuilding(
   const queueItem = planet.buildQueue.find((item) => item.id === command.queueItemId);
   if (queueItem === undefined) {
     return { ok: false, code: 'BUILD_QUEUE_ITEM_NOT_FOUND', message: 'The construction order does not exist.' };
+  }
+  if (isFinalProjectGateQueueItem(state, queueItem.id)) {
+    return {
+      ok: false,
+      code: 'FINAL_PROJECT_CANCEL_REQUIRED',
+      message: 'A pooled final Gate can only be cancelled through its final project.',
+    };
   }
   const updatedPlanet: PlanetState = {
     ...planet,
@@ -456,6 +435,9 @@ export function executeCommand(state: GameState, command: GameCommand): CommandR
     case 'JOIN_ALLIANCE': return joinAlliance(state, command);
     case 'LEAVE_ALLIANCE': return leaveAlliance(state, command);
     case 'ENTER_SOLAR_WAR': return enterSolarWar(state, command);
+    case 'START_FINAL_OBJECT_PROJECT': return startFinalObjectProject(state, command);
+    case 'CONTRIBUTE_FINAL_OBJECT_PROJECT': return contributeFinalObjectProject(state, command);
+    case 'CANCEL_FINAL_OBJECT_PROJECT': return cancelFinalObjectProject(state, command);
     case 'QUEUE_BUILDING': return queueBuilding(state, command);
     case 'CANCEL_BUILDING': return cancelBuilding(state, command);
     case 'SET_PLANET_SPECIALIZATION': return setPlanetSpecialization(state, command);

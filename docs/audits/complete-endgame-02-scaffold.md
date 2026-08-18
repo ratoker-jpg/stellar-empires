@@ -1,25 +1,49 @@
 # Audit — COMPLETE-ENDGAME-02
 
-**Status:** audit complete; squash merge pending; implementation is **not authorized until merge**  
+**Status:** completed and squash-merged  
 **Updated:** 2026-08-18  
 **Previous batch:** `COMPLETE-ENDGAME-01` — closed by PR #156  
 **Exact PR #156 squash / audit baseline:** `c2fcaf39402392f0ebbad297d88f9689f4165e4c`  
-**Branch:** `agent/complete-endgame-02-audit`  
-**Current runtime baseline:** schema v18 / save format v5  
+**Audit PR:** #157  
+**Final Audit head:** `d45f97b50d8f518ea01ad160e6e9a34500f8fa6d`  
+**Audit squash / new `main`:** `7750cdb83b58e95f790351b306e9cf5b344bd780`  
+**Audit branch:** `agent/complete-endgame-02-audit`  
+**Current implementation branch:** `agent/final-object-foundation`  
+**Runtime baseline:** schema v18 / save format v5  
 **Target runtime:** schema v19 / save format v6  
 **Complexity:** medium  
 **Critical unknowns:** 0
 
 ## Result
 
-The recon is complete. Existing final buildings, assets, construction, combat, destruction, persistence, campaign-time/runtime and UI boundaries are concrete enough to authorize one bounded Stage-2 sequence **after this Audit is squash-merged**.
+The recon is complete and accepted. Existing final buildings, assets, construction, combat, destruction, persistence, campaign-time/runtime and UI boundaries are concrete enough for one bounded Stage-2 sequence.
 
 Authoritative audit artifacts:
 
 - evidence: `docs/audits/evidence/complete-endgame-02.md`;
 - contract: `docs/audits/contracts/complete-endgame-02.md`.
 
-No gameplay/runtime code is changed by Audit #157.
+Audit #157 changed no gameplay/runtime code.
+
+## Exact Audit validation
+
+On final head `d45f97b50d8f518ea01ad160e6e9a34500f8fa6d`:
+
+- CI `32156043266` — success;
+- 153 test files passed, 1 skipped;
+- 621 tests passed, 1 skipped;
+- production build and compressed progression — success;
+- one campaign day `4.316 s < 15 s`;
+- seven campaign days `21.087 s < 30 s`;
+- Browser E2E `32156043231` — **33/33 (7.1m)**;
+- Graphify `32156043235` — success;
+- unresolved review threads 0;
+- submitted reviews 0;
+- mergeable true before squash.
+
+Generated squash SHA / fresh main:
+
+`7750cdb83b58e95f790351b306e9cf5b344bd780`
 
 ## Accepted architectural decisions
 
@@ -90,8 +114,8 @@ The final closure PR #161 must prove, for all three player factions and both sol
 - no bot Gate planning or hidden-information changes;
 - no multiplayer/seasons/M9/release work.
 
-## Authorization boundary
+## Authorization boundary after merge
 
-`implementationAuthorized: false` while Audit PR #157 is open.
+`implementationAuthorized: true`, but strictly sequential.
 
-After #157 is squash-merged, fresh `main` must be fetched and the exact generated Audit squash SHA must be recorded in the first implementation scaffold. Only then may **#158 `FINAL-OBJECT-FOUNDATION`** exist, initially as a scaffold from fresh main. No implementation code belongs in Audit #157.
+Only **#158 `FINAL-OBJECT-FOUNDATION`** is currently allowed. It starts as a draft scaffold from exact fresh main `7750cdb83b58e95f790351b306e9cf5b344bd780`. #159 must not start until #158 is squash-merged.

@@ -18,7 +18,7 @@ import {
 const SAVE_TIME = '2026-07-18T12:00:00.000Z';
 
 describe('save format', () => {
-  it.each(WORLD_SPEED_PRESETS)('round-trips schema v18 at world speed x%s', (worldSpeed) => {
+  it.each(WORLD_SPEED_PRESETS)('round-trips schema v19 at world speed x%s', (worldSpeed) => {
     const settings = createCampaignSettings({
       scenarioPreset: 'test',
       worldSpeed,
@@ -33,7 +33,7 @@ describe('save format', () => {
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 
-  it('migrates a schema-v8 save to schema v18 with x1 and envelope creation time', () => {
+  it('migrates a schema-v8 save to schema v19 with x1 and envelope creation time', () => {
     const current = createInitialGameState('legacy-save');
     const {
       campaignSettings: _campaignSettings,
@@ -44,6 +44,8 @@ describe('save format', () => {
       commanders: _commanders,
       pveMeta: _pveMeta,
       endgameParticipation: _endgameParticipation,
+      endgameFinalObjects: _endgameFinalObjects,
+      campaignResult: _campaignResult,
       ...withoutNewCollections
     } = current;
     const legacyState = {
@@ -64,8 +66,8 @@ describe('save format', () => {
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
 
-    expect(parsed.value.formatVersion).toBe(5);
-    expect(parsed.value.state.schemaVersion).toBe(18);
+    expect(parsed.value.formatVersion).toBe(6);
+    expect(parsed.value.state.schemaVersion).toBe(19);
     expect(parsed.value.state.campaignSettings).toEqual(createCampaignSettings({
       scenarioPreset: parsed.value.state.universe.presetId,
       worldSpeed: 1,
@@ -101,6 +103,15 @@ describe('save format', () => {
       nextMembershipHistorySequence: 0,
       solarWar: { activeEntries: [], history: [] },
     });
+    expect(parsed.value.state.endgameFinalObjects).toEqual({
+      activeProjects: [],
+      history: [],
+      contributionHistory: [],
+      nextProjectSequence: 1,
+      nextHistorySequence: 0,
+      nextContributionSequence: 0,
+    });
+    expect(parsed.value.state.campaignResult).toEqual({ status: 'ongoing' });
   });
 
   it('round-trips an active ship-upgrade queue', () => {
@@ -224,6 +235,8 @@ describe('save format', () => {
       commanders: _commanders,
       pveMeta: _pveMeta,
       endgameParticipation: _endgameParticipation,
+      endgameFinalObjects: _endgameFinalObjects,
+      campaignResult: _campaignResult,
       ...legacyBase
     } = current;
     const legacyState = { ...legacyBase, schemaVersion: 6, fleets: [olderFleet] };
@@ -238,7 +251,7 @@ describe('save format', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.state.fleets[0]?.mission).toBeNull();
-      expect(parsed.value.state.schemaVersion).toBe(18);
+      expect(parsed.value.state.schemaVersion).toBe(19);
       expect(parsed.value.state.campaignSettings.worldSpeed).toBe(1);
     }
   });
@@ -254,6 +267,8 @@ describe('save format', () => {
       botAutomation: _botAutomation,
       pveMeta: _pveMeta,
       endgameParticipation: _endgameParticipation,
+      endgameFinalObjects: _endgameFinalObjects,
+      campaignResult: _campaignResult,
       ...legacyBase
     } = advanced;
     const legacyState = { ...legacyBase, schemaVersion: 13 };
@@ -282,6 +297,8 @@ describe('save format', () => {
       commanders: _commanders,
       pveMeta: _pveMeta,
       endgameParticipation: _endgameParticipation,
+      endgameFinalObjects: _endgameFinalObjects,
+      campaignResult: _campaignResult,
       ...legacyBase
     } = current;
     const legacyState = { ...legacyBase, schemaVersion: 13 };

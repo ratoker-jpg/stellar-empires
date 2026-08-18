@@ -15,7 +15,7 @@ import { createSchemaV13MigrationFixture } from '../fixtures/gameStateV13Fixture
 
 const MIGRATION_TIME = '2026-07-27T00:00:00.000Z';
 
-describe('schema v14 through v18 migration', () => {
+describe('schema v14 through v19 migration', () => {
   it('migrates the committed v13 fixture to v14 deterministically', () => {
     const fixture = createSchemaV13MigrationFixture();
     const first = migrateGameStateV14(fixture);
@@ -29,7 +29,7 @@ describe('schema v14 through v18 migration', () => {
     expect(first?.spaceObjects.every((object) => object.coordinate !== undefined)).toBe(true);
   });
 
-  it('preserves the schema-v15 legacy shell, upgrades it to v16 and imports it as v18/v5', () => {
+  it('preserves the schema-v15 legacy shell, upgrades it to v16 and imports it as v19/v6', () => {
     const legacy = migrateGameStateV15(createSchemaV13MigrationFixture(), MIGRATION_TIME);
     expect(legacy).toBeDefined();
     if (legacy === undefined) return;
@@ -67,16 +67,18 @@ describe('schema v14 through v18 migration', () => {
     }));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.formatVersion).toBe(5);
-      expect(parsed.value.state.schemaVersion).toBe(18);
+      expect(parsed.value.formatVersion).toBe(6);
+      expect(parsed.value.state.schemaVersion).toBe(19);
       expect(parsed.value.state.pveMeta?.reputations.every((entry) => entry.reputation === 0)).toBe(true);
       expect(parsed.value.state.endgameParticipation?.participants.every(
         (entry) => entry.allianceId === null && entry.soloEligible,
       )).toBe(true);
+      expect(parsed.value.state.endgameFinalObjects?.activeProjects).toEqual([]);
+      expect(parsed.value.state.campaignResult).toEqual({ status: 'ongoing' });
     }
   });
 
-  it('keeps explicit replay settings and checksum stable under schema v18', () => {
+  it('keeps explicit replay settings and checksum stable under schema v19', () => {
     const settings = createCampaignSettings({
       scenarioPreset: 'test',
       worldSpeed: 5,
@@ -87,12 +89,12 @@ describe('schema v14 through v18 migration', () => {
       { type: 'ADVANCE_TIME' as const, seconds: 30 },
     ];
     const first = replayCommands({
-      seedSource: 'schema-v18-replay',
+      seedSource: 'schema-v19-replay',
       faction: 'synod',
       campaignSettings: settings,
     }, commands);
     const second = replayCommands({
-      seedSource: 'schema-v18-replay',
+      seedSource: 'schema-v19-replay',
       faction: 'synod',
       campaignSettings: settings,
     }, commands);
@@ -100,12 +102,12 @@ describe('schema v14 through v18 migration', () => {
     expect(second.ok).toBe(true);
     if (!first.ok || !second.ok) return;
 
-    const direct = createInitialGameState('schema-v18-replay', {
+    const direct = createInitialGameState('schema-v19-replay', {
       playerFaction: 'synod',
       campaignSettings: settings,
     });
     expect(first.value.clock.elapsedSeconds).toBe(150);
-    expect(first.value.schemaVersion).toBe(18);
+    expect(first.value.schemaVersion).toBe(19);
     expect(first.value.campaignSettings).toEqual(settings);
     expect(createStateChecksum(first.value)).toBe(createStateChecksum(second.value));
     expect(createStateChecksum(first.value)).not.toBe(createStateChecksum(direct));

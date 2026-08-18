@@ -1,10 +1,10 @@
 # AI Continuation Guide
 
-**Status:** draft Audit PR #157 `COMPLETE-ENDGAME-02`; implementation is not authorized  
+**Status:** Audit #157 `COMPLETE-ENDGAME-02` merged; PR #158 `FINAL-OBJECT-FOUNDATION` implemented and in exact-head closure  
 **Updated:** 2026-08-18  
-**Last merged PR:** #156 `ENDGAME-PARTICIPATION-GATE`  
-**Verified main:** `c2fcaf39402392f0ebbad297d88f9689f4165e4c`  
-**Active branch:** `agent/complete-endgame-02-audit`
+**Last merged PR:** #157 `COMPLETE-ENDGAME-02` Audit  
+**Verified main:** `7750cdb83b58e95f790351b306e9cf5b344bd780`  
+**Active branch:** `agent/final-object-foundation`
 
 ## Repository
 
@@ -16,15 +16,16 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 
 1. `AGENTS.md`
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
-3. `docs/audits/current-execution-state.md`
-4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/complete-endgame-02-scaffold.md`
-6. `docs/audits/completed/complete-endgame-01.md`
+3. `docs/audits/contracts/complete-endgame-02.md`
+4. `docs/audits/evidence/complete-endgame-02.md`
+5. `docs/audits/current-execution-state.md`
+6. `docs/audits/current-batch-audit.md`
 7. `docs/project-status.json`
 8. `docs/roadmap-pr-index.json`
 9. `docs/16-execution-roadmap.md`
-10. `docs/27-playable-game-roadmap-v5.md`
-11. PR #157 and actual `main`
+10. `docs/17-continuation-guide.md`
+11. `docs/27-playable-game-roadmap-v5.md`
+12. the active PR and actual `main`
 
 ## Closed stage 1
 
@@ -38,38 +39,66 @@ Actual `main` and merged GitHub history override stale prose, abandoned branches
 
 `COMPLETE-ENDGAME-01` is completed with divergence none. Its exact closure evidence is archived in `docs/audits/completed/complete-endgame-01.md`.
 
-## Current Audit #157
+## Accepted Stage 2
 
-Audit, do not implement:
+Audit #157 was accepted and squash-merged as:
 
-- inspect existing locked Obelisks/Gates, prerequisites, costs and assets;
-- inspect current contribution/resource/build command boundaries;
-- determine solo/alliance ownership and victory semantics;
-- determine final-object attack/destruction reuse of ordinary combat;
-- bind exact terminal timestamp and event ordering;
-- bind post-terminal command behavior;
-- prove what active/offline/save-load/autosave behavior must be tested at the terminal boundary;
-- determine canonical terminal presentation without inventing an unnecessary route family;
-- decide schema/save migration implications;
-- identify three-faction asymmetries;
-- produce a bounded implementation sequence and permanent acceptance gates.
+`7750cdb83b58e95f790351b306e9cf5b344bd780`
 
-`implementationAuthorized: false`
+Critical unknowns: **0**.
+
+Exactly four implementation PRs are authorized, strictly sequentially:
+
+```text
+#158 FINAL-OBJECT-FOUNDATION
+→ #159 FINAL-GATE-VULNERABILITY
+→ #160 TERMINAL-RUNTIME-UX
+→ #161 ENDGAME-TERMINAL-GATE
+```
+
+No later PR may start before the preceding PR is squash-merged and the generated fresh `main` SHA is verified.
+
+## Current PR #158
+
+Delivered foundation only:
+
+- schema v19/save v6 and controlled v18/v5 migration;
+- persisted final-project state and ongoing campaign-result foundation;
+- strict current-state validation;
+- positive Solar War qualification snapshot;
+- qualified ordinary Obelisk queueing with direct Gate queue still locked;
+- immutable solo/alliance project cohort;
+- dedicated metal/crystal/gas contribution ledger;
+- exact existing Gate cost target;
+- full funding transitions into the ordinary Gate construction/`BUILDING_COMPLETE` machinery without double charge;
+- bounded histories and six-way Aegis/Synod/Veyra × solo/alliance funded-construction acceptance coverage;
+- campaign-time performance hot-path fixes that preserve event/bot/operation semantics and thresholds.
+
+Still excluded from #158:
+
+- vulnerable Gate phase and final stabilization behavior;
+- Gate combat destruction/rebuild integration;
+- terminal campaign result/freeze/runtime backlog/autosave behavior;
+- terminal Operations/Reports/HUD/catch-up UX;
+- bot final-object planning/perception.
 
 ## Exact recovery action
 
-1. verify `main` is still `c2fcaf39402392f0ebbad297d88f9689f4165e4c` or inspect anything added on top;
-2. work only on `agent/complete-endgame-02-audit` while PR #157 is open;
-3. read real final-object, persistence, campaign-time, combat and UI code before making product decisions;
-4. record concrete evidence paths and unresolved unknowns;
-5. do not create an implementation branch/PR while any critical unknown remains;
-6. only an explicitly accepted/merged Audit #157 may set `implementationAuthorized: true` and define the next bounded PR sequence.
+1. verify actual `main` still matches the active PR base, or inspect anything added on top;
+2. verify the active PR exact base/head and accepted work-item scope;
+3. finish exact-head lint/typecheck/full tests/build, compressed progression, campaign performance, Browser E2E and Graphify;
+4. require unresolved review threads = 0, blocking submitted reviews = 0 and mergeable = true;
+5. mark ready only after all final gates belong to the exact final head;
+6. squash-merge with `expected_head_sha` and record the generated squash SHA;
+7. verify `main` is exactly that generated SHA;
+8. create the next authorized draft PR only from that fresh main;
+9. repeat through #161 without widening the accepted Audit.
 
 ## Hard stops
 
-- no Obelisk/Gate implementation in the Audit PR;
-- no contribution or final-object combat commands;
-- no persisted victory/defeat or terminal freeze;
-- no bot final-object planning or allied-information exception (`COMPLETE-ENDGAME-03`);
-- no new currency, catalogs/assets, multiplayer, seasons, global rebalance or M9 work;
-- no weakening progression, determinism, performance, Browser or Graphify gates.
+- no fifth `COMPLETE-ENDGAME-02` implementation PR;
+- no final-object planner or allied-information exception for bots (`COMPLETE-ENDGAME-03` owns that work);
+- no new currency, alliance treasury, catalogs/assets or widened transport contribution semantics;
+- no separate final-object combat engine or Gate HP/repair currency;
+- no multiplayer, seasons, global rebalance or M9 work;
+- no weakening progression, determinism, `<15 s` / `<30 s` performance, Browser or Graphify gates.

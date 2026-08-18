@@ -1,4 +1,5 @@
 import type { BattleReport } from '../combat/types';
+import type { ResourceCost } from '../economy/types';
 import type { FactionId } from '../planet/types';
 
 export const ALLIANCE_NAME_MIN_LENGTH = 3;
@@ -6,6 +7,8 @@ export const ALLIANCE_NAME_MAX_LENGTH = 40;
 export const ENDGAME_PARTICIPATION_HISTORY_LIMIT = 64;
 export const SOLAR_WAR_CYCLE_SECONDS = 86_400;
 export const SOLAR_WAR_HISTORY_LIMIT = 64;
+export const FINAL_OBJECT_HISTORY_LIMIT = 64;
+export const FINAL_OBJECT_CONTRIBUTION_HISTORY_LIMIT = 64;
 
 export interface EndgameAlliance {
   readonly id: string;
@@ -91,3 +94,88 @@ export interface EndgameParticipationState {
   readonly nextMembershipHistorySequence: number;
   readonly solarWar: SolarWarState;
 }
+
+export type FinalObjectProjectPhase = 'funding' | 'building' | 'vulnerable';
+
+export interface FinalObjectContributionByEmpire {
+  readonly empireId: string;
+  readonly resources: ResourceCost;
+}
+
+export interface FinalObjectQualificationSnapshot {
+  readonly cycleId: string;
+  readonly cycleIndex: number;
+  readonly resolvedAt: number;
+  readonly score: number;
+}
+
+export interface FinalObjectProject {
+  readonly id: string;
+  readonly ownerEmpireId: string;
+  readonly ownerPlanetId: string;
+  readonly factionId: FactionId;
+  readonly obeliskBuildingId: string;
+  readonly gateBuildingId: string;
+  readonly participationKind: SolarWarParticipationKind;
+  readonly participationId: string;
+  readonly allianceId: string | null;
+  readonly eligibleEmpireIds: readonly string[];
+  readonly qualification: FinalObjectQualificationSnapshot;
+  readonly phase: FinalObjectProjectPhase;
+  readonly requiredResources: ResourceCost;
+  readonly contributedResources: ResourceCost;
+  readonly contributionByEmpire: readonly FinalObjectContributionByEmpire[];
+  readonly startedAt: number;
+  readonly fundedAt?: number;
+  readonly gateQueueItemId?: string;
+  readonly gateCompletesAt?: number;
+  readonly vulnerabilityStartedAt?: number;
+  readonly stabilizesAt?: number;
+}
+
+export interface FinalObjectContributionHistoryEntry {
+  readonly sequence: number;
+  readonly projectId: string;
+  readonly empireId: string;
+  readonly sourcePlanetId: string;
+  readonly resources: ResourceCost;
+  readonly occurredAt: number;
+}
+
+export type FinalObjectHistoryAction = 'cancelled';
+
+export interface FinalObjectHistoryEntry {
+  readonly sequence: number;
+  readonly projectId: string;
+  readonly action: FinalObjectHistoryAction;
+  readonly ownerEmpireId: string;
+  readonly ownerPlanetId: string;
+  readonly participationId: string;
+  readonly occurredAt: number;
+}
+
+export interface EndgameFinalObjectState {
+  readonly activeProjects: readonly FinalObjectProject[];
+  readonly history: readonly FinalObjectHistoryEntry[];
+  readonly contributionHistory: readonly FinalObjectContributionHistoryEntry[];
+  readonly nextProjectSequence: number;
+  readonly nextHistorySequence: number;
+  readonly nextContributionSequence: number;
+}
+
+export interface OngoingCampaignResult {
+  readonly status: 'ongoing';
+}
+
+export interface TerminalCampaignResult {
+  readonly status: 'terminal';
+  readonly winningParticipationKind: SolarWarParticipationKind;
+  readonly winningParticipationId: string;
+  readonly winningEmpireIds: readonly string[];
+  readonly ownerEmpireId: string;
+  readonly hostPlanetId: string;
+  readonly terminalAt: number;
+  readonly reason: 'final-gate-stabilized';
+}
+
+export type CampaignResult = OngoingCampaignResult | TerminalCampaignResult;

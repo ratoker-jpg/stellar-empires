@@ -1,7 +1,7 @@
 import type { ResourceCost } from '../simulation/economy/types';
 import type { GameState } from '../simulation/types';
 
-export const SAVE_FORMAT_VERSION = 5 as const;
+export const SAVE_FORMAT_VERSION = 6 as const;
 
 export interface CampaignCatchUpSummary {
   readonly absence: {

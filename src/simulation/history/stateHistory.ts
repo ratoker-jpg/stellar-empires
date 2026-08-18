@@ -35,6 +35,7 @@ export function appendExecutedEventHistory(
   log: readonly ExecutedGameEvent[],
   entries: readonly ExecutedGameEvent[],
 ): readonly ExecutedGameEvent[] {
+  if (entries.length === 0) return log;
   return retainNewest([...log, ...entries], STATE_HISTORY_LIMITS.executedEvents);
 }
 

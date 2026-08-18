@@ -17,6 +17,8 @@ function legacyV3Save() {
   const {
     pveMeta: _pveMeta,
     endgameParticipation: _endgameParticipation,
+    endgameFinalObjects: _endgameFinalObjects,
+    campaignResult: _campaignResult,
     ...withoutCurrentDomains
   } = current;
   const state = { ...withoutCurrentDomains, schemaVersion: 16 as const };
@@ -39,14 +41,14 @@ function legacyV3Save() {
 }
 
 describe('PvE meta persistence migration', () => {
-  it('migrates v16/v3 to v18/v5 without changing existing campaign data', () => {
+  it('migrates v16/v3 to v19/v6 without changing existing campaign data', () => {
     const legacy = legacyV3Save();
     const parsed = parseSaveJson(JSON.stringify(legacy.save));
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
 
-    expect(parsed.value.formatVersion).toBe(5);
-    expect(parsed.value.state.schemaVersion).toBe(18);
+    expect(parsed.value.formatVersion).toBe(6);
+    expect(parsed.value.state.schemaVersion).toBe(19);
     expect(parsed.value.state.pveMeta).toEqual({
       reputations: legacy.current.empires.map((empireId) => ({ empireId, reputation: 0 })),
       activeArenaEntries: [],
@@ -55,10 +57,21 @@ describe('PvE meta persistence migration', () => {
     expect(parsed.value.state.endgameParticipation?.participants.every(
       (entry) => entry.allianceId === null && entry.soloEligible,
     )).toBe(true);
+    expect(parsed.value.state.endgameFinalObjects).toEqual({
+      activeProjects: [],
+      history: [],
+      contributionHistory: [],
+      nextProjectSequence: 1,
+      nextHistorySequence: 0,
+      nextContributionSequence: 0,
+    });
+    expect(parsed.value.state.campaignResult).toEqual({ status: 'ongoing' });
     const {
       schemaVersion: _schemaVersion,
       pveMeta: _migratedMeta,
       endgameParticipation: _migratedParticipation,
+      endgameFinalObjects: _migratedFinalObjects,
+      campaignResult: _migratedCampaignResult,
       ...migratedExisting
     } = parsed.value.state;
     const { schemaVersion: _legacyVersion, ...legacyExisting } = legacy.state;
@@ -146,7 +159,7 @@ describe('PvE meta persistence migration', () => {
     expect(created.ok).toBe(true);
     if (!created.ok) return;
 
-    const save = createSaveEnvelope('logistics-v5', created.value, SAVED_AT);
+    const save = createSaveEnvelope('logistics-v6', created.value, SAVED_AT);
     const parsed = parseSaveJson(serializeSave(save));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
@@ -157,7 +170,7 @@ describe('PvE meta persistence migration', () => {
   it('rejects future save and simulation versions instead of guessing', () => {
     const current = createInitialGameState('pve-meta-future-rejection');
     expect(parseSaveJson(JSON.stringify({
-      formatVersion: 6,
+      formatVersion: 7,
       slotId: 'future-format',
       savedAt: SAVED_AT,
       runtimeMetadata: createCampaignRuntimeMetadata(SAVED_AT),
@@ -166,12 +179,12 @@ describe('PvE meta persistence migration', () => {
     }))).toMatchObject({ ok: false, code: 'INVALID_SAVE_SHAPE' });
 
     expect(parseSaveJson(JSON.stringify({
-      formatVersion: 5,
+      formatVersion: 6,
       slotId: 'future-schema',
       savedAt: SAVED_AT,
       runtimeMetadata: createCampaignRuntimeMetadata(SAVED_AT),
       checksum: 'unused',
-      state: { ...current, schemaVersion: 19 },
+      state: { ...current, schemaVersion: 20 },
     }))).toMatchObject({ ok: false, code: 'INVALID_SAVE_SHAPE' });
   });
 });
