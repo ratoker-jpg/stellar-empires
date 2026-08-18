@@ -116,12 +116,17 @@ export function mapProcessedGameTimeToRealDuration(
   };
 }
 
-function earliest(values: readonly (number | undefined)[]): number | undefined {
-  let result: number | undefined;
-  for (const value of values) {
-    if (value !== undefined && (result === undefined || value < result)) {
-      result = value;
-    }
+function earliestOfThree(
+  first: number | undefined,
+  second: number | undefined,
+  third: number | undefined,
+): number | undefined {
+  let result = first;
+  if (second !== undefined && (result === undefined || second < result)) {
+    result = second;
+  }
+  if (third !== undefined && (result === undefined || third < result)) {
+    result = third;
   }
   return result;
 }
@@ -149,10 +154,12 @@ function newExecutedEvents(
 ): readonly ExecutedGameEvent[] {
   const lastExistingId = before.eventLog.at(-1)?.event.id;
   if (lastExistingId === undefined) return after.eventLog;
-  const overlapIndex = after.eventLog.findIndex(
-    (entry) => entry.event.id === lastExistingId,
-  );
-  return overlapIndex < 0 ? after.eventLog : after.eventLog.slice(overlapIndex + 1);
+  for (let index = after.eventLog.length - 1; index >= 0; index -= 1) {
+    if (after.eventLog[index]?.event.id === lastExistingId) {
+      return after.eventLog.slice(index + 1);
+    }
+  }
+  return after.eventLog;
 }
 
 function advanceNonBotTime(state: GameState, seconds: number): {
@@ -226,7 +233,7 @@ export function advanceCampaignTime(
     const nextBotAt = scheduledBotAt !== undefined && scheduledBotAt <= targetTime
       ? Math.max(currentTime, scheduledBotAt)
       : undefined;
-    const nextNonBotAt = earliest([boundedEventAt, nextRouteAt, nextWorldEventAt]);
+    const nextNonBotAt = earliestOfThree(boundedEventAt, nextRouteAt, nextWorldEventAt);
 
     if (
       currentTime >= targetTime &&
@@ -236,7 +243,7 @@ export function advanceCampaignTime(
       break;
     }
 
-    const nextBoundaryAt = earliest([nextNonBotAt, nextBotAt, targetTime]);
+    const nextBoundaryAt = earliestOfThree(nextNonBotAt, nextBotAt, targetTime);
     if (nextBoundaryAt === undefined) break;
 
     const shouldAdvanceNonBot = nextBoundaryAt > currentTime ||
