@@ -1,8 +1,10 @@
 import { DEFAULT_BOT_PROFILES } from '../simulation/bots/profiles';
 import { createStateChecksum } from '../simulation/checksum';
 import type { BattleReport } from '../simulation/combat/types';
+import type { FinalObjectProject } from '../simulation/endgame/types';
 import type { FleetState } from '../simulation/fleets/types';
 import type { IntelObservation } from '../simulation/intelligence/types';
+import { getCompleteBuildingIds } from '../simulation/planet/completeBuildingCatalog';
 import { executeCommand } from '../simulation/reducer';
 import type { GameState } from '../simulation/types';
 import {
@@ -19,6 +21,7 @@ export const E2E_SECONDARY_PLANET_ID = 'planet-e2e-secondary';
 const E2E_BOT_IDLE_SECONDS = 86_400;
 const E2E_SCOUT_COOLDOWN_CEILING_SECONDS = 7_200;
 const E2E_BOT_GATE_DELAY_MILLISECONDS = 250;
+const E2E_TERMINAL_QUERY = 'terminalGate';
 
 let botGateResult: OrdinaryMissionIntelligenceGateResult | undefined;
 let botGateScheduled = false;
@@ -27,6 +30,12 @@ function isBotGateRequested(): boolean {
   return E2E_RUNTIME_ENABLED &&
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).get('botGate') === '1';
+}
+
+function isTerminalFixtureRequested(): boolean {
+  return E2E_RUNTIME_ENABLED &&
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get(E2E_TERMINAL_QUERY) === '1';
 }
 
 function getBotGateResult(): OrdinaryMissionIntelligenceGateResult {
@@ -124,6 +133,75 @@ function canonicalizeFixtureState(state: GameState): GameState {
     throw new Error('E2E scenario state is not JSON serializable.');
   }
   return JSON.parse(serialized) as GameState;
+}
+
+function createE2eTerminalState(state: GameState): GameState {
+  if (state.campaignResult?.status === 'terminal') return canonicalizeFixtureState(state);
+  const host = state.planets.find((planet) => planet.ownerEmpireId === 'player');
+  if (host === undefined || state.endgameFinalObjects === undefined) {
+    throw new Error('E2E terminal scenario requires a player host and final-object state.');
+  }
+  const ids = getCompleteBuildingIds(host.factionId);
+  const terminalAt = state.clock.elapsedSeconds;
+  const resources = { metal: 1_000, crystal: 750, gas: 500 } as const;
+  const project: FinalObjectProject = {
+    id: 'final-project-1',
+    ownerEmpireId: 'player',
+    ownerPlanetId: host.id,
+    factionId: host.factionId,
+    obeliskBuildingId: ids.galacticObelisk,
+    gateBuildingId: ids.supremeGalacticGates,
+    participationKind: 'solo',
+    participationId: 'player',
+    allianceId: null,
+    eligibleEmpireIds: ['player'],
+    qualification: {
+      cycleId: 'e2e-terminal-cycle',
+      cycleIndex: 1,
+      resolvedAt: Math.max(0, terminalAt - 60),
+      score: 1_000,
+    },
+    phase: 'vulnerable',
+    requiredResources: resources,
+    contributedResources: resources,
+    contributionByEmpire: [{ empireId: 'player', resources }],
+    startedAt: Math.max(0, terminalAt - 86_500),
+    fundedAt: Math.max(0, terminalAt - 86_450),
+    gateQueueItemId: 'e2e-terminal-gate-queue',
+    gateCompletesAt: Math.max(0, terminalAt - 86_400),
+    vulnerabilityStartedAt: Math.max(0, terminalAt - 86_400),
+    stabilizesAt: terminalAt,
+  };
+  const terminalState: GameState = {
+    ...state,
+    planets: state.planets.map((planet) =>
+      planet.id === host.id
+        ? {
+            ...planet,
+            buildings: [
+              ...planet.buildings.filter((building) => building.buildingId !== ids.supremeGalacticGates),
+              { buildingId: ids.supremeGalacticGates, level: 1 },
+            ],
+          }
+        : planet,
+    ),
+    endgameFinalObjects: {
+      ...state.endgameFinalObjects,
+      activeProjects: [project],
+      nextProjectSequence: Math.max(2, state.endgameFinalObjects.nextProjectSequence),
+    },
+    campaignResult: {
+      status: 'terminal',
+      winningParticipationKind: 'solo',
+      winningParticipationId: 'player',
+      winningEmpireIds: ['player'],
+      ownerEmpireId: 'player',
+      hostPlanetId: host.id,
+      terminalAt,
+      reason: 'final-gate-stabilized',
+    },
+  };
+  return canonicalizeFixtureState(terminalState);
 }
 
 export function createE2eFixtureState(state: GameState): GameState {
@@ -311,7 +389,14 @@ export function createE2eFixtureState(state: GameState): GameState {
 }
 
 export function prepareE2eState(state: GameState): GameState {
-  return E2E_RUNTIME_ENABLED ? createE2eFixtureState(state) : state;
+  if (!E2E_RUNTIME_ENABLED) return state;
+  if (isTerminalFixtureRequested()) {
+    const fixture = state.campaignResult?.status === 'terminal'
+      ? state
+      : createE2eFixtureState(state);
+    return createE2eTerminalState(fixture);
+  }
+  return createE2eFixtureState(state);
 }
 
 export function updateE2eRuntimeDiagnostics(state: GameState): void {

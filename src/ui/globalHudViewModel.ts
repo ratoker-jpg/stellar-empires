@@ -14,6 +14,10 @@ import {
   getReservedPopulation,
   getUnitPopulationUsed,
 } from '../simulation/units/inventory';
+import {
+  createCampaignTerminalPresentation,
+  type CampaignTerminalPresentation,
+} from './endgameTerminalPresentation';
 
 export type HudWarningLevel = 'normal' | 'warning' | 'danger' | 'critical';
 
@@ -51,6 +55,7 @@ export interface GlobalHudViewModel {
   readonly planetName: string;
   readonly coordinate: string;
   readonly elapsedSeconds: number;
+  readonly terminal: CampaignTerminalPresentation | null;
   readonly resources: Readonly<Record<ResourceId, HudResourceViewModel>>;
   readonly energy: HudEnergyViewModel;
   readonly population: HudCapacityViewModel;
@@ -147,6 +152,7 @@ export function createGlobalHudViewModel(
     planetName: planet.name,
     coordinate: `${planet.systemId}:${planet.position}`,
     elapsedSeconds: state.clock.elapsedSeconds,
+    terminal: createCampaignTerminalPresentation(state, 'player'),
     resources,
     energy: {
       produced,

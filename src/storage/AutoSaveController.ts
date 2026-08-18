@@ -51,6 +51,7 @@ export class AutoSaveController {
   #writeChain: Promise<void> = Promise.resolve();
   #activeWrite: Promise<void> | undefined;
   #propagateFlushFailure = false;
+  #lastImmediateTerminalState: GameState | undefined;
   #disposed = false;
 
   constructor(repository: SaveRepository, options: AutoSaveControllerOptions = {}) {
@@ -109,6 +110,14 @@ export class AutoSaveController {
     this.stage(state, runtimeMetadata);
     this.#onStatus({ phase: 'pending' });
     if (this.#timer !== undefined) clearTimeout(this.#timer);
+    const terminalRequiresImmediateFlush = state.campaignResult?.status === 'terminal' &&
+      this.#lastImmediateTerminalState !== state;
+    if (terminalRequiresImmediateFlush) {
+      this.#lastImmediateTerminalState = state;
+      this.#timer = undefined;
+      void this.flush().catch(() => undefined);
+      return;
+    }
     this.#timer = setTimeout(() => {
       this.#timer = undefined;
       void this.flush().catch(() => undefined);

@@ -14,6 +14,7 @@ import {
 import type { SpaceCoordinate } from '../simulation/space/coordinates';
 import type { GameState } from '../simulation/types';
 import type { ReportShellFilter } from './appShellRoute';
+import { createCampaignTerminalPresentation } from './endgameTerminalPresentation';
 import { createIncomingFlightsSection } from './intelligencePresentation';
 import { formatGameDuration } from './planetViewModel';
 import {
@@ -141,6 +142,23 @@ function createSelect(
   select.value = selected;
   label.append(caption, select);
   return { label, select };
+}
+
+function createTerminalReportSummary(state: GameState): HTMLElement | null {
+  const terminal = createCampaignTerminalPresentation(state, 'player');
+  if (terminal === null) return null;
+  const section = document.createElement('section');
+  section.className = 'mission-reports-summary';
+  section.dataset.testid = 'terminal-campaign-report';
+  section.dataset.outcome = terminal.outcome;
+  const title = document.createElement('h2');
+  title.textContent = `Кампания завершена · ${terminal.outcomeLabel}`;
+  const result = document.createElement('p');
+  result.textContent = `Победитель: ${terminal.winningParticipationLabel}. Хост финальных Врат: ${terminal.hostLabel}.`;
+  const timestamp = document.createElement('strong');
+  timestamp.textContent = `Терминальная отметка ${formatGameDuration(terminal.terminalAt)}`;
+  section.append(title, result, timestamp);
+  return section;
 }
 
 function worldEventTargetLabel(state: GameState, targetId: string): string {
@@ -360,7 +378,17 @@ export function mountReportsWorkspace(options: ReportsWorkspaceOptions): Reports
     if (filtered.length === 0) list.textContent = 'По заданным фильтрам отчётов нет.';
     const incoming = createIncomingFlightsSection(state, 'player');
     incoming.hidden = filter !== 'all' && filter !== 'intelligence';
-    host.replaceChildren(summary, controls, incoming, comparison, list);
+    const terminalSummary = filter === 'all' || filter === 'endgame'
+      ? createTerminalReportSummary(state)
+      : null;
+    host.replaceChildren(
+      summary,
+      ...(terminalSummary === null ? [] : [terminalSummary]),
+      controls,
+      incoming,
+      comparison,
+      list,
+    );
   };
 
   const onTabClick = (event: Event): void => {

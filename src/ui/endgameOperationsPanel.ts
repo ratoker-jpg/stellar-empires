@@ -26,6 +26,13 @@ export function createEndgamePanelSummary(
   view: EndgameOperationsViewModel,
   mode: EndgameOperationsPanelMode,
 ): EndgamePanelSummary {
+  if (view.terminal !== null) {
+    return {
+      title: mode === 'alliances' ? 'Альянсы и одиночное участие' : 'Солнечная война',
+      status: `${view.terminal.outcomeLabel}. Кампания завершена на ${formatGameDuration(view.terminal.terminalAt)}.`,
+      primaryAction: null,
+    };
+  }
   if (mode === 'alliances') {
     return {
       title: 'Альянсы и одиночное участие',
@@ -78,6 +85,52 @@ function createActionButton(
   button.dataset.testid = testId;
   button.addEventListener('click', action);
   return button;
+}
+
+function createFinalProjectSection(view: EndgameOperationsViewModel): HTMLElement {
+  const section = createSection('Финальный проект', 'endgame-final-projects', 'final-project-status');
+  if (view.terminal !== null) {
+    const terminal = createParagraph(
+      `${view.terminal.outcomeLabel} · победитель: ${view.terminal.winningParticipationLabel} · хост: ${view.terminal.hostLabel}.`,
+      'endgame-feedback',
+    );
+    terminal.dataset.testid = 'campaign-terminal-result';
+    terminal.dataset.outcome = view.terminal.outcome;
+    section.append(
+      terminal,
+      createParagraph(
+        `Кампания зафиксирована на ${formatGameDuration(view.terminal.terminalAt)}. Игровые действия остановлены; состояние доступно только для просмотра.`,
+        'endgame-muted',
+      ),
+    );
+  }
+  if (view.finalProjects.length === 0) {
+    section.append(createParagraph('Активных финальных проектов пока нет.', 'endgame-muted'));
+    return section;
+  }
+  for (const project of view.finalProjects) {
+    const card = document.createElement('article');
+    card.className = `endgame-alliance-card${project.terminalWinner ? ' is-current' : ''}`;
+    card.dataset.finalProjectId = project.id;
+    const title = document.createElement('strong');
+    title.textContent = `${project.id} · ${project.phaseLabel}`;
+    const identity = createParagraph(
+      `Хост: ${project.hostLabel} · владелец ${project.ownerEmpireId} · ${project.participationLabel}.`,
+    );
+    const funding = createParagraph(
+      `Финансирование ${project.fundingPercent}% · ${project.fundingLabel}`,
+      'endgame-muted',
+    );
+    card.append(title, identity, funding);
+    if (project.vulnerabilityDeadline !== null && project.vulnerabilityRemainingSeconds !== null) {
+      card.append(createParagraph(
+        `Стабилизация на ${formatGameDuration(project.vulnerabilityDeadline)} · осталось ${formatGameDuration(project.vulnerabilityRemainingSeconds)}.`,
+        'endgame-muted',
+      ));
+    }
+    section.append(card);
+  }
+  return section;
 }
 
 function renderUnavailable(host: HTMLElement): void {
@@ -194,7 +247,7 @@ function renderAlliancePanel(
     }
     list.append(card);
   }
-  host.replaceChildren(overview, list);
+  host.replaceChildren(createFinalProjectSection(view), overview, list);
 }
 
 function renderSolarWarEntry(
@@ -202,6 +255,10 @@ function renderSolarWarEntry(
   view: EndgameOperationsViewModel,
   options: EndgameOperationsPanelOptions,
 ): void {
+  if (view.terminal !== null) {
+    section.append(createParagraph('Кампания завершена. Новые входы в Солнечную войну недоступны.', 'endgame-muted'));
+    return;
+  }
   if (view.activeEntry !== null) {
     const entry = view.activeEntry;
     section.append(
@@ -342,7 +399,14 @@ function renderSolarWarPanel(
     ownedResults.append(details);
   }
 
-  host.replaceChildren(cycle, entry, scoreboard, publicResults, ownedResults);
+  host.replaceChildren(
+    createFinalProjectSection(view),
+    cycle,
+    entry,
+    scoreboard,
+    publicResults,
+    ownedResults,
+  );
 }
 
 export function renderEndgameOperationsPanel(

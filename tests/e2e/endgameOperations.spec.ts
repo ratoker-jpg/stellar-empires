@@ -80,6 +80,66 @@ test('alliance and Solar War actions use canonical Operations routes and survive
   await expect(page).toHaveURL(/#\/operations\/solar-war$/);
 });
 
+test('terminal Gate result is read-only, visible across existing surfaces, and reload-safe', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?e2e=1&terminalGate=1#/operations/solar-war');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+
+  const finalProject = page.locator('[data-testid="final-project-status"]');
+  await expect(finalProject).toContainText('Финальный проект');
+  await expect(finalProject).toContainText('Уязвимость Врат');
+  await expect(finalProject).toContainText('Финансирование 100%');
+  await expect(finalProject.locator('[data-testid="campaign-terminal-result"]')).toHaveAttribute(
+    'data-outcome',
+    'victory',
+  );
+  await expect(finalProject.locator('[data-testid="campaign-terminal-result"]')).toContainText(
+    'Победа',
+  );
+  await expect(page.locator('[data-testid="solar-war-entry"]')).toContainText(
+    'Кампания завершена',
+  );
+  await expect(page.locator('[data-testid="solar-war-enter"]')).toHaveCount(0);
+  await expect(page.locator('[data-testid="hud-solar-war-indicator"]')).toHaveAttribute(
+    'data-terminal',
+    'true',
+  );
+  await expect(page.locator('[data-testid="hud-solar-war-indicator"]')).toHaveAttribute(
+    'data-outcome',
+    'victory',
+  );
+  await expectNoHorizontalOverflow(page);
+
+  await expect(page.locator('#app-status')).toHaveText('Сохранено локально', { timeout: 8_000 });
+  const worldTime = await page.locator('#hud-world-time').textContent();
+  await page.waitForTimeout(1_500);
+  await expect(page.locator('#hud-world-time')).toHaveText(worldTime ?? '');
+
+  await page.goto('/?e2e=1&terminalGate=1#/reports/endgame');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page.locator('[data-testid="terminal-campaign-report"]')).toHaveAttribute(
+    'data-outcome',
+    'victory',
+  );
+  await expect(page.locator('[data-testid="terminal-campaign-report"]')).toContainText('Победа');
+  await expectNoHorizontalOverflow(page);
+
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/reports\/endgame$/);
+  await expect(page.locator('[data-testid="terminal-campaign-report"]')).toHaveAttribute(
+    'data-outcome',
+    'victory',
+  );
+  await expect(page.locator('[data-testid="hud-solar-war-indicator"]')).toHaveAttribute(
+    'data-terminal',
+    'true',
+  );
+  await expect(page.locator('#hud-world-time')).toHaveText(worldTime ?? '');
+  await expectNoHorizontalOverflow(page);
+});
+
 test('endgame Reports filter and Operations surfaces remain responsive and reduced-motion safe', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const viewport of [

@@ -1,5 +1,6 @@
 import type { BotSchedulerAuditEntry } from '../bots/scheduler';
 import type { ResourceCost, ResourceId } from '../economy/types';
+import { getCampaignOutcomeForEmpire } from '../endgame/campaignResult';
 import type { LogisticsDepartureReceipt } from '../logistics/types';
 import type { ExecutedGameEvent, GameState } from '../types';
 
@@ -315,7 +316,7 @@ export function summarizeCampaignTransition(
       logisticsTransfers,
     },
     result: {
-      status: after.empires.includes('player') ? 'ongoing' : 'defeat',
+      status: getCampaignOutcomeForEmpire(after, 'player'),
     },
   };
 }

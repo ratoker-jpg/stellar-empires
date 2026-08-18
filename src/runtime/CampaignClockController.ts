@@ -78,7 +78,9 @@ export class CampaignClockController {
         'active',
         this.#operationBudget,
       );
-      const saveRequested = !checkpoint.complete ||
+      const becameTerminal = beforeState.campaignResult?.status !== 'terminal' &&
+        checkpoint.state.campaignResult?.status === 'terminal';
+      const saveRequested = becameTerminal || !checkpoint.complete ||
         nowMilliseconds - this.#lastSaveRequestedAtMilliseconds >= this.#saveIntervalMilliseconds;
       if (saveRequested) this.#lastSaveRequestedAtMilliseconds = nowMilliseconds;
       this.#options.applyCheckpoint(checkpoint, saveRequested);

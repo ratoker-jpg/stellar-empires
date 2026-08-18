@@ -1,25 +1,25 @@
 {
-  "statusVersion": 73,
+  "statusVersion": 74,
   "updatedAt": "2026-08-18",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 157,
-  "lastMergeSha": "7750cdb83b58e95f790351b306e9cf5b344bd780",
-  "verifiedMainBaseline": "PR #157 COMPLETE-ENDGAME-02 Audit squash-merged after exact final CI, Browser E2E, Graphify and review gates",
-  "runtimeBaselinePr": 157,
-  "runtimeBaselineSha": "7750cdb83b58e95f790351b306e9cf5b344bd780",
-  "activePr": 158,
+  "lastMergedPr": 159,
+  "lastMergeSha": "466e5ea161a005eeb792d5440dc27d960b37b2f2",
+  "verifiedMainBaseline": "PR #159 FINAL-GATE-VULNERABILITY squash-merged; exact main verified before PR #160 continuation",
+  "runtimeBaselinePr": 159,
+  "runtimeBaselineSha": "466e5ea161a005eeb792d5440dc27d960b37b2f2",
+  "activePr": 160,
   "activePrKind": "implementation",
-  "activeWorkItem": "FINAL-OBJECT-FOUNDATION",
-  "activeBranch": "agent/final-object-foundation",
-  "activeCodeHead": "a3e191bac4ced5402507d887fd182d9e33830d25",
-  "nextPrAfterActive": 159,
-  "nextPrKind": "implementation-after-pr158-merge",
-  "nextWorkItem": "FINAL-GATE-VULNERABILITY",
-  "currentMilestone": "M8.2 final-object foundation",
+  "activeWorkItem": "TERMINAL-RUNTIME-UX",
+  "activeBranch": "agent/terminal-runtime-ux",
+  "activeCodeHead": "2cffc2800298ef8b57c9f1fa049561d0da540ddd",
+  "nextPrAfterActive": 161,
+  "nextPrKind": "implementation-closure-after-pr160-merge",
+  "nextWorkItem": "ENDGAME-TERMINAL-GATE",
+  "currentMilestone": "M8.2 terminal runtime and UX",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "canonicalCampaignContract": "docs/25a-local-campaign-world-speed-and-offline-progression.md",
@@ -31,7 +31,7 @@
     "docs/audits/evidence/complete-endgame-02.md"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastChangeDocument": "docs/changes/pr158-final-object-foundation.md",
+  "lastChangeDocument": "docs/changes/pr160-terminal-runtime-ux.md",
   "lastCompletedBatchArchive": "docs/audits/completed/complete-endgame-01.md",
   "currentBatchArchive": null,
   "lastCompletedBatch": {
@@ -58,10 +58,11 @@
     "auditPr": 157,
     "auditMergeSha": "7750cdb83b58e95f790351b306e9cf5b344bd780",
     "auditFinalHead": "d45f97b50d8f518ea01ad160e6e9a34500f8fa6d",
-    "status": "merged-implementation-pr158-validation",
+    "status": "merged-pr158-pr159-active-pr160-final-validation",
     "implementationAuthorized": true,
     "baselineSha": "c2fcaf39402392f0ebbad297d88f9689f4165e4c",
     "implementationBaselineSha": "7750cdb83b58e95f790351b306e9cf5b344bd780",
+    "currentMainSha": "466e5ea161a005eeb792d5440dc27d960b37b2f2",
     "complexity": "medium",
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
@@ -70,7 +71,12 @@
     "boundedImplementationSequence": true,
     "implementationCount": 4,
     "plannedImplementationPrs": [158, 159, 160, 161],
-    "completedImplementationPrs": [],
+    "completedImplementationPrs": [158, 159],
+    "implementationMergeShas": {
+      "158": "a66a05fd433893f4a6f15cd8d9fd53ea31d793f9",
+      "159": "466e5ea161a005eeb792d5440dc27d960b37b2f2"
+    },
+    "activeImplementationPr": 160,
     "workItems": [
       "FINAL-OBJECT-FOUNDATION",
       "FINAL-GATE-VULNERABILITY",
@@ -95,10 +101,16 @@
     "functionalObelisksImplemented": true,
     "gateFundingConstructionImplemented": true,
     "finalObjectSixWayFundingClosureImplemented": true,
-    "functionalGatesImplemented": false,
-    "campaignTerminalStateImplemented": false,
+    "functionalGatesImplemented": true,
+    "finalGateVulnerabilityImplemented": true,
+    "finalGateAttackDestructionImplemented": true,
+    "campaignTerminalStateImplemented": true,
+    "terminalRuntimeFreezeImplemented": true,
+    "terminalBacklogConsumptionImplemented": true,
+    "terminalDurableCheckpointImplemented": true,
+    "terminalOperationsReportsHudUxImplemented": true,
     "botEndgameParityImplemented": false,
-    "status": "m8-stage-2-pr158-implementation-complete-awaiting-final-gates"
+    "status": "m8-stage-2-pr160-implementation-complete-awaiting-final-exact-head-gates"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -154,7 +166,7 @@
     "postVictoryContinueMode": false,
     "botEndgamePlannerIncluded": false,
     "implementationAuthorized": true,
-    "currentlyAuthorizedWorkItem": "FINAL-OBJECT-FOUNDATION",
+    "currentlyAuthorizedWorkItem": "TERMINAL-RUNTIME-UX",
     "criticalUnknowns": 0,
     "futureAudits": ["COMPLETE-ENDGAME-03"]
   },
@@ -170,16 +182,14 @@
     {"pr": 155, "kind": "implementation", "workItem": "ENDGAME-OPERATIONS-UX", "status": "merged", "mergeSha": "a5c72562200c2a6dfdc49f1e4f07e8a869a6558d"},
     {"pr": 156, "kind": "implementation-closure", "workItem": "ENDGAME-PARTICIPATION-GATE", "status": "merged", "mergeSha": "c2fcaf39402392f0ebbad297d88f9689f4165e4c"},
     {"pr": 157, "kind": "audit", "batchId": "COMPLETE-ENDGAME-02", "workItem": "COMPLETE-ENDGAME-02-AUDIT", "status": "merged", "mergeSha": "7750cdb83b58e95f790351b306e9cf5b344bd780", "implementationAuthorized": true},
-    {"pr": 158, "kind": "implementation", "workItem": "FINAL-OBJECT-FOUNDATION", "status": "implementation-complete-awaiting-final-gates", "implementationStarted": true, "productCodeHead": "a3e191bac4ced5402507d887fd182d9e33830d25"},
-    {"pr": 159, "kind": "implementation", "workItem": "FINAL-GATE-VULNERABILITY", "status": "planned-after-pr158-merge"},
-    {"pr": 160, "kind": "implementation", "workItem": "TERMINAL-RUNTIME-UX", "status": "planned"},
-    {"pr": 161, "kind": "implementation-closure", "workItem": "ENDGAME-TERMINAL-GATE", "status": "planned"}
+    {"pr": 158, "kind": "implementation", "workItem": "FINAL-OBJECT-FOUNDATION", "status": "merged", "mergeSha": "a66a05fd433893f4a6f15cd8d9fd53ea31d793f9"},
+    {"pr": 159, "kind": "implementation", "workItem": "FINAL-GATE-VULNERABILITY", "status": "merged", "mergeSha": "466e5ea161a005eeb792d5440dc27d960b37b2f2"},
+    {"pr": 160, "kind": "implementation", "workItem": "TERMINAL-RUNTIME-UX", "status": "implementation-complete-awaiting-final-exact-head-gates", "implementationStarted": true, "productCodeHead": "554c4a1caf6e24f4d84a285ba426a39e95d7dd87", "implementationTestClosureHead": "2cffc2800298ef8b57c9f1fa049561d0da540ddd"},
+    {"pr": 161, "kind": "implementation-closure", "workItem": "ENDGAME-TERMINAL-GATE", "status": "planned-after-pr160-merge"}
   ],
   "knownLimitations": [
-    "PR #158 final-object foundation is implemented on its branch but is not merged until exact-head gates complete",
-    "Gate vulnerability/destruction is reserved for #159",
-    "Persisted terminal victory/defeat runtime and UI are reserved for #160 and closure evidence for #161",
-    "Bot Solar War/final-endgame planning and allied perception require COMPLETE-ENDGAME-03",
+    "PR #160 is not mergeable by policy until all gates are green again on its final exact source-of-truth-sync head",
+    "Bot Solar War/final-object planning and allied perception remain outside COMPLETE-ENDGAME-02 and require COMPLETE-ENDGAME-03",
     "M9 onboarding and release hardening remain incomplete"
   ],
   "requiredStartupReading": [
@@ -190,11 +200,11 @@
     "docs/audits/complete-endgame-02-scaffold.md",
     "docs/audits/contracts/complete-endgame-02.md",
     "docs/audits/evidence/complete-endgame-02.md",
-    "docs/changes/pr158-final-object-foundation.md",
+    "docs/changes/pr160-terminal-runtime-ux.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
-    "PR #158 and actual main"
+    "PR #160 and actual main"
   ],
-  "nextAction": "Validate the exact final PR #158 head with CI, Browser E2E, Graphify, progression/performance and review/mergeability gates, then squash-merge #158. Only after the generated squash is on fresh main may #159 be created as a draft scaffold; do not implement #159 in the same closeout step."
+  "nextAction": "Fetch the final exact PR #160 head after source-of-truth sync and require CI, Browser E2E, Graphify, compressed progression, permanent performance and review/mergeability gates all green on that SHA. Then mark #160 ready and squash-merge with expected-head protection. Verify the generated squash as fresh main and create only Draft scaffold #161 ENDGAME-TERMINAL-GATE from it; do not implement #161 in the #160 closeout step."
 }

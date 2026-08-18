@@ -1,3 +1,4 @@
+import { getCampaignOutcomeForEmpire } from '../endgame/campaignResult';
 import type { ResourceCost, ResourceId } from '../economy/types';
 import type { LogisticsDepartureReceipt } from '../logistics/types';
 import type { ExecutedGameEvent, GameState } from '../types';
@@ -185,5 +186,5 @@ export function accumulateCampaignTransition(
   accumulatePlayerResources(target, before, after);
   accumulateEvents(target, before, after, events);
   accumulateLogistics(target, logisticsReceipts);
-  target.result.status = after.empires.includes('player') ? 'ongoing' : 'defeat';
+  target.result.status = getCampaignOutcomeForEmpire(after, 'player');
 }

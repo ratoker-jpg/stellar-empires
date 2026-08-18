@@ -24,6 +24,12 @@ import {
 import type { FleetState } from '../simulation/fleets/types';
 import type { GameState } from '../simulation/types';
 import { getUnitDefinition } from '../simulation/units/catalog';
+import {
+  createCampaignTerminalPresentation,
+  createFinalProjectPresentations,
+  type CampaignTerminalPresentation,
+  type FinalProjectPresentation,
+} from './endgameTerminalPresentation';
 
 export const PLAYER_EMPIRE_ID = 'player';
 
@@ -47,6 +53,7 @@ const SOLAR_WAR_VALIDATION_MESSAGES: Readonly<Record<string, string>> = {
   SOLAR_WAR_FLEET_NOT_IDLE: 'Нужен собственный станционированный флот без активной миссии.',
   SOLAR_WAR_FLEET_NOT_COMBAT_CAPABLE: 'Во флоте должен быть хотя бы один боевой корабль.',
   SOLAR_WAR_ORIGIN_UNAVAILABLE: 'Планета базирования флота недоступна.',
+  CAMPAIGN_TERMINAL: 'Кампания завершена. Игровые действия заблокированы.',
 };
 
 export interface AllianceRosterView {
@@ -106,6 +113,8 @@ export interface SolarWarScoreboardView {
 export interface EndgameOperationsViewModel {
   readonly available: boolean;
   readonly empireId: string;
+  readonly terminal: CampaignTerminalPresentation | null;
+  readonly finalProjects: readonly FinalProjectPresentation[];
   readonly soloEligible: boolean;
   readonly participationKind: SolarWarParticipationKind;
   readonly currentAllianceId: string | null;
@@ -204,6 +213,7 @@ function createAllianceViews(
   state: GameState,
   empireId: string,
   currentAllianceId: string | null,
+  terminal: boolean,
 ): readonly AllianceRosterView[] {
   const participation = state.endgameParticipation;
   if (participation === undefined) return [];
@@ -217,7 +227,7 @@ function createAllianceViews(
       members,
       memberCount: members.length,
       current: alliance.id === currentAllianceId,
-      canJoin: currentAllianceId === null && !members.includes(empireId),
+      canJoin: !terminal && currentAllianceId === null && !members.includes(empireId),
     };
   });
 }
@@ -254,11 +264,15 @@ export function createEndgameOperationsViewModel(
     ? undefined
     : getEmpireParticipation(participation, empireId);
   const currentAllianceId = participant?.allianceId ?? null;
+  const terminal = createCampaignTerminalPresentation(state, empireId);
+  const terminalLocked = terminal !== null;
   const cycle = getCurrentSolarWarCycle(state);
-  const eligibleFleets = getEligibleSolarWarFleets(state, empireId)
-    .slice()
-    .sort((left, right) => left.id.localeCompare(right.id))
-    .map((fleet) => createFleetOption(state, fleet));
+  const eligibleFleets = terminalLocked
+    ? []
+    : getEligibleSolarWarFleets(state, empireId)
+      .slice()
+      .sort((left, right) => left.id.localeCompare(right.id))
+      .map((fleet) => createFleetOption(state, fleet));
   const publicResults = getSolarWarPublicResults(state)
     .slice()
     .sort((left, right) => right.resolvedAt - left.resolvedAt || left.id.localeCompare(right.id))
@@ -290,15 +304,17 @@ export function createEndgameOperationsViewModel(
   return {
     available: participation !== undefined && participant !== undefined,
     empireId,
+    terminal,
+    finalProjects: createFinalProjectPresentations(state, empireId),
     soloEligible: participation === undefined
       ? false
       : isEmpireSoloEligible(participation, empireId),
     participationKind: currentAllianceId === null ? 'solo' : 'alliance',
     currentAllianceId,
     currentAllianceName: allianceName(participation?.alliances ?? [], currentAllianceId),
-    canCreateAlliance: participation !== undefined && participant?.allianceId === null,
-    canLeaveAlliance: participant?.allianceId !== null && participant?.allianceId !== undefined,
-    alliances: createAllianceViews(state, empireId, currentAllianceId),
+    canCreateAlliance: !terminalLocked && participation !== undefined && participant?.allianceId === null,
+    canLeaveAlliance: !terminalLocked && participant?.allianceId !== null && participant?.allianceId !== undefined,
+    alliances: createAllianceViews(state, empireId, currentAllianceId, terminalLocked),
     cycle: {
       id: cycle.id,
       index: cycle.cycleIndex,
@@ -322,6 +338,13 @@ export function validateSolarWarEntrySelection(
   fleetId: string,
   empireId = PLAYER_EMPIRE_ID,
 ): SolarWarEntryValidation {
+  if (state.campaignResult?.status === 'terminal') {
+    return {
+      ok: false,
+      code: 'CAMPAIGN_TERMINAL',
+      message: SOLAR_WAR_VALIDATION_MESSAGES.CAMPAIGN_TERMINAL!,
+    };
+  }
   if (fleetId.length === 0) {
     return {
       ok: false,

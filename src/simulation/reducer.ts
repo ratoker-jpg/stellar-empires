@@ -5,6 +5,7 @@ import {
   queueDefenseRepair,
 } from './defense/planetaryDefense';
 import { accrueAllPlanetEconomies } from './economy/planetEconomy';
+import { applyFinalGateStabilization } from './endgame/campaignResult';
 import {
   applyFinalGateBuildingCompletion,
   reconcileFinalGateAfterBattle,
@@ -115,6 +116,14 @@ function replacePlanet(
   replacement: PlanetState,
 ): readonly PlanetState[] {
   return planets.map((planet) => (planet.id === planetId ? replacement : planet));
+}
+
+function terminalCommandRejection(): CommandResult<never> {
+  return {
+    ok: false,
+    code: 'CAMPAIGN_TERMINAL',
+    message: 'The campaign has reached its terminal result and can no longer mutate.',
+  };
 }
 
 function scheduleEvent(
@@ -313,7 +322,7 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
     return applySolarWarResolutionEvent(state, event);
   }
   if (event.payload.type === 'FINAL_GATE_STABILIZE') {
-    return state;
+    return applyFinalGateStabilization(state, event);
   }
   if (event.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
     return applySpaceObjectMissionEventWithReturn(state, event);
@@ -397,6 +406,7 @@ export function executeAdvanceTimeWithTelemetry(
   state: GameState,
   command: Extract<GameCommand, { readonly type: 'ADVANCE_TIME' }>,
 ): CommandResult<AdvanceTimeExecution> {
+  if (state.campaignResult?.status === 'terminal') return terminalCommandRejection();
   if (!isNonNegativeInteger(command.seconds)) {
     return { ok: false, code: 'INVALID_TIME_DELTA', message: 'Time delta must be a non-negative integer.' };
   }
@@ -425,19 +435,30 @@ export function executeAdvanceTimeWithTelemetry(
       working = { ...working, pendingEvents: working.pendingEvents.slice(1) };
       working = applyEvent(working, nextEvent);
       executedEvents.push({ event: nextEvent, executedAt: nextAt });
+      if (working.campaignResult?.status === 'terminal') {
+        cursor = nextAt;
+        break;
+      }
     }
     if (nextWorldEventAt === nextAt) {
       working = processWorldEventEvaluationAt(working, nextAt, executedEvents);
     }
     cursor = nextAt;
   }
-  working = accrueStateEconomies(working, targetTime - cursor);
+
+  if (working.campaignResult?.status !== 'terminal') {
+    working = accrueStateEconomies(working, targetTime - cursor);
+    working = {
+      ...working,
+      clock: { ...working.clock, elapsedSeconds: targetTime },
+    };
+  }
+
   return {
     ok: true,
     value: {
       state: {
         ...working,
-        clock: { ...working.clock, elapsedSeconds: targetTime },
         commandLog: appendCommand(state, command),
         eventLog: appendExecutedEventHistory(state.eventLog, executedEvents),
       },
@@ -457,6 +478,7 @@ function advanceTime(
 }
 
 export function executeCommand(state: GameState, command: GameCommand): CommandResult<GameState> {
+  if (state.campaignResult?.status === 'terminal') return terminalCommandRejection();
   switch (command.type) {
     case 'SCHEDULE_EVENT': return scheduleEvent(state, command);
     case 'CREATE_ALLIANCE': return createAlliance(state, command);
