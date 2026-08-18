@@ -5,6 +5,7 @@ import {
   type BotSchedulerAuditEntry,
   type BotSchedulerDiagnosticEntry,
 } from '../bots/scheduler';
+import { getCampaignOutcomeForEmpire } from '../endgame/campaignResult';
 import { getNextLogisticsDepartureAt } from '../logistics/routes';
 import type { LogisticsDepartureReceipt } from '../logistics/types';
 import { getNextWorldEventEvaluationAt } from '../pve/worldEvents';
@@ -211,9 +212,29 @@ function isCompleteAtTarget(
   botProfiles: readonly BotProfile[],
 ): boolean {
   if (state.clock.elapsedSeconds < targetTime) return false;
+  if (state.campaignResult?.status === 'terminal') return true;
   if (hasDueNonBotBoundary(state, targetTime)) return false;
   const nextBot = getNextScheduledBotDecision(state, botProfiles);
   return nextBot === undefined || nextBot.nextDecisionAt > targetTime;
+}
+
+function terminalAdvanceResult(
+  state: GameState,
+  requestedGameSeconds: number,
+): CampaignAdvanceResult {
+  const summary = createEmptyCatchUpSummary();
+  summary.result.status = getCampaignOutcomeForEmpire(state, 'player');
+  return {
+    state,
+    requestedGameSeconds,
+    processedGameSeconds: 0,
+    remainingGameSeconds: 0,
+    operationsProcessed: 0,
+    complete: true,
+    summaryDelta: summary,
+    botAudit: [],
+    botDiagnostics: [],
+  };
 }
 
 export function advanceCampaignTime(
@@ -222,6 +243,9 @@ export function advanceCampaignTime(
   options: CampaignAdvanceOptions = {},
 ): CampaignAdvanceResult {
   assertNonNegativeSafeInteger(requestedGameSeconds, 'Requested game duration');
+  if (state.campaignResult?.status === 'terminal') {
+    return terminalAdvanceResult(state, requestedGameSeconds);
+  }
   const operationBudget = options.operationBudget ?? DEFAULT_CAMPAIGN_OPERATION_BUDGET;
   if (!Number.isSafeInteger(operationBudget) || operationBudget < 1) {
     throw new Error('Campaign operation budget must be a positive safe integer.');
@@ -278,6 +302,7 @@ export function advanceCampaignTime(
         advanced.logisticsReceipts,
       );
       operationsProcessed += 1;
+      if (working.campaignResult?.status === 'terminal') break;
       if (operationsProcessed >= operationBudget) break;
     }
 
@@ -304,7 +329,7 @@ export function advanceCampaignTime(
     state: working,
     requestedGameSeconds,
     processedGameSeconds,
-    remainingGameSeconds: targetTime - working.clock.elapsedSeconds,
+    remainingGameSeconds: Math.max(0, targetTime - working.clock.elapsedSeconds),
     operationsProcessed,
     complete,
     summaryDelta: {
