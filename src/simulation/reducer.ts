@@ -6,6 +6,11 @@ import {
 } from './defense/planetaryDefense';
 import { accrueAllPlanetEconomies } from './economy/planetEconomy';
 import {
+  applyFinalGateBuildingCompletion,
+  reconcileFinalGateAfterBattle,
+  reconcileFinalProjectHostPresence,
+} from './endgame/finalGateVulnerability';
+import {
   canQueueQualifiedObelisk,
   cancelFinalObjectProject,
   contributeFinalObjectProject,
@@ -128,6 +133,7 @@ function scheduleEvent(
     command.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE' ||
     command.payload.type === 'ARENA_RESOLVE' ||
     command.payload.type === 'SOLAR_WAR_RESOLVE' ||
+    command.payload.type === 'FINAL_GATE_STABILIZE' ||
     command.payload.type === 'WORLD_EVENT_END' ||
     command.payload.type === 'WORLD_EVENT_START'
   ) {
@@ -285,6 +291,17 @@ function cancelBuilding(
   };
 }
 
+function newlyEnqueuedBattleReport(
+  before: GameState,
+  after: GameState,
+): Extract<ScheduledGameEvent['payload'], { readonly type: 'BATTLE_REPORT' }>['report'] | undefined {
+  const existingIds = new Set(before.pendingEvents.map((event) => event.id));
+  const event = after.pendingEvents.find(
+    (candidate) => candidate.payload.type === 'BATTLE_REPORT' && !existingIds.has(candidate.id),
+  );
+  return event?.payload.type === 'BATTLE_REPORT' ? event.payload.report : undefined;
+}
+
 function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
   if (event.payload.type === 'WORLD_EVENT_END' || event.payload.type === 'WORLD_EVENT_START') {
     return applyWorldEventEvent(state, event);
@@ -295,6 +312,9 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
   if (event.payload.type === 'SOLAR_WAR_RESOLVE') {
     return applySolarWarResolutionEvent(state, event);
   }
+  if (event.payload.type === 'FINAL_GATE_STABILIZE') {
+    return state;
+  }
   if (event.payload.type === 'SPACE_OBJECT_MISSION_RESOLVE') {
     return applySpaceObjectMissionEventWithReturn(state, event);
   }
@@ -302,7 +322,14 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
     return applyExpeditionEventWithReturn(state, event);
   }
   if (event.payload.type === 'FLEET_ARRIVE' || event.payload.type === 'FLEET_RETURN') {
-    return applyFlightEvent(state, event);
+    const afterFlight = applyFlightEvent(state, event);
+    const report = event.payload.type === 'FLEET_ARRIVE'
+      ? newlyEnqueuedBattleReport(state, afterFlight)
+      : undefined;
+    const afterBattle = report === undefined
+      ? afterFlight
+      : reconcileFinalGateAfterBattle(afterFlight, report);
+    return reconcileFinalProjectHostPresence(afterBattle);
   }
   if (event.payload.type === 'RESEARCH_COMPLETE') {
     return { ...state, research: completeResearch(state.research, event.payload) };
@@ -332,7 +359,7 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
   const payload = event.payload;
   const planet = state.planets.find((candidate) => candidate.id === payload.planetId);
   if (planet === undefined) return state;
-  return {
+  const completed = {
     ...state,
     planets: replacePlanet(
       state.planets,
@@ -346,6 +373,7 @@ function applyEvent(state: GameState, event: ScheduledGameEvent): GameState {
       ),
     ),
   };
+  return applyFinalGateBuildingCompletion(completed, payload);
 }
 
 function accrueStateEconomies(state: GameState, seconds: number): GameState {
