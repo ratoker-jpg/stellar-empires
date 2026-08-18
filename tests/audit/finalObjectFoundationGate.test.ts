@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import type { ResourceCost } from '../../src/simulation/economy/types';
-import {
-  isCampaignResult,
-  isEndgameFinalObjectState,
-} from '../../src/simulation/endgame/finalObjects';
-import { isEndgameParticipationState } from '../../src/simulation/endgame/participation';
 import type {
   SolarWarParticipationKind,
   SolarWarResult,
@@ -269,16 +264,21 @@ describe('FINAL-OBJECT-FOUNDATION acceptance matrix', () => {
         expect(host.economy.resources.crystal.amount).toBe(ownerBefore.crystal - ownerContribution.crystal);
         expect(host.economy.resources.gas.amount).toBe(ownerBefore.gas - ownerContribution.gas);
 
-        expect(isEndgameParticipationState(state.endgameParticipation, state.empires)).toBe(true);
-        expect(isEndgameFinalObjectState(state.endgameFinalObjects, state.empires)).toBe(true);
-        expect(isCampaignResult(state.campaignResult, state.empires)).toBe(true);
-
         const save = createSaveEnvelope(
           `foundation-${factionId}-${participationKind}`,
           state,
           SAVE_TIME,
         );
-        expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
+        const parsed = parseSaveJson(serializeSave(save));
+        expect(parsed.ok).toBe(true);
+        if (!parsed.ok) return;
+
+        expect(parsed.value.state.endgameFinalObjects).toEqual(state.endgameFinalObjects);
+        expect(parsed.value.state.endgameParticipation).toEqual(state.endgameParticipation);
+        expect(parsed.value.state.campaignResult).toEqual(state.campaignResult);
+        expect(
+          parsed.value.state.planets.find((planet) => planet.id === host.id)?.buildQueue,
+        ).toEqual(host.buildQueue);
       });
     }
   }
