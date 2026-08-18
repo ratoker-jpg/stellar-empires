@@ -222,8 +222,14 @@ function terminalAdvanceResult(
   state: GameState,
   requestedGameSeconds: number,
 ): CampaignAdvanceResult {
-  const summary = createEmptyCatchUpSummary();
-  summary.result.status = getCampaignOutcomeForEmpire(state, 'player');
+  const emptySummary = createEmptyCatchUpSummary();
+  const summary: CampaignCatchUpSummary = {
+    ...emptySummary,
+    result: {
+      ...emptySummary.result,
+      status: getCampaignOutcomeForEmpire(state, 'player'),
+    },
+  };
   return {
     state,
     requestedGameSeconds,
