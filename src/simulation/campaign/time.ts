@@ -25,6 +25,11 @@ const NO_EXECUTED_EVENTS: readonly ExecutedGameEvent[] = [];
 const NO_BOT_AUDIT: readonly BotSchedulerAuditEntry[] = [];
 const NO_COMMAND_LOG: GameState['commandLog'] = [];
 
+interface ScheduledBotDecision {
+  readonly profile: BotProfile;
+  readonly nextDecisionAt: number;
+}
+
 export interface RealToGameTimeMapping {
   readonly wholeGameSeconds: number;
   readonly gameTimeFractionNumerator: number;
@@ -135,21 +140,25 @@ function earliestOfThree(
   return result;
 }
 
-function getNextScheduledBotDecisionAt(
+function getNextScheduledBotDecision(
   state: GameState,
   profiles: readonly BotProfile[],
-): number | undefined {
-  let nextDecisionAt: number | undefined;
+): ScheduledBotDecision | undefined {
+  let next: ScheduledBotDecision | undefined;
   for (const profile of profiles) {
     if (!state.empires.includes(profile.empireId)) continue;
-    const candidate =
+    const candidateAt =
       state.botAutomation.nextDecisionAtByEmpire[profile.empireId] ??
       state.clock.elapsedSeconds;
-    if (nextDecisionAt === undefined || candidate < nextDecisionAt) {
-      nextDecisionAt = candidate;
+    if (
+      next === undefined ||
+      candidateAt < next.nextDecisionAt ||
+      (candidateAt === next.nextDecisionAt && profile.empireId.localeCompare(next.profile.empireId) < 0)
+    ) {
+      next = { profile, nextDecisionAt: candidateAt };
     }
   }
-  return nextDecisionAt;
+  return next;
 }
 
 function newExecutedEvents(
@@ -205,8 +214,8 @@ function isCompleteAtTarget(
 ): boolean {
   if (state.clock.elapsedSeconds < targetTime) return false;
   if (hasDueNonBotBoundary(state, targetTime)) return false;
-  const nextBotAt = getNextScheduledBotDecisionAt(state, botProfiles);
-  return nextBotAt === undefined || nextBotAt > targetTime;
+  const nextBot = getNextScheduledBotDecision(state, botProfiles);
+  return nextBot === undefined || nextBot.nextDecisionAt > targetTime;
 }
 
 export function advanceCampaignTime(
@@ -240,9 +249,9 @@ export function advanceCampaignTime(
       : undefined;
     const nextRouteAt = getNextLogisticsDepartureAt(working, targetTime);
     const nextWorldEventAt = getNextWorldEventEvaluationAt(working, targetTime);
-    const scheduledBotAt = getNextScheduledBotDecisionAt(working, botProfiles);
-    const nextBotAt = scheduledBotAt !== undefined && scheduledBotAt <= targetTime
-      ? Math.max(currentTime, scheduledBotAt)
+    const scheduledBot = getNextScheduledBotDecision(working, botProfiles);
+    const nextBotAt = scheduledBot !== undefined && scheduledBot.nextDecisionAt <= targetTime
+      ? Math.max(currentTime, scheduledBot.nextDecisionAt)
       : undefined;
     const nextNonBotAt = earliestOfThree(boundedEventAt, nextRouteAt, nextWorldEventAt);
 
@@ -277,9 +286,13 @@ export function advanceCampaignTime(
       if (operationsProcessed >= operationBudget) break;
     }
 
-    const dueBotAt = getNextScheduledBotDecisionAt(working, botProfiles);
-    if (dueBotAt !== undefined && dueBotAt <= working.clock.elapsedSeconds && dueBotAt <= targetTime) {
-      const botResult = runBotScheduler(working, botProfiles, 1);
+    const dueBot = getNextScheduledBotDecision(working, botProfiles);
+    if (
+      dueBot !== undefined &&
+      dueBot.nextDecisionAt <= working.clock.elapsedSeconds &&
+      dueBot.nextDecisionAt <= targetTime
+    ) {
+      const botResult = runBotScheduler(working, [dueBot.profile], 1);
       working = botResult.state;
       botAudit.push(...botResult.audit);
       botDiagnostics.push(...botResult.diagnostics);
