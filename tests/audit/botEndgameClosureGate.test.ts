@@ -91,6 +91,11 @@ function prepareBotPlanet(state: GameState, empireId: string): GameState {
   let planet = getPlanet(state, empireId);
   const ids = getCompleteBuildingIds(planet.factionId);
   const ships = getFactionMechanicalRoles(planet.factionId).ships;
+  planet = setBuildingLevel(planet, ids.constructionComplex, 3);
+  planet = setBuildingLevel(planet, ids.metalPrimary, 2);
+  planet = setBuildingLevel(planet, ids.crystalPrimary, 2);
+  planet = setBuildingLevel(planet, ids.solarPower, 5);
+  planet = setBuildingLevel(planet, ids.shipyard, 4);
   planet = setBuildingLevel(planet, ids.government, 10);
   planet = setBuildingLevel(planet, ids.researchCenter, 15);
   planet = setBuildingLevel(planet, ids.spaceport, 12);
