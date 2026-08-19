@@ -15,11 +15,7 @@ import { getCompleteBuildingIds } from '../../src/simulation/planet/completeBuil
 import type { PlanetState } from '../../src/simulation/planet/types';
 import { executeCommand } from '../../src/simulation/reducer';
 import type { GameCommand, GameState, ScheduledGameEvent } from '../../src/simulation/types';
-import {
-  createSaveEnvelope,
-  parseSaveJson,
-  serializeSave,
-} from '../../src/storage/saveFormat';
+import { createSaveEnvelope, parseSaveJson, serializeSave } from '../../src/storage/saveFormat';
 import { createCampaignRuntimeMetadata } from '../../src/storage/runtimeMetadata';
 
 const BOT_EMPIRES = ['aegis-bot', 'synod-bot', 'veyra-bot'] as const;
@@ -27,10 +23,7 @@ const SAVE_TIME = '2026-08-19T06:00:00.000Z';
 const RUNTIME_START = '2026-08-19T07:00:00.000Z';
 
 type SolarWarResolutionEvent = ScheduledGameEvent & {
-  readonly payload: {
-    readonly type: 'SOLAR_WAR_RESOLVE';
-    readonly cycleId: string;
-  };
+  readonly payload: { readonly type: 'SOLAR_WAR_RESOLVE'; readonly cycleId: string };
 };
 
 function profile(empireId: string) {
@@ -52,6 +45,13 @@ function getPlanet(state: GameState, empireId: string): PlanetState {
   return planet;
 }
 
+function replacePlanet(state: GameState, replacement: PlanetState): GameState {
+  return {
+    ...state,
+    planets: state.planets.map((planet) => planet.id === replacement.id ? replacement : planet),
+  };
+}
+
 function setBuildingLevel(planet: PlanetState, buildingId: string, level: number): PlanetState {
   const exists = planet.buildings.some((building) => building.buildingId === buildingId);
   return {
@@ -70,36 +70,50 @@ function withResources(planet: PlanetState, resources: ResourceCost): PlanetStat
     economy: {
       ...planet.economy,
       resources: {
-        metal: { ...planet.economy.resources.metal, amount: resources.metal },
-        crystal: { ...planet.economy.resources.crystal, amount: resources.crystal },
-        gas: { ...planet.economy.resources.gas, amount: resources.gas },
+        metal: {
+          ...planet.economy.resources.metal,
+          amount: resources.metal,
+          capacity: Math.max(planet.economy.resources.metal.capacity, resources.metal),
+        },
+        crystal: {
+          ...planet.economy.resources.crystal,
+          amount: resources.crystal,
+          capacity: Math.max(planet.economy.resources.crystal.capacity, resources.crystal),
+        },
+        gas: {
+          ...planet.economy.resources.gas,
+          amount: resources.gas,
+          capacity: Math.max(planet.economy.resources.gas.capacity, resources.gas),
+        },
       },
     },
   };
 }
 
-function replacePlanet(state: GameState, replacement: PlanetState): GameState {
-  return {
-    ...state,
-    planets: state.planets.map((planet) =>
-      planet.id === replacement.id ? replacement : planet,
-    ),
-  };
+function roundTrip(state: GameState, label: string): GameState {
+  const parsed = parseSaveJson(serializeSave(createSaveEnvelope(label, state, SAVE_TIME)));
+  expect(parsed.ok).toBe(true);
+  if (!parsed.ok) throw new Error(`${parsed.code}: ${parsed.message}`);
+  return parsed.value.state;
 }
 
 function prepareBotPlanet(state: GameState, empireId: string): GameState {
   let planet = getPlanet(state, empireId);
   const ids = getCompleteBuildingIds(planet.factionId);
   const ships = getFactionMechanicalRoles(planet.factionId).ships;
-  planet = setBuildingLevel(planet, ids.constructionComplex, 3);
-  planet = setBuildingLevel(planet, ids.metalPrimary, 2);
-  planet = setBuildingLevel(planet, ids.crystalPrimary, 2);
-  planet = setBuildingLevel(planet, ids.solarPower, 5);
-  planet = setBuildingLevel(planet, ids.shipyard, 4);
-  planet = setBuildingLevel(planet, ids.government, 10);
-  planet = setBuildingLevel(planet, ids.researchCenter, 15);
-  planet = setBuildingLevel(planet, ids.spaceport, 12);
-  planet = setBuildingLevel(planet, ids.galacticObelisk, 1);
+  for (const [buildingId, level] of [
+    [ids.constructionComplex, 3],
+    [ids.metalPrimary, 2],
+    [ids.crystalPrimary, 2],
+    [ids.solarPower, 5],
+    [ids.shipyard, 4],
+    [ids.government, 10],
+    [ids.researchCenter, 15],
+    [ids.spaceport, 12],
+    [ids.galacticObelisk, 1],
+  ] as const) {
+    planet = setBuildingLevel(planet, buildingId, level);
+  }
   planet = withResources(planet, {
     metal: 100_000_000,
     crystal: 100_000_000,
@@ -159,6 +173,9 @@ function baseEndgameState(seed: string): GameState {
   for (const empireId of BOT_EMPIRES) {
     state = prepareBotPlanet(state, empireId);
     state = addSolarFleet(state, empireId);
+  }
+  state = roundTrip(state, `${seed}-prepared`);
+  for (const empireId of BOT_EMPIRES) {
     expect(getBotProgressionPhase(state, empireId)).toBe('endgame-preparation');
   }
   return state;
@@ -167,7 +184,7 @@ function baseEndgameState(seed: string): GameState {
 function executeParticipationPlan(state: GameState, empireId: string): GameState {
   const plan = planBotEndgameParticipation(state, profile(empireId));
   expect(plan.command).not.toBeNull();
-  if (plan.command === null) throw new Error(`No endgame participation command for ${empireId}.`);
+  if (plan.command === null) throw new Error(`No participation command for ${empireId}.`);
   return execute(state, plan.command);
 }
 
@@ -223,7 +240,7 @@ function dueNow(state: GameState): GameState {
   };
 }
 
-function botsAfterTerminal(state: GameState): GameState {
+function postponeBots(state: GameState): GameState {
   return {
     ...state,
     botAutomation: {
@@ -235,13 +252,6 @@ function botsAfterTerminal(state: GameState): GameState {
   };
 }
 
-function roundTrip(state: GameState, label: string): GameState {
-  const parsed = parseSaveJson(serializeSave(createSaveEnvelope(label, state, SAVE_TIME)));
-  expect(parsed.ok).toBe(true);
-  if (!parsed.ok) throw new Error(`${parsed.code}: ${parsed.message}`);
-  return parsed.value.state;
-}
-
 function planAndExecuteFinal(state: GameState, empireId: string): GameState {
   const plan = planBotEndgameFinalObjects(state, profile(empireId));
   expect(plan.command).not.toBeNull();
@@ -250,9 +260,8 @@ function planAndExecuteFinal(state: GameState, empireId: string): GameState {
 }
 
 describe('COMPLETE-ENDGAME-03 bot closure gate', () => {
-  it('runs all three real participation policies through one Solar War and keeps bot decisions deterministic across save and chunk partitions', () => {
-    let state = baseEndgameState('bot-closure-three-factions');
-    state = enterAllBots(state);
+  it('runs all three real participation policies through one Solar War and stays deterministic across save and chunk partitions', () => {
+    let state = enterAllBots(baseEndgameState('bot-closure-three-factions'));
     const entries = state.endgameParticipation?.solarWar.activeEntries ?? [];
     expect(entries).toHaveLength(3);
     expect(entries.find((entry) => entry.empireId === 'aegis-bot')).toMatchObject({
@@ -270,6 +279,7 @@ describe('COMPLETE-ENDGAME-03 bot closure gate', () => {
 
     state = dueNow(resolveSolarWar(state));
     const loaded = roundTrip(state, 'bot-closure-qualified');
+    expect(loaded).toEqual(state);
     expect(runBotScheduler(loaded)).toEqual(runBotScheduler(state));
 
     const direct = advanceCampaignTime(state, 600, { operationBudget: 50_000 });
@@ -285,7 +295,7 @@ describe('COMPLETE-ENDGAME-03 bot closure gate', () => {
     expect(direct.botAudit.some((entry) => entry.source === 'endgame')).toBe(true);
   });
 
-  it('composes real alliance funding with a real-qualified Veyra solo Gate through save, direct/chunk, offline and terminal fixed points', async () => {
+  it('composes alliance funding with a real-qualified Veyra solo Gate through save, offline and terminal fixed points', async () => {
     let state = qualifiedThreeFactionState('bot-closure-terminal');
     state = replacePlanet(
       state,
@@ -318,9 +328,7 @@ describe('COMPLETE-ENDGAME-03 bot closure gate', () => {
     );
     if (veyraProject?.gateCompletesAt === undefined) throw new Error('Veyra building project missing.');
     expect(veyraProject.phase).toBe('building');
-    expect(roundTrip(state, 'bot-closure-building').endgameFinalObjects).toEqual(
-      state.endgameFinalObjects,
-    );
+    expect(roundTrip(state, 'bot-closure-building')).toEqual(state);
 
     state = execute(state, {
       type: 'CANCEL_FINAL_OBJECT_PROJECT',
@@ -331,7 +339,7 @@ describe('COMPLETE-ENDGAME-03 bot closure gate', () => {
       type: 'ADVANCE_TIME',
       seconds: veyraProject.gateCompletesAt - state.clock.elapsedSeconds,
     });
-    const vulnerable = botsAfterTerminal(state);
+    const vulnerable = postponeBots(state);
     const vulnerableProject = vulnerable.endgameFinalObjects?.activeProjects.find(
       (project) => project.ownerEmpireId === 'veyra-bot',
     );
@@ -340,7 +348,7 @@ describe('COMPLETE-ENDGAME-03 bot closure gate', () => {
     }
     expect(vulnerableProject.phase).toBe('vulnerable');
     const loadedVulnerable = roundTrip(vulnerable, 'bot-closure-vulnerable');
-    expect(loadedVulnerable.endgameFinalObjects).toEqual(vulnerable.endgameFinalObjects);
+    expect(loadedVulnerable).toEqual(vulnerable);
 
     const remaining = vulnerableProject.stabilizesAt - vulnerable.clock.elapsedSeconds;
     const direct = advanceCampaignTime(vulnerable, remaining, {
@@ -377,8 +385,9 @@ describe('COMPLETE-ENDGAME-03 bot closure gate', () => {
     });
     expect(roundTrip(direct.state, 'bot-closure-terminal')).toEqual(direct.state);
 
-    const runtimeStartMs = Date.parse(RUNTIME_START);
-    const target = new Date(runtimeStartMs + (remaining + 10) * 1_000).toISOString();
+    const target = new Date(
+      Date.parse(RUNTIME_START) + (remaining + 10) * 1_000,
+    ).toISOString();
     const offline = await runCampaignCatchUp({
       state: loadedVulnerable,
       runtimeMetadata: createCampaignRuntimeMetadata(RUNTIME_START),
