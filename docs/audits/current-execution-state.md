@@ -1,68 +1,66 @@
 # Current execution state
 
 **Updated:** 2026-08-19  
-**Safe to continue:** yes, only Audit PR #162 `COMPLETE-ENDGAME-03` until it is squash-merged
+**Safe to continue:** yes  
+**Batch:** `COMPLETE-ENDGAME-03` / Audit #162  
+**Runtime:** schema v19 / save format v6 unchanged
 
 | Field | Current value |
 |---|---|
-| Verified fresh `main` baseline | `8f05d22b3475ee99e9af8652d385c956e0acd7c7` |
-| Last merged PR | #161 `ENDGAME-TERMINAL-GATE` |
-| #161 squash SHA / current `main` | `8f05d22b3475ee99e9af8652d385c956e0acd7c7` |
-| Completed batch | `COMPLETE-ENDGAME-02` / M8.2 |
-| Active work | #162 `COMPLETE-ENDGAME-03` Audit |
-| Active branch | `agent/complete-endgame-03-audit` |
-| Runtime | schema v19 / save format v6 |
-| Current implementation authorized | **no while Audit #162 is open** |
-| Critical unknowns | **0** |
-| Complexity | **medium** |
-| Target persistence | **unchanged v19/v6** |
+| Verified fresh `main` | `5be7b44eb51cf389e8006f0a0201ab61c0ee0df5` |
+| Audit #162 squash | `b7de24f52c02480f6db244c00b1282407d5743cc` |
+| #163 `ENDGAME-BOT-PERCEPTION` | merged → `46e0966c2843424d6e098e363327ffe5cf74d352` |
+| #164 `ENDGAME-BOT-PARTICIPATION` | merged → `5be7b44eb51cf389e8006f0a0201ab61c0ee0df5` |
+| Active work | #165 `ENDGAME-BOT-FINAL-OBJECTS` |
+| Active branch | `agent/endgame-bot-final-objects` |
+| Exact #165 base | `5be7b44eb51cf389e8006f0a0201ab61c0ee0df5` |
+| Next accepted PR | #166 `ENDGAME-BOT-CLOSURE-GATE` |
+| Critical unknowns | 0 |
 
-## Completed M8.2
+## Accepted batch sequence
 
 ```text
-#157 COMPLETE-ENDGAME-02 Audit    → 7750cdb83b58e95f790351b306e9cf5b344bd780
-#158 FINAL-OBJECT-FOUNDATION      → a66a05fd433893f4a6f15cd8d9fd53ea31d793f9
-#159 FINAL-GATE-VULNERABILITY    → 466e5ea161a005eeb792d5440dc27d960b37b2f2
-#160 TERMINAL-RUNTIME-UX         → 8ad44509426e4bb9555a8a6133e1dbdb899dccae
-#161 ENDGAME-TERMINAL-GATE       → 8f05d22b3475ee99e9af8652d385c956e0acd7c7
-```
-
-Stage 2 is complete. Player/system final-object, vulnerable Gate and persisted terminal campaign behavior are accepted and closed.
-
-## Active Audit authority
-
-`COMPLETE-ENDGAME-03` is governed by:
-
-- `docs/audits/complete-endgame-03-scaffold.md`;
-- `docs/audits/evidence/complete-endgame-03.md`;
-- `docs/audits/contracts/complete-endgame-03.md`.
-
-Recon conclusion:
-
-- bot scheduler already emits ordinary commands on deterministic persisted cadence;
-- endgame player/system commands already exist;
-- explicit endgame perception is the missing information boundary;
-- bots must use public/owned/allied data and existing intelligence, never raw hidden foreign state;
-- alliance/Solar War/final-object/Gate response can reuse ordinary commands and mechanics;
-- no new persistent bot field is required;
-- critical unknowns are zero.
-
-## Exactly accepted M8.3 sequence after Audit merge
-
-```text
-#163 ENDGAME-BOT-PERCEPTION
-→ #164 ENDGAME-BOT-PARTICIPATION
-→ #165 ENDGAME-BOT-FINAL-OBJECTS
-→ #166 ENDGAME-BOT-CLOSURE-GATE
+#162 COMPLETE-ENDGAME-03 Audit    → b7de24f52c02480f6db244c00b1282407d5743cc
+#163 ENDGAME-BOT-PERCEPTION       → 46e0966c2843424d6e098e363327ffe5cf74d352
+#164 ENDGAME-BOT-PARTICIPATION    → 5be7b44eb51cf389e8006f0a0201ab61c0ee0df5
+#165 ENDGAME-BOT-FINAL-OBJECTS    → active
+#166 ENDGAME-BOT-CLOSURE-GATE     → next/final implementation PR
 ```
 
 No fifth M8.3 implementation PR is authorized.
 
+## Last completed atomic action
+
+#164 was exact-head green and squash-merged. #165 was then branched from the generated fresh main. The #165 implementation currently contains:
+
+- deterministic final-object planner over existing bot/endgame perception;
+- ordinary qualified Obelisk queueing when needed;
+- ordinary final-project start and immutable-cohort contribution planning;
+- public vulnerable Gate response gated by current L3 intelligence, an owned Planet Destroyer fleet and ordinary mission legality;
+- focused tests including hidden foreign host-state decision invariance and terminal no-op;
+- PR change documentation.
+
+The generic economy planner's intentional endgame-building exclusion was confirmed during implementation; qualified Obelisk queueing is the narrow existing-command bridge required for a legal project host, not a new mechanic.
+
+## Last successful validation
+
+#164 final exact head `93b12c04e8429c6d6271e84cbea23c54b0ecd483`:
+
+- CI success;
+- 165 test files passed / 677 tests passed / 1 skipped;
+- Browser E2E 34/34 with no retry;
+- Graphify success;
+- compressed progression success;
+- one-day 3.150 s and seven-day 14.401 s.
+
+#165 exact-head validation is not yet complete.
+
 ## Exact next action
 
-1. Freeze one exact final #162 documentation head.
-2. Require Main CI, Browser E2E, Graphify, compressed progression/performance and review/mergeability green on that same SHA.
-3. Mark #162 Ready and squash-merge with expected-head protection.
-4. Verify the generated squash is fresh `main`.
-5. Only then create/implement #163 from that generated main, followed sequentially by #164–#166 from each preceding generated squash.
-6. Do not start M9 until #166 closes M8.3 and a separate release-candidate Audit authorizes M9.
+1. Open Draft PR #165 from `agent/endgame-bot-final-objects` to current `main`.
+2. Run exact-head CI, Browser and Graphify.
+3. Fix every ordinary code/test/build blocker on the same PR; do not bypass checks.
+4. Add only contract-required focused evidence; composed save/load/offline/direct-chunk/three-faction closure remains #166.
+5. When one exact #165 head is fully green, require reviews/threads clean and mergeability true, mark Ready and squash-merge with expected-head protection.
+6. Verify generated fresh `main`, then create only #166 `ENDGAME-BOT-CLOSURE-GATE` from that squash.
+7. Do not begin M9 before #166 closes this batch.
