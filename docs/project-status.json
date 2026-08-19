@@ -1,55 +1,37 @@
 {
-  "statusVersion": 77,
+  "statusVersion": 78,
   "updatedAt": "2026-08-19",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 164,
-  "lastMergeSha": "5be7b44eb51cf389e8006f0a0201ab61c0ee0df5",
-  "verifiedMainBaseline": "PR #164 ENDGAME-BOT-PARTICIPATION squash-merged after exact-head CI, Browser E2E, Graphify, progression/performance and clean review gates",
-  "runtimeBaselinePr": 164,
-  "runtimeBaselineSha": "5be7b44eb51cf389e8006f0a0201ab61c0ee0df5",
-  "activePr": 165,
-  "activePrKind": "implementation",
-  "activeWorkItem": "ENDGAME-BOT-FINAL-OBJECTS",
-  "activeBranch": "agent/endgame-bot-final-objects",
-  "nextPrAfterActive": 166,
-  "nextPrKind": "implementation-closure",
-  "nextWorkItem": "ENDGAME-BOT-CLOSURE-GATE",
-  "currentMilestone": "M8.3 bot endgame final-object planning",
+  "lastMergedPr": 165,
+  "lastMergeSha": "d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7",
+  "verifiedMainBaseline": "PR #165 ENDGAME-BOT-FINAL-OBJECTS squash",
+  "runtimeBaselinePr": 165,
+  "runtimeBaselineSha": "d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7",
+  "activePr": 166,
+  "activePrKind": "implementation-closure",
+  "activeWorkItem": "ENDGAME-BOT-CLOSURE-GATE",
+  "activeBranch": "agent/endgame-bot-closure-gate",
+  "nextPrAfterActive": null,
+  "nextPrKind": "audit-required",
+  "nextWorkItem": "M9-RELEASE-CANDIDATE-AUDIT",
+  "currentMilestone": "M8.3 bot endgame closure gate",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
-  "currentAudit": "docs/audits/complete-endgame-03-scaffold.md",
+  "currentAudit": "docs/audits/current-batch-audit.md",
   "currentAuditContracts": ["docs/audits/contracts/complete-endgame-03.md"],
   "currentAuditEvidence": ["docs/audits/evidence/complete-endgame-03.md"],
   "currentExecutionState": "docs/audits/current-execution-state.md",
+  "completionArchiveCandidate": "docs/audits/completed/complete-endgame-03.md",
   "lastCompletedBatchArchive": "docs/audits/completed/complete-endgame-02.md",
-  "lastCompletedBatch": {
-    "batchId": "COMPLETE-ENDGAME-02",
-    "roadmapMilestone": "M8.2",
-    "complexity": "medium",
-    "auditPr": 157,
-    "auditMergeSha": "7750cdb83b58e95f790351b306e9cf5b344bd780",
-    "implementationCount": 4,
-    "implementationPrs": [158,159,160,161],
-    "completedImplementationPrs": [158,159,160,161],
-    "implementationMergeShas": {
-      "158": "a66a05fd433893f4a6f15cd8d9fd53ea31d793f9",
-      "159": "466e5ea161a005eeb792d5440dc27d960b37b2f2",
-      "160": "8ad44509426e4bb9555a8a6133e1dbdb899dccae",
-      "161": "8f05d22b3475ee99e9af8652d385c956e0acd7c7"
-    },
-    "status": "completed",
-    "archive": "docs/audits/completed/complete-endgame-02.md",
-    "divergence": "none"
-  },
   "currentAuditState": {
     "batchId": "COMPLETE-ENDGAME-03",
     "auditPr": 162,
     "auditMergeSha": "b7de24f52c02480f6db244c00b1282407d5743cc",
-    "status": "implementation-in-progress",
+    "status": "closure-pr-active",
     "implementationAuthorized": true,
     "baselineSha": "8f05d22b3475ee99e9af8652d385c956e0acd7c7",
     "complexity": "medium",
@@ -60,8 +42,8 @@
     "criticalUnknowns": 0,
     "boundedImplementationSequence": true,
     "implementationCount": 4,
-    "plannedImplementationPrs": [163,164,165,166],
-    "completedImplementationPrs": [163,164],
+    "plannedImplementationPrs": [163, 164, 165, 166],
+    "completedImplementationPrs": [163, 164, 165],
     "workItems": [
       "ENDGAME-BOT-PERCEPTION",
       "ENDGAME-BOT-PARTICIPATION",
@@ -86,9 +68,9 @@
     "browserSuccessArtifactRetentionImplemented": true,
     "botEndgamePerceptionImplemented": true,
     "botEndgameParticipationImplemented": true,
-    "botFinalObjectPlanningImplemented": false,
-    "botEndgameParityImplemented": false,
-    "status": "m8-stage-3-pr165-active"
+    "botFinalObjectPlanningImplemented": true,
+    "botEndgameParityImplemented": true,
+    "status": "m8-stage-3-closure-candidate"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -126,26 +108,17 @@
     "criticalUnknowns": 0,
     "futureAudits": ["M9-RELEASE-CANDIDATE"]
   },
-  "batchSizing": {
-    "heavy": [1,2],
-    "medium": [4,4],
-    "light": [6,6]
-  },
   "activeDelivery": [
-    {"pr":157,"kind":"audit","batchId":"COMPLETE-ENDGAME-02","status":"merged","mergeSha":"7750cdb83b58e95f790351b306e9cf5b344bd780"},
-    {"pr":158,"kind":"implementation","status":"merged","mergeSha":"a66a05fd433893f4a6f15cd8d9fd53ea31d793f9"},
-    {"pr":159,"kind":"implementation","status":"merged","mergeSha":"466e5ea161a005eeb792d5440dc27d960b37b2f2"},
-    {"pr":160,"kind":"implementation","status":"merged","mergeSha":"8ad44509426e4bb9555a8a6133e1dbdb899dccae"},
-    {"pr":161,"kind":"implementation-closure","status":"merged","mergeSha":"8f05d22b3475ee99e9af8652d385c956e0acd7c7"},
     {"pr":162,"kind":"audit","batchId":"COMPLETE-ENDGAME-03","status":"merged","mergeSha":"b7de24f52c02480f6db244c00b1282407d5743cc"},
     {"pr":163,"kind":"implementation","workItem":"ENDGAME-BOT-PERCEPTION","status":"merged","mergeSha":"46e0966c2843424d6e098e363327ffe5cf74d352"},
     {"pr":164,"kind":"implementation","workItem":"ENDGAME-BOT-PARTICIPATION","status":"merged","mergeSha":"5be7b44eb51cf389e8006f0a0201ab61c0ee0df5"},
-    {"pr":165,"kind":"implementation","workItem":"ENDGAME-BOT-FINAL-OBJECTS","status":"active"}
+    {"pr":165,"kind":"implementation","workItem":"ENDGAME-BOT-FINAL-OBJECTS","status":"merged","mergeSha":"d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7"},
+    {"pr":166,"kind":"implementation-closure","workItem":"ENDGAME-BOT-CLOSURE-GATE","status":"active"}
   ],
   "knownLimitations": [
-    "Bot final-object planning is active in PR #165 and is not accepted until exact-head gates and merge complete",
-    "M8.3 composed save/load/offline/direct-chunk/three-faction closure remains PR #166",
-    "M9 onboarding, release hardening and final release validation remain incomplete"
+    "PR #166 still requires final docs-inclusive exact-head gates and squash merge",
+    "The generated #166 squash SHA must be recorded by the next Audit from fresh main",
+    "M9 release-candidate audit and release hardening remain incomplete"
   ],
   "requiredStartupReading": [
     "AGENTS.md",
@@ -159,5 +132,5 @@
     "docs/27-playable-game-roadmap-v5.md",
     "actual main and active PR"
   ],
-  "nextAction": "Validate and complete PR #165 ENDGAME-BOT-FINAL-OBJECTS on one exact head, squash-merge it, verify generated fresh main, then execute only #166 ENDGAME-BOT-CLOSURE-GATE as the final COMPLETE-ENDGAME-03 implementation PR."
+  "nextAction": "Finish #166 on one docs-inclusive exact green head, squash-merge with expected-head protection, verify generated fresh main, then stop M8.3. The next valid work is a separate M9 Release Candidate Audit; do not begin M9 implementation from this closure."
 }
