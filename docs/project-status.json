@@ -1,24 +1,24 @@
 {
-  "statusVersion": 76,
+  "statusVersion": 77,
   "updatedAt": "2026-08-19",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0",
-  "lastMergedPr": 161,
-  "lastMergeSha": "8f05d22b3475ee99e9af8652d385c956e0acd7c7",
-  "verifiedMainBaseline": "PR #161 ENDGAME-TERMINAL-GATE squash-merged after exact-head CI, Browser E2E with retained artifact, Graphify, progression/performance and review gates",
-  "runtimeBaselinePr": 161,
-  "runtimeBaselineSha": "8f05d22b3475ee99e9af8652d385c956e0acd7c7",
-  "activePr": 162,
-  "activePrKind": "audit",
-  "activeWorkItem": "COMPLETE-ENDGAME-03-AUDIT",
-  "activeBranch": "agent/complete-endgame-03-audit",
-  "nextPrAfterActive": 163,
-  "nextPrKind": "implementation-after-audit-merge",
-  "nextWorkItem": "ENDGAME-BOT-PERCEPTION",
-  "currentMilestone": "M8.3 bot endgame closure audit",
+  "lastMergedPr": 164,
+  "lastMergeSha": "5be7b44eb51cf389e8006f0a0201ab61c0ee0df5",
+  "verifiedMainBaseline": "PR #164 ENDGAME-BOT-PARTICIPATION squash-merged after exact-head CI, Browser E2E, Graphify, progression/performance and clean review gates",
+  "runtimeBaselinePr": 164,
+  "runtimeBaselineSha": "5be7b44eb51cf389e8006f0a0201ab61c0ee0df5",
+  "activePr": 165,
+  "activePrKind": "implementation",
+  "activeWorkItem": "ENDGAME-BOT-FINAL-OBJECTS",
+  "activeBranch": "agent/endgame-bot-final-objects",
+  "nextPrAfterActive": 166,
+  "nextPrKind": "implementation-closure",
+  "nextWorkItem": "ENDGAME-BOT-CLOSURE-GATE",
+  "currentMilestone": "M8.3 bot endgame final-object planning",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/complete-endgame-03-scaffold.md",
@@ -48,8 +48,9 @@
   "currentAuditState": {
     "batchId": "COMPLETE-ENDGAME-03",
     "auditPr": 162,
-    "status": "audit-recon-complete-awaiting-exact-head-gates",
-    "implementationAuthorized": false,
+    "auditMergeSha": "b7de24f52c02480f6db244c00b1282407d5743cc",
+    "status": "implementation-in-progress",
+    "implementationAuthorized": true,
     "baselineSha": "8f05d22b3475ee99e9af8652d385c956e0acd7c7",
     "complexity": "medium",
     "targetStateSchema": 19,
@@ -60,7 +61,7 @@
     "boundedImplementationSequence": true,
     "implementationCount": 4,
     "plannedImplementationPrs": [163,164,165,166],
-    "completedImplementationPrs": [],
+    "completedImplementationPrs": [163,164],
     "workItems": [
       "ENDGAME-BOT-PERCEPTION",
       "ENDGAME-BOT-PARTICIPATION",
@@ -83,11 +84,11 @@
     "terminalRuntimeFreezeImplemented": true,
     "endgameTerminalClosureCoverageImplemented": true,
     "browserSuccessArtifactRetentionImplemented": true,
-    "botEndgamePerceptionImplemented": false,
-    "botEndgameParticipationImplemented": false,
+    "botEndgamePerceptionImplemented": true,
+    "botEndgameParticipationImplemented": true,
     "botFinalObjectPlanningImplemented": false,
     "botEndgameParityImplemented": false,
-    "status": "m8-stage-3-audit-active"
+    "status": "m8-stage-3-pr165-active"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -121,7 +122,7 @@
     "newCombatEngineIncluded": false,
     "botEndgamePlannerIncluded": true,
     "botEndgameInformationBoundary": "canonical-public-owned-allied-existing-intelligence-only",
-    "implementationAuthorized": false,
+    "implementationAuthorized": true,
     "criticalUnknowns": 0,
     "futureAudits": ["M9-RELEASE-CANDIDATE"]
   },
@@ -136,10 +137,14 @@
     {"pr":159,"kind":"implementation","status":"merged","mergeSha":"466e5ea161a005eeb792d5440dc27d960b37b2f2"},
     {"pr":160,"kind":"implementation","status":"merged","mergeSha":"8ad44509426e4bb9555a8a6133e1dbdb899dccae"},
     {"pr":161,"kind":"implementation-closure","status":"merged","mergeSha":"8f05d22b3475ee99e9af8652d385c956e0acd7c7"},
-    {"pr":162,"kind":"audit","batchId":"COMPLETE-ENDGAME-03","status":"active-recon-complete"}
+    {"pr":162,"kind":"audit","batchId":"COMPLETE-ENDGAME-03","status":"merged","mergeSha":"b7de24f52c02480f6db244c00b1282407d5743cc"},
+    {"pr":163,"kind":"implementation","workItem":"ENDGAME-BOT-PERCEPTION","status":"merged","mergeSha":"46e0966c2843424d6e098e363327ffe5cf74d352"},
+    {"pr":164,"kind":"implementation","workItem":"ENDGAME-BOT-PARTICIPATION","status":"merged","mergeSha":"5be7b44eb51cf389e8006f0a0201ab61c0ee0df5"},
+    {"pr":165,"kind":"implementation","workItem":"ENDGAME-BOT-FINAL-OBJECTS","status":"active"}
   ],
   "knownLimitations": [
-    "Bot endgame perception/planning is not implemented until Audit #162 merges and #163-#166 execute",
+    "Bot final-object planning is active in PR #165 and is not accepted until exact-head gates and merge complete",
+    "M8.3 composed save/load/offline/direct-chunk/three-faction closure remains PR #166",
     "M9 onboarding, release hardening and final release validation remain incomplete"
   ],
   "requiredStartupReading": [
@@ -147,13 +152,12 @@
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
-    "docs/audits/complete-endgame-03-scaffold.md",
     "docs/audits/evidence/complete-endgame-03.md",
     "docs/audits/contracts/complete-endgame-03.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
-    "PR #162 and actual main"
+    "actual main and active PR"
   ],
-  "nextAction": "Freeze and validate Audit #162 exact head, squash-merge it, verify generated fresh main, then implement exactly #163 ENDGAME-BOT-PERCEPTION, #164 ENDGAME-BOT-PARTICIPATION, #165 ENDGAME-BOT-FINAL-OBJECTS and #166 ENDGAME-BOT-CLOSURE-GATE sequentially."
+  "nextAction": "Validate and complete PR #165 ENDGAME-BOT-FINAL-OBJECTS on one exact head, squash-merge it, verify generated fresh main, then execute only #166 ENDGAME-BOT-CLOSURE-GATE as the final COMPLETE-ENDGAME-03 implementation PR."
 }
