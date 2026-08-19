@@ -6,15 +6,21 @@ describe('faction runtime assets', () => {
     expect(Object.keys(FACTION_RUNTIME_ASSETS)).toEqual(['aegis', 'synod', 'veyra']);
 
     for (const faction of Object.values(FACTION_RUNTIME_ASSETS)) {
-      expect(faction.emblemUrl).toMatch(/\.webp$/);
-      expect(faction.backgroundUrl).toMatch(/\.webp$/);
-      expect(faction.heroUrl).toMatch(/\.webp$/);
+      expect(faction.emblemUrl).toMatch(/\.png$/);
+      expect(faction.backgroundUrl).toMatch(/\.png$/);
+      expect(faction.heroUrl).toMatch(/\.png$/);
       expect(faction.buildingsAtlasUrl).toMatch(/buildings-atlas\.webp$/);
       expect(faction.shipsAtlasUrl).toMatch(/ships-atlas\.webp$/);
       expect(faction.defensesAtlasUrl).toMatch(/defenses-atlas\.webp$/);
       expect(faction.technologiesAtlasUrl).toMatch(/technologies-atlas\.svg$/);
       expect(faction.effectsAtlasUrl).toMatch(/effects-atlas\.svg$/);
     }
+  });
+
+  it('binds showcase identity art to the generated faction source set', () => {
+    expect(FACTION_RUNTIME_ASSETS.aegis.heroUrl).toMatch(/generated-factions-v1\/factions\/aegis_hero\.png$/);
+    expect(FACTION_RUNTIME_ASSETS.synod.emblemUrl).toMatch(/generated-factions-v1\/factions\/synod_emblem\.png$/);
+    expect(FACTION_RUNTIME_ASSETS.veyra.backgroundUrl).toMatch(/generated-factions-v1\/factions\/veyra_card_bg\.png$/);
   });
 
   it('keeps generated faction paths unique while sharing explicit procedural fallbacks', () => {
