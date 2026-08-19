@@ -4,6 +4,7 @@ const PRODUCTION_BASE_URL = 'http://127.0.0.1:4173/stellar-empires/';
 
 export default defineConfig({
   testDir: './e2e-production',
+  testMatch: '**/*.pw.ts',
   timeout: 90_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
