@@ -39,9 +39,11 @@ Production-path QA only:
 - keep the existing broad dev-server Browser suite;
 - add a dedicated Playwright smoke against the normal production build served under `/stellar-empires/`;
 - use the real new-game dialog with no `VITE_E2E` state injection;
-- prove production assets load, app reaches ready state and the production base survives primary navigation;
+- prove production assets load and decode, app reaches ready state and the production base survives primary navigation;
 - prove a real manual save can be loaded into autosave and survive reload;
 - retain a separate success/failure Playwright artifact for this production smoke.
+
+The new production gate exposed one in-scope release blocker: faction showcase WebP placeholders returned 200 but were not decodable images. The candidate fix rebinds showcase hero/emblem/background URLs to the already-existing valid generated faction identity PNG source set through `GENERATED_FACTION_IDENTITY_ASSETS`; no new art or gameplay behavior is introduced. The production smoke remains strict and must prove browser decode on the final exact head.
 
 No GameState, save format, balance, bot or gameplay mechanic change is permitted in #169.
 
@@ -51,4 +53,4 @@ Freeze one exact #169 head and require full CI, existing Browser E2E, the new pr
 
 ## Stop conditions
 
-Stop rather than opening the next implementation PR if the production smoke reveals a release blocker outside the accepted M9 contract, the current head has unresolved failures, an external workflow is genuinely stuck across three checks, or `main` moves unexpectedly.
+Stop rather than opening the next implementation PR if the production smoke reveals another release blocker outside the accepted M9 contract, the current head has unresolved failures, an external workflow is genuinely stuck across three checks, or `main` moves unexpectedly.
