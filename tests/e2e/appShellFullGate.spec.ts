@@ -48,7 +48,11 @@ test('new campaign exposes immutable compressed duration expectations at release
       await expect(duration).toContainText('ориентир 12 ч · максимум 16 ч');
       await dialog.locator('.new-game-setting__select').nth(1).selectOption('10');
       await expect(duration).toContainText('ориентир 2,4 ч · максимум 3,2 ч');
-      await expect(dialog).toContainText('Финальная победа и работа Врат пока не входят');
+      await expect(dialog.locator('[data-campaign-orientation="true"]')).toContainText('Solar War');
+      await expect(dialog.locator('[data-campaign-orientation="true"]')).toContainText('финальные Врата');
+      await expect(dialog.locator('[data-campaign-terminal-note="true"]')).toContainText('Победа фиксируется');
+      await expect(dialog.locator('[data-campaign-terminal-note="true"]')).toContainText('кампания останавливается');
+      await expect(dialog).not.toContainText('пока не входят в текущий runtime');
       await expectNoHorizontalOverflow(page);
     } finally {
       await context.close();
