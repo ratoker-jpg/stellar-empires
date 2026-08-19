@@ -1,70 +1,81 @@
 # Current audit boundary
 
-**Batch:** `COMPLETE-ENDGAME-03` / Audit #162  
-**Audit status:** accepted; final closure PR #166 active  
+**Batch:** `M9-RELEASE-CANDIDATE` / Audit #167  
+**Audit status:** recon complete; implementation unauthorized until Audit merge  
 **Updated:** 2026-08-19  
-**Audit baseline / #161 squash:** `8f05d22b3475ee99e9af8652d385c956e0acd7c7`  
-**Audit squash:** `b7de24f52c02480f6db244c00b1282407d5743cc`  
-**Fresh main before #166:** `d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7`  
+**Audit baseline / #166 squash:** `a6b225fe38c1c320244fc54929534e49029d4026`  
 **Runtime target:** schema v19 / save format v6 unchanged  
+**Release target:** `1.0.0`  
 **Critical unknowns:** 0  
 **Complexity:** medium
 
 ## Binding authority
 
-The accepted implementation is governed by:
+This Audit is governed by:
 
-- `docs/audits/evidence/complete-endgame-03.md`;
-- `docs/audits/contracts/complete-endgame-03.md`;
+- `docs/audits/evidence/m9-release-candidate.md`;
+- `docs/audits/contracts/m9-release-candidate.md`;
 - `docs/audits/current-execution-state.md`;
-- actual GitHub PR/merge/workflow state when it is newer than prose.
+- actual GitHub `main`, PR and workflow state when newer than prose.
 
-## Accepted sequence
+## Fresh baseline
+
+PR #166 `ENDGAME-BOT-CLOSURE-GATE` is merged. Generated fresh `main`:
+
+`a6b225fe38c1c320244fc54929534e49029d4026`
+
+M8.3 is closed. No additional M8 implementation is authorized.
+
+## Verified M9 gaps
+
+- new-game dialog contains obsolete copy claiming final victory/Gates are unavailable;
+- normal Browser E2E tests the Vite dev root while production uses `/stellar-empires/`;
+- release version metadata is still independently hard-coded as `0.1.0`;
+- CI/E2E/Pages pin Node 22.12.0 despite current dependency engine warnings;
+- README describes a materially obsolete early project state;
+- no current evidence requires gameplay rebalancing, schema/save migration or a new mechanic.
+
+## Proposed implementation sequence
+
+If and only if Audit #167 exact-head gates pass and the Audit squash merges, authorize exactly:
 
 ```text
-#162 Audit                         → merged b7de24f52c02480f6db244c00b1282407d5743cc
-#163 ENDGAME-BOT-PERCEPTION       → merged 46e0966c2843424d6e098e363327ffe5cf74d352
-#164 ENDGAME-BOT-PARTICIPATION    → merged 5be7b44eb51cf389e8006f0a0201ab61c0ee0df5
-#165 ENDGAME-BOT-FINAL-OBJECTS    → merged d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7
-#166 ENDGAME-BOT-CLOSURE-GATE     → final closure candidate
+#168 RELEASE-ONBOARDING-TRUTH
+→ #169 RELEASE-PRODUCTION-BROWSER
+→ #170 RELEASE-PACKAGING-METADATA
+→ #171 RELEASE-1.0-CLOSURE
 ```
 
-No additional M8.3 implementation PR is allowed.
+Stable work-item IDs are authoritative if GitHub numbering changes.
 
-## Information boundary delivered
+No fifth M9 implementation PR is authorized by this Audit.
 
-Bots use canonical public endgame state, own state, immutable allied-project data they are eligible to see, and existing stored intelligence. Hidden foreign economy, fleets, defences, queues, private intelligence and private contribution sources do not become bot inputs.
+A post-#171 docs-only release record is permitted solely to record the generated closure SHA and post-merge Pages evidence if canonical status cannot self-record it.
 
-## #166 closure boundary
+## Hard boundaries
 
-#166 is acceptance/tests/docs-only unless a real composed blocker appears. The composed suite passed without production changes and covers:
+M9 does not authorize:
 
-- Aegis/Synod alliance + Veyra solo policy;
-- real three-faction Solar War and positive qualification;
-- scheduler save/load + direct/chunk determinism;
-- immutable-cohort alliance funding;
-- real-qualified Veyra solo Gate through build, vulnerability and terminal;
-- building/vulnerable/terminal save round-trips;
-- direct/chunk/loaded/offline terminal equality;
-- post-terminal bot/time fixed point.
+- new gameplay mechanics;
+- new currencies/catalogs/factions/missions/combat engines;
+- post-victory continuation mode;
+- schema/save migration;
+- arbitrary balance retuning without measured release evidence;
+- tutorial persistence/quest systems;
+- broad visual redesign;
+- license selection on behalf of the owner;
+- backend/cloud/multiplayer work.
 
-Existing focused suites remain authoritative for qualified Obelisk queueing, public vulnerable-Gate attack legality, hidden-state invariance, Gate destruction/rebuild, host loss, same-second ordering and terminal command rejection.
+## Audit acceptance
 
-## Final closure gates
+Before implementation begins, one exact #167 docs-only head must pass:
 
-The current docs-inclusive #166 head must independently pass:
-
-- asset audit, lint, typecheck, full tests and build;
+- asset audit, lint, typecheck, all tests and build;
+- compressed progression;
+- campaign performance budgets;
 - Browser E2E;
 - Graphify;
-- compressed progression;
-- one-day `<15 s` and seven-day `<30 s` campaign performance;
 - reviews/unresolved threads clean;
-- mergeability true;
-- expected-head squash merge.
+- mergeability true.
 
-Only after generated fresh-main verification is `COMPLETE-ENDGAME-03` operationally closed. The generated #166 squash is recorded by the next Audit.
-
-## Next boundary
-
-The next valid project action is a separate **M9 Release Candidate Audit** from fresh post-#166 `main`. This document does not authorize M9 implementation.
+Then mark #167 Ready, squash-merge with expected-head protection and verify the generated fresh `main` before creating `RELEASE-ONBOARDING-TRUTH`.
