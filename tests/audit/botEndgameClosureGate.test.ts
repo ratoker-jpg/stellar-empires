@@ -233,7 +233,7 @@ function botsAfterTerminal(state: GameState): GameState {
 function roundTrip(state: GameState, label: string): GameState {
   const parsed = parseSaveJson(serializeSave(createSaveEnvelope(label, state, SAVE_TIME)));
   expect(parsed.ok).toBe(true);
-  if (!parsed.ok) throw new Error(parsed.error);
+  if (!parsed.ok) throw new Error(`${parsed.code}: ${parsed.message}`);
   return parsed.value.state;
 }
 
