@@ -7,9 +7,9 @@
 
 ## Scope
 
-Final composed acceptance for the already-implemented M8.3 bot endgame path. No new mechanic is intended in this PR.
+Final composed acceptance for the already-implemented M8.3 bot endgame path. #166 adds no production mechanic.
 
-The closure gate composes existing authoritative behavior to prove:
+The closure gate proves:
 
 - Aegis and Synod reach the same public alliance while Veyra remains solo;
 - all three use ordinary bot participation commands to enter one real Solar War cycle;
@@ -17,14 +17,24 @@ The closure gate composes existing authoritative behavior to prove:
 - scheduler output after qualification is deterministic across save/load and direct/chunk campaign-time partitions;
 - a real-qualified alliance project starts and is funded by its immutable eligible cohort;
 - a real-qualified Veyra solo project reaches ordinary construction, vulnerable Gate and exact terminal stabilization;
-- building/vulnerable/terminal state round-trips through the current save format;
+- building/vulnerable/terminal state round-trips through save format v6;
 - vulnerable-to-terminal behavior is identical across direct, chunked, loaded and offline catch-up paths;
 - terminal time and bot planning remain frozen after the persisted result.
 
 Existing focused suites remain authoritative for qualified Obelisk queueing, public vulnerable-Gate attacks, hidden-state invariance, Gate destruction/rebuild, host loss, same-second attack/stabilization order and terminal command rejection.
 
-## Closure rule
+## Fixture acceleration
 
-If composed tests expose a real blocker, fix only that blocker through existing mechanics and rerun all exact-head gates. Otherwise this PR remains tests/docs-only.
+Canonical compressed storage cannot hold the full multi-million Gate target at once, so real gameplay normally funds over repeated contributions. The closure fixture keeps real qualification and ordinary project creation, then makes the exact remaining resources available immediately before an ordinary contribution command to keep acceptance runtime bounded. The command still validates cohort/ownership/overfunding, spends the resources and queues the normal Gate build. All save/load assertions occur after spend on canonical state.
 
-After one exact head passes CI, Browser E2E, Graphify, compressed progression/performance, reviews/threads and mergeability, the Stage-3 audit/status/roadmap archive is updated on the same PR and the final exact head is rerun before squash merge.
+## Evidence
+
+The two composed closure tests passed on pre-archive head `a888221f7dba4fab44690a9419275b88ba9a7368`. Earlier red closure runs were typecheck/fixture corrections only; no production change was needed.
+
+This Stage-3 docs commit intentionally creates a new final candidate head. Earlier green checks are superseded; the docs-inclusive head must pass all CI, Browser E2E, Graphify, progression/performance, review/thread and mergeability gates before Ready/squash.
+
+## Hard boundary
+
+No new mechanics, schema/save migration, balance, assets/catalogs/currencies/routes/mission families/combat engine, or M9 implementation.
+
+After #166 squash and generated fresh-main verification, the next valid work is a separate M9 Release Candidate Audit.
