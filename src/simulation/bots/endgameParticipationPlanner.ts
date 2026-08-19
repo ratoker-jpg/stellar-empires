@@ -3,11 +3,13 @@ import {
   getSolarWarEntryForEmpire,
 } from '../endgame/solarWarView';
 import type { GameCommand, GameState } from '../types';
+import { planBotEndgameFinalObjects } from './endgameFinalObjectPlanner';
 import { createBotEndgamePerception } from './endgamePerception';
 import type { BotProfile } from './profiles';
 
 export type BotEndgameParticipationReasonCode =
   | 'campaign-terminal'
+  | 'final-object-action'
   | 'participation-unavailable'
   | 'alliance-create'
   | 'alliance-join'
@@ -81,6 +83,11 @@ export function planBotEndgameParticipation(
   }
   if (state.endgameParticipation === undefined) {
     return { command: null, reasonCode: 'participation-unavailable' };
+  }
+
+  const finalObject = planBotEndgameFinalObjects(state, profile);
+  if (finalObject.command !== null) {
+    return { command: finalObject.command, reasonCode: 'final-object-action' };
   }
 
   const membership = allianceCommand(state, profile);
