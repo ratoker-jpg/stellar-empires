@@ -18,7 +18,9 @@ Add deterministic alliance/solo and Solar War participation planning through exi
 
 ## Release-gate blocker repair
 
-Browser E2E on the original bot-only candidate head reproduced the same mobile `/reports/endgame` document overflow twice: a 520px combat table caused its `<details>` grid item to retain intrinsic minimum width, expanding the 390px viewport document to 580px. The repair is intentionally presentation-only: the details element now has `width: 100%` and `min-width: 0`, preserving the table's existing internal horizontal scroller without allowing it to widen the page.
+Browser E2E exposed a live-resize race on `/reports/endgame`: after changing an already-mounted desktop page to the 390×844 release viewport, `data-viewport-mode` could remain `compact` for one animation frame. The higher-specificity compact layout therefore kept its 500px minimum topbar track long enough for the document to report 580px horizontal overflow.
+
+The repair keeps viewport-mode derivation unchanged but applies it synchronously from the resize event instead of deferring it through `requestAnimationFrame`. Browser coverage now asserts the desktop-to-mobile transition itself (`data-viewport-mode="mobile"`) before checking the existing no-horizontal-overflow gate, and also verifies the same route after reload.
 
 This does not change report content, route structure, simulation behavior, balance, persistence, or bot planning.
 
