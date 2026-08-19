@@ -375,7 +375,7 @@ describe('bot endgame final-object planning', () => {
               },
               inventory: {
                 ...planet.inventory,
-                defenses: { ...planet.inventory.defenses, hidden-test-defense: 999 },
+                defenses: { ...planet.inventory.defenses, 'hidden-test-defense': 999 },
               },
             }
           : planet,
