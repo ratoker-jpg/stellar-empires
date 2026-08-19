@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test';
 const PRODUCTION_BASE_URL = 'http://127.0.0.1:4173/stellar-empires/';
 
 export default defineConfig({
-  testDir: './tests/e2e-production',
+  testDir: './e2e-production',
   timeout: 90_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
