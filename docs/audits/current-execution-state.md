@@ -2,49 +2,71 @@
 
 **Updated:** 2026-08-19  
 **Safe to continue:** yes  
-**Batch:** `COMPLETE-ENDGAME-03` final closure  
-**Runtime:** schema v19 / save format v6 unchanged
+**Batch:** `M9-RELEASE-CANDIDATE` Audit  
+**Runtime:** schema v19 / save format v6 unchanged  
+**Release target:** 1.0.0
 
 | Field | Current value |
 |---|---|
-| Fresh `main` before closure | `d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7` |
-| Audit #162 squash | `b7de24f52c02480f6db244c00b1282407d5743cc` |
-| #163 `ENDGAME-BOT-PERCEPTION` | merged → `46e0966c2843424d6e098e363327ffe5cf74d352` |
-| #164 `ENDGAME-BOT-PARTICIPATION` | merged → `5be7b44eb51cf389e8006f0a0201ab61c0ee0df5` |
-| #165 `ENDGAME-BOT-FINAL-OBJECTS` | merged → `d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7` |
-| Active closure | #166 `ENDGAME-BOT-CLOSURE-GATE` |
-| Closure branch | `agent/endgame-bot-closure-gate` |
-| Exact #166 base | `d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7` |
-| Next M8.3 implementation PR | none |
-| Next valid work after #166 merge | separate `M9-RELEASE-CANDIDATE` Audit |
+| Fresh `main` | `a6b225fe38c1c320244fc54929534e49029d4026` |
+| Last merged PR | #166 `ENDGAME-BOT-CLOSURE-GATE` |
+| M8.3 status | closed |
+| Active Audit | #167 `M9-RELEASE-CANDIDATE-AUDIT` |
+| Audit branch | `agent/m9-release-candidate-audit` |
+| Exact Audit base | `a6b225fe38c1c320244fc54929534e49029d4026` |
+| Audit complexity | medium |
+| Planned implementation count | 4 |
+| Target state schema | 19 |
+| Target save format | 6 |
 | Critical unknowns | 0 |
+| Implementation authorized now | no — Audit must merge first |
 
-## Accepted sequence
+## Recon result
+
+M8 gameplay closure is complete; M9 is release hardening, not another mechanics milestone.
+
+Verified release gaps:
+
+1. stale new-game statement says final victory/Gates are unavailable;
+2. Browser E2E currently proves dev-root behavior but not the production `/stellar-empires/` base path;
+3. product version is still `0.1.0` in multiple authorities;
+4. Node 22.12 CI pin is below current ESLint dependency engine requirements and emits warnings;
+5. README is materially stale;
+6. no measured evidence currently justifies a new balance pass or schema/save change.
+
+## Proposed accepted sequence
+
+After #167 itself squash-merges and its generated fresh main is verified:
 
 ```text
-#162 COMPLETE-ENDGAME-03 Audit    → b7de24f52c02480f6db244c00b1282407d5743cc
-#163 ENDGAME-BOT-PERCEPTION       → 46e0966c2843424d6e098e363327ffe5cf74d352
-#164 ENDGAME-BOT-PARTICIPATION    → 5be7b44eb51cf389e8006f0a0201ab61c0ee0df5
-#165 ENDGAME-BOT-FINAL-OBJECTS    → d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7
-#166 ENDGAME-BOT-CLOSURE-GATE     → final closure candidate
+#168 RELEASE-ONBOARDING-TRUTH
+→ #169 RELEASE-PRODUCTION-BROWSER
+→ #170 RELEASE-PACKAGING-METADATA
+→ #171 RELEASE-1.0-CLOSURE
 ```
 
-No fifth M8.3 implementation PR is authorized.
+No implementation branch may be created from the Audit branch.
 
 ## Last completed atomic action
 
-The #166 composed closure suite is green on pre-archive evidence head `a888221f7dba4fab44690a9419275b88ba9a7368`.
-
-It proves three-faction real Solar War participation/qualification, save/load scheduler determinism, direct/chunk equality, alliance funding, Veyra solo Gate construction/vulnerability/terminal, vulnerable save/load, offline terminal equality and post-terminal fixed-point behavior. No #166 production mechanic was required.
-
-This commit synchronizes the Stage-3 archive and repository source-of-truth documents. Because this docs commit creates a new head, all earlier green runs are superseded.
+Recon is complete and the M9 evidence/contract/source-of-truth update is being committed to Audit #167. No production file has been changed by the Audit.
 
 ## Exact next action
 
-1. Treat the docs-inclusive current #166 branch tip as the only candidate head.
-2. Require full CI: asset audit, lint, typecheck, all tests, build, compressed progression and campaign performance `<15 s` one-day / `<30 s` seven-day.
+1. Freeze one exact docs-inclusive #167 head.
+2. Require full CI: asset audit, lint, typecheck, all tests, build, compressed progression and permanent performance budgets.
 3. Require Browser E2E and Graphify on that same head.
-4. Require reviews and unresolved review threads = 0 and mergeability = true.
-5. Only then mark #166 Ready and squash-merge with expected-head protection.
-6. Fetch and verify the generated fresh `main`; the exact #166 squash SHA is recorded by the next Audit.
-7. Stop M8.3 work. Do **not** begin M9 implementation in this closure. The next valid work is a separate M9 Release Candidate Audit from fresh `main`.
+4. Require reviews = 0, unresolved review threads = 0 and mergeability = true.
+5. Mark #167 Ready only after those gates pass.
+6. Squash-merge #167 with expected-head protection.
+7. Fetch and verify generated fresh `main`.
+8. Only then create `RELEASE-ONBOARDING-TRUTH` from that fresh main.
+
+## Stop conditions
+
+Stop rather than opening the next implementation PR if:
+
+- a real release blocker cannot be bounded by the accepted M9 contract;
+- the current exact head has unresolved ordinary code/test failures;
+- the same external workflow remains genuinely stuck across three status checks;
+- `main` moves unexpectedly and the new commits have not been reconciled.

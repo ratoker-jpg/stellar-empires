@@ -2,51 +2,93 @@
 
 ## Current handoff
 
-`COMPLETE-ENDGAME-03` is at its final closure PR #166 `ENDGAME-BOT-CLOSURE-GATE`.
+`COMPLETE-ENDGAME-03` is closed. PR #166 squash / fresh `main`:
 
-- accepted Audit #162 squash: `b7de24f52c02480f6db244c00b1282407d5743cc`;
-- #163 perception squash: `46e0966c2843424d6e098e363327ffe5cf74d352`;
-- #164 participation squash: `5be7b44eb51cf389e8006f0a0201ab61c0ee0df5`;
-- #165 final-object planning squash / fresh main before closure: `d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7`;
-- active branch: `agent/endgame-bot-closure-gate`;
-- runtime remains schema v19 / save format v6.
+`a6b225fe38c1c320244fc54929534e49029d4026`
 
-No fifth M8.3 implementation PR is authorized.
+M9 Release Candidate begins with mandatory Audit #167 on branch:
 
-## Read before any continuation
+`agent/m9-release-candidate-audit`
+
+Runtime remains schema v19 / save format v6. Target release is 1.0.0.
+
+## Read before continuation
 
 1. `AGENTS.md`
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/contracts/complete-endgame-03.md`
-6. `docs/audits/evidence/complete-endgame-03.md`
-7. `docs/audits/completed/complete-endgame-03.md`
-8. `docs/project-status.json`
-9. `docs/roadmap-pr-index.json`
-10. actual `main` and active PR metadata/checks
+5. `docs/audits/evidence/m9-release-candidate.md`
+6. `docs/audits/contracts/m9-release-candidate.md`
+7. `docs/project-status.json`
+8. `docs/roadmap-pr-index.json`
+9. `docs/27-playable-game-roadmap-v5.md`
+10. actual GitHub `main`, Audit #167 and workflow state
 
 Actual GitHub state overrides older prose when they differ.
 
-## What M8.3 delivered
+## Completed gameplay baseline
 
-- canonical bot endgame perception with a hard public/owned/intelligence information boundary;
-- deterministic Aegis/Synod public-alliance policy and Veyra solo policy;
-- ordinary Solar War entry through owned legal fleets;
-- real qualification-driven qualified Obelisk/final-project planning;
-- immutable-cohort resource contribution planning;
-- public vulnerable-Gate response only through current L3 intelligence, owned Planet Destroyer capability and ordinary mission legality;
-- terminal no-op behavior;
-- composed three-faction/save-load/direct-chunk/offline closure coverage.
+M1–M8 gameplay delivery is mechanically complete for the local browser campaign:
 
-#166 required no new production mechanic; closure reds were test fixture/typecheck corrections.
+- deterministic multi-colony economy and logistics;
+- research, production, fleets and ordinary missions;
+- combat, demolition/destruction/recovery, PvE and meta systems;
+- three mechanical factions and autonomous bot empires;
+- optional alliance participation and solo play;
+- Solar War qualification;
+- final Gate projects, vulnerability/destruction/recovery;
+- persisted victory/defeat and exact terminal freeze;
+- bot endgame perception/participation/final-project parity;
+- save/load/offline/direct/chunk deterministic closure.
 
-## If #166 is still open
+PR #166 required no new production mechanic and closed M8.3 with composed acceptance evidence.
 
-Do not use an earlier green head. Require one current docs-inclusive head to pass full CI, Browser E2E, Graphify, compressed progression/performance, review/thread and mergeability gates. Mark Ready only after all are green, then squash-merge with expected-head protection and verify generated fresh `main`.
+## M9 recon result
 
-## If #166 is already merged
+Critical unknowns: **0**.
 
-Fetch actual `main` and the generated #166 squash SHA first. The next valid work is **not another M8 implementation PR**. Create a separate **M9 Release Candidate Audit** from that fresh main and let that audit discover/bound any release-hardening implementation.
+Verified release-hardening gaps are limited to:
 
-Do not begin M9 implementation before that audit is accepted.
+- stale new-game release copy/orientation;
+- lack of direct Browser proof for the production `/stellar-empires/` base path;
+- `0.1.0` version drift and stale repository metadata;
+- Node 22.12 workflow pins that sit below current dependency engine requirements;
+- final 1.0 combined release closure and post-merge Pages verification.
+
+No current evidence authorizes gameplay retuning or schema/save migration.
+
+## Authorized implementation after Audit merge
+
+Do not begin implementation while #167 is open.
+
+After #167 squash-merges and its generated fresh main is verified, execute exactly:
+
+```text
+#168 RELEASE-ONBOARDING-TRUTH
+→ #169 RELEASE-PRODUCTION-BROWSER
+→ #170 RELEASE-PACKAGING-METADATA
+→ #171 RELEASE-1.0-CLOSURE
+```
+
+Stable work-item IDs are authoritative if numbering changes.
+
+No fifth M9 implementation PR is authorized.
+
+A docs-only post-release record may be created after #171 solely to record the generated squash SHA and successful Pages deployment evidence. It may not add implementation.
+
+## Merge discipline
+
+For Audit #167 and every M9 implementation PR:
+
+1. freeze one exact final head;
+2. require Main CI, Browser E2E, Graphify, compressed progression and permanent one-day/seven-day performance gates green on that same head;
+3. for #169 onward also require the dedicated production-base Browser smoke once introduced;
+4. require unresolved review threads = 0, reviews/blockers = 0, expected base unchanged and mergeable = true;
+5. mark Ready only after all gates pass;
+6. squash-merge with expected-head protection;
+7. verify generated fresh `main` before creating the next branch.
+
+## Hard boundary
+
+Do not add backend/accounts/cloud saves/multiplayer, new mechanics, post-victory sandbox, new currencies/catalogs, broad redesign, tutorial persistence or license terms during M9 unless a new separate owner decision and audit explicitly authorizes them.

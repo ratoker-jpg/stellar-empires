@@ -1,58 +1,65 @@
 {
-  "indexVersion": 14,
+  "indexVersion": 15,
   "updatedAt": "2026-08-19",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 5,
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 165,
-    "mergeSha": "d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7",
-    "runtimeBaselinePr": 165,
-    "runtimeBaselineSha": "d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7",
+    "lastMergedPr": 166,
+    "mergeSha": "a6b225fe38c1c320244fc54929534e49029d4026",
+    "runtimeBaselinePr": 166,
+    "runtimeBaselineSha": "a6b225fe38c1c320244fc54929534e49029d4026",
     "lastCompletedAuditPr": 162,
     "lastCompletedAuditMergeSha": "b7de24f52c02480f6db244c00b1282407d5743cc"
   },
   "active": {
-    "pr": 166,
-    "kind": "implementation-closure",
-    "batchId": "COMPLETE-ENDGAME-03",
-    "workItem": "ENDGAME-BOT-CLOSURE-GATE",
-    "branch": "agent/endgame-bot-closure-gate",
-    "baseSha": "d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7",
-    "implementationAuthorized": true,
-    "status": "final-closure-candidate"
+    "pr": 167,
+    "kind": "audit",
+    "batchId": "M9-RELEASE-CANDIDATE",
+    "workItem": "M9-RELEASE-CANDIDATE-AUDIT",
+    "branch": "agent/m9-release-candidate-audit",
+    "baseSha": "a6b225fe38c1c320244fc54929534e49029d4026",
+    "implementationAuthorized": false,
+    "status": "recon-complete-audit-open"
   },
   "currentPhase": {
-    "id": "COMPLETE-ENDGAME-03",
-    "milestone": "M8.3",
-    "auditPr": 162,
-    "auditMergeSha": "b7de24f52c02480f6db244c00b1282407d5743cc",
-    "status": "closure-pr-active",
+    "id": "M9-RELEASE-CANDIDATE",
+    "milestone": "M9",
+    "auditPr": 167,
+    "auditMergeSha": null,
+    "status": "audit-open",
     "implementationCount": 4,
-    "plannedImplementationPrs": [163, 164, 165, 166],
-    "completedImplementationPrs": [163, 164, 165],
-    "implementationMergeShas": {
-      "163": "46e0966c2843424d6e098e363327ffe5cf74d352",
-      "164": "5be7b44eb51cf389e8006f0a0201ab61c0ee0df5",
-      "165": "d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7",
-      "166": "recorded-by-next-audit"
-    },
+    "plannedImplementationPrs": [168, 169, 170, 171],
+    "completedImplementationPrs": [],
+    "implementationMergeShas": {},
+    "workItems": [
+      "RELEASE-ONBOARDING-TRUTH",
+      "RELEASE-PRODUCTION-BROWSER",
+      "RELEASE-PACKAGING-METADATA",
+      "RELEASE-1.0-CLOSURE"
+    ],
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
-    "archive": "docs/audits/completed/complete-endgame-03.md"
+    "targetReleaseVersion": "1.0.0",
+    "archive": "docs/audits/completed/m9-release-candidate.md"
   },
   "sequence": [
     {"pr":162,"kind":"audit","workItem":"COMPLETE-ENDGAME-03","status":"merged","mergeSha":"b7de24f52c02480f6db244c00b1282407d5743cc"},
     {"pr":163,"kind":"implementation","workItem":"ENDGAME-BOT-PERCEPTION","status":"merged","mergeSha":"46e0966c2843424d6e098e363327ffe5cf74d352"},
     {"pr":164,"kind":"implementation","workItem":"ENDGAME-BOT-PARTICIPATION","status":"merged","mergeSha":"5be7b44eb51cf389e8006f0a0201ab61c0ee0df5"},
     {"pr":165,"kind":"implementation","workItem":"ENDGAME-BOT-FINAL-OBJECTS","status":"merged","mergeSha":"d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7"},
-    {"pr":166,"kind":"implementation-closure","workItem":"ENDGAME-BOT-CLOSURE-GATE","status":"active"}
+    {"pr":166,"kind":"implementation-closure","workItem":"ENDGAME-BOT-CLOSURE-GATE","status":"merged","mergeSha":"a6b225fe38c1c320244fc54929534e49029d4026"},
+    {"pr":167,"kind":"audit","workItem":"M9-RELEASE-CANDIDATE-AUDIT","status":"active"},
+    {"pr":168,"kind":"implementation","workItem":"RELEASE-ONBOARDING-TRUTH","status":"planned-after-audit"},
+    {"pr":169,"kind":"implementation","workItem":"RELEASE-PRODUCTION-BROWSER","status":"planned-after-audit"},
+    {"pr":170,"kind":"implementation","workItem":"RELEASE-PACKAGING-METADATA","status":"planned-after-audit"},
+    {"pr":171,"kind":"implementation-closure","workItem":"RELEASE-1.0-CLOSURE","status":"planned-after-audit"}
   ],
   "next": {
-    "pr": null,
-    "kind": "audit-required",
-    "workItem": "M9-RELEASE-CANDIDATE-AUDIT",
-    "instruction": "After #166 squash and fresh-main verification, begin only a separate M9 Release Candidate Audit. Do not start M9 implementation from the M8.3 closure."
+    "pr": 168,
+    "kind": "implementation-after-audit-merge",
+    "workItem": "RELEASE-ONBOARDING-TRUTH",
+    "instruction": "Do not create implementation until Audit #167 squash-merges and its generated fresh main is verified. Then execute exactly the four authorized M9 work items sequentially from each fresh main."
   }
 }

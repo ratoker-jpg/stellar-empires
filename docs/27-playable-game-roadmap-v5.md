@@ -1,10 +1,10 @@
 # Stellar Empires — canonical roadmap to a complete playable game v5
 
-**Status:** M8.1/M8.2 completed; M8.3 `COMPLETE-ENDGAME-03` Audit #162 active  
+**Status:** M1–M8 mechanically complete; M9 Release Candidate Audit #167 active  
 **Updated:** 2026-08-19  
-**Last merged PR:** #161 `ENDGAME-TERMINAL-GATE` · `8f05d22b3475ee99e9af8652d385c956e0acd7c7`  
+**Last merged PR:** #166 `ENDGAME-BOT-CLOSURE-GATE` · `a6b225fe38c1c320244fc54929534e49029d4026`  
 **Runtime:** schema v19 / save format v6  
-**Release target:** complete local PvE browser campaign with autonomous bot empires
+**Release target:** 1.0.0 complete local PvE browser campaign with autonomous bot empires
 
 ## 1. Product target
 
@@ -31,13 +31,30 @@ choose faction and immutable campaign settings
 6. canonical product contracts;
 7. completed audits/history.
 
+Actual GitHub state overrides stale prose.
+
 ## 3. Delivered baseline
 
-M1–M6b are complete through #151. M7 autonomous bot parity is substantially delivered for ordinary campaign behavior. M8.1 alliance/solo/Solar-War participation is complete through #156. M8.2 final objects, Gate vulnerability/recovery and terminal campaign closure is complete through #161.
+All mechanical milestones through M8 are closed on fresh post-#166 main:
 
-Fresh current main after #161 is:
+`a6b225fe38c1c320244fc54929534e49029d4026`
 
-`8f05d22b3475ee99e9af8652d385c956e0acd7c7`.
+Delivered game scope includes:
+
+- deterministic campaign settings, local active time and offline catch-up;
+- three mechanical factions;
+- multi-colony economy, logistics and market;
+- research, buildings, ships, defenses and upgrades;
+- Universe navigation and intelligence;
+- ordinary fleet missions, expeditions, objects, events and reports;
+- combat, debris, demolition, planet destruction/recovery and recolonization;
+- sustainable PvE/meta systems;
+- autonomous bot ordinary-campaign and endgame parity;
+- optional alliances and solo completion;
+- Solar War qualification;
+- final Gate projects, vulnerability, destruction/rebuild and host recovery;
+- immutable persisted terminal victory/defeat and exact runtime freeze;
+- deterministic save/load/direct/chunk/offline closure.
 
 ## 4. Completed milestone map
 
@@ -56,70 +73,81 @@ Fresh current main after #161 is:
 | M6b — PvE meta foundation | Audit #147; #148–#151 |
 | M8.1 — Endgame participation | Audit #152; #153–#156 |
 | M8.2 — Final objects/terminal | Audit #157; #158–#161 |
+| M8.3 — Bot endgame closure | Audit #162; #163–#166 |
 
-## 5. M8.3 — COMPLETE-ENDGAME-03
+M7 autonomous bot parity is satisfied through the ordinary-campaign work above plus M8.3 final endgame parity.
 
-Audit #162 is the mandatory entrypoint for the remaining bot endgame parity gap.
-
-Recon on fresh post-#161 main found:
-
-- the bot scheduler already advances deterministic cadence and emits ordinary reducer commands;
-- existing bot perception already protects hidden foreign state but lacks explicit endgame public/owned/allied projections;
-- alliance, Solar War, final-project, vulnerable Gate attack/recovery and terminal mechanics are already ordinary gameplay;
-- no bot-specific simulation engine, schema/save migration, currency, catalog, asset or combat engine is required;
-- M8.3 complexity is medium and critical unknowns are zero.
-
-While Audit #162 is open, implementation is unauthorized.
-
-After #162 itself squash-merges and its generated main is verified, exactly this sequence is authorized:
-
-```text
-#163 ENDGAME-BOT-PERCEPTION
-→ #164 ENDGAME-BOT-PARTICIPATION
-→ #165 ENDGAME-BOT-FINAL-OBJECTS
-→ #166 ENDGAME-BOT-CLOSURE-GATE
-```
-
-No fifth M8.3 implementation PR is authorized.
-
-### Information parity
-
-Bots may use canonical public alliance/Solar-War/final-project/terminal facts, their own participation/qualification and project-cohort data they are entitled to, plus existing owned state/intelligence/public contacts.
-
-Bots may not read hidden foreign resources, inventories, fleets, queues, logistics, private intelligence or private contribution-source data merely because a foreign endgame object exists.
-
-### Command parity
-
-Bots use the same existing commands for alliance participation, Solar War, project start/contribution and ordinary ATTACK. Existing build events/combat/recovery/terminal semantics remain authoritative.
-
-## 6. Release 1.0 definition
+## 5. Release 1.0 definition
 
 A player can create and resume a deterministic campaign, build and understand a multi-colony economy, configure logistics, unlock the catalog, execute sustainable missions, fight and recover colonies, use bounded PvE/meta systems, remain solo or participate in an alliance, participate in Solar War and reach a persisted victory or defeat.
 
-Bots must use the same commands, resources, timing and allowed information classes. Save/load/offline partitions must preserve deterministic outcomes.
+Bots use the same commands, resources, timing and allowed information classes. Save/load/offline partitions preserve deterministic outcomes.
 
-## 7. Remaining milestones
+For technical Release 1.0, the built production artifact must additionally:
+
+- tell the truth about available campaign/endgame behavior;
+- boot and navigate under the GitHub Pages production base `/stellar-empires/`;
+- use coherent package/UI release metadata;
+- run on an automated Node baseline supported by current dependencies;
+- retain the permanent progression/performance/Browser/Graphify gates;
+- have current repository documentation describing the shipped game.
+
+## 6. M9 — Release Candidate
+
+Audit #167 `M9-RELEASE-CANDIDATE-AUDIT` is the mandatory entrypoint.
+
+Recon on fresh post-#166 main found a medium release-hardening batch with critical unknowns = 0. No new gameplay mechanic or schema/save migration is required.
+
+While #167 is open, M9 implementation is unauthorized.
+
+After #167 squash-merges and its generated fresh main is verified, exactly this implementation sequence is authorized:
+
+```text
+#168 RELEASE-ONBOARDING-TRUTH
+→ #169 RELEASE-PRODUCTION-BROWSER
+→ #170 RELEASE-PACKAGING-METADATA
+→ #171 RELEASE-1.0-CLOSURE
+```
+
+Stable work-item IDs are authoritative if GitHub numbering changes. No fifth M9 implementation PR is authorized by this Audit.
+
+### M9.1 Release onboarding truth
+
+Correct stale new-game claims and add concise first-run orientation using the existing new-game surface. No tutorial state or quest subsystem.
+
+### M9.2 Production browser proof
+
+Keep the existing broad dev-server Browser suite and add a dedicated small smoke against the real production build/base path `/stellar-empires/`, including real fresh-campaign selection and reload.
+
+### M9.3 Packaging and metadata
+
+Make `package.json` the version authority, move the release automation baseline to Node 24, identify the RC as `1.0.0-rc.1` and bring README/current metadata up to the actual shipped state. License selection remains owner-controlled.
+
+### M9.4 1.0 closure
+
+Advance the package-authoritative version to `1.0.0`, run combined exact-head release gates, archive M9, mark technical Release 1.0 complete, squash-merge and verify the resulting `main` plus Pages deployment.
+
+## 7. Remaining milestone map
 
 | Milestone | Status | Delivery |
 |---|---|---|
-| M1–M6b | completed | through #151 |
-| M7 — Autonomous bot parity | substantially delivered | final endgame parity in M8.3 |
-| M8.1 | completed | #152–#156 |
-| M8.2 | completed | #157–#161 |
-| M8.3 — Bot endgame closure | Audit active | #162; then #163–#166 if Audit merges |
-| M9 — Release candidate | not audited | balance, onboarding, QA, performance and release |
+| M1–M8 | completed | through #166 |
+| M9 — Release candidate | Audit active | #167; then exactly four implementation work items if Audit merges |
+| Release 1.0 | pending M9 closure | target after `RELEASE-1.0-CLOSURE` |
 
 ## 8. Key invariants
 
 - current `main` is the only valid merged runtime baseline;
 - alliance membership is optional and solo completion remains legal;
-- schema v19/save v6 remains the M8.3 target;
+- schema v19/save v6 remains the M9 target;
 - Solar War and final objects use ordinary commands/mechanics;
 - terminal result is persisted, immutable and freezes simulation at the exact terminal second;
 - no post-victory continue sandbox exists;
 - bots do not gain hidden foreign state;
-- progression, determinism, Browser, Graphify and performance gates remain mandatory.
+- progression, determinism, Browser, Graphify and performance gates remain mandatory;
+- existing accepted balance is not retuned without measured evidence;
+- M9 release hardening must not become a new gameplay expansion.
 
 ## 9. Immediate action
 
-Finish #162 Audit exact-head validation and squash merge. Then implement #163–#166 sequentially from each fresh generated main. After M8.3 closure, M9 must begin with its own Audit before release-candidate implementation.
+Finish Audit #167 on one exact docs-only green head and squash-merge it. Verify generated fresh `main`. Then begin only `RELEASE-ONBOARDING-TRUTH` from that fresh main and execute the accepted M9 sequence linearly.
