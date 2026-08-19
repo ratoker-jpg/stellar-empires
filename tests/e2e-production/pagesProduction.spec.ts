@@ -17,11 +17,14 @@ test('production Pages build survives real new game, save/load, navigation and r
   await expect(dialog.locator('[data-campaign-orientation="true"]')).toContainText('Solar War');
   await expect(dialog.locator('[data-campaign-terminal-note="true"]')).toContainText('Победа фиксируется');
 
-  const heroLoaded = await dialog.locator('.new-game-faction__hero').first().evaluate((image) => {
-    const element = image as HTMLImageElement;
-    return element.complete && element.naturalWidth > 0;
-  });
-  expect(heroLoaded).toBe(true);
+  const hero = dialog.locator('.new-game-faction__hero').first();
+  await expect(hero).toHaveAttribute('src', /\/stellar-empires\/assets\//);
+  await expect.poll(
+    () => hero.evaluate((image) => {
+      const element = image as HTMLImageElement;
+      return element.complete && element.naturalWidth > 0;
+    }),
+  ).toBe(true);
 
   await dialog.locator('.new-game-setting__select').nth(0).selectOption('test');
   await dialog.locator('.new-game-setting__select').nth(1).selectOption('10');
