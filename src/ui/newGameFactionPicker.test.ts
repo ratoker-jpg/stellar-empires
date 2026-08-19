@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   formatCompressedCampaignDurationExpectation,
   NEW_GAME_FACTION_OPTIONS,
+  NEW_GAME_ORIENTATION,
   NEW_GAME_SCENARIO_OPTIONS,
   NEW_GAME_SPEED_OPTIONS,
+  NEW_GAME_TERMINAL_NOTE,
 } from './newGameFactionPicker';
 
 describe('new game campaign options', () => {
@@ -39,5 +41,16 @@ describe('new game campaign options', () => {
     expect(formatCompressedCampaignDurationExpectation(2)).toContain('12 ч · максимум 16 ч');
     expect(formatCompressedCampaignDurationExpectation(5)).toContain('4,8 ч · максимум 6,4 ч');
     expect(formatCompressedCampaignDurationExpectation(10)).toContain('2,4 ч · максимум 3,2 ч');
+  });
+
+  it('describes the real release route and terminal behavior without stale pre-endgame copy', () => {
+    expect(NEW_GAME_ORIENTATION).toContain('добычу и энергию');
+    expect(NEW_GAME_ORIENTATION).toContain('Solar War');
+    expect(NEW_GAME_ORIENTATION).toContain('финальные Врата');
+    expect(NEW_GAME_TERMINAL_NOTE).toContain('Победа фиксируется');
+    expect(NEW_GAME_TERMINAL_NOTE).toContain('После завершения кампания останавливается');
+    expect(`${NEW_GAME_ORIENTATION} ${NEW_GAME_TERMINAL_NOTE}`).not.toContain(
+      'пока не входят в текущий runtime',
+    );
   });
 });
