@@ -8,6 +8,16 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
 }
 
+async function expectReportTableOverflowIsScoped(page: Page): Promise<void> {
+  const details = page.locator('.mission-report-card details').first();
+  await expect(details).toBeVisible();
+  const layout = await details.evaluate((element) => ({
+    scrollWidth: element.scrollWidth,
+    clientWidth: element.clientWidth,
+  }));
+  expect(layout.scrollWidth).toBeGreaterThan(layout.clientWidth);
+}
+
 test('endgame participation closes through canonical Operations, HUD and Reports surfaces', async ({ page }) => {
   await page.goto('/?e2e=1#/operations/alliances');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
@@ -68,10 +78,12 @@ test('endgame participation closes through canonical Operations, HUD and Reports
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expectNoHorizontalOverflow(page);
+  await expectReportTableOverflowIsScoped(page);
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page).toHaveURL(/#\/reports\/endgame$/);
   await expectNoHorizontalOverflow(page);
+  await expectReportTableOverflowIsScoped(page);
 
   await page.goto('/?e2e=1#/operations/solar-war');
   await expect(page.locator('[data-testid="solar-war-entry"]')).toContainText(fleetId!);
