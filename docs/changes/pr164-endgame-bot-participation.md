@@ -16,6 +16,12 @@ Add deterministic alliance/solo and Solar War participation planning through exi
 - the scheduler exposes `endgame` as an ordinary audited planner source only in `endgame-preparation` progression.
 - terminal campaigns produce no endgame participation command.
 
+## Release-gate blocker repair
+
+Browser E2E on the original bot-only candidate head reproduced the same mobile `/reports/endgame` document overflow twice: a 520px combat table caused its `<details>` grid item to retain intrinsic minimum width, expanding the 390px viewport document to 580px. The repair is intentionally presentation-only: the details element now has `width: 100%` and `min-width: 0`, preserving the table's existing internal horizontal scroller without allowing it to widen the page.
+
+This does not change report content, route structure, simulation behavior, balance, persistence, or bot planning.
+
 ## Hard boundary
 
 No direct qualification/score grant, no final-project start/funding, no Gate attack planning, no hidden foreign-state access, no new persistence, gameplay mechanic, balance, asset, catalog, route or combat engine.
