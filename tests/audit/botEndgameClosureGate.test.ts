@@ -64,27 +64,15 @@ function setBuildingLevel(planet: PlanetState, buildingId: string, level: number
   };
 }
 
-function withResources(planet: PlanetState, resources: ResourceCost): PlanetState {
+function withResourceAmounts(planet: PlanetState, resources: ResourceCost): PlanetState {
   return {
     ...planet,
     economy: {
       ...planet.economy,
       resources: {
-        metal: {
-          ...planet.economy.resources.metal,
-          amount: resources.metal,
-          capacity: Math.max(planet.economy.resources.metal.capacity, resources.metal),
-        },
-        crystal: {
-          ...planet.economy.resources.crystal,
-          amount: resources.crystal,
-          capacity: Math.max(planet.economy.resources.crystal.capacity, resources.crystal),
-        },
-        gas: {
-          ...planet.economy.resources.gas,
-          amount: resources.gas,
-          capacity: Math.max(planet.economy.resources.gas.capacity, resources.gas),
-        },
+        metal: { ...planet.economy.resources.metal, amount: resources.metal },
+        crystal: { ...planet.economy.resources.crystal, amount: resources.crystal },
+        gas: { ...planet.economy.resources.gas, amount: resources.gas },
       },
     },
   };
@@ -114,11 +102,6 @@ function prepareBotPlanet(state: GameState, empireId: string): GameState {
   ] as const) {
     planet = setBuildingLevel(planet, buildingId, level);
   }
-  planet = withResources(planet, {
-    metal: 100_000_000,
-    crystal: 100_000_000,
-    gas: 100_000_000,
-  });
   planet = {
     ...planet,
     inventory: {
@@ -295,53 +278,68 @@ describe('COMPLETE-ENDGAME-03 bot closure gate', () => {
     expect(direct.botAudit.some((entry) => entry.source === 'endgame')).toBe(true);
   });
 
-  it('composes alliance funding with a real-qualified Veyra solo Gate through save, offline and terminal fixed points', async () => {
+  it('composes real alliance funding and a real-qualified Veyra solo Gate through save, offline and terminal fixed points', async () => {
     let state = qualifiedThreeFactionState('bot-closure-terminal');
-    state = replacePlanet(
-      state,
-      withResources(getPlanet(state, 'aegis-bot'), { metal: 0, crystal: 0, gas: 0 }),
-    );
 
     state = planAndExecuteFinal(state, 'aegis-bot');
     const allianceProject = state.endgameFinalObjects?.activeProjects.find(
       (project) => project.ownerEmpireId === 'aegis-bot',
     );
     if (allianceProject === undefined) throw new Error('Alliance project missing.');
-    expect(allianceProject.participationKind).toBe('alliance');
-    expect(allianceProject.eligibleEmpireIds).toEqual(['aegis-bot', 'synod-bot']);
+    expect(allianceProject).toMatchObject({
+      participationKind: 'alliance',
+      eligibleEmpireIds: ['aegis-bot', 'synod-bot'],
+      phase: 'funding',
+    });
 
+    state = replacePlanet(
+      state,
+      withResourceAmounts(getPlanet(state, 'synod-bot'), allianceProject.requiredResources),
+    );
     state = planAndExecuteFinal(state, 'synod-bot');
-    expect(state.endgameFinalObjects?.activeProjects.find(
+    const fundedAlliance = state.endgameFinalObjects?.activeProjects.find(
       (project) => project.id === allianceProject.id,
-    )).toMatchObject({ phase: 'building' });
-    expect(state.endgameFinalObjects?.activeProjects.find(
-      (project) => project.id === allianceProject.id,
-    )?.contributionByEmpire).toContainEqual({
+    );
+    expect(fundedAlliance).toMatchObject({
+      phase: 'building',
+      contributedResources: allianceProject.requiredResources,
+    });
+    expect(fundedAlliance?.contributionByEmpire).toContainEqual({
       empireId: 'synod-bot',
       resources: allianceProject.requiredResources,
     });
 
     state = planAndExecuteFinal(state, 'veyra-bot');
+    const veyraFunding = state.endgameFinalObjects?.activeProjects.find(
+      (project) => project.ownerEmpireId === 'veyra-bot',
+    );
+    if (veyraFunding === undefined) throw new Error('Veyra funding project missing.');
+    expect(veyraFunding).toMatchObject({ participationKind: 'solo', phase: 'funding' });
+    state = replacePlanet(
+      state,
+      withResourceAmounts(getPlanet(state, 'veyra-bot'), veyraFunding.requiredResources),
+    );
     state = planAndExecuteFinal(state, 'veyra-bot');
     const veyraProject = state.endgameFinalObjects?.activeProjects.find(
-      (project) => project.ownerEmpireId === 'veyra-bot',
+      (project) => project.id === veyraFunding.id,
     );
     if (veyraProject?.gateCompletesAt === undefined) throw new Error('Veyra building project missing.');
     expect(veyraProject.phase).toBe('building');
-    expect(roundTrip(state, 'bot-closure-building')).toEqual(state);
 
     state = execute(state, {
       type: 'CANCEL_FINAL_OBJECT_PROJECT',
       empireId: 'aegis-bot',
       projectId: allianceProject.id,
     });
+    expect(roundTrip(state, 'bot-closure-building')).toEqual(state);
+
     state = execute(state, {
       type: 'ADVANCE_TIME',
       seconds: veyraProject.gateCompletesAt - state.clock.elapsedSeconds,
     });
     const vulnerable = postponeBots(state);
     const vulnerableProject = vulnerable.endgameFinalObjects?.activeProjects.find(
-      (project) => project.ownerEmpireId === 'veyra-bot',
+      (project) => project.id === veyraProject.id,
     );
     if (vulnerableProject?.stabilizesAt === undefined) {
       throw new Error('Veyra vulnerable project missing stabilization deadline.');
