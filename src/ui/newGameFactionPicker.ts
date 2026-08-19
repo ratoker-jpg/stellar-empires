@@ -61,6 +61,12 @@ export const NEW_GAME_SPEED_OPTIONS: readonly NewGameSpeedOption[] = [
   { value: 10, name: 'x10', detail: 'Экспресс-кампания' },
 ];
 
+export const NEW_GAME_ORIENTATION =
+  'Стартовый маршрут: разгоните добычу и энергию → откройте исследования и флот → участвуйте в Solar War соло или через альянс → стройте или уничтожайте финальные Врата.';
+
+export const NEW_GAME_TERMINAL_NOTE =
+  'Офлайн-прогрессия включена. Настройки после старта изменить нельзя. Победа фиксируется после стабилизации финальных Врат; поражение — если победит другая сторона. После завершения кампания останавливается.';
+
 function formatHours(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(1).replace('.', ',');
 }
@@ -193,6 +199,11 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
     speed.select.addEventListener('change', updateDuration);
     updateDuration();
 
+    const orientation = document.createElement('p');
+    orientation.className = 'new-game-note';
+    orientation.dataset.campaignOrientation = 'true';
+    orientation.textContent = NEW_GAME_ORIENTATION;
+
     const grid = document.createElement('div');
     grid.className = 'new-game-faction-grid';
     const finish = (faction: FactionArtKey): void => {
@@ -214,9 +225,9 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
 
     const note = document.createElement('p');
     note.className = 'new-game-note';
-    note.textContent =
-      'Офлайн-прогрессия включена. Настройки после старта изменить нельзя. Финальная победа и работа Врат пока не входят в текущий runtime.';
-    dialog.append(header, settings, duration, grid, note);
+    note.dataset.campaignTerminalNote = 'true';
+    note.textContent = NEW_GAME_TERMINAL_NOTE;
+    dialog.append(header, settings, duration, orientation, grid, note);
     document.body.append(dialog);
     dialog.showModal();
   });
