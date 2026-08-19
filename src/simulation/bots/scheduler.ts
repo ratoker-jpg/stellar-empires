@@ -4,6 +4,7 @@ import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
 import { planBotColonyLogistics } from './colonyLogisticsPlanner';
 import { planBotEconomy } from './economyPlanner';
+import { planBotEndgameParticipation } from './endgameParticipationPlanner';
 import {
   planBotFleetMission,
   type BotFleetReasonCode,
@@ -33,7 +34,8 @@ export type BotPlannerSource =
   | 'production'
   | 'fleet'
   | 'threat'
-  | 'pve';
+  | 'pve'
+  | 'endgame';
 export const MAX_BOT_DECISIONS_PER_RUN = 32;
 export const POST_ENDGAME_BOT_DECISION_INTERVAL_SECONDS = 3_600;
 export const BOT_PVE_PLANNING_INTERVAL_SECONDS = 21_600;
@@ -129,6 +131,12 @@ function priorityThreatCommand(plan: BotThreatRecoveryPlan): GameCommand | null 
   return PRIORITY_THREAT_REASONS.has(plan.reasonCode) ? plan.command : null;
 }
 
+function endgameCommand(state: GameState, profile: BotProfile): GameCommand | null {
+  return getBotProgressionPhase(state, profile.empireId) === 'endgame-preparation'
+    ? planBotEndgameParticipation(state, profile).command
+    : null;
+}
+
 function compressedCandidate(
   state: GameState,
   profile: BotProfile,
@@ -153,6 +161,11 @@ function compressedCandidate(
         pve: null,
       };
     }
+  }
+
+  const endgame = selectCandidate('endgame', endgameCommand(state, profile), attempted);
+  if (endgame !== null) {
+    return { candidates: [endgame], fleet: precomputedFleet ?? null, pve: null };
   }
 
   const science = planBotResearchAndProduction(state, profile.empireId);
@@ -231,8 +244,10 @@ function legacyCandidatesForPersonality(
     : null;
   const pve = allowPve ? planBotPveOperations(state, profile) : null;
   const priorityThreat = priorityThreatCommand(threat);
+  const endgame = endgameCommand(state, profile);
   const candidates: Readonly<Record<BotPersonality, readonly CommandCandidate[]>> = {
     industrial: [
+      { source: 'endgame', command: endgame },
       { source: 'logistics', command: logistics },
       { source: 'economy', command: economy.command },
       { source: 'research', command: science.research.command },
@@ -242,6 +257,7 @@ function legacyCandidatesForPersonality(
       { source: 'fleet', command: fleet.command },
     ],
     explorer: [
+      { source: 'endgame', command: endgame },
       { source: 'logistics', command: logistics },
       { source: 'threat', command: priorityThreat },
       { source: 'pve', command: pve?.command ?? null },
@@ -251,6 +267,7 @@ function legacyCandidatesForPersonality(
       { source: 'production', command: science.production.command },
     ],
     aggressive: [
+      { source: 'endgame', command: endgame },
       { source: 'logistics', command: logistics },
       { source: 'threat', command: priorityThreat },
       { source: 'pve', command: pve?.command ?? null },

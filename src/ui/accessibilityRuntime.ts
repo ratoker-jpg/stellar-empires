@@ -138,10 +138,8 @@ export function mountAccessibilityRuntime(): () => void {
       matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.documentElement.dataset.reducedMotion = String(reduced);
   };
-  let resizeFrame = 0;
   const onResize = (): void => {
-    cancelAnimationFrame(resizeFrame);
-    resizeFrame = requestAnimationFrame(updatePresentationMode);
+    updatePresentationMode();
   };
   window.addEventListener('resize', onResize, { passive: true });
   updatePresentationMode();
@@ -178,7 +176,6 @@ export function mountAccessibilityRuntime(): () => void {
   const unbindEscape = bindDialogEscape();
 
   return () => {
-    cancelAnimationFrame(resizeFrame);
     window.removeEventListener('resize', onResize);
     preferenceObserver.disconnect();
     statusObserver.disconnect();

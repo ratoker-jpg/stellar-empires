@@ -67,10 +67,12 @@ test('endgame participation closes through canonical Operations, HUD and Reports
   await expect(page).toHaveURL(/#\/reports\/endgame$/);
 
   await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('html')).toHaveAttribute('data-viewport-mode', 'mobile');
   await expectNoHorizontalOverflow(page);
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page).toHaveURL(/#\/reports\/endgame$/);
+  await expect(page.locator('html')).toHaveAttribute('data-viewport-mode', 'mobile');
   await expectNoHorizontalOverflow(page);
 
   await page.goto('/?e2e=1#/operations/solar-war');
