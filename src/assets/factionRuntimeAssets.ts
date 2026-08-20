@@ -1,4 +1,5 @@
 import type { FactionArtKey } from './artTokens';
+import { GENERATED_FACTION_IDENTITY_ASSETS } from './generatedFactionIdentityAssets';
 import { RUNTIME_ASSETS } from './runtimeAssets';
 
 export interface FactionRuntimeAssetSet {
@@ -21,9 +22,9 @@ export const FACTION_RUNTIME_ASSETS: Readonly<Record<FactionArtKey, FactionRunti
   aegis: {
     id: 'aegis',
     accent: '#4EA7FF',
-    emblemUrl: RUNTIME_ASSETS.factionAegisEmblemWebp,
-    backgroundUrl: RUNTIME_ASSETS.factionAegisBackgroundWebp,
-    heroUrl: RUNTIME_ASSETS.factionAegisHero,
+    emblemUrl: GENERATED_FACTION_IDENTITY_ASSETS.aegis.emblemUrl,
+    backgroundUrl: GENERATED_FACTION_IDENTITY_ASSETS.aegis.backgroundUrl,
+    heroUrl: GENERATED_FACTION_IDENTITY_ASSETS.aegis.heroUrl,
     controlSetUrl: RUNTIME_ASSETS.factionAegisControlSet,
     buildingsAtlasUrl: RUNTIME_ASSETS.factionAegisBuildingsAtlasWebp,
     shipsAtlasUrl: RUNTIME_ASSETS.factionAegisShipsAtlasWebp,
@@ -36,9 +37,9 @@ export const FACTION_RUNTIME_ASSETS: Readonly<Record<FactionArtKey, FactionRunti
   synod: {
     id: 'synod',
     accent: '#55E985',
-    emblemUrl: RUNTIME_ASSETS.factionSynodEmblemWebp,
-    backgroundUrl: RUNTIME_ASSETS.factionSynodBackgroundWebp,
-    heroUrl: RUNTIME_ASSETS.factionSynodHero,
+    emblemUrl: GENERATED_FACTION_IDENTITY_ASSETS.synod.emblemUrl,
+    backgroundUrl: GENERATED_FACTION_IDENTITY_ASSETS.synod.backgroundUrl,
+    heroUrl: GENERATED_FACTION_IDENTITY_ASSETS.synod.heroUrl,
     controlSetUrl: RUNTIME_ASSETS.factionSynodControlSet,
     buildingsAtlasUrl: RUNTIME_ASSETS.factionSynodBuildingsAtlasWebp,
     shipsAtlasUrl: RUNTIME_ASSETS.factionSynodShipsAtlasWebp,
@@ -51,9 +52,9 @@ export const FACTION_RUNTIME_ASSETS: Readonly<Record<FactionArtKey, FactionRunti
   veyra: {
     id: 'veyra',
     accent: '#FF5A64',
-    emblemUrl: RUNTIME_ASSETS.factionVeyraEmblemWebp,
-    backgroundUrl: RUNTIME_ASSETS.factionVeyraBackgroundWebp,
-    heroUrl: RUNTIME_ASSETS.factionVeyraHero,
+    emblemUrl: GENERATED_FACTION_IDENTITY_ASSETS.veyra.emblemUrl,
+    backgroundUrl: GENERATED_FACTION_IDENTITY_ASSETS.veyra.backgroundUrl,
+    heroUrl: GENERATED_FACTION_IDENTITY_ASSETS.veyra.heroUrl,
     controlSetUrl: RUNTIME_ASSETS.factionVeyraControlSet,
     buildingsAtlasUrl: RUNTIME_ASSETS.factionVeyraBuildingsAtlasWebp,
     shipsAtlasUrl: RUNTIME_ASSETS.factionVeyraShipsAtlasWebp,

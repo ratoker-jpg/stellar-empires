@@ -8,14 +8,14 @@
 
 | Field | Current value |
 |---|---|
-| Fresh `main` | `f7e14fda42a135f70c0ad95ada7d3080d472176b` |
-| Last merged PR | #167 `M9-RELEASE-CANDIDATE-AUDIT` |
+| Fresh `main` | `bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a` |
+| Last merged PR | #168 `RELEASE-ONBOARDING-TRUTH` |
 | Accepted Audit | #167 · `f7e14fda42a135f70c0ad95ada7d3080d472176b` |
-| Active work item | #168 `RELEASE-ONBOARDING-TRUTH` |
-| Active branch | `agent/release-onboarding-truth` |
-| Exact base | `f7e14fda42a135f70c0ad95ada7d3080d472176b` |
+| Active work item | #169 `RELEASE-PRODUCTION-BROWSER` |
+| Active branch | `agent/release-production-browser` |
+| Exact base | `bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a` |
 | Planned implementation count | 4 |
-| Completed M9 implementation PRs | 0 |
+| Completed M9 implementation PRs | 1 |
 | Target state schema | 19 |
 | Target save format | 6 |
 | Critical unknowns | 0 |
@@ -24,30 +24,33 @@
 ## Accepted sequence
 
 ```text
-#168 RELEASE-ONBOARDING-TRUTH
-→ #169 RELEASE-PRODUCTION-BROWSER
+#168 RELEASE-ONBOARDING-TRUTH      merged
+→ #169 RELEASE-PRODUCTION-BROWSER active
 → #170 RELEASE-PACKAGING-METADATA
 → #171 RELEASE-1.0-CLOSURE
 ```
 
 No fifth M9 implementation PR is authorized.
 
-## #168 scope
+## #169 scope
 
-Presentation-only release truth:
+Production-path QA only:
 
-- remove the obsolete statement that final victory/Gates are unavailable;
-- explain the real terminal victory/defeat behavior;
-- provide concise first-run orientation: economy → research/fleet → Solar War → final Gates;
-- preserve immutable campaign settings and all existing mechanics;
-- preserve release viewport/no-horizontal-overflow Browser evidence.
+- keep the existing broad dev-server Browser suite;
+- add a dedicated Playwright smoke against the normal production build served under `/stellar-empires/`;
+- use the real new-game dialog with no `VITE_E2E` state injection;
+- prove production assets load and decode, app reaches ready state and the production base survives primary navigation;
+- prove a real manual save can be loaded into autosave and survive reload;
+- retain a separate success/failure Playwright artifact for this production smoke.
 
-No GameState, save, balance, bot or mechanics change is permitted in #168.
+The new production gate exposed one in-scope release blocker: faction showcase WebP placeholders returned 200 but were not decodable images. The candidate fix rebinds showcase hero/emblem/background URLs to the already-existing valid generated faction identity PNG source set through `GENERATED_FACTION_IDENTITY_ASSETS`; no new art or gameplay behavior is introduced. The production smoke remains strict and must prove browser decode on the final exact head.
+
+No GameState, save format, balance, bot or gameplay mechanic change is permitted in #169.
 
 ## Exact next action
 
-Freeze one exact #168 head and require full CI, Browser E2E, Graphify, compressed progression/performance, reviews/threads and mergeability. On green, squash-merge with expected-head protection, verify generated fresh `main`, then create only `RELEASE-PRODUCTION-BROWSER` from that fresh main.
+Freeze one exact #169 head and require full CI, existing Browser E2E, the new production Pages smoke, Graphify, compressed progression/performance, reviews/threads and mergeability. On green, squash-merge with expected-head protection, verify generated fresh `main`, then create only `RELEASE-PACKAGING-METADATA` from that fresh main.
 
 ## Stop conditions
 
-Stop rather than opening the next implementation PR if the accepted scope cannot contain a real blocker, the current head has unresolved failures, an external workflow is genuinely stuck across three checks, or `main` moves unexpectedly.
+Stop rather than opening the next implementation PR if the production smoke reveals another release blocker outside the accepted M9 contract, the current head has unresolved failures, an external workflow is genuinely stuck across three checks, or `main` moves unexpectedly.

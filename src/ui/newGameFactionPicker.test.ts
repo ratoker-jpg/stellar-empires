@@ -19,9 +19,9 @@ describe('new game campaign options', () => {
 
   it('uses generated hero, emblem and background art', () => {
     for (const option of NEW_GAME_FACTION_OPTIONS) {
-      expect(option.heroUrl).toMatch(/hero\.webp$/);
-      expect(option.emblemUrl).toMatch(/emblem\.webp$/);
-      expect(option.backgroundUrl).toMatch(/background\.webp$/);
+      expect(option.heroUrl).toMatch(/_hero\.png$/);
+      expect(option.emblemUrl).toMatch(/_emblem\.png$/);
+      expect(option.backgroundUrl).toMatch(/_card_bg\.png$/);
     }
   });
 

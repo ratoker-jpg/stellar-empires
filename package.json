@@ -19,7 +19,8 @@
     "assets:atlas": "node scripts/assets/atlas.mjs",
     "check": "npm run assets:check && npm run lint && npm run typecheck && npm run test && vite build",
     "assets:contact-sheet": "node scripts/assets/contact-sheet.mjs",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:production": "playwright test --config=playwright.production.config.ts"
   },
   "dependencies": {
     "phaser": "4.2.1"
