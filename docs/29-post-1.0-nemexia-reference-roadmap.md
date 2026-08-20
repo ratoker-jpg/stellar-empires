@@ -13,6 +13,8 @@ Release 1.0 is closed. The next product phase is not an automatic continuation o
 
 Every post-1.0 mechanic must therefore pass a Stellar-vs-Nemexia parity/reference Audit before implementation.
 
+The first Audit is **not primarily a feature-port audit**. Its highest priority is to prove that a real fresh Stellar campaign can organically reach its terminal state without prepared fixtures or direct state injection. Nemexia parity work comes after that product-truth gate.
+
 ## Non-negotiable provenance rule
 
 Every imported claim or candidate mechanic must retain one of these provenance classes:
@@ -50,7 +52,10 @@ The next PR after this roadmap must be a dedicated docs-only Audit PR with work 
 
 `POST-1.0-NEMEXIA-PARITY-AUDIT`
 
-It must start from the then-current fresh `main`, perform no runtime implementation, and produce a parity matrix for the current Stellar product against the Nemexia reference surface.
+It must start from the then-current fresh `main`, perform no runtime implementation, and produce both:
+
+1. a **Fresh Game → Terminal truth audit** for the current Stellar campaign; and
+2. a parity matrix for the current Stellar product against the Nemexia reference surface.
 
 For every material candidate, the Audit must classify exactly one outcome:
 
@@ -61,23 +66,148 @@ RESEARCH
 REJECT
 ```
 
-The Audit must verify current source/tests/docs and must not infer a gap merely from the reference snapshot.
+The Audit must verify current source/tests/docs and must not infer a gap merely from the reference snapshot or from an older audit.
+
+## Controller-prioritized verification order
+
+These are **priority hypotheses to verify on fresh `main`**, not pre-authorized fixes. If current source disproves one, the Audit must record that and move on.
+
+### P0 — Fresh Game → Terminal without state injection
+
+Highest priority. Prove or falsify that a new ordinary campaign can progress through the real production/economy/research/fleet loop into:
+
+```text
+fresh game
+→ ordinary expansion/progression
+→ Solar War participation
+→ Gate funding/construction/vulnerability
+→ terminal victory or defeat
+```
+
+The proof must not directly inject buildings, resources, research completion, fleet composition, Solar War state, Gate state or terminal state.
+
+The Audit must distinguish:
+
+- acceptance tests that prove isolated endgame mechanics from prepared states;
+- progression tests that stop before terminal play;
+- a true organic campaign proof from clean initialization.
+
+If no such proof exists, this gap outranks refactors and most Nemexia-derived feature work.
+
+### P1 — Organic late-game bot production and endgame force readiness
+
+Re-verify the controller-reported risk that current compressed bot production targets remain too small for organic Gate warfare, and that progression may treat a unit as "mastered" when it is producible rather than physically fielded.
+
+Specifically inspect:
+
+- late-game production targets for scouts/fighters/colonizers/frigates and heavier combat hulls;
+- actual physical availability of a planet-destroyer when Gate attacks require one;
+- Solar War fleet strength reached organically by each bot;
+- whether endgame closure tests inject planet-destroyers or very large fleets that ordinary bot production has not demonstrated it can create;
+- resource, population, shipyard, research and timing constraints that could prevent organic readiness.
+
+Do not prescribe a fleet size before the Audit measures the real campaign. The target is **organic terminal capability**, not reproducing a fixture number.
+
+### P2 — Advertised effects must have real runtime consumers
+
+Audit every player-visible effect from catalog/tooltip through reducer/runtime consumption. Priority examples reported for verification:
+
+- Scrapyard → `salvageEfficiencyPercent`;
+- Trade Center → `marketEfficiencyPercent`;
+- Bank → `bankCreditEfficiencyPercent`;
+- Ecology → `ecologyCapacity`.
+
+Classify each as implemented, partially wired, ghost/dead, misleading copy or intentionally unused.
+
+Default remediation principle if a ghost effect is confirmed:
+
+- wire it into an existing coherent system, **or**
+- change/remove the advertised effect;
+- do **not** invent a large new subsystem merely to justify one stale bonus. In particular, no new credit system for Bank by default.
+
+### P3 — Combat correctness before combat redesign
+
+Verify two reported correctness risks:
+
+1. battle seed entropy may use `attackerFleet.id.length` instead of a deterministic hash of the full stable fleet identity;
+2. a multi-fleet defender side may inherit doctrine/formation from only `defenderFleets[0]`.
+
+If confirmed, treat them as bounded correctness fixes.
+
+Do **not** bundle initiative, active abilities, a new combat engine or broad balance redesign into the same batch. Those are separate design work and require their own evidence/audit.
+
+### P4 — UI must tell the same truth as runtime
+
+Verify:
+
+- whether construction is actually single-queue while UI renders several apparent queue slots/reservations;
+- whether raw faction research catalogs are used by UI requirement checks while runtime uses compatibility-adjusted `getResearchDefinition()` requirements for technologies such as `improved-construction` and `critical-hit`.
+
+Default principle:
+
+- do not implement four real queues merely because four slots are drawn;
+- prefer removing/clarifying misleading slots unless product value justifies a queue-system change;
+- use one authoritative research-requirement resolution path for runtime and UI.
+
+### P5 — Make the existing three bot personalities meaningfully different before adding more
+
+Re-verify current personality/difficulty behavior before expanding archetype count.
+
+Preferred direction if the gap is real:
+
+- Aegis: stronger economy/defence bias;
+- Synod: stronger scouting/research bias;
+- Veyra: stronger fleet production/attack bias;
+- difficulty changes risk evaluation, safety margins or planning quality rather than existing only as metadata;
+- durable bot memory should use meaningful losses/wins/observations to alter later decisions.
+
+Do not jump directly to eight personalities. Also verify current offensive behavior before claiming bots do not attack; the controller reports that known foreign planets can already be attacked when intelligence is current and own estimated strength clears the planner threshold.
+
+### P6 — Cheap delivery/tooling hygiene after gameplay truth
+
+Low-risk candidates to verify after P0–P5:
+
+- replace CI `npm install` with `npm ci` where the committed lockfile and workflow make that correct;
+- add visual regression snapshots where they provide stable value;
+- add focused accessibility/axe coverage;
+- remove proven dead code.
+
+These must not displace campaign-truth work merely because they are easy.
+
+## Explicitly deprioritized by default
+
+Do not schedule these merely because an older audit proposed them:
+
+- Svelte/Solid UI migration;
+- event-sourcing/replay rewrite;
+- binary-heap event queue while performance gates remain healthy;
+- broad market/logistics rewrite without demonstrated player-facing failure;
+- removal of hardcoded `'player'` solely for architectural purity while the product remains intentionally single-player;
+- wholesale combat redesign when bounded correctness fixes are sufficient.
+
+Any of these may return only if the new Audit produces concrete evidence and a separate justified scope.
 
 ### Required Audit coverage
 
 At minimum inspect and classify:
 
-1. galaxy topology, solar-system presentation and colonization;
-2. ships, defence, commander ships, population/capacity and faction asymmetry;
-3. fleet missions, slots, travel/ETA contracts and logistics;
-4. economy/production overview and multi-planet QoL;
-5. spying/reconnaissance and report surfaces;
-6. combat model, battle reports, debris/recycling and known/unknown formulas;
-7. Resource/Battle/Total/Achievement score layers and Admiral/commander progression;
-8. achievements, ranking, profile and alliance surfaces;
-9. moving asteroid/debris world mechanics;
-10. saved-page/MHTML/catalog evidence that is useful for research but should not become runtime coupling;
-11. current production/browser/Pages baseline after Release 1.0.
+1. fresh-game progression through actual terminal victory/defeat without state injection;
+2. organic bot late-game production, Solar War strength and Gate-attack prerequisites;
+3. catalog/tooltip effects versus real runtime consumers;
+4. combat determinism and multi-fleet doctrine correctness;
+5. construction/research UI truth versus reducer/runtime truth;
+6. personality/difficulty behavior and durable bot memory;
+7. galaxy topology, solar-system presentation and colonization;
+8. ships, defence, commander ships, population/capacity and faction asymmetry;
+9. fleet missions, slots, travel/ETA contracts and logistics;
+10. economy/production overview and multi-planet QoL;
+11. spying/reconnaissance and report surfaces;
+12. combat model, battle reports, debris/recycling and known/unknown formulas;
+13. Resource/Battle/Total/Achievement score layers and Admiral/commander progression;
+14. achievements, ranking, profile and alliance surfaces;
+15. moving asteroid/debris world mechanics;
+16. saved-page/MHTML/catalog evidence that is useful for research but should not become runtime coupling;
+17. current CI reproducibility, production/browser/Pages baseline after Release 1.0.
 
 ### Required Audit outputs
 
@@ -85,9 +215,16 @@ The Audit PR must contain:
 
 - current exact `main` SHA and verified release/runtime baseline;
 - affected Stellar files/modules/tests/docs, not just a feature wishlist;
-- the parity matrix with provenance and confidence for each Nemexia-derived fact;
+- an explicit statement whether a clean ordinary campaign is proven to reach terminal victory/defeat;
+- evidence showing where current progression/closure tests stop and where fixtures/state injection are used;
+- measured organic bot endgame readiness findings;
+- ghost-effect wiring matrix from advertised effect to actual runtime consumer;
+- combat correctness findings for deterministic seed and multi-fleet doctrine handling;
+- UI/runtime truth findings for build queue and research requirements;
+- bot personality/difficulty behavior matrix;
+- the Nemexia parity matrix with provenance and confidence for each Nemexia-derived fact;
 - gaps, contradictions and research blockers;
-- explicit rejected/non-port items;
+- explicit rejected/non-port/deprioritized items;
 - schema/save-format impact assessment;
 - deterministic/performance/browser-risk assessment;
 - ranked post-1.0 backlog;
@@ -145,59 +282,80 @@ The report must be sufficient for a controller to decide `CLOSE`, `FIX`, `STOP/R
 
 These are research streams, not implementation authorization and not a fixed order.
 
-### N1 — Reference/provenance foundation
+### N1 — Campaign truth and organic endgame
+
+- clean Fresh Game → Terminal proof;
+- organic bot late-game production/readiness;
+- no fixture success presented as proof of organic progression.
+
+### N2 — Runtime truth / ghost-effect cleanup
+
+- building/research effects must have real consumers or truthful copy;
+- combat deterministic seed and multi-fleet doctrine correctness;
+- UI requirement/queue truth must match runtime.
+
+### N3 — Bot behavioral depth
+
+- differentiate the existing three personalities first;
+- make difficulty affect decision quality/risk;
+- use durable observations/outcomes as meaningful memory.
+
+### N4 — Reference/provenance foundation
 
 - Stellar-vs-Nemexia parity matrix;
 - provenance/confidence register;
 - verified catalog evidence and explicit unknown-formula register.
 
-### N2 — Solar-system and colonization fidelity
+### N5 — Solar-system and colonization fidelity
 
 Investigate the observed Nemexia reference of 3 galaxies × 40 solar systems × 24 positions, discrete system positions, solar-system navigation and colonization UX. Stellar may keep its current topology where better; reference numbers are evidence, not mandatory targets.
 
-### N3 — Faction military catalog depth
+### N6 — Faction military catalog depth
 
 Compare ship/defence/commander catalogs, population weights, roles, counters and faction asymmetry. Do not import values blindly; preserve Stellar balance and campaign constraints unless an accepted Audit intentionally changes them.
 
-### N4 — Combat evidence and battle reports
+### N7 — Combat evidence and battle reports
 
 Use live battle-report evidence to improve report fidelity and research combat behavior. Exact armor, targeting, ability, Resource Point and Battle Point formulas remain research items unless proven or intentionally redefined for Stellar.
 
-### N5 — Profile, scoring and progression
+### N8 — Profile, scoring and progression
 
 Investigate Resource Points, Battle Points, Total Points, Achievement Points, ranking/profile presentation and Admiral progression. Do not assume remembered `1 point / 1000 resources` or `Total = Resource + Battle` without evidence.
 
-### N6 — Dynamic world / debris loop
+### N9 — Dynamic world / debris loop
 
 Audit moving asteroids, debris, recycler/recovery missions and ETA-dependent target prediction as possible world-depth mechanics.
 
-### N7 — Empire operations QoL
+### N10 — Empire operations QoL
 
 Audit multi-planet overview, fleet production planning, target fleet doctrine, dislocation/logistics, slot visibility and resource-transfer planning as player-facing QoL rather than automation.
 
-### N8 — Reconnaissance, reports and intelligence
+### N11 — Reconnaissance, reports and intelligence
 
 Audit spy-report data layers, report categories, target information disclosure and fleet intelligence against Stellar's information-security rules and bot parity.
 
-### N9 — Social/meta surfaces
+### N12 — Social/meta surfaces
 
 Research achievements, ranking, alliances, commander/admiral progression and profile identity only after their actual reference evidence and Stellar product value are clear.
 
-### N10 — Deep reference extraction
+### N13 — Deep reference extraction
 
 MHTML/resource extraction, information-page catalog extraction and larger battle-report datasets are research tooling tasks. They should feed evidence, not become production dependencies.
 
 ## Initial priority hypothesis
 
-The first Audit should rank by player value, architectural fit, evidence quality and migration risk. A reasonable starting hypothesis is:
+The first Audit should rank by player value, architectural fit, evidence quality and migration risk. Current controller priority is:
 
-1. parity/provenance foundation;
-2. visible Solar System / empire overview QoL gaps;
-3. catalog/report fidelity that uses verified data without schema churn;
-4. scoring/combat formula research before scoring/combat redesign;
-5. larger meta systems and dynamic-world mechanics only after evidence and save impact are understood.
+1. **Fresh Game → Terminal proof without state injection**;
+2. **organic late-game bot production / Solar War strength / planet-destroyer availability**;
+3. **ghost effects and Ecology wiring**;
+4. **combat seed + multi-fleet defender doctrine correctness**;
+5. **research-requirement UI truth + misleading build-queue slots**;
+6. **make the existing three bot personalities materially different**;
+7. **`npm ci`, visual snapshots, accessibility checks and proven dead-code cleanup**;
+8. only then promote larger Nemexia-derived feature streams according to evidence/value.
 
-The Audit may change this order when current Stellar source demonstrates a better path.
+This order is a hypothesis, not a mandate to implement all items. The Audit may change it when fresh source/test/runtime evidence demonstrates a better path.
 
 ## Hard stop conditions
 
@@ -209,13 +367,17 @@ Stop and return to Audit instead of implementing when:
 - combat/economy formulas would have to be guessed;
 - scope mixes heavy architecture with a six-PR light batch;
 - production/release baseline is not understood;
-- implementation would copy automation infrastructure rather than a game-domain concept.
+- implementation would copy automation infrastructure rather than a game-domain concept;
+- a prepared fixture is being used to claim that organic Fresh Game → Terminal progression is proven.
 
 ## Immediate next action
 
 ```text
 fresh main after this docs-only roadmap merge
 → POST-1.0-NEMEXIA-PARITY-AUDIT (docs only)
+→ prove/falsify Fresh Game → Terminal first
+→ verify organic bot endgame readiness and controller-priority correctness/UI/effect risks
+→ complete Nemexia parity/provenance matrix
 → controller review
 → Audit merge only if approved
 → approved 4-PR implementation batch by default
