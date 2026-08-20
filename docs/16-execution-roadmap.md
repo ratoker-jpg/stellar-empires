@@ -1,9 +1,9 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** M8.2 closed through #161; `COMPLETE-ENDGAME-03` Audit #162 active  
-**Updated:** 2026-08-19  
-**Verified main:** `8f05d22b3475ee99e9af8652d385c956e0acd7c7`  
-**Last merged PR:** #161 `ENDGAME-TERMINAL-GATE`  
+**Status:** Release 1.0 closed; post-1.0 implementation not yet authorized  
+**Updated:** 2026-08-20  
+**Verified release main:** `1f7298a602062837ec6bb8e3778d408ada26051c`  
+**Last merged release PR:** #171 `RELEASE-1.0-CLOSURE`  
 **Runtime:** schema v19 / save format v6
 
 ## Authoritative files
@@ -13,80 +13,54 @@ AGENTS.md
 docs/28-audit-first-autonomous-delivery-protocol.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
-docs/audits/complete-endgame-03-scaffold.md
-docs/audits/evidence/complete-endgame-03.md
-docs/audits/contracts/complete-endgame-03.md
 docs/project-status.json
 docs/roadmap-pr-index.json
-docs/27-playable-game-roadmap-v5.md
+docs/29-post-1.0-nemexia-reference-roadmap.md
+docs/27-playable-game-roadmap-v5.md   # historical Release 1.0 roadmap
 ```
 
-## Closed M8.1
+Actual GitHub state wins over stale prose.
+
+## Release 1.0 boundary
+
+M1–M9 are complete. PR #171 closed the accepted M9 release-candidate batch and generated fresh `main`:
+
+`1f7298a602062837ec6bb8e3778d408ada26051c`
+
+The Release 1.0 runtime remains schema v19 / save format v6. No fifth M9 implementation PR is authorized.
+
+## Post-1.0 entrypoint
+
+The owner has supplied `ratoker-jpg/Nemexia_auto_v2` and a structured Nemexia research snapshot as reference sources for future Stellar improvements.
+
+They are not implementation contracts. The next product action must be a separate docs-only Audit:
+
+`POST-1.0-NEMEXIA-PARITY-AUDIT`
+
+That Audit must compare the current Stellar implementation with the reference evidence, preserve provenance, classify candidates as `KEEP_STELLAR`, `ADAPT_FROM_NEMEXIA`, `RESEARCH` or `REJECT`, and propose the first bounded implementation batch.
+
+## Delivery model
 
 ```text
-#152 COMPLETE-ENDGAME-01 Audit
-→ #153 ALLIANCE-SOLO-FOUNDATION
-→ #154 SOLAR-WAR-PARTICIPATION
-→ #155 ENDGAME-OPERATIONS-UX
-→ #156 ENDGAME-PARTICIPATION-GATE
+Audit PR (docs only)
+→ controller review
+→ Audit merge only after approval
+→ 4 implementation PRs by default
+   or max 6 only for explicitly justified light/independent work
+→ batch report
+→ controller MERGE / FIX / STOP-RE-AUDIT decision
 ```
 
-M8.1 is complete.
+Implementation is not authorized before the Audit is accepted.
 
-## Closed M8.2 — COMPLETE-ENDGAME-02
+## Permanent boundaries
 
-```text
-#157 Audit 7750cdb83b58e95f790351b306e9cf5b344bd780
-→ #158 a66a05fd433893f4a6f15cd8d9fd53ea31d793f9
-→ #159 466e5ea161a005eeb792d5440dc27d960b37b2f2
-→ #160 8ad44509426e4bb9555a8a6133e1dbdb899dccae
-→ #161 8f05d22b3475ee99e9af8652d385c956e0acd7c7
-```
-
-M8.2 delivered existing final objects, Solar War qualification, Gate funding/construction/vulnerability/destruction/recovery, immutable persisted terminal victory/defeat, exact terminal freeze, runtime backlog consumption, durable terminal checkpoint and existing-shell terminal UX. Stage 2 is closed.
-
-## Active M8.3 — COMPLETE-ENDGAME-03
-
-Audit #162 starts exactly from fresh `main = 8f05d22b3475ee99e9af8652d385c956e0acd7c7`.
-
-Recon result:
-
-- current bot scheduler is deterministic and ordinary-command based;
-- endgame mechanics/commands already exist;
-- missing work is explicit allowed-information perception plus planner parity;
-- no schema/save bump or new mechanic is required;
-- complexity medium; critical unknowns 0.
-
-After Audit #162 squash merge, exactly four sequential implementation PRs are authorized:
-
-```text
-#163 ENDGAME-BOT-PERCEPTION
-→ #164 ENDGAME-BOT-PARTICIPATION
-→ #165 ENDGAME-BOT-FINAL-OBJECTS
-→ #166 ENDGAME-BOT-CLOSURE-GATE
-```
-
-No fifth M8.3 implementation PR is authorized.
-
-## Permanent boundary
-
-- bots use ordinary commands/resources/timing/combat;
-- public/owned/allied information only; hidden foreign state remains hidden;
-- no new final-building catalogs/assets/meta currency;
-- no alliance treasury/diplomacy matrix;
-- no new combat engine;
-- no post-victory sandbox;
-- no M9 work inside M8.3;
-- progression, deterministic partition equality, Browser E2E, Graphify and `<15 s` / `<30 s` performance gates remain mandatory.
+- do not directly port browser automation, Tkinter, DOM selectors, CAPTCHA or raid/farm tooling from Nemexia;
+- do not promote user memory, heuristics or hypotheses into game formulas;
+- keep Stellar-native architecture and deterministic/save/performance/browser gates;
+- any unplanned schema/save migration or guessed combat/economy formula requires re-audit;
+- every dependent branch starts from the latest merged `main`.
 
 ## Next action
 
-```text
-finish #162 Audit exact-head gates
-→ squash-merge #162 and verify fresh main
-→ #163 perception
-→ #164 participation
-→ #165 final objects
-→ #166 closure gate
-→ only then begin a separate M9 release-candidate Audit
-```
+After this docs-only control-plane update merges, start exactly one new docs-only `POST-1.0-NEMEXIA-PARITY-AUDIT` from fresh `main`. Do not implement product changes in that Audit PR.
