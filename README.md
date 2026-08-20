@@ -6,7 +6,7 @@
 
 ## Текущий статус
 
-Release Candidate: **1.0.0-rc.1**.
+Release: **1.0.0**.
 
 Текущий runtime использует **GameState schema v19** и **save format v6**. Кампания полностью проходит от старта до терминального результата: развитие империи → Solar War → финальный проект/Врата → сохранённая победа или поражение.
 
@@ -52,11 +52,11 @@ npm run e2e:production
 1. [`AGENTS.md`](AGENTS.md)
 2. [`docs/audits/current-execution-state.md`](docs/audits/current-execution-state.md)
 3. [`docs/audits/current-batch-audit.md`](docs/audits/current-batch-audit.md)
-4. [`docs/audits/contracts/m9-release-candidate.md`](docs/audits/contracts/m9-release-candidate.md)
+4. [`docs/audits/completed/m9-release-candidate.md`](docs/audits/completed/m9-release-candidate.md)
 5. [`docs/17-continuation-guide.md`](docs/17-continuation-guide.md)
 6. [`docs/27-playable-game-roadmap-v5.md`](docs/27-playable-game-roadmap-v5.md)
 
-Текущий M9 Release Candidate batch после production-browser proof закрывает packaging/version metadata и затем выполняет финальный `1.0.0` closure.
+M9 закрывается PR #171 `RELEASE-1.0-CLOSURE`: финальный exact-head должен пройти стандартный Browser E2E, production-base Browser smoke, CI, progression/performance и Graphify, после чего squash-merge фиксирует технический Release 1.0. Новая M9-реализация после #171 не разрешена.
 
 ## Research and assets
 

@@ -1,38 +1,42 @@
 {
-  "indexVersion": 15,
-  "updatedAt": "2026-08-19",
+  "indexVersion": 16,
+  "updatedAt": "2026-08-20",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 5,
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 166,
-    "mergeSha": "a6b225fe38c1c320244fc54929534e49029d4026",
-    "runtimeBaselinePr": 166,
-    "runtimeBaselineSha": "a6b225fe38c1c320244fc54929534e49029d4026",
-    "lastCompletedAuditPr": 162,
-    "lastCompletedAuditMergeSha": "b7de24f52c02480f6db244c00b1282407d5743cc"
+    "lastMergedPr": 170,
+    "mergeSha": "1221bfe19cc11f836db7fe7e5720f778419c2dd9",
+    "runtimeBaselinePr": 170,
+    "runtimeBaselineSha": "1221bfe19cc11f836db7fe7e5720f778419c2dd9",
+    "lastCompletedAuditPr": 167,
+    "lastCompletedAuditMergeSha": "f7e14fda42a135f70c0ad95ada7d3080d472176b"
   },
   "active": {
-    "pr": 167,
-    "kind": "audit",
+    "pr": 171,
+    "kind": "implementation-closure",
     "batchId": "M9-RELEASE-CANDIDATE",
-    "workItem": "M9-RELEASE-CANDIDATE-AUDIT",
-    "branch": "agent/m9-release-candidate-audit",
-    "baseSha": "a6b225fe38c1c320244fc54929534e49029d4026",
-    "implementationAuthorized": false,
-    "status": "recon-complete-audit-open"
+    "workItem": "RELEASE-1.0-CLOSURE",
+    "branch": "agent/release-1.0-closure",
+    "baseSha": "1221bfe19cc11f836db7fe7e5720f778419c2dd9",
+    "implementationAuthorized": true,
+    "status": "closure-active"
   },
   "currentPhase": {
     "id": "M9-RELEASE-CANDIDATE",
     "milestone": "M9",
     "auditPr": 167,
-    "auditMergeSha": null,
-    "status": "audit-open",
+    "auditMergeSha": "f7e14fda42a135f70c0ad95ada7d3080d472176b",
+    "status": "closure-active",
     "implementationCount": 4,
     "plannedImplementationPrs": [168, 169, 170, 171],
-    "completedImplementationPrs": [],
-    "implementationMergeShas": {},
+    "completedImplementationPrs": [168, 169, 170],
+    "implementationMergeShas": {
+      "168": "bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a",
+      "169": "6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f",
+      "170": "1221bfe19cc11f836db7fe7e5720f778419c2dd9"
+    },
     "workItems": [
       "RELEASE-ONBOARDING-TRUTH",
       "RELEASE-PRODUCTION-BROWSER",
@@ -50,16 +54,16 @@
     {"pr":164,"kind":"implementation","workItem":"ENDGAME-BOT-PARTICIPATION","status":"merged","mergeSha":"5be7b44eb51cf389e8006f0a0201ab61c0ee0df5"},
     {"pr":165,"kind":"implementation","workItem":"ENDGAME-BOT-FINAL-OBJECTS","status":"merged","mergeSha":"d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7"},
     {"pr":166,"kind":"implementation-closure","workItem":"ENDGAME-BOT-CLOSURE-GATE","status":"merged","mergeSha":"a6b225fe38c1c320244fc54929534e49029d4026"},
-    {"pr":167,"kind":"audit","workItem":"M9-RELEASE-CANDIDATE-AUDIT","status":"active"},
-    {"pr":168,"kind":"implementation","workItem":"RELEASE-ONBOARDING-TRUTH","status":"planned-after-audit"},
-    {"pr":169,"kind":"implementation","workItem":"RELEASE-PRODUCTION-BROWSER","status":"planned-after-audit"},
-    {"pr":170,"kind":"implementation","workItem":"RELEASE-PACKAGING-METADATA","status":"planned-after-audit"},
-    {"pr":171,"kind":"implementation-closure","workItem":"RELEASE-1.0-CLOSURE","status":"planned-after-audit"}
+    {"pr":167,"kind":"audit","workItem":"M9-RELEASE-CANDIDATE-AUDIT","status":"merged","mergeSha":"f7e14fda42a135f70c0ad95ada7d3080d472176b"},
+    {"pr":168,"kind":"implementation","workItem":"RELEASE-ONBOARDING-TRUTH","status":"merged","mergeSha":"bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a"},
+    {"pr":169,"kind":"implementation","workItem":"RELEASE-PRODUCTION-BROWSER","status":"merged","mergeSha":"6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f"},
+    {"pr":170,"kind":"implementation","workItem":"RELEASE-PACKAGING-METADATA","status":"merged","mergeSha":"1221bfe19cc11f836db7fe7e5720f778419c2dd9"},
+    {"pr":171,"kind":"implementation-closure","workItem":"RELEASE-1.0-CLOSURE","status":"active"}
   ],
   "next": {
-    "pr": 168,
-    "kind": "implementation-after-audit-merge",
-    "workItem": "RELEASE-ONBOARDING-TRUTH",
-    "instruction": "Do not create implementation until Audit #167 squash-merges and its generated fresh main is verified. Then execute exactly the four authorized M9 work items sequentially from each fresh main."
+    "pr": null,
+    "kind": "new-audit-after-release-only",
+    "workItem": null,
+    "instruction": "Do not create a fifth M9 implementation PR. After #171 squash-merge, only the explicitly permitted tiny docs-only release record may capture the generated squash SHA and Pages evidence. Any further product work must begin with a new Audit."
   }
 }
