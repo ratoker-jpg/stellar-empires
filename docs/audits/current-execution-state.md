@@ -1,6 +1,6 @@
 # Current execution state
 
-**Updated:** 2026-08-19  
+**Updated:** 2026-08-20  
 **Safe to continue:** yes  
 **Batch:** `M9-RELEASE-CANDIDATE`  
 **Runtime:** schema v19 / save format v6 unchanged  
@@ -8,14 +8,14 @@
 
 | Field | Current value |
 |---|---|
-| Fresh `main` | `bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a` |
-| Last merged PR | #168 `RELEASE-ONBOARDING-TRUTH` |
+| Fresh `main` | `6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f` |
+| Last merged PR | #169 `RELEASE-PRODUCTION-BROWSER` |
 | Accepted Audit | #167 · `f7e14fda42a135f70c0ad95ada7d3080d472176b` |
-| Active work item | #169 `RELEASE-PRODUCTION-BROWSER` |
-| Active branch | `agent/release-production-browser` |
-| Exact base | `bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a` |
+| Active work item | #170 `RELEASE-PACKAGING-METADATA` |
+| Active branch | `agent/release-packaging-metadata` |
+| Exact base | `6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f` |
 | Planned implementation count | 4 |
-| Completed M9 implementation PRs | 1 |
+| Completed M9 implementation PRs | 2 |
 | Target state schema | 19 |
 | Target save format | 6 |
 | Critical unknowns | 0 |
@@ -24,33 +24,31 @@
 ## Accepted sequence
 
 ```text
-#168 RELEASE-ONBOARDING-TRUTH      merged
-→ #169 RELEASE-PRODUCTION-BROWSER active
-→ #170 RELEASE-PACKAGING-METADATA
+#168 RELEASE-ONBOARDING-TRUTH       merged
+→ #169 RELEASE-PRODUCTION-BROWSER  merged
+→ #170 RELEASE-PACKAGING-METADATA  active
 → #171 RELEASE-1.0-CLOSURE
 ```
 
 No fifth M9 implementation PR is authorized.
 
-## #169 scope
+## #170 scope
 
-Production-path QA only:
+Release packaging and truth only:
 
-- keep the existing broad dev-server Browser suite;
-- add a dedicated Playwright smoke against the normal production build served under `/stellar-empires/`;
-- use the real new-game dialog with no `VITE_E2E` state injection;
-- prove production assets load and decode, app reaches ready state and the production base survives primary navigation;
-- prove a real manual save can be loaded into autosave and survive reload;
-- retain a separate success/failure Playwright artifact for this production smoke.
+- make `package.json` the authoritative product version source;
+- set the candidate version to `1.0.0-rc.1` and prove the production build badge derives from it;
+- synchronize root lockfile metadata with package metadata without changing dependency versions;
+- run CI, Browser and Pages build workflows on Node 24;
+- replace stale README claims with the current schema/save, three-faction, bot/endgame and production Pages state;
+- remove the conflicting static `v0.1.0` badge fallback.
 
-The new production gate exposed one in-scope release blocker: faction showcase WebP placeholders returned 200 but were not decodable images. The candidate fix rebinds showcase hero/emblem/background URLs to the already-existing valid generated faction identity PNG source set through `GENERATED_FACTION_IDENTITY_ASSETS`; no new art or gameplay behavior is introduced. The production smoke remains strict and must prove browser decode on the final exact head.
-
-No GameState, save format, balance, bot or gameplay mechanic change is permitted in #169.
+No GameState, save format, balance, bot or gameplay mechanic change is permitted in #170.
 
 ## Exact next action
 
-Freeze one exact #169 head and require full CI, existing Browser E2E, the new production Pages smoke, Graphify, compressed progression/performance, reviews/threads and mergeability. On green, squash-merge with expected-head protection, verify generated fresh `main`, then create only `RELEASE-PACKAGING-METADATA` from that fresh main.
+Freeze one exact #170 head and require full CI, existing Browser E2E, production Pages smoke, Graphify, compressed progression/performance, reviews/threads and mergeability. On green, squash-merge with expected-head protection, verify generated fresh `main`, then create only `RELEASE-1.0-CLOSURE` from that fresh main.
 
 ## Stop conditions
 
-Stop rather than opening the next implementation PR if the production smoke reveals another release blocker outside the accepted M9 contract, the current head has unresolved failures, an external workflow is genuinely stuck across three checks, or `main` moves unexpectedly.
+Stop rather than opening #171 if packaging/version metadata is internally inconsistent, Node 24 exposes a real toolchain failure, either Browser gate is red, the current head has unresolved failures, or `main` moves unexpectedly.
