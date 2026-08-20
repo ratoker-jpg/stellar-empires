@@ -54,6 +54,12 @@ test('production Pages build survives real new game, save/load, navigation and r
   await expect(page.locator('#system-view')).toBeVisible();
   expect(notFoundResponses).toEqual([]);
 
+  const returnSummary = page.locator('#campaign-return-summary');
+  if (await returnSummary.isVisible()) {
+    await returnSummary.getByRole('button', { name: 'Продолжить кампанию' }).click();
+    await expect(returnSummary).toHaveCount(0);
+  }
+
   await page.locator('#nav-reports').click();
   await expect(page).toHaveURL(new RegExp(`${PRODUCTION_PATH.replaceAll('/', '\\/')}#/reports/all$`));
   await expect(page.locator('#reports-view')).toBeVisible();
