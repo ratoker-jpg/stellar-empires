@@ -2,15 +2,15 @@
 
 ## Current handoff
 
-PR #170 `RELEASE-PACKAGING-METADATA` is merged. Generated fresh `main`:
+Release 1.0 is closed. PR #171 `RELEASE-1.0-CLOSURE` squash-merged and generated fresh `main`:
 
-`1221bfe19cc11f836db7fe7e5720f778419c2dd9`
+`1f7298a602062837ec6bb8e3778d408ada26051c`
 
-The only active M9 work item is final closure PR #171 on branch:
+Runtime remains schema v19 / save format v6. There is no active implementation batch and no fifth M9 implementation PR.
 
-`agent/release-1.0-closure`
+The next product phase is governed by:
 
-Runtime remains schema v19 / save format v6. Package-authoritative final version in #171 is 1.0.0.
+`docs/29-post-1.0-nemexia-reference-roadmap.md`
 
 ## Read before continuation
 
@@ -18,57 +18,66 @@ Runtime remains schema v19 / save format v6. Package-authoritative final version
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/completed/m9-release-candidate.md`
-6. `docs/audits/contracts/m9-release-candidate.md`
-7. `docs/project-status.json`
+5. `docs/17-continuation-guide.md`
+6. `docs/project-status.json`
+7. `docs/16-execution-roadmap.md`
 8. `docs/roadmap-pr-index.json`
-9. `docs/27-playable-game-roadmap-v5.md`
-10. actual GitHub `main`, PR #171 and workflow state
+9. `docs/29-post-1.0-nemexia-reference-roadmap.md`
+10. `docs/audits/completed/m9-release-candidate.md`
+11. actual GitHub `main`, latest PRs and workflow/production state
 
 Actual GitHub state overrides older prose when they differ.
 
-## Completed product baseline
+## Completed Release 1.0 baseline
 
-M1–M8 gameplay delivery is mechanically complete for the local browser campaign, and the first three M9 release-hardening items are merged:
+M1–M9 are complete for the local browser campaign, including:
 
-- deterministic multi-colony economy and logistics;
-- research, production, fleets and ordinary missions;
-- combat, demolition/destruction/recovery, PvE and meta systems;
+- deterministic multi-colony economy/logistics and research/production/fleets;
+- combat, destruction/recovery, PvE and meta systems;
 - three mechanical factions and autonomous bot empires;
-- optional alliance participation and solo play;
-- Solar War qualification;
-- final Gate projects, vulnerability/destruction/recovery;
-- persisted victory/defeat and exact terminal freeze;
+- optional alliances and solo endgame participation;
+- Solar War/Gates, persisted terminal victory/defeat and exact terminal freeze;
 - bot endgame perception/participation/final-project parity;
 - save/load/offline/direct/chunk deterministic closure;
-- truthful first-run release orientation;
-- dedicated production-build Browser proof under `/stellar-empires/`;
-- package-authoritative release version, Node 24 automation baseline and current README metadata.
+- release onboarding truth;
+- production-build Browser proof under `/stellar-empires/`;
+- package-authoritative `1.0.0`, Node 24 automation baseline and release metadata.
 
-## M9 final closure
+Historical M9 Audit: #167. Closed implementation chain: #168 → #169 → #170 → #171.
 
-Accepted Audit #167 authorized exactly four implementation work items. #168, #169 and #170 are merged. #171 is the fourth and final item.
+## Post-1.0 reference program
 
-#171 may only:
+The owner has supplied `ratoker-jpg/Nemexia_auto_v2` plus a structured Nemexia research snapshot. Treat these as research/reference evidence only.
 
-- advance the version from `1.0.0-rc.1` to `1.0.0` and synchronize root lock metadata;
-- archive M9 and update canonical release-state documentation;
-- run the combined exact-head release gates.
+Do not assume that old Nemexia automation architecture, heuristics, remembered formulas or historical values belong in Stellar. Preserve provenance and compare against what Stellar already implements.
 
-It must not introduce a new mechanic, schema/save migration, balance change or fifth implementation PR.
+The next authorized work item is exactly:
 
-## Merge discipline for #171
+`POST-1.0-NEMEXIA-PARITY-AUDIT`
 
-1. freeze one exact final head;
-2. require CI including asset audit/lint/typecheck/tests/build, compressed progression and permanent one-day/seven-day performance gates;
-3. require existing Browser E2E and dedicated production-base Browser smoke green on the same head;
-4. require Graphify, unresolved review threads = 0, reviews/blockers = 0, expected base unchanged and mergeable = true;
-5. mark Ready only after all gates pass;
-6. squash-merge with expected-head protection;
-7. verify generated fresh `main` and post-merge Pages deployment.
+It is docs-only.
 
-If the generated #171 squash SHA or Pages evidence must be recorded in canonical docs, create only the explicitly permitted tiny docs-only release record. It may not add implementation.
+## Audit handoff requirements
 
-## After Release 1.0
+The Audit must:
 
-There is no authorized fifth M9 implementation PR. Any further product work must begin with a new Audit from the then-current fresh `main` and a new owner-approved scope. Repository license selection remains owner-controlled.
+- start from the then-current fresh `main`;
+- inspect current Stellar source/tests/docs and current production/browser state;
+- produce a Stellar-vs-Nemexia parity matrix;
+- classify candidates `KEEP_STELLAR`, `ADAPT_FROM_NEMEXIA`, `RESEARCH` or `REJECT`;
+- preserve Nemexia evidence provenance/confidence;
+- identify unknown formulas and reject direct automation-stack ports;
+- assess schema/save, deterministic, performance and Browser impact;
+- propose an exact first implementation batch with stable work-item IDs and gates;
+- prefer 4 implementation PRs; propose at most 6 only for explicitly justified light/independent work;
+- stop with the Audit PR open for controller review.
+
+The worker must not merge the Audit or begin implementation before controller approval.
+
+## After Audit approval
+
+Once the controller approves and the Audit is merged, execute only the accepted batch. After the batch, report PRs, heads/merge SHAs, material files, validation, risks, production evidence, divergence and proposed next work. Do not begin the next batch until the controller closes the review cycle.
+
+## Known boundary
+
+Repository license selection remains owner-controlled. Any guessed combat/economy/scoring formula, unplanned schema/save migration or direct port of Playwright/Tkinter/DOM/CAPTCHA/raid automation requires stop/re-audit rather than implementation.
