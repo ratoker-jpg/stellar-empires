@@ -1,0 +1,42 @@
+name: Sync release lock once
+
+on:
+  push:
+    branches:
+      - agent/release-packaging-metadata
+
+permissions:
+  contents: write
+
+jobs:
+  sync-lock:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/release-packaging-metadata
+          fetch-depth: 0
+      - name: Restore exact baseline lock and update root metadata
+        shell: bash
+        run: |
+          git show 6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f:package-lock.json > package-lock.json
+          node <<'NODE'
+          const fs = require('fs');
+          const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          lock.version = '1.0.0-rc.1';
+          lock.packages[''].version = '1.0.0-rc.1';
+          lock.packages[''].engines.node = '>=24.0.0';
+          fs.writeFileSync('package-lock.json', `${JSON.stringify(lock, null, 2)}\n`);
+          NODE
+      - name: Commit synchronized lock metadata
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- package-lock.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'chore: sync RC lock metadata'
+          git push origin HEAD:agent/release-packaging-metadata
