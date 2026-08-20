@@ -1,6 +1,10 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
 const PRODUCTION_PATH = '/stellar-empires/';
+const packageVersion = (JSON.parse(
+  readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+) as { version: string }).version;
 
 test('production Pages build survives real new game, save/load, navigation and reload', async ({ page }) => {
   const notFoundResponses: string[] = [];
@@ -31,6 +35,7 @@ test('production Pages build survives real new game, save/load, navigation and r
   await dialog.locator('.new-game-faction--aegis').click();
 
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page.locator('#build-version')).toHaveText(`v${packageVersion}`);
   await expect(page).toHaveURL(new RegExp(`${PRODUCTION_PATH.replaceAll('/', '\\/')}`));
   await expect(page.locator('.brand-logo')).toBeVisible();
   expect(notFoundResponses).toEqual([]);
@@ -50,6 +55,7 @@ test('production Pages build survives real new game, save/load, navigation and r
   ]);
 
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page.locator('#build-version')).toHaveText(`v${packageVersion}`);
   await expect(page.locator('.new-game-dialog')).toHaveCount(0);
   await expect(page.locator('#system-view')).toBeVisible();
   expect(notFoundResponses).toEqual([]);
@@ -66,6 +72,7 @@ test('production Pages build survives real new game, save/load, navigation and r
 
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page.locator('#build-version')).toHaveText(`v${packageVersion}`);
   await expect(page).toHaveURL(new RegExp(`${PRODUCTION_PATH.replaceAll('/', '\\/')}#/reports/all$`));
   await expect(page.locator('#reports-view')).toBeVisible();
   await expect(page.locator('.new-game-dialog')).toHaveCount(0);
