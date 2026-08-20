@@ -1,59 +1,59 @@
 # Current execution state
 
 **Updated:** 2026-08-20  
-**Safe to continue:** yes  
-**Batch:** `M9-RELEASE-CANDIDATE`  
+**Safe to continue:** yes — Audit only  
+**Phase:** post-1.0 planning  
 **Runtime:** schema v19 / save format v6 unchanged  
-**Release target:** 1.0.0
+**Release:** 1.0.0 closed
 
 | Field | Current value |
 |---|---|
-| Fresh `main` | `1221bfe19cc11f836db7fe7e5720f778419c2dd9` |
-| Last merged PR | #170 `RELEASE-PACKAGING-METADATA` |
-| Accepted Audit | #167 · `f7e14fda42a135f70c0ad95ada7d3080d472176b` |
-| Active work item | #171 `RELEASE-1.0-CLOSURE` |
-| Active branch | `agent/release-1.0-closure` |
-| Exact base | `1221bfe19cc11f836db7fe7e5720f778419c2dd9` |
-| Planned implementation count | 4 |
-| Completed M9 implementation PRs | 3 |
+| Verified Release 1.0 `main` | `1f7298a602062837ec6bb8e3778d408ada26051c` |
+| Last merged PR | #171 `RELEASE-1.0-CLOSURE` |
+| Last accepted Audit | #167 `M9-RELEASE-CANDIDATE` |
+| M9 state | complete / archived |
+| Active implementation PR | none |
+| Active implementation batch | none |
 | Target state schema | 19 |
 | Target save format | 6 |
-| Critical unknowns | 0 |
-| Implementation authorized now | yes — closure only |
+| Post-1.0 implementation authorized | no |
+| Next authorized work item | `POST-1.0-NEMEXIA-PARITY-AUDIT` — docs only |
 
-## Accepted sequence
+## Release closure
+
+The M9 implementation chain is complete:
 
 ```text
 #168 RELEASE-ONBOARDING-TRUTH       merged
 → #169 RELEASE-PRODUCTION-BROWSER  merged
 → #170 RELEASE-PACKAGING-METADATA  merged
-→ #171 RELEASE-1.0-CLOSURE          active
+→ #171 RELEASE-1.0-CLOSURE          merged → 1f7298a602062837ec6bb8e3778d408ada26051c
 ```
 
-No fifth M9 implementation PR is authorized.
+There is no fifth M9 implementation PR.
 
-## #171 scope
+The generated #171 squash SHA is now recorded here because a PR cannot self-record its own future squash SHA.
 
-Final release closure only:
+## Post-1.0 control state
 
-- advance `package.json` and root lock metadata from `1.0.0-rc.1` to `1.0.0`;
-- preserve schema v19/save v6 and all gameplay, balance, bot and deterministic behavior;
-- archive M9 and update the canonical batch/status/roadmap/handoff documents;
-- require both the normal Browser suite and production-base Browser smoke on the same exact head;
-- retain compressed progression, one-day/seven-day performance budgets, Graphify and all normal CI gates.
+The next program uses `ratoker-jpg/Nemexia_auto_v2` and the owner-supplied Nemexia research snapshot as evidence/reference only. The governing forward roadmap is:
 
-No new runtime test is required unless an existing gate reveals a concrete missing release invariant.
+`docs/29-post-1.0-nemexia-reference-roadmap.md`
 
-## Last completed atomic action
-
-PR #170 `RELEASE-PACKAGING-METADATA` passed its exact-head release gates and squash-merged. Generated fresh `main` is `1221bfe19cc11f836db7fe7e5720f778419c2dd9`; #171 branch was created from that exact commit.
+No mechanic from the reference project is authorized for implementation until the dedicated parity Audit verifies current Stellar source and classifies the candidate.
 
 ## Exact next action
 
-Freeze one exact docs/version-only #171 head. Require full CI, existing Browser E2E, production Pages smoke, Graphify, compressed progression/performance, reviews/threads and mergeability. On green, mark Ready and squash-merge with expected-head protection. Verify generated fresh `main` and the post-merge Pages deployment.
+From the fresh `main` produced after this docs-only roadmap PR:
 
-If canonical documents must record the generated #171 squash SHA or Pages run after merge, create only the explicitly permitted tiny docs-only release record.
+1. create exactly one docs-only `POST-1.0-NEMEXIA-PARITY-AUDIT` PR;
+2. audit current Stellar versus Nemexia reference evidence and current production/browser baseline;
+3. preserve provenance and classify candidates `KEEP_STELLAR`, `ADAPT_FROM_NEMEXIA`, `RESEARCH` or `REJECT`;
+4. propose an exact bounded implementation batch — 4 PRs by default, maximum 6 only for justified light/independent work;
+5. stop before Audit merge and return the Audit PR/report to the controller.
+
+Implementation remains unauthorized until controller approval and Audit merge.
 
 ## Stop conditions
 
-Stop rather than expanding scope if any gate demonstrates a genuine gameplay/save/release regression, `main` moves unexpectedly, a required external workflow stalls in the same state across three checks, or the accepted M9 contract proves materially wrong. Do not create a fifth M9 implementation PR.
+Stop rather than implementing if the Audit is not approved, `main` moved unexpectedly, provenance is insufficient, a formula would need to be guessed, an unplanned schema/save migration appears, or the proposed batch mixes heavy architecture with a light six-PR scope.
