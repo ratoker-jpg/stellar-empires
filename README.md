@@ -2,36 +2,27 @@
 
 Одиночная браузерная космическая стратегия с автономными бот-империями.
 
+**Публичная версия:** https://ratoker-jpg.github.io/stellar-empires/
+
 ## Текущий статус
 
-Baseline после merged PR #65:
+Release Candidate: **1.0.0-rc.1**.
 
-- Phaser 4.2.1 + TypeScript 6 + Vite 8;
-- детерминированная schema-v12 simulation core;
-- IndexedDB autosave, слоты, import/export и recovery;
-- seeded galaxy, fog-aware intelligence и несколько колоний;
-- три планетарные зоны, экономика, здания, исследования и производство;
-- флоты, transport/deploy/scout/attack/recycle/colonize/expedition/space-object;
-- combat v2, plunder, debris, unified reports и defense repair;
-- logistics routes, deterministic market, pirates, world events and PvE;
-- honest autonomous bot planners in a Web Worker;
-- три faction identities, runtime atlases and faction selection;
-- Design System v1, structured HUD and rebuilt planet workspace.
+Текущий runtime использует **GameState schema v19** и **save format v6**. Кампания полностью проходит от старта до терминального результата: развитие империи → Solar War → финальный проект/Врата → сохранённая победа или поражение.
 
-Три фракции пока используют общий Aegis mechanical catalog. Новые пользовательские source packs зарегистрированы отдельно и должны интегрироваться screen-by-screen.
+В игре доступны:
 
-## Current roadmap
+- три самостоятельные механические фракции: Aegis, Synod и Veyra;
+- экономика, энергия, здания, исследования и производство;
+- колонии, специализации, логистика и рынок;
+- флоты, разведка, бои, переработка обломков, колонизация и уничтожение планет;
+- PvE, пираты, экспедиции, космические объекты, Arena и мировые события;
+- альянсы, Solar War и финальные объекты;
+- автономные бот-империи с progression/endgame parity и ограничениями восприятия;
+- IndexedDB autosave, ручные слоты, import/export, recovery и offline catch-up;
+- терминальное состояние кампании, сохраняемое и восстанавливаемое через save/load.
 
-Канонический порядок: [`docs/16-execution-roadmap.md`](docs/16-execution-roadmap.md).
-
-Активный mechanics-informed visual/content batch:
-
-1. #66 knowledge/audit/source asset intake;
-2. #67 fleets and galaxy;
-3. #68 research/production/defense;
-4. #69 operations and reports;
-5. #70 command/ranking/faction polish;
-6. #71 responsive/accessibility/performance QA.
+Release gates включают unit/integration/audit tests, deterministic compressed progression, performance budgets, полный Browser E2E и отдельный production Pages smoke на реальном base `/stellar-empires/`.
 
 ## Technology
 
@@ -39,25 +30,33 @@ Baseline после merged PR #65:
 - TypeScript 6.0.3
 - Vite 8.1.5
 - Vitest 4.1.10
+- Playwright 1.62
 - ESLint 10
-- GitHub Actions and GitHub Pages
-
-Node.js 22.12+:
+- GitHub Actions + GitHub Pages
+- Node.js 24+
 
 ```bash
 npm install
 npm run dev
 npm run check
+npm run e2e
+npm run e2e:production
 ```
 
-## Continue in a new AI session
+`package.json` — авторитетный источник версии приложения. Production badge получает версию из него через Vite build define.
+
+## Roadmap и продолжение работы
+
+Канонический release-state находится в:
 
 1. [`AGENTS.md`](AGENTS.md)
-2. [`docs/17-continuation-guide.md`](docs/17-continuation-guide.md)
-3. [`docs/project-status.json`](docs/project-status.json)
-4. [`docs/16-execution-roadmap.md`](docs/16-execution-roadmap.md)
-5. [`docs/18-project-gap-analysis.md`](docs/18-project-gap-analysis.md)
-6. latest merged GitHub PRs.
+2. [`docs/audits/current-execution-state.md`](docs/audits/current-execution-state.md)
+3. [`docs/audits/current-batch-audit.md`](docs/audits/current-batch-audit.md)
+4. [`docs/audits/contracts/m9-release-candidate.md`](docs/audits/contracts/m9-release-candidate.md)
+5. [`docs/17-continuation-guide.md`](docs/17-continuation-guide.md)
+6. [`docs/27-playable-game-roadmap-v5.md`](docs/27-playable-game-roadmap-v5.md)
+
+Текущий M9 Release Candidate batch после production-browser proof закрывает packaging/version metadata и затем выполняет финальный `1.0.0` closure.
 
 ## Research and assets
 
@@ -65,8 +64,8 @@ npm run check
 - [Project gap analysis](docs/18-project-gap-analysis.md)
 - [User-supplied asset intake](docs/assets/user-supplied-asset-intake.md)
 
-Research is not a license or a production specification. Captured third-party HTML/screens/assets are excluded.
+Research/reference material не является лицензией или отдельной production specification. Runtime assets проходят repository asset audit и production browser verification.
 
 ## License
 
-The project license is not selected yet.
+Отдельная лицензия проекта пока не выбрана и не предоставлена. Этот статус не следует трактовать как выдачу прав на использование, распространение или модификацию проекта.
