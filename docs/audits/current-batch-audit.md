@@ -1,77 +1,88 @@
 # Current audit boundary
 
-**Batch:** `M9-RELEASE-CANDIDATE` / accepted Audit #167  
-**Audit status:** accepted and merged; final implementation closure active  
+**State:** no active post-1.0 implementation batch  
 **Updated:** 2026-08-20  
-**Audit baseline / #166 squash:** `a6b225fe38c1c320244fc54929534e49029d4026`  
-**Accepted Audit squash:** `f7e14fda42a135f70c0ad95ada7d3080d472176b`  
-**Current fresh main / #170 squash:** `1221bfe19cc11f836db7fe7e5720f778419c2dd9`  
-**Runtime target:** schema v19 / save format v6 unchanged  
-**Release target:** `1.0.0`  
-**Critical unknowns:** 0  
-**Complexity:** medium
+**Release 1.0 main / #171 squash:** `1f7298a602062837ec6bb8e3778d408ada26051c`  
+**Runtime baseline:** schema v19 / save format v6  
+**Implementation authorized:** no  
+**Next authorized work:** `POST-1.0-NEMEXIA-PARITY-AUDIT` — docs only
 
 ## Binding authority
 
-The accepted M9 implementation contract is:
+Current authority is:
 
-- `docs/audits/contracts/m9-release-candidate.md`;
-- `docs/audits/evidence/m9-release-candidate.md`;
+- `AGENTS.md`;
+- `docs/28-audit-first-autonomous-delivery-protocol.md`;
+- `docs/29-post-1.0-nemexia-reference-roadmap.md`;
 - `docs/audits/current-execution-state.md`;
 - actual GitHub `main`, PR and workflow state when newer than prose.
 
-## Accepted implementation sequence
+The completed M9 Release 1.0 Audit remains archived at:
+
+`docs/audits/completed/m9-release-candidate.md`
+
+## Closed Release 1.0 batch
 
 ```text
-#168 RELEASE-ONBOARDING-TRUTH       merged → bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a
-→ #169 RELEASE-PRODUCTION-BROWSER  merged → 6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f
-→ #170 RELEASE-PACKAGING-METADATA  merged → 1221bfe19cc11f836db7fe7e5720f778419c2dd9
-→ #171 RELEASE-1.0-CLOSURE          active
+Audit #167 M9-RELEASE-CANDIDATE
+→ #168 RELEASE-ONBOARDING-TRUTH       merged
+→ #169 RELEASE-PRODUCTION-BROWSER  merged
+→ #170 RELEASE-PACKAGING-METADATA  merged
+→ #171 RELEASE-1.0-CLOSURE          merged → 1f7298a602062837ec6bb8e3778d408ada26051c
 ```
 
 No fifth M9 implementation PR is authorized.
 
-## Verified closure baseline
+## Next Audit contract
 
-The first three M9 implementation items are merged and established the required release surface:
+The next worker may create only a docs-only Audit PR for `POST-1.0-NEMEXIA-PARITY-AUDIT`.
 
-- new-game onboarding truth matches the implemented terminal campaign and gives concise first-run orientation;
-- the existing broad Browser suite is supplemented by a dedicated production-build smoke under `/stellar-empires/` using a real fresh campaign, save/load, navigation and reload;
-- `package.json` is the product-version authority, the RC is `1.0.0-rc.1`, the production badge derives from package metadata and automated release workflows use Node 24;
-- README describes schema v19/save v6, three mechanical factions, autonomous bot/endgame parity and the public Pages deployment;
-- no M9 work changed GameState schema, save format, campaign mechanics or accepted performance budgets.
+The Audit must inspect the current Stellar implementation and tests before declaring gaps. It must use `ratoker-jpg/Nemexia_auto_v2` and the owner-supplied research snapshot as reference evidence, not as an implementation contract.
 
-## #171 authorized scope
+Every Nemexia-derived claim must keep provenance such as:
 
-`RELEASE-1.0-CLOSURE` is closure-only:
+```text
+LIVE_HTML
+LIVE_BATTLE_REPORT
+LIVE_DOM_GLOBAL
+SUPPLIED_INFO_PAGE
+AUTOMATION_OBSERVATION
+USER_MEMORY
+HEURISTIC
+HYPOTHESIS
+```
 
-- advance package-authoritative version from `1.0.0-rc.1` to `1.0.0` and keep root lock metadata synchronized;
-- add no gameplay mechanic or save migration;
-- archive the accepted M9 batch under `docs/audits/completed/m9-release-candidate.md`;
-- update batch history, project status, roadmap index, continuation guide, canonical roadmap and README final status wording;
-- run the combined release gates on one exact final head.
+Every candidate must be classified:
 
-## Final acceptance
+```text
+KEEP_STELLAR
+ADAPT_FROM_NEMEXIA
+RESEARCH
+REJECT
+```
 
-One exact #171 head must pass:
+The Audit must cover world/colonization, faction catalogs, fleet/logistics, economy overview, spying/reports, combat/battle reports, scoring/progression, asteroids/debris, achievements/ranking/profile/alliances, research-only saved-page/MHTML sources and the current production/browser baseline.
 
-- asset audit;
-- lint;
-- typecheck;
-- all unit/integration/audit tests;
-- build;
-- compressed progression;
-- campaign performance `<15 s` one-day and `<30 s` seven-day;
-- existing Browser E2E;
-- production-base Browser smoke;
-- Graphify;
-- reviews = 0 and unresolved review threads = 0;
-- mergeable = true.
+## Required Audit deliverables
 
-Then mark #171 Ready and squash-merge with expected-head protection. Verify generated fresh `main` and the post-merge Pages deployment.
+Before implementation can be authorized, the Audit PR must provide:
+
+- exact starting `main` SHA;
+- current affected Stellar source/test/doc surface;
+- parity matrix with provenance/confidence;
+- explicit unknowns and rejected/non-port items;
+- schema/save and deterministic/performance/browser risk assessment;
+- ranked backlog;
+- exact first implementation batch proposal with stable work-item IDs and dependencies;
+- 4 implementation PRs by default, or at most 6 only when the work is light, repetitive, independent and explicitly justified;
+- validation/acceptance gates for every proposed PR.
+
+## Controller gate
+
+The worker must stop with the Audit PR open. It must not merge the Audit and must not begin implementation until the external controller has reviewed the PR and explicitly approved merge/continuation.
+
+After an accepted Audit merges, the worker executes only the approved batch and returns the required batch report to the controller before the next batch begins.
 
 ## Hard boundaries
 
-M9 does not authorize new mechanics, currencies/catalogs/factions, schema/save migration, arbitrary balance retuning, post-victory sandbox, tutorial persistence, broad redesign, backend/cloud/multiplayer work or license selection on behalf of the owner.
-
-A tiny docs-only post-release record is permitted only if the generated #171 squash SHA and post-merge Pages evidence need to be written back into canonical status. It may not add implementation.
+The Audit must not implement product behavior. It must not directly port Playwright/Tkinter/DOM/CAPTCHA/raid automation, guess combat/economy/scoring formulas, silently add schema/save migrations, or treat `USER_MEMORY`, `HEURISTIC` or `HYPOTHESIS` as verified game truth.
