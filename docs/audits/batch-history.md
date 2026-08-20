@@ -1,28 +1,29 @@
 # Audit batch history
 
-This file is the compact historical index for completed roadmap audit batches. Generated closure squash SHAs may be recorded by the next Audit because a closure PR cannot self-reference its future squash commit.
+This file is the compact historical index for completed roadmap audit batches. Generated closure squash SHAs may be recorded by the next Audit or by an explicitly permitted docs-only post-closure record because a closure PR cannot self-reference its future squash commit.
 
 | Batch ID | Complexity | Audit PR | Implementation PRs | Outcome | Archived audit |
 |---|---:|---:|---|---|---|
 | `COMPLETE-ENDGAME-01` | medium | #152 | #153–#156 | completed | `docs/audits/completed/complete-endgame-01.md` |
 | `COMPLETE-ENDGAME-02` | medium | #157 | #158–#161 | completed | `docs/audits/completed/complete-endgame-02.md` |
-| `COMPLETE-ENDGAME-03` | medium | #162 | #163–#166 | closure completed by #166; generated squash recorded by next Audit | `docs/audits/completed/complete-endgame-03.md` |
+| `COMPLETE-ENDGAME-03` | medium | #162 | #163–#166 | completed; #166 squash recorded by M9 Audit | `docs/audits/completed/complete-endgame-03.md` |
+| `M9-RELEASE-CANDIDATE` | medium | #167 | #168–#171 | final closure active in #171; generated squash/Pages evidence recorded post-merge if needed | `docs/audits/completed/m9-release-candidate.md` |
 
 ## Current boundary
 
 ```text
-COMPLETE-ENDGAME-03
-Audit #162 → b7de24f52c02480f6db244c00b1282407d5743cc
-#163 → 46e0966c2843424d6e098e363327ffe5cf74d352
-#164 → 5be7b44eb51cf389e8006f0a0201ab61c0ee0df5
-#165 → d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7
-#166 → final closure PR; generated squash recorded by next Audit
-next valid work → separate M9 Release Candidate Audit from fresh post-#166 main
+M9-RELEASE-CANDIDATE
+Audit #167 → f7e14fda42a135f70c0ad95ada7d3080d472176b
+#168 → bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a
+#169 → 6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f
+#170 → 1221bfe19cc11f836db7fe7e5720f778419c2dd9
+#171 → final 1.0.0 closure PR; generated squash cannot be self-recorded
+next valid implementation → none inside M9
 ```
 
 ## Recording rules
 
 - Audit PR numbers and generated merge SHAs are immutable once recorded.
-- A closure PR may record itself by PR number while deferring its generated squash SHA to the next Audit.
+- A closure PR may record itself by PR number while deferring its generated squash SHA to the next Audit or an explicitly authorized docs-only post-release record.
 - Actual GitHub state is authoritative if a closure document is viewed before its PR has merged.
 - Do not append a future implementation batch until its Audit has been accepted.

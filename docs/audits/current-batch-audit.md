@@ -1,9 +1,11 @@
 # Current audit boundary
 
-**Batch:** `M9-RELEASE-CANDIDATE` / Audit #167  
-**Audit status:** recon complete; implementation unauthorized until Audit merge  
-**Updated:** 2026-08-19  
+**Batch:** `M9-RELEASE-CANDIDATE` / accepted Audit #167  
+**Audit status:** accepted and merged; final implementation closure active  
+**Updated:** 2026-08-20  
 **Audit baseline / #166 squash:** `a6b225fe38c1c320244fc54929534e49029d4026`  
+**Accepted Audit squash:** `f7e14fda42a135f70c0ad95ada7d3080d472176b`  
+**Current fresh main / #170 squash:** `1221bfe19cc11f836db7fe7e5720f778419c2dd9`  
 **Runtime target:** schema v19 / save format v6 unchanged  
 **Release target:** `1.0.0`  
 **Critical unknowns:** 0  
@@ -11,71 +13,65 @@
 
 ## Binding authority
 
-This Audit is governed by:
+The accepted M9 implementation contract is:
 
-- `docs/audits/evidence/m9-release-candidate.md`;
 - `docs/audits/contracts/m9-release-candidate.md`;
+- `docs/audits/evidence/m9-release-candidate.md`;
 - `docs/audits/current-execution-state.md`;
 - actual GitHub `main`, PR and workflow state when newer than prose.
 
-## Fresh baseline
-
-PR #166 `ENDGAME-BOT-CLOSURE-GATE` is merged. Generated fresh `main`:
-
-`a6b225fe38c1c320244fc54929534e49029d4026`
-
-M8.3 is closed. No additional M8 implementation is authorized.
-
-## Verified M9 gaps
-
-- new-game dialog contains obsolete copy claiming final victory/Gates are unavailable;
-- normal Browser E2E tests the Vite dev root while production uses `/stellar-empires/`;
-- release version metadata is still independently hard-coded as `0.1.0`;
-- CI/E2E/Pages pin Node 22.12.0 despite current dependency engine warnings;
-- README describes a materially obsolete early project state;
-- no current evidence requires gameplay rebalancing, schema/save migration or a new mechanic.
-
-## Proposed implementation sequence
-
-If and only if Audit #167 exact-head gates pass and the Audit squash merges, authorize exactly:
+## Accepted implementation sequence
 
 ```text
-#168 RELEASE-ONBOARDING-TRUTH
-→ #169 RELEASE-PRODUCTION-BROWSER
-→ #170 RELEASE-PACKAGING-METADATA
-→ #171 RELEASE-1.0-CLOSURE
+#168 RELEASE-ONBOARDING-TRUTH       merged → bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a
+→ #169 RELEASE-PRODUCTION-BROWSER  merged → 6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f
+→ #170 RELEASE-PACKAGING-METADATA  merged → 1221bfe19cc11f836db7fe7e5720f778419c2dd9
+→ #171 RELEASE-1.0-CLOSURE          active
 ```
 
-Stable work-item IDs are authoritative if GitHub numbering changes.
+No fifth M9 implementation PR is authorized.
 
-No fifth M9 implementation PR is authorized by this Audit.
+## Verified closure baseline
 
-A post-#171 docs-only release record is permitted solely to record the generated closure SHA and post-merge Pages evidence if canonical status cannot self-record it.
+The first three M9 implementation items are merged and established the required release surface:
+
+- new-game onboarding truth matches the implemented terminal campaign and gives concise first-run orientation;
+- the existing broad Browser suite is supplemented by a dedicated production-build smoke under `/stellar-empires/` using a real fresh campaign, save/load, navigation and reload;
+- `package.json` is the product-version authority, the RC is `1.0.0-rc.1`, the production badge derives from package metadata and automated release workflows use Node 24;
+- README describes schema v19/save v6, three mechanical factions, autonomous bot/endgame parity and the public Pages deployment;
+- no M9 work changed GameState schema, save format, campaign mechanics or accepted performance budgets.
+
+## #171 authorized scope
+
+`RELEASE-1.0-CLOSURE` is closure-only:
+
+- advance package-authoritative version from `1.0.0-rc.1` to `1.0.0` and keep root lock metadata synchronized;
+- add no gameplay mechanic or save migration;
+- archive the accepted M9 batch under `docs/audits/completed/m9-release-candidate.md`;
+- update batch history, project status, roadmap index, continuation guide, canonical roadmap and README final status wording;
+- run the combined release gates on one exact final head.
+
+## Final acceptance
+
+One exact #171 head must pass:
+
+- asset audit;
+- lint;
+- typecheck;
+- all unit/integration/audit tests;
+- build;
+- compressed progression;
+- campaign performance `<15 s` one-day and `<30 s` seven-day;
+- existing Browser E2E;
+- production-base Browser smoke;
+- Graphify;
+- reviews = 0 and unresolved review threads = 0;
+- mergeable = true.
+
+Then mark #171 Ready and squash-merge with expected-head protection. Verify generated fresh `main` and the post-merge Pages deployment.
 
 ## Hard boundaries
 
-M9 does not authorize:
+M9 does not authorize new mechanics, currencies/catalogs/factions, schema/save migration, arbitrary balance retuning, post-victory sandbox, tutorial persistence, broad redesign, backend/cloud/multiplayer work or license selection on behalf of the owner.
 
-- new gameplay mechanics;
-- new currencies/catalogs/factions/missions/combat engines;
-- post-victory continuation mode;
-- schema/save migration;
-- arbitrary balance retuning without measured release evidence;
-- tutorial persistence/quest systems;
-- broad visual redesign;
-- license selection on behalf of the owner;
-- backend/cloud/multiplayer work.
-
-## Audit acceptance
-
-Before implementation begins, one exact #167 docs-only head must pass:
-
-- asset audit, lint, typecheck, all tests and build;
-- compressed progression;
-- campaign performance budgets;
-- Browser E2E;
-- Graphify;
-- reviews/unresolved threads clean;
-- mergeability true.
-
-Then mark #167 Ready, squash-merge with expected-head protection and verify the generated fresh `main` before creating `RELEASE-ONBOARDING-TRUTH`.
+A tiny docs-only post-release record is permitted only if the generated #171 squash SHA and post-merge Pages evidence need to be written back into canonical status. It may not add implementation.

@@ -1,36 +1,37 @@
 {
-  "statusVersion": 79,
-  "updatedAt": "2026-08-19",
+  "statusVersion": 80,
+  "updatedAt": "2026-08-20",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 5,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 166,
-  "lastMergeSha": "a6b225fe38c1c320244fc54929534e49029d4026",
-  "verifiedMainBaseline": "PR #166 ENDGAME-BOT-CLOSURE-GATE squash",
-  "runtimeBaselinePr": 166,
-  "runtimeBaselineSha": "a6b225fe38c1c320244fc54929534e49029d4026",
-  "activePr": 167,
-  "activePrKind": "audit",
-  "activeWorkItem": "M9-RELEASE-CANDIDATE-AUDIT",
-  "activeBranch": "agent/m9-release-candidate-audit",
-  "nextPrAfterActive": 168,
-  "nextPrKind": "implementation-after-audit-merge",
-  "nextWorkItem": "RELEASE-ONBOARDING-TRUTH",
-  "currentMilestone": "M9 Release Candidate Audit",
+  "lastMergedPr": 170,
+  "lastMergeSha": "1221bfe19cc11f836db7fe7e5720f778419c2dd9",
+  "verifiedMainBaseline": "PR #170 RELEASE-PACKAGING-METADATA squash",
+  "runtimeBaselinePr": 170,
+  "runtimeBaselineSha": "1221bfe19cc11f836db7fe7e5720f778419c2dd9",
+  "activePr": 171,
+  "activePrKind": "implementation-closure",
+  "activeWorkItem": "RELEASE-1.0-CLOSURE",
+  "activeBranch": "agent/release-1.0-closure",
+  "nextPrAfterActive": null,
+  "nextPrKind": "new-audit-only-after-release",
+  "nextWorkItem": null,
+  "currentMilestone": "M9 Release 1.0 Closure",
   "authoritativeRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
   "currentAuditContracts": ["docs/audits/contracts/m9-release-candidate.md"],
   "currentAuditEvidence": ["docs/audits/evidence/m9-release-candidate.md"],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastCompletedBatchArchive": "docs/audits/completed/complete-endgame-03.md",
+  "lastCompletedBatchArchive": "docs/audits/completed/m9-release-candidate.md",
   "currentAuditState": {
     "batchId": "M9-RELEASE-CANDIDATE",
     "auditPr": 167,
-    "status": "recon-complete-audit-open",
-    "implementationAuthorized": false,
+    "auditMergeSha": "f7e14fda42a135f70c0ad95ada7d3080d472176b",
+    "status": "closure-active",
+    "implementationAuthorized": true,
     "baselineSha": "a6b225fe38c1c320244fc54929534e49029d4026",
     "complexity": "medium",
     "targetStateSchema": 19,
@@ -42,7 +43,8 @@
     "boundedImplementationSequence": true,
     "implementationCount": 4,
     "plannedImplementationPrs": [168, 169, 170, 171],
-    "completedImplementationPrs": [],
+    "completedImplementationPrs": [168, 169, 170],
+    "activeImplementationPr": 171,
     "workItems": [
       "RELEASE-ONBOARDING-TRUTH",
       "RELEASE-PRODUCTION-BROWSER",
@@ -50,7 +52,8 @@
       "RELEASE-1.0-CLOSURE"
     ],
     "contract": "docs/audits/contracts/m9-release-candidate.md",
-    "evidence": "docs/audits/evidence/m9-release-candidate.md"
+    "evidence": "docs/audits/evidence/m9-release-candidate.md",
+    "archive": "docs/audits/completed/m9-release-candidate.md"
   },
   "activeImplementationState": {
     "stateSchema": 19,
@@ -64,11 +67,13 @@
     "terminalRuntimeFreezeImplemented": true,
     "botEndgameParityImplemented": true,
     "productionPagesWorkflowExists": true,
-    "productionBasePathBrowserSmokeImplemented": false,
-    "releaseOnboardingTruthComplete": false,
-    "releaseVersionAuthorityComplete": false,
-    "releaseMetadataCurrent": false,
-    "status": "mechanically-complete-release-audit"
+    "productionBasePathBrowserSmokeImplemented": true,
+    "releaseOnboardingTruthComplete": true,
+    "releaseVersionAuthorityComplete": true,
+    "releaseMetadataCurrent": true,
+    "releaseVersion": "1.0.0",
+    "releaseClosurePendingExactHeadGates": true,
+    "status": "release-1.0-closure-candidate"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -101,19 +106,18 @@
     "productionBaseBrowserProofRequired": true,
     "packageVersionBecomesAuthority": true,
     "node24ReleaseBaseline": true,
-    "implementationAuthorized": false,
+    "implementationAuthorized": true,
     "criticalUnknowns": 0
   },
   "activeDelivery": [
     {"pr":166,"kind":"implementation-closure","batchId":"COMPLETE-ENDGAME-03","workItem":"ENDGAME-BOT-CLOSURE-GATE","status":"merged","mergeSha":"a6b225fe38c1c320244fc54929534e49029d4026"},
-    {"pr":167,"kind":"audit","batchId":"M9-RELEASE-CANDIDATE","workItem":"M9-RELEASE-CANDIDATE-AUDIT","status":"active"}
+    {"pr":167,"kind":"audit","batchId":"M9-RELEASE-CANDIDATE","workItem":"M9-RELEASE-CANDIDATE-AUDIT","status":"merged","mergeSha":"f7e14fda42a135f70c0ad95ada7d3080d472176b"},
+    {"pr":168,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-ONBOARDING-TRUTH","status":"merged","mergeSha":"bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a"},
+    {"pr":169,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-PRODUCTION-BROWSER","status":"merged","mergeSha":"6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f"},
+    {"pr":170,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-PACKAGING-METADATA","status":"merged","mergeSha":"1221bfe19cc11f836db7fe7e5720f778419c2dd9"},
+    {"pr":171,"kind":"implementation-closure","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-1.0-CLOSURE","status":"active"}
   ],
   "knownLimitations": [
-    "New-game copy still claims final victory and Gates are unavailable",
-    "Existing Browser E2E does not directly exercise the production /stellar-empires/ base path",
-    "Product/package/UI version metadata is still 0.1.0",
-    "CI/E2E/Pages still pin Node 22.12.0 and emit dependency engine warnings",
-    "README is materially stale relative to current runtime",
     "Repository license remains an owner-controlled unresolved choice"
   ],
   "requiredStartupReading": [
@@ -121,12 +125,11 @@
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
-    "docs/audits/evidence/m9-release-candidate.md",
-    "docs/audits/contracts/m9-release-candidate.md",
+    "docs/audits/completed/m9-release-candidate.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/27-playable-game-roadmap-v5.md",
-    "actual main and active PR"
+    "actual main, active PR and workflow state"
   ],
-  "nextAction": "Finish Audit #167 on one exact docs-only green head, squash-merge with expected-head protection, verify generated fresh main, then implement RELEASE-ONBOARDING-TRUTH as the first of exactly four authorized M9 implementation work items."
+  "nextAction": "Finish RELEASE-1.0-CLOSURE #171 on one exact docs/version-only head, require all standard and production Browser release gates plus Graphify/progression/performance, squash-merge with expected-head protection, verify generated fresh main and post-merge Pages, then create only the permitted docs-only release record if generated SHA/Pages evidence must be recorded. Any further product implementation requires a new Audit."
 }
