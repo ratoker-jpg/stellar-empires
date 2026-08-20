@@ -101,12 +101,13 @@ This roadmap uses an external controller/auditor workflow.
 1. Worker creates the Audit PR and stops before merge.
 2. Controller reviews the PR, diff, evidence and proposed batch.
 3. Only after controller approval may the worker merge the Audit PR.
-4. Worker then executes the approved implementation batch.
-5. Worker reports the whole batch back to the controller.
-6. Controller decides whether PRs may merge, need correction, or the plan must change.
-7. The next batch is not started until the controller closes the previous review cycle.
+4. Worker then executes only the approved implementation batch.
+5. **Dependent PRs are sequential checkpoints:** complete one PR, return it to the controller, merge only after approval, then create the dependent successor from the new fresh `main`.
+6. **Independent PRs may be prepared as one approved batch** when the Audit proves they do not depend on each other's changes; controller review still occurs before merge authorization.
+7. After the accepted batch is closed, worker sends one whole-batch closeout report to the controller.
+8. Controller decides whether the batch is closed, needs correction, or requires re-audit before any next batch begins.
 
-No worker may silently broaden scope or self-authorize a new batch.
+No worker may silently broaden scope, self-authorize a new batch, or build a dependent successor from an unmerged predecessor branch.
 
 ## Batch sizing
 
@@ -118,16 +119,17 @@ Use the repository audit-first complexity model from `AGENTS.md`:
 
 For this post-1.0 program, prefer 4. A 6-PR batch requires explicit Audit justification and controller approval. Audit PRs do not count toward the implementation count.
 
-Each implementation PR must be one coherent behavior change and cite the accepted Audit/work-item ID.
+Each implementation PR must be one coherent behavior change and cite the accepted Audit/work-item ID. Every dependent branch must be created from the latest merged `main`.
 
 ## Required batch report
 
-After a worker completes an approved batch, report exactly:
+After a worker closes an approved batch, report exactly:
 
 | Field | Required content |
 |---|---|
 | Baseline | Audit PR, audit squash SHA, starting `main` SHA |
 | PRs | number, work-item ID, title, branch, head SHA, state |
+| Dependency checkpoints | controller decision and predecessor merge SHA for each dependent PR |
 | Scope | what changed and intentional omissions per PR |
 | Files | material changed files/modules |
 | Validation | lint/typecheck/tests/build/browser/performance/Graphify as applicable |
@@ -137,7 +139,7 @@ After a worker completes an approved batch, report exactly:
 | Divergence | any departure from the accepted Audit |
 | Next | proposed next Audit/batch, not automatically authorized |
 
-The report must be sufficient for a controller to decide `MERGE`, `FIX`, `STOP/RE-AUDIT` without rediscovering the whole batch.
+The report must be sufficient for a controller to decide `CLOSE`, `FIX`, `STOP/RE-AUDIT` without rediscovering the whole batch. Dependent PRs receive their earlier per-PR controller checkpoints; the whole-batch report is the final closeout gate, not a substitute for those checkpoints.
 
 ## Candidate post-1.0 streams
 
@@ -218,8 +220,10 @@ fresh main after this docs-only roadmap merge
 → Audit merge only if approved
 → approved 4-PR implementation batch by default
    OR explicitly justified 6-PR light batch
-→ batch report to controller
-→ controller MERGE / FIX / STOP-RE-AUDIT decision
+→ dependent PR: controller checkpoint → merge → fresh main → successor
+   independent PRs: may be prepared together when Audit proves independence
+→ whole-batch closeout report to controller
+→ controller CLOSE / FIX / STOP-RE-AUDIT decision
 ```
 
 Until that Audit is accepted, **no post-1.0 product implementation is authorized**.
