@@ -1,82 +1,195 @@
 # Current execution state
 
 **Updated:** 2026-08-21  
-**Safe to continue:** controller review only  
-**Phase:** `POST-1.0-NEMEXIA-PARITY-AUDIT` FIX / review gate  
+**Safe to continue:** controller merge decision only  
+**Phase:** `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` final handoff  
 **Runtime:** schema v19 / save format v6 unchanged  
+**Migration:** none  
 **Release:** 1.0.0 closed
 
 | Field | Current value |
 |---|---|
-| Verified Audit baseline `main` | `538a0f22ab77687b148916c9a50721fca32930b4` |
-| Baseline source | #172 `docs: define post-1.0 Nemexia reference roadmap` |
-| Active Audit PR | #173 `POST-1.0-NEMEXIA-PARITY-AUDIT` |
-| Audit branch | `audit/post-1.0-nemexia-parity` |
-| Audit state | FIX applied / controller re-review required / do not merge autonomously |
-| Active implementation PR | none |
-| Active implementation batch | none — proposed only |
-| Target state schema | 19 |
-| Target save format | 6 |
-| Post-1.0 implementation authorized | no |
-| Proposed first implementation item | `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` — not authorized |
+| Accepted Audit authority | #173 `POST-1.0-NEMEXIA-PARITY-AUDIT` — merged |
+| Accepted PR1 starting `main` | `817a014ef958be4c54f2bd5b54a68890f358d53a` |
+| Active implementation PR | #174 `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` |
+| Implementation branch | `agent/post-1.0-organic-late-game-closure` |
+| PR1 state | implementation + evidence complete / final controller review |
+| Fresh Game → Terminal | organically proven |
+| Physical Planet Destroyer | organically proven |
+| Positive Solar War | organically proven |
+| Obelisk/storage progression | organically proven |
+| Final project / Gate / terminal | organically proven |
+| Save/load determinism | proven |
+| Partition determinism | proven |
+| Bounded faction matrix | proven |
+| Target state schema | 19 — unchanged |
+| Target save format | 6 — unchanged |
+| Migration | none |
+| PR2 / PR3 / PR4 | not started / not authorized by this handoff |
 
-## Audit verdict
+## PR1 final verdict
 
-Fresh Game → Terminal is **not** organically proven on the audited baseline.
+`POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` is complete for controller review.
 
-The ordinary-command `compressed-v1` progression scenario starts from `createInitialGameState(...)` and reaches the formal phase label `endgame-preparation`, then proof stops. The actual late-game gap is not role mapping: `roles.dreadnought` correctly resolves to the canonical Planet Destroyer. The compressed prerequisite path can establish production capability, but compressed production targets do not physically request that hull. Existing terminal closure acceptance is a prepared endgame fixture with directly prepared late buildings, ships/fleets and resources.
+The accepted Audit #173 established that `roles.dreadnought` already maps to the canonical Planet Destroyer and that the real original blocker was the compressed production path: the bot could reach formal endgame preparation without physically requesting the Planet Destroyer hull.
 
-The FIXed Audit also records:
-
-- required Nemexia parity/reference coverage 7–17 with explicit `KEEP_STELLAR` / `ADAPT_FROM_NEMEXIA` / `RESEARCH` / `REJECT` decisions, provenance/confidence and no-action conclusions;
-- the pinned Graphify `0.8.38` exact-head build/query pass and its limitations;
-- protocol-complete contracts for proposed PR1–PR4;
-- preserved CONFIRMED/DISPROVED/UNKNOWN findings and explicit non-port boundaries.
-
-Canonical evidence and contracts are in:
-
-`docs/audits/current-batch-audit.md`
-
-## Proposed batch — controller approval required
+PR #174 closes the ordinary-command path and now proves, without direct acceptance-path state injection:
 
 ```text
-Audit #173
-→ controller review + merge
-→ POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE
-→ controller review + merge
-   ├─ POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE
-   ├─ POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH
-   └─ POST-1.0-PR4-LOW-COST-QUALITY-GATES  [technically independent, intentionally later]
+Fresh Game
+→ physical Planet Destroyer
+→ positive Solar War qualification
+→ storage preparation
+→ Galactic Obelisk
+→ final project funding
+→ Galactic Gate
+→ vulnerability / stabilization
+→ terminal
 ```
 
-PR2 and PR3 are logically code-independent from each other after PR1. PR4 is technically independent but intentionally deferred until gameplay truth. Do not depict PR2 → PR3 as a mandatory code dependency.
+The canonical organic acceptance reaches a legal terminal result with the player losing normally to the winning AI alliance; no manufactured player victory is required.
 
-No implementation branch may start until Audit #173 is approved and merged. After that, dependent work uses fresh `main` after predecessor review/merge; independent parallel preparation requires explicit controller authorization.
+## Material divergence discovered during PR1
 
-## Current Graphify control state
+The implementation required two additional bounded fixes discovered only after running the organic campaign.
 
-Repository-owned setup:
+### A. Galactic Obelisk feasibility blocker
 
-- `.graphify-version` = `0.8.38`;
-- `.agents/skills/graphify/SKILL.md` governs usage;
-- `scripts/graphify-audit.sh code` builds the code graph;
-- `.github/workflows/graphify-audit.yml` pins `graphifyy==0.8.38`.
+The canonical compressed Galactic Obelisk cost was mathematically unreachable relative to legal compressed storage capacity. This was a real progression-profile feasibility defect, not a planner timing issue.
 
-The pre-FIX exact-head PR Graphify run #1245 succeeded and produced a 3,496-node / 12,184-edge graph artifact that was queried for the critical P0–P6 and parity dependency/consumer paths. A fresh exact-head Graphify run is required after the FIX commit before controller handoff.
+### B. Compressed-only feasibility override
 
-## Stop conditions
+A compressed-only endgame cost feasibility override was added through the existing progression-profile layer:
 
-Stop rather than implementing if:
+- Galactic Obelisk base cost = **75‰** for `compressed-v1`;
+- the override stays inside the existing progression/profile mechanism;
+- `legacy-v1` is unchanged;
+- no direct resource grant or affordability bypass was added.
 
-- Audit #173 has not been approved and merged by the controller;
-- `main` moved and the accepted Audit has not been reconciled;
-- an implementation would require guessing a Nemexia formula from weak provenance;
-- a schema/save migration becomes necessary but was not explicitly approved;
-- PR1 expands beyond organic campaign closure without concrete ordinary-path blocker evidence;
-- PR2 expands into broad combat redesign;
-- PR3 creates a new credit/scrap/ozone subsystem solely to consume ghost metadata;
-- PR4 expands into speculative cleanup or gameplay work.
+### C. Storage-planning blocker
+
+After the Obelisk became legally affordable in principle, the organic campaign exposed a second blocker: qualified bots still did not develop storage buildings far enough to hold the resolved Obelisk cost.
+
+At the first measured `final-object-no-legal-action`, qualified bots had empty build queues, satisfied building prerequisites, starting-scale resource capacities, and real Obelisk queue attempts rejected with `INSUFFICIENT_RESOURCES`.
+
+### D. Bounded compressed endgame storage targets
+
+The existing progression/economy planning path now derives bounded compressed endgame storage targets from:
+
+```text
+resolved Obelisk cost
+→ base storage
+→ storage-building contribution
+→ progression-profile multiplier
+→ legal storage level cap
+```
+
+This keeps the fix inside existing progression/economy planning. No new subsystem was introduced and `legacy-v1` was not changed.
+
+## Measured organic evidence
+
+The final canonical run proves the late-game chain with physical game objects and normal command execution.
+
+### Physical Planet Destroyer
+
+First physical Planet Destroyer evidence in the canonical run:
+
+- player: `135000` real seconds;
+- Aegis bot: `59400` real seconds;
+- Synod bot: `59400` real seconds;
+- Veyra bot: `54000` real seconds.
+
+### Positive Solar War
+
+The winning Synod path records positive Solar War qualification with a measured score of `21456` before its final project starts. Other bot paths also record positive Solar War results during the same ordinary campaign.
+
+### Organic storage → Obelisk
+
+Measured queue/completion evidence without state injection:
+
+| Empire | Storage levels (M/C/G) | Capacity (M/C/G) | Resolved Obelisk cost (M/C/G) | Queued at real s | Completed at real s |
+|---|---:|---:|---:|---:|---:|
+| Veyra | `5 / 5 / 0` | `180000 / 180000 / 60000` | `178125 / 178125 / 35625` | `174300` | `181080` |
+| Synod | `6 / 6 / 0` | `204000 / 204000 / 60000` | `187500 / 187500 / 37500` | `346920` | `353700` |
+
+### Final project → Gate → terminal
+
+Canonical terminal evidence:
+
+- elapsed real campaign seconds: `1228500`;
+- terminal game time: `2457000`;
+- winning participation: `alliance-1`;
+- winning empires: `aegis-bot`, `synod-bot`;
+- owner: `synod-bot`;
+- reason: `final-gate-stabilized`.
+
+Winning project evidence:
+
+- started at game time `708240`;
+- required/funded resources: `8000000 / 8000000 / 2000000`;
+- fully funded at `2357040`;
+- Gate completes at `2370600`;
+- vulnerability begins at `2370600`;
+- stabilization and terminal at `2457000`.
+
+The player loses legally; terminal acceptance does not inject a win or mutate campaign state directly.
+
+## Determinism proof
+
+PR1 also proves the terminal outcome across normal persistence and time partitioning:
+
+- schema version: `19`;
+- save format version: `6`;
+- migration: none;
+- save/load continuation reaches the same authoritative terminal state;
+- partitioned continuation reaches the same authoritative terminal state;
+- canonical terminal checksum: `c6a4d163`.
+
+## Bounded faction matrix
+
+Additional ordinary Fresh Game cases are green without state injection:
+
+- `progression-synod-01` / player faction `synod` → terminal;
+- `progression-veyra-01` / player faction `veyra` → terminal.
+
+Together with the canonical Aegis-player acceptance, these provide bounded faction coverage for PR1 rather than a single-seed proof.
+
+## Scope boundaries preserved
+
+PR1 intentionally does **not** include:
+
+- PR2 combat identity / seed / doctrine work;
+- PR3 advertised-effect truth work;
+- PR4 low-cost tooling-quality work;
+- a new resource/storage subsystem;
+- direct resource grants;
+- affordability bypasses;
+- acceptance-path state injection;
+- schema changes;
+- save-format changes;
+- save migration work;
+- `legacy-v1` rebalance.
+
+## Control-plane validation
+
+The implementation head before this final handoff docs update (`d814073dbbf266188f360a7c5c36767bfad8bf75`) had green:
+
+- CI quality / tests / build;
+- campaign catch-up performance;
+- compressed progression scenario;
+- organic Fresh Game → Terminal acceptance;
+- organic Obelisk evidence;
+- save/load + partition determinism;
+- bounded organic faction matrix;
+- Graphify;
+- production Pages smoke.
+
+The final docs-only handoff commit must receive fresh exact-head CI, Graphify and Browser E2E before PR #174 is marked Ready for review.
 
 ## Controller handoff
 
-Review the FIXed Audit PR #173 after its exact-head Graphify, CI and Browser E2E checks settle. No implementation is active. Do not merge autonomously and do not begin `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` until explicit controller approval.
+PR #174 is the only active implementation PR. Runtime/controller review has passed; the remaining work is final control-plane settlement only.
+
+After the final docs-only head is green for CI, Graphify and Browser E2E, has zero unresolved review threads, and remains mergeable, mark PR #174 **Ready for review** and stop for controller merge.
+
+Do **not** merge autonomously. Do **not** create PR2, PR3 or PR4 from this handoff.

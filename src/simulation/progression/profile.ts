@@ -143,6 +143,7 @@ const legacyBuildingCapById = new Map<string, number>();
 const compressedResearchCapById = new Map<string, number>();
 const legacyResearchCapById = new Map<string, number>();
 const compressedEndgameBaseSecondsById = new Map<string, number>();
+const compressedEndgameBaseCostPermilleById = new Map<string, number>();
 
 for (const factionId of FACTION_IDS) {
   const buildingIds = getCompleteBuildingIds(factionId);
@@ -154,6 +155,7 @@ for (const factionId of FACTION_IDS) {
   }
   compressedEndgameBaseSecondsById.set(buildingIds.galacticObelisk, 14_400);
   compressedEndgameBaseSecondsById.set(buildingIds.supremeGalacticGates, 14_400);
+  compressedEndgameBaseCostPermilleById.set(buildingIds.galacticObelisk, 75);
 
   for (const [slug, cap] of Object.entries(COMPRESSED_RESEARCH_CAPS)) {
     compressedResearchCapById.set(getCompleteResearchId(factionId, slug), cap);
@@ -225,6 +227,17 @@ export function getBuildingBaseSeconds(
     definition.baseBuildSeconds,
     getProgressionProfileRules(profileId).building.baseTimePermille,
   );
+}
+
+export function getBuildingBaseCostPermille(
+  profileId: ProgressionProfileId,
+  definition: BuildingDefinition,
+): number {
+  if (profileId !== LEGACY_PROGRESSION_PROFILE_ID) {
+    const override = compressedEndgameBaseCostPermilleById.get(definition.id);
+    if (override !== undefined) return override;
+  }
+  return getProgressionProfileRules(profileId).building.baseCostPermille;
 }
 
 export function resolveBuildingRequirement(

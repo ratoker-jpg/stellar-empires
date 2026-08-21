@@ -10,6 +10,8 @@ import {
 import { advanceCampaignTime } from '../campaign/time';
 import { createCampaignSettings, type WorldSpeed } from '../campaign/settings';
 import { createInitialGameState } from '../createInitialGameState';
+import { getFactionIdForEmpire } from '../factions/factionMechanicalCatalogRegistry';
+import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import type { FactionId } from '../planet/types';
 import { executeCommand } from '../reducer';
 import type { GameCommand, GameState } from '../types';
@@ -40,6 +42,78 @@ export interface ProgressionScenarioResult {
   >;
   readonly acceptedPlayerCommands: number;
   readonly rejectedPlayerCommands: number;
+}
+
+export interface OrganicTerminalEmpireEvidence {
+  readonly empireId: string;
+  readonly planetDestroyerId: string;
+  readonly firstPhysicalPlanetDestroyerAtRealSeconds: number | null;
+  readonly physicalPlanetDestroyerCount: number;
+  readonly maximumSolarWarScore: number;
+  readonly positiveSolarWarResults: number;
+  readonly strongestSolarWarFleetShips: number;
+  readonly strongestSolarWarFleet: Readonly<Record<string, number>>;
+}
+
+export interface OrganicTerminalScenarioResult {
+  readonly input: Required<ProgressionScenarioInput>;
+  readonly state: GameState;
+  readonly complete: boolean;
+  readonly elapsedRealSeconds: number;
+  readonly phaseReachedAtRealSeconds: Readonly<
+    Record<string, Partial<Record<BotProgressionPhase, number>>>
+  >;
+  readonly acceptedPlayerCommands: number;
+  readonly rejectedPlayerCommands: number;
+  readonly empireEvidence: Readonly<Record<string, OrganicTerminalEmpireEvidence>>;
+}
+
+const SCENARIO_OPERATION_BUDGET = 50_000;
+const SCENARIO_ADVANCE_PASS_LIMIT = 16;
+
+function advanceScenarioStep(state: GameState, requestedGameSeconds: number): GameState {
+  let working = state;
+  let remainingGameSeconds = requestedGameSeconds;
+
+  for (let pass = 0; pass < SCENARIO_ADVANCE_PASS_LIMIT; pass += 1) {
+    const advanced = advanceCampaignTime(working, remainingGameSeconds, {
+      operationBudget: SCENARIO_OPERATION_BUDGET,
+    });
+    working = advanced.state;
+    if (advanced.complete) return working;
+    if (advanced.operationsProcessed === 0 && advanced.processedGameSeconds === 0) {
+      throw new Error(
+        `Progression scenario made no catch-up progress with ${advanced.remainingGameSeconds} seconds remaining.`,
+      );
+    }
+    remainingGameSeconds = advanced.remainingGameSeconds;
+  }
+
+  throw new Error(
+    `Progression scenario exceeded ${SCENARIO_ADVANCE_PASS_LIMIT} catch-up passes with ${remainingGameSeconds} seconds remaining.`,
+  );
+}
+
+function resolveInput(input: ProgressionScenarioInput): Required<ProgressionScenarioInput> {
+  return {
+    seed: input.seed,
+    playerFaction: input.playerFaction,
+    worldSpeed: input.worldSpeed ?? 2,
+    maximumRealSeconds: input.maximumRealSeconds ?? 14 * 24 * 60 * 60,
+    decisionStepGameSeconds: input.decisionStepGameSeconds ?? 3_600,
+  };
+}
+
+function createScenarioState(input: Required<ProgressionScenarioInput>): GameState {
+  return createInitialGameState(input.seed, {
+    playerFaction: input.playerFaction,
+    campaignSettings: createCampaignSettings({
+      scenarioPreset: 'campaign',
+      worldSpeed: input.worldSpeed,
+      progressionProfile: 'compressed-v1',
+      createdAtReal: '2026-07-30T00:00:00.000Z',
+    }),
+  });
 }
 
 function applyCommand(state: GameState, command: GameCommand | null): {
@@ -131,64 +205,156 @@ function allEmpiresReachedEndgamePreparation(state: GameState): boolean {
   );
 }
 
-export function runProgressionScenario(
-  input: ProgressionScenarioInput,
-): ProgressionScenarioResult {
-  const resolvedInput: Required<ProgressionScenarioInput> = {
-    seed: input.seed,
-    playerFaction: input.playerFaction,
-    worldSpeed: input.worldSpeed ?? 2,
-    maximumRealSeconds: input.maximumRealSeconds ?? 16 * 60 * 60,
-    decisionStepGameSeconds: input.decisionStepGameSeconds ?? 240,
-  };
-  let state = createInitialGameState(resolvedInput.seed, {
-    playerFaction: resolvedInput.playerFaction,
-    campaignSettings: createCampaignSettings({
-      scenarioPreset: 'campaign',
-      worldSpeed: resolvedInput.worldSpeed,
-      progressionProfile: 'compressed-v1',
-      createdAtReal: '2026-07-30T00:00:00.000Z',
-    }),
-  });
+function countPhysicalShip(state: GameState, empireId: string, unitId: string): number {
+  const planetCount = state.planets
+    .filter((planet) => planet.ownerEmpireId === empireId)
+    .reduce((total, planet) => total + (planet.inventory.ships[unitId] ?? 0), 0);
+  return state.fleets
+    .filter((fleet) => fleet.empireId === empireId)
+    .reduce((total, fleet) => total + (fleet.ships[unitId] ?? 0), planetCount);
+}
+
+function recordPhysicalPlanetDestroyers(
+  state: GameState,
+  worldSpeed: WorldSpeed,
+  firstProducedAt: Record<string, number | null>,
+): void {
+  const elapsedRealSeconds = state.clock.elapsedSeconds / worldSpeed;
+  for (const empireId of state.empires) {
+    if (firstProducedAt[empireId] !== null && firstProducedAt[empireId] !== undefined) continue;
+    const factionId = getFactionIdForEmpire(state, empireId);
+    const unitId = getFactionMechanicalRoles(factionId).ships.complete.planetDestroyer;
+    if (countPhysicalShip(state, empireId, unitId) > 0) {
+      firstProducedAt[empireId] = elapsedRealSeconds;
+    } else if (firstProducedAt[empireId] === undefined) {
+      firstProducedAt[empireId] = null;
+    }
+  }
+}
+
+function createEmpireEvidence(
+  state: GameState,
+  firstProducedAt: Readonly<Record<string, number | null>>,
+): Readonly<Record<string, OrganicTerminalEmpireEvidence>> {
+  return Object.fromEntries(state.empires.map((empireId) => {
+    const factionId = getFactionIdForEmpire(state, empireId);
+    const planetDestroyerId = getFactionMechanicalRoles(factionId).ships.complete.planetDestroyer;
+    const results = state.endgameParticipation?.solarWar.history.filter(
+      (result) => result.empireId === empireId,
+    ) ?? [];
+    const strongest = [...results].sort((left, right) => {
+      const leftShips = Object.values(left.attackerInitial).reduce((sum, count) => sum + count, 0);
+      const rightShips = Object.values(right.attackerInitial).reduce((sum, count) => sum + count, 0);
+      return rightShips - leftShips || right.score - left.score;
+    })[0];
+    const strongestSolarWarFleet = strongest?.attackerInitial ?? {};
+    const strongestSolarWarFleetShips = Object.values(strongestSolarWarFleet)
+      .reduce((sum, count) => sum + count, 0);
+    return [empireId, {
+      empireId,
+      planetDestroyerId,
+      firstPhysicalPlanetDestroyerAtRealSeconds: firstProducedAt[empireId] ?? null,
+      physicalPlanetDestroyerCount: countPhysicalShip(state, empireId, planetDestroyerId),
+      maximumSolarWarScore: Math.max(0, ...results.map((result) => result.score)),
+      positiveSolarWarResults: results.filter((result) => result.score > 0).length,
+      strongestSolarWarFleetShips,
+      strongestSolarWarFleet,
+    } satisfies OrganicTerminalEmpireEvidence] as const;
+  }));
+}
+
+function runScenarioFromState(
+  initialState: GameState,
+  input: Required<ProgressionScenarioInput>,
+  stopAtEndgamePreparation: boolean,
+): ProgressionScenarioResult | OrganicTerminalScenarioResult {
+  let state = initialState;
   const phaseReachedAtRealSeconds: Record<
     string,
     Partial<Record<BotProgressionPhase, number>>
   > = {};
+  const firstProducedAt: Record<string, number | null> = {};
   let acceptedPlayerCommands = 0;
   let rejectedPlayerCommands = 0;
-  recordPhases(state, resolvedInput.worldSpeed, phaseReachedAtRealSeconds);
-  const maximumGameSeconds = resolvedInput.maximumRealSeconds * resolvedInput.worldSpeed;
+  recordPhases(state, input.worldSpeed, phaseReachedAtRealSeconds);
+  recordPhysicalPlanetDestroyers(state, input.worldSpeed, firstProducedAt);
+  const maximumGameSeconds = input.maximumRealSeconds * input.worldSpeed;
 
   while (
     state.clock.elapsedSeconds < maximumGameSeconds &&
-    !allEmpiresReachedEndgamePreparation(state)
+    state.campaignResult?.status !== 'terminal' &&
+    !(stopAtEndgamePreparation && allEmpiresReachedEndgamePreparation(state))
   ) {
     const player = runPlayerDecision(state);
     state = runBotExpeditionDecisions(player.state);
     acceptedPlayerCommands += player.accepted;
     rejectedPlayerCommands += player.rejected;
-    recordPhases(state, resolvedInput.worldSpeed, phaseReachedAtRealSeconds);
-    if (allEmpiresReachedEndgamePreparation(state)) break;
+    recordPhases(state, input.worldSpeed, phaseReachedAtRealSeconds);
+    recordPhysicalPlanetDestroyers(state, input.worldSpeed, firstProducedAt);
+    if (stopAtEndgamePreparation && allEmpiresReachedEndgamePreparation(state)) break;
+    if (state.campaignResult?.status === 'terminal') break;
 
     const remaining = maximumGameSeconds - state.clock.elapsedSeconds;
-    const step = Math.min(resolvedInput.decisionStepGameSeconds, remaining);
-    const advanced = advanceCampaignTime(state, step, { operationBudget: 50_000 });
-    if (!advanced.complete) {
-      throw new Error(
-        `Progression scenario exhausted its operation budget with ${advanced.remainingGameSeconds} seconds remaining.`,
-      );
-    }
-    state = advanced.state;
-    recordPhases(state, resolvedInput.worldSpeed, phaseReachedAtRealSeconds);
+    const step = Math.min(input.decisionStepGameSeconds, remaining);
+    state = advanceScenarioStep(state, step);
+    recordPhases(state, input.worldSpeed, phaseReachedAtRealSeconds);
+    recordPhysicalPlanetDestroyers(state, input.worldSpeed, firstProducedAt);
   }
 
-  return {
-    input: resolvedInput,
+  const common = {
+    input,
     state,
-    complete: allEmpiresReachedEndgamePreparation(state),
-    elapsedRealSeconds: state.clock.elapsedSeconds / resolvedInput.worldSpeed,
+    elapsedRealSeconds: state.clock.elapsedSeconds / input.worldSpeed,
     phaseReachedAtRealSeconds,
     acceptedPlayerCommands,
     rejectedPlayerCommands,
   };
+  if (stopAtEndgamePreparation) {
+    return {
+      ...common,
+      complete: allEmpiresReachedEndgamePreparation(state),
+    };
+  }
+  return {
+    ...common,
+    complete: state.campaignResult?.status === 'terminal',
+    empireEvidence: createEmpireEvidence(state, firstProducedAt),
+  };
+}
+
+export function runProgressionScenario(
+  input: ProgressionScenarioInput,
+): ProgressionScenarioResult {
+  const resolvedInput: Required<ProgressionScenarioInput> = {
+    ...resolveInput(input),
+    maximumRealSeconds: input.maximumRealSeconds ?? 16 * 60 * 60,
+    decisionStepGameSeconds: input.decisionStepGameSeconds ?? 240,
+  };
+  return runScenarioFromState(
+    createScenarioState(resolvedInput),
+    resolvedInput,
+    true,
+  ) as ProgressionScenarioResult;
+}
+
+export function runOrganicTerminalScenario(
+  input: ProgressionScenarioInput,
+): OrganicTerminalScenarioResult {
+  const resolvedInput = resolveInput(input);
+  return runScenarioFromState(
+    createScenarioState(resolvedInput),
+    resolvedInput,
+    false,
+  ) as OrganicTerminalScenarioResult;
+}
+
+export function continueOrganicTerminalScenario(
+  state: GameState,
+  input: ProgressionScenarioInput,
+): OrganicTerminalScenarioResult {
+  const resolvedInput = resolveInput(input);
+  if (state.campaignSettings.progressionProfile !== 'compressed-v1') {
+    throw new Error('Organic terminal continuation requires compressed-v1 state.');
+  }
+  return runScenarioFromState(state, resolvedInput, false) as OrganicTerminalScenarioResult;
 }
