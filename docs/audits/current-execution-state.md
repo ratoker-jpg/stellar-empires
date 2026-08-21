@@ -1,59 +1,57 @@
 # Current execution state
 
-**Updated:** 2026-08-20  
-**Safe to continue:** yes — Audit only  
-**Phase:** post-1.0 planning  
+**Updated:** 2026-08-21  
+**Safe to continue:** controller review only  
+**Phase:** `POST-1.0-NEMEXIA-PARITY-AUDIT` review gate  
 **Runtime:** schema v19 / save format v6 unchanged  
 **Release:** 1.0.0 closed
 
 | Field | Current value |
 |---|---|
-| Verified Release 1.0 `main` | `1f7298a602062837ec6bb8e3778d408ada26051c` |
-| Last merged PR | #171 `RELEASE-1.0-CLOSURE` |
-| Last accepted Audit | #167 `M9-RELEASE-CANDIDATE` |
-| M9 state | complete / archived |
+| Verified Audit baseline `main` | `538a0f22ab77687b148916c9a50721fca32930b4` |
+| Baseline source | #172 `docs: serialize post-1.0 Nemexia parity audit gate` |
+| Active Audit PR | #173 `POST-1.0-NEMEXIA-PARITY-AUDIT` |
+| Audit branch | `audit/post-1.0-nemexia-parity` |
+| Audit state | complete for controller review / do not merge autonomously |
 | Active implementation PR | none |
-| Active implementation batch | none |
+| Active implementation batch | none — proposed only |
 | Target state schema | 19 |
 | Target save format | 6 |
 | Post-1.0 implementation authorized | no |
-| Next authorized work item | `POST-1.0-NEMEXIA-PARITY-AUDIT` — docs only |
+| Proposed first implementation item | `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` — not authorized |
 
-## Release closure
+## Audit verdict
 
-The M9 implementation chain is complete:
+Fresh Game → Terminal is **not** organically proven on the audited baseline.
+
+The ordinary-command `compressed-v1` progression scenario starts from `createInitialGameState(...)` and reaches the formal phase label `endgame-preparation`, then its proof stops. Capability can satisfy the Planet Destroyer phase checkpoint, while compressed production targets do not physically request the canonical Planet Destroyer. Existing terminal closure acceptance uses a prepared endgame fixture with directly prepared late buildings, ships/fleets and resources.
+
+Core Audit findings, exact evidence, disproved older hypotheses, unknowns, Nemexia provenance classification and the bounded proposed batch are recorded in:
+
+`docs/audits/current-batch-audit.md`
+
+## Proposed batch — controller approval required
 
 ```text
-#168 RELEASE-ONBOARDING-TRUTH       merged
-→ #169 RELEASE-PRODUCTION-BROWSER  merged
-→ #170 RELEASE-PACKAGING-METADATA  merged
-→ #171 RELEASE-1.0-CLOSURE          merged → 1f7298a602062837ec6bb8e3778d408ada26051c
+POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE
+→ controller review + merge
+→ POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE
+→ POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH
+→ POST-1.0-PR4-LOW-COST-QUALITY-GATES
 ```
 
-There is no fifth M9 implementation PR.
-
-The generated #171 squash SHA is now recorded here because a PR cannot self-record its own future squash SHA.
-
-## Post-1.0 control state
-
-The next program uses `ratoker-jpg/Nemexia_auto_v2` and the owner-supplied Nemexia research snapshot as evidence/reference only. The governing forward roadmap is:
-
-`docs/29-post-1.0-nemexia-reference-roadmap.md`
-
-No mechanic from the reference project is authorized for implementation until the dedicated parity Audit verifies current Stellar source and classifies the candidate.
-
-## Exact next action
-
-From the fresh `main` produced after this docs-only roadmap PR:
-
-1. create exactly one docs-only `POST-1.0-NEMEXIA-PARITY-AUDIT` PR;
-2. audit current Stellar versus Nemexia reference evidence and current production/browser baseline;
-3. preserve provenance and classify candidates `KEEP_STELLAR`, `ADAPT_FROM_NEMEXIA`, `RESEARCH` or `REJECT`;
-4. propose an exact bounded implementation batch — 4 PRs by default, maximum 6 only for justified light/independent work;
-5. stop before Audit merge and return the Audit PR/report to the controller.
-
-Implementation remains unauthorized until controller approval and Audit merge.
+PR2 and PR3 are logically code-independent from each other; PR4 is technically independent but intentionally deferred until gameplay truth. Do not create implementation branches until the Audit is accepted and merged. After that, dependent work must use fresh `main` after predecessor review/merge unless the controller explicitly authorizes independent parallel preparation.
 
 ## Stop conditions
 
-Stop rather than implementing if the Audit is not approved, `main` moved unexpectedly, provenance is insufficient, a formula would need to be guessed, an unplanned schema/save migration appears, or the proposed batch mixes heavy architecture with a light six-PR scope.
+Stop rather than implementing if:
+
+- Audit #173 has not been approved and merged by the controller;
+- `main` moved and the accepted Audit has not been rebased/reconciled;
+- an implementation would require guessing a Nemexia formula from weak provenance;
+- a schema/save migration becomes necessary but was not explicitly approved;
+- a proposed PR expands into broad architecture, combat redesign, market/logistics rewrite or new bot-archetype work outside the accepted Audit.
+
+## Controller handoff
+
+Review Audit PR #173. No implementation is active. The next worker must not begin `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` until the controller explicitly approves Audit merge/continuation.
