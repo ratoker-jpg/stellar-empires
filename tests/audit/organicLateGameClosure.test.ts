@@ -51,27 +51,28 @@ describe('POST-1.0-PR1 organic late-game closure', () => {
     console.info(`ORGANIC_TERMINAL_EVIDENCE=${JSON.stringify(summary)}`);
 
     expect(result.complete).toBe(true);
-    expect(result.state.campaignResult?.status).toBe('terminal');
+    const campaignResult = result.state.campaignResult;
+    expect(campaignResult?.status).toBe('terminal');
     expect(
       Object.values(result.empireEvidence).filter(
         (evidence) => evidence.firstPhysicalPlanetDestroyerAtRealSeconds === null,
       ),
     ).toEqual([]);
 
-    if (result.state.campaignResult?.status !== 'terminal') {
+    if (campaignResult?.status !== 'terminal') {
       throw new Error('Organic terminal scenario did not produce a terminal campaign result.');
     }
-    const winnerEvidence = result.empireEvidence[result.state.campaignResult.ownerEmpireId];
+    const winnerEvidence = result.empireEvidence[campaignResult.ownerEmpireId];
     expect(winnerEvidence?.maximumSolarWarScore ?? 0).toBeGreaterThan(0);
     expect(winnerEvidence?.positiveSolarWarResults ?? 0).toBeGreaterThan(0);
 
     const winningProject = result.state.endgameFinalObjects?.activeProjects.find(
-      (project) => project.ownerEmpireId === result.state.campaignResult?.ownerEmpireId,
+      (project) => project.ownerEmpireId === campaignResult.ownerEmpireId,
     );
     expect(winningProject).toMatchObject({
       phase: 'vulnerable',
       qualification: { score: expect.any(Number) },
-      stabilizesAt: result.state.campaignResult.terminalAt,
+      stabilizesAt: campaignResult.terminalAt,
     });
     expect(winningProject?.qualification.score ?? 0).toBeGreaterThan(0);
     expect(winningProject?.contributedResources).toEqual(winningProject?.requiredResources);
