@@ -2,6 +2,7 @@ import type { ProgressionProfileId } from '../campaign/settings';
 import { refreshPlanetEconomy } from '../economy/planetEconomy';
 import type { PlanetEconomyState, ResourceCost, ResourceId } from '../economy/types';
 import {
+  getBuildingBaseCostPermille,
   getBuildingBaseSeconds,
   getProgressionProfileRules,
   growProgressionInteger,
@@ -30,7 +31,10 @@ export function calculateBuildingCost(
   profileId: ProgressionProfileId,
 ): ResourceCost {
   const rules = getProgressionProfileRules(profileId).building;
-  const baseCost = scaleProgressionCost(definition.baseCost, rules.baseCostPermille);
+  const baseCost = scaleProgressionCost(
+    definition.baseCost,
+    getBuildingBaseCostPermille(profileId, definition),
+  );
   return {
     metal: growProgressionInteger(baseCost.metal, targetLevel, rules.costGrowthPermille),
     crystal: growProgressionInteger(baseCost.crystal, targetLevel, rules.costGrowthPermille),

@@ -3,6 +3,7 @@ import { createPlanetEconomy } from '../../src/simulation/economy/planetEconomy'
 import { getCompleteBuildingIds } from '../../src/simulation/planet/completeBuildingCatalog';
 import { getBuildingDefinition } from '../../src/simulation/planet/buildingCatalog';
 import { calculateBuildingCost } from '../../src/simulation/planet/buildingProgression';
+import { getEconomyProgressionProfile } from '../../src/simulation/progression/economyProfile';
 import { getBuildingMaxLevel } from '../../src/simulation/progression/profile';
 
 const PROFILE_ID = 'compressed-v1' as const;
@@ -30,13 +31,20 @@ describe('compressed endgame feasibility', () => {
     }));
     const maximumStorageEconomy = createPlanetEconomy(PROFILE_ID, storageBuildings);
     const obelisk = requireBuilding(ids.galacticObelisk);
-    const obeliskCost = calculateBuildingCost(obelisk, 1, PROFILE_ID);
+    const compressedCost = calculateBuildingCost(obelisk, 1, PROFILE_ID);
+    const legacyCost = calculateBuildingCost(obelisk, 1, 'legacy-v1');
+    const compressedStartingResources = getEconomyProgressionProfile(PROFILE_ID).startingResources;
 
+    expect(legacyCost).toEqual(obelisk.baseCost);
     for (const resourceId of RESOURCE_IDS) {
       expect(
-        obeliskCost[resourceId],
+        compressedCost[resourceId],
         `${resourceId} Obelisk cost must fit legal compressed storage capacity`,
       ).toBeLessThanOrEqual(maximumStorageEconomy.resources[resourceId].capacity);
+      expect(
+        compressedCost[resourceId],
+        `${resourceId} Obelisk cost must still require organic accumulation`,
+      ).toBeGreaterThan(compressedStartingResources[resourceId]);
     }
   });
 });
