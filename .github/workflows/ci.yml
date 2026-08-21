@@ -109,3 +109,69 @@ jobs:
         env:
           RUN_ORGANIC_TERMINAL_SCENARIO: '1'
         run: npx vitest run tests/audit/organicLateGameClosure.test.ts --maxWorkers=1 --no-file-parallelism
+
+  organic-obelisk-evidence:
+    name: Organic Obelisk evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Record organic Obelisk queue evidence
+        env:
+          RUN_ORGANIC_OBELISK_EVIDENCE: '1'
+        run: npx vitest run tests/audit/organicLateGameObeliskEvidence.test.ts --maxWorkers=1 --no-file-parallelism
+
+  organic-terminal-determinism:
+    name: Organic terminal save-load and partition determinism
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run organic terminal determinism
+        env:
+          RUN_ORGANIC_TERMINAL_DETERMINISM: '1'
+        run: npx vitest run tests/audit/organicLateGameDeterminism.test.ts --maxWorkers=1 --no-file-parallelism
+
+  organic-terminal-matrix:
+    name: Bounded organic terminal faction matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run bounded organic terminal matrix
+        env:
+          RUN_ORGANIC_TERMINAL_MATRIX: '1'
+        run: npx vitest run tests/audit/organicLateGameMatrix.test.ts --maxWorkers=1 --no-file-parallelism
