@@ -39,7 +39,7 @@ function setBuildingLevel(planet: PlanetState, buildingId: string, level: number
   };
 }
 
-function positiveResult(state: GameState, planetId: string): SolarWarResult {
+function positiveResult(planetId: string): SolarWarResult {
   return {
     id: 'compressed-storage-qualified-result',
     entryId: 'compressed-storage-qualified-entry',
@@ -145,7 +145,7 @@ function createQualifiedEndgameState(): GameState {
         ...state.endgameParticipation.solarWar,
         history: [
           ...state.endgameParticipation.solarWar.history,
-          positiveResult(state, planet.id),
+          positiveResult(planet.id),
         ],
       },
     },
