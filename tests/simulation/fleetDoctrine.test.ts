@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   getClassSkillBonusMaps,
   getTargetPriorityWeightPermille,
+  selectPrimaryFleetByStableId,
 } from '../../src/simulation/combat/fleetDoctrine';
 import { resolveBattle } from '../../src/simulation/combat/resolveBattle';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
@@ -20,6 +21,15 @@ describe('fleet doctrine', () => {
     ).toBeGreaterThan(
       getTargetPriorityWeightPermille('interceptors', 'ship.aegis.frigate'),
     );
+  });
+
+  it('selects the lexicographically smallest stable fleet id independent of array order', () => {
+    const fleetA = { id: 'defender-a' };
+    const fleetB = { id: 'defender-b' };
+
+    expect(selectPrimaryFleetByStableId([fleetB, fleetA])).toBe(fleetA);
+    expect(selectPrimaryFleetByStableId([fleetA, fleetB])).toBe(fleetA);
+    expect(selectPrimaryFleetByStableId([])).toBeUndefined();
   });
 
   it('updates doctrine only for a stationed owned fleet', () => {
