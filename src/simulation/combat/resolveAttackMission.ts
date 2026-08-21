@@ -26,6 +26,7 @@ import {
 import type { GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
 import { getShipUpgradeBonusMap } from '../upgrades/shipUpgrades';
+import { stableFleetIdentityContribution } from './combatIdentity';
 import {
   addDebrisField,
   calculateDebrisFromLosses,
@@ -33,6 +34,7 @@ import {
   type DebrisAmount,
 } from './debris';
 import { getPlanetaryDefenseTargetPriority } from './defenseAbilities';
+import { selectPrimaryFleetByStableId } from './fleetDoctrine';
 import { resolvePlanetDemolition } from './planetDemolition';
 import { resolvePlanetDestruction } from './planetDestruction';
 import { resolveBattle } from './resolveBattle';
@@ -204,7 +206,7 @@ export function resolveAttackMission(
       fleet.location.planetId === target.id,
   );
   for (const fleet of defenderFleets) mergeUnits(defenderUnits, fleet.ships);
-  const defenderDoctrine = defenderFleets[0];
+  const defenderDoctrine = selectPrimaryFleetByStableId(defenderFleets);
   const attackerFormation = attackerFleet.formation ?? 'line';
   const attackerTargetPriority = attackerFleet.targetPriority ?? 'balanced';
   const defenderFormation = defenderDoctrine?.formation ?? 'line';
@@ -231,7 +233,11 @@ export function resolveAttackMission(
     ? getCommanderFleetEffects(state, target.ownerEmpireId, undefined, effectiveDefenderUnits)
     : getCommanderFleetEffects(state, defenderDoctrine);
 
-  const seed = (state.seed ^ eventSequence ^ attackerFleet.id.length) >>> 0;
+  const seed = (
+    state.seed ^
+    eventSequence ^
+    stableFleetIdentityContribution(attackerFleet.id)
+  ) >>> 0;
   const resolution = resolveBattle(
     seed,
     {
