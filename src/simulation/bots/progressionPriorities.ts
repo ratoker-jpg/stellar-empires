@@ -349,6 +349,7 @@ export function getBotPhaseProductionTargets(
     { unitId: roles.fighter, quantity: 1, desiredTotal: 1 },
     { unitId: roles.colonizer, quantity: 1, desiredTotal: 1 },
     { unitId: roles.frigate, quantity: 1, desiredTotal: 1 },
+    { unitId: roles.dreadnought, quantity: 1, desiredTotal: 1 },
   ] as const;
   const compressedMilestoneCount = phase === 'foundation'
     ? 1
@@ -356,7 +357,9 @@ export function getBotPhaseProductionTargets(
       ? 2
       : phase === 'first-combat'
         ? 3
-        : 4;
+        : phase === 'colonization'
+          ? 4
+          : 5;
   const primary: readonly BotProductionTarget[] = compressed
     ? compressedMilestones.slice(0, compressedMilestoneCount)
     : (() => {
