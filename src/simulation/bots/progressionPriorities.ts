@@ -1,3 +1,4 @@
+import type { ResourceId } from '../economy/types';
 import {
   getBuildingCatalogForFaction,
   getFactionIdForEmpire,
@@ -6,6 +7,11 @@ import {
 } from '../factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
 import { isBuildingEndgameLocked } from '../planet/buildingOperations';
+import { calculateBuildingCost } from '../planet/buildingProgression';
+import {
+  getEconomyProgressionProfile,
+  scaleStorageContribution,
+} from '../progression/economyProfile';
 import {
   getBuildingMaxLevelById,
   getResearchMaxLevelById,
@@ -220,6 +226,40 @@ function createPhasePrerequisiteTargets(
     addBuilding(roles.buildings.complete.metalPrimary, economy.metal);
   };
 
+  const addCompressedEndgameStorageTargets = (): void => {
+    if (profileId !== 'compressed-v1' || phase !== 'endgame-preparation') return;
+    const obelisk = buildingById.get(roles.buildings.complete.galacticObelisk);
+    if (obelisk === undefined) return;
+    const cost = calculateBuildingCost(obelisk, 1, profileId);
+    const economyProfile = getEconomyProgressionProfile(profileId);
+    const storageByResource: readonly [ResourceId, string][] = [
+      ['metal', roles.buildings.complete.metalStorage],
+      ['crystal', roles.buildings.complete.crystalStorage],
+      ['gas', roles.buildings.complete.gasStorage],
+    ];
+
+    for (const [resourceId, buildingId] of storageByResource) {
+      const definition = buildingById.get(buildingId);
+      const contribution = definition?.economy?.storageCapacity?.[resourceId] ?? 0;
+      if (definition === undefined || contribution <= 0) continue;
+      const maximum = getBuildingMaxLevelById(profileId, buildingId) ?? definition.maxLevel;
+      let requiredLevel = 0;
+      while (
+        requiredLevel < maximum &&
+        economyProfile.baseStorageCapacity +
+          scaleStorageContribution(profileId, contribution * requiredLevel) < cost[resourceId]
+      ) {
+        requiredLevel += 1;
+      }
+      if (
+        economyProfile.baseStorageCapacity +
+          scaleStorageContribution(profileId, contribution * requiredLevel) >= cost[resourceId]
+      ) {
+        addBuilding(buildingId, requiredLevel);
+      }
+    }
+  };
+
   const compressedNeedsStableEconomy =
     profileId === 'compressed-v1' &&
     phase !== 'foundation' &&
@@ -243,6 +283,7 @@ function createPhasePrerequisiteTargets(
   }
 
   if (!frontLoadEconomy) addCompressedEconomyTargets();
+  addCompressedEndgameStorageTargets();
 
   const buildings = buildingOrder.map((buildingId) => ({
     buildingId,
