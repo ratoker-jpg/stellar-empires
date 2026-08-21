@@ -3,6 +3,14 @@ import { getBotPhaseProductionTargets } from '../../src/simulation/bots/progress
 import { createCampaignSettings } from '../../src/simulation/campaign/settings';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
+import { runOrganicTerminalScenario } from '../../src/simulation/progression/scenarioRunner';
+
+const runtimeEnvironment = (
+  globalThis as typeof globalThis & {
+    readonly process?: { readonly env?: Readonly<Record<string, string | undefined>> };
+  }
+).process?.env;
+const scenarioIt = runtimeEnvironment?.RUN_ORGANIC_TERMINAL_SCENARIO === '1' ? it : it.skip;
 
 describe('POST-1.0-PR1 organic late-game closure', () => {
   it('requires compressed late-game production to request the canonical Planet Destroyer', () => {
@@ -24,4 +32,48 @@ describe('POST-1.0-PR1 organic late-game closure', () => {
       desiredTotal: 1,
     });
   });
+
+  scenarioIt('reaches terminal state organically with physical Planet Destroyers and positive Solar War', () => {
+    const result = runOrganicTerminalScenario({
+      seed: 'stellar-empires-m1',
+      playerFaction: 'aegis',
+      worldSpeed: 2,
+      maximumRealSeconds: 14 * 24 * 60 * 60,
+      decisionStepGameSeconds: 3_600,
+    });
+    const summary = {
+      complete: result.complete,
+      elapsedRealSeconds: result.elapsedRealSeconds,
+      campaignResult: result.state.campaignResult,
+      empireEvidence: result.empireEvidence,
+      finalProjects: result.state.endgameFinalObjects?.activeProjects ?? [],
+    };
+    console.info(`ORGANIC_TERMINAL_EVIDENCE=${JSON.stringify(summary)}`);
+
+    expect(result.complete).toBe(true);
+    expect(result.state.campaignResult?.status).toBe('terminal');
+    expect(
+      Object.values(result.empireEvidence).filter(
+        (evidence) => evidence.firstPhysicalPlanetDestroyerAtRealSeconds === null,
+      ),
+    ).toEqual([]);
+
+    if (result.state.campaignResult?.status !== 'terminal') {
+      throw new Error('Organic terminal scenario did not produce a terminal campaign result.');
+    }
+    const winnerEvidence = result.empireEvidence[result.state.campaignResult.ownerEmpireId];
+    expect(winnerEvidence?.maximumSolarWarScore ?? 0).toBeGreaterThan(0);
+    expect(winnerEvidence?.positiveSolarWarResults ?? 0).toBeGreaterThan(0);
+
+    const winningProject = result.state.endgameFinalObjects?.activeProjects.find(
+      (project) => project.ownerEmpireId === result.state.campaignResult?.ownerEmpireId,
+    );
+    expect(winningProject).toMatchObject({
+      phase: 'vulnerable',
+      qualification: { score: expect.any(Number) },
+      stabilizesAt: result.state.campaignResult.terminalAt,
+    });
+    expect(winningProject?.qualification.score ?? 0).toBeGreaterThan(0);
+    expect(winningProject?.contributedResources).toEqual(winningProject?.requiredResources);
+  }, 300_000);
 });
