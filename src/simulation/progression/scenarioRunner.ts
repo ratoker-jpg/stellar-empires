@@ -68,6 +68,32 @@ export interface OrganicTerminalScenarioResult {
   readonly empireEvidence: Readonly<Record<string, OrganicTerminalEmpireEvidence>>;
 }
 
+const SCENARIO_OPERATION_BUDGET = 50_000;
+const SCENARIO_ADVANCE_PASS_LIMIT = 16;
+
+function advanceScenarioStep(state: GameState, requestedGameSeconds: number): GameState {
+  let working = state;
+  let remainingGameSeconds = requestedGameSeconds;
+
+  for (let pass = 0; pass < SCENARIO_ADVANCE_PASS_LIMIT; pass += 1) {
+    const advanced = advanceCampaignTime(working, remainingGameSeconds, {
+      operationBudget: SCENARIO_OPERATION_BUDGET,
+    });
+    working = advanced.state;
+    if (advanced.complete) return working;
+    if (advanced.operationsProcessed === 0 && advanced.processedGameSeconds === 0) {
+      throw new Error(
+        `Progression scenario made no catch-up progress with ${advanced.remainingGameSeconds} seconds remaining.`,
+      );
+    }
+    remainingGameSeconds = advanced.remainingGameSeconds;
+  }
+
+  throw new Error(
+    `Progression scenario exceeded ${SCENARIO_ADVANCE_PASS_LIMIT} catch-up passes with ${remainingGameSeconds} seconds remaining.`,
+  );
+}
+
 function resolveInput(input: ProgressionScenarioInput): Required<ProgressionScenarioInput> {
   return {
     seed: input.seed,
@@ -270,13 +296,7 @@ function runScenarioFromState(
 
     const remaining = maximumGameSeconds - state.clock.elapsedSeconds;
     const step = Math.min(input.decisionStepGameSeconds, remaining);
-    const advanced = advanceCampaignTime(state, step, { operationBudget: 50_000 });
-    if (!advanced.complete) {
-      throw new Error(
-        `Progression scenario exhausted its operation budget with ${advanced.remainingGameSeconds} seconds remaining.`,
-      );
-    }
-    state = advanced.state;
+    state = advanceScenarioStep(state, step);
     recordPhases(state, input.worldSpeed, phaseReachedAtRealSeconds);
     recordPhysicalPlanetDestroyers(state, input.worldSpeed, firstProducedAt);
   }
