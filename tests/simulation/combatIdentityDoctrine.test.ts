@@ -1,4 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import type {
+  FleetFormation,
+  FleetTargetPriority,
+} from '../../src/simulation/combat/fleetDoctrine';
 import { resolveAttackMission } from '../../src/simulation/combat/resolveAttackMission';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import type { FleetState } from '../../src/simulation/fleets/types';
@@ -11,8 +15,8 @@ function createFleet(
   empireId: string,
   planetId: string,
   ships: Readonly<Record<string, number>>,
-  formation: FleetState['formation'],
-  targetPriority: FleetState['targetPriority'],
+  formation: FleetFormation,
+  targetPriority: FleetTargetPriority,
 ): FleetState {
   return {
     id,
