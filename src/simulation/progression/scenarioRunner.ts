@@ -233,7 +233,7 @@ function createEmpireEvidence(
       positiveSolarWarResults: results.filter((result) => result.score > 0).length,
       strongestSolarWarFleetShips,
       strongestSolarWarFleet,
-    } satisfies OrganicTerminalEmpireEvidence];
+    } satisfies OrganicTerminalEmpireEvidence] as const;
   }));
 }
 
