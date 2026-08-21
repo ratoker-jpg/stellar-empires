@@ -1,36 +1,73 @@
 {
-  "indexVersion": 17,
-  "updatedAt": "2026-08-20",
+  "indexVersion": 18,
+  "updatedAt": "2026-08-21",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 171,
-    "mergeSha": "1f7298a602062837ec6bb8e3778d408ada26051c",
-    "runtimeBaselinePr": 171,
-    "runtimeBaselineSha": "1f7298a602062837ec6bb8e3778d408ada26051c",
-    "lastCompletedAuditPr": 167,
-    "lastCompletedAuditMergeSha": "f7e14fda42a135f70c0ad95ada7d3080d472176b",
-    "freshMainMustBeResolvedAfterThisDocsRecord": true
+    "lastMergedPr": 174,
+    "mergeSha": "200456244d3a7efcbb197f7734a97adf622fad76",
+    "runtimeBaselinePr": 174,
+    "runtimeBaselineSha": "200456244d3a7efcbb197f7734a97adf622fad76",
+    "lastCompletedAuditPr": 173,
+    "lastCompletedAuditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
+    "freshMainMustBeResolvedAfterThisDocsRecord": false
   },
-  "active": null,
+  "active": {
+    "pr": 175,
+    "kind": "implementation",
+    "workItem": "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
+    "branch": "agent/post-1.0-combat-identity-doctrine",
+    "startingMain": "200456244d3a7efcbb197f7734a97adf622fad76",
+    "status": "complete-for-controller-review",
+    "mergeSha": null
+  },
   "currentPhase": {
     "id": "POST-1.0-NEMEXIA-PARITY",
     "milestone": "POST-1.0",
-    "auditPr": null,
-    "auditMergeSha": null,
-    "status": "audit-required",
-    "implementationAuthorized": false,
-    "implementationCount": 0,
-    "plannedImplementationPrs": [],
-    "completedImplementationPrs": [],
-    "implementationMergeShas": {},
-    "workItems": [],
+    "auditPr": 173,
+    "auditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
+    "status": "implementation-pr2-controller-review",
+    "implementationAuthorized": true,
+    "implementationCount": 4,
+    "plannedImplementationPrs": [
+      "POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE",
+      "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
+      "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+      "POST-1.0-PR4-LOW-COST-QUALITY-GATES"
+    ],
+    "completedImplementationPrs": [174],
+    "implementationMergeShas": {
+      "174": "200456244d3a7efcbb197f7734a97adf622fad76"
+    },
+    "workItems": [
+      {
+        "id": "POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE",
+        "pr": 174,
+        "status": "merged"
+      },
+      {
+        "id": "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
+        "pr": 175,
+        "status": "active-complete-for-controller-review"
+      },
+      {
+        "id": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+        "pr": null,
+        "status": "pending-after-pr2-merge"
+      },
+      {
+        "id": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
+        "pr": null,
+        "status": "pending-intentionally-later"
+      }
+    ],
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "targetReleaseVersion": "1.0.0",
+    "schemaMigrationRequired": false,
     "roadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md"
   },
   "sequence": [
@@ -43,13 +80,18 @@
     {"pr":168,"kind":"implementation","workItem":"RELEASE-ONBOARDING-TRUTH","status":"merged","mergeSha":"bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a"},
     {"pr":169,"kind":"implementation","workItem":"RELEASE-PRODUCTION-BROWSER","status":"merged","mergeSha":"6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f"},
     {"pr":170,"kind":"implementation","workItem":"RELEASE-PACKAGING-METADATA","status":"merged","mergeSha":"1221bfe19cc11f836db7fe7e5720f778419c2dd9"},
-    {"pr":171,"kind":"implementation-closure","workItem":"RELEASE-1.0-CLOSURE","status":"merged","mergeSha":"1f7298a602062837ec6bb8e3778d408ada26051c"}
+    {"pr":171,"kind":"implementation-closure","workItem":"RELEASE-1.0-CLOSURE","status":"merged","mergeSha":"1f7298a602062837ec6bb8e3778d408ada26051c"},
+    {"pr":172,"kind":"roadmap-docs","workItem":"POST-1.0-NEMEXIA-REFERENCE-ROADMAP","status":"merged","mergeSha":"538a0f22ab77687b148916c9a50721fca32930b4"},
+    {"pr":173,"kind":"audit","workItem":"POST-1.0-NEMEXIA-PARITY-AUDIT","status":"merged","mergeSha":"817a014ef958be4c54f2bd5b54a68890f358d53a"},
+    {"pr":174,"kind":"implementation","workItem":"POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE","status":"merged","mergeSha":"200456244d3a7efcbb197f7734a97adf622fad76"},
+    {"pr":175,"kind":"implementation","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"active-open-complete-for-controller-review"}
   ],
   "next": {
     "pr": null,
-    "kind": "audit-docs-only",
-    "workItem": "POST-1.0-NEMEXIA-PARITY-AUDIT",
-    "implementationAuthorized": false,
-    "instruction": "After the current docs-only roadmap/control-plane record merges, start from fresh main and create only the POST-1.0-NEMEXIA-PARITY-AUDIT. Preserve provenance, classify KEEP_STELLAR/ADAPT_FROM_NEMEXIA/RESEARCH/REJECT, propose 4 implementation PRs by default or at most 6 explicitly justified light/independent PRs, and stop before Audit merge for external controller review."
+    "kind": "implementation",
+    "workItem": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+    "implementationAuthorized": true,
+    "prerequisite": "controller review and merge of PR #175, then resolve fresh main",
+    "instruction": "Do not start PR3 before controller merges PR #175. After that merge, resolve fresh main and start POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH. POST-1.0-PR4-LOW-COST-QUALITY-GATES remains intentionally later and must not be treated as active."
   }
 }
