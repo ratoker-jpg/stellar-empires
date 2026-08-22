@@ -1,0 +1,33 @@
+name: PR4 lockfile refresh
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh-lockfile:
+    if: github.head_ref == 'agent/post-1.0-low-cost-quality-gates'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Generate dependency metadata
+        run: npm install --package-lock-only --save-dev @axe-core/playwright@4.13.0 --no-audit --no-fund
+
+      - name: Upload generated package metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr4-package-metadata
+          path: |
+            package.json
+            package-lock.json
+          retention-days: 1
