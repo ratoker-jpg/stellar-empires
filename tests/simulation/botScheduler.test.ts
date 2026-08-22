@@ -232,7 +232,7 @@ describe('autonomous bot scheduler', () => {
     });
     expect(explorer.audit[0]).toMatchObject({
       personality: 'explorer',
-      source: 'fleet',
+      source: 'research',
       accepted: true,
     });
     expect(aggressive.audit[0]).toMatchObject({
@@ -244,7 +244,35 @@ describe('autonomous bot scheduler', () => {
       industrial.audit[0]?.source,
       explorer.audit[0]?.source,
       aggressive.audit[0]?.source,
-    ])).toEqual(new Set(['economy', 'fleet', 'production']));
+    ])).toEqual(new Set(['economy', 'research', 'production']));
+
+    expect(runBotScheduler(state, [equalizedProfile('industrial')])).toEqual(industrial);
+    expect(runBotScheduler(state, [equalizedProfile('explorer')])).toEqual(explorer);
+    expect(runBotScheduler(state, [equalizedProfile('aggressive')])).toEqual(aggressive);
+
+    const hiddenPlayerChange: GameState = {
+      ...state,
+      planets: state.planets.map((planet) =>
+        planet.ownerEmpireId === 'player'
+          ? {
+              ...planet,
+              economy: {
+                ...planet.economy,
+                resources: {
+                  ...planet.economy.resources,
+                  gas: { ...planet.economy.resources.gas, amount: 999_999 },
+                },
+              },
+            }
+          : planet,
+      ),
+    };
+    expect(runBotScheduler(hiddenPlayerChange, [equalizedProfile('industrial')]).audit)
+      .toEqual(industrial.audit);
+    expect(runBotScheduler(hiddenPlayerChange, [equalizedProfile('explorer')]).audit)
+      .toEqual(explorer.audit);
+    expect(runBotScheduler(hiddenPlayerChange, [equalizedProfile('aggressive')]).audit)
+      .toEqual(aggressive.audit);
   });
 
   it('uses a serializable worker request and response without runtime-only cursor state', () => {
