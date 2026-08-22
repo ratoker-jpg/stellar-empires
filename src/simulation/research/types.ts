@@ -26,7 +26,6 @@ export type ResearchEffect =
   | { readonly type: 'SHIP_DURABILITY'; readonly percentPerLevel: number }
   | { readonly type: 'ARMOR_PENETRATION'; readonly percentPerLevel: number }
   | { readonly type: 'CRITICAL_CHANCE'; readonly basisPointsPerLevel: number }
-  | { readonly type: 'ECOLOGY_CAPACITY'; readonly pointsPerLevel: number }
   | { readonly type: 'WEAPON_STRENGTH'; readonly percentPerLevel: number };
 
 export interface ResearchDefinition {
