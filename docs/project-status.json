@@ -1,23 +1,23 @@
 {
-  "statusVersion": 82,
-  "updatedAt": "2026-08-21",
+  "statusVersion": 83,
+  "updatedAt": "2026-08-22",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 174,
-  "lastMergeSha": "200456244d3a7efcbb197f7734a97adf622fad76",
-  "verifiedMainBaseline": "PR #174 POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE squash; accepted starting main for active PR #175",
-  "runtimeBaselinePr": 174,
-  "runtimeBaselineSha": "200456244d3a7efcbb197f7734a97adf622fad76",
-  "activePr": 175,
+  "lastMergedPr": 175,
+  "lastMergeSha": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa",
+  "verifiedMainBaseline": "PR #175 POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE squash; accepted starting main for active PR #176",
+  "runtimeBaselinePr": 175,
+  "runtimeBaselineSha": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa",
+  "activePr": 176,
   "activePrKind": "implementation",
-  "activeWorkItem": "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
-  "activeBranch": "agent/post-1.0-combat-identity-doctrine",
+  "activeWorkItem": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+  "activeBranch": "agent/post-1.0-advertised-effect-truth",
   "nextPrAfterActive": null,
   "nextPrKind": "implementation",
-  "nextWorkItem": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+  "nextWorkItem": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
   "currentMilestone": "Post-1.0 Nemexia parity implementation",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
@@ -54,8 +54,8 @@
       "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
       "POST-1.0-PR4-LOW-COST-QUALITY-GATES"
     ],
-    "completedImplementationPrs": [174],
-    "activeImplementationPr": 175,
+    "completedImplementationPrs": [174, 175],
+    "activeImplementationPr": 176,
     "workItems": [
       {
         "id": "POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE",
@@ -66,13 +66,13 @@
       {
         "id": "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
         "pr": 175,
-        "status": "complete-for-controller-review",
-        "mergeSha": null
+        "status": "merged",
+        "mergeSha": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa"
       },
       {
         "id": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
-        "pr": null,
-        "status": "pending-after-pr2-merge",
+        "pr": 176,
+        "status": "complete-for-controller-review-after-exact-head-gates",
         "mergeSha": null
       },
       {
@@ -83,7 +83,7 @@
       }
     ],
     "contract": "Accepted Audit #173 implementation batch; each dependent next item starts only from fresh main after controller review/merge of the predecessor checkpoint.",
-    "evidence": "PR1 #174 merged; PR2 #175 implementation/evidence complete and exact-head validation green before this control-plane consistency fix.",
+    "evidence": "PR1 #174 and PR2 #175 merged. PR3 #176 removes confirmed salvage/market/ecology ghost active effects, leaves Bank UNKNOWN untouched, and requires final exact-head CI/Graphify/Browser gates before Ready for controller review.",
     "archive": null
   },
   "activeImplementationState": {
@@ -107,8 +107,13 @@
     "organicSaveLoadDeterminismProven": true,
     "organicPartitionDeterminismProven": true,
     "boundedFactionMatrixProven": true,
-    "combatStableFleetIdentityImplementedInActivePr": true,
-    "combatStablePrimaryDefenderImplementedInActivePr": true,
+    "combatStableFleetIdentityImplemented": true,
+    "combatStablePrimaryDefenderImplemented": true,
+    "advertisedEffectTruthImplementedInActivePr": true,
+    "salvageGhostEffectRemovedInActivePr": true,
+    "marketGhostEffectRemovedInActivePr": true,
+    "ecologyGhostEffectRemovedInActivePr": true,
+    "bankCreditConsumerStatus": "UNKNOWN-UNTOUCHED",
     "productionPagesWorkflowExists": true,
     "productionBasePathBrowserSmokeImplemented": true,
     "releaseOnboardingTruthComplete": true,
@@ -116,7 +121,7 @@
     "releaseMetadataCurrent": true,
     "releaseVersion": "1.0.0",
     "releaseClosurePendingExactHeadGates": false,
-    "status": "post-1.0-pr2-complete-for-controller-review"
+    "status": "post-1.0-pr3-complete-for-controller-review-after-exact-head-gates"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -163,12 +168,14 @@
     {"pr":172,"kind":"roadmap-docs","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-NEMEXIA-REFERENCE-ROADMAP","status":"merged","mergeSha":"538a0f22ab77687b148916c9a50721fca32930b4"},
     {"pr":173,"kind":"audit","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-NEMEXIA-PARITY-AUDIT","status":"merged","mergeSha":"817a014ef958be4c54f2bd5b54a68890f358d53a"},
     {"pr":174,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE","status":"merged","mergeSha":"200456244d3a7efcbb197f7734a97adf622fad76"},
-    {"pr":175,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"complete-for-controller-review","mergeSha":null}
+    {"pr":175,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"merged","mergeSha":"415a3aa814d759d1f76a986003ad7e9d06e0e8fa"},
+    {"pr":176,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH","status":"complete-for-controller-review-after-exact-head-gates","mergeSha":null}
   ],
   "knownLimitations": [
     "Repository license remains an owner-controlled unresolved choice",
     "Several original Nemexia combat/economy/scoring formulas remain unverified and must not be guessed",
-    "PR3 advertised-effect truth work and PR4 low-cost quality gates remain pending"
+    "Bank bankCreditEfficiencyPercent consumer remains UNKNOWN; PR3 deliberately leaves it untouched rather than inventing credit mechanics",
+    "PR4 low-cost quality gates remain pending and intentionally later"
   ],
   "requiredStartupReading": [
     "AGENTS.md",
@@ -183,5 +190,5 @@
     "docs/audits/completed/m9-release-candidate.md",
     "actual main, latest PR and workflow/production state"
   ],
-  "nextAction": "Controller review/merge PR #175 POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE. Do not merge autonomously. After #175 merges, resolve fresh main and start the next accepted implementation item POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH. PR4 POST-1.0-PR4-LOW-COST-QUALITY-GATES remains intentionally later."
+  "nextAction": "Controller review/merge PR #176 POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH after final exact-head gates. Do not merge autonomously. Do not start POST-1.0-PR4-LOW-COST-QUALITY-GATES before controller review/merge of #176 and a fresh-main checkpoint."
 }
