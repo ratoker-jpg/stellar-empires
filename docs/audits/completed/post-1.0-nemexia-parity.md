@@ -9,7 +9,7 @@
 **Migration:** none  
 **Release:** 1.0.0 remains closed  
 **Closure PR:** #177 `POST-1.0-PR4-LOW-COST-QUALITY-GATES`  
-**Closure squash:** pending controller review/merge; cannot be self-recorded before merge
+**Closure squash:** `53cf207f30f1a51f864d77f61969937e0d1ad59c`
 
 ## Accepted implementation chain
 
@@ -18,9 +18,9 @@
 | #174 | `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` | merged → `200456244d3a7efcbb197f7734a97adf622fad76` |
 | #175 | `POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE` | merged → `415a3aa814d759d1f76a986003ad7e9d06e0e8fa` |
 | #176 | `POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH` | merged → `c2012c76397c0a56bce85c470334850f7be4bd3e` |
-| #177 | `POST-1.0-PR4-LOW-COST-QUALITY-GATES` | implementation complete; final closure/exact-head validation and controller review; merge SHA pending |
+| #177 | `POST-1.0-PR4-LOW-COST-QUALITY-GATES` | merged → `53cf207f30f1a51f864d77f61969937e0d1ad59c` |
 
-Exactly four implementation PRs were accepted. There is no PR5 in this batch.
+Exactly four implementation PRs were accepted and merged. There is no PR5 in this batch.
 
 ## Delivered outcome
 
@@ -53,37 +53,21 @@ PR #176 applied the accepted **CONSUMER-OR-REMOVE** rule:
 
 ### Low-cost quality gates
 
-PR #177 hardens delivery without changing gameplay/runtime:
+PR #177 hardened delivery without changing gameplay/runtime:
 
-- all lockfile-backed CI, Browser E2E and Pages install paths use `npm ci --no-audit --no-fund`;
-- the pre-existing lockfile proved compatible with clean `npm ci`; no fallback/repair was needed for the reproducibility rollout;
-- exact dev dependency `@axe-core/playwright@4.13.0` adds one bounded deterministic Empire Overview WCAG A/AA automated scan with zero violations and no targeted exceptions;
-- exactly one deterministic Playwright visual snapshot is committed for the same Empire Overview route, using fixed `1366×768`, reduced motion, disabled animations, hidden caret and `maxDiffPixelRatio: 0.001`;
-- the canonical `empire-overview-linux.png` baseline was produced on GitHub Actions Ubuntu/Chromium;
+- lockfile-backed CI, Browser E2E and Pages install paths use reproducible `npm ci --no-audit --no-fund`;
+- focused axe and one deterministic Empire Overview visual snapshot became permanent browser gates;
+- production base-path Browser smoke became permanent;
+- Graphify code mode was corrected to include code files rather than binary snapshots/assets;
 - no gameplay/runtime source and no dead code were changed/deleted by PR4.
 
-## PR4 Graphify divergence
+## PR4 Graphify divergence and resolution
 
-The accepted committed PNG visual baseline exposed a hidden compatibility problem in the existing Graphify runner. `scripts/graphify-audit.sh` previously copied the entire `tests` directory into the temporary code corpus. Graphify #1299 therefore saw:
+The committed PNG visual baseline exposed a hidden compatibility problem in the previous Graphify corpus builder. It copied the entire `tests` directory, so Graphify #1299 encountered an image and attempted a semantic image path that requires an LLM API key.
 
-```text
-456 code
-0 docs
-0 papers
-1 images
-```
+PR #177 fixed the repository-owned code corpus generically by including code extensions from `src` and `tests`, retaining `package.json`/`tsconfig.json`, and excluding screenshots/baselines/traces/non-code assets from code mode.
 
-and failed because the image semantic-extraction path requires an LLM API key that the repository code-only graph contract does not use.
-
-This was a bounded tooling divergence inside PR4, not a Graphify service outage and not a gameplay/product defect.
-
-PR #177 changed the corpus builder by general code-file inclusion rather than snapshot-name exclusion:
-
-- recursively include `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.mjs`, `*.cjs` and `*.css` from `src` and `tests` while preserving relative paths;
-- retain the previously intentional root inputs `package.json` and `tsconfig.json`;
-- exclude PNGs, screenshots, visual baselines, traces, test-result artifacts and other non-code assets from code mode.
-
-Fresh Graphify #1300 on implementation head `207ded53b399b37a3e823caaac7de48ca2275ed0` succeeded with:
+Fresh Graphify evidence after the fix:
 
 ```text
 456 code
@@ -95,24 +79,26 @@ graph.json: 3546 nodes / 12388 edges
 exit-code=0
 ```
 
-No Graphify secret, version change, workflow bypass, ignored exit code or `continue-on-error` was introduced.
+No secret, Graphify version bypass, ignored exit code or `continue-on-error` was introduced.
 
-## Implementation-head closure evidence
+## Final #177 exact-head closure evidence
 
-Before the final control-plane commit, exact implementation head `207ded53b399b37a3e823caaac7de48ca2275ed0` passed the combined accepted gates:
+The final #177 PR head passed the required matrix before controller merge:
 
 ```text
-CI #2161             SUCCESS
-Graphify #1300       SUCCESS
-Browser E2E #1391    SUCCESS — 36/36 in 5.6 min
-axe quality gate      SUCCESS — 0 violations; 4.8 s in full run
-visual snapshot       SUCCESS — 4.3 s in full run
+CI #2162             SUCCESS
+Graphify #1301       SUCCESS
+Browser E2E #1392    SUCCESS — 36/36
+axe quality gate      SUCCESS
+visual snapshot       SUCCESS
 production smoke      SUCCESS
+unresolved threads    0
+mergeable              true
 ```
 
-CI #2161 includes asset audit, lint, typecheck, full tests, build, Organic Fresh Game → terminal, compressed progression, Organic Obelisk evidence, bounded terminal faction matrix, terminal save/load + partition determinism and campaign catch-up performance.
+The controller then squash-merged #177, producing current/historical runtime baseline:
 
-The closure/control-plane documents in #177 change the exact PR head after that implementation proof. A fresh exact-head CI / Graphify / Browser matrix is therefore required before #177 is marked Ready for controller review.
+`53cf207f30f1a51f864d77f61969937e0d1ad59c`
 
 ## Intentional omissions / remaining boundaries
 
@@ -123,15 +109,12 @@ The closure/control-plane documents in #177 change the exact PR head after that 
 - no broad accessibility refactor or UI redesign;
 - no dependency-modernization sweep;
 - no dead-code cleanup;
-- no new assets beyond the one accepted test baseline;
 - no guessed Nemexia combat/economy/scoring formulas;
 - Bank credit-efficiency consumer remains UNKNOWN and untouched;
 - repository license remains owner-controlled.
 
 ## Closure boundary
 
-Implementation for the accepted `POST-1.0-NEMEXIA-PARITY` batch is complete in #177, but actual batch merge closure remains a controller action. This archive intentionally records #177 by PR number and defers its generated squash SHA until after merge, consistent with the repository closure convention.
+`POST-1.0-NEMEXIA-PARITY` is **COMPLETE** at #177 squash `53cf207f30f1a51f864d77f61969937e0d1ad59c`.
 
-Do not create PR5 and do not begin new feature implementation from this archive.
-
-After the controller reviews/merges #177, the next action is controller batch-closure / roadmap decision from fresh `main`. Any new coherent product implementation requires a new Audit accepted under `docs/28-audit-first-autonomous-delivery-protocol.md`.
+Do not create PR5 from this archive. Completion of this batch does not authorize another feature batch. The next valid product work is a new fresh-main Audit under `docs/28-audit-first-autonomous-delivery-protocol.md`; Audit #178 performs that role with implementation authorization still false.
