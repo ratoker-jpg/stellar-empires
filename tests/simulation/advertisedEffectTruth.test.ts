@@ -20,8 +20,8 @@ describe('POST-1.0-PR3 advertised effect truth', () => {
 
       expect(scrapyard).toBeDefined();
       expect(tradeCenter).toBeDefined();
-      expect(scrapyard?.operations).not.toHaveProperty('salvageEfficiencyPercent');
-      expect(tradeCenter?.operations).not.toHaveProperty('marketEfficiencyPercent');
+      expect(scrapyard?.operations).toBeUndefined();
+      expect(tradeCenter?.operations).toBeUndefined();
 
       const summary = calculateBuildingOperationalSummary([
         { buildingId: ids.scrapyard, level: 10 },
