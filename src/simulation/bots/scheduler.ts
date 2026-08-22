@@ -183,7 +183,9 @@ function compressedCandidate(
   const policy = deriveBotStrategyPolicy(profile);
   const phase = getBotProgressionPhase(state, profile.empireId);
   const developmentPreference =
-    phase === 'planet-destruction' || phase === 'endgame-preparation'
+    phase === 'heavy-fleet' ||
+    phase === 'planet-destruction' ||
+    phase === 'endgame-preparation'
       ? COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE
       : policy.compressedDevelopmentPreference;
   let science: ReturnType<typeof planBotResearchAndProduction> | undefined;
