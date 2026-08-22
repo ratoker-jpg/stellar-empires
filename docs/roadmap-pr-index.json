@@ -1,5 +1,5 @@
 {
-  "indexVersion": 20,
+  "indexVersion": 21,
   "updatedAt": "2026-08-22",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,72 +7,63 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 176,
-    "mergeSha": "c2012c76397c0a56bce85c470334850f7be4bd3e",
-    "runtimeBaselinePr": 176,
-    "runtimeBaselineSha": "c2012c76397c0a56bce85c470334850f7be4bd3e",
+    "lastMergedPr": 177,
+    "mergeSha": "53cf207f30f1a51f864d77f61969937e0d1ad59c",
+    "runtimeBaselinePr": 177,
+    "runtimeBaselineSha": "53cf207f30f1a51f864d77f61969937e0d1ad59c",
     "lastCompletedAuditPr": 173,
     "lastCompletedAuditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
     "freshMainMustBeResolvedAfterThisDocsRecord": false
   },
   "active": {
-    "pr": 177,
-    "kind": "implementation-closure",
-    "workItem": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
-    "branch": "agent/post-1.0-low-cost-quality-gates",
-    "startingMain": "c2012c76397c0a56bce85c470334850f7be4bd3e",
-    "status": "complete-for-controller-review-after-final-exact-head-gates",
+    "pr": 178,
+    "kind": "audit",
+    "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
+    "branch": "audit/post-1.0-next-product",
+    "startingMain": "53cf207f30f1a51f864d77f61969937e0d1ad59c",
+    "status": "audit-complete-awaiting-final-exact-head-gates-and-controller-review",
     "mergeSha": null
   },
-  "currentPhase": {
+  "previousPhase": {
     "id": "POST-1.0-NEMEXIA-PARITY",
     "milestone": "POST-1.0",
     "auditPr": 173,
     "auditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
-    "status": "implementation-complete-closure-pr-awaiting-final-exact-head-gates-and-controller-review",
-    "implementationAuthorized": true,
-    "furtherImplementationAuthorized": false,
+    "status": "complete",
+    "implementationAuthorized": false,
     "implementationCount": 4,
-    "plannedImplementationPrs": [
-      "POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE",
-      "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
-      "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
-      "POST-1.0-PR4-LOW-COST-QUALITY-GATES"
-    ],
-    "completedImplementationPrs": [174, 175, 176],
+    "completedImplementationPrs": [174, 175, 176, 177],
     "implementationMergeShas": {
       "174": "200456244d3a7efcbb197f7734a97adf622fad76",
       "175": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa",
-      "176": "c2012c76397c0a56bce85c470334850f7be4bd3e"
+      "176": "c2012c76397c0a56bce85c470334850f7be4bd3e",
+      "177": "53cf207f30f1a51f864d77f61969937e0d1ad59c"
     },
-    "workItems": [
-      {
-        "id": "POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE",
-        "pr": 174,
-        "status": "merged"
-      },
-      {
-        "id": "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
-        "pr": 175,
-        "status": "merged"
-      },
-      {
-        "id": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
-        "pr": 176,
-        "status": "merged"
-      },
-      {
-        "id": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
-        "pr": 177,
-        "status": "active-complete-for-controller-review-after-final-exact-head-gates"
-      }
-    ],
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "targetReleaseVersion": "1.0.0",
     "schemaMigrationRequired": false,
-    "archive": "docs/audits/completed/post-1.0-nemexia-parity.md",
-    "roadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md"
+    "archive": "docs/audits/completed/post-1.0-nemexia-parity.md"
+  },
+  "currentPhase": {
+    "id": "POST-1.0-NEXT-PRODUCT-AUDIT",
+    "milestone": "POST-1.0",
+    "auditPr": 178,
+    "auditMergeSha": null,
+    "status": "audit-complete-awaiting-final-exact-head-gates-and-controller-review",
+    "implementationAuthorized": false,
+    "furtherImplementationAuthorized": false,
+    "recommendedBatch": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
+    "recommendedImplementationCount": 3,
+    "proposedImplementationPrs": [
+      "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
+      "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
+      "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE"
+    ],
+    "targetStateSchema": 19,
+    "targetSaveFormat": 6,
+    "schemaMigrationRequired": false,
+    "audit": "docs/audits/current-batch-audit.md"
   },
   "sequence": [
     {"pr":162,"kind":"audit","workItem":"COMPLETE-ENDGAME-03","status":"merged","mergeSha":"b7de24f52c02480f6db244c00b1282407d5743cc"},
@@ -90,14 +81,15 @@
     {"pr":174,"kind":"implementation","workItem":"POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE","status":"merged","mergeSha":"200456244d3a7efcbb197f7734a97adf622fad76"},
     {"pr":175,"kind":"implementation","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"merged","mergeSha":"415a3aa814d759d1f76a986003ad7e9d06e0e8fa"},
     {"pr":176,"kind":"implementation","workItem":"POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH","status":"merged","mergeSha":"c2012c76397c0a56bce85c470334850f7be4bd3e"},
-    {"pr":177,"kind":"implementation-closure","workItem":"POST-1.0-PR4-LOW-COST-QUALITY-GATES","status":"active-complete-for-controller-review-after-final-exact-head-gates","mergeSha":null}
+    {"pr":177,"kind":"implementation-closure","workItem":"POST-1.0-PR4-LOW-COST-QUALITY-GATES","status":"merged","mergeSha":"53cf207f30f1a51f864d77f61969937e0d1ad59c"},
+    {"pr":178,"kind":"audit","workItem":"POST-1.0-NEXT-PRODUCT-AUDIT","status":"controller-review-after-final-gates","mergeSha":null}
   ],
   "next": {
     "pr": null,
     "kind": "controller-decision",
     "workItem": null,
     "implementationAuthorized": false,
-    "prerequisite": "controller review and merge of PR #177, then resolve fresh main before any future Audit",
-    "instruction": "Do not create PR5 or start new feature implementation. After #177, the controller closes the POST-1.0-NEMEXIA-PARITY batch and decides the next roadmap/Audit. Any new coherent product implementation requires a new accepted Audit from fresh main."
+    "prerequisite": "controller review of Audit PR #178",
+    "instruction": "Do not merge #178 automatically and do not create implementation branches. If the controller approves POST-1.0-BOT-STRATEGY-DIFFERENTIATION, resolve fresh main again and execute only the approved ordered work items."
   }
 }
