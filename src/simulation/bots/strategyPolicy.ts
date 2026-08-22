@@ -15,38 +15,50 @@ export interface BotStrategyPolicy {
   readonly maxAttackRiskPermille: number;
 }
 
-const STRATEGY_POLICY_BY_PERSONALITY: Readonly<Record<BotPersonality, BotStrategyPolicy>> = {
-  industrial: Object.freeze({
-    personality: 'industrial',
+function freezePolicy(policy: BotStrategyPolicy): BotStrategyPolicy {
+  return Object.freeze({
+    ...policy,
     compressedDevelopmentPreference: Object.freeze([
+      ...policy.compressedDevelopmentPreference,
+    ]),
+    compressedOpportunityPreference: Object.freeze([
+      ...policy.compressedOpportunityPreference,
+    ]),
+  });
+}
+
+const STRATEGY_POLICY_BY_PERSONALITY: Readonly<Record<BotPersonality, BotStrategyPolicy>> = {
+  industrial: freezePolicy({
+    personality: 'industrial',
+    compressedDevelopmentPreference: [
       'economy',
       'research',
       'production',
       'logistics',
-    ]),
-    compressedOpportunityPreference: Object.freeze(['pve', 'fleet']),
+    ],
+    compressedOpportunityPreference: ['pve', 'fleet'],
     maxAttackRiskPermille: 700,
   }),
-  explorer: Object.freeze({
+  explorer: freezePolicy({
     personality: 'explorer',
-    compressedDevelopmentPreference: Object.freeze([
+    compressedDevelopmentPreference: [
       'research',
       'economy',
       'production',
       'logistics',
-    ]),
-    compressedOpportunityPreference: Object.freeze(['fleet', 'pve']),
+    ],
+    compressedOpportunityPreference: ['fleet', 'pve'],
     maxAttackRiskPermille: 800,
   }),
-  aggressive: Object.freeze({
+  aggressive: freezePolicy({
     personality: 'aggressive',
-    compressedDevelopmentPreference: Object.freeze([
+    compressedDevelopmentPreference: [
       'production',
       'research',
       'economy',
       'logistics',
-    ]),
-    compressedOpportunityPreference: Object.freeze(['pve', 'fleet']),
+    ],
+    compressedOpportunityPreference: ['pve', 'fleet'],
     maxAttackRiskPermille: 900,
   }),
 };
