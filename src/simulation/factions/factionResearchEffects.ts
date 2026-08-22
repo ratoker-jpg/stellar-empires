@@ -15,7 +15,6 @@ const EMPTY_RESEARCH_EFFECTS: ResearchEffectSummary = {
   shipDurabilityPercent: 0,
   armorPenetrationPercent: 0,
   criticalChanceBasisPoints: 0,
-  ecologyCapacity: 0,
   weaponStrengthPercent: 0,
 };
 
