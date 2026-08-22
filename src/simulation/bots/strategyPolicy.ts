@@ -1,54 +1,52 @@
 import type { BotPersonality, BotProfile } from './profiles';
 
-export type BotCompressedStrategySource =
+export type BotCompressedDevelopmentSource =
   | 'economy'
   | 'research'
   | 'production'
-  | 'logistics'
-  | 'pve'
-  | 'fleet';
+  | 'logistics';
+
+export type BotCompressedOpportunitySource = 'pve' | 'fleet';
 
 export interface BotStrategyPolicy {
   readonly personality: BotPersonality;
-  readonly compressedSourcePreference: readonly BotCompressedStrategySource[];
+  readonly compressedDevelopmentPreference: readonly BotCompressedDevelopmentSource[];
+  readonly compressedOpportunityPreference: readonly BotCompressedOpportunitySource[];
   readonly maxAttackRiskPermille: number;
 }
 
 const STRATEGY_POLICY_BY_PERSONALITY: Readonly<Record<BotPersonality, BotStrategyPolicy>> = {
   industrial: Object.freeze({
     personality: 'industrial',
-    compressedSourcePreference: Object.freeze([
+    compressedDevelopmentPreference: Object.freeze([
       'economy',
       'research',
       'production',
       'logistics',
-      'pve',
-      'fleet',
     ]),
+    compressedOpportunityPreference: Object.freeze(['pve', 'fleet']),
     maxAttackRiskPermille: 700,
   }),
   explorer: Object.freeze({
     personality: 'explorer',
-    compressedSourcePreference: Object.freeze([
-      'pve',
-      'fleet',
+    compressedDevelopmentPreference: Object.freeze([
       'research',
       'economy',
       'production',
       'logistics',
     ]),
+    compressedOpportunityPreference: Object.freeze(['fleet', 'pve']),
     maxAttackRiskPermille: 800,
   }),
   aggressive: Object.freeze({
     personality: 'aggressive',
-    compressedSourcePreference: Object.freeze([
+    compressedDevelopmentPreference: Object.freeze([
       'production',
-      'pve',
-      'fleet',
       'research',
       'economy',
       'logistics',
     ]),
+    compressedOpportunityPreference: Object.freeze(['pve', 'fleet']),
     maxAttackRiskPermille: 900,
   }),
 };
