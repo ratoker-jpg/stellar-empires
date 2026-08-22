@@ -75,8 +75,7 @@ function createEqualizedCompressedStrategyFixture(): GameState {
               ...planet.inventory,
               ships: {
                 ...planet.inventory.ships,
-                [roles.ships.scout]: 2,
-                [roles.ships.fighter]: 6,
+                [roles.ships.transport]: 1,
               },
             },
           }
