@@ -26,6 +26,7 @@
     "phaser": "4.2.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@eslint/js": "10.0.1",
     "@playwright/test": "^1.62.0",
     "eslint": "10.6.0",
