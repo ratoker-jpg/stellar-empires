@@ -36,7 +36,7 @@ describe('complete building economy', () => {
     }
   });
 
-  it('provides real operational effects for construction, production, research and hangars', () => {
+  it('provides real operational effects for active building mechanics', () => {
     const ids = getCompleteBuildingIds('aegis');
     const summary = calculateBuildingOperationalSummary([
       { buildingId: ids.constructionComplex, level: 3 },
@@ -56,11 +56,11 @@ describe('complete building economy', () => {
       defenseProductionSpeedPercent: 32,
       researchSpeedPercent: 14,
       hangarCapacity: 240,
-      salvageEfficiencyPercent: 10,
-      marketEfficiencyPercent: 4,
       shipUpgradeCapacity: 2,
       bankCreditEfficiencyPercent: 10,
     });
+    expect(summary).not.toHaveProperty('salvageEfficiencyPercent');
+    expect(summary).not.toHaveProperty('marketEfficiencyPercent');
   });
 
   it('keeps old saves and unit requirements compatible through canonical aliases', () => {
