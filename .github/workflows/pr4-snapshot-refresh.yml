@@ -1,0 +1,45 @@
+name: PR4 snapshot refresh
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-snapshot:
+    if: github.head_ref == 'agent/post-1.0-low-cost-quality-gates'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Generate canonical Linux snapshot
+        run: npx playwright test tests/e2e/qualityGates.spec.ts --update-snapshots
+
+      - name: Commit snapshot if needed
+        run: |
+          SNAPSHOT='tests/e2e/qualityGates.spec.ts-snapshots/empire-overview-linux.png'
+          if git diff --quiet -- "$SNAPSHOT" && git ls-files --error-unmatch "$SNAPSHOT" >/dev/null 2>&1; then
+            echo "Snapshot already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$SNAPSHOT"
+          git commit -m "test: add Empire Overview visual baseline"
+          git push origin HEAD:${{ github.head_ref }}
