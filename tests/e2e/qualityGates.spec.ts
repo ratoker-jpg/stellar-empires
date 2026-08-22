@@ -28,3 +28,13 @@ test('empire overview has no WCAG A/AA automated accessibility violations', asyn
     ),
   ).toEqual([]);
 });
+
+test('empire overview visual baseline remains stable', async ({ page }) => {
+  await openStableEmpireOverview(page);
+
+  await expect(page.locator('#command-overview-view')).toHaveScreenshot('empire-overview.png', {
+    animations: 'disabled',
+    caret: 'hide',
+    maxDiffPixelRatio: 0.001,
+  });
+});
