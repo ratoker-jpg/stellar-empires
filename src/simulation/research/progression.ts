@@ -48,7 +48,6 @@ export interface ResearchEffectSummary {
   readonly shipDurabilityPercent: number;
   readonly armorPenetrationPercent: number;
   readonly criticalChanceBasisPoints: number;
-  readonly ecologyCapacity: number;
   readonly weaponStrengthPercent: number;
 }
 
@@ -67,7 +66,6 @@ export function calculateResearchEffects(
   let shipDurabilityPercent = 0;
   let armorPenetrationPercent = 0;
   let criticalChanceBasisPoints = 0;
-  let ecologyCapacity = 0;
   let weaponStrengthPercent = 0;
 
   const definitions = new Map(catalog.map((definition) => [definition.id, definition]));
@@ -113,9 +111,6 @@ export function calculateResearchEffects(
         case 'CRITICAL_CHANCE':
           criticalChanceBasisPoints += effect.basisPointsPerLevel * level;
           break;
-        case 'ECOLOGY_CAPACITY':
-          ecologyCapacity += effect.pointsPerLevel * level;
-          break;
         case 'WEAPON_STRENGTH':
           weaponStrengthPercent += effect.percentPerLevel * level;
           break;
@@ -135,7 +130,6 @@ export function calculateResearchEffects(
     shipDurabilityPercent,
     armorPenetrationPercent,
     criticalChanceBasisPoints: Math.min(1_200, criticalChanceBasisPoints),
-    ecologyCapacity,
     weaponStrengthPercent,
   };
 }
