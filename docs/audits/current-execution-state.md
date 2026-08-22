@@ -1,7 +1,7 @@
 # Current execution state
 
 **Updated:** 2026-08-22  
-**Safe to continue:** yes — controller review only after final gates  
+**Safe to continue:** yes — Audit docs FIX only, then controller review  
 **Phase:** `POST-1.0-NEXT-PRODUCT-AUDIT`  
 **Runtime baseline:** `main` `53cf207f30f1a51f864d77f61969937e0d1ad59c`  
 **Runtime:** schema v19 / save format v6  
@@ -10,47 +10,70 @@
 
 | Field | Current value |
 |---|---|
-| Previous accepted Audit | #173 `POST-1.0-NEMEXIA-PARITY-AUDIT` — merged at `817a014ef958be4c54f2bd5b54a68890f358d53a` |
 | Previous batch | `POST-1.0-NEMEXIA-PARITY` — COMPLETE |
-| #174 | merged → `200456244d3a7efcbb197f7734a97adf622fad76` |
-| #175 | merged → `415a3aa814d759d1f76a986003ad7e9d06e0e8fa` |
-| #176 | merged → `c2012c76397c0a56bce85c470334850f7be4bd3e` |
 | #177 | merged → `53cf207f30f1a51f864d77f61969937e0d1ad59c` |
 | Exact Audit starting `main` | `53cf207f30f1a51f864d77f61969937e0d1ad59c` |
 | Active Audit work item | `POST-1.0-NEXT-PRODUCT-AUDIT` |
 | Audit PR | #178 |
 | Audit branch | `audit/post-1.0-next-product` |
-| Audit status | evidence complete; final exact-head gates required before Ready |
+| Controller verdict | `FIX — DOCS-ONLY AUDIT CONTRACT COMPLETENESS` |
 | Active implementation PR | none |
 | Active implementation work item | none |
 | Implementation authorized | false |
-| PR5 | not authorized / does not exist |
 | Recommended next batch | `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` — proposal only |
+| Proposed sequence | PR1 → PR2 → PR3 |
+| Critical unknowns resolved | true |
+| Critical unknowns | `[]` |
 
-## Post-merge reconciliation
+## Controller FIX closure
 
-GitHub independently confirms that #177 is squash-merged and current `main` at Audit start is exactly `53cf207f30f1a51f864d77f61969937e0d1ad59c`. The stale pre-merge closure metadata has been reconciled across the current status/index/history/archive/continuation entrypoints.
+Two post-Ready review findings were valid and are now addressed in the Audit contract rather than merely marked resolved.
 
-The previous #173–#177 batch is formally complete. No implementation remains active and no PR5 is authorized.
+### DECISION A — tactical risk
 
-## Audit result
+One derived policy truth in `src/simulation/bots/strategyPolicy.ts`:
 
-Fresh survey and disproof work are recorded in `docs/audits/current-batch-audit.md`.
+`maxAttackRiskPermille`
 
-Highest-value finding:
+- industrial / Aegis = **700**;
+- explorer / Synod = **800**;
+- aggressive / Veyra = **900**.
 
-- the three bot personalities are real and already differ in cadence/command budget and PvE opportunity ordering;
-- blanket “personalities unused” is therefore DISPROVED;
-- however the recommended `compressed-v1` core scheduler/planners are largely personality-agnostic across ordinary economy/research/production/logistics/fleet/threat decisions;
-- the existing `BotProfile`/scheduler/planner/reducer architecture provides a bounded, deterministic, no-migration seam for stronger player-visible strategy differentiation.
+PR2 requires both `fleetMissionPlanner.ts` and `threatRecoveryPlanner.ts` to consume the same threshold. Current/full level-3 intel, mission availability and reducer validation remain mandatory.
 
-Ranked backlog:
+### DECISION B — recent outcome window
 
-1. `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` — recommended single next batch;
-2. combat doctrine observability in battle reports — defer as a bounded future one-PR candidate;
-3. deterministic world-object lifecycle/movement — RESEARCH.
+`RECENT_BOT_BATTLE_WINDOW = 3`.
 
-Explicit no-action/defer areas include repeated endgame closure, combat-engine redesign, second quality-gate pass, broad UI/economy/intelligence rewrites, achievement/score formula ports, Bank credit implementation and architecture-only refactor.
+Only the three latest relevant resolved own PvP `BATTLE_REPORT` entries are considered. Canonical ordering is stable and independent of current array order:
+
+1. `event.executeAt`;
+2. `event.sequence`;
+3. `report.id`.
+
+No wall clock, persisted counter, new AI memory, schema or save change.
+
+### Exact PR3 seam
+
+New helper:
+
+`src/simulation/bots/outcomeSignals.ts`
+
+`deriveRecentBotBattleOutcomeSignal(state, empireId)`
+
+Exact output fields:
+
+- `consideredBattles`;
+- `wins`;
+- `losses`;
+- `draws`;
+- `recoveryBias: 'none' | 'loss-dominant'`.
+
+Sole direct runtime consumer in PR3:
+
+`src/simulation/bots/threatRecoveryPlanner.ts`
+
+`src/simulation/bots/scheduler.ts` is read/verify only for PR3.
 
 ## Proposed implementation sequence — NOT AUTHORIZED
 
@@ -58,30 +81,21 @@ Explicit no-action/defer areas include repeated endgame closure, combat-engine r
 2. `POST-1.0-PR2-PERSONALITY-TACTICAL-RISK`
 3. `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE`
 
-Target remains schema v19 / save v6 / migration none. If an implementation later discovers a real persistence requirement, it must stop for controller migration review rather than silently changing schema/save.
+Target remains schema v19 / save v6 / migration none.
 
-## Graphify evidence
+PR1 fixture source ordering is explicitly **non-critical**. If a fixture exposes starvation, implementation may choose another ordering only inside the accepted personality intent and mandatory invariants. It may not change acceptance gates, reducer authority, schema/save or the chosen batch theme.
 
-Repository-pinned Graphify `0.8.38` run #1302 succeeded for Audit #178:
-
-```text
-456 code / 0 docs / 0 papers / 0 images
-3546 nodes / 12388 edges
-GameState 320 edges
-createInitialGameState() 229
-executeCommand() 162
-getFactionMechanicalRoles() 122
-```
-
-`compressedCandidate()` directly consumes the core bot planners, while `BotProfile` is already a non-persisted input used by scheduler/PvE/endgame code. This supports a derived policy adaptation instead of a new AI state machine. Graphify is evidence only; source/tests were used to verify semantics.
+Achievements/extra score layers, moving objects and Bank credit remain outside this chosen batch and are not critical unknowns.
 
 ## Next safe action
 
-1. Treat the current branch head after this commit as the final Audit docs head.
-2. Require fresh exact-head CI, Graphify and Browser E2E including production smoke.
-3. Verify unresolved review threads = 0 and `mergeable=true`.
-4. Update PR metadata/body only with validation evidence; do not create another docs commit after the final gate matrix.
-5. Mark PR #178 Ready for review.
+After the final docs FIX commit:
+
+1. reply to the P1 thread with decision evidence and resolve it;
+2. reply to the P2 thread with the exact seam evidence and resolve it;
+3. require fresh exact-head CI, Graphify and Browser E2E including production smoke;
+4. verify `main` still equals `53cf207f30f1a51f864d77f61969937e0d1ad59c`;
+5. verify unresolved threads = 0, `mergeable=true`, `draft=false`;
 6. STOP for controller review.
 
-Do not merge. Do not create implementation branches.
+Do not merge. Do not create PR1 or any implementation branch.

@@ -1,6 +1,6 @@
 # POST-1.0-NEXT-PRODUCT-AUDIT
 
-**State:** complete for controller review — docs only  
+**State:** complete for controller review after docs-only FIX  
 **Audit baseline / exact starting `main`:** `53cf207f30f1a51f864d77f61969937e0d1ad59c`  
 **Baseline source:** squash-merged PR #177 `POST-1.0-PR4-LOW-COST-QUALITY-GATES`  
 **Runtime baseline:** schema v19 / save format v6  
@@ -11,582 +11,412 @@
 
 ## Controller gate
 
-This Audit reconciles the completed #173–#177 batch and recommends one next product batch. It does **not** authorize implementation. Keep PR #178 for controller review; do not merge it automatically and do not create implementation branches until explicit controller approval.
+This is an amendment of the existing Audit #178 after controller verdict `FIX — DOCS-ONLY AUDIT CONTRACT COMPLETENESS`. It does not restart the Audit, change the chosen theme, authorize implementation, create PR1, or modify runtime/tests/workflows/dependencies.
 
-Evidence state:
+Evidence states remain:
 
 - **CONFIRMED** — verified in current source/tests, GitHub state or generated Graphify evidence;
 - **DISPROVED** — a plausible hypothesis contradicted by current evidence;
-- **UNKNOWN** — insufficient evidence for an implementation contract;
-- **DECISION** — bounded Stellar product choice proposed for controller approval.
+- **UNKNOWN** — insufficient evidence, allowed only when non-critical and explicitly bounded;
+- **DECISION** — explicit Stellar-native product choice made for the proposed batch.
 
-Nemexia-reference classification remains `KEEP_STELLAR`, `ADAPT_FROM_NEMEXIA`, `RESEARCH`, or `REJECT`. Nemexia is reference evidence, not authority.
+Critical UNKNOWN items are not allowed to survive Audit merge under `docs/28-audit-first-autonomous-delivery-protocol.md`.
 
 ## Executive verdict
 
-The highest-value next development is **not** another endgame closure, combat-correctness pass, advertised-effect sweep, quality-gate pass, broad UI redesign, scoring port or architectural refactor.
+The strongest fresh product gap remains opponent strategy differentiation in the recommended `compressed-v1` campaign. The chosen proposal remains exactly:
 
-The strongest fresh product gap is narrower and player-visible:
+`POST-1.0-BOT-STRATEGY-DIFFERENTIATION`
 
-> **The default/recommended `compressed-v1` campaign has three named bot personalities, but most core strategic planning is shared. Personality is real in cadence and PvE opportunity ordering, while economy/research/production/logistics/ordinary fleet risk and compressed planner ordering mostly remain personality-agnostic.**
+Ordered work items, **not authorized**:
 
-This means the old blanket hypothesis “bot personalities are unused” remains **DISPROVED**, but a more precise hypothesis is **CONFIRMED**: in the recommended campaign path, strategic differentiation is materially thinner than the profile labels imply.
+1. `POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY`
+2. `POST-1.0-PR2-PERSONALITY-TACTICAL-RISK`
+3. `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE`
 
-**Recommended single next batch:** `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` — three bounded implementation PRs that reuse the existing bot profile/perception/planner/reducer architecture, add no archetypes, add no new combat engine, and require no schema/save migration.
+No implementation PR exists. `implementationAuthorized=false`.
 
-## Phase 1 — post-merge reconciliation
+## Reconciled baseline
 
-GitHub truth at Audit start:
-
-- #177 is squash-merged;
-- exact merge/current `main`: `53cf207f30f1a51f864d77f61969937e0d1ad59c`;
-- previous batch `POST-1.0-NEMEXIA-PARITY`: **COMPLETE**;
-- last merged PR: **177**;
-- active implementation PR: **none**;
-- active implementation work item: **none**;
-- PR5: **not authorized / does not exist**;
+- #173–#177 is complete;
+- #177 squash/current Audit starting `main`: `53cf207f30f1a51f864d77f61969937e0d1ad59c`;
+- active implementation PR/work item: none;
+- PR5: does not exist / not authorized;
 - schema v19;
-- save format v6;
+- save v6;
 - migration none.
 
-Post-merge prose that still described #177 as active was generated stale metadata. This Audit reconciles that state; it does not reinterpret it as authorization to repeat PR4.
-
-## Studied surfaces
-
-### Authority / control plane
-
-- `AGENTS.md`
-- `docs/28-audit-first-autonomous-delivery-protocol.md`
-- `docs/audits/current-execution-state.md`
-- `docs/audits/current-batch-audit.md`
-- `docs/audits/completed/post-1.0-nemexia-parity.md`
-- `docs/audits/batch-history.md`
-- `docs/project-status.json`
-- `docs/roadmap-pr-index.json`
-- `docs/17-continuation-guide.md`
-- `docs/16-execution-roadmap.md`
-- `docs/29-post-1.0-nemexia-reference-roadmap.md`
-- GitHub PR #177 and current PR/branch state
-
-### Bot/product path
-
-- `src/simulation/campaign/settings.ts`
-- `src/simulation/createInitialGameState.ts`
-- `src/simulation/bots/profiles.ts`
-- `src/simulation/bots/scheduler.ts`
-- `src/simulation/bots/perception.ts`
-- `src/simulation/bots/memory.ts`
-- `src/simulation/bots/progressionPhase.ts`
-- `src/simulation/bots/progressionPriorities.ts`
-- `src/simulation/bots/economyPlanner.ts`
-- `src/simulation/bots/researchProductionPlanner.ts`
-- `src/simulation/bots/colonyLogisticsPlanner.ts`
-- `src/simulation/bots/fleetMissionPlanner.ts`
-- `src/simulation/bots/threatRecoveryPlanner.ts`
-- `src/simulation/bots/pveOperationsPlanner.ts`
-- `src/simulation/bots/pveOperationsPlannerLegacy.ts`
-- `tests/simulation/botScheduler.test.ts`
-- `tests/simulation/botEconomyPlanner.test.ts`
-- `tests/simulation/botResearchProductionPlanner.test.ts`
-- `tests/simulation/botColonyLogisticsPlanner.test.ts`
-- `tests/simulation/botFleetMissionPlanner.test.ts`
-- `tests/simulation/botThreatRecoveryPlanner.test.ts`
-- `tests/simulation/botPveOperationsPlanner.test.ts`
-
-### Combat / information / meta / world / colony / UX
-
-- `src/simulation/combat/fleetDoctrine.ts`
-- `src/simulation/combat/types.ts`
-- `src/simulation/command/commandDoctrine.ts`
-- `src/ui/fleetDoctrineScreen.ts`
-- `src/ui/commandDoctrineScreen.ts`
-- `tests/simulation/fleetDoctrine.test.ts`
-- `tests/simulation/commandDoctrine.test.ts`
-- `src/simulation/reports/missionReports.ts`
-- `src/ui/missionReportsPanel.ts`
-- `src/simulation/intelligence/intelligenceState.ts`
-- `src/simulation/galaxy/intelligenceView.ts`
-- `src/ui/galaxyIntelPanel.ts`
-- `src/ui/commandRanking.ts`
-- `src/ui/commandRankingScreen.ts`
-- `src/simulation/endgame/solarWarView.ts`
-- `src/simulation/pve/spaceObjects.ts`
-- `src/ui/spaceObjectsPanel.ts`
-- `src/simulation/planet/specialization.ts`
-- `src/simulation/economy/empireEconomy.ts`
-- logistics/market consumers used by bot and player paths
-
-### Technical / quality
-
-- `.agents/skills/graphify/SKILL.md`
-- `scripts/graphify-audit.sh`
-- `.github/workflows/graphify-audit.yml`
-- current CI / Browser E2E workflow state
-- #177 final quality-gate evidence
-
-## Mandatory Graphify evidence
+## Evidence retained from the original #178 Audit
 
-Repository-pinned Graphify `0.8.38` ran successfully through `scripts/graphify-audit.sh code` on PR #178 Audit state:
+The original #178 survey remains authoritative except where this FIX resolves the two contract gaps below.
 
-- Graphify run #1302 / run id `32579558191` — SUCCESS;
-- artifact `graphify-audit-output`, id `9477434626`;
-- 456 code files, 0 docs/images in the code-only corpus;
-- 3,546 nodes;
-- 12,388 edges;
-- 135 communities after clustering;
-- graph extraction 100% extracted, three inferred edges after clustering;
-- `GameState` 320 edges;
-- `createInitialGameState()` 229;
-- `executeCommand()` 162;
-- `getFactionMechanicalRoles()` 122;
-- `GameCommand` 95.
+### CONFIRMED
 
-Relevant path findings, verified against source:
+- three bot personalities exist and already differ in cadence/command budget and PvE opportunity ordering;
+- blanket “personalities unused” is false;
+- default `compressed-v1` core economy/research/production/logistics/fleet/threat orchestration is still largely personality-agnostic;
+- combat formations, target priorities, class skills, Admiral/commander ships are live deterministic mechanics;
+- ranking/profile, stale intelligence/reporting, colony specialization/logistics and space-object gameplay already exist;
+- Graphify `0.8.38` on Audit evidence reported 456 code files, 3,546 nodes and 12,388 edges; `compressedCandidate()` is an existing orchestration seam and `BotProfile` is already a non-persisted policy input.
 
-| Subject | Graph evidence | Audit consequence |
-|---|---|---|
-| `compressedCandidate()` | 11 edges; directly calls logistics, economy, research/production, fleet, threat, PvE and endgame planning | personality adaptation can be bounded at an existing orchestration seam instead of forking the simulation |
-| `runBotScheduler()` | consumed by campaign time, worker and multiple simulation/audit tests | scheduler behavior is highly regression-visible; every personality change needs deterministic scenario gates |
-| `BotProfile` | 23 incoming references; already consumed by scheduler/PvE/endgame paths | use the existing profile as policy input; do not persist a duplicate strategy state |
-| `planBotEconomy()` | 24 edges; shared by scheduler, threat recovery and scenario runner | avoid invasive personality-specific economy forks in the first batch |
-| `planBotResearchAndProduction()` | 14 edges; shared by scheduler, threat recovery and scenario runner | bias ordering through policy first; retain ordinary production/research validators |
-| `planBotFleetMission()` | 18 edges; scheduler, threat recovery, E2E/runtime and integration consumers | tactical policy changes need shared mission validation and information-boundary tests |
-| `planBotThreatAndRecovery()` | 11 edges | bounded risk/recovery policy is feasible without replacing the threat model |
-| `createBotMemoryTimeline()` | only intelligence observations/alerts; no battle outcome adaptation path | recent win/loss response is a real gap, but can be derived from existing history rather than persisted state |
-| `createUnifiedMissionReports()` | 19 edges into ranking/HUD/report UI/tests | reports are a natural player-observation surface; no new telemetry subsystem is required |
-| `FleetFormation` | referenced by battle input/report, fleet state, UI and tests | combat doctrine is already a live gameplay system, not a missing engine |
-| `createInitialSpaceObjects()` | creation/migration/state consumers exist | moving/lifecycle objects would touch persistence/determinism boundaries and are not a low-risk follow-up |
+### DISPROVED
 
-Graphify also reports existing import cycles around combat/unit/type and PvE space-object/world-event modules. There is no failing test, runtime defect or delivery blocker tied to those cycles, so this Audit does **not** authorize a refactor batch for architectural aesthetics.
+- another PR5 from the old batch is required;
+- organic endgame needs another closure PR;
+- combat depth is absent;
+- intelligence/reporting, colony specialization or space-object gameplay are absent;
+- another quality-only/refactor batch is required before product work.
 
-Graphify is evidence, not authority. Community names are generic because no external LLM backend is configured; product conclusions above were verified against source and tests.
+### Non-critical RESEARCH / UNKNOWN outside the chosen batch
 
-## Fresh product survey A–I
+These do **not** block `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` and cannot change its accepted contract:
 
-### A. Player gameplay depth — CONFIRMED / mixed
+- achievement/extra score-layer gameplay value;
+- Stellar-native moving-object trajectory/lifecycle contract;
+- Bank `bankCreditEfficiencyPercent` consumer remains `UNKNOWN-UNTOUCHED` and is not part of this batch;
+- long-run player win-rate rebalance after personality differentiation is post-implementation observation, not an implementation prerequisite.
 
-The current product already has a broad early→mid→late→terminal loop, multiple colonies, specializations, logistics, market, research, fleets, scouting, PvE, bot warfare, Solar War and final objects. #174 already proved organic endgame closure.
+`criticalUnknownsResolved = true` and `criticalUnknowns = []` for the chosen batch.
 
-The strongest fresh depth issue is therefore not missing systems. It is **opponent strategy readability and differentiation**: the player can build different plans, but the three persistent opponents often feed the same core planners in the recommended profile.
+## Controller FIX Decision A — exact tactical risk policy
 
-### B. Bot personality / strategy — CONFIRMED gap, blanket claim DISPROVED
+### Current source truth — CONFIRMED
 
-Current profile truth:
+`src/simulation/bots/threatRecoveryPlanner.ts` currently recommends attack when calculated target risk satisfies:
 
-- Aegis → `industrial`, normal, 600s cadence / early 240s, max 2 commands;
-- Synod → `explorer`, hard, 300s / early 240s, max 3;
-- Veyra → `aggressive`, normal, 450s / early 240s, max 2.
+`riskPermille <= 800`
 
-Player-visible differentiation already exists:
+`src/simulation/bots/fleetMissionPlanner.ts` currently uses:
 
-- cadence / command budget differs;
-- PvE candidate ordering is personality-specific: explorer favors anomaly/expedition, industrial favors resource objects, aggressive favors pirate hunt;
-- faction catalogs/mechanical roles remain distinct.
+`ownPower * 10 >= targetPower * 12`
 
-But the recommended `compressed-v1` path uses one shared `compressedCandidate()` planner ordering. `planBotEconomy`, `planBotResearchAndProduction`, `planBotColonyLogistics`, `planBotFleetMission` and `planBotThreatAndRecovery` take `empireId`/state rather than personality policy. Ordinary attack safety uses a fixed threshold, logistics assigns the same colony-index role pattern, and bot memory summarizes intelligence rather than battle outcomes.
+which is approximately a target-risk ceiling of 833 permille. The two planner paths therefore encode two different shared attack cutoffs.
 
-**Verdict:** different bots are real, but most core compressed strategy differences are cadence/faction/PvE rather than coherent opponent doctrines. This is the best leverage point for the next batch.
+### DECISION — single personality policy truth
 
-### C. Combat depth — broad redesign DISPROVED
+PR1 owns a new pure policy module:
 
-Stellar already has:
+`src/simulation/bots/strategyPolicy.ts`
 
-- line/screen/wedge formations with real attack/armor trade-offs;
-- target priorities with target-size weights;
-- class skills tied to formation;
-- Admiral doctrines;
-- 13 commander ships and flagship ability selection;
-- deterministic tests proving formation/priority changes damage and target allocation.
+It derives policy from the existing `BotProfile.personality`. Its attack-risk field is exactly:
 
-Therefore a new combat engine, initiative system or generic active-ability layer is not justified.
+`maxAttackRiskPermille`
 
-A smaller **combat-doctrine observability** gap is real: `BattleReport` retains commander IDs, attacker/defender formation and target priority, while `UnifiedMissionReport`/`missionReportsPanel` expose detailed damage breakdown but do not currently surface those doctrine choices. That is a valuable future one-PR candidate, not part of the chosen bot batch.
+Accepted values:
 
-### D. Score / achievements / long-term meta — RESEARCH
+| Personality / default empire | `maxAttackRiskPermille` |
+|---|---:|
+| `industrial` / Aegis | 700 |
+| `explorer` / Synod | 800 |
+| `aggressive` / Veyra | 900 |
 
-`commandRanking.ts` already provides a native composite ranking plus colonies, resource stock, production, building/research levels, units, fleets and victories. Solar War also has its own scoreboard.
+This is Stellar-native product tuning, not a Nemexia formula.
 
-No executable Achievement subsystem was found in the current code graph. A Resource/Battle/Achievement score split or achievement checklist therefore needs an independent gameplay goal. Porting Nemexia score formulas would add vanity/accounting surface without proven decisions. Keep as RESEARCH.
+Rationale:
 
-### E. World / space-object depth — existing gameplay CONFIRMED, movement RESEARCH
+- Explorer preserves the existing ~800 threat-planner baseline;
+- Industrial gets an explicitly safer margin;
+- Aggressive gets a bounded marginal-risk window;
+- even Aggressive at 900 still requires estimated target power to remain below own estimated power;
+- current full-intel requirements and ordinary mission/reducer validation remain mandatory.
 
-Asteroids, gas clouds and anomalies already have specialist hull requirements, deterministic coordinates, fuel/travel, depletion, hazards, cooldowns, temporary control, contextual yield and reports. The system is meaningful, not cosmetic.
+### Mandatory PR2 truth-source contract
 
-The fresh limitation is that initial space-object positions are deterministic and fixed; there is no verified moving-object/lifecycle trajectory contract. Movement could create competition and route re-evaluation, but would increase persistence, determinism and UX risk. Keep deterministic lifecycle/movement as RESEARCH until a Stellar-native product contract is approved; do not copy an unknown Nemexia formula.
+Both tactical planner paths must consume the same derived `maxAttackRiskPermille` from `src/simulation/bots/strategyPolicy.ts`.
 
-### F. Economy / colony specialization — KEEP_STELLAR
+- `src/simulation/bots/fleetMissionPlanner.ts` must replace the hardcoded `10/12` attack cutoff with the exact policy threshold;
+- `src/simulation/bots/threatRecoveryPlanner.ts` must replace hardcoded `riskPermille <= 800` with the same exact policy threshold;
+- no second personality threshold table is allowed in either planner.
 
-Planet specialization already changes resource production, construction speed, ship speed and defense speed with explicit trade-offs. Development templates and inter-colony logistics are real. Bots assign industry/resource/military roles and maintain routes/market fallback.
+All three personalities must still require:
 
-No fresh evidence proves a dominant player strategy severe enough to justify broad rebalance. Do not rebalance economy from intuition alone.
+- current intelligence;
+- level 3/full defense estimate;
+- `getMissionAvailability()` where the ordinary fleet mission path applies;
+- existing command/reducer validation.
 
-### G. Intelligence / reports / information game — KEEP_STELLAR with one bounded combat-report opportunity
+### Exact PR2 acceptance fixture
 
-Galaxy intelligence distinguishes owned/current/stale/contact/unclaimed, shows observation expiry and supports target-to-mission flow. Bot attacks require current full intelligence. Unified reports include intelligence events, battle/PvE/Solar-War history, filtering, comparison and map backlinks.
+Use one deterministic equal-force/intelligence fixture with at least one candidate target whose `riskPermille` lies strictly between 700 and 900. The fixture must prove:
 
-Broad “information gameplay missing” is disproved. The specific doctrine-to-result explanation gap in battle reports remains a future bounded candidate.
+- Industrial rejects risk above 700;
+- Explorer accepts at/below 800 and rejects above 800;
+- Aggressive accepts at/below 900;
+- the same target around the bounded marginal window is rejected by Industrial and accepted by Aggressive;
+- no personality attacks without current level-3 intelligence;
+- validator/reducer truth remains authoritative.
 
-### H. UI / UX gaps — no redesign batch
+The exact tactical margin is therefore **DECISION**, not UNKNOWN.
 
-The audit found existing dedicated surfaces for doctrines, Admiral/commander ships, rankings, intelligence, reports, space objects and operations. Quality gates do not prove perfect UX, but no fresh task-level evidence supports a broad redesign.
+## Controller FIX Decision B — exact recent battle history window
 
-Do not replace navigation or information architecture merely because the product is dense. Future UX work must tie to a specific decision task.
+### DECISION
 
-### I. Technical health — KEEP current architecture; no refactor batch
+`RECENT_BOT_BATTLE_WINDOW = 3`
 
-#177 already hardened reproducible install, axe, deterministic snapshot, production browser smoke and Graphify corpus. Graphify shows large shared hubs and several import cycles, but current tests/gates do not show a defect or cost that requires a refactor before player-facing work.
+Outcome adaptation considers only the three most recent relevant resolved own PvP battle reports.
 
-The bot strategy seam is existing and bounded enough to proceed without architecture cleanup. Technical work should accompany the behavior it protects, not precede it as a cosmetic refactor.
+A relevant battle is an existing `GameState.eventLog` entry where:
 
-## CONFIRMED
+- `entry.event.payload.type === 'BATTLE_REPORT'`;
+- the target empire is `report.attackerEmpireId` or `report.defenderEmpireId`;
+- the battle is PvP under the existing BattleReport/mode semantics and is not a PvE battle.
 
-1. #177 is merged and #173–#177 is complete.
-2. Default campaign progression is `compressed-v1`.
-3. Three bot personalities exist with distinct cadence/budgets.
-4. Personality already affects PvE opportunity ordering; “personalities unused” is false.
-5. Core compressed planner ordering is shared across personalities.
-6. Economy/research/production/logistics/ordinary fleet/threat planners are largely personality-agnostic.
-7. Ordinary bot attack safety is fixed rather than personality-specific.
-8. Bot memory is intelligence-centric and does not model recent battle win/loss adaptation.
-9. Combat doctrine, target priorities, class skills, Admiral and commander ships already affect gameplay.
-10. Ranking/profile already exists as a Stellar-native composite model.
-11. Space objects already provide persistent deterministic gameplay with depletion/control/hazards.
-12. Colony specialization/logistics and stale intelligence/reporting are real runtime systems.
-13. Current Graphify code corpus is cleanly code-only: 456 files, 3,546 nodes, 12,388 edges.
+Canonical selection must not depend on current `eventLog` array order. Relevant entries are deterministically ordered by these stable keys, ascending:
 
-## DISPROVED
+1. `entry.event.executeAt`;
+2. `entry.event.sequence`;
+3. `report.id`.
 
-1. “The next step is PR5 from the old batch.” — false; PR5 is not authorized and #177 closed that batch.
-2. “Organic endgame still needs another closure PR.” — false after #174.
-3. “Combat doctrine/counters are missing.” — false; live simulation + UI + tests exist.
-4. “Bot personalities are completely unused.” — false; PvE and cadence already use them.
-5. “Scouting/stale intel/reporting are absent.” — false.
-6. “Colonies do not specialize.” — false.
-7. “Space objects are only decorative.” — false.
-8. “A new quality-gate/refactor batch is required before gameplay work.” — no evidence supports it.
+Then take the final three relevant entries.
 
-## UNKNOWN
+No wall clock. No persisted counter. No new bot memory. No schema/save change.
 
-1. Exact optimal numeric risk margins for each bot personality.
-2. Whether long-run player win rate needs balance adjustment after personality differentiation.
-3. Whether achievement layers would change player behavior enough to justify persistence/UI cost.
-4. A Stellar-native moving-asteroid trajectory/lifecycle contract.
-5. Whether `bankCreditEfficiencyPercent` should ever become a credit system; remains untouched.
-6. Whether existing Graphify import cycles create material maintenance cost; no current defect proves it.
+For the target empire each considered battle is classified exactly as:
 
-## Nemexia/reference classification summary
+- `win` — `report.winner` equals the side on which the empire participated;
+- `loss` — `report.winner` equals the opposing side;
+- `draw` — `report.winner === 'draw'`.
 
-| Area | Classification | Reason |
-|---|---|---|
-| Core Stellar progression/endgame | `KEEP_STELLAR` | already closed and proven |
-| Current combat engine/doctrines | `KEEP_STELLAR` | rich deterministic native system |
-| Bot strategy differentiation | `KEEP_STELLAR` + bounded adaptation concept | use Stellar profiles/planners; no Nemexia formula is required |
-| Separate Resource/Battle/Achievement scores | `RESEARCH` | native ranking exists; gameplay value unproven |
-| Achievements | `RESEARCH` | no current contract; avoid vanity checklist |
-| Moving/dynamic space objects | `RESEARCH` | current objects meaningful; trajectory semantics unknown |
-| Colony specialization/logistics | `KEEP_STELLAR` | existing trade-offs and routes are live |
-| Intelligence/report loop | `KEEP_STELLAR` | current/stale intel + report backlinks exist |
-| Broad UI parity/redesign | `REJECT` for next batch | no task-level evidence |
-| Nemexia credit system from Bank field | `REJECT` without new decision | source field remains UNKNOWN / UNTOUCHED |
-| New initiative/ability combat engine | `REJECT` for next batch | duplicates existing depth without proven value |
+Only these three classifications feed the bounded signal.
 
-No `USER_MEMORY`, `HEURISTIC` or `HYPOTHESIS` reference claim is promoted into a Stellar contract by this Audit. The chosen batch is justified by LIVE STELLAR source/tests/Graphify evidence.
+When a prior loss no longer belongs to the last three relevant battles, it must no longer affect the signal. The bot therefore returns to its baseline personality policy unless the current three-battle window itself is loss-dominant.
 
-## Ranked next backlog
-
-### #1 — Bot strategy differentiation in the default campaign — RECOMMEND
-
-**Player-visible problem:** Aegis/Synod/Veyra carry distinct labels and some distinct behavior, but default compressed campaign decisions often converge onto the same planner ordering/risk logic.
-
-**Why now:** the game already has enough economy, fleets, intelligence, PvE and endgame depth for opponent behavior to leverage. Improving strategy differentiation compounds existing systems instead of adding another subsystem.
-
-**Smallest viable scope:** derived personality policy; personality-sensitive compressed planner ordering; bounded tactical risk/scouting differences; recent outcome signal derived from existing battle history; deterministic multi-personality scenario gates.
-
-**Persistence:** none expected. Policy and outcome signal are derived from existing profile/state/history.
-
-**Main risks:** destabilizing organic progression; making one personality objectively stronger; accidentally using hidden player state; nondeterministic tie-breaking.
-
-### #2 — Combat doctrine observability in battle reports — DEFER as next one-PR candidate
-
-**Player-visible problem:** doctrine choices affect battle resolution, but the unified report UI does not explain which formation, target priority and commander context produced the result.
-
-**Leverage:** data already exists in `BattleReport`; likely no schema change.
-
-**Why not #1:** improves comprehension of one system, but does not change the strategic opposition across the whole campaign.
-
-### #3 — Deterministic world-object lifecycle/movement — RESEARCH
-
-**Player-visible problem:** persistent objects are meaningful but spatially static after generation, reducing route re-evaluation and competition.
-
-**Why not now:** movement/lifecycle touches save/determinism/map/mission semantics and lacks a proved Stellar-native contract. Research first.
-
-## Rejected / deprioritized / explicit no-action
-
-- repeat organic late-game closure — **NO ACTION**;
-- repeat combat identity correctness — **NO ACTION**;
-- repeat advertised-effect cleanup — **NO ACTION**;
-- second low-cost quality-gate PR — **NO ACTION**;
-- broad economy rebalance — **DEFER** pending measured dominant-strategy evidence;
-- broad colony redesign — **NO ACTION**;
-- broad intelligence rewrite — **NO ACTION**;
-- generic UI redesign — **REJECT** for next batch;
-- achievement/score formula port — **RESEARCH**;
-- new combat engine/initiative layer — **REJECT** for next batch;
-- Bank/credit subsystem — **REJECT** without separate product evidence;
-- import-cycle/module refactor — **DEFER** until a concrete defect/cost or feature unblock is demonstrated.
-
-# Chosen single next batch
-
-## `POST-1.0-BOT-STRATEGY-DIFFERENTIATION`
-
-**Theme:** make the three existing opponents express distinct, understandable strategies throughout the recommended `compressed-v1` campaign by adapting existing planner decisions, not by adding new factions/archetypes or replacing the simulation.
-
-**Dependency graph:** PR1 → PR2 → PR3. No parallel implementation is authorized by this Audit.
+This history window is therefore **DECISION**, not UNKNOWN.
 
 ## Proposed PR1 — `POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY`
 
-### Purpose / player-visible outcome
+### Purpose
 
-Make Aegis industrial, Synod explorer and Veyra aggressive affect the ordinary `compressed-v1` scheduler decision portfolio, while preserving mandatory logistics/endgame invariants and ordinary command validators.
+Make compressed-campaign strategy preferences explicit without introducing persisted AI state or bypassing ordinary commands.
 
-### Verified current state
+### Exact primary paths
 
-`legacyCandidatesForPersonality()` already has personality-specific source ordering; `compressedCandidate()` currently uses one shared ordering. `BotProfile` is already provided to scheduler decisions and is not persisted inside `GameState`.
-
-### Expected files / functions
-
-- `src/simulation/bots/profiles.ts` — bounded strategy-policy type/derivation or profile-owned policy constants;
-- `src/simulation/bots/scheduler.ts` — `compressedCandidate()`, candidate ordering helpers, `runProfileDecision()`;
-- focused scheduler tests in `tests/simulation/botScheduler.test.ts` and/or a new `tests/simulation/botStrategyPolicy.test.ts`.
-
-Do not change reducer command semantics.
+- **new:** `src/simulation/bots/strategyPolicy.ts` — pure `BotProfile` → derived policy truth;
+- `src/simulation/bots/scheduler.ts` — consume policy in compressed candidate ordering only where personality preference is allowed;
+- `src/simulation/bots/profiles.ts` — read/verify existing personality identities and defaults;
+- **new focused test:** `tests/simulation/botStrategyPolicy.test.ts`;
+- existing `tests/simulation/botScheduler.test.ts` for deterministic integration/regression evidence.
 
 ### Data flow
 
-`DEFAULT_BOT_PROFILES` → derived strategy policy → `runProfileDecision()` → `compressedCandidate()` → existing planners → `selectCandidate()` → `executeCommand()`.
+`DEFAULT_BOT_PROFILES` → `deriveBotStrategyPolicy(profile)` → `runProfileDecision()` / `compressedCandidate()` → existing planners → `selectCandidate()` → `executeCommand()`.
 
-### Consumers
+### Invariants
 
-Bots directly; player observes different growth/scouting/aggression tempo through map, reports, ranking and attacks. Worker/campaign-time consumers remain unchanged.
+- mandatory logistics/endgame/critical recovery invariants stay above flavor ordering where required for correctness/closure;
+- no hidden player information;
+- no randomness/wall clock;
+- ordinary commands/reducer remain authoritative;
+- schema v19 / save v6 / migration none.
 
-### Persistence / schema
+### Acceptance gate
 
-None. `schemaVersion=19`, save v6, no migration.
+On an equalized deterministic fixture where multiple ordinary actions are simultaneously valid, all three profiles must show documented distinct strategy preference while accepted commands pass existing validators, repeated results/checksums match, hidden player-state mutation does not alter a bot choice, and Fresh Game→Terminal remains green.
 
-### Determinism / performance constraints
+### Non-critical implementation question
 
-- policy is a pure function of existing profile fields;
-- stable ordering/tie-breaks only;
-- no randomness or wall clock;
-- no extra unbounded planner loops;
-- mandatory logistics/endgame actions remain ahead of personality flavor when they protect invariants/closure.
-
-### Required gates
-
-- focused policy/scheduler unit tests;
-- existing bot scheduler/save/hidden-state tests;
-- organic campaign/endgame audit tests;
-- full CI + Browser E2E on exact head.
-
-### Risks
-
-Personality flavor could starve prerequisites or endgame participation. The implementation must distinguish **preference** from invariant-breaking priority.
-
-### Non-goals
-
-No new personalities, no difficulty redesign, no faction catalog rebalance, no UI redesign, no save fields.
-
-### Ordered implementation steps
-
-1. Encode three bounded strategy preferences using existing profile identity.
-2. Refactor compressed candidate ordering to consume that policy while retaining invariant actions.
-3. Add controlled fixtures where multiple valid planner actions coexist.
-4. Prove personalities choose different ordinary sources in those fixtures.
-5. Run organic closure/regression gates.
-
-### Exact acceptance gate
-
-On an equalized deterministic fixture where at least economy, fleet/scout and military/production actions are simultaneously valid, the three profiles must produce the documented personality-specific ordering, all accepted commands must pass the existing reducer validators, repeated runs/checksums must match, hidden player-state mutation must not change a bot choice, and Fresh Game→Terminal closure tests must remain green.
-
-### Unresolved question / verification
-
-Exact source ordering may need one fixture-driven adjustment if it starves a mandatory compressed milestone. Verify by the existing progression scenario and reject any ordering that regresses terminal closure.
+The exact fixture-oriented source ordering may need adjustment if a proposed preference starves a mandatory compressed milestone. This is **NON-CRITICAL** because implementation may change ordering only inside the already accepted personality intent and invariants above. It may not change personality intent, validator authority, acceptance gates, schema/save, or the PR1→PR2→PR3 batch contract. If a fixture exposes starvation, choose another ordering inside the accepted policy rather than redesigning the batch.
 
 ## Proposed PR2 — `POST-1.0-PR2-PERSONALITY-TACTICAL-RISK`
 
 ### Purpose / player-visible outcome
 
-Make personality visible in *how* fleets gather information, select safe targets and recover/defend — without changing battle rules.
+Make personality visible in information gathering and bounded attack/recovery risk without changing combat results.
 
-### Verified current state
+### Exact primary paths
 
-`planBotFleetMission()` and `planBotThreatAndRecovery()` currently use shared attack/recovery thresholds. Scout missions already precede attacks inside the ordinary fleet planner, attacks require current full intel, and all commands go through shared mission/reducer validation.
-
-### Expected files / functions
-
-- strategy policy definition from PR1;
-- `src/simulation/bots/fleetMissionPlanner.ts` — `missionPlan()`, scout/attack ranking and policy input;
-- `src/simulation/bots/threatRecoveryPlanner.ts` — `assessTargets()`, `threatLevel()`/action selection policy input where bounded;
-- focused `botFleetMissionPlanner.test.ts` and `botThreatRecoveryPlanner.test.ts` fixtures;
-- scheduler integration tests.
+- `src/simulation/bots/strategyPolicy.ts` — truth source for `maxAttackRiskPermille`;
+- `src/simulation/bots/fleetMissionPlanner.ts` — use exact policy threshold instead of hardcoded `10/12` cutoff;
+- `src/simulation/bots/threatRecoveryPlanner.ts` — use the same exact policy threshold instead of `riskPermille <= 800`;
+- `tests/simulation/botFleetMissionPlanner.test.ts`;
+- `tests/simulation/botThreatRecoveryPlanner.test.ts`;
+- existing `tests/simulation/botScheduler.test.ts` for integration/regression only as needed.
 
 ### Data flow
 
-`BotProfile` → derived policy → perception/current intel → fleet/threat planner → shared `getMissionAvailability()`/production validators → scheduler → reducer.
+`BotProfile` → `deriveBotStrategyPolicy(profile).maxAttackRiskPermille` → perception/current full intel → both fleet/threat attack eligibility paths → existing mission/command validators → scheduler → reducer.
 
-### Player/bot/UI/report consumers
+### Behavior boundary
 
-No new UI contract. Player observes Explorer refreshing uncertain/stale targets more strongly, Industrial preserving safer assets/recovery, Aggressive accepting the highest still-bounded safe attack opportunity. Existing reports/intelligence show resulting actions.
-
-### Persistence / schema
-
-None.
-
-### Determinism / performance
-
-Stable sort keys and integer thresholds only; no random personality roll; no access to hidden opponent data; no second combat simulation inside planning.
-
-### Required gates
-
-- current/stale/full-intel boundary tests;
-- policy-specific target/risk fixtures;
-- mission validator tests;
-- hidden-state invariance;
-- scheduler determinism/save round-trip;
-- full CI/Browser.
-
-### Risks
-
-Too-wide risk margins can produce passive Industrial or suicidal Aggressive behavior. Numeric thresholds are product tuning, not Nemexia formulas.
-
-### Non-goals
-
-No combat-engine changes, no fleet formation redesign, no new intel level, no new ship role.
-
-### Ordered steps
-
-1. Thread PR1 policy into fleet/threat planners without duplicating state.
-2. Parameterize only existing scout/target/risk decisions.
-3. Add symmetric fixtures that vary policy while holding information/forces constant.
-4. Confirm all selected commands remain ordinary and validated.
-5. Calibrate within existing campaign-performance budget.
+- Industrial/Aegis: 700;
+- Explorer/Synod: 800;
+- Aggressive/Veyra: 900;
+- current level-3 intel remains mandatory;
+- no hidden information;
+- no combat-engine or battle-result change;
+- no new mission type;
+- no schema/save change.
 
 ### Exact acceptance gate
 
-For the same deterministic military/intelligence fixture, Explorer must prefer a valid information-gathering action when actionable intel is stale/incomplete, Aggressive must accept at least one marginal-but-bounded target that Industrial rejects, Industrial must still attack clearly favorable fully known targets, and no personality may attack without current full intelligence or bypass `getMissionAvailability()`/reducer validation. All outcomes must be seed/order deterministic.
+The shared deterministic marginal-risk fixture described in Decision A must prove one policy truth across both planner paths. Industrial rejects a target in the >700 bounded window, Aggressive accepts a target <=900 that Industrial rejects, Explorer follows the 800 boundary exactly, and all three still obey current/full-intel plus mission/reducer validation. Planner results remain deterministic under stable ordering.
 
-### Unresolved question / verification
-
-Exact numeric safety margins are **UNKNOWN**. Determine the smallest integer-permille separation that satisfies the controlled fixtures and does not materially regress campaign completion/performance; document chosen constants in implementation PR evidence.
+No tactical-risk UNKNOWN remains.
 
 ## Proposed PR3 — `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE`
 
 ### Purpose / player-visible outcome
 
-Give the existing personalities bounded response to recent wins/losses so opposition changes after combat instead of returning immediately to a static policy, then prove player-visible differentiation across a scenario matrix.
+Add bounded recovery response to recent own PvP losses using already persisted battle history, then return to baseline when the loss leaves the exact three-battle window.
 
-### Verified current state
+### Exact new helper path and public contract
 
-Battle reports/history are already in `GameState`; bot memory currently summarizes intelligence observations/alerts, not own battle outcomes. New persisted memory is therefore unnecessary for a first bounded adaptation.
+**New file:**
 
-### Expected files / functions
+`src/simulation/bots/outcomeSignals.ts`
 
-- new bounded helper such as `src/simulation/bots/outcomeSignals.ts` (name may vary, contract must not);
-- `src/simulation/bots/scheduler.ts` and/or `threatRecoveryPlanner.ts` to consume a derived recent-outcome signal;
-- tests for signal derivation, save/load equivalence and scenario behavior;
-- existing report/event types only unless a missing read-only helper is required.
+**Public helper:**
 
-### Data flow
+`deriveRecentBotBattleOutcomeSignal(state, empireId)`
 
-existing deterministic `eventLog` / `BATTLE_REPORT` history → derived per-empire recent outcome signal → strategy policy adjustment → existing planner choices. No write-back state.
+Exact readonly output contract:
 
-### Consumers
+```ts
+interface RecentBotBattleOutcomeSignal {
+  readonly consideredBattles: number;
+  readonly wins: number;
+  readonly losses: number;
+  readonly draws: number;
+  readonly recoveryBias: 'none' | 'loss-dominant';
+}
+```
 
-Bots change posture; player observes recovery/caution after losses and return toward baseline after stabilization through reports/map/ranking. No new telemetry panel is required.
+`recoveryBias` is `loss-dominant` iff `losses > wins`; draws are neutral. Wins never create a positive/unbounded aggression bonus. Otherwise it is `none`.
 
-### Persistence / schema
+The helper is pure and deterministic. It derives only from existing `GameState.eventLog` using `RECENT_BOT_BATTLE_WINDOW = 3` and the canonical ordering/selection semantics in Decision B.
 
-None. Derive from existing saved history. If implementation discovers that required history is not persisted/reliably bounded, STOP and return to controller rather than adding schema implicitly.
+### Exact runtime consumer
 
-### Determinism / performance
+**Only direct runtime consumer in PR3:**
 
-Use a bounded recent-history window; stable chronological/id ordering; O(bounded history) planner overhead; no wall-clock time; save/load must derive the same signal.
+`src/simulation/bots/threatRecoveryPlanner.ts`
 
-### Required gates
+`planBotThreatAndRecovery()` consumes the derived signal and may apply a bounded recovery bias through its existing recovery/action-selection model.
 
-- recent-win/loss signal unit tests;
-- save/load and partition determinism;
-- player-hidden-information boundary;
-- three-personality scenario matrix;
-- organic Fresh Game→Terminal;
-- full CI, Graphify, Browser E2E, production smoke.
+`src/simulation/bots/scheduler.ts` is **READ/VERIFY ONLY** for PR3 unless a genuine pre-existing contract violation is discovered and the implementation stops/re-audits. Scheduler must not become a direct outcome-signal consumer.
 
-### Risks
+### Exact PR3 data flow
 
-Feedback loops can amplify imbalance or make behavior oscillate. Adaptation must be bounded and decay/return to baseline using existing game-time/history, not permanent hidden state.
+`GameState.eventLog`
+→ `src/simulation/bots/outcomeSignals.ts`
+→ `deriveRecentBotBattleOutcomeSignal(state, empireId)`
+→ `planBotThreatAndRecovery()` in `src/simulation/bots/threatRecoveryPlanner.ts`
+→ existing recovery/action selection
+→ scheduler existing threat candidate path
+→ `executeCommand()`
+→ reducer validation.
 
-### Non-goals
+### Exact PR3 expected files
 
-No reinforcement learning, no long-term generated memory, no new persisted AI state, no personality count increase.
+Primary runtime:
 
-### Ordered steps
+- `src/simulation/bots/outcomeSignals.ts`;
+- `src/simulation/bots/threatRecoveryPlanner.ts`.
 
-1. Derive a bounded recent outcome summary from existing battle history.
-2. Prove save/load and ordering determinism.
-3. Apply a small policy modifier after losses/wins.
-4. Add controlled loss→recovery and win→baseline scenarios for all personalities.
-5. Run campaign/performance/browser closure gates.
+Read/verify only:
 
-### Exact acceptance gate
+- `src/simulation/bots/scheduler.ts`;
+- `src/simulation/types.ts`;
+- `src/simulation/combat/types.ts`.
 
-Given identical saved state/history, outcome signal and next bot decisions must be identical before/after save-load and across event-array order normalization; a recent meaningful loss must move the affected bot toward a safer/recovery action relative to its baseline when such an action is valid; after the bounded window no longer contains the loss, the same profile must return to baseline policy. The three-profile scenario matrix must retain distinct behavior without preventing organic terminal closure or exceeding existing campaign performance gates.
+Focused tests:
 
-### Unresolved question / verification
+- `tests/simulation/botOutcomeSignals.test.ts`;
+- `tests/simulation/botThreatRecoveryPlanner.test.ts`;
+- existing `tests/simulation/botScheduler.test.ts` only for integration/regression evidence if needed.
 
-The minimum useful history window is UNKNOWN. Start with the smallest bounded number of own resolved battles that can satisfy loss/recovery fixtures; do not use elapsed real time or add persisted counters.
+No alternative helper path or `scheduler.ts and/or ...` seam is allowed.
+
+### Exact PR3 behavior boundary
+
+The outcome signal must not:
+
+- change the combat engine or battle result;
+- create persistent bot memory/counters;
+- bypass PR1/PR2 personality policy;
+- create a new scheduler mode;
+- add hidden information;
+- create permanent Aggressive/Industrial state;
+- create a win-based unbounded aggression bonus.
+
+Allowed bounded behavior:
+
+- when the current three-battle signal is `loss-dominant`, `planBotThreatAndRecovery()` receives recovery bias;
+- that bias may strengthen existing fleet/recovery posture only;
+- critical/economic invariants remain higher priority;
+- chosen actions remain existing ordinary commands;
+- validators/reducer remain authoritative;
+- when the loss no longer belongs to the latest three relevant battles, the baseline personality policy returns automatically.
+
+### Exact PR3 acceptance gate
+
+Tests must prove:
+
+1. event-array permutation produces the same canonical considered three reports and the same signal;
+2. save/load produces the same signal and next threat/recovery decision;
+3. own attacker win/loss, own defender win/loss and draw are classified correctly;
+4. PvE battle reports do not enter the window;
+5. a loss-dominant three-battle window produces bounded safer/recovery posture when a valid recovery action exists;
+6. when that loss ages out of the latest three relevant battles, behavior returns to baseline personality policy;
+7. wins do not create an unbounded aggression bonus;
+8. organic Fresh Game→Terminal, deterministic scheduler/regression, campaign performance, CI, Graphify and Browser gates remain green.
+
+No outcome-history UNKNOWN remains.
 
 ## Schema / save assessment
 
-Chosen batch target:
+Chosen batch target remains exactly:
 
-- schema: remain v19;
-- save format: remain v6;
-- migration: none;
-- strategy policy: derived from existing `BotProfile`;
-- outcome adaptation: derived from already persisted game history.
+- schema v19;
+- save format v6;
+- migration none;
+- strategy policy derived from `BotProfile`;
+- recent outcome signal derived from existing persisted `eventLog`;
+- no persisted AI memory or counters.
 
-**Stop condition:** if any proposed PR discovers that a required player-visible contract cannot be implemented honestly without new persisted state, it must stop and return to controller with a migration proposal. This Audit does not pre-authorize schema/save changes.
+Any discovered requirement for new persisted state is a STOP/re-audit condition, not implicit migration authorization.
+
+## Critical UNKNOWN closure
+
+`criticalUnknownsResolved = true`
+
+`criticalUnknowns = []`
+
+Resolved by Audit DECISION:
+
+- tactical risk margins → 700 / 800 / 900 through one `maxAttackRiskPermille` policy truth;
+- recent outcome history window → `RECENT_BOT_BATTLE_WINDOW = 3` with exact canonical ordering and classification;
+- PR3 implementation seam → exact `outcomeSignals.ts` helper and sole direct runtime consumer `threatRecoveryPlanner.ts`.
+
+Remaining research areas (achievements, moving objects, Bank) are outside the chosen batch and are not critical unknowns. PR1 fixture ordering is explicitly non-critical and cannot alter the accepted contract.
 
 ## Intentional non-goals
 
 - no runtime changes in PR #178;
-- no implementation branch from this Audit;
+- no implementation branch / PR1;
 - no PR5 continuation of the closed batch;
 - no Nemexia formula port;
-- no fourth/eighth bot archetype;
-- no combat engine redesign;
-- no achievements/score-layer implementation;
-- no moving asteroid implementation;
+- no new personality archetypes;
+- no combat-engine redesign;
+- no achievement/score-layer implementation;
+- no moving-object implementation;
 - no economy-wide rebalance;
 - no broad UI redesign;
 - no tooling/dependency/workflow change;
 - no Bank/credit system.
 
-## Material divergence
+## Exact-head validation contract after this FIX
 
-The Audit intentionally diverges from the old reference roadmap ordering. After #174–#177, several former high-priority risks are closed or disproved. Fresh evidence moves bot personality/strategy from a vague parity hypothesis to the strongest bounded product opportunity, while scoring, achievements and moving space objects remain RESEARCH.
+After the final docs commit:
 
-The chosen batch is Stellar-native. It may resemble strategy differentiation seen in other 4X/browser games, but its contract comes from current `BotProfile`, scheduler/planner behavior, current information boundaries and deterministic reducer semantics — not from unverified Nemexia behavior.
-
-## Exact-head validation contract
-
-After the final docs/control-plane commit, PR #178 must have fresh exact-head:
-
+- current `main` must still equal `53cf207f30f1a51f864d77f61969937e0d1ad59c`;
 - CI — SUCCESS;
-- Graphify audit — SUCCESS;
+- Graphify — SUCCESS;
 - Browser E2E — SUCCESS;
-- production smoke inside Browser E2E — SUCCESS;
+- production smoke — SUCCESS;
 - unresolved review threads — 0;
-- mergeable — true.
+- `mergeable=true`;
+- PR #178 remains Ready / `draft=false`.
 
-Only then mark PR #178 Ready for review. **Do not merge. Do not create implementation branches.**
+Then STOP for controller review. **Do not merge. Do not create PR1.**

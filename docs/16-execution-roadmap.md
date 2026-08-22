@@ -1,6 +1,6 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Release 1.0 closed; previous post-1.0 batch complete; next product Audit #178 active  
+**Status:** Release 1.0 closed; previous post-1.0 batch complete; Audit #178 under controller FIX review  
 **Updated:** 2026-08-22  
 **Verified runtime main:** `53cf207f30f1a51f864d77f61969937e0d1ad59c`  
 **Last merged PR:** #177 `POST-1.0-PR4-LOW-COST-QUALITY-GATES`  
@@ -14,84 +14,115 @@ AGENTS.md
 docs/28-audit-first-autonomous-delivery-protocol.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
-docs/audits/completed/post-1.0-nemexia-parity.md
-docs/audits/batch-history.md
 docs/project-status.json
 docs/roadmap-pr-index.json
 docs/17-continuation-guide.md
-docs/29-post-1.0-nemexia-reference-roadmap.md
-docs/27-playable-game-roadmap-v5.md   # historical Release 1.0 roadmap
 ```
 
 Actual GitHub state wins over stale prose.
 
 ## Completed boundary
 
-Release 1.0 M1–M9 remains closed. The subsequent `POST-1.0-NEMEXIA-PARITY` Audit/implementation chain is also complete:
-
-```text
-#173 Audit → 817a014ef958be4c54f2bd5b54a68890f358d53a
-#174 → 200456244d3a7efcbb197f7734a97adf622fad76
-#175 → 415a3aa814d759d1f76a986003ad7e9d06e0e8fa
-#176 → c2012c76397c0a56bce85c470334850f7be4bd3e
-#177 → 53cf207f30f1a51f864d77f61969937e0d1ad59c
-```
-
-There is no PR5 from that batch.
+`POST-1.0-NEMEXIA-PARITY` is complete through #177. There is no PR5 from that batch.
 
 ## Current entrypoint
 
-The active work item is docs-only:
+Only docs-only Audit #178 is active:
 
-`POST-1.0-NEXT-PRODUCT-AUDIT` — PR #178 — branch `audit/post-1.0-next-product`.
+`POST-1.0-NEXT-PRODUCT-AUDIT`
 
-It started from exact fresh `main` `53cf207f30f1a51f864d77f61969937e0d1ad59c` and performs a fresh survey rather than repeating the #173 roadmap.
-
-Current Audit recommendation:
+Chosen proposal, still **not authorized**:
 
 `POST-1.0-BOT-STRATEGY-DIFFERENTIATION`
 
-Proposed ordered work items, **not authorized yet**:
+Exact ordered work items:
 
 1. `POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY`
 2. `POST-1.0-PR2-PERSONALITY-TACTICAL-RISK`
 3. `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE`
 
-The complete evidence/contracts live in `docs/audits/current-batch-audit.md`.
+No implementation PR exists.
 
-## Why this batch is recommended
+## Critical UNKNOWN closure
 
-The recommended `compressed-v1` campaign already has three bot profiles and real PvE/cadence differences, but most core economy/research/production/logistics/fleet/threat planning is shared. The existing `BotProfile` → scheduler/planner → ordinary reducer path gives a bounded way to make opposing strategy more visible without adding a new AI subsystem or persisted state.
+Audit #178 now records:
 
-The Audit explicitly does not reopen organic endgame closure, combat correctness, advertised-effect truth or low-cost quality gates. Combat doctrine/report observability is ranked second; dynamic world-object lifecycle and achievements/extra score layers remain RESEARCH.
+`criticalUnknownsResolved = true`
+
+`criticalUnknowns = []`
+
+The two prior critical questions are resolved as Stellar-native DECISIONs.
+
+### Tactical-risk DECISION
+
+Single truth source in proposed PR1:
+
+`src/simulation/bots/strategyPolicy.ts`
+
+Field:
+
+`maxAttackRiskPermille`
+
+- industrial / Aegis = 700;
+- explorer / Synod = 800;
+- aggressive / Veyra = 900.
+
+PR2 requires both `fleetMissionPlanner.ts` and `threatRecoveryPlanner.ts` to use that same threshold. Current full level-3 intel, mission availability and reducer validation remain mandatory.
+
+### Outcome-window DECISION
+
+`RECENT_BOT_BATTLE_WINDOW = 3`.
+
+Only the three latest relevant resolved own PvP battle reports count, ordered deterministically by:
+
+1. `event.executeAt`;
+2. `event.sequence`;
+3. `report.id`.
+
+No wall clock, persisted counters, new AI memory, schema or save change.
+
+### Exact PR3 seam
+
+New helper:
+
+`src/simulation/bots/outcomeSignals.ts`
+
+Function:
+
+`deriveRecentBotBattleOutcomeSignal(state, empireId)`
+
+Direct runtime consumer:
+
+`src/simulation/bots/threatRecoveryPlanner.ts`
+
+`src/simulation/bots/scheduler.ts` is read/verify only for PR3.
+
+## Non-critical boundary
+
+PR1 fixture source ordering may change only inside the accepted personality intent if a fixture exposes starvation. Such an adjustment cannot change mandatory invariants, reducer validation, acceptance gate, schema/save or the PR1→PR2→PR3 contract.
+
+Achievements/extra score layers, moving objects and Bank credit are outside the chosen batch and are not critical unknowns.
 
 ## Delivery model
 
 ```text
-Audit PR #178 (docs only)
-→ exact-head CI + Graphify + Browser/production smoke
-→ Ready
-→ controller review
-→ controller approves / fixes / rejects
-→ only after approval: fresh-main implementation PR1
-→ controller merge checkpoint
-→ PR2 from fresh main
-→ controller merge checkpoint
-→ PR3 from fresh main
-→ batch closure
+Audit PR #178 docs FIX
+→ reply/resolve P1 + P2 threads
+→ fresh exact-head CI + Graphify + Browser/production smoke
+→ verify main unchanged + mergeable=true + unresolved threads=0 + draft=false
+→ STOP for controller review
 ```
 
-Audit Ready is not implementation authorization.
+Audit readiness does not authorize implementation.
 
 ## Permanent boundaries
 
-- do not directly port browser automation, DOM selectors, CAPTCHA or raid/farm tooling from Nemexia;
-- do not promote user memory, heuristics or hypotheses into game formulas;
-- keep Stellar-native architecture and deterministic/save/performance/browser gates;
-- any unplanned schema/save migration or guessed combat/economy formula requires controller re-audit;
-- every dependent branch starts from the latest merged `main`;
-- do not add implementation branches while `implementationAuthorized=false`.
+- no implementation branch while `implementationAuthorized=false`;
+- no guessed Nemexia formula;
+- no unplanned schema/save migration;
+- no new persisted AI memory for this batch;
+- every future implementation PR starts only after explicit controller approval and fresh-main verification.
 
 ## Next action
 
-Complete the exact-final-head validation matrix for Audit PR #178, verify zero unresolved threads and `mergeable=true`, mark #178 Ready, then STOP for controller review. Do not merge and do not create implementation branches.
+Finish the docs-only controller FIX inside existing PR #178, resolve its two valid review threads with evidence, require fresh exact-head gates, verify Ready state, and STOP. Do not merge. Do not create PR1.

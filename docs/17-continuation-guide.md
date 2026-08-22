@@ -4,25 +4,13 @@
 
 Release 1.0 remains closed. Runtime baseline is schema v19 / save format v6 / migration none.
 
-The previous `POST-1.0-NEMEXIA-PARITY` batch is complete:
+Previous `POST-1.0-NEMEXIA-PARITY` batch is complete through #177 at:
 
-```text
-Audit #173 → 817a014ef958be4c54f2bd5b54a68890f358d53a
-#174 → 200456244d3a7efcbb197f7734a97adf622fad76
-#175 → 415a3aa814d759d1f76a986003ad7e9d06e0e8fa
-#176 → c2012c76397c0a56bce85c470334850f7be4bd3e
-#177 → 53cf207f30f1a51f864d77f61969937e0d1ad59c
-```
+`53cf207f30f1a51f864d77f61969937e0d1ad59c`
 
-#177 was the fourth and final authorized implementation PR. PR5 does not exist and is not authorized.
+PR5 does not exist and is not authorized.
 
-The permanent completed-batch record is:
-
-`docs/audits/completed/post-1.0-nemexia-parity.md`
-
-## Active work
-
-The only active work item is docs-only Audit:
+## Only active work
 
 ```text
 POST-1.0-NEXT-PRODUCT-AUDIT
@@ -32,84 +20,146 @@ starting main 53cf207f30f1a51f864d77f61969937e0d1ad59c
 implementationAuthorized = false
 ```
 
-Audit #178 recommends, but does not authorize:
+Controller verdict after the first Ready pass:
+
+`FIX — DOCS-ONLY AUDIT CONTRACT COMPLETENESS`
+
+Do not restart the Audit. Do not create implementation branches.
+
+## Chosen proposal — NOT AUTHORIZED
 
 `POST-1.0-BOT-STRATEGY-DIFFERENTIATION`
 
-Proposed ordered implementation sequence:
+Exact sequence:
 
 1. `POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY`
 2. `POST-1.0-PR2-PERSONALITY-TACTICAL-RISK`
 3. `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE`
 
-Do **not** create any of those branches/PRs until controller approval of Audit #178 and a fresh-main recheck.
+## Critical UNKNOWN state
 
-## Fresh Audit verdict
+`criticalUnknownsResolved = true`
 
-The recommended next batch is based on a bounded current-product gap:
+`criticalUnknowns = []`
 
-- three bot personalities are real and already differ in cadence/command budget and PvE opportunity ordering;
-- the recommended `compressed-v1` core scheduler/planners remain largely personality-agnostic;
-- ordinary economy/research/production/logistics/fleet risk/recovery therefore produce less coherent player-visible strategic differentiation than the labels imply;
-- the existing `BotProfile` → scheduler/planner → reducer path can support bounded derived policy without new persisted AI state.
+### DECISION — one tactical-risk truth
 
-Important disproofs:
+Proposed PR1 owns:
 
-- organic Fresh Game → Terminal is already closed; do not repeat PR #174;
-- fleet formations, target priorities, Admiral doctrine and commander abilities already exist; do not replace the combat engine;
-- stale intelligence, report filtering/backlinks and colony specialization already exist;
-- ranking/profile already has a Stellar-native composite score; achievements/extra score layers remain RESEARCH;
-- space-object gameplay already has depletion/control/hazards; movement/lifecycle remains RESEARCH;
-- #177 quality gates are complete; do not create another quality-only batch.
+`src/simulation/bots/strategyPolicy.ts`
 
-## Graphify handoff
+with derived field:
 
-Audit #178 Graphify #1302 succeeded through the repository-pinned `0.8.38` path:
+`maxAttackRiskPermille`
 
-```text
-456 code / 0 docs / 0 papers / 0 images
-3546 nodes / 12388 edges
-GameState 320 edges
-createInitialGameState() 229
-executeCommand() 162
-getFactionMechanicalRoles() 122
-```
+Exact values:
 
-Material bot boundary:
+- industrial / Aegis = 700;
+- explorer / Synod = 800;
+- aggressive / Veyra = 900.
 
-- `compressedCandidate()` directly consumes logistics, economy, research/production, fleet, threat, PvE and endgame planners;
-- `BotProfile` is already a widely consumed non-persisted input;
-- use this existing seam rather than adding a second AI state machine.
+PR2 must remove the current `fleetMissionPlanner.ts` hardcoded `10/12` cutoff and `threatRecoveryPlanner.ts` hardcoded `riskPermille <= 800`, replacing both with the same policy value.
 
-Graphify remains evidence, not authority; source/tests in `docs/audits/current-batch-audit.md` define the Audit conclusion.
+All personalities still require current level-3/full intel and existing mission/reducer validation.
 
-## Read before continuation
+### DECISION — exact recent battle window
+
+`RECENT_BOT_BATTLE_WINDOW = 3`.
+
+Only three latest relevant resolved own PvP `BATTLE_REPORT` entries are considered. Canonical ordering is independent of current array order:
+
+1. `event.executeAt`;
+2. `event.sequence`;
+3. `report.id`.
+
+Then take the latest three.
+
+No wall clock. No persisted counter. No new AI memory. No schema/save change.
+
+## Exact PR3 seam
+
+New file:
+
+`src/simulation/bots/outcomeSignals.ts`
+
+Public helper:
+
+`deriveRecentBotBattleOutcomeSignal(state, empireId)`
+
+Exact output fields:
+
+- `consideredBattles`;
+- `wins`;
+- `losses`;
+- `draws`;
+- `recoveryBias: 'none' | 'loss-dominant'`.
+
+`loss-dominant` means `losses > wins`. Draws are neutral. Wins do not create an unbounded aggression bonus.
+
+Sole direct runtime consumer:
+
+`src/simulation/bots/threatRecoveryPlanner.ts`
+
+Exact data flow:
+
+`GameState.eventLog`
+→ `outcomeSignals.ts`
+→ `planBotThreatAndRecovery()`
+→ existing recovery/action selection
+→ scheduler existing threat candidate path
+→ `executeCommand()`
+→ reducer validation.
+
+For PR3, `src/simulation/bots/scheduler.ts` is read/verify only.
+
+Primary runtime files:
+
+- `src/simulation/bots/outcomeSignals.ts`;
+- `src/simulation/bots/threatRecoveryPlanner.ts`.
+
+Read/verify only:
+
+- `src/simulation/bots/scheduler.ts`;
+- `src/simulation/types.ts`;
+- `src/simulation/combat/types.ts`.
+
+Focused tests:
+
+- `tests/simulation/botOutcomeSignals.test.ts`;
+- `tests/simulation/botThreatRecoveryPlanner.test.ts`;
+- existing `tests/simulation/botScheduler.test.ts` only if integration/regression evidence is needed.
+
+## PR3 behavior boundary
+
+Outcome adaptation cannot change battle resolution, create persistent bot memory, bypass personality policy, add hidden information or create a new scheduler mode.
+
+A loss-dominant current three-battle window may strengthen existing fleet/recovery posture only. Critical/economic invariants remain higher priority, commands stay ordinary, validators/reducer remain authoritative, and baseline policy returns automatically once the loss leaves the three-battle window.
+
+## Non-critical questions
+
+PR1 fixture source ordering is non-critical. If a fixture shows starvation, implementation may select another ordering only inside the already accepted personality policy and mandatory invariants. It cannot change personality intent, reducer validation, acceptance gates, schema/save or the batch theme.
+
+Achievements, moving-object lifecycle and Bank credit remain outside the chosen batch and are not critical unknowns.
+
+## Read before any continuation
 
 1. `AGENTS.md`
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/audits/completed/post-1.0-nemexia-parity.md`
-6. `docs/audits/batch-history.md`
-7. `docs/project-status.json`
-8. `docs/roadmap-pr-index.json`
-9. `docs/17-continuation-guide.md`
-10. `docs/16-execution-roadmap.md`
-11. `docs/29-post-1.0-nemexia-reference-roadmap.md`
-12. actual GitHub `main`, PR #178 and exact workflow state
-
-Actual GitHub state overrides stale prose.
-
-## Known boundary
-
-- repository license selection remains owner-controlled;
-- Bank `bankCreditEfficiencyPercent` remains `UNKNOWN-UNTOUCHED`;
-- exact personality tactical risk margins remain a bounded implementation-time tuning question, not a Nemexia formula;
-- moving space-object semantics and achievements remain RESEARCH;
-- schema v19 / save v6 / migration none remain the target for the proposed batch.
+5. `docs/project-status.json`
+6. `docs/roadmap-pr-index.json`
+7. `docs/16-execution-roadmap.md`
+8. actual GitHub `main`, PR #178, review threads and exact workflow state
 
 ## Next valid action
 
-Finish exact-final-head CI, Graphify and Browser E2E including production smoke for PR #178, verify unresolved review threads = 0 and `mergeable=true`, then mark #178 Ready and **STOP for controller review**.
+After the final docs FIX commit:
 
-Do not merge #178. Do not create implementation branches.
+1. reply to and resolve the P1/P2 review threads with exact evidence;
+2. wait for fresh exact-head CI, Graphify, Browser E2E and production smoke SUCCESS;
+3. verify `main` unchanged at `53cf207f30f1a51f864d77f61969937e0d1ad59c`;
+4. verify unresolved threads = 0, `mergeable=true`, `draft=false`;
+5. STOP for controller review.
+
+Do not merge #178. Do not create PR1.
