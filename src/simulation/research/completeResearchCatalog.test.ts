@@ -11,10 +11,12 @@ describe('complete research catalog', () => {
   it.each(FACTIONS)('registers exactly 22 reachable technologies for %s', (factionId) => {
     const catalog = COMPLETE_RESEARCH_CATALOGS[factionId];
     const ids = new Set(catalog.map((definition) => definition.id));
+    const ecologyId = getCompleteResearchId(factionId, 'ecology');
 
     expect(catalog).toHaveLength(22);
     expect(ids.size).toBe(22);
-    expect(catalog.every((definition) => definition.effects.length > 0)).toBe(true);
+    expect(catalog.filter((definition) => definition.effects.length === 0).map((definition) => definition.id))
+      .toEqual([ecologyId]);
     for (const definition of catalog) {
       for (const requirement of definition.requirements) {
         expect(ids.has(requirement.technologyId)).toBe(true);
@@ -36,14 +38,13 @@ describe('complete research catalog', () => {
     expect(getResearchLevel(research, canonicalId)).toBe(4);
   });
 
-  it('calculates the extended effects and caps critical chance at 12 percent', () => {
+  it('calculates active extended effects and caps critical chance at 12 percent', () => {
     const research = {
       empireId: 'empire-aegis',
       levels: {
         [getCompleteResearchId('aegis', 'computer-systems')]: 3,
         [getCompleteResearchId('aegis', 'fuel-cells')]: 2,
         [getCompleteResearchId('aegis', 'critical-hit')]: 10,
-        [getCompleteResearchId('aegis', 'ecology')]: 2,
       },
       queue: [],
     } as const;
@@ -52,6 +53,6 @@ describe('complete research catalog', () => {
     expect(effects.flightSlots).toBe(3);
     expect(effects.fuelEfficiencyPercent).toBe(8);
     expect(effects.criticalChanceBasisPoints).toBe(1_200);
-    expect(effects.ecologyCapacity).toBe(3_000);
+    expect(effects).not.toHaveProperty('ecologyCapacity');
   });
 });
