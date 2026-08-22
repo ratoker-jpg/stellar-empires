@@ -2,107 +2,114 @@
 
 ## Current handoff
 
-Release 1.0 remains closed at schema v19 / save format v6 with no migration in the current post-1.0 batch.
+Release 1.0 remains closed. Runtime baseline is schema v19 / save format v6 / migration none.
 
-The accepted `POST-1.0-NEMEXIA-PARITY` Audit is PR #173, merged at:
-
-`817a014ef958be4c54f2bd5b54a68890f358d53a`
-
-The accepted implementation sequence is exactly four PRs:
+The previous `POST-1.0-NEMEXIA-PARITY` batch is complete:
 
 ```text
-#174 POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE
-→ 200456244d3a7efcbb197f7734a97adf622fad76
-
-#175 POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE
-→ 415a3aa814d759d1f76a986003ad7e9d06e0e8fa
-
-#176 POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH
-→ c2012c76397c0a56bce85c470334850f7be4bd3e
-
-#177 POST-1.0-PR4-LOW-COST-QUALITY-GATES
-→ active final implementation / batch-closure PR; merge SHA not generated yet
+Audit #173 → 817a014ef958be4c54f2bd5b54a68890f358d53a
+#174 → 200456244d3a7efcbb197f7734a97adf622fad76
+#175 → 415a3aa814d759d1f76a986003ad7e9d06e0e8fa
+#176 → c2012c76397c0a56bce85c470334850f7be4bd3e
+#177 → 53cf207f30f1a51f864d77f61969937e0d1ad59c
 ```
 
-PR #177 started from exact fresh `main`:
+#177 was the fourth and final authorized implementation PR. PR5 does not exist and is not authorized.
 
-`c2012c76397c0a56bce85c470334850f7be4bd3e`
-
-It must not be merged by the implementation worker. It may be marked Ready only after the exact final closure head passes CI, Graphify and Browser E2E including production smoke, with zero unresolved review threads and `mergeable=true`.
-
-The permanent batch record is:
+The permanent completed-batch record is:
 
 `docs/audits/completed/post-1.0-nemexia-parity.md`
 
-## Delivered post-1.0 parity outcome
+## Active work
 
-### PR1 — organic late-game closure
+The only active work item is docs-only Audit:
 
-- compressed-v1 ordinary-command progression now physically produces the Planet Destroyer when required;
-- Fresh Game → Terminal is organically proven through ordinary campaign commands;
-- Organic Obelisk storage/final-project progression, positive Solar War qualification, terminal result, save/load determinism and partition determinism are permanent gates;
-- bounded Aegis/Synod/Veyra terminal matrix is permanent CI evidence.
+```text
+POST-1.0-NEXT-PRODUCT-AUDIT
+PR #178
+branch audit/post-1.0-next-product
+starting main 53cf207f30f1a51f864d77f61969937e0d1ad59c
+implementationAuthorized = false
+```
 
-### PR2 — combat identity / doctrine
+Audit #178 recommends, but does not authorize:
 
-- attack resolution preserves stable fleet identity and stable primary-defender semantics through doctrine/commander paths;
-- deterministic combat identity/doctrine behavior is regression-covered without replacing the combat engine or guessing Nemexia formulas.
+`POST-1.0-BOT-STRATEGY-DIFFERENTIATION`
 
-### PR3 — advertised-effect truth
+Proposed ordered implementation sequence:
 
-- producer-only Scrapyard salvage and Trade Center market efficiency active effects were removed rather than inventing consumers;
-- Ecology no longer advertises/aggregates a gameplay capacity bonus that has no operational consumer;
-- Bank credit efficiency remains explicitly `UNKNOWN-UNTOUCHED`; no credit/loan system or speculative formula was added.
+1. `POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY`
+2. `POST-1.0-PR2-PERSONALITY-TACTICAL-RISK`
+3. `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE`
 
-### PR4 — low-cost quality gates
+Do **not** create any of those branches/PRs until controller approval of Audit #178 and a fresh-main recheck.
 
-- lockfile-backed CI / Browser / Pages installs use clean `npm ci --no-audit --no-fund`;
-- exact `@axe-core/playwright@4.13.0` adds one bounded deterministic WCAG A/AA automated scan with zero violations and no targeted exceptions;
-- one deterministic Empire Overview Playwright visual snapshot is committed with fixed `1366×768` viewport, reduced motion, disabled animations, hidden caret and `maxDiffPixelRatio: 0.001`;
-- canonical snapshot provenance is GitHub Actions Ubuntu/Chromium;
-- the accepted snapshot exposed a pre-existing Graphify corpus-builder incompatibility; `scripts/graphify-audit.sh` now copies only supported code/text extensions from `src`/`tests` while retaining root `package.json`/`tsconfig.json`, so binary snapshots/traces/artifacts do not enter code-only analysis;
-- PR4 changes no gameplay/runtime source and deletes no dead code.
+## Fresh Audit verdict
 
-## Last green implementation-head proof
+The recommended next batch is based on a bounded current-product gap:
 
-Head `207ded53b399b37a3e823caaac7de48ca2275ed0` passed:
+- three bot personalities are real and already differ in cadence/command budget and PvE opportunity ordering;
+- the recommended `compressed-v1` core scheduler/planners remain largely personality-agnostic;
+- ordinary economy/research/production/logistics/fleet risk/recovery therefore produce less coherent player-visible strategic differentiation than the labels imply;
+- the existing `BotProfile` → scheduler/planner → reducer path can support bounded derived policy without new persisted AI state.
 
-- CI #2161 — all jobs success;
-- Graphify #1300 — `456 code, 0 docs, 0 papers, 0 images`, 456/456 extracted, real graph with 3,546 nodes / 12,388 edges;
-- Browser E2E #1391 — 36/36 passed in 5.6 min;
-- bounded axe test — 0 violations, 4.8 s in the full run;
-- visual snapshot comparison — success, 4.3 s in the full run;
-- production Pages smoke — success.
+Important disproofs:
 
-Closure documents change the exact PR head after this evidence. Therefore use actual GitHub state and the fresh exact-head runs, not this implementation-head SHA alone, for the final Ready decision.
+- organic Fresh Game → Terminal is already closed; do not repeat PR #174;
+- fleet formations, target priorities, Admiral doctrine and commander abilities already exist; do not replace the combat engine;
+- stale intelligence, report filtering/backlinks and colony specialization already exist;
+- ranking/profile already has a Stellar-native composite score; achievements/extra score layers remain RESEARCH;
+- space-object gameplay already has depletion/control/hazards; movement/lifecycle remains RESEARCH;
+- #177 quality gates are complete; do not create another quality-only batch.
 
-## Read before any continuation
+## Graphify handoff
+
+Audit #178 Graphify #1302 succeeded through the repository-pinned `0.8.38` path:
+
+```text
+456 code / 0 docs / 0 papers / 0 images
+3546 nodes / 12388 edges
+GameState 320 edges
+createInitialGameState() 229
+executeCommand() 162
+getFactionMechanicalRoles() 122
+```
+
+Material bot boundary:
+
+- `compressedCandidate()` directly consumes logistics, economy, research/production, fleet, threat, PvE and endgame planners;
+- `BotProfile` is already a widely consumed non-persisted input;
+- use this existing seam rather than adding a second AI state machine.
+
+Graphify remains evidence, not authority; source/tests in `docs/audits/current-batch-audit.md` define the Audit conclusion.
+
+## Read before continuation
 
 1. `AGENTS.md`
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
 3. `docs/audits/current-execution-state.md`
 4. `docs/audits/current-batch-audit.md`
-5. `docs/17-continuation-guide.md`
-6. `docs/project-status.json`
-7. `docs/16-execution-roadmap.md`
+5. `docs/audits/completed/post-1.0-nemexia-parity.md`
+6. `docs/audits/batch-history.md`
+7. `docs/project-status.json`
 8. `docs/roadmap-pr-index.json`
-9. `docs/29-post-1.0-nemexia-reference-roadmap.md`
-10. `docs/audits/completed/post-1.0-nemexia-parity.md`
-11. actual GitHub `main`, PR #177 and exact workflow/production state
+9. `docs/17-continuation-guide.md`
+10. `docs/16-execution-roadmap.md`
+11. `docs/29-post-1.0-nemexia-reference-roadmap.md`
+12. actual GitHub `main`, PR #178 and exact workflow state
 
-Actual GitHub state overrides older prose when they differ.
+Actual GitHub state overrides stale prose.
 
 ## Known boundary
 
-- Repository license selection remains owner-controlled.
-- Several original Nemexia combat/economy/scoring formulas remain unverified and must not be guessed.
-- Bank `bankCreditEfficiencyPercent` consumer remains UNKNOWN and intentionally untouched.
-- No PR5 or post-PR4 feature implementation is authorized by Audit #173.
+- repository license selection remains owner-controlled;
+- Bank `bankCreditEfficiencyPercent` remains `UNKNOWN-UNTOUCHED`;
+- exact personality tactical risk margins remain a bounded implementation-time tuning question, not a Nemexia formula;
+- moving space-object semantics and achievements remain RESEARCH;
+- schema v19 / save v6 / migration none remain the target for the proposed batch.
 
-## After controller merge of #177
+## Next valid action
 
-Do not immediately start implementation.
+Finish exact-final-head CI, Graphify and Browser E2E including production smoke for PR #178, verify unresolved review threads = 0 and `mergeable=true`, then mark #178 Ready and **STOP for controller review**.
 
-The next action is **controller batch-closure / roadmap decision**. Resolve the fresh `main` produced by #177, reconcile the generated merge SHA into project records when appropriate, and decide whether there is a coherent next product area worth auditing.
-
-Any next coherent product implementation requires a new Audit from fresh `main`, accepted under `docs/28-audit-first-autonomous-delivery-protocol.md`. A future Audit may propose a complexity-sized batch, but this guide does not pre-authorize one.
+Do not merge #178. Do not create implementation branches.
