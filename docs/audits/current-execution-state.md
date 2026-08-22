@@ -1,8 +1,8 @@
 # Current execution state
 
-**Updated:** 2026-08-21  
-**Safe to continue:** controller review / merge decision only  
-**Phase:** `POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE` final handoff  
+**Updated:** 2026-08-22  
+**Safe to continue:** controller review / merge decision only after final exact-head gates  
+**Phase:** `POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH` final handoff  
 **Runtime:** schema v19 / save format v6 unchanged  
 **Migration:** none  
 **Release:** 1.0.0 closed
@@ -10,210 +10,101 @@
 | Field | Current value |
 |---|---|
 | Accepted Audit authority | #173 `POST-1.0-NEMEXIA-PARITY-AUDIT` — merged |
-| Accepted predecessor | #174 `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` — merged |
-| Exact PR2 starting `main` | `200456244d3a7efcbb197f7734a97adf622fad76` |
-| Active implementation PR | #175 `POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE` |
-| Implementation branch | `agent/post-1.0-combat-identity-doctrine` |
-| PR2 state | implementation + evidence complete / final controller review |
-| Organic Fresh Game → Terminal | remains green |
-| Save/load combat replay | proven |
-| Defender permutation stability | proven |
+| Completed PR1 | #174 `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` — merged at `200456244d3a7efcbb197f7734a97adf622fad76` |
+| Completed PR2 | #175 `POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE` — merged at `415a3aa814d759d1f76a986003ad7e9d06e0e8fa` |
+| Exact PR3 starting `main` | `415a3aa814d759d1f76a986003ad7e9d06e0e8fa` |
+| Active implementation PR | #176 `POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH` |
+| Implementation branch | `agent/post-1.0-advertised-effect-truth` |
+| PR3 state | implementation + focused evidence complete; final exact-head validation / controller review |
 | Target state schema | 19 — unchanged |
 | Target save format | 6 — unchanged |
 | Migration | none |
-| PR3 / PR4 | not started |
+| PR4 | not started; intentionally later |
 
-## PR2 final verdict
+## PR3 truth decisions
 
-`POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE` is implementation- and evidence-complete for controller review under the merged Audit #173 authority and after merged predecessor #174.
+Accepted principle: **CONSUMER-OR-REMOVE**. An advertised/aggregated effect must have a deterministic coherent Stellar consumer or stop being represented as an active effect.
 
-The work is intentionally bounded to the two accepted combat determinism defects. No combat redesign, balance expansion, bot work, PR3 or PR4 work was added.
+Fresh source plus repository-pinned Graphify verification on the merged PR2 tree confirmed the Audit findings:
 
-## Fixed findings
+| Effect | Fresh evidence | PR3 decision |
+|---|---|---|
+| `salvageEfficiencyPercent` | Scrapyard produced/aggregated it; `collectDebris()` consumes debris amounts and cargo capacity, with no building-operational-summary path | **REMOVE active truth** — removed from building operational types, Scrapyard catalog operations and summary aggregation |
+| `marketEfficiencyPercent` | Trade Center produced/aggregated it; `quoteMarketSwap()` / `executeMarketSwap()` use fee/reserve/price-impact calculations with no building-operational-summary path | **REMOVE active truth** — removed from building operational types, Trade Center catalog operations and summary aggregation |
+| `ecologyCapacity` / `ECOLOGY_CAPACITY` | Ecology research advertised and aggregated capacity, but no operational consumer exists in the audited planet/economy/colonization paths | **REMOVE active truth** — removed effect type/summary aggregation; Ecology remains a research/progression item with truthful copy that claims no separate gameplay bonus |
+| `bankCreditEfficiencyPercent` | Bank producer remains present; fresh Graphify/source verification still found no established credit/loan consumer and Audit classifies it UNKNOWN | **UNKNOWN / UNTOUCHED** — no credit subsystem or speculative formula introduced |
 
-### A. Attacker identity contribution collision
-
-Before PR2 the attack seed used:
-
-```text
-state.seed ^ eventSequence ^ attackerFleet.id.length
-```
-
-Different stable fleet IDs with the same string length therefore contributed the same attacker-identity value to the battle seed.
-
-### B. Deterministic full stable fleet-ID contribution
-
-PR2 replaces the length-only contribution with a deterministic FNV-1a-style unsigned 32-bit contribution derived from the full stable attacker fleet ID.
-
-The implementation is deterministic and local to the combat boundary:
-
-- no `Math.random()`;
-- no timestamp/process-dependent hash;
-- no array-index identity;
-- no persisted battle-seed field;
-- no schema or save-format change.
-
-### C. Defender doctrine depended on `state.fleets` order
-
-Multi-fleet defense already pooled all eligible defender units, but doctrine metadata came from:
-
-```text
-defenderFleets[0]
-```
-
-That meant array order could change combat semantics even when the same eligible defender fleets were present.
-
-### D. Stable primary defender rule
-
-PR2 now selects exactly one primary defender as:
-
-```text
-lexicographically smallest eligible defender fleet.id
-```
-
-The selection is deterministic and independent of `state.fleets` ordering.
-
-### E. One primary owns all defender doctrine identity
-
-The same selected primary defender determines:
-
-- formation;
-- target priority;
-- commander;
-- defender command-combat fleet identity.
-
-This removes mixed identity/doctrine selection and makes the doctrine source explicit and stable.
-
-### F. Pooled units and casualty redistribution unchanged
-
-PR2 intentionally preserves the existing pooled-defense model:
-
-- all eligible defender ship units are still pooled into combat;
-- planetary defenses remain part of the same defender unit set;
-- `redistributeDefenderShips()` was not changed;
-- casualty redistribution semantics were not redesigned.
-
-The defender permutation regression proves that the same defender set produces the same authoritative BattleReport regardless of the eligible fleet-array permutation used by the regression.
+No replacement gameplay formulas were added. Debris collection, market swap/quote, economy and colonization calculations were not redesigned.
 
 ## Regression-first evidence
 
-### Equal-length attacker fleet IDs
+The first PR3 commit was test-only:
 
-The test-only red regression used two different equal-length IDs:
+`3009c86d63c123a6d1183f4d4516fa02d4c87418`
 
-```text
-attack-id-a
-attack-id-b
-```
+CI #2129 failed on the expected pre-fix truth assertions:
 
-On the pre-fix runtime both resolved to the same battle seed contribution path and produced the same report seed (`2831578435` in the red CI evidence), proving the length-only collision.
+- Scrapyard / Trade Center still exposed producer-only operational effects for all three factions;
+- Ecology still advertised `ECOLOGY_CAPACITY` for all three factions;
+- Bank UNKNOWN/untouched assertions already passed.
 
-After the fix the regression is green: identical IDs replay identically while selected different equal-length IDs contribute different deterministic values.
+After the runtime truth cleanup, Ecology and Bank assertions passed immediately. A follow-up test-only correction changed the removed-building assertion to handle `operations === undefined`; that was a matcher issue, not a runtime defect.
 
-### Deterministic hash vectors
+## Graphify evidence
 
-Golden vectors lock the chosen full-ID contribution behavior:
+The merged PR2 `main` and PR #175 exact head share tree `acca53839ff1f273d3d23e5d1b56a4b57c882587`, so exact-head Graphify #1278 was a valid fresh baseline before PR3 changes.
 
-```text
-attack-id-a → 2303295411
-attack-id-b → 2320073030
-```
+PR3 runtime head `08c6b8253d9ae2dc159b33adeb3b396349c6d1f0` then passed Graphify #1289. Its generated graph retains the real `collectDebris()`, `quoteMarketSwap()`, `executeMarketSwap()` and `calculateBuildingOperationalSummary()` nodes while no longer containing the removed salvage/market/ecology active-effect identifiers.
 
-These vectors protect deterministic cross-run behavior from accidental implementation drift.
+## Runtime validation before final control-plane commit
 
-### Defender permutation regression
+Runtime head `08c6b8253d9ae2dc159b33adeb3b396349c6d1f0` has already proven:
 
-The regression executes the same eligible defender set in both orders:
+- asset audit — SUCCESS;
+- lint — SUCCESS;
+- typecheck — SUCCESS;
+- full unit/integration test step — SUCCESS;
+- build — SUCCESS;
+- market regressions — SUCCESS;
+- debris regressions — SUCCESS;
+- relevant building/research catalog regressions — SUCCESS;
+- organic Fresh Game → Terminal — SUCCESS;
+- compressed progression — SUCCESS;
+- organic Obelisk evidence — SUCCESS;
+- campaign catch-up performance — SUCCESS;
+- Graphify #1289 — SUCCESS.
 
-```text
-[defender-b, defender-a]
-[defender-a, defender-b]
-```
+The final docs/control-plane commit changes the exact PR head, so fresh exact-head CI, Graphify and Browser E2E including production Pages smoke are mandatory before PR #176 is marked Ready for review.
 
-Before the fix, `[defender-b, defender-a]` selected `screen` from array position zero instead of canonical `defender-a` doctrine.
+## Scope boundaries preserved
 
-After the fix both permutations use the lexicographically smallest primary defender and produce the same BattleReport, including stable:
+PR3 intentionally does **not** add or change:
 
-- `wedge` formation;
-- `capitals` target priority;
-- `commander.shared.executor` commander identity;
-- winner / rounds / remaining units;
-- debris, plunder, demolition and destruction report content.
-
-### Real save/load combat replay
-
-PR2 includes a bounded persistence regression through the real save pipeline:
-
-```text
-createSaveEnvelope
-→ serializeSave
-→ parseSaveJson
-→ resolveAttackMission
-```
-
-The post-load combat resolution matches the direct resolution. No new persisted combat state is required.
-
-## Organic campaign regression status
-
-The accepted organic Fresh Game → Terminal path from PR1 remains green with the PR2 combat seed/doctrine correction applied.
-
-The PR2 exact-head validation also preserves the existing terminal determinism and bounded faction matrix gates. PR2 does not reopen PR1 progression/content work.
-
-## Schema / save impact
-
-- state schema: **v19**, unchanged;
-- save format: **v6**, unchanged;
-- migration: **none**.
-
-## Graphify / dependency boundary
-
-Graphify confirms `resolveAttackMission()` remains the bounded combat integration hub reached from fleet event execution and connected to battle resolution, commander/command effects, debris/plunder, demolition/destruction and destroyed-planet reconciliation.
-
-The accepted fixes therefore stay inside the existing combat boundary. No new combat subsystem or cross-domain architecture was introduced.
-
-## Intentional omissions
-
-PR2 intentionally does **not** include:
-
-- PR1 economy, Obelisk, storage or organic-progression changes;
-- a combat-system redesign;
-- casualty redistribution redesign;
-- fleet pooling redesign;
-- combat balance tuning;
-- bot behavior changes;
-- PR3 advertised-effect truth work;
-- PR4 tooling-quality work;
-- schema changes;
-- save-format changes;
-- migration work.
-
-PR3 and PR4 are **not started**.
+- Bank credit/loan mechanics;
+- a scrap-processing economy;
+- an ozone/ecology subsystem;
+- market/economy redesign;
+- new resources;
+- Nemexia formula guesses;
+- combat or PR2 identity/doctrine behavior;
+- PR1 campaign progression behavior;
+- PR4 npm/axe/snapshot quality-gate work;
+- schema/save format/migrations;
+- unrelated cleanup.
 
 ## Material divergence
 
-None discovered for the accepted PR2 scope.
-
-The regression-first work exposed exactly the two Audit-authorized defects and the bounded implementation resolved them without requiring redistribution, persistence, architecture or balance expansion.
-
-## Control-plane validation
-
-Runtime/content review has passed. The implementation head before this final handoff docs update (`ce5d5a2ebdbf3f9d234da9ff33db78399540bc04`) had controller-confirmed green:
-
-- CI #2125;
-- Graphify #1276;
-- Browser E2E #1355;
-- organic Fresh Game → Terminal;
-- terminal determinism;
-- bounded faction matrix;
-- zero unresolved review threads;
-- `mergeable=true`.
-
-Because this final handoff changes the PR head, the new docs-only exact head must receive fresh CI, Graphify and Browser E2E before PR #175 is marked Ready for review.
+None. The fresh consumer investigation confirmed the accepted Audit classifications. Salvage, market and Ecology use the Audit-authorized remove/reword path; Bank remains explicitly UNKNOWN and untouched.
 
 ## Controller handoff
 
-PR #175 is the only active implementation PR for this handoff. Runtime/content has passed; only final control-plane settlement remains.
+PR #176 is the only active implementation PR. Do not merge it autonomously and do not start PR4 from this handoff.
 
-When the final docs-only exact head has green CI, Graphify and Browser E2E, preserves the organic terminal gates, has zero unresolved review threads and remains mergeable, mark PR #175 **Ready for review** and stop for controller review / merge decision.
+Before controller handoff is complete, require on the final exact PR head:
 
-Do **not** merge autonomously. Do **not** create PR3 or PR4.
+- CI completed SUCCESS, including organic terminal, save/load + partition determinism, bounded faction matrix, campaign performance and build gates;
+- Graphify completed SUCCESS;
+- Browser E2E completed SUCCESS, including production Pages smoke;
+- unresolved review threads = 0;
+- `mergeable=true`;
+- PR marked Ready for review.
