@@ -111,6 +111,13 @@ const PRIORITY_THREAT_REASONS = new Set<BotThreatRecoveryPlan['reasonCode']>([
   'high-threat-response',
 ]);
 
+const COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE = [
+  'production',
+  'research',
+  'economy',
+  'logistics',
+] as const satisfies readonly BotCompressedDevelopmentSource[];
+
 function isSameCommand(left: GameCommand, right: GameCommand): boolean {
   return JSON.stringify(left) === JSON.stringify(right);
 }
@@ -174,6 +181,11 @@ function compressedCandidate(
   }
 
   const policy = deriveBotStrategyPolicy(profile);
+  const phase = getBotProgressionPhase(state, profile.empireId);
+  const developmentPreference =
+    phase === 'planet-destruction' || phase === 'endgame-preparation'
+      ? COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE
+      : policy.compressedDevelopmentPreference;
   let science: ReturnType<typeof planBotResearchAndProduction> | undefined;
   let economy: ReturnType<typeof planBotEconomy> | undefined;
   let fleet: BotFleetMissionPlan | undefined = precomputedFleet;
@@ -207,7 +219,7 @@ function compressedCandidate(
     return logistics?.command ?? null;
   };
 
-  for (const source of policy.compressedDevelopmentPreference) {
+  for (const source of developmentPreference) {
     const candidate = selectCandidate(source, developmentCommand(source), attempted);
     if (candidate !== null) {
       return {
