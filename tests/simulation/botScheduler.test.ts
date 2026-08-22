@@ -46,7 +46,7 @@ function createEqualizedCompressedStrategyFixture(): GameState {
               ),
               { buildingId: roles.buildings.command, level: 3 },
               { buildingId: roles.buildings.laboratory, level: 3 },
-              { buildingId: roles.buildings.shipyard, level: 2 },
+              { buildingId: roles.buildings.shipyard, level: 3 },
               { buildingId: roles.buildings.sensorGrid, level: 1 },
             ],
             economy: {
@@ -79,7 +79,8 @@ function createEqualizedCompressedStrategyFixture(): GameState {
             ...research,
             levels: {
               [roles.research.construction]: 1,
-              [roles.research.sensors]: 1,
+              [roles.research.sensors]: 2,
+              [roles.research.logistics]: 1,
               [getCompleteResearchId('aegis', 'astronomy')]: 1,
             },
             queue: [],
