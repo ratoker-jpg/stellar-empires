@@ -8,23 +8,27 @@ This file is the compact historical index for completed roadmap audit batches. G
 | `COMPLETE-ENDGAME-02` | medium | #157 | #158–#161 | completed | `docs/audits/completed/complete-endgame-02.md` |
 | `COMPLETE-ENDGAME-03` | medium | #162 | #163–#166 | completed; #166 squash recorded by M9 Audit | `docs/audits/completed/complete-endgame-03.md` |
 | `M9-RELEASE-CANDIDATE` | medium | #167 | #168–#171 | completed; Release 1.0 closure #171 → `1f7298a602062837ec6bb8e3778d408ada26051c` | `docs/audits/completed/m9-release-candidate.md` |
-| `POST-1.0-NEMEXIA-PARITY` | bounded-sequential | #173 | #174–#177 | implementation complete in #177; closure pending controller merge; generated #177 squash deferred | `docs/audits/completed/post-1.0-nemexia-parity.md` |
+| `POST-1.0-NEMEXIA-PARITY` | bounded-sequential | #173 | #174–#177 | completed; #177 closure → `53cf207f30f1a51f864d77f61969937e0d1ad59c` | `docs/audits/completed/post-1.0-nemexia-parity.md` |
 
 ## Current boundary
 
 ```text
-POST-1.0-NEMEXIA-PARITY
+POST-1.0-NEMEXIA-PARITY → COMPLETE
 Audit #173 → 817a014ef958be4c54f2bd5b54a68890f358d53a
 #174 → 200456244d3a7efcbb197f7734a97adf622fad76
 #175 → 415a3aa814d759d1f76a986003ad7e9d06e0e8fa
 #176 → c2012c76397c0a56bce85c470334850f7be4bd3e
-#177 → active final implementation / batch closure; generated squash pending controller review/merge
+#177 → 53cf207f30f1a51f864d77f61969937e0d1ad59c
 schema v19 / save v6 / migration none
-next valid action → controller review/merge #177, then controller batch-closure / roadmap decision
-PR5 / new feature implementation → not authorized
+active implementation PR → none
+active implementation work item → none
+PR5 → not authorized / does not exist
+active docs-only Audit → #178 POST-1.0-NEXT-PRODUCT-AUDIT
+implementationAuthorized → false
+next valid action → controller review of Audit #178
 ```
 
-PR #177 is allowed to record its own batch/closure PR number while deferring the generated squash SHA that cannot exist until after merge. Actual GitHub state remains authoritative if this record is read before the controller merges #177.
+PR #178 is not a new implementation batch. It records the generated #177 squash SHA, audits fresh product value from the completed runtime baseline and proposes — but does not authorize — the next coherent implementation batch.
 
 ## Recording rules
 
