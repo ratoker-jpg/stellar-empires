@@ -12,8 +12,6 @@ export interface BuildingOperationalEffects {
   readonly defenseProductionSpeedPercent?: number;
   readonly researchSpeedPercent?: number;
   readonly hangarCapacity?: number;
-  readonly salvageEfficiencyPercent?: number;
-  readonly marketEfficiencyPercent?: number;
   readonly shipUpgradeCapacity?: number;
   readonly bankCreditEfficiencyPercent?: number;
   readonly endgameLocked?: boolean;
