@@ -29,7 +29,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Run browser E2E
-        run: npx playwright test tests/e2e/qualityGates.spec.ts
+        run: npm run e2e
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
