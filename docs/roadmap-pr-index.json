@@ -1,27 +1,27 @@
 {
-  "indexVersion": 18,
-  "updatedAt": "2026-08-21",
+  "indexVersion": 19,
+  "updatedAt": "2026-08-22",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 174,
-    "mergeSha": "200456244d3a7efcbb197f7734a97adf622fad76",
-    "runtimeBaselinePr": 174,
-    "runtimeBaselineSha": "200456244d3a7efcbb197f7734a97adf622fad76",
+    "lastMergedPr": 175,
+    "mergeSha": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa",
+    "runtimeBaselinePr": 175,
+    "runtimeBaselineSha": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa",
     "lastCompletedAuditPr": 173,
     "lastCompletedAuditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
     "freshMainMustBeResolvedAfterThisDocsRecord": false
   },
   "active": {
-    "pr": 175,
+    "pr": 176,
     "kind": "implementation",
-    "workItem": "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
-    "branch": "agent/post-1.0-combat-identity-doctrine",
-    "startingMain": "200456244d3a7efcbb197f7734a97adf622fad76",
-    "status": "complete-for-controller-review",
+    "workItem": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+    "branch": "agent/post-1.0-advertised-effect-truth",
+    "startingMain": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa",
+    "status": "complete-for-controller-review-after-exact-head-gates",
     "mergeSha": null
   },
   "currentPhase": {
@@ -29,7 +29,7 @@
     "milestone": "POST-1.0",
     "auditPr": 173,
     "auditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
-    "status": "implementation-pr2-controller-review",
+    "status": "implementation-pr3-controller-review-after-exact-head-gates",
     "implementationAuthorized": true,
     "implementationCount": 4,
     "plannedImplementationPrs": [
@@ -38,9 +38,10 @@
       "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
       "POST-1.0-PR4-LOW-COST-QUALITY-GATES"
     ],
-    "completedImplementationPrs": [174],
+    "completedImplementationPrs": [174, 175],
     "implementationMergeShas": {
-      "174": "200456244d3a7efcbb197f7734a97adf622fad76"
+      "174": "200456244d3a7efcbb197f7734a97adf622fad76",
+      "175": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa"
     },
     "workItems": [
       {
@@ -51,12 +52,12 @@
       {
         "id": "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
         "pr": 175,
-        "status": "active-complete-for-controller-review"
+        "status": "merged"
       },
       {
         "id": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
-        "pr": null,
-        "status": "pending-after-pr2-merge"
+        "pr": 176,
+        "status": "active-complete-for-controller-review-after-exact-head-gates"
       },
       {
         "id": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
@@ -84,14 +85,15 @@
     {"pr":172,"kind":"roadmap-docs","workItem":"POST-1.0-NEMEXIA-REFERENCE-ROADMAP","status":"merged","mergeSha":"538a0f22ab77687b148916c9a50721fca32930b4"},
     {"pr":173,"kind":"audit","workItem":"POST-1.0-NEMEXIA-PARITY-AUDIT","status":"merged","mergeSha":"817a014ef958be4c54f2bd5b54a68890f358d53a"},
     {"pr":174,"kind":"implementation","workItem":"POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE","status":"merged","mergeSha":"200456244d3a7efcbb197f7734a97adf622fad76"},
-    {"pr":175,"kind":"implementation","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"active-open-complete-for-controller-review"}
+    {"pr":175,"kind":"implementation","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"merged","mergeSha":"415a3aa814d759d1f76a986003ad7e9d06e0e8fa"},
+    {"pr":176,"kind":"implementation","workItem":"POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH","status":"active-open-complete-for-controller-review-after-exact-head-gates"}
   ],
   "next": {
     "pr": null,
     "kind": "implementation",
-    "workItem": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+    "workItem": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
     "implementationAuthorized": true,
-    "prerequisite": "controller review and merge of PR #175, then resolve fresh main",
-    "instruction": "Do not start PR3 before controller merges PR #175. After that merge, resolve fresh main and start POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH. POST-1.0-PR4-LOW-COST-QUALITY-GATES remains intentionally later and must not be treated as active."
+    "prerequisite": "controller review and merge of PR #176, then resolve fresh main",
+    "instruction": "Do not start PR4 before controller reviews and merges PR #176. After that merge, resolve fresh main and only then continue POST-1.0-PR4-LOW-COST-QUALITY-GATES under the accepted Audit #173 contract."
   }
 }
