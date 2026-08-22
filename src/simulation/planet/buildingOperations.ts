@@ -7,8 +7,6 @@ export interface PlanetBuildingOperationalSummary {
   readonly defenseProductionSpeedPercent: number;
   readonly researchSpeedPercent: number;
   readonly hangarCapacity: number;
-  readonly salvageEfficiencyPercent: number;
-  readonly marketEfficiencyPercent: number;
   readonly shipUpgradeCapacity: number;
   readonly bankCreditEfficiencyPercent: number;
 }
@@ -22,8 +20,6 @@ export function calculateBuildingOperationalSummary(
     defenseProductionSpeedPercent: 0,
     researchSpeedPercent: 0,
     hangarCapacity: 0,
-    salvageEfficiencyPercent: 0,
-    marketEfficiencyPercent: 0,
     shipUpgradeCapacity: 0,
     bankCreditEfficiencyPercent: 0,
   };
@@ -37,8 +33,6 @@ export function calculateBuildingOperationalSummary(
     summary.defenseProductionSpeedPercent += (operations.defenseProductionSpeedPercent ?? 0) * level;
     summary.researchSpeedPercent += (operations.researchSpeedPercent ?? 0) * level;
     summary.hangarCapacity += (operations.hangarCapacity ?? 0) * level;
-    summary.salvageEfficiencyPercent += (operations.salvageEfficiencyPercent ?? 0) * level;
-    summary.marketEfficiencyPercent += (operations.marketEfficiencyPercent ?? 0) * level;
     summary.shipUpgradeCapacity += (operations.shipUpgradeCapacity ?? 0) * level;
     summary.bankCreditEfficiencyPercent += (operations.bankCreditEfficiencyPercent ?? 0) * level;
   }
