@@ -61,7 +61,7 @@ jobs:
           node-version: '24'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Run isolated catch-up performance gate
         run: node --expose-gc ./node_modules/vitest/vitest.mjs run tests/simulation/campaignTimePerformance.test.ts --maxWorkers=1 --no-file-parallelism
@@ -81,7 +81,7 @@ jobs:
           node-version: '24'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Run deterministic progression scenario
         env:
@@ -103,7 +103,7 @@ jobs:
           node-version: '24'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Run organic terminal acceptance
         env:
@@ -125,7 +125,7 @@ jobs:
           node-version: '24'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Record organic Obelisk queue evidence
         env:
@@ -147,7 +147,7 @@ jobs:
           node-version: '24'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Run organic terminal determinism
         env:
@@ -169,7 +169,7 @@ jobs:
           node-version: '24'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Run bounded organic terminal matrix
         env:
