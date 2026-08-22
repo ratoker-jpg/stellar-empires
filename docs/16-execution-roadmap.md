@@ -1,10 +1,11 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Release 1.0 closed; post-1.0 implementation not yet authorized  
-**Updated:** 2026-08-20  
-**Verified release main:** `1f7298a602062837ec6bb8e3778d408ada26051c`  
-**Last merged release PR:** #171 `RELEASE-1.0-CLOSURE`  
-**Runtime:** schema v19 / save format v6
+**Status:** Release 1.0 closed; previous post-1.0 batch complete; next product Audit #178 active  
+**Updated:** 2026-08-22  
+**Verified runtime main:** `53cf207f30f1a51f864d77f61969937e0d1ad59c`  
+**Last merged PR:** #177 `POST-1.0-PR4-LOW-COST-QUALITY-GATES`  
+**Runtime:** schema v19 / save format v6 / migration none  
+**Implementation authorized:** false
 
 ## Authoritative files
 
@@ -13,54 +14,84 @@ AGENTS.md
 docs/28-audit-first-autonomous-delivery-protocol.md
 docs/audits/current-execution-state.md
 docs/audits/current-batch-audit.md
+docs/audits/completed/post-1.0-nemexia-parity.md
+docs/audits/batch-history.md
 docs/project-status.json
 docs/roadmap-pr-index.json
+docs/17-continuation-guide.md
 docs/29-post-1.0-nemexia-reference-roadmap.md
 docs/27-playable-game-roadmap-v5.md   # historical Release 1.0 roadmap
 ```
 
 Actual GitHub state wins over stale prose.
 
-## Release 1.0 boundary
+## Completed boundary
 
-M1–M9 are complete. PR #171 closed the accepted M9 release-candidate batch and generated fresh `main`:
+Release 1.0 M1–M9 remains closed. The subsequent `POST-1.0-NEMEXIA-PARITY` Audit/implementation chain is also complete:
 
-`1f7298a602062837ec6bb8e3778d408ada26051c`
+```text
+#173 Audit → 817a014ef958be4c54f2bd5b54a68890f358d53a
+#174 → 200456244d3a7efcbb197f7734a97adf622fad76
+#175 → 415a3aa814d759d1f76a986003ad7e9d06e0e8fa
+#176 → c2012c76397c0a56bce85c470334850f7be4bd3e
+#177 → 53cf207f30f1a51f864d77f61969937e0d1ad59c
+```
 
-The Release 1.0 runtime remains schema v19 / save format v6. No fifth M9 implementation PR is authorized.
+There is no PR5 from that batch.
 
-## Post-1.0 entrypoint
+## Current entrypoint
 
-The owner has supplied `ratoker-jpg/Nemexia_auto_v2` and a structured Nemexia research snapshot as reference sources for future Stellar improvements.
+The active work item is docs-only:
 
-They are not implementation contracts. The next product action must be a separate docs-only Audit:
+`POST-1.0-NEXT-PRODUCT-AUDIT` — PR #178 — branch `audit/post-1.0-next-product`.
 
-`POST-1.0-NEMEXIA-PARITY-AUDIT`
+It started from exact fresh `main` `53cf207f30f1a51f864d77f61969937e0d1ad59c` and performs a fresh survey rather than repeating the #173 roadmap.
 
-That Audit must compare the current Stellar implementation with the reference evidence, preserve provenance, classify candidates as `KEEP_STELLAR`, `ADAPT_FROM_NEMEXIA`, `RESEARCH` or `REJECT`, and propose the first bounded implementation batch.
+Current Audit recommendation:
+
+`POST-1.0-BOT-STRATEGY-DIFFERENTIATION`
+
+Proposed ordered work items, **not authorized yet**:
+
+1. `POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY`
+2. `POST-1.0-PR2-PERSONALITY-TACTICAL-RISK`
+3. `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE`
+
+The complete evidence/contracts live in `docs/audits/current-batch-audit.md`.
+
+## Why this batch is recommended
+
+The recommended `compressed-v1` campaign already has three bot profiles and real PvE/cadence differences, but most core economy/research/production/logistics/fleet/threat planning is shared. The existing `BotProfile` → scheduler/planner → ordinary reducer path gives a bounded way to make opposing strategy more visible without adding a new AI subsystem or persisted state.
+
+The Audit explicitly does not reopen organic endgame closure, combat correctness, advertised-effect truth or low-cost quality gates. Combat doctrine/report observability is ranked second; dynamic world-object lifecycle and achievements/extra score layers remain RESEARCH.
 
 ## Delivery model
 
 ```text
-Audit PR (docs only)
+Audit PR #178 (docs only)
+→ exact-head CI + Graphify + Browser/production smoke
+→ Ready
 → controller review
-→ Audit merge only after approval
-→ 4 implementation PRs by default
-   or max 6 only for explicitly justified light/independent work
-→ batch report
-→ controller MERGE / FIX / STOP-RE-AUDIT decision
+→ controller approves / fixes / rejects
+→ only after approval: fresh-main implementation PR1
+→ controller merge checkpoint
+→ PR2 from fresh main
+→ controller merge checkpoint
+→ PR3 from fresh main
+→ batch closure
 ```
 
-Implementation is not authorized before the Audit is accepted.
+Audit Ready is not implementation authorization.
 
 ## Permanent boundaries
 
-- do not directly port browser automation, Tkinter, DOM selectors, CAPTCHA or raid/farm tooling from Nemexia;
+- do not directly port browser automation, DOM selectors, CAPTCHA or raid/farm tooling from Nemexia;
 - do not promote user memory, heuristics or hypotheses into game formulas;
 - keep Stellar-native architecture and deterministic/save/performance/browser gates;
-- any unplanned schema/save migration or guessed combat/economy formula requires re-audit;
-- every dependent branch starts from the latest merged `main`.
+- any unplanned schema/save migration or guessed combat/economy formula requires controller re-audit;
+- every dependent branch starts from the latest merged `main`;
+- do not add implementation branches while `implementationAuthorized=false`.
 
 ## Next action
 
-After this docs-only control-plane update merges, start exactly one new docs-only `POST-1.0-NEMEXIA-PARITY-AUDIT` from fresh `main`. Do not implement product changes in that Audit PR.
+Complete the exact-final-head validation matrix for Audit PR #178, verify zero unresolved threads and `mergeable=true`, mark #178 Ready, then STOP for controller review. Do not merge and do not create implementation branches.
