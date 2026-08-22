@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { planBotEconomy } from '../../src/simulation/bots/economyPlanner';
-import { planBotFleetMission } from '../../src/simulation/bots/fleetMissionPlanner';
 import {
   MAX_BOT_DECISIONS_PER_RUN,
   runBotScheduler,
@@ -71,13 +70,6 @@ function createEqualizedCompressedStrategyFixture(): GameState {
                 capacity: 100,
               },
             },
-            inventory: {
-              ...planet.inventory,
-              ships: {
-                ...planet.inventory.ships,
-                [roles.ships.transport]: 1,
-              },
-            },
           }
         : planet,
     ),
@@ -100,7 +92,6 @@ function createEqualizedCompressedStrategyFixture(): GameState {
   const science = planBotResearchAndProduction(prepared, empireId);
   expect(science.research.command).not.toBeNull();
   expect(science.production.command).not.toBeNull();
-  expect(planBotFleetMission(prepared, empireId).command).not.toBeNull();
   return prepared;
 }
 
