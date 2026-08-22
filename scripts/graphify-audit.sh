@@ -17,14 +17,34 @@ install_graphify() {
   test -s .agents/skills/graphify/SKILL.md
 }
 
+copy_code_tree() {
+  local source_root="$1"
+  local destination_root="$2"
+  local source_file
+  local relative_path
+
+  mkdir -p "$destination_root"
+
+  while IFS= read -r -d '' source_file; do
+    relative_path="${source_file#"$source_root"/}"
+    mkdir -p "$destination_root/$(dirname "$relative_path")"
+    cp "$source_file" "$destination_root/$relative_path"
+  done < <(
+    find "$source_root" -type f \
+      \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \
+         -o -name '*.mjs' -o -name '*.cjs' -o -name '*.css' \) \
+      -print0
+  )
+}
+
 build_code_graph() {
   local temp_root
   temp_root="$(mktemp -d)"
   trap "rm -rf -- '$temp_root'" EXIT
 
   mkdir -p "$temp_root/project"
-  cp -R src "$temp_root/project/src"
-  cp -R tests "$temp_root/project/tests"
+  copy_code_tree src "$temp_root/project/src"
+  copy_code_tree tests "$temp_root/project/tests"
   cp package.json tsconfig.json "$temp_root/project/"
 
   (
