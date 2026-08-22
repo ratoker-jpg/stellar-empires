@@ -1,13 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { createStateChecksum } from '../../src/simulation/checksum';
+import { planBotEconomy } from '../../src/simulation/bots/economyPlanner';
+import { planBotFleetMission } from '../../src/simulation/bots/fleetMissionPlanner';
 import {
   MAX_BOT_DECISIONS_PER_RUN,
   runBotScheduler,
 } from '../../src/simulation/bots/scheduler';
 import type { BotProfile } from '../../src/simulation/bots/profiles';
+import { planBotResearchAndProduction } from '../../src/simulation/bots/researchProductionPlanner';
+import { createStateChecksum } from '../../src/simulation/checksum';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
+import { getCompleteResearchId } from '../../src/simulation/research/completeResearchCatalog';
+import type { GameState } from '../../src/simulation/types';
 import {
   createSaveEnvelope,
   parseSaveJson,
@@ -20,6 +25,95 @@ function advance(state: ReturnType<typeof createInitialGameState>, seconds: numb
   expect(result.ok).toBe(true);
   if (!result.ok) throw new Error(result.message);
   return result.value;
+}
+
+function createEqualizedCompressedStrategyFixture(): GameState {
+  const empireId = 'aegis-bot';
+  const state = createInitialGameState('bot-scheduler-strategy-gap');
+  const roles = getFactionMechanicalRoles('aegis');
+  const prepared: GameState = {
+    ...state,
+    planets: state.planets.map((planet) =>
+      planet.ownerEmpireId === empireId
+        ? {
+            ...planet,
+            buildings: [
+              ...planet.buildings.filter(
+                (building) =>
+                  building.buildingId !== roles.buildings.command &&
+                  building.buildingId !== roles.buildings.laboratory &&
+                  building.buildingId !== roles.buildings.shipyard &&
+                  building.buildingId !== roles.buildings.sensorGrid,
+              ),
+              { buildingId: roles.buildings.command, level: 3 },
+              { buildingId: roles.buildings.laboratory, level: 3 },
+              { buildingId: roles.buildings.shipyard, level: 2 },
+              { buildingId: roles.buildings.sensorGrid, level: 1 },
+            ],
+            economy: {
+              ...planet.economy,
+              resources: {
+                metal: {
+                  ...planet.economy.resources.metal,
+                  amount: planet.economy.resources.metal.capacity,
+                },
+                crystal: {
+                  ...planet.economy.resources.crystal,
+                  amount: planet.economy.resources.crystal.capacity,
+                },
+                gas: {
+                  ...planet.economy.resources.gas,
+                  amount: planet.economy.resources.gas.capacity,
+                },
+              },
+              population: {
+                ...planet.economy.population,
+                capacity: 100,
+              },
+            },
+            inventory: {
+              ...planet.inventory,
+              ships: {
+                ...planet.inventory.ships,
+                [roles.ships.scout]: 2,
+                [roles.ships.fighter]: 6,
+              },
+            },
+          }
+        : planet,
+    ),
+    research: state.research.map((research) =>
+      research.empireId === empireId
+        ? {
+            ...research,
+            levels: {
+              [roles.research.construction]: 1,
+              [roles.research.sensors]: 1,
+              [getCompleteResearchId('aegis', 'astronomy')]: 1,
+            },
+            queue: [],
+          }
+        : research,
+    ),
+  };
+
+  expect(planBotEconomy(prepared, empireId).command).not.toBeNull();
+  const science = planBotResearchAndProduction(prepared, empireId);
+  expect(science.research.command).not.toBeNull();
+  expect(science.production.command).not.toBeNull();
+  expect(planBotFleetMission(prepared, empireId).command).not.toBeNull();
+  return prepared;
+}
+
+function equalizedProfile(personality: BotProfile['personality']): BotProfile {
+  return {
+    id: `test.equalized-${personality}`,
+    empireId: 'aegis-bot',
+    personality,
+    difficulty: 'normal',
+    decisionIntervalSeconds: 300,
+    maxCommandsPerDecision: 1,
+  };
 }
 
 describe('autonomous bot scheduler', () => {
@@ -120,6 +214,37 @@ describe('autonomous bot scheduler', () => {
       source: 'economy',
       decidedAt: 0,
     });
+  });
+
+  it('differentiates compressed ordinary strategy on an equalized multi-source fixture', () => {
+    const state = createEqualizedCompressedStrategyFixture();
+    const industrial = runBotScheduler(state, [equalizedProfile('industrial')]);
+    const explorer = runBotScheduler(state, [equalizedProfile('explorer')]);
+    const aggressive = runBotScheduler(state, [equalizedProfile('aggressive')]);
+
+    expect(industrial.audit).toHaveLength(1);
+    expect(explorer.audit).toHaveLength(1);
+    expect(aggressive.audit).toHaveLength(1);
+    expect(industrial.audit[0]).toMatchObject({
+      personality: 'industrial',
+      source: 'economy',
+      accepted: true,
+    });
+    expect(explorer.audit[0]).toMatchObject({
+      personality: 'explorer',
+      source: 'fleet',
+      accepted: true,
+    });
+    expect(aggressive.audit[0]).toMatchObject({
+      personality: 'aggressive',
+      source: 'production',
+      accepted: true,
+    });
+    expect(new Set([
+      industrial.audit[0]?.source,
+      explorer.audit[0]?.source,
+      aggressive.audit[0]?.source,
+    ])).toEqual(new Set(['economy', 'fleet', 'production']));
   });
 
   it('uses a serializable worker request and response without runtime-only cursor state', () => {
