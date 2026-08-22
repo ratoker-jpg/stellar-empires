@@ -101,6 +101,16 @@ export function isFleetTargetPriority(value: unknown): value is FleetTargetPrior
   );
 }
 
+export function selectPrimaryFleetByStableId<T extends { readonly id: string }>(
+  fleets: readonly T[],
+): T | undefined {
+  let primary: T | undefined;
+  for (const fleet of fleets) {
+    if (primary === undefined || fleet.id < primary.id) primary = fleet;
+  }
+  return primary;
+}
+
 export function getTargetPriorityWeightPermille(
   priority: FleetTargetPriority,
   targetUnitId: string,

@@ -1,8 +1,8 @@
 # Current execution state
 
 **Updated:** 2026-08-21  
-**Safe to continue:** controller merge decision only  
-**Phase:** `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` final handoff  
+**Safe to continue:** controller review / merge decision only  
+**Phase:** `POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE` final handoff  
 **Runtime:** schema v19 / save format v6 unchanged  
 **Migration:** none  
 **Release:** 1.0.0 closed
@@ -10,186 +10,210 @@
 | Field | Current value |
 |---|---|
 | Accepted Audit authority | #173 `POST-1.0-NEMEXIA-PARITY-AUDIT` — merged |
-| Accepted PR1 starting `main` | `817a014ef958be4c54f2bd5b54a68890f358d53a` |
-| Active implementation PR | #174 `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` |
-| Implementation branch | `agent/post-1.0-organic-late-game-closure` |
-| PR1 state | implementation + evidence complete / final controller review |
-| Fresh Game → Terminal | organically proven |
-| Physical Planet Destroyer | organically proven |
-| Positive Solar War | organically proven |
-| Obelisk/storage progression | organically proven |
-| Final project / Gate / terminal | organically proven |
-| Save/load determinism | proven |
-| Partition determinism | proven |
-| Bounded faction matrix | proven |
+| Accepted predecessor | #174 `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` — merged |
+| Exact PR2 starting `main` | `200456244d3a7efcbb197f7734a97adf622fad76` |
+| Active implementation PR | #175 `POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE` |
+| Implementation branch | `agent/post-1.0-combat-identity-doctrine` |
+| PR2 state | implementation + evidence complete / final controller review |
+| Organic Fresh Game → Terminal | remains green |
+| Save/load combat replay | proven |
+| Defender permutation stability | proven |
 | Target state schema | 19 — unchanged |
 | Target save format | 6 — unchanged |
 | Migration | none |
-| PR2 / PR3 / PR4 | not started / not authorized by this handoff |
+| PR3 / PR4 | not started |
 
-## PR1 final verdict
+## PR2 final verdict
 
-`POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` is complete for controller review.
+`POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE` is implementation- and evidence-complete for controller review under the merged Audit #173 authority and after merged predecessor #174.
 
-The accepted Audit #173 established that `roles.dreadnought` already maps to the canonical Planet Destroyer and that the real original blocker was the compressed production path: the bot could reach formal endgame preparation without physically requesting the Planet Destroyer hull.
+The work is intentionally bounded to the two accepted combat determinism defects. No combat redesign, balance expansion, bot work, PR3 or PR4 work was added.
 
-PR #174 closes the ordinary-command path and now proves, without direct acceptance-path state injection:
+## Fixed findings
 
-```text
-Fresh Game
-→ physical Planet Destroyer
-→ positive Solar War qualification
-→ storage preparation
-→ Galactic Obelisk
-→ final project funding
-→ Galactic Gate
-→ vulnerability / stabilization
-→ terminal
-```
+### A. Attacker identity contribution collision
 
-The canonical organic acceptance reaches a legal terminal result with the player losing normally to the winning AI alliance; no manufactured player victory is required.
-
-## Material divergence discovered during PR1
-
-The implementation required two additional bounded fixes discovered only after running the organic campaign.
-
-### A. Galactic Obelisk feasibility blocker
-
-The canonical compressed Galactic Obelisk cost was mathematically unreachable relative to legal compressed storage capacity. This was a real progression-profile feasibility defect, not a planner timing issue.
-
-### B. Compressed-only feasibility override
-
-A compressed-only endgame cost feasibility override was added through the existing progression-profile layer:
-
-- Galactic Obelisk base cost = **75‰** for `compressed-v1`;
-- the override stays inside the existing progression/profile mechanism;
-- `legacy-v1` is unchanged;
-- no direct resource grant or affordability bypass was added.
-
-### C. Storage-planning blocker
-
-After the Obelisk became legally affordable in principle, the organic campaign exposed a second blocker: qualified bots still did not develop storage buildings far enough to hold the resolved Obelisk cost.
-
-At the first measured `final-object-no-legal-action`, qualified bots had empty build queues, satisfied building prerequisites, starting-scale resource capacities, and real Obelisk queue attempts rejected with `INSUFFICIENT_RESOURCES`.
-
-### D. Bounded compressed endgame storage targets
-
-The existing progression/economy planning path now derives bounded compressed endgame storage targets from:
+Before PR2 the attack seed used:
 
 ```text
-resolved Obelisk cost
-→ base storage
-→ storage-building contribution
-→ progression-profile multiplier
-→ legal storage level cap
+state.seed ^ eventSequence ^ attackerFleet.id.length
 ```
 
-This keeps the fix inside existing progression/economy planning. No new subsystem was introduced and `legacy-v1` was not changed.
+Different stable fleet IDs with the same string length therefore contributed the same attacker-identity value to the battle seed.
 
-## Measured organic evidence
+### B. Deterministic full stable fleet-ID contribution
 
-The final canonical run proves the late-game chain with physical game objects and normal command execution.
+PR2 replaces the length-only contribution with a deterministic FNV-1a-style unsigned 32-bit contribution derived from the full stable attacker fleet ID.
 
-### Physical Planet Destroyer
+The implementation is deterministic and local to the combat boundary:
 
-First physical Planet Destroyer evidence in the canonical run:
+- no `Math.random()`;
+- no timestamp/process-dependent hash;
+- no array-index identity;
+- no persisted battle-seed field;
+- no schema or save-format change.
 
-- player: `135000` real seconds;
-- Aegis bot: `59400` real seconds;
-- Synod bot: `59400` real seconds;
-- Veyra bot: `54000` real seconds.
+### C. Defender doctrine depended on `state.fleets` order
 
-### Positive Solar War
+Multi-fleet defense already pooled all eligible defender units, but doctrine metadata came from:
 
-The winning Synod path records positive Solar War qualification with a measured score of `21456` before its final project starts. Other bot paths also record positive Solar War results during the same ordinary campaign.
+```text
+defenderFleets[0]
+```
 
-### Organic storage → Obelisk
+That meant array order could change combat semantics even when the same eligible defender fleets were present.
 
-Measured queue/completion evidence without state injection:
+### D. Stable primary defender rule
 
-| Empire | Storage levels (M/C/G) | Capacity (M/C/G) | Resolved Obelisk cost (M/C/G) | Queued at real s | Completed at real s |
-|---|---:|---:|---:|---:|---:|
-| Veyra | `5 / 5 / 0` | `180000 / 180000 / 60000` | `178125 / 178125 / 35625` | `174300` | `181080` |
-| Synod | `6 / 6 / 0` | `204000 / 204000 / 60000` | `187500 / 187500 / 37500` | `346920` | `353700` |
+PR2 now selects exactly one primary defender as:
 
-### Final project → Gate → terminal
+```text
+lexicographically smallest eligible defender fleet.id
+```
 
-Canonical terminal evidence:
+The selection is deterministic and independent of `state.fleets` ordering.
 
-- elapsed real campaign seconds: `1228500`;
-- terminal game time: `2457000`;
-- winning participation: `alliance-1`;
-- winning empires: `aegis-bot`, `synod-bot`;
-- owner: `synod-bot`;
-- reason: `final-gate-stabilized`.
+### E. One primary owns all defender doctrine identity
 
-Winning project evidence:
+The same selected primary defender determines:
 
-- started at game time `708240`;
-- required/funded resources: `8000000 / 8000000 / 2000000`;
-- fully funded at `2357040`;
-- Gate completes at `2370600`;
-- vulnerability begins at `2370600`;
-- stabilization and terminal at `2457000`.
+- formation;
+- target priority;
+- commander;
+- defender command-combat fleet identity.
 
-The player loses legally; terminal acceptance does not inject a win or mutate campaign state directly.
+This removes mixed identity/doctrine selection and makes the doctrine source explicit and stable.
 
-## Determinism proof
+### F. Pooled units and casualty redistribution unchanged
 
-PR1 also proves the terminal outcome across normal persistence and time partitioning:
+PR2 intentionally preserves the existing pooled-defense model:
 
-- schema version: `19`;
-- save format version: `6`;
-- migration: none;
-- save/load continuation reaches the same authoritative terminal state;
-- partitioned continuation reaches the same authoritative terminal state;
-- canonical terminal checksum: `c6a4d163`.
+- all eligible defender ship units are still pooled into combat;
+- planetary defenses remain part of the same defender unit set;
+- `redistributeDefenderShips()` was not changed;
+- casualty redistribution semantics were not redesigned.
 
-## Bounded faction matrix
+The defender permutation regression proves that the same defender set produces the same authoritative BattleReport regardless of the eligible fleet-array permutation used by the regression.
 
-Additional ordinary Fresh Game cases are green without state injection:
+## Regression-first evidence
 
-- `progression-synod-01` / player faction `synod` → terminal;
-- `progression-veyra-01` / player faction `veyra` → terminal.
+### Equal-length attacker fleet IDs
 
-Together with the canonical Aegis-player acceptance, these provide bounded faction coverage for PR1 rather than a single-seed proof.
+The test-only red regression used two different equal-length IDs:
 
-## Scope boundaries preserved
+```text
+attack-id-a
+attack-id-b
+```
 
-PR1 intentionally does **not** include:
+On the pre-fix runtime both resolved to the same battle seed contribution path and produced the same report seed (`2831578435` in the red CI evidence), proving the length-only collision.
 
-- PR2 combat identity / seed / doctrine work;
+After the fix the regression is green: identical IDs replay identically while selected different equal-length IDs contribute different deterministic values.
+
+### Deterministic hash vectors
+
+Golden vectors lock the chosen full-ID contribution behavior:
+
+```text
+attack-id-a → 2303295411
+attack-id-b → 2320073030
+```
+
+These vectors protect deterministic cross-run behavior from accidental implementation drift.
+
+### Defender permutation regression
+
+The regression executes the same eligible defender set in both orders:
+
+```text
+[defender-b, defender-a]
+[defender-a, defender-b]
+```
+
+Before the fix, `[defender-b, defender-a]` selected `screen` from array position zero instead of canonical `defender-a` doctrine.
+
+After the fix both permutations use the lexicographically smallest primary defender and produce the same BattleReport, including stable:
+
+- `wedge` formation;
+- `capitals` target priority;
+- `commander.shared.executor` commander identity;
+- winner / rounds / remaining units;
+- debris, plunder, demolition and destruction report content.
+
+### Real save/load combat replay
+
+PR2 includes a bounded persistence regression through the real save pipeline:
+
+```text
+createSaveEnvelope
+→ serializeSave
+→ parseSaveJson
+→ resolveAttackMission
+```
+
+The post-load combat resolution matches the direct resolution. No new persisted combat state is required.
+
+## Organic campaign regression status
+
+The accepted organic Fresh Game → Terminal path from PR1 remains green with the PR2 combat seed/doctrine correction applied.
+
+The PR2 exact-head validation also preserves the existing terminal determinism and bounded faction matrix gates. PR2 does not reopen PR1 progression/content work.
+
+## Schema / save impact
+
+- state schema: **v19**, unchanged;
+- save format: **v6**, unchanged;
+- migration: **none**.
+
+## Graphify / dependency boundary
+
+Graphify confirms `resolveAttackMission()` remains the bounded combat integration hub reached from fleet event execution and connected to battle resolution, commander/command effects, debris/plunder, demolition/destruction and destroyed-planet reconciliation.
+
+The accepted fixes therefore stay inside the existing combat boundary. No new combat subsystem or cross-domain architecture was introduced.
+
+## Intentional omissions
+
+PR2 intentionally does **not** include:
+
+- PR1 economy, Obelisk, storage or organic-progression changes;
+- a combat-system redesign;
+- casualty redistribution redesign;
+- fleet pooling redesign;
+- combat balance tuning;
+- bot behavior changes;
 - PR3 advertised-effect truth work;
-- PR4 low-cost tooling-quality work;
-- a new resource/storage subsystem;
-- direct resource grants;
-- affordability bypasses;
-- acceptance-path state injection;
+- PR4 tooling-quality work;
 - schema changes;
 - save-format changes;
-- save migration work;
-- `legacy-v1` rebalance.
+- migration work.
+
+PR3 and PR4 are **not started**.
+
+## Material divergence
+
+None discovered for the accepted PR2 scope.
+
+The regression-first work exposed exactly the two Audit-authorized defects and the bounded implementation resolved them without requiring redistribution, persistence, architecture or balance expansion.
 
 ## Control-plane validation
 
-The implementation head before this final handoff docs update (`d814073dbbf266188f360a7c5c36767bfad8bf75`) had green:
+Runtime/content review has passed. The implementation head before this final handoff docs update (`ce5d5a2ebdbf3f9d234da9ff33db78399540bc04`) had controller-confirmed green:
 
-- CI quality / tests / build;
-- campaign catch-up performance;
-- compressed progression scenario;
-- organic Fresh Game → Terminal acceptance;
-- organic Obelisk evidence;
-- save/load + partition determinism;
-- bounded organic faction matrix;
-- Graphify;
-- production Pages smoke.
+- CI #2125;
+- Graphify #1276;
+- Browser E2E #1355;
+- organic Fresh Game → Terminal;
+- terminal determinism;
+- bounded faction matrix;
+- zero unresolved review threads;
+- `mergeable=true`.
 
-The final docs-only handoff commit must receive fresh exact-head CI, Graphify and Browser E2E before PR #174 is marked Ready for review.
+Because this final handoff changes the PR head, the new docs-only exact head must receive fresh CI, Graphify and Browser E2E before PR #175 is marked Ready for review.
 
 ## Controller handoff
 
-PR #174 is the only active implementation PR. Runtime/controller review has passed; the remaining work is final control-plane settlement only.
+PR #175 is the only active implementation PR for this handoff. Runtime/content has passed; only final control-plane settlement remains.
 
-After the final docs-only head is green for CI, Graphify and Browser E2E, has zero unresolved review threads, and remains mergeable, mark PR #174 **Ready for review** and stop for controller merge.
+When the final docs-only exact head has green CI, Graphify and Browser E2E, preserves the organic terminal gates, has zero unresolved review threads and remains mergeable, mark PR #175 **Ready for review** and stop for controller review / merge decision.
 
-Do **not** merge autonomously. Do **not** create PR2, PR3 or PR4 from this handoff.
+Do **not** merge autonomously. Do **not** create PR3 or PR4.

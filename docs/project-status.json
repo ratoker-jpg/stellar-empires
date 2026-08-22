@@ -1,60 +1,95 @@
 {
-  "statusVersion": 81,
-  "updatedAt": "2026-08-20",
+  "statusVersion": 82,
+  "updatedAt": "2026-08-21",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 171,
-  "lastMergeSha": "1f7298a602062837ec6bb8e3778d408ada26051c",
-  "verifiedMainBaseline": "PR #171 RELEASE-1.0-CLOSURE squash; next Audit must re-resolve fresh main after this docs-only roadmap record",
-  "runtimeBaselinePr": 171,
-  "runtimeBaselineSha": "1f7298a602062837ec6bb8e3778d408ada26051c",
-  "activePr": null,
-  "activePrKind": null,
-  "activeWorkItem": null,
-  "activeBranch": null,
+  "lastMergedPr": 174,
+  "lastMergeSha": "200456244d3a7efcbb197f7734a97adf622fad76",
+  "verifiedMainBaseline": "PR #174 POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE squash; accepted starting main for active PR #175",
+  "runtimeBaselinePr": 174,
+  "runtimeBaselineSha": "200456244d3a7efcbb197f7734a97adf622fad76",
+  "activePr": 175,
+  "activePrKind": "implementation",
+  "activeWorkItem": "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
+  "activeBranch": "agent/post-1.0-combat-identity-doctrine",
   "nextPrAfterActive": null,
-  "nextPrKind": "audit-docs-only",
-  "nextWorkItem": "POST-1.0-NEMEXIA-PARITY-AUDIT",
-  "currentMilestone": "Post-1.0 Nemexia reference program",
+  "nextPrKind": "implementation",
+  "nextWorkItem": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+  "currentMilestone": "Post-1.0 Nemexia parity implementation",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
-  "currentAuditContracts": [],
-  "currentAuditEvidence": [],
+  "currentAuditContracts": [
+    "docs/audits/post-1.0-nemexia-parity-audit.md"
+  ],
+  "currentAuditEvidence": [
+    "PR #173 POST-1.0-NEMEXIA-PARITY-AUDIT — merged and accepted"
+  ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "lastCompletedBatchArchive": "docs/audits/completed/m9-release-candidate.md",
   "currentAuditState": {
     "batchId": "POST-1.0-NEMEXIA-PARITY",
-    "auditPr": null,
-    "auditMergeSha": null,
-    "status": "audit-required",
-    "implementationAuthorized": false,
+    "auditPr": 173,
+    "auditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
+    "status": "completed-accepted",
+    "implementationAuthorized": true,
     "releaseBaselineSha": "1f7298a602062837ec6bb8e3778d408ada26051c",
-    "auditBaselineMustUseFreshMain": true,
-    "complexity": null,
+    "auditBaselineMustUseFreshMain": false,
+    "complexity": "bounded-sequential",
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "targetReleaseVersion": "1.0.0",
-    "schemaMigrationRequired": null,
-    "criticalUnknownsResolved": false,
-    "criticalUnknowns": null,
-    "boundedImplementationSequence": false,
-    "implementationCount": 0,
-    "plannedImplementationPrs": [],
-    "completedImplementationPrs": [],
-    "activeImplementationPr": null,
-    "workItems": [],
-    "contract": null,
-    "evidence": null,
+    "schemaMigrationRequired": false,
+    "criticalUnknownsResolved": true,
+    "criticalUnknowns": [],
+    "boundedImplementationSequence": true,
+    "implementationCount": 4,
+    "plannedImplementationPrs": [
+      "POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE",
+      "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
+      "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+      "POST-1.0-PR4-LOW-COST-QUALITY-GATES"
+    ],
+    "completedImplementationPrs": [174],
+    "activeImplementationPr": 175,
+    "workItems": [
+      {
+        "id": "POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE",
+        "pr": 174,
+        "status": "merged",
+        "mergeSha": "200456244d3a7efcbb197f7734a97adf622fad76"
+      },
+      {
+        "id": "POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE",
+        "pr": 175,
+        "status": "complete-for-controller-review",
+        "mergeSha": null
+      },
+      {
+        "id": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
+        "pr": null,
+        "status": "pending-after-pr2-merge",
+        "mergeSha": null
+      },
+      {
+        "id": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
+        "pr": null,
+        "status": "pending-intentionally-later",
+        "mergeSha": null
+      }
+    ],
+    "contract": "Accepted Audit #173 implementation batch; each dependent next item starts only from fresh main after controller review/merge of the predecessor checkpoint.",
+    "evidence": "PR1 #174 merged; PR2 #175 implementation/evidence complete and exact-head validation green before this control-plane consistency fix.",
     "archive": null
   },
   "activeImplementationState": {
     "stateSchema": 19,
     "saveFormat": 6,
+    "migration": "none",
     "m8GameplayClosureComplete": true,
     "m9ReleaseClosureComplete": true,
     "allianceDomainImplemented": true,
@@ -64,6 +99,16 @@
     "campaignTerminalStateImplemented": true,
     "terminalRuntimeFreezeImplemented": true,
     "botEndgameParityImplemented": true,
+    "organicFreshGameToTerminalProven": true,
+    "organicPlanetDestroyerProductionProven": true,
+    "organicPositiveSolarWarProven": true,
+    "organicObeliskStorageProgressionProven": true,
+    "organicFinalProjectGateTerminalProven": true,
+    "organicSaveLoadDeterminismProven": true,
+    "organicPartitionDeterminismProven": true,
+    "boundedFactionMatrixProven": true,
+    "combatStableFleetIdentityImplementedInActivePr": true,
+    "combatStablePrimaryDefenderImplementedInActivePr": true,
     "productionPagesWorkflowExists": true,
     "productionBasePathBrowserSmokeImplemented": true,
     "releaseOnboardingTruthComplete": true,
@@ -71,7 +116,7 @@
     "releaseMetadataCurrent": true,
     "releaseVersion": "1.0.0",
     "releaseClosurePendingExactHeadGates": false,
-    "status": "release-1.0-closed-post-1.0-audit-required"
+    "status": "post-1.0-pr2-complete-for-controller-review"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -93,20 +138,20 @@
   },
   "auditDecisions": {
     "batchId": "POST-1.0-NEMEXIA-PARITY",
-    "implementationCount": 0,
-    "complexity": null,
+    "implementationCount": 4,
+    "complexity": "bounded-sequential",
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "targetReleaseVersion": "1.0.0",
-    "newSchemaMigration": null,
-    "newMechanicalCatalogsIncluded": null,
-    "newAssetsIncluded": null,
-    "newMetaCurrencyIncluded": null,
-    "newCombatEngineIncluded": null,
+    "newSchemaMigration": false,
+    "newMechanicalCatalogsIncluded": false,
+    "newAssetsIncluded": false,
+    "newMetaCurrencyIncluded": false,
+    "newCombatEngineIncluded": false,
     "gameplayRetuneByDefault": false,
     "productionBaseBrowserProofRequired": true,
-    "implementationAuthorized": false,
-    "criticalUnknowns": null
+    "implementationAuthorized": true,
+    "criticalUnknowns": []
   },
   "activeDelivery": [
     {"pr":166,"kind":"implementation-closure","batchId":"COMPLETE-ENDGAME-03","workItem":"ENDGAME-BOT-CLOSURE-GATE","status":"merged","mergeSha":"a6b225fe38c1c320244fc54929534e49029d4026"},
@@ -114,12 +159,16 @@
     {"pr":168,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-ONBOARDING-TRUTH","status":"merged","mergeSha":"bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a"},
     {"pr":169,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-PRODUCTION-BROWSER","status":"merged","mergeSha":"6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f"},
     {"pr":170,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-PACKAGING-METADATA","status":"merged","mergeSha":"1221bfe19cc11f836db7fe7e5720f778419c2dd9"},
-    {"pr":171,"kind":"implementation-closure","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-1.0-CLOSURE","status":"merged","mergeSha":"1f7298a602062837ec6bb8e3778d408ada26051c"}
+    {"pr":171,"kind":"implementation-closure","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-1.0-CLOSURE","status":"merged","mergeSha":"1f7298a602062837ec6bb8e3778d408ada26051c"},
+    {"pr":172,"kind":"roadmap-docs","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-NEMEXIA-REFERENCE-ROADMAP","status":"merged","mergeSha":"538a0f22ab77687b148916c9a50721fca32930b4"},
+    {"pr":173,"kind":"audit","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-NEMEXIA-PARITY-AUDIT","status":"merged","mergeSha":"817a014ef958be4c54f2bd5b54a68890f358d53a"},
+    {"pr":174,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE","status":"merged","mergeSha":"200456244d3a7efcbb197f7734a97adf622fad76"},
+    {"pr":175,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"complete-for-controller-review","mergeSha":null}
   ],
   "knownLimitations": [
     "Repository license remains an owner-controlled unresolved choice",
-    "Post-1.0 Nemexia-derived mechanics are not authorized until parity Audit review",
-    "Several original Nemexia combat/economy/scoring formulas remain unverified and must not be guessed"
+    "Several original Nemexia combat/economy/scoring formulas remain unverified and must not be guessed",
+    "PR3 advertised-effect truth work and PR4 low-cost quality gates remain pending"
   ],
   "requiredStartupReading": [
     "AGENTS.md",
@@ -134,5 +183,5 @@
     "docs/audits/completed/m9-release-candidate.md",
     "actual main, latest PR and workflow/production state"
   ],
-  "nextAction": "After this docs-only roadmap/control-plane record merges, resolve fresh main and create POST-1.0-NEMEXIA-PARITY-AUDIT as a docs-only Audit PR. Compare current Stellar against Nemexia reference evidence with provenance, classify KEEP_STELLAR/ADAPT_FROM_NEMEXIA/RESEARCH/REJECT, propose a bounded 4-PR batch by default or at most 6 justified light independent PRs, then stop before merge for external controller review. No post-1.0 implementation is authorized before that approval."
+  "nextAction": "Controller review/merge PR #175 POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE. Do not merge autonomously. After #175 merges, resolve fresh main and start the next accepted implementation item POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH. PR4 POST-1.0-PR4-LOW-COST-QUALITY-GATES remains intentionally later."
 }
