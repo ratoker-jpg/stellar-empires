@@ -1,110 +1,72 @@
 # Current execution state
 
 **Updated:** 2026-08-22  
-**Safe to continue:** controller review / merge decision only after final exact-head gates  
-**Phase:** `POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH` final handoff  
+**Safe to continue:** yes — final exact-head validation, then controller review only  
+**Phase:** `POST-1.0-PR4-LOW-COST-QUALITY-GATES` / batch closure  
 **Runtime:** schema v19 / save format v6 unchanged  
 **Migration:** none  
-**Release:** 1.0.0 closed
+**Release:** 1.0.0 remains closed
 
 | Field | Current value |
 |---|---|
-| Accepted Audit authority | #173 `POST-1.0-NEMEXIA-PARITY-AUDIT` — merged |
+| Accepted Audit authority | #173 `POST-1.0-NEMEXIA-PARITY-AUDIT` — merged at `817a014ef958be4c54f2bd5b54a68890f358d53a` |
 | Completed PR1 | #174 `POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE` — merged at `200456244d3a7efcbb197f7734a97adf622fad76` |
 | Completed PR2 | #175 `POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE` — merged at `415a3aa814d759d1f76a986003ad7e9d06e0e8fa` |
-| Exact PR3 starting `main` | `415a3aa814d759d1f76a986003ad7e9d06e0e8fa` |
-| Active implementation PR | #176 `POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH` |
-| Implementation branch | `agent/post-1.0-advertised-effect-truth` |
-| PR3 state | implementation + focused evidence complete; final exact-head validation / controller review |
-| Target state schema | 19 — unchanged |
-| Target save format | 6 — unchanged |
-| Migration | none |
-| PR4 | not started; intentionally later |
+| Completed PR3 | #176 `POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH` — merged at `c2012c76397c0a56bce85c470334850f7be4bd3e` |
+| Exact PR4 starting `main` | `c2012c76397c0a56bce85c470334850f7be4bd3e` |
+| Active/final implementation PR | #177 `POST-1.0-PR4-LOW-COST-QUALITY-GATES` |
+| Implementation branch | `agent/post-1.0-low-cost-quality-gates` |
+| Last green implementation head | `207ded53b399b37a3e823caaac7de48ca2275ed0` |
+| Batch archive | `docs/audits/completed/post-1.0-nemexia-parity.md` |
+| PR5 | not authorized / must not be created |
 
-## PR3 truth decisions
+## PR4 delivered quality gates
 
-Accepted principle: **CONSUMER-OR-REMOVE**. An advertised/aggregated effect must have a deterministic coherent Stellar consumer or stop being represented as an active effect.
+- Every lockfile-backed CI, Browser E2E and Pages install path uses `npm ci --no-audit --no-fund`.
+- The committed npm lockfile was already compatible with clean `npm ci`; no fallback or lock repair was required for the reproducibility rollout.
+- `@axe-core/playwright` is pinned as exact dev dependency `4.13.0` with npm-generated lock metadata.
+- One bounded axe scan covers deterministic `/?e2e=1#/command/overview` at `1366×768` with reduced motion; WCAG A/AA automated violations = `0`; targeted exceptions = none.
+- One committed visual snapshot covers the same stable Empire Overview surface. Controls: fixed viewport, reduced motion, locator-only capture, `animations: disabled`, `caret: hide`, `maxDiffPixelRatio: 0.001`, no sleeps.
+- Canonical `empire-overview-linux.png` baseline was generated on GitHub Actions Ubuntu/Chromium and the temporary baseline generator was removed from the final diff.
+- Gameplay/runtime source was not changed. Dead-code deletion = none.
 
-Fresh source plus repository-pinned Graphify verification on the merged PR2 tree confirmed the Audit findings:
+## Graphify material divergence and resolution
 
-| Effect | Fresh evidence | PR3 decision |
-|---|---|---|
-| `salvageEfficiencyPercent` | Scrapyard produced/aggregated it; `collectDebris()` consumes debris amounts and cargo capacity, with no building-operational-summary path | **REMOVE active truth** — removed from building operational types, Scrapyard catalog operations and summary aggregation |
-| `marketEfficiencyPercent` | Trade Center produced/aggregated it; `quoteMarketSwap()` / `executeMarketSwap()` use fee/reserve/price-impact calculations with no building-operational-summary path | **REMOVE active truth** — removed from building operational types, Trade Center catalog operations and summary aggregation |
-| `ecologyCapacity` / `ECOLOGY_CAPACITY` | Ecology research advertised and aggregated capacity, but no operational consumer exists in the audited planet/economy/colonization paths | **REMOVE active truth** — removed effect type/summary aggregation; Ecology remains a research/progression item with truthful copy that claims no separate gameplay bonus |
-| `bankCreditEfficiencyPercent` | Bank producer remains present; fresh Graphify/source verification still found no established credit/loan consumer and Audit classifies it UNKNOWN | **UNKNOWN / UNTOUCHED** — no credit subsystem or speculative formula introduced |
+PR4's accepted committed Playwright PNG baseline exposed a hidden incompatibility in the pre-existing Graphify code-corpus builder. `scripts/graphify-audit.sh` used `cp -R tests`, so Graphify #1299 saw `456 code, 0 docs, 0 papers, 1 images` and requested an unavailable LLM key for semantic image extraction.
 
-No replacement gameplay formulas were added. Debris collection, market swap/quote, economy and colonization calculations were not redesigned.
+This was a bounded tooling divergence inside PR4, not product-scope expansion and not a Graphify service outage.
 
-## Regression-first evidence
+The fix keeps `code` mode genuinely code-only:
 
-The first PR3 commit was test-only:
+- recursively copy only `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.mjs`, `*.cjs` and `*.css` from `src` and `tests`, preserving relative directory structure;
+- retain the previously intentional root inputs `package.json` and `tsconfig.json`;
+- therefore exclude PNG snapshots, screenshots, traces, test-result artifacts and other non-code assets without special-casing a filename.
 
-`3009c86d63c123a6d1183f4d4516fa02d4c87418`
+Fresh Graphify #1300 on head `207ded53b399b37a3e823caaac7de48ca2275ed0` succeeded with `456 code, 0 docs, 0 papers, 0 images`, extracted all 456 code files, wrote a real `graph.json` with 3,546 nodes / 12,388 edges, and exited 0 without requiring an LLM backend for extraction.
 
-CI #2129 failed on the expected pre-fix truth assertions:
+## Green implementation-head evidence
 
-- Scrapyard / Trade Center still exposed producer-only operational effects for all three factions;
-- Ecology still advertised `ECOLOGY_CAPACITY` for all three factions;
-- Bank UNKNOWN/untouched assertions already passed.
+Exact implementation head `207ded53b399b37a3e823caaac7de48ca2275ed0`:
 
-After the runtime truth cleanup, Ecology and Bank assertions passed immediately. A follow-up test-only correction changed the removed-building assertion to handle `operations === undefined`; that was a matcher issue, not a runtime defect.
+- CI #2161 — SUCCESS: asset audit, lint, typecheck, full tests, build, compressed progression, Organic Fresh Game → terminal, Organic Obelisk evidence, bounded terminal faction matrix, save/load + partition determinism and campaign catch-up performance all green;
+- Graphify #1300 — SUCCESS: 456/456 code files, zero docs/papers/images, real graph output;
+- Browser E2E #1391 — SUCCESS: 36/36 tests in 5.6 min;
+- PR4 axe test — SUCCESS in 4.8 s;
+- PR4 snapshot comparison — SUCCESS in 4.3 s;
+- production Pages smoke in Browser #1391 — SUCCESS.
 
-## Graphify evidence
+## Batch closure state
 
-The merged PR2 `main` and PR #175 exact head share tree `acca53839ff1f273d3d23e5d1b56a4b57c882587`, so exact-head Graphify #1278 was a valid fresh baseline before PR3 changes.
+This PR is the fourth and final implementation PR authorized by Audit #173. The accepted batch outcome is now archived at `docs/audits/completed/post-1.0-nemexia-parity.md`, and batch history/status/continuation are synchronized for controller handoff.
 
-PR3 runtime head `08c6b8253d9ae2dc159b33adeb3b396349c6d1f0` then passed Graphify #1289. Its generated graph retains the real `collectDebris()`, `quoteMarketSwap()`, `executeMarketSwap()` and `calculateBuildingOperationalSummary()` nodes while no longer containing the removed salvage/market/ecology active-effect identifiers.
+Because these closure documents change the PR head, the implementation-head evidence above is not sufficient for Ready state by itself. Fresh CI, Graphify and Browser E2E including production smoke are required on the exact final closure head before #177 may be marked Ready.
 
-## Runtime validation before final control-plane commit
+## Next safe action
 
-Runtime head `08c6b8253d9ae2dc159b33adeb3b396349c6d1f0` has already proven:
+1. Resolve the exact PR head after the closure commit.
+2. Require exact-head CI, Graphify and Browser E2E / production smoke SUCCESS.
+3. Verify unresolved review threads = 0 and `mergeable=true`.
+4. Mark #177 Ready for review only after those conditions are true.
+5. STOP for controller review. Do not merge.
 
-- asset audit — SUCCESS;
-- lint — SUCCESS;
-- typecheck — SUCCESS;
-- full unit/integration test step — SUCCESS;
-- build — SUCCESS;
-- market regressions — SUCCESS;
-- debris regressions — SUCCESS;
-- relevant building/research catalog regressions — SUCCESS;
-- organic Fresh Game → Terminal — SUCCESS;
-- compressed progression — SUCCESS;
-- organic Obelisk evidence — SUCCESS;
-- campaign catch-up performance — SUCCESS;
-- Graphify #1289 — SUCCESS.
-
-The final docs/control-plane commit changes the exact PR head, so fresh exact-head CI, Graphify and Browser E2E including production Pages smoke are mandatory before PR #176 is marked Ready for review.
-
-## Scope boundaries preserved
-
-PR3 intentionally does **not** add or change:
-
-- Bank credit/loan mechanics;
-- a scrap-processing economy;
-- an ozone/ecology subsystem;
-- market/economy redesign;
-- new resources;
-- Nemexia formula guesses;
-- combat or PR2 identity/doctrine behavior;
-- PR1 campaign progression behavior;
-- PR4 npm/axe/snapshot quality-gate work;
-- schema/save format/migrations;
-- unrelated cleanup.
-
-## Material divergence
-
-None. The fresh consumer investigation confirmed the accepted Audit classifications. Salvage, market and Ecology use the Audit-authorized remove/reword path; Bank remains explicitly UNKNOWN and untouched.
-
-## Controller handoff
-
-PR #176 is the only active implementation PR. Do not merge it autonomously and do not start PR4 from this handoff.
-
-Before controller handoff is complete, require on the final exact PR head:
-
-- CI completed SUCCESS, including organic terminal, save/load + partition determinism, bounded faction matrix, campaign performance and build gates;
-- Graphify completed SUCCESS;
-- Browser E2E completed SUCCESS, including production Pages smoke;
-- unresolved review threads = 0;
-- `mergeable=true`;
-- PR marked Ready for review.
+After a future controller merge of #177, no PR5 or new feature implementation is automatically authorized. The next action is controller batch-closure / roadmap decision; any new coherent product implementation must begin with an accepted Audit from fresh `main`.

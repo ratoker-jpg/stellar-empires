@@ -1,44 +1,42 @@
 {
-  "statusVersion": 83,
+  "statusVersion": 84,
   "updatedAt": "2026-08-22",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 175,
-  "lastMergeSha": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa",
-  "verifiedMainBaseline": "PR #175 POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE squash; accepted starting main for active PR #176",
-  "runtimeBaselinePr": 175,
-  "runtimeBaselineSha": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa",
-  "activePr": 176,
-  "activePrKind": "implementation",
-  "activeWorkItem": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
-  "activeBranch": "agent/post-1.0-advertised-effect-truth",
+  "lastMergedPr": 176,
+  "lastMergeSha": "c2012c76397c0a56bce85c470334850f7be4bd3e",
+  "verifiedMainBaseline": "PR #176 POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH squash; exact starting main for active/final PR #177",
+  "runtimeBaselinePr": 176,
+  "runtimeBaselineSha": "c2012c76397c0a56bce85c470334850f7be4bd3e",
+  "activePr": 177,
+  "activePrKind": "implementation-closure",
+  "activeWorkItem": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
+  "activeBranch": "agent/post-1.0-low-cost-quality-gates",
   "nextPrAfterActive": null,
-  "nextPrKind": "implementation",
-  "nextWorkItem": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
-  "currentMilestone": "Post-1.0 Nemexia parity implementation",
+  "nextPrKind": "controller-decision",
+  "nextWorkItem": null,
+  "currentMilestone": "Post-1.0 Nemexia parity batch closure",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
-  "currentAuditContracts": [
-    "docs/audits/post-1.0-nemexia-parity-audit.md"
-  ],
   "currentAuditEvidence": [
-    "PR #173 POST-1.0-NEMEXIA-PARITY-AUDIT — merged and accepted"
+    "PR #173 POST-1.0-NEMEXIA-PARITY-AUDIT — merged and accepted at 817a014ef958be4c54f2bd5b54a68890f358d53a"
   ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "lastCompletedBatchArchive": "docs/audits/completed/m9-release-candidate.md",
+  "pendingBatchArchive": "docs/audits/completed/post-1.0-nemexia-parity.md",
   "currentAuditState": {
     "batchId": "POST-1.0-NEMEXIA-PARITY",
     "auditPr": 173,
     "auditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
-    "status": "completed-accepted",
+    "status": "implementation-complete-closure-pr-awaiting-final-exact-head-gates-and-controller-review",
     "implementationAuthorized": true,
+    "furtherImplementationAuthorized": false,
     "releaseBaselineSha": "1f7298a602062837ec6bb8e3778d408ada26051c",
-    "auditBaselineMustUseFreshMain": false,
     "complexity": "bounded-sequential",
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
@@ -54,8 +52,8 @@
       "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
       "POST-1.0-PR4-LOW-COST-QUALITY-GATES"
     ],
-    "completedImplementationPrs": [174, 175],
-    "activeImplementationPr": 176,
+    "completedImplementationPrs": [174, 175, 176],
+    "activeImplementationPr": 177,
     "workItems": [
       {
         "id": "POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE",
@@ -72,19 +70,19 @@
       {
         "id": "POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH",
         "pr": 176,
-        "status": "complete-for-controller-review-after-exact-head-gates",
-        "mergeSha": null
+        "status": "merged",
+        "mergeSha": "c2012c76397c0a56bce85c470334850f7be4bd3e"
       },
       {
         "id": "POST-1.0-PR4-LOW-COST-QUALITY-GATES",
-        "pr": null,
-        "status": "pending-intentionally-later",
+        "pr": 177,
+        "status": "complete-for-controller-review-after-final-exact-head-gates",
         "mergeSha": null
       }
     ],
-    "contract": "Accepted Audit #173 implementation batch; each dependent next item starts only from fresh main after controller review/merge of the predecessor checkpoint.",
-    "evidence": "PR1 #174 and PR2 #175 merged. PR3 #176 removes confirmed salvage/market/ecology ghost active effects, leaves Bank UNKNOWN untouched, and requires final exact-head CI/Graphify/Browser gates before Ready for controller review.",
-    "archive": null
+    "contract": "Accepted Audit #173 implementation batch. #177 is the fourth and final authorized implementation PR and additionally owns batch closure.",
+    "evidence": "Implementation head 207ded53b399b37a3e823caaac7de48ca2275ed0 passed CI #2161, Graphify #1300 and Browser E2E #1391 including 36/36 Playwright and production smoke. Closure docs change the head, so a fresh exact-head matrix is required before Ready.",
+    "archive": "docs/audits/completed/post-1.0-nemexia-parity.md"
   },
   "activeImplementationState": {
     "stateSchema": 19,
@@ -92,13 +90,6 @@
     "migration": "none",
     "m8GameplayClosureComplete": true,
     "m9ReleaseClosureComplete": true,
-    "allianceDomainImplemented": true,
-    "soloParticipationImplemented": true,
-    "solarWarImplemented": true,
-    "functionalGatesImplemented": true,
-    "campaignTerminalStateImplemented": true,
-    "terminalRuntimeFreezeImplemented": true,
-    "botEndgameParityImplemented": true,
     "organicFreshGameToTerminalProven": true,
     "organicPlanetDestroyerProductionProven": true,
     "organicPositiveSolarWarProven": true,
@@ -109,19 +100,21 @@
     "boundedFactionMatrixProven": true,
     "combatStableFleetIdentityImplemented": true,
     "combatStablePrimaryDefenderImplemented": true,
-    "advertisedEffectTruthImplementedInActivePr": true,
-    "salvageGhostEffectRemovedInActivePr": true,
-    "marketGhostEffectRemovedInActivePr": true,
-    "ecologyGhostEffectRemovedInActivePr": true,
+    "advertisedEffectTruthImplemented": true,
+    "salvageGhostEffectRemoved": true,
+    "marketGhostEffectRemoved": true,
+    "ecologyGhostEffectRemoved": true,
     "bankCreditConsumerStatus": "UNKNOWN-UNTOUCHED",
+    "reproducibleNpmCiGatesImplemented": true,
+    "boundedAxeGateImplemented": true,
+    "boundedVisualSnapshotGateImplemented": true,
+    "graphifyCodeOnlyCorpusFixed": true,
     "productionPagesWorkflowExists": true,
     "productionBasePathBrowserSmokeImplemented": true,
-    "releaseOnboardingTruthComplete": true,
-    "releaseVersionAuthorityComplete": true,
-    "releaseMetadataCurrent": true,
     "releaseVersion": "1.0.0",
-    "releaseClosurePendingExactHeadGates": false,
-    "status": "post-1.0-pr3-complete-for-controller-review-after-exact-head-gates"
+    "gameplayRuntimeChangedByPr4": false,
+    "deadCodeDeletedByPr4": false,
+    "status": "post-1.0-pr4-complete-for-controller-review-after-final-exact-head-gates"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -159,7 +152,6 @@
     "criticalUnknowns": []
   },
   "activeDelivery": [
-    {"pr":166,"kind":"implementation-closure","batchId":"COMPLETE-ENDGAME-03","workItem":"ENDGAME-BOT-CLOSURE-GATE","status":"merged","mergeSha":"a6b225fe38c1c320244fc54929534e49029d4026"},
     {"pr":167,"kind":"audit","batchId":"M9-RELEASE-CANDIDATE","workItem":"M9-RELEASE-CANDIDATE-AUDIT","status":"merged","mergeSha":"f7e14fda42a135f70c0ad95ada7d3080d472176b"},
     {"pr":168,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-ONBOARDING-TRUTH","status":"merged","mergeSha":"bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a"},
     {"pr":169,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-PRODUCTION-BROWSER","status":"merged","mergeSha":"6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f"},
@@ -169,13 +161,14 @@
     {"pr":173,"kind":"audit","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-NEMEXIA-PARITY-AUDIT","status":"merged","mergeSha":"817a014ef958be4c54f2bd5b54a68890f358d53a"},
     {"pr":174,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE","status":"merged","mergeSha":"200456244d3a7efcbb197f7734a97adf622fad76"},
     {"pr":175,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"merged","mergeSha":"415a3aa814d759d1f76a986003ad7e9d06e0e8fa"},
-    {"pr":176,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH","status":"complete-for-controller-review-after-exact-head-gates","mergeSha":null}
+    {"pr":176,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH","status":"merged","mergeSha":"c2012c76397c0a56bce85c470334850f7be4bd3e"},
+    {"pr":177,"kind":"implementation-closure","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR4-LOW-COST-QUALITY-GATES","status":"complete-for-controller-review-after-final-exact-head-gates","mergeSha":null}
   ],
   "knownLimitations": [
     "Repository license remains an owner-controlled unresolved choice",
     "Several original Nemexia combat/economy/scoring formulas remain unverified and must not be guessed",
-    "Bank bankCreditEfficiencyPercent consumer remains UNKNOWN; PR3 deliberately leaves it untouched rather than inventing credit mechanics",
-    "PR4 low-cost quality gates remain pending and intentionally later"
+    "Bank bankCreditEfficiencyPercent consumer remains UNKNOWN and intentionally untouched",
+    "No post-PR4 feature implementation is authorized; any next coherent product work requires controller roadmap decision and an accepted fresh-main Audit"
   ],
   "requiredStartupReading": [
     "AGENTS.md",
@@ -187,8 +180,8 @@
     "docs/16-execution-roadmap.md",
     "docs/roadmap-pr-index.json",
     "docs/29-post-1.0-nemexia-reference-roadmap.md",
-    "docs/audits/completed/m9-release-candidate.md",
+    "docs/audits/completed/post-1.0-nemexia-parity.md",
     "actual main, latest PR and workflow/production state"
   ],
-  "nextAction": "Controller review/merge PR #176 POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH after final exact-head gates. Do not merge autonomously. Do not start POST-1.0-PR4-LOW-COST-QUALITY-GATES before controller review/merge of #176 and a fresh-main checkpoint."
+  "nextAction": "Finish exact-final-head CI, Graphify and Browser/production validation for PR #177, verify zero unresolved threads and mergeable=true, then mark #177 Ready and STOP for controller review. Do not merge. After a future controller merge, do not create PR5; the next action is controller batch-closure / roadmap decision and any new implementation requires a new accepted Audit."
 }

@@ -2,17 +2,81 @@
 
 ## Current handoff
 
-Release 1.0 is closed. PR #171 `RELEASE-1.0-CLOSURE` squash-merged and generated fresh `main`:
+Release 1.0 remains closed at schema v19 / save format v6 with no migration in the current post-1.0 batch.
 
-`1f7298a602062837ec6bb8e3778d408ada26051c`
+The accepted `POST-1.0-NEMEXIA-PARITY` Audit is PR #173, merged at:
 
-Runtime remains schema v19 / save format v6. There is no active implementation batch and no fifth M9 implementation PR.
+`817a014ef958be4c54f2bd5b54a68890f358d53a`
 
-The next product phase is governed by:
+The accepted implementation sequence is exactly four PRs:
 
-`docs/29-post-1.0-nemexia-reference-roadmap.md`
+```text
+#174 POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE
+→ 200456244d3a7efcbb197f7734a97adf622fad76
 
-## Read before continuation
+#175 POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE
+→ 415a3aa814d759d1f76a986003ad7e9d06e0e8fa
+
+#176 POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH
+→ c2012c76397c0a56bce85c470334850f7be4bd3e
+
+#177 POST-1.0-PR4-LOW-COST-QUALITY-GATES
+→ active final implementation / batch-closure PR; merge SHA not generated yet
+```
+
+PR #177 started from exact fresh `main`:
+
+`c2012c76397c0a56bce85c470334850f7be4bd3e`
+
+It must not be merged by the implementation worker. It may be marked Ready only after the exact final closure head passes CI, Graphify and Browser E2E including production smoke, with zero unresolved review threads and `mergeable=true`.
+
+The permanent batch record is:
+
+`docs/audits/completed/post-1.0-nemexia-parity.md`
+
+## Delivered post-1.0 parity outcome
+
+### PR1 — organic late-game closure
+
+- compressed-v1 ordinary-command progression now physically produces the Planet Destroyer when required;
+- Fresh Game → Terminal is organically proven through ordinary campaign commands;
+- Organic Obelisk storage/final-project progression, positive Solar War qualification, terminal result, save/load determinism and partition determinism are permanent gates;
+- bounded Aegis/Synod/Veyra terminal matrix is permanent CI evidence.
+
+### PR2 — combat identity / doctrine
+
+- attack resolution preserves stable fleet identity and stable primary-defender semantics through doctrine/commander paths;
+- deterministic combat identity/doctrine behavior is regression-covered without replacing the combat engine or guessing Nemexia formulas.
+
+### PR3 — advertised-effect truth
+
+- producer-only Scrapyard salvage and Trade Center market efficiency active effects were removed rather than inventing consumers;
+- Ecology no longer advertises/aggregates a gameplay capacity bonus that has no operational consumer;
+- Bank credit efficiency remains explicitly `UNKNOWN-UNTOUCHED`; no credit/loan system or speculative formula was added.
+
+### PR4 — low-cost quality gates
+
+- lockfile-backed CI / Browser / Pages installs use clean `npm ci --no-audit --no-fund`;
+- exact `@axe-core/playwright@4.13.0` adds one bounded deterministic WCAG A/AA automated scan with zero violations and no targeted exceptions;
+- one deterministic Empire Overview Playwright visual snapshot is committed with fixed `1366×768` viewport, reduced motion, disabled animations, hidden caret and `maxDiffPixelRatio: 0.001`;
+- canonical snapshot provenance is GitHub Actions Ubuntu/Chromium;
+- the accepted snapshot exposed a pre-existing Graphify corpus-builder incompatibility; `scripts/graphify-audit.sh` now copies only supported code/text extensions from `src`/`tests` while retaining root `package.json`/`tsconfig.json`, so binary snapshots/traces/artifacts do not enter code-only analysis;
+- PR4 changes no gameplay/runtime source and deletes no dead code.
+
+## Last green implementation-head proof
+
+Head `207ded53b399b37a3e823caaac7de48ca2275ed0` passed:
+
+- CI #2161 — all jobs success;
+- Graphify #1300 — `456 code, 0 docs, 0 papers, 0 images`, 456/456 extracted, real graph with 3,546 nodes / 12,388 edges;
+- Browser E2E #1391 — 36/36 passed in 5.6 min;
+- bounded axe test — 0 violations, 4.8 s in the full run;
+- visual snapshot comparison — success, 4.3 s in the full run;
+- production Pages smoke — success.
+
+Closure documents change the exact PR head after this evidence. Therefore use actual GitHub state and the fresh exact-head runs, not this implementation-head SHA alone, for the final Ready decision.
+
+## Read before any continuation
 
 1. `AGENTS.md`
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`
@@ -23,61 +87,22 @@ The next product phase is governed by:
 7. `docs/16-execution-roadmap.md`
 8. `docs/roadmap-pr-index.json`
 9. `docs/29-post-1.0-nemexia-reference-roadmap.md`
-10. `docs/audits/completed/m9-release-candidate.md`
-11. actual GitHub `main`, latest PRs and workflow/production state
+10. `docs/audits/completed/post-1.0-nemexia-parity.md`
+11. actual GitHub `main`, PR #177 and exact workflow/production state
 
 Actual GitHub state overrides older prose when they differ.
 
-## Completed Release 1.0 baseline
-
-M1–M9 are complete for the local browser campaign, including:
-
-- deterministic multi-colony economy/logistics and research/production/fleets;
-- combat, destruction/recovery, PvE and meta systems;
-- three mechanical factions and autonomous bot empires;
-- optional alliances and solo endgame participation;
-- Solar War/Gates, persisted terminal victory/defeat and exact terminal freeze;
-- bot endgame perception/participation/final-project parity;
-- save/load/offline/direct/chunk deterministic closure;
-- release onboarding truth;
-- production-build Browser proof under `/stellar-empires/`;
-- package-authoritative `1.0.0`, Node 24 automation baseline and release metadata.
-
-Historical M9 Audit: #167. Closed implementation chain: #168 → #169 → #170 → #171.
-
-## Post-1.0 reference program
-
-The owner has supplied `ratoker-jpg/Nemexia_auto_v2` plus a structured Nemexia research snapshot. Treat these as research/reference evidence only.
-
-Do not assume that old Nemexia automation architecture, heuristics, remembered formulas or historical values belong in Stellar. Preserve provenance and compare against what Stellar already implements.
-
-The next authorized work item is exactly:
-
-`POST-1.0-NEMEXIA-PARITY-AUDIT`
-
-It is docs-only.
-
-## Audit handoff requirements
-
-The Audit must:
-
-- start from the then-current fresh `main`;
-- inspect current Stellar source/tests/docs and current production/browser state;
-- produce a Stellar-vs-Nemexia parity matrix;
-- classify candidates `KEEP_STELLAR`, `ADAPT_FROM_NEMEXIA`, `RESEARCH` or `REJECT`;
-- preserve Nemexia evidence provenance/confidence;
-- identify unknown formulas and reject direct automation-stack ports;
-- assess schema/save, deterministic, performance and Browser impact;
-- propose an exact first implementation batch with stable work-item IDs and gates;
-- prefer 4 implementation PRs; propose at most 6 only for explicitly justified light/independent work;
-- stop with the Audit PR open for controller review.
-
-The worker must not merge the Audit or begin implementation before controller approval.
-
-## After Audit approval
-
-Once the controller approves and the Audit is merged, execute only the accepted batch. After the batch, report PRs, heads/merge SHAs, material files, validation, risks, production evidence, divergence and proposed next work. Do not begin the next batch until the controller closes the review cycle.
-
 ## Known boundary
 
-Repository license selection remains owner-controlled. Any guessed combat/economy/scoring formula, unplanned schema/save migration or direct port of Playwright/Tkinter/DOM/CAPTCHA/raid automation requires stop/re-audit rather than implementation.
+- Repository license selection remains owner-controlled.
+- Several original Nemexia combat/economy/scoring formulas remain unverified and must not be guessed.
+- Bank `bankCreditEfficiencyPercent` consumer remains UNKNOWN and intentionally untouched.
+- No PR5 or post-PR4 feature implementation is authorized by Audit #173.
+
+## After controller merge of #177
+
+Do not immediately start implementation.
+
+The next action is **controller batch-closure / roadmap decision**. Resolve the fresh `main` produced by #177, reconcile the generated merge SHA into project records when appropriate, and decide whether there is a coherent next product area worth auditing.
+
+Any next coherent product implementation requires a new Audit from fresh `main`, accepted under `docs/28-audit-first-autonomous-delivery-protocol.md`. A future Audit may propose a complexity-sized batch, but this guide does not pre-authorize one.
