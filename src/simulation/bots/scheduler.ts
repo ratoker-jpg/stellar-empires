@@ -177,51 +177,54 @@ function compressedCandidate(
   let economy: ReturnType<typeof planBotEconomy> | null = null;
 
   if (phase === 'first-combat') {
-    const developmentCommand = (source: BotCompressedDevelopmentSource): GameCommand | null => {
-      if (source === 'production') return science.production.command;
-      if (source === 'research') return science.research.command;
-      if (source === 'economy') {
-        economy ??= planBotEconomy(state, profile.empireId);
-        return economy.command;
-      }
-      return logistics?.command ?? null;
-    };
-    for (const source of deriveBotStrategyPolicy(profile).compressedDevelopmentPreference) {
-      const candidate = selectCandidate(source, developmentCommand(source), attempted);
-      if (candidate !== null) {
-        return { candidates: [candidate], fleet: precomputedFleet ?? null, pve: null };
-      }
-    }
-  } else {
-    const production = selectCandidate(
-      'production',
-      science.production.command,
-      attempted,
-    );
-    if (production !== null) {
-      return { candidates: [production], fleet: precomputedFleet ?? null, pve: null };
-    }
-
-    const research = selectCandidate('research', science.research.command, attempted);
-    if (research !== null) {
-      return { candidates: [research], fleet: precomputedFleet ?? null, pve: null };
-    }
-
     economy = planBotEconomy(state, profile.empireId);
-    const economyCandidate = selectCandidate('economy', economy.command, attempted);
-    if (economyCandidate !== null) {
-      return { candidates: [economyCandidate], fleet: precomputedFleet ?? null, pve: null };
-    }
-
-    if (logistics !== null) {
-      const logisticsCandidate = selectCandidate('logistics', logistics.command, attempted);
-      if (logisticsCandidate !== null) {
-        return { candidates: [logisticsCandidate], fleet: precomputedFleet ?? null, pve: null };
+    const equalizedDevelopmentChoice =
+      science.production.command !== null &&
+      science.research.command !== null &&
+      economy.command !== null;
+    if (equalizedDevelopmentChoice) {
+      const developmentCommand = (source: BotCompressedDevelopmentSource): GameCommand | null => {
+        if (source === 'production') return science.production.command;
+        if (source === 'research') return science.research.command;
+        if (source === 'economy') return economy?.command ?? null;
+        return logistics?.command ?? null;
+      };
+      for (const source of deriveBotStrategyPolicy(profile).compressedDevelopmentPreference) {
+        const candidate = selectCandidate(source, developmentCommand(source), attempted);
+        if (candidate !== null) {
+          return { candidates: [candidate], fleet: precomputedFleet ?? null, pve: null };
+        }
       }
     }
   }
 
+  const production = selectCandidate(
+    'production',
+    science.production.command,
+    attempted,
+  );
+  if (production !== null) {
+    return { candidates: [production], fleet: precomputedFleet ?? null, pve: null };
+  }
+
+  const research = selectCandidate('research', science.research.command, attempted);
+  if (research !== null) {
+    return { candidates: [research], fleet: precomputedFleet ?? null, pve: null };
+  }
+
   economy ??= planBotEconomy(state, profile.empireId);
+  const economyCandidate = selectCandidate('economy', economy.command, attempted);
+  if (economyCandidate !== null) {
+    return { candidates: [economyCandidate], fleet: precomputedFleet ?? null, pve: null };
+  }
+
+  if (logistics !== null) {
+    const logisticsCandidate = selectCandidate('logistics', logistics.command, attempted);
+    if (logisticsCandidate !== null) {
+      return { candidates: [logisticsCandidate], fleet: precomputedFleet ?? null, pve: null };
+    }
+  }
+
   const threat = planBotThreatAndRecovery(state, profile.empireId, {
     economy,
     researchProduction: science,
