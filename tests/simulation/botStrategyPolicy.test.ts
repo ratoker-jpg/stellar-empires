@@ -5,10 +5,12 @@ import {
 } from '../../src/simulation/bots/profiles';
 import { BOT_PROGRESSION_PHASES } from '../../src/simulation/bots/progressionPhase';
 import {
+  calculateBotAttackRiskPermille,
   COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE,
   COMPRESSED_CLOSURE_OPPORTUNITY_PREFERENCE,
   deriveBotStrategyPolicy,
   deriveCompressedDevelopmentPreference,
+  resolveBotStrategyPolicy,
   type BotStrategyPolicy,
 } from '../../src/simulation/bots/strategyPolicy';
 
@@ -87,10 +89,26 @@ describe('bot strategy policy', () => {
     expect(COMPRESSED_CLOSURE_OPPORTUNITY_PREFERENCE).toEqual(['pve', 'fleet']);
   });
 
-  it('records the accepted future tactical-risk truth without wiring planner behavior', () => {
+  it('exposes one accepted tactical-risk truth and resolves the actual supplied profile', () => {
     expect(policyFor('industrial').maxAttackRiskPermille).toBe(700);
     expect(policyFor('explorer').maxAttackRiskPermille).toBe(800);
     expect(policyFor('aggressive').maxAttackRiskPermille).toBe(900);
+
+    const aegis = DEFAULT_BOT_PROFILES.find((profile) => profile.empireId === 'aegis-bot');
+    if (aegis === undefined) throw new Error('Missing Aegis profile.');
+    const aggressiveAegis = { ...aegis, personality: 'aggressive' as const };
+    expect(resolveBotStrategyPolicy('aegis-bot', aggressiveAegis)?.maxAttackRiskPermille).toBe(900);
+    expect(resolveBotStrategyPolicy('aegis-bot')?.maxAttackRiskPermille).toBe(700);
+    expect(resolveBotStrategyPolicy('synod-bot', aggressiveAegis)).toBeNull();
+    expect(resolveBotStrategyPolicy('unknown-bot')).toBeNull();
+  });
+
+  it('uses deterministic integer permille risk semantics shared by tactical planners', () => {
+    expect(calculateBotAttackRiskPermille(248, 300)).toBe(826);
+    expect(calculateBotAttackRiskPermille(210, 300)).toBe(700);
+    expect(calculateBotAttackRiskPermille(271, 300)).toBe(903);
+    expect(calculateBotAttackRiskPermille(10_000, 0)).toBe(9_999);
+    expect(calculateBotAttackRiskPermille(-5, 100)).toBe(0);
   });
 
   it('does not mutate profiles and exposes frozen bounded policy data', () => {

@@ -13,6 +13,11 @@ import type { GameCommand, GameState } from '../types';
 import { getUnitDefinition } from '../units/catalog';
 import type { ShipRole } from '../units/types';
 import { createBotPerception, type BotPerception } from './perception';
+import {
+  calculateBotAttackRiskPermille,
+  resolveBotStrategyPolicy,
+  type BotTacticalProfile,
+} from './strategyPolicy';
 
 export type BotFleetReasonCode =
   | 'fleet-created'
@@ -160,6 +165,7 @@ function tryMission(
 function missionPlan(
   state: GameState,
   perception: BotPerception,
+  maxAttackRiskPermille: number | null,
 ): { readonly plan: BotFleetMissionPlan | null; readonly blocker: MissionBlocker | null } {
   const fleets = perception.ownFleets
     .filter((fleet) => fleet.status === 'stationed' && fleet.location.type === 'planet')
@@ -283,7 +289,9 @@ function missionPlan(
           left.power - right.power || left.planet.planetId.localeCompare(right.planet.planetId),
       );
     for (const target of targets) {
-      if (ownPower * 10 < Math.max(1, target.power) * 12) continue;
+      if (maxAttackRiskPermille === null) continue;
+      const riskPermille = calculateBotAttackRiskPermille(target.power, ownPower);
+      if (riskPermille > maxAttackRiskPermille) continue;
       const plan = tryMission(
         state,
         perception,
@@ -291,7 +299,7 @@ function missionPlan(
         fleet,
         'attack',
         target.planet.planetId,
-        `Флот ${fleet.id} атакует ${target.planet.planetId}: ${ownPower} против ${target.power}.`,
+        `Флот ${fleet.id} атакует ${target.planet.planetId}: ${ownPower} против ${target.power}, риск ${riskPermille}‰.`,
       );
       if (plan !== null) return { plan, blocker: null };
     }
@@ -492,9 +500,11 @@ function blockedPlan(empireId: string, blocker: MissionBlocker): BotFleetMission
 export function planBotFleetMission(
   state: GameState,
   empireId: string,
+  profile?: BotTacticalProfile,
 ): BotFleetMissionPlan {
   const perception = createBotPerception(state, empireId);
-  const mission = missionPlan(state, perception);
+  const policy = resolveBotStrategyPolicy(empireId, profile);
+  const mission = missionPlan(state, perception, policy?.maxAttackRiskPermille ?? null);
   if (mission.plan !== null) return mission.plan;
 
   if (
