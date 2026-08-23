@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DEFAULT_BOT_PROFILES,
+  type BotPersonality,
+  type BotProfile,
+} from '../../src/simulation/bots/profiles';
+import {
   planAllBotThreatsAndRecovery,
   planBotThreatAndRecovery,
 } from '../../src/simulation/bots/threatRecoveryPlanner';
@@ -9,6 +14,7 @@ import { getFactionMechanicalRoles } from '../../src/simulation/factions/faction
 import { executeCommand } from '../../src/simulation/reducer';
 import { getCompleteResearchId } from '../../src/simulation/research/completeResearchCatalog';
 import type { GameState } from '../../src/simulation/types';
+import { getUnitDefinition } from '../../src/simulation/units/catalog';
 
 const ZERO_CARGO = { metal: 0, crystal: 0, gas: 0 } as const;
 
@@ -73,6 +79,124 @@ function prepareMilitaryIndustry(state: GameState, empireId: string): GameState 
         : research,
     ),
   };
+}
+
+function tacticalProfile(personality: BotPersonality): BotProfile {
+  const base = DEFAULT_BOT_PROFILES.find((profile) => profile.empireId === 'aegis-bot');
+  if (base === undefined) throw new Error('Missing Aegis bot profile.');
+  return { ...base, id: `aegis-${personality}-threat-risk`, personality };
+}
+
+function catalogPower(unitId: string, quantity: number): number {
+  const definition = getUnitDefinition(unitId);
+  if (definition === undefined) throw new Error(`Missing unit definition: ${unitId}`);
+  return quantity * (
+    definition.stats.attack * 2 +
+    definition.stats.armor +
+    definition.stats.shield
+  );
+}
+
+function findRiskWindow(
+  ownUnitId: string,
+  targetUnitId: string,
+  minimumExclusive: number,
+  maximumInclusive: number,
+): { readonly ownCount: number; readonly targetCount: number; readonly riskPermille: number } {
+  for (let ownCount = 1; ownCount <= 20; ownCount += 1) {
+    for (let targetCount = 1; targetCount <= 20; targetCount += 1) {
+      const ownPower = catalogPower(ownUnitId, ownCount);
+      const targetPower = catalogPower(targetUnitId, targetCount);
+      const riskPermille = Math.min(
+        9_999,
+        Math.floor((targetPower * 1_000) / Math.max(1, ownPower)),
+      );
+      if (riskPermille > minimumExclusive && riskPermille <= maximumInclusive) {
+        return { ownCount, targetCount, riskPermille };
+      }
+    }
+  }
+  throw new Error(`No catalog risk window (${minimumExclusive}, ${maximumInclusive}] found.`);
+}
+
+function threatRiskFixture(
+  seed: string,
+  minimumExclusive: number,
+  maximumInclusive: number,
+): {
+  readonly state: GameState;
+  readonly empireId: string;
+  readonly targetId: string;
+  readonly riskPermille: number;
+} {
+  const empireId = 'aegis-bot';
+  let state = createInitialGameState(seed);
+  const origin = state.planets.find((planet) => planet.ownerEmpireId === empireId)!;
+  const target = state.planets.find((planet) => planet.ownerEmpireId === 'player')!;
+  const ownRoles = getFactionMechanicalRoles(origin.factionId);
+  const targetRoles = getFactionMechanicalRoles(target.factionId);
+  const fighterId = ownRoles.ships.fighter;
+  const defenseId = targetRoles.defenses.light;
+  const configuration = findRiskWindow(
+    fighterId,
+    defenseId,
+    minimumExclusive,
+    maximumInclusive,
+  );
+  state = {
+    ...state,
+    planets: state.planets.map((planet) =>
+      planet.ownerEmpireId === empireId
+        ? {
+            ...planet,
+            inventory: {
+              ships: planet.id === origin.id
+                ? { [fighterId]: configuration.ownCount }
+                : {},
+              defenses: {},
+            },
+          }
+        : planet,
+    ),
+    fleets: state.fleets.filter((fleet) => fleet.empireId !== empireId),
+    intelligence: state.intelligence.map((entry) =>
+      entry.empireId === empireId
+        ? {
+            ...entry,
+            observations: [{
+              id: `${seed}-intel`,
+              observerEmpireId: empireId,
+              targetPlanetId: target.id,
+              coordinate: target.coordinate,
+              observedAt: state.clock.elapsedSeconds,
+              expiresAt: state.clock.elapsedSeconds + 10_000,
+              detected: false,
+              snapshot: {
+                planetId: target.id,
+                coordinate: target.coordinate,
+                name: target.name,
+                ownerEmpireId: target.ownerEmpireId,
+                factionId: target.factionId,
+                level: 3 as const,
+                defenses: { [defenseId]: configuration.targetCount },
+                stationedFleets: [],
+              },
+            }],
+          }
+        : entry,
+    ),
+  };
+  return { state, empireId, targetId: target.id, riskPermille: configuration.riskPermille };
+}
+
+function targetAssessment(
+  state: GameState,
+  empireId: string,
+  targetId: string,
+  profile: BotProfile,
+) {
+  return planBotThreatAndRecovery(state, empireId, {}, profile).targets
+    .find((candidate) => candidate.planetId === targetId);
 }
 
 describe('bot threat, target and recovery planner', () => {
@@ -176,6 +300,147 @@ describe('bot threat, target and recovery planner', () => {
       targetPlanetId: target.id,
       mission: 'attack',
     });
+  });
+
+  it('applies exact 700/800/900 thresholds to the same deterministic threat-risk concept', () => {
+    const safe = threatRiskFixture('threat-risk-safe', 0, 700);
+    const explorerWindow = threatRiskFixture('threat-risk-explorer', 700, 800);
+    const aggressiveWindow = threatRiskFixture('threat-risk-aggressive', 800, 900);
+    const overAggressive = threatRiskFixture('threat-risk-over-aggressive', 900, 1_200);
+    const industrial = tacticalProfile('industrial');
+    const explorer = tacticalProfile('explorer');
+    const aggressive = tacticalProfile('aggressive');
+
+    expect(safe.riskPermille).toBeLessThanOrEqual(700);
+    expect(targetAssessment(safe.state, safe.empireId, safe.targetId, industrial)).toMatchObject({
+      riskPermille: safe.riskPermille,
+      attackRecommended: true,
+    });
+
+    expect(explorerWindow.riskPermille).toBeGreaterThan(700);
+    expect(explorerWindow.riskPermille).toBeLessThanOrEqual(800);
+    expect(targetAssessment(
+      explorerWindow.state,
+      explorerWindow.empireId,
+      explorerWindow.targetId,
+      industrial,
+    )?.attackRecommended).toBe(false);
+    expect(targetAssessment(
+      explorerWindow.state,
+      explorerWindow.empireId,
+      explorerWindow.targetId,
+      explorer,
+    )?.attackRecommended).toBe(true);
+
+    expect(aggressiveWindow.riskPermille).toBeGreaterThan(800);
+    expect(aggressiveWindow.riskPermille).toBeLessThanOrEqual(900);
+    expect(targetAssessment(
+      aggressiveWindow.state,
+      aggressiveWindow.empireId,
+      aggressiveWindow.targetId,
+      explorer,
+    )?.attackRecommended).toBe(false);
+    expect(targetAssessment(
+      aggressiveWindow.state,
+      aggressiveWindow.empireId,
+      aggressiveWindow.targetId,
+      aggressive,
+    )?.attackRecommended).toBe(true);
+    expect(targetAssessment(
+      aggressiveWindow.state,
+      aggressiveWindow.empireId,
+      aggressiveWindow.targetId,
+      industrial,
+    )?.attackRecommended).toBe(false);
+
+    expect(overAggressive.riskPermille).toBeGreaterThan(900);
+    expect(targetAssessment(
+      overAggressive.state,
+      overAggressive.empireId,
+      overAggressive.targetId,
+      aggressive,
+    )?.attackRecommended).toBe(false);
+  });
+
+  it('requires current full level-three intelligence for tactical recommendations', () => {
+    const fixture = threatRiskFixture('threat-risk-intel', 800, 900);
+    const aggressive = tacticalProfile('aggressive');
+    const full = targetAssessment(fixture.state, fixture.empireId, fixture.targetId, aggressive);
+    expect(full).toMatchObject({
+      riskPermille: fixture.riskPermille,
+      attackRecommended: true,
+    });
+
+    const partial: GameState = {
+      ...fixture.state,
+      intelligence: fixture.state.intelligence.map((entry) =>
+        entry.empireId === fixture.empireId
+          ? {
+              ...entry,
+              observations: entry.observations.map((observation) => ({
+                ...observation,
+                snapshot: {
+                  planetId: observation.snapshot.planetId,
+                  coordinate: observation.snapshot.coordinate,
+                  name: observation.snapshot.name,
+                  ownerEmpireId: observation.snapshot.ownerEmpireId,
+                  factionId: observation.snapshot.factionId,
+                  level: 2 as const,
+                  resources: { metal: 1, crystal: 1, gas: 1 },
+                  buildings: {},
+                },
+              })),
+            }
+          : entry,
+      ),
+    };
+    expect(targetAssessment(partial, fixture.empireId, fixture.targetId, aggressive)).toMatchObject({
+      estimatedDefense: null,
+      riskPermille: null,
+      attackRecommended: false,
+    });
+
+    const stale: GameState = {
+      ...fixture.state,
+      clock: { ...fixture.state.clock, elapsedSeconds: 20_000 },
+    };
+    expect(targetAssessment(stale, fixture.empireId, fixture.targetId, aggressive)).toMatchObject({
+      freshness: 'stale',
+      riskPermille: fixture.riskPermille,
+      attackRecommended: false,
+    });
+  });
+
+  it('keeps threat target scoring deterministic and invariant to hidden foreign state', () => {
+    const fixture = threatRiskFixture('threat-risk-hidden', 800, 900);
+    const aggressive = tacticalProfile('aggressive');
+    const first = planBotThreatAndRecovery(fixture.state, fixture.empireId, {}, aggressive);
+    expect(planBotThreatAndRecovery(fixture.state, fixture.empireId, {}, aggressive)).toEqual(first);
+
+    const hiddenChanged: GameState = {
+      ...fixture.state,
+      planets: fixture.state.planets.map((planet) =>
+        planet.id === fixture.targetId
+          ? {
+              ...planet,
+              inventory: {
+                ships: { 'ship.aegis.dreadnought': 999 },
+                defenses: { 'defense.aegis.fortress-array': 999 },
+              },
+              economy: {
+                ...planet.economy,
+                resources: {
+                  ...planet.economy.resources,
+                  metal: { ...planet.economy.resources.metal, amount: 99_999 },
+                  crystal: { ...planet.economy.resources.crystal, amount: 99_999 },
+                  gas: { ...planet.economy.resources.gas, amount: 99_999 },
+                },
+              },
+            }
+          : planet,
+      ),
+    };
+    expect(planBotThreatAndRecovery(hiddenChanged, fixture.empireId, {}, aggressive)).toEqual(first);
   });
 
   it('rebuilds military production after fleet losses', () => {
