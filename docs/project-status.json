@@ -1,5 +1,5 @@
 {
-  "statusVersion": 89,
+  "statusVersion": 90,
   "updatedAt": "2026-08-23",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -8,17 +8,17 @@
   "releaseTarget": "1.0.0",
   "lastMergedPr": 180,
   "lastMergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
-  "verifiedMainBaseline": "PR #180 POST-1.0-PR2-PERSONALITY-TACTICAL-RISK squash; exact starting main for PR #181",
+  "verifiedMainBaseline": "PR #180 squash; exact starting main for PR #181",
   "runtimeBaselinePr": 180,
   "runtimeBaselineSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
   "activePr": 181,
-  "activePrKind": "implementation",
+  "activePrKind": "implementation-closure",
   "activeWorkItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
   "activeBranch": "agent/post-1.0-bot-outcome-adaptation",
   "nextPrAfterActive": null,
-  "nextPrKind": "controller-decision",
+  "nextPrKind": "new-audit-after-controller-merge",
   "nextWorkItem": null,
-  "currentMilestone": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION / PR3 controller review",
+  "currentMilestone": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION / closure staged in PR #181",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -28,25 +28,18 @@
     "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
     "auditPr": 178,
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "status": "merged-controller-authorized-pr3-only",
-    "implementationAuthorized": true,
+    "archive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
+    "status": "closure-staged-in-pr181-awaiting-controller-merge",
+    "implementationAuthorized": false,
     "furtherImplementationAuthorized": false,
-    "exactStartingMain": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
+    "activeClosurePr": 181,
+    "activeClosureMergeSha": null,
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false,
-    "recommendedBatch": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
-    "recommendedImplementationCount": 3,
-    "proposedImplementationPrs": [
-      "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
-      "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-      "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE"
-    ],
-    "activeImplementationPr": 181,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
-    "contract": "Audit #178, PR1 #179 and PR2 #180 are merged. Controller accepted PR3 runtime and authorized final control-plane synchronization, exact-head gates, Ready, then STOP. No further batch is authorized.",
-    "archive": null
+    "contract": "Audit #178 is archived. PR1 #179 and PR2 #180 are merged. PR3 #181 is the final implementation/closure PR. No PR4 or further implementation is authorized. After controller merge, next valid category is a fresh docs-only Audit from new main."
   },
   "activeImplementationState": {
     "stateSchema": 19,
@@ -54,60 +47,34 @@
     "migration": "none",
     "activeImplementationPr": 181,
     "activeImplementationWorkItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-    "implementationAuthorized": true,
+    "implementationAuthorized": false,
     "furtherImplementationAuthorized": false,
-    "releaseVersion": "1.0.0",
-    "runtimeEvidenceHead": "83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f",
-    "status": "complete-for-controller-review-pending-final-exact-head-gates"
+    "status": "final-closure-pr-complete-for-controller-review-pending-fresh-review-fix-gates",
+    "mergeSha": null
   },
-  "pr1StrategyPolicy": {
-    "truthSource": "src/simulation/bots/strategyPolicy.ts",
-    "developmentPreference": {
-      "industrial": ["economy", "research", "production", "logistics"],
-      "explorer": ["research", "economy", "production", "logistics"],
-      "aggressive": ["production", "research", "economy", "logistics"]
+  "batchOutcome": {
+    "compressedPersonalityDifferentiation": true,
+    "tacticalRiskPermille": {
+      "industrial": 700,
+      "explorer": 800,
+      "aggressive": 900
     },
-    "closureSafeDevelopmentPreference": ["production", "research", "economy", "logistics"],
-    "activation": {
-      "progressionPhase": "first-combat",
-      "firstCommandOnly": true,
-      "requiresActionable": ["economy", "research", "production"],
-      "economyCommandType": "SET_PLANET_SPECIALIZATION",
-      "reason": "bounded non-resource-spending differentiation preserves mandatory organic campaign trajectory"
-    },
-    "compressedOpportunityPreference": ["pve", "fleet"]
-  },
-  "pr2TacticalRiskPolicy": {
-    "truthSource": "src/simulation/bots/strategyPolicy.ts",
-    "field": "maxAttackRiskPermille",
-    "industrial": 700,
-    "explorer": 800,
-    "aggressive": 900,
-    "wired": true,
-    "riskSemantics": "min(9999, floor(targetPower * 1000 / max(1, ownPower)))",
-    "consumers": [
-      "src/simulation/bots/fleetMissionPlanner.ts",
-      "src/simulation/bots/threatRecoveryPlanner.ts"
-    ],
-    "schedulerProfilePropagation": true,
-    "directCallerDefaultProfileResolution": true,
-    "unknownOrMismatchedProfileGetsGuessedThreshold": false,
-    "requiresCurrentFullLevel3Intel": true,
-    "missionAvailabilityBypass": false,
-    "reducerBypass": false,
-    "mergedPr": 180,
-    "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
+    "ordinaryCommandsAndReducerAuthorityPreserved": true,
+    "currentFullIntelSemanticsPreserved": true,
+    "stateSchema": 19,
+    "saveFormat": 6,
+    "migration": "none"
   },
   "pr3OutcomeAdaptation": {
     "regressionFirstCommit": "846ec783df14b6c35f993b6353c383369147de3c",
-    "baselineGap": "GameState.eventLog did not affect planBotThreatAndRecovery recovery decisions",
     "truthSource": "existing GameState.eventLog",
     "constant": "RECENT_BOT_BATTLE_WINDOW",
     "window": 3,
     "helperPath": "src/simulation/bots/outcomeSignals.ts",
     "helperFunction": "deriveRecentBotBattleOutcomeSignal(state, empireId)",
     "ordering": ["event.executeAt", "event.sequence", "report.id"],
-    "relevantReports": "BATTLE_REPORT where mode=pvp and empire is attacker or defender",
+    "effectiveBattleMode": "explicit mode authoritative; omitted mode with pirate attacker/defender => pve; omitted mode with non-pirate participants => pvp",
+    "pirateTruthSource": "src/simulation/pve/neutralForces.ts#PIRATE_EMPIRE_ID",
     "attackerDefenderPerspectiveClassification": true,
     "drawNeutral": true,
     "pveExcluded": true,
@@ -127,94 +94,28 @@
       "stable loss-dominant bounded military-recovery fallback",
       "no action"
     ],
-    "earlyVariantRejected": "earlier recovery placement displaced normal development and broke Organic Obelisk evidence",
-    "finalVariantRestoredOrganicObelisk": true,
     "saveLoadSignalEqual": true,
+    "saveLoadLegacyModeLessSignalCovered": true,
     "saveLoadNextDecisionEqual": true,
-    "newPersistedAiMemory": false,
-    "runtimeEvidenceHead": "83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f",
-    "status": "runtime-accepted-complete-for-controller-review"
+    "newPersistedAiMemory": false
   },
-  "runtimeEvidence": {
-    "head": "83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f",
-    "ciRun": 2234,
+  "previousReadyEvidence": {
+    "head": "cc3b6e3b3bcce5256ced5e6430f4ba19293a2a87",
+    "ciRun": 2235,
     "ci": "success",
-    "assets": "success",
-    "lint": "success",
-    "typecheck": "success",
-    "fullTests": "success",
-    "build": "success",
-    "compressedProgression": "success",
-    "organicFreshGameToTerminal": "success",
-    "organicTerminalDeterminism": "success",
-    "boundedOrganicFactionMatrix": "success",
-    "organicObelisk": "success",
-    "campaignPerformance": {
-      "status": "success",
-      "oneDayMilliseconds": 5254.070,
-      "oneDayOperations": 1559,
-      "oneDayBotAudit": 537,
-      "oneDayBotDiagnostics": 559,
-      "sevenDayMilliseconds": 20000.787,
-      "sevenDayOperations": 3174,
-      "sevenDayBotAudit": 984,
-      "sevenDayBotDiagnostics": 1156
-    },
-    "graphifyRun": 1369,
+    "graphifyRun": 1370,
     "graphify": "success",
-    "browserE2eRun": 1464,
+    "browserE2eRun": 1465,
     "browserE2e": "success",
     "productionPagesSmoke": "success",
-    "note": "accepted runtime evidence only; final exact-head gates must rerun after the control-plane commit"
+    "note": "historical after review-fix commit; fresh final exact-head gates required"
   },
   "productDecisions": {
-    "localBrowserCampaign": true,
-    "requiredContinuousServer": false,
-    "offlineProgression": true,
-    "offlineBotsContinue": true,
-    "soloEndgameRequired": true,
-    "terminalCampaignFreeze": true,
-    "postTerminalContinueMode": false,
     "botUsesOrdinaryCommands": true,
     "botHiddenForeignStateAccess": false,
-    "releaseVersionTarget": "1.0.0",
-    "licenseSelectionOwnerControlled": true,
-    "nemexiaReferenceIsImplementationContract": false,
     "post1ImplementationRequiresNewAudit": true,
-    "externalControllerApprovalRequired": true
-  },
-  "auditDecisions": {
-    "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
-    "targetStateSchema": 19,
-    "targetSaveFormat": 6,
-    "newSchemaMigration": false,
-    "implementationAuthorized": true,
-    "furtherImplementationAuthorized": false,
-    "criticalUnknownsResolved": true,
-    "criticalUnknowns": [],
-    "tacticalRiskPolicy": {
-      "truthSource": "src/simulation/bots/strategyPolicy.ts",
-      "field": "maxAttackRiskPermille",
-      "industrial": 700,
-      "explorer": 800,
-      "aggressive": 900,
-      "pr2Wired": true,
-      "sharedConsumers": [
-        "src/simulation/bots/fleetMissionPlanner.ts",
-        "src/simulation/bots/threatRecoveryPlanner.ts"
-      ]
-    },
-    "recentBattleOutcomePolicy": {
-      "constant": "RECENT_BOT_BATTLE_WINDOW",
-      "window": 3,
-      "helperPath": "src/simulation/bots/outcomeSignals.ts",
-      "helperFunction": "deriveRecentBotBattleOutcomeSignal(state, empireId)",
-      "directRuntimeConsumer": "src/simulation/bots/threatRecoveryPlanner.ts",
-      "schedulerRole": "read-verify-only-runtime-unchanged",
-      "ordering": ["event.executeAt", "event.sequence", "report.id"],
-      "persistence": "derive-from-existing-eventLog-no-new-memory",
-      "status": "PR3 runtime accepted; pending final exact-head gates and Ready"
-    }
+    "externalControllerApprovalRequired": true,
+    "releaseVersionTarget": "1.0.0"
   },
   "activeDelivery": [
     {
@@ -222,7 +123,7 @@
       "kind": "audit",
       "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
       "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
-      "status": "merged",
+      "status": "merged-archived",
       "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77"
     },
     {
@@ -243,29 +144,29 @@
     },
     {
       "pr": 181,
-      "kind": "implementation",
+      "kind": "implementation-closure",
       "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
       "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-      "status": "complete-for-controller-review-pending-final-exact-head-gates",
+      "status": "complete-for-controller-review-pending-fresh-review-fix-gates",
       "mergeSha": null
     }
   ],
   "knownLimitations": [
-    "Repository license remains an owner-controlled unresolved choice",
-    "Several original Nemexia combat/economy/scoring formulas remain unverified and must not be guessed",
-    "PR #181 is not merged and therefore POST-1.0-BOT-STRATEGY-DIFFERENTIATION must not be marked merged-complete",
-    "No subsequent Audit/batch is authorized"
+    "PR #181 is not merged; its generated squash SHA is intentionally unknown",
+    "POST-1.0-BOT-STRATEGY-DIFFERENTIATION becomes GitHub-complete only after controller merge of #181",
+    "No PR4, subsequent implementation or next Audit has been started or authorized"
   ],
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-batch-audit.md",
     "docs/audits/current-execution-state.md",
+    "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/16-execution-roadmap.md",
     "docs/17-continuation-guide.md",
     "actual main and PR #181 exact workflow/review state"
   ],
-  "nextAction": "Require fresh exact-head CI, Graphify and Browser E2E including production smoke after this control-plane commit; verify main remains f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd, unresolved threads=0 and mergeable=true; ensure PR #181 body is final and mark Ready only when every final-head gate is green, then STOP for controller review. Do not merge and do not start another Audit/batch."
+  "nextAction": "Run fresh exact-head CI, Graphify and Browser E2E including production smoke after the review-fix/closure commit; verify main remains f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd, unresolved threads=0, mergeable=true and draft=false; STOP for controller review. Do not merge #181 and do not start a new Audit/batch."
 }

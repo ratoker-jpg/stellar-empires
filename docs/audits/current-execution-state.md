@@ -1,8 +1,8 @@
 # Current execution state
 
 **Updated:** 2026-08-23  
-**Safe to continue:** PR #181 final validation / controller review only; do not merge or start another Audit/batch  
-**Phase:** `POST-1.0-BOT-STRATEGY-DIFFERENTIATION`  
+**Safe to continue:** PR #181 review-fix validation / controller review only; do not merge or start another Audit/batch  
+**Phase:** `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` closure staged  
 **Exact starting `main` for PR3:** `f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd`  
 **Runtime:** schema v19 / save format v6  
 **Migration:** none  
@@ -13,83 +13,75 @@
 | Audit #178 | MERGED → `4b96d457fad1577a0663210864381a0d3a33cb77` |
 | PR1 #179 | MERGED → `7620975e1cd604c8bcdce0bac748e32e276061db` |
 | PR2 #180 | MERGED → `f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd` |
+| PR3 #181 | final implementation / closure PR; open; merge SHA unknown |
 | Batch | `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` |
-| Active implementation work item | `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE` |
-| Active implementation PR | #181 |
+| Active implementation work item | none beyond #181 closure fixes |
 | Branch | `agent/post-1.0-bot-outcome-adaptation` |
-| PR3 controller state | runtime accepted; complete-for-controller-review pending fresh docs-head gates |
 | Further implementation authorized | false |
-| Accepted runtime evidence head | `83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f` |
-| PR3 merge SHA | none — PR #181 is not merged |
+| Archived Audit | `docs/audits/completed/post-1.0-bot-strategy-differentiation.md` |
+| Previous Ready head | `cc3b6e3b3bcce5256ced5e6430f4ba19293a2a87` |
+| PR3 merge SHA | none — generated only if controller merges #181 |
 
-## PR3 recent-outcome contract
+## Review-fix state
 
-Regression-first commit: `846ec783df14b6c35f993b6353c383369147de3c`.
+Two post-Ready findings were validated by the controller and are fixed in this closure update.
 
-The red evidence established the baseline gap cleanly: persisted `GameState.eventLog` battle history did not affect `planBotThreatAndRecovery()` recovery selection.
+### P2 — legacy BattleReport.mode compatibility
 
-The public pure helper is:
+`BattleReport.mode` remains optional. Recent bot outcome classification now uses the same effective-mode semantics already encoded in `src/simulation/reports/missionReports.ts`:
 
-`deriveRecentBotBattleOutcomeSignal(state, empireId)`
+- explicit `mode` is authoritative;
+- omitted mode with `PIRATE_EMPIRE_ID` as attacker or defender is PvE;
+- omitted mode with two non-pirate participants is PvP.
 
-with `RECENT_BOT_BATTLE_WINDOW = 3`.
+No combat generation, save format, migration, recovery ordering or scheduler runtime was changed.
 
-Relevant history is limited to `BATTLE_REPORT` entries where `report.mode === 'pvp'` and the target empire is the attacker or defender. Relevant reports are canonically ordered by:
+Focused coverage includes:
 
-1. `event.executeAt`;
-2. `event.sequence`;
-3. `report.id`;
+- explicit PvP considered;
+- explicit PvE ignored;
+- legacy mode-less ordinary battle considered as PvP;
+- legacy mode-less pirate attacker/defender ignored as PvE;
+- legacy mode-less PvP signal preserved through save/load;
+- existing latest-three, canonical ordering, permutation, perspective classification and aging-out coverage retained.
 
-then the latest three are selected. Classification is from the target empire's attacker/defender perspective; draws are neutral. PvE reports and unrelated empires are excluded. Event-array permutation does not alter the considered canonical window or signal.
+### P1 — final batch closure
 
-`recoveryBias` is `loss-dominant` iff `losses > wins`; otherwise it is `none`. Wins create no positive or unbounded aggression bonus. Once a loss ages out of the latest-three relevant window, baseline personality behavior returns automatically.
+The accepted Audit #178 contract is archived at:
 
-The only direct runtime consumer is `src/simulation/bots/threatRecoveryPlanner.ts`. `src/simulation/bots/scheduler.ts` runtime is unchanged.
+`docs/audits/completed/post-1.0-bot-strategy-differentiation.md`
 
-The accepted bounded integration order is:
+`docs/audits/batch-history.md` now records #178 / #179–#181 with closure staged in #181 and no invented future squash SHA.
 
-1. existing critical/economic recovery;
-2. existing fleet/high-threat recovery;
-3. ordinary fleet action;
-4. ordinary research action;
-5. only then, in stable state, loss-dominant bounded military-recovery fallback;
-6. otherwise no action.
+`docs/audits/current-batch-audit.md` is reset to the repository's no-active-next-implementation boundary: #181 closure is staged, no PR4 exists, no further implementation is authorized, and the next valid work after controller merge is a fresh docs-only Audit from the new main.
 
-An earlier implementation placed outcome recovery too early and broke Organic Obelisk trajectory evidence; that variant was rejected. The final bounded fallback restores the normal development trajectory while retaining the accepted outcome response.
+Continuation, project status, roadmap index and execution roadmap are synchronized to the same boundary.
 
-Save/load preserves both the derived signal and the next bounded recovery decision. No persistent AI memory/counters were added.
+## Accepted pre-fix evidence
 
-## Accepted runtime-head evidence
+The prior Ready head `cc3b6e3b3bcce5256ced5e6430f4ba19293a2a87` passed:
 
-Exact accepted runtime head: `83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f`.
-
-- CI #2234 — SUCCESS;
+- CI #2235 — SUCCESS;
+- Graphify #1370 — SUCCESS;
+- Browser E2E #1465 — SUCCESS;
+- production Pages smoke — SUCCESS;
 - asset audit / lint / typecheck / full tests / build — SUCCESS;
-- compressed progression scenario — SUCCESS;
-- Organic Obelisk evidence — SUCCESS;
+- compressed progression — SUCCESS;
+- campaign catch-up performance — SUCCESS;
+- Organic Obelisk — SUCCESS;
 - Organic Fresh Game → Terminal — SUCCESS;
-- Organic terminal save/load + partition determinism — SUCCESS;
-- bounded organic terminal faction matrix — SUCCESS;
-- campaign catch-up performance — SUCCESS:
-  - one day `5254.070 ms`, operations `1559`, botAudit `537`, botDiagnostics `559`;
-  - seven days `20000.787 ms`, operations `3174`, botAudit `984`, botDiagnostics `1156`;
-- Graphify #1369 — SUCCESS;
-- Browser E2E #1464 — SUCCESS;
-- production Pages smoke in #1464 — SUCCESS;
-- unresolved review threads — 0;
-- mergeable — true;
-- verified `main` remained `f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd`.
+- terminal save/load + partition determinism — SUCCESS;
+- bounded organic faction matrix — SUCCESS.
+
+Those runs are historical evidence only after this review-fix commit; they are not the final exact-head gate.
 
 ## Next safe action
 
-This control-plane synchronization changes the PR head, therefore #2234/#1369/#1464 remain accepted runtime evidence but are not the final exact-head handoff gates.
-
-1. require fresh CI, Graphify and Browser E2E including production Pages smoke on the final docs head;
-2. require every CI job green: assets, lint, typecheck, full tests, build, compressed progression, campaign performance, Organic Obelisk, Organic Fresh Game → Terminal, terminal determinism and bounded faction matrix;
-3. verify `main` still equals `f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd`;
-4. verify unresolved review threads = 0 and `mergeable=true`;
-5. ensure PR #181 body records the accepted contract, rejected early variant and final exact-head evidence;
-6. only when all final-head gates are green, mark #181 Ready for review;
-7. STOP for controller review.
+1. reply to both validated review threads with exact fix evidence and resolve them only after the commit exists;
+2. require fresh exact-head CI including all organic/performance jobs, Graphify and Browser E2E including production Pages smoke;
+3. verify `main` still equals `f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd` unless explicitly reconciled;
+4. verify unresolved review threads = 0, `mergeable=true` and `draft=false`;
+5. ensure PR #181 body records legacy-mode compatibility, closure archive/history/reset/continuation state and final exact-head evidence;
+6. STOP for controller review.
 
 Do not merge #181. Do not start another Audit/batch.

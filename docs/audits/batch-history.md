@@ -9,26 +9,25 @@ This file is the compact historical index for completed roadmap audit batches. G
 | `COMPLETE-ENDGAME-03` | medium | #162 | #163–#166 | completed; #166 squash recorded by M9 Audit | `docs/audits/completed/complete-endgame-03.md` |
 | `M9-RELEASE-CANDIDATE` | medium | #167 | #168–#171 | completed; Release 1.0 closure #171 → `1f7298a602062837ec6bb8e3778d408ada26051c` | `docs/audits/completed/m9-release-candidate.md` |
 | `POST-1.0-NEMEXIA-PARITY` | bounded-sequential | #173 | #174–#177 | completed; #177 closure → `53cf207f30f1a51f864d77f61969937e0d1ad59c` | `docs/audits/completed/post-1.0-nemexia-parity.md` |
+| `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` | bounded-sequential | #178 | #179–#181 | closure staged in #181 / complete upon controller-approved merge | `docs/audits/completed/post-1.0-bot-strategy-differentiation.md` |
 
 ## Current boundary
 
 ```text
-POST-1.0-NEMEXIA-PARITY → COMPLETE
-Audit #173 → 817a014ef958be4c54f2bd5b54a68890f358d53a
-#174 → 200456244d3a7efcbb197f7734a97adf622fad76
-#175 → 415a3aa814d759d1f76a986003ad7e9d06e0e8fa
-#176 → c2012c76397c0a56bce85c470334850f7be4bd3e
-#177 → 53cf207f30f1a51f864d77f61969937e0d1ad59c
+POST-1.0-BOT-STRATEGY-DIFFERENTIATION → CLOSURE STAGED IN #181
+Audit #178 → 4b96d457fad1577a0663210864381a0d3a33cb77
+#179 → 7620975e1cd604c8bcdce0bac748e32e276061db
+#180 → f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd
+#181 → final implementation / closure PR; merge SHA unknown until merge
 schema v19 / save v6 / migration none
-active implementation PR → none
-active implementation work item → none
-PR5 → not authorized / does not exist
-active docs-only Audit → #178 POST-1.0-NEXT-PRODUCT-AUDIT
-implementationAuthorized → false
-next valid action → controller review of Audit #178
+active implementation PR → #181 closure only
+further implementation authorized → false
+PR4 → not authorized / does not exist
+next valid action → controller review/merge decision for #181
+next valid category after merge → fresh docs-only Audit from new main
 ```
 
-PR #178 is not a new implementation batch. It records the generated #177 squash SHA, audits fresh product value from the completed runtime baseline and proposes — but does not authorize — the next coherent implementation batch.
+Actual GitHub state is authoritative while #181 remains open. The batch is not GitHub-complete and no #181 squash SHA exists in this record yet.
 
 ## Recording rules
 
@@ -37,4 +36,4 @@ PR #178 is not a new implementation batch. It records the generated #177 squash 
 - Actual GitHub state is authoritative if a closure document is viewed before its PR has merged.
 - Do not append a future implementation batch until its Audit has been accepted.
 - For dependent implementation PRs, every successor branch must start from the latest merged `main`; controller approval/merge checkpoint therefore occurs before the dependent successor begins.
-- Closing an audited batch does not itself authorize PR5 or another feature batch.
+- Closing an audited batch does not itself authorize another implementation PR or feature batch.

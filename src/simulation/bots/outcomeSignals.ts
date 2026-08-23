@@ -1,4 +1,5 @@
 import type { BattleReport } from '../combat/types';
+import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
 import type { ExecutedGameEvent, GameState } from '../types';
 
 export const RECENT_BOT_BATTLE_WINDOW = 3;
@@ -22,7 +23,13 @@ function relevantOwnPvpBattle(
 ): RelevantBattle | null {
   if (entry.event.payload.type !== 'BATTLE_REPORT') return null;
   const report = entry.event.payload.report;
-  if (report.mode !== 'pvp') return null;
+  const mode = report.mode ?? (
+    report.attackerEmpireId === PIRATE_EMPIRE_ID ||
+    report.defenderEmpireId === PIRATE_EMPIRE_ID
+      ? 'pve'
+      : 'pvp'
+  );
+  if (mode !== 'pvp') return null;
   if (
     report.attackerEmpireId !== empireId &&
     report.defenderEmpireId !== empireId

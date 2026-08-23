@@ -5,6 +5,7 @@ import {
 } from '../../src/simulation/bots/outcomeSignals';
 import type { BattleMode, BattleReport, BattleWinner } from '../../src/simulation/combat/types';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
+import { PIRATE_EMPIRE_ID } from '../../src/simulation/pve/neutralForces';
 import type { ExecutedGameEvent, GameState } from '../../src/simulation/types';
 import {
   createSaveEnvelope,
@@ -23,6 +24,7 @@ interface BattleEventOptions {
   readonly defenderEmpireId?: string;
   readonly winner: BattleWinner;
   readonly mode?: BattleMode;
+  readonly legacyModeOmitted?: boolean;
 }
 
 function battleEvent(options: BattleEventOptions): ExecutedGameEvent {
@@ -39,7 +41,7 @@ function battleEvent(options: BattleEventOptions): ExecutedGameEvent {
     defenderInitial: {},
     attackerRemaining: {},
     defenderRemaining: {},
-    mode: options.mode ?? 'pvp',
+    ...(options.legacyModeOmitted ? {} : { mode: options.mode ?? 'pvp' }),
   };
   return {
     event: {
@@ -98,6 +100,90 @@ describe('recent bot battle outcome signal', () => {
     })])).toMatchObject({ wins: 0, losses: 1, draws: 0, recoveryBias: 'loss-dominant' });
     expect(signal([battleEvent({ id: 'draw', executeAt: 1, sequence: 1, winner: 'draw' })]))
       .toMatchObject({ wins: 0, losses: 0, draws: 1, recoveryBias: 'none' });
+  });
+
+  it('considers an explicit PvP report', () => {
+    expect(signal([
+      battleEvent({
+        id: 'explicit-pvp-loss',
+        executeAt: 5,
+        sequence: 1,
+        winner: 'defender',
+        mode: 'pvp',
+      }),
+    ])).toEqual({
+      consideredBattles: 1,
+      wins: 0,
+      losses: 1,
+      draws: 0,
+      recoveryBias: 'loss-dominant',
+    });
+  });
+
+  it('ignores an explicit PvE report', () => {
+    expect(signal([
+      battleEvent({
+        id: 'explicit-pve-loss',
+        executeAt: 5,
+        sequence: 1,
+        winner: 'defender',
+        mode: 'pve',
+      }),
+    ])).toEqual({
+      consideredBattles: 0,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      recoveryBias: 'none',
+    });
+  });
+
+  it('treats legacy mode-less non-pirate battles as PvP', () => {
+    expect(signal([
+      battleEvent({
+        id: 'legacy-pvp-loss',
+        executeAt: 6,
+        sequence: 1,
+        winner: 'defender',
+        legacyModeOmitted: true,
+      }),
+    ])).toEqual({
+      consideredBattles: 1,
+      wins: 0,
+      losses: 1,
+      draws: 0,
+      recoveryBias: 'loss-dominant',
+    });
+  });
+
+  it('treats legacy mode-less pirate battles as PvE for either pirate side', () => {
+    const events = [
+      battleEvent({
+        id: 'legacy-pirate-attacker',
+        executeAt: 7,
+        sequence: 1,
+        attackerEmpireId: PIRATE_EMPIRE_ID,
+        defenderEmpireId: EMPIRE,
+        winner: 'attacker',
+        legacyModeOmitted: true,
+      }),
+      battleEvent({
+        id: 'legacy-pirate-defender',
+        executeAt: 8,
+        sequence: 2,
+        attackerEmpireId: EMPIRE,
+        defenderEmpireId: PIRATE_EMPIRE_ID,
+        winner: 'defender',
+        legacyModeOmitted: true,
+      }),
+    ];
+    expect(signal(events)).toEqual({
+      consideredBattles: 0,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      recoveryBias: 'none',
+    });
   });
 
   it('ignores PvE reports and battles unrelated to the target empire', () => {
@@ -222,6 +308,45 @@ describe('recent bot battle outcome signal', () => {
     ]);
     const expected = deriveRecentBotBattleOutcomeSignal(state, EMPIRE);
     const envelope = createSaveEnvelope('outcome-signal', state, '2026-08-23T12:00:00.000Z');
+    const parsed = parseSaveJson(serializeSave(envelope));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(deriveRecentBotBattleOutcomeSignal(parsed.value.state, EMPIRE)).toEqual(expected);
+  });
+
+  it('preserves a legacy mode-less PvP signal through save and load', () => {
+    const state = withEvents([
+      battleEvent({
+        id: 'legacy-save-loss',
+        executeAt: 10,
+        sequence: 1,
+        winner: 'defender',
+        legacyModeOmitted: true,
+      }),
+      battleEvent({
+        id: 'legacy-save-win',
+        executeAt: 20,
+        sequence: 2,
+        winner: 'attacker',
+        legacyModeOmitted: true,
+      }),
+      battleEvent({
+        id: 'legacy-save-loss-2',
+        executeAt: 30,
+        sequence: 3,
+        winner: 'defender',
+        legacyModeOmitted: true,
+      }),
+    ]);
+    const expected = deriveRecentBotBattleOutcomeSignal(state, EMPIRE);
+    expect(expected).toEqual({
+      consideredBattles: 3,
+      wins: 1,
+      losses: 2,
+      draws: 0,
+      recoveryBias: 'loss-dominant',
+    });
+    const envelope = createSaveEnvelope('legacy-outcome-signal', state, '2026-08-23T12:00:00.000Z');
     const parsed = parseSaveJson(serializeSave(envelope));
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
