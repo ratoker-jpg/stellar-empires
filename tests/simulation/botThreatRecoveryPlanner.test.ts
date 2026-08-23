@@ -104,9 +104,14 @@ function prepareOutcomeRecoveryState(seed: string, empireId: string): GameState 
       planet.ownerEmpireId === empireId
         ? {
             ...planet,
-            buildings: planet.buildings.filter(
-              (building) => building.buildingId !== roles.buildings.laboratory,
-            ),
+            buildings: [
+              ...planet.buildings.filter(
+                (building) =>
+                  building.buildingId !== roles.buildings.laboratory &&
+                  building.buildingId !== roles.buildings.power,
+              ),
+              { buildingId: roles.buildings.power, level: 10 },
+            ],
             inventory: { ships: {}, defenses: {} },
           }
         : planet,
