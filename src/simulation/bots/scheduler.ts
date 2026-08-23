@@ -22,10 +22,7 @@ import {
   type BotPveReasonCode,
 } from './pveOperationsPlanner';
 import { planBotResearchAndProduction } from './researchProductionPlanner';
-import {
-  deriveBotStrategyPolicy,
-  type BotCompressedDevelopmentSource,
-} from './strategyPolicy';
+import { deriveBotStrategyPolicy } from './strategyPolicy';
 import {
   planBotThreatAndRecovery,
   type BotThreatRecoveryPlan,
@@ -101,7 +98,6 @@ interface PlannerCandidates {
   readonly candidates: readonly CommandCandidate[];
   readonly fleet: BotFleetMissionPlan | null;
   readonly pve: BotPveOperationsPlan | null;
-  readonly activatesPersonalityArbitration?: boolean;
 }
 
 const PRIORITY_THREAT_REASONS = new Set<BotThreatRecoveryPlan['reasonCode']>([
@@ -149,7 +145,6 @@ function compressedCandidate(
   allowLogistics: boolean,
   prioritizePortfolioMaintenance: boolean,
   allowPve: boolean,
-  personalityArbitrationActive: boolean,
   precomputedFleet?: BotFleetMissionPlan,
 ): PlannerCandidates {
   const logistics = allowLogistics
@@ -178,51 +173,34 @@ function compressedCandidate(
   const science = planBotResearchAndProduction(state, profile.empireId);
   let economy: ReturnType<typeof planBotEconomy> | null = null;
 
-  const developmentCommand = (source: BotCompressedDevelopmentSource): GameCommand | null => {
-    if (source === 'production') return science.production.command;
-    if (source === 'research') return science.research.command;
-    if (source === 'economy') {
-      economy ??= planBotEconomy(state, profile.empireId);
-      return economy.command;
-    }
-    return logistics?.command ?? null;
-  };
-
-  if (phase === 'first-combat' && personalityArbitrationActive) {
-    for (const source of deriveBotStrategyPolicy(profile).compressedDevelopmentPreference) {
-      const candidate = selectCandidate(source, developmentCommand(source), attempted);
-      if (candidate !== null) {
-        return { candidates: [candidate], fleet: precomputedFleet ?? null, pve: null };
-      }
-    }
-  }
-
   if (
     phase === 'first-combat' &&
     attempted.length === 0 &&
     science.production.command !== null &&
     science.research.command !== null
   ) {
-    const [preferredSource] = deriveBotStrategyPolicy(profile).compressedDevelopmentPreference;
-    if (preferredSource === 'economy' || preferredSource === 'research') {
-      economy = planBotEconomy(state, profile.empireId);
-      if (economy.command !== null) {
-        const preferredCommand = preferredSource === 'economy'
-          ? economy.command
-          : science.research.command;
-        const preferredCandidate = selectCandidate(
-          preferredSource,
-          preferredCommand,
-          attempted,
-        );
-        if (preferredCandidate !== null) {
-          return {
-            candidates: [preferredCandidate],
-            fleet: precomputedFleet ?? null,
-            pve: null,
-            activatesPersonalityArbitration: true,
-          };
-        }
+    economy = planBotEconomy(state, profile.empireId);
+    if (
+      economy.command !== null &&
+      economy.command.type === 'SET_PLANET_SPECIALIZATION'
+    ) {
+      const preferredSource = deriveBotStrategyPolicy(profile).compressedDevelopmentPreference[0];
+      const preferredCommand = preferredSource === 'economy'
+        ? economy.command
+        : preferredSource === 'research'
+          ? science.research.command
+          : science.production.command;
+      const preferredCandidate = selectCandidate(
+        preferredSource ?? 'production',
+        preferredCommand,
+        attempted,
+      );
+      if (preferredCandidate !== null) {
+        return {
+          candidates: [preferredCandidate],
+          fleet: precomputedFleet ?? null,
+          pve: null,
+        };
       }
     }
   }
@@ -494,7 +472,6 @@ function runProfileDecision(
   let logisticsCommandAttempted = false;
   let pveCommandAttempted = false;
   let pveDiagnosticRecorded = false;
-  let personalityArbitrationActive = false;
   const compressed = state.campaignSettings.progressionProfile === 'compressed-v1';
   const portfolioMaintenanceDue = isCadenceDue(
     state,
@@ -526,7 +503,6 @@ function runProfileDecision(
           !logisticsCommandAttempted,
           portfolioMaintenanceDue,
           pveDue && !pveCommandAttempted,
-          personalityArbitrationActive,
           index === 0 ? diagnosticFleet : undefined,
         )
       : legacyCandidatesForPersonality(
@@ -535,9 +511,6 @@ function runProfileDecision(
           !logisticsCommandAttempted,
           pveDue && !pveCommandAttempted,
         );
-    if (planning.activatesPersonalityArbitration === true) {
-      personalityArbitrationActive = true;
-    }
     if (!pveDiagnosticRecorded && planning.pve !== null) {
       const pveDiagnostic = diagnosticForBlockedPve(profile, decidedAt, planning.pve);
       if (pveDiagnostic !== null) diagnostics.push(pveDiagnostic);
