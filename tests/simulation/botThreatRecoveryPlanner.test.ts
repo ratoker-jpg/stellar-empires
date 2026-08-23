@@ -90,22 +90,48 @@ function prepareMilitaryIndustry(state: GameState, empireId: string): GameState 
 function prepareOutcomeRecoveryState(seed: string, empireId: string): GameState {
   const state = prepareMilitaryIndustry(createInitialGameState(seed), empireId);
   const origin = state.planets.find((planet) => planet.ownerEmpireId === empireId);
-  if (origin === undefined) throw new Error('Missing outcome recovery origin.');
+  const target = state.planets.find((planet) => planet.ownerEmpireId === 'player');
+  if (origin === undefined || target === undefined) {
+    throw new Error('Missing outcome recovery origin or target.');
+  }
   const roles = getFactionMechanicalRoles(origin.factionId);
+  const fighter = getUnitDefinition(roles.ships.fighter);
+  if (fighter === undefined) throw new Error('Missing outcome recovery fighter.');
+  const departedAt = state.clock.elapsedSeconds;
   return {
     ...state,
     planets: state.planets.map((planet) =>
       planet.ownerEmpireId === empireId
         ? {
             ...planet,
-            inventory: {
-              ships: planet.id === origin.id ? { [roles.ships.fighter]: 2 } : {},
-              defenses: {},
-            },
+            buildings: planet.buildings.filter(
+              (building) => building.buildingId !== roles.buildings.laboratory,
+            ),
+            inventory: { ships: {}, defenses: {} },
           }
         : planet,
     ),
-    fleets: state.fleets.filter((fleet) => fleet.empireId !== empireId),
+    fleets: [
+      ...state.fleets.filter((fleet) => fleet.empireId !== empireId),
+      {
+        id: `${seed}-busy-fleet`,
+        empireId,
+        originPlanetId: origin.id,
+        location: {
+          type: 'transit' as const,
+          fromPlanetId: origin.id,
+          toPlanetId: target.id,
+          departedAt,
+          arrivesAt: departedAt + 10_000,
+        },
+        status: 'outbound' as const,
+        ships: { [roles.ships.fighter]: 2 },
+        cargo: ZERO_CARGO,
+        speed: fighter.stats.speed,
+        cargoCapacity: 100,
+        mission: { kind: 'attack' as const, targetPlanetId: target.id },
+      },
+    ],
     intelligence: state.intelligence.map((entry) =>
       entry.empireId === empireId
         ? { ...entry, observations: [], alerts: [] }
@@ -515,7 +541,8 @@ describe('bot threat, target and recovery planner', () => {
     if (target === undefined) throw new Error('Missing outcome target.');
     const baseline = planBotThreatAndRecovery(state, empireId);
     expect(baseline.recoveryPhase).toBe('stable');
-    expect(baseline.reasonCode).not.toBe('military-recovery');
+    expect(baseline.reasonCode).toBe('no-action');
+    expect(baseline.command).toBeNull();
 
     const lossDominant: GameState = {
       ...state,
@@ -545,6 +572,7 @@ describe('bot threat, target and recovery planner', () => {
     if (target === undefined) throw new Error('Missing outcome target.');
     const profile = tacticalProfile('aggressive');
     const baseline = planBotThreatAndRecovery(state, empireId, {}, profile);
+    expect(baseline.reasonCode).toBe('no-action');
 
     const lossDominant: GameState = {
       ...state,
