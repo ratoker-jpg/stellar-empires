@@ -1,101 +1,104 @@
 # Current execution state
 
-**Updated:** 2026-08-22  
-**Safe to continue:** yes — Audit docs FIX only, then controller review  
-**Phase:** `POST-1.0-NEXT-PRODUCT-AUDIT`  
-**Runtime baseline:** `main` `53cf207f30f1a51f864d77f61969937e0d1ad59c`  
+**Updated:** 2026-08-23  
+**Safe to continue:** PR #179 final validation only; do not merge or start PR2/PR3  
+**Phase:** `POST-1.0-BOT-STRATEGY-DIFFERENTIATION`  
+**Exact starting `main`:** `4b96d457fad1577a0663210864381a0d3a33cb77`  
 **Runtime:** schema v19 / save format v6  
 **Migration:** none  
 **Release:** 1.0.0 remains closed
 
 | Field | Current value |
 |---|---|
-| Previous batch | `POST-1.0-NEMEXIA-PARITY` — COMPLETE |
-| #177 | merged → `53cf207f30f1a51f864d77f61969937e0d1ad59c` |
-| Exact Audit starting `main` | `53cf207f30f1a51f864d77f61969937e0d1ad59c` |
-| Active Audit work item | `POST-1.0-NEXT-PRODUCT-AUDIT` |
-| Audit PR | #178 |
-| Audit branch | `audit/post-1.0-next-product` |
-| Controller verdict | `FIX — DOCS-ONLY AUDIT CONTRACT COMPLETENESS` |
-| Active implementation PR | none |
-| Active implementation work item | none |
-| Implementation authorized | false |
-| Recommended next batch | `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` — proposal only |
-| Proposed sequence | PR1 → PR2 → PR3 |
-| Critical unknowns resolved | true |
-| Critical unknowns | `[]` |
+| Audit #178 | MERGED → `4b96d457fad1577a0663210864381a0d3a33cb77` |
+| Batch | `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` |
+| Active implementation work item | `POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY` |
+| Active implementation PR | #179 |
+| Branch | `agent/post-1.0-compressed-personality-strategy` |
+| PR1 controller state | complete-for-controller-review after final exact-head validation |
+| PR2 | pending / not started |
+| PR3 | pending / not started |
+| Further implementation authorized | false |
+| Runtime implementation evidence head | `7a1b9c505fb556836b078e55fac86691a0472d5e` |
+| PR1 merge SHA | none — PR #179 is not merged |
 
-## Controller FIX closure
+## PR1 strategy contract
 
-Two post-Ready review findings were valid and are now addressed in the Audit contract rather than merely marked resolved.
+`src/simulation/bots/strategyPolicy.ts` is the pure personality-policy truth source.
 
-### DECISION A — tactical risk
+Development preference truth:
 
-One derived policy truth in `src/simulation/bots/strategyPolicy.ts`:
+- Industrial / Aegis: `economy → research → production → logistics`;
+- Explorer / Synod: `research → economy → production → logistics`;
+- Aggressive / Veyra: `production → research → economy → logistics`.
 
-`maxAttackRiskPermille`
+Closure-safe shared development fallback remains:
 
-- industrial / Aegis = **700**;
-- explorer / Synod = **800**;
-- aggressive / Veyra = **900**.
+`production → research → economy → logistics`.
 
-PR2 requires both `fleetMissionPlanner.ts` and `threatRecoveryPlanner.ts` to consume the same threshold. Current/full level-3 intel, mission availability and reducer validation remain mandatory.
+PR1 personality development arbitration is intentionally bounded. It activates only on the first command of a compressed `first-combat` decision when economy, research and production are all actionable **and** the economy candidate is the ordinary non-resource-spending `SET_PLANET_SPECIALIZATION` command. Outside that bounded early-game state the compressed scheduler uses the closure-safe shared development order.
 
-### DECISION B — recent outcome window
+Compressed opportunity order is shared for PR1:
 
-`RECENT_BOT_BATTLE_WINDOW = 3`.
+`pve → fleet`.
 
-Only the three latest relevant resolved own PvP `BATTLE_REPORT` entries are considered. Canonical ordering is stable and independent of current array order:
+The earlier Explorer `fleet → pve` experiment is not part of the final contract: organic closure evidence disproved it.
 
-1. `event.executeAt`;
-2. `event.sequence`;
-3. `report.id`.
+Future PR2 tactical-risk truth is recorded but not wired:
 
-No wall clock, persisted counter, new AI memory, schema or save change.
+- Industrial: `maxAttackRiskPermille = 700`;
+- Explorer: `maxAttackRiskPermille = 800`;
+- Aggressive: `maxAttackRiskPermille = 900`.
 
-### Exact PR3 seam
+`fleetMissionPlanner.ts` and `threatRecoveryPlanner.ts` remain untouched by PR1 threshold wiring.
 
-New helper:
+## Regression / closure evidence
 
-`src/simulation/bots/outcomeSignals.ts`
+The original broad personality ordering changed the long-run compressed resource/progression trajectory and could leave final projects in `funding` at the accepted terminal horizon. Subsequent evidence also showed that Explorer `fleet → pve` changed organic closure. The accepted fixture-driven adjustment therefore minimizes personality influence instead of weakening campaign gates.
 
-`deriveRecentBotBattleOutcomeSignal(state, empireId)`
+The final controlled scheduler fixture proves, before invoking the scheduler:
 
-Exact output fields:
+- phase is exactly `first-combat`;
+- economy is actionable;
+- research is actionable;
+- production is actionable;
+- the state uses ordinary catalog prerequisites rather than outcome/resource bypasses.
 
-- `consideredBattles`;
-- `wins`;
-- `losses`;
-- `draws`;
-- `recoveryBias: 'none' | 'loss-dominant'`.
+On the same equalized state, one ordinary reducer-validated command differs by personality:
 
-Sole direct runtime consumer in PR3:
+- Industrial → `economy`;
+- Explorer → `research`;
+- Aggressive → `production`.
 
-`src/simulation/bots/threatRecoveryPlanner.ts`
+Repeated executions are equal and hidden player-resource changes do not change the bot audit choice.
 
-`src/simulation/bots/scheduler.ts` is read/verify only for PR3.
+## Green runtime-head evidence
 
-## Proposed implementation sequence — NOT AUTHORIZED
+Exact runtime evidence head: `7a1b9c505fb556836b078e55fac86691a0472d5e`.
 
-1. `POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY`
-2. `POST-1.0-PR2-PERSONALITY-TACTICAL-RISK`
-3. `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE`
+- CI #2207 — SUCCESS;
+- full assets/lint/typecheck/tests/build — SUCCESS;
+- Organic Fresh Game → Terminal — SUCCESS;
+- Organic terminal save/load + partition determinism — SUCCESS;
+- bounded organic terminal faction matrix — SUCCESS;
+- compressed progression scenario — SUCCESS;
+- Organic Obelisk evidence — SUCCESS: Synod queued at `346920`, Veyra at `174300` real seconds;
+- campaign performance — SUCCESS: seven days `21974.367 ms`, operations `3174`, botAudit `984`, botDiagnostics `1156`;
+- Graphify #1344 — SUCCESS;
+- Browser E2E #1437 — SUCCESS;
+- production Pages smoke in #1437 — SUCCESS.
 
-Target remains schema v19 / save v6 / migration none.
-
-PR1 fixture source ordering is explicitly **non-critical**. If a fixture exposes starvation, implementation may choose another ordering only inside the accepted personality intent and mandatory invariants. It may not change acceptance gates, reducer authority, schema/save or the chosen batch theme.
-
-Achievements/extra score layers, moving objects and Bank credit remain outside this chosen batch and are not critical unknowns.
+The restored Obelisk timestamps and seven-day operation/audit/diagnostic counts match the accepted baseline trajectory, while controlled differentiation remains observable in the bounded fixture.
 
 ## Next safe action
 
-After the final docs FIX commit:
+This control-plane synchronization changes the PR head, so runtime-head checks above are evidence only and are no longer sufficient for final handoff.
 
-1. reply to the P1 thread with decision evidence and resolve it;
-2. reply to the P2 thread with the exact seam evidence and resolve it;
-3. require fresh exact-head CI, Graphify and Browser E2E including production smoke;
-4. verify `main` still equals `53cf207f30f1a51f864d77f61969937e0d1ad59c`;
-5. verify unresolved threads = 0, `mergeable=true`, `draft=false`;
+1. require fresh exact-head CI, Graphify and Browser E2E including production smoke after this docs commit;
+2. verify `main` still equals `4b96d457fad1577a0663210864381a0d3a33cb77`;
+3. verify unresolved review threads = 0 and `mergeable=true`;
+4. update the stale PR #179 description with the final bounded policy/evidence;
+5. only after every final-head gate is green, mark #179 Ready for review;
 6. STOP for controller review.
 
-Do not merge. Do not create PR1 or any implementation branch.
+Do not merge #179. Do not start PR2 or PR3.

@@ -1,44 +1,37 @@
 {
-  "statusVersion": 86,
-  "updatedAt": "2026-08-22",
+  "statusVersion": 87,
+  "updatedAt": "2026-08-23",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 177,
-  "lastMergeSha": "53cf207f30f1a51f864d77f61969937e0d1ad59c",
-  "verifiedMainBaseline": "PR #177 POST-1.0-PR4-LOW-COST-QUALITY-GATES squash; exact starting main for Audit #178",
-  "runtimeBaselinePr": 177,
-  "runtimeBaselineSha": "53cf207f30f1a51f864d77f61969937e0d1ad59c",
-  "activePr": 178,
-  "activePrKind": "audit",
-  "activeWorkItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
-  "activeBranch": "audit/post-1.0-next-product",
+  "lastMergedPr": 178,
+  "lastMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
+  "verifiedMainBaseline": "PR #178 POST-1.0-NEXT-PRODUCT-AUDIT squash; exact starting main for PR #179",
+  "runtimeBaselinePr": 178,
+  "runtimeBaselineSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
+  "activePr": 179,
+  "activePrKind": "implementation",
+  "activeWorkItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
+  "activeBranch": "agent/post-1.0-compressed-personality-strategy",
   "nextPrAfterActive": null,
   "nextPrKind": "controller-decision",
   "nextWorkItem": null,
-  "currentMilestone": "Post-1.0 next product Audit",
+  "currentMilestone": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION / PR1 controller review",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
-  "currentAuditEvidence": [
-    "PR #178 POST-1.0-NEXT-PRODUCT-AUDIT — docs-only controller review item",
-    "Graphify audit #1302 — 456 code files, 3546 nodes, 12388 edges",
-    "Controller FIX resolves tactical-risk and outcome-window critical unknowns as explicit Audit DECISIONs"
-  ],
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "lastCompletedBatchArchive": "docs/audits/completed/post-1.0-nemexia-parity.md",
-  "pendingBatchArchive": null,
   "currentAuditState": {
-    "batchId": "POST-1.0-NEXT-PRODUCT-AUDIT",
+    "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
     "auditPr": 178,
-    "auditMergeSha": null,
-    "status": "audit-contract-complete-after-controller-fix-awaiting-fresh-exact-head-gates-and-controller-review",
-    "implementationAuthorized": false,
+    "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
+    "status": "merged-controller-authorized-pr1-only",
+    "implementationAuthorized": true,
     "furtherImplementationAuthorized": false,
-    "exactStartingMain": "53cf207f30f1a51f864d77f61969937e0d1ad59c",
+    "exactStartingMain": "4b96d457fad1577a0663210864381a0d3a33cb77",
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false,
@@ -49,36 +42,72 @@
       "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
       "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE"
     ],
-    "activeImplementationPr": null,
+    "activeImplementationPr": 179,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
-    "contract": "Docs-only Audit. Proposed bot strategy batch is not authorized until explicit controller approval.",
+    "contract": "Audit #178 is merged. Controller authorized PR1 only. PR2/PR3 require later controller authorization.",
     "archive": null
-  },
-  "previousBatch": {
-    "batchId": "POST-1.0-NEMEXIA-PARITY",
-    "status": "complete",
-    "auditPr": 173,
-    "auditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
-    "implementationAuthorized": false,
-    "completedImplementationPrs": [174, 175, 176, 177],
-    "workItems": [
-      {"id":"POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE","pr":174,"status":"merged","mergeSha":"200456244d3a7efcbb197f7734a97adf622fad76"},
-      {"id":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","pr":175,"status":"merged","mergeSha":"415a3aa814d759d1f76a986003ad7e9d06e0e8fa"},
-      {"id":"POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH","pr":176,"status":"merged","mergeSha":"c2012c76397c0a56bce85c470334850f7be4bd3e"},
-      {"id":"POST-1.0-PR4-LOW-COST-QUALITY-GATES","pr":177,"status":"merged","mergeSha":"53cf207f30f1a51f864d77f61969937e0d1ad59c"}
-    ],
-    "archive": "docs/audits/completed/post-1.0-nemexia-parity.md"
   },
   "activeImplementationState": {
     "stateSchema": 19,
     "saveFormat": 6,
     "migration": "none",
-    "activeImplementationPr": null,
-    "activeImplementationWorkItem": null,
-    "implementationAuthorized": false,
+    "activeImplementationPr": 179,
+    "activeImplementationWorkItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
+    "implementationAuthorized": true,
+    "furtherImplementationAuthorized": false,
     "releaseVersion": "1.0.0",
-    "status": "runtime-frozen-at-post-1.0-batch-complete-while-audit-awaits-controller-review"
+    "runtimeEvidenceHead": "7a1b9c505fb556836b078e55fac86691a0472d5e",
+    "status": "complete-for-controller-review-after-final-exact-head-gates"
+  },
+  "pr1StrategyPolicy": {
+    "truthSource": "src/simulation/bots/strategyPolicy.ts",
+    "developmentPreference": {
+      "industrial": ["economy", "research", "production", "logistics"],
+      "explorer": ["research", "economy", "production", "logistics"],
+      "aggressive": ["production", "research", "economy", "logistics"]
+    },
+    "closureSafeDevelopmentPreference": ["production", "research", "economy", "logistics"],
+    "activation": {
+      "progressionPhase": "first-combat",
+      "firstCommandOnly": true,
+      "requiresActionable": ["economy", "research", "production"],
+      "economyCommandType": "SET_PLANET_SPECIALIZATION",
+      "reason": "bounded non-resource-spending differentiation preserves mandatory organic campaign trajectory"
+    },
+    "compressedOpportunityPreference": ["pve", "fleet"],
+    "tacticalRiskTruthOnly": {
+      "industrial": 700,
+      "explorer": 800,
+      "aggressive": 900,
+      "wiredInPr1": false
+    }
+  },
+  "runtimeEvidence": {
+    "head": "7a1b9c505fb556836b078e55fac86691a0472d5e",
+    "ciRun": 2207,
+    "ci": "success",
+    "organicFreshGameToTerminal": "success",
+    "organicTerminalDeterminism": "success",
+    "boundedOrganicFactionMatrix": "success",
+    "compressedProgression": "success",
+    "organicObelisk": {
+      "status": "success",
+      "synodQueuedAtRealSeconds": 346920,
+      "veyraQueuedAtRealSeconds": 174300
+    },
+    "campaignPerformance": {
+      "status": "success",
+      "sevenDayMilliseconds": 21974.367,
+      "operations": 3174,
+      "botAudit": 984,
+      "botDiagnostics": 1156
+    },
+    "graphifyRun": 1344,
+    "graphify": "success",
+    "browserE2eRun": 1437,
+    "browserE2e": "success",
+    "productionPagesSmoke": "success"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -97,13 +126,12 @@
     "externalControllerApprovalRequired": true
   },
   "auditDecisions": {
-    "batchId": "POST-1.0-NEXT-PRODUCT-AUDIT",
-    "recommendedBatch": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
-    "recommendedImplementationCount": 3,
+    "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "newSchemaMigration": false,
-    "implementationAuthorized": false,
+    "implementationAuthorized": true,
+    "furtherImplementationAuthorized": false,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
     "tacticalRiskPolicy": {
@@ -112,7 +140,8 @@
       "industrial": 700,
       "explorer": 800,
       "aggressive": 900,
-      "consumers": [
+      "pr1Wired": false,
+      "futureConsumers": [
         "src/simulation/bots/fleetMissionPlanner.ts",
         "src/simulation/bots/threatRecoveryPlanner.ts"
       ]
@@ -129,39 +158,40 @@
     }
   },
   "activeDelivery": [
-    {"pr":167,"kind":"audit","batchId":"M9-RELEASE-CANDIDATE","workItem":"M9-RELEASE-CANDIDATE-AUDIT","status":"merged","mergeSha":"f7e14fda42a135f70c0ad95ada7d3080d472176b"},
-    {"pr":168,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-ONBOARDING-TRUTH","status":"merged","mergeSha":"bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a"},
-    {"pr":169,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-PRODUCTION-BROWSER","status":"merged","mergeSha":"6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f"},
-    {"pr":170,"kind":"implementation","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-PACKAGING-METADATA","status":"merged","mergeSha":"1221bfe19cc11f836db7fe7e5720f778419c2dd9"},
-    {"pr":171,"kind":"implementation-closure","batchId":"M9-RELEASE-CANDIDATE","workItem":"RELEASE-1.0-CLOSURE","status":"merged","mergeSha":"1f7298a602062837ec6bb8e3778d408ada26051c"},
-    {"pr":172,"kind":"roadmap-docs","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-NEMEXIA-REFERENCE-ROADMAP","status":"merged","mergeSha":"538a0f22ab77687b148916c9a50721fca32930b4"},
-    {"pr":173,"kind":"audit","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-NEMEXIA-PARITY-AUDIT","status":"merged","mergeSha":"817a014ef958be4c54f2bd5b54a68890f358d53a"},
-    {"pr":174,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE","status":"merged","mergeSha":"200456244d3a7efcbb197f7734a97adf622fad76"},
-    {"pr":175,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"merged","mergeSha":"415a3aa814d759d1f76a986003ad7e9d06e0e8fa"},
-    {"pr":176,"kind":"implementation","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH","status":"merged","mergeSha":"c2012c76397c0a56bce85c470334850f7be4bd3e"},
-    {"pr":177,"kind":"implementation-closure","batchId":"POST-1.0-NEMEXIA-PARITY","workItem":"POST-1.0-PR4-LOW-COST-QUALITY-GATES","status":"merged","mergeSha":"53cf207f30f1a51f864d77f61969937e0d1ad59c"},
-    {"pr":178,"kind":"audit","batchId":"POST-1.0-NEXT-PRODUCT-AUDIT","workItem":"POST-1.0-NEXT-PRODUCT-AUDIT","status":"controller-fix-applied-awaiting-fresh-final-gates","mergeSha":null}
+    {
+      "pr": 178,
+      "kind": "audit",
+      "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
+      "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
+      "status": "merged",
+      "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77"
+    },
+    {
+      "pr": 179,
+      "kind": "implementation",
+      "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
+      "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
+      "status": "complete-for-controller-review-after-final-exact-head-gates",
+      "mergeSha": null
+    }
   ],
   "knownLimitations": [
     "Repository license remains an owner-controlled unresolved choice",
     "Several original Nemexia combat/economy/scoring formulas remain unverified and must not be guessed",
-    "Bank bankCreditEfficiencyPercent consumer remains UNKNOWN and intentionally untouched outside the chosen batch",
-    "Moving space-object trajectory/lifecycle semantics remain RESEARCH outside the chosen batch",
-    "PR1 fixture ordering may be adjusted only inside the accepted personality policy if a fixture shows starvation; this is non-critical and cannot change invariants, acceptance gates, schema/save or batch theme",
-    "No POST-1.0-BOT-STRATEGY-DIFFERENTIATION implementation is authorized until controller approval of PR #178"
+    "PR2 tactical-risk threshold wiring is pending and not authorized by PR1",
+    "PR3 outcome adaptation is pending and not authorized by PR1",
+    "No merge SHA exists for PR #179 because it must not be merged before controller review"
   ],
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
-    "docs/audits/current-execution-state.md",
     "docs/audits/current-batch-audit.md",
-    "docs/17-continuation-guide.md",
+    "docs/audits/current-execution-state.md",
     "docs/project-status.json",
-    "docs/16-execution-roadmap.md",
     "docs/roadmap-pr-index.json",
-    "docs/29-post-1.0-nemexia-reference-roadmap.md",
-    "docs/audits/completed/post-1.0-nemexia-parity.md",
-    "actual main, PR #178 and exact workflow/review state"
+    "docs/16-execution-roadmap.md",
+    "docs/17-continuation-guide.md",
+    "actual main and PR #179 exact workflow/review state"
   ],
-  "nextAction": "After the final docs FIX commit, require fresh exact-head CI, Graphify and Browser E2E including production smoke; reply to and resolve the two valid review threads; verify main unchanged, unresolved threads=0, mergeable=true and draft=false; then STOP for controller review. Do not merge and do not create PR1."
+  "nextAction": "Require fresh exact-head CI, Graphify and Browser E2E including production smoke after the control-plane commit; verify main remains 4b96d457fad1577a0663210864381a0d3a33cb77, unresolved threads=0 and mergeable=true; update PR #179 body, mark Ready only when every final-head gate is green, then STOP for controller review. Do not merge and do not start PR2/PR3."
 }

@@ -1,77 +1,93 @@
 {
-  "indexVersion": 22,
-  "updatedAt": "2026-08-22",
+  "indexVersion": 23,
+  "updatedAt": "2026-08-23",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 177,
-    "mergeSha": "53cf207f30f1a51f864d77f61969937e0d1ad59c",
-    "runtimeBaselinePr": 177,
-    "runtimeBaselineSha": "53cf207f30f1a51f864d77f61969937e0d1ad59c",
-    "lastCompletedAuditPr": 173,
-    "lastCompletedAuditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
+    "lastMergedPr": 178,
+    "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
+    "runtimeBaselinePr": 178,
+    "runtimeBaselineSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
+    "lastCompletedAuditPr": 178,
+    "lastCompletedAuditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
     "freshMainMustBeResolvedAfterThisDocsRecord": false
   },
   "active": {
-    "pr": 178,
-    "kind": "audit",
-    "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
-    "branch": "audit/post-1.0-next-product",
-    "startingMain": "53cf207f30f1a51f864d77f61969937e0d1ad59c",
-    "status": "controller-fix-applied-awaiting-fresh-exact-head-gates-and-review",
+    "pr": 179,
+    "kind": "implementation",
+    "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
+    "branch": "agent/post-1.0-compressed-personality-strategy",
+    "startingMain": "4b96d457fad1577a0663210864381a0d3a33cb77",
+    "status": "complete-for-controller-review-after-final-exact-head-gates",
     "mergeSha": null
   },
   "previousPhase": {
-    "id": "POST-1.0-NEMEXIA-PARITY",
-    "milestone": "POST-1.0",
-    "auditPr": 173,
-    "auditMergeSha": "817a014ef958be4c54f2bd5b54a68890f358d53a",
-    "status": "complete",
-    "implementationAuthorized": false,
-    "implementationCount": 4,
-    "completedImplementationPrs": [174, 175, 176, 177],
-    "implementationMergeShas": {
-      "174": "200456244d3a7efcbb197f7734a97adf622fad76",
-      "175": "415a3aa814d759d1f76a986003ad7e9d06e0e8fa",
-      "176": "c2012c76397c0a56bce85c470334850f7be4bd3e",
-      "177": "53cf207f30f1a51f864d77f61969937e0d1ad59c"
-    },
-    "targetStateSchema": 19,
-    "targetSaveFormat": 6,
-    "targetReleaseVersion": "1.0.0",
-    "schemaMigrationRequired": false,
-    "archive": "docs/audits/completed/post-1.0-nemexia-parity.md"
-  },
-  "currentPhase": {
     "id": "POST-1.0-NEXT-PRODUCT-AUDIT",
     "milestone": "POST-1.0",
     "auditPr": 178,
-    "auditMergeSha": null,
-    "status": "audit-contract-complete-after-controller-fix-awaiting-fresh-final-gates",
-    "implementationAuthorized": false,
+    "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
+    "status": "complete",
+    "implementationAuthorized": true,
+    "implementationAuthorizationScope": "PR1 only",
+    "targetStateSchema": 19,
+    "targetSaveFormat": 6,
+    "schemaMigrationRequired": false
+  },
+  "currentPhase": {
+    "id": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
+    "milestone": "POST-1.0",
+    "auditPr": 178,
+    "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
+    "status": "pr1-complete-for-controller-review-after-final-exact-head-gates",
+    "implementationAuthorized": true,
     "furtherImplementationAuthorized": false,
-    "recommendedBatch": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
-    "recommendedImplementationCount": 3,
-    "proposedImplementationPrs": [
-      "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
-      "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-      "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE"
+    "implementationCount": 3,
+    "workItems": [
+      {
+        "id": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
+        "pr": 179,
+        "status": "active-complete-for-controller-review",
+        "mergeSha": null
+      },
+      {
+        "id": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
+        "pr": null,
+        "status": "pending-not-started",
+        "mergeSha": null
+      },
+      {
+        "id": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
+        "pr": null,
+        "status": "pending-not-started",
+        "mergeSha": null
+      }
     ],
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
+    "pr1Policy": {
+      "developmentPreference": {
+        "industrial": ["economy", "research", "production", "logistics"],
+        "explorer": ["research", "economy", "production", "logistics"],
+        "aggressive": ["production", "research", "economy", "logistics"]
+      },
+      "closureSafeDevelopmentPreference": ["production", "research", "economy", "logistics"],
+      "activation": "first-combat first command with economy/research/production actionable and economy candidate SET_PLANET_SPECIALIZATION",
+      "opportunityPreference": ["pve", "fleet"]
+    },
     "tacticalRiskDecision": {
       "truthSource": "src/simulation/bots/strategyPolicy.ts",
       "field": "maxAttackRiskPermille",
       "industrial": 700,
       "explorer": 800,
       "aggressive": 900,
-      "sharedConsumers": [
+      "wiredInPr1": false,
+      "futureSharedConsumers": [
         "src/simulation/bots/fleetMissionPlanner.ts",
         "src/simulation/bots/threatRecoveryPlanner.ts"
       ]
@@ -82,35 +98,46 @@
       "canonicalOrdering": ["event.executeAt", "event.sequence", "report.id"],
       "helper": "src/simulation/bots/outcomeSignals.ts#deriveRecentBotBattleOutcomeSignal(state, empireId)",
       "directRuntimeConsumer": "src/simulation/bots/threatRecoveryPlanner.ts",
-      "scheduler": "read-verify-only"
+      "scheduler": "read-verify-only",
+      "status": "PR3 pending-not-started"
     },
     "audit": "docs/audits/current-batch-audit.md"
   },
+  "runtimeEvidence": {
+    "head": "7a1b9c505fb556836b078e55fac86691a0472d5e",
+    "ci": "#2207 SUCCESS",
+    "graphify": "#1344 SUCCESS",
+    "browserE2e": "#1437 SUCCESS",
+    "productionSmoke": "SUCCESS",
+    "organicFreshGameToTerminal": "SUCCESS",
+    "organicTerminalDeterminism": "SUCCESS",
+    "boundedFactionMatrix": "SUCCESS",
+    "compressedProgression": "SUCCESS",
+    "organicObelisk": "SUCCESS — Synod 346920 / Veyra 174300",
+    "campaignPerformance": "SUCCESS — seven days 21974.367 ms; operations 3174; botAudit 984; botDiagnostics 1156"
+  },
   "sequence": [
-    {"pr":162,"kind":"audit","workItem":"COMPLETE-ENDGAME-03","status":"merged","mergeSha":"b7de24f52c02480f6db244c00b1282407d5743cc"},
-    {"pr":163,"kind":"implementation","workItem":"ENDGAME-BOT-PERCEPTION","status":"merged","mergeSha":"46e0966c2843424d6e098e363327ffe5cf74d352"},
-    {"pr":164,"kind":"implementation","workItem":"ENDGAME-BOT-PARTICIPATION","status":"merged","mergeSha":"5be7b44eb51cf389e8006f0a0201ab61c0ee0df5"},
-    {"pr":165,"kind":"implementation","workItem":"ENDGAME-BOT-FINAL-OBJECTS","status":"merged","mergeSha":"d2d9f62b9367b2f12a23571fd8ffebdaee86fdd7"},
-    {"pr":166,"kind":"implementation-closure","workItem":"ENDGAME-BOT-CLOSURE-GATE","status":"merged","mergeSha":"a6b225fe38c1c320244fc54929534e49029d4026"},
-    {"pr":167,"kind":"audit","workItem":"M9-RELEASE-CANDIDATE-AUDIT","status":"merged","mergeSha":"f7e14fda42a135f70c0ad95ada7d3080d472176b"},
-    {"pr":168,"kind":"implementation","workItem":"RELEASE-ONBOARDING-TRUTH","status":"merged","mergeSha":"bd6f0302ef55f0d8f68c6fa619ecd1e07540aa9a"},
-    {"pr":169,"kind":"implementation","workItem":"RELEASE-PRODUCTION-BROWSER","status":"merged","mergeSha":"6b37ffc7d439889f3bdf21f7f1c6abaca6f4ec3f"},
-    {"pr":170,"kind":"implementation","workItem":"RELEASE-PACKAGING-METADATA","status":"merged","mergeSha":"1221bfe19cc11f836db7fe7e5720f778419c2dd9"},
-    {"pr":171,"kind":"implementation-closure","workItem":"RELEASE-1.0-CLOSURE","status":"merged","mergeSha":"1f7298a602062837ec6bb8e3778d408ada26051c"},
-    {"pr":172,"kind":"roadmap-docs","workItem":"POST-1.0-NEMEXIA-REFERENCE-ROADMAP","status":"merged","mergeSha":"538a0f22ab77687b148916c9a50721fca32930b4"},
-    {"pr":173,"kind":"audit","workItem":"POST-1.0-NEMEXIA-PARITY-AUDIT","status":"merged","mergeSha":"817a014ef958be4c54f2bd5b54a68890f358d53a"},
-    {"pr":174,"kind":"implementation","workItem":"POST-1.0-PR1-ORGANIC-LATE-GAME-CLOSURE","status":"merged","mergeSha":"200456244d3a7efcbb197f7734a97adf622fad76"},
-    {"pr":175,"kind":"implementation","workItem":"POST-1.0-PR2-COMBAT-IDENTITY-DOCTRINE","status":"merged","mergeSha":"415a3aa814d759d1f76a986003ad7e9d06e0e8fa"},
-    {"pr":176,"kind":"implementation","workItem":"POST-1.0-PR3-ADVERTISED-EFFECT-TRUTH","status":"merged","mergeSha":"c2012c76397c0a56bce85c470334850f7be4bd3e"},
-    {"pr":177,"kind":"implementation-closure","workItem":"POST-1.0-PR4-LOW-COST-QUALITY-GATES","status":"merged","mergeSha":"53cf207f30f1a51f864d77f61969937e0d1ad59c"},
-    {"pr":178,"kind":"audit","workItem":"POST-1.0-NEXT-PRODUCT-AUDIT","status":"controller-fix-applied-awaiting-fresh-final-gates","mergeSha":null}
+    {
+      "pr": 178,
+      "kind": "audit",
+      "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
+      "status": "merged",
+      "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77"
+    },
+    {
+      "pr": 179,
+      "kind": "implementation",
+      "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
+      "status": "complete-for-controller-review-after-final-exact-head-gates",
+      "mergeSha": null
+    }
   ],
   "next": {
     "pr": null,
     "kind": "controller-decision",
     "workItem": null,
     "implementationAuthorized": false,
-    "prerequisite": "fresh exact-head gates and controller review of Audit PR #178",
-    "instruction": "Do not merge #178 automatically and do not create implementation branches. The chosen proposal is POST-1.0-BOT-STRATEGY-DIFFERENTIATION with PR1→PR2→PR3 and zero critical unknowns."
+    "prerequisite": "fresh exact-head CI + Graphify + Browser E2E/production smoke, zero unresolved threads, mergeable=true, PR #179 Ready, then controller review",
+    "instruction": "Do not merge #179. Do not start PR2 or PR3 until explicit controller authorization."
   }
 }

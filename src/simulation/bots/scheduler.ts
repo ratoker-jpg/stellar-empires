@@ -22,6 +22,7 @@ import {
   type BotPveReasonCode,
 } from './pveOperationsPlanner';
 import { planBotResearchAndProduction } from './researchProductionPlanner';
+import { deriveBotStrategyPolicy } from './strategyPolicy';
 import {
   planBotThreatAndRecovery,
   type BotThreatRecoveryPlan,
@@ -168,7 +169,42 @@ function compressedCandidate(
     return { candidates: [endgame], fleet: precomputedFleet ?? null, pve: null };
   }
 
+  const phase = getBotProgressionPhase(state, profile.empireId);
   const science = planBotResearchAndProduction(state, profile.empireId);
+  let economy: ReturnType<typeof planBotEconomy> | null = null;
+
+  if (
+    phase === 'first-combat' &&
+    attempted.length === 0 &&
+    science.production.command !== null &&
+    science.research.command !== null
+  ) {
+    economy = planBotEconomy(state, profile.empireId);
+    if (
+      economy.command !== null &&
+      economy.command.type === 'SET_PLANET_SPECIALIZATION'
+    ) {
+      const preferredSource = deriveBotStrategyPolicy(profile).compressedDevelopmentPreference[0];
+      const preferredCommand = preferredSource === 'economy'
+        ? economy.command
+        : preferredSource === 'research'
+          ? science.research.command
+          : science.production.command;
+      const preferredCandidate = selectCandidate(
+        preferredSource ?? 'production',
+        preferredCommand,
+        attempted,
+      );
+      if (preferredCandidate !== null) {
+        return {
+          candidates: [preferredCandidate],
+          fleet: precomputedFleet ?? null,
+          pve: null,
+        };
+      }
+    }
+  }
+
   const production = selectCandidate(
     'production',
     science.production.command,
@@ -183,7 +219,7 @@ function compressedCandidate(
     return { candidates: [research], fleet: precomputedFleet ?? null, pve: null };
   }
 
-  const economy = planBotEconomy(state, profile.empireId);
+  economy ??= planBotEconomy(state, profile.empireId);
   const economyCandidate = selectCandidate('economy', economy.command, attempted);
   if (economyCandidate !== null) {
     return { candidates: [economyCandidate], fleet: precomputedFleet ?? null, pve: null };
