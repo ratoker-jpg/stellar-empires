@@ -9,6 +9,11 @@ import { planBotEconomy } from './economyPlanner';
 import { planBotFleetMission } from './fleetMissionPlanner';
 import { createBotPerception, type BotPerception } from './perception';
 import { planBotResearchAndProduction } from './researchProductionPlanner';
+import {
+  calculateBotAttackRiskPermille,
+  resolveBotStrategyPolicy,
+  type BotTacticalProfile,
+} from './strategyPolicy';
 
 export type BotThreatLevel = 'none' | 'low' | 'medium' | 'high';
 export type BotRecoveryPhase = 'stable' | 'economic' | 'fleet' | 'critical';
@@ -130,6 +135,7 @@ function planetStrategicValue(planet: BotPerception['ownPlanets'][number]): numb
 function assessTargets(
   perception: BotPerception,
   militaryPower: number,
+  maxAttackRiskPermille: number | null,
 ): readonly BotTargetAssessment[] {
   return perception.foreignPlanets
     .map((planet) => {
@@ -138,7 +144,7 @@ function assessTargets(
       const riskPermille =
         defense === null
           ? null
-          : Math.min(9_999, Math.floor((defense * 1_000) / Math.max(1, militaryPower)));
+          : calculateBotAttackRiskPermille(defense, militaryPower);
       const score =
         reward -
         (planet.freshness === 'stale' ? 1_000 : 0) -
@@ -156,7 +162,8 @@ function assessTargets(
           planet.freshness === 'current' &&
           defense !== null &&
           riskPermille !== null &&
-          riskPermille <= 800 &&
+          maxAttackRiskPermille !== null &&
+          riskPermille <= maxAttackRiskPermille &&
           militaryPower > 0,
       };
     })
@@ -291,6 +298,7 @@ function selectAction(
   threat: BotThreatLevel,
   hasTarget: boolean,
   dependencies: BotThreatRecoveryDependencies,
+  profile?: BotTacticalProfile,
 ): Action {
   if (phase === 'critical' || phase === 'economic') {
     const economy = dependencies.economy ?? planBotEconomy(state, empireId);
@@ -327,7 +335,7 @@ function selectAction(
     }
   }
 
-  const fleet = dependencies.fleet ?? planBotFleetMission(state, empireId);
+  const fleet = dependencies.fleet ?? planBotFleetMission(state, empireId, profile);
   if (fleet.command !== null) {
     return {
       reasonCode: hasTarget ? 'target-opportunity' : 'stable-development',
@@ -357,10 +365,16 @@ export function planBotThreatAndRecovery(
   state: GameState,
   empireId: string,
   dependencies: BotThreatRecoveryDependencies = {},
+  profile?: BotTacticalProfile,
 ): BotThreatRecoveryPlan {
   const perception = createBotPerception(state, empireId);
+  const policy = resolveBotStrategyPolicy(empireId, profile);
   const militaryPower = ownMilitaryPower(perception);
-  const targets = assessTargets(perception, militaryPower);
+  const targets = assessTargets(
+    perception,
+    militaryPower,
+    policy?.maxAttackRiskPermille ?? null,
+  );
   const knownHostilePower = targets.reduce(
     (maximum, target) => Math.max(maximum, target.estimatedDefense ?? 0),
     0,
@@ -390,6 +404,7 @@ export function planBotThreatAndRecovery(
       threat,
       target !== null,
       dependencies,
+      profile,
     ),
   };
 }
