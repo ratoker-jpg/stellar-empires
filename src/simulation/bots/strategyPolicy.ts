@@ -81,7 +81,9 @@ export function deriveCompressedDevelopmentPreference(
   profile: Pick<BotProfile, 'personality'>,
   phase: BotProgressionPhase,
 ): readonly BotCompressedDevelopmentSource[] {
-  return phase === 'foundation' || phase === 'reconnaissance'
+  return phase === 'foundation' ||
+    phase === 'reconnaissance' ||
+    phase === 'first-combat'
     ? deriveBotStrategyPolicy(profile).compressedDevelopmentPreference
     : COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE;
 }
