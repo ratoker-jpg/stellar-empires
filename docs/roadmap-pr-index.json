@@ -1,5 +1,5 @@
 {
-  "indexVersion": 23,
+  "indexVersion": 24,
   "updatedAt": "2026-08-23",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,21 +7,21 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 178,
-    "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "runtimeBaselinePr": 178,
-    "runtimeBaselineSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
+    "lastMergedPr": 179,
+    "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db",
+    "runtimeBaselinePr": 179,
+    "runtimeBaselineSha": "7620975e1cd604c8bcdce0bac748e32e276061db",
     "lastCompletedAuditPr": 178,
     "lastCompletedAuditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
     "freshMainMustBeResolvedAfterThisDocsRecord": false
   },
   "active": {
-    "pr": 179,
+    "pr": 180,
     "kind": "implementation",
-    "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
-    "branch": "agent/post-1.0-compressed-personality-strategy",
-    "startingMain": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "status": "complete-for-controller-review-after-final-exact-head-gates",
+    "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
+    "branch": "agent/post-1.0-personality-tactical-risk",
+    "startingMain": "7620975e1cd604c8bcdce0bac748e32e276061db",
+    "status": "complete-for-controller-review-pending-final-exact-head-gates",
     "mergeSha": null
   },
   "previousPhase": {
@@ -31,7 +31,7 @@
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
     "status": "complete",
     "implementationAuthorized": true,
-    "implementationAuthorizationScope": "PR1 only",
+    "implementationAuthorizationScope": "PR1 then controller-authorized PR2",
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false
@@ -41,7 +41,7 @@
     "milestone": "POST-1.0",
     "auditPr": 178,
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "status": "pr1-complete-for-controller-review-after-final-exact-head-gates",
+    "status": "pr2-complete-for-controller-review-pending-final-exact-head-gates",
     "implementationAuthorized": true,
     "furtherImplementationAuthorized": false,
     "implementationCount": 3,
@@ -49,13 +49,13 @@
       {
         "id": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
         "pr": 179,
-        "status": "active-complete-for-controller-review",
-        "mergeSha": null
+        "status": "merged",
+        "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db"
       },
       {
         "id": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-        "pr": null,
-        "status": "pending-not-started",
+        "pr": 180,
+        "status": "active-complete-for-controller-review",
         "mergeSha": null
       },
       {
@@ -86,11 +86,17 @@
       "industrial": 700,
       "explorer": 800,
       "aggressive": 900,
-      "wiredInPr1": false,
-      "futureSharedConsumers": [
+      "wiredInPr2": true,
+      "riskSemantics": "min(9999, floor(targetPower * 1000 / max(1, ownPower)))",
+      "sharedConsumers": [
         "src/simulation/bots/fleetMissionPlanner.ts",
         "src/simulation/bots/threatRecoveryPlanner.ts"
-      ]
+      ],
+      "schedulerActualProfilePropagation": true,
+      "directCallerDefaultProfileResolution": true,
+      "unknownOrMismatchedProfileGetsGuessedThreshold": false,
+      "currentFullLevel3IntelRequired": true,
+      "missionAndReducerValidationPreserved": true
     },
     "outcomeWindowDecision": {
       "constant": "RECENT_BOT_BATTLE_WINDOW",
@@ -104,17 +110,17 @@
     "audit": "docs/audits/current-batch-audit.md"
   },
   "runtimeEvidence": {
-    "head": "7a1b9c505fb556836b078e55fac86691a0472d5e",
-    "ci": "#2207 SUCCESS",
-    "graphify": "#1344 SUCCESS",
-    "browserE2e": "#1437 SUCCESS",
+    "head": "eaa8a9b2edfcabce72cef11fb8026be96f9673c7",
+    "ci": "#2220 SUCCESS",
+    "graphify": "#1356 SUCCESS",
+    "browserE2e": "#1450 SUCCESS",
     "productionSmoke": "SUCCESS",
     "organicFreshGameToTerminal": "SUCCESS",
     "organicTerminalDeterminism": "SUCCESS",
     "boundedFactionMatrix": "SUCCESS",
     "compressedProgression": "SUCCESS",
-    "organicObelisk": "SUCCESS — Synod 346920 / Veyra 174300",
-    "campaignPerformance": "SUCCESS — seven days 21974.367 ms; operations 3174; botAudit 984; botDiagnostics 1156"
+    "organicObelisk": "SUCCESS — Synod 346920→353700 / Veyra 174300→181080",
+    "campaignPerformance": "SUCCESS — one day 5364.431 ms / seven days 20285.642 ms; seven-day operations 3174; botAudit 984; botDiagnostics 1156"
   },
   "sequence": [
     {
@@ -128,7 +134,14 @@
       "pr": 179,
       "kind": "implementation",
       "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
-      "status": "complete-for-controller-review-after-final-exact-head-gates",
+      "status": "merged",
+      "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db"
+    },
+    {
+      "pr": 180,
+      "kind": "implementation",
+      "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
+      "status": "complete-for-controller-review-pending-final-exact-head-gates",
       "mergeSha": null
     }
   ],
@@ -137,7 +150,7 @@
     "kind": "controller-decision",
     "workItem": null,
     "implementationAuthorized": false,
-    "prerequisite": "fresh exact-head CI + Graphify + Browser E2E/production smoke, zero unresolved threads, mergeable=true, PR #179 Ready, then controller review",
-    "instruction": "Do not merge #179. Do not start PR2 or PR3 until explicit controller authorization."
+    "prerequisite": "fresh exact-head CI + Graphify + Browser E2E/production smoke, zero unresolved threads, mergeable=true, PR #180 Ready, then controller review",
+    "instruction": "Do not merge #180. Do not start PR3 until explicit controller authorization."
   }
 }
