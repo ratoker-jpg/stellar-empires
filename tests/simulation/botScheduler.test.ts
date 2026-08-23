@@ -138,6 +138,14 @@ function createFirstCombatClosureFixture(): GameState {
               { buildingId: roles.buildings.shipyard, level: 3 },
               { buildingId: roles.buildings.sensorGrid, level: 1 },
             ],
+            inventory: {
+              ...planet.inventory,
+              ships: {
+                ...planet.inventory.ships,
+                [roles.ships.scout]: 1,
+                [roles.ships.fighter]: 1,
+              },
+            },
           }
         : planet,
     ),
