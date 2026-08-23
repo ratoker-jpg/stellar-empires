@@ -1,5 +1,5 @@
 {
-  "indexVersion": 26,
+  "indexVersion": 27,
   "updatedAt": "2026-08-23",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,133 +7,79 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 180,
-    "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
-    "runtimeBaselinePr": 180,
-    "runtimeBaselineSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
+    "lastMergedPr": 181,
+    "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
+    "runtimeBaselinePr": 181,
+    "runtimeBaselineSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
     "lastCompletedAuditPr": 178,
     "lastCompletedAuditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "auditArchive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
-    "freshMainMustBeResolvedAfterClosureMerge": true
+    "lastCompletedAuditArchive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md"
   },
   "active": {
-    "pr": 181,
-    "kind": "implementation-closure",
-    "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-    "branch": "agent/post-1.0-bot-outcome-adaptation",
-    "startingMain": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
-    "status": "closure-staged-complete-for-controller-review-pending-fresh-review-fix-gates",
-    "mergeSha": null
+    "pr": 182,
+    "kind": "audit",
+    "workItem": "POST-1.0-NEXT-PRODUCT-2",
+    "branch": "audit/post-1.0-next-product-2",
+    "startingMain": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
+    "status": "docs-only-audit-pr182-controller-review-preparation",
+    "implementationAuthorized": false
   },
-  "currentPhase": {
+  "completedPreviousPhase": {
     "id": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
-    "milestone": "POST-1.0",
+    "status": "completed",
     "auditPr": 178,
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "auditArchive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
-    "status": "closure-staged-in-pr181-awaiting-controller-merge",
-    "implementationAuthorized": false,
-    "furtherImplementationAuthorized": false,
-    "implementationCount": 3,
+    "archive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
     "workItems": [
-      {
-        "id": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
-        "pr": 179,
-        "status": "merged",
-        "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db"
-      },
-      {
-        "id": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-        "pr": 180,
-        "status": "merged",
-        "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
-      },
-      {
-        "id": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-        "pr": 181,
-        "status": "final-closure-pr-open-complete-for-controller-review",
-        "mergeSha": null
-      }
-    ],
+      { "id": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "pr": 179, "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
+      { "id": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "pr": 180, "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
+      { "id": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "pr": 181, "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" }
+    ]
+  },
+  "currentAudit": {
+    "id": "POST-1.0-NEXT-PRODUCT-2",
+    "pr": 182,
+    "status": "active-docs-only-audit",
+    "implementationAuthorized": false,
+    "proposedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
+    "complexity": "medium",
+    "implementationCount": 3,
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
-    "tacticalRiskDecision": {
-      "industrial": 700,
-      "explorer": 800,
-      "aggressive": 900,
-      "currentFullLevel3IntelRequired": true,
-      "missionAndReducerValidationPreserved": true
-    },
-    "outcomeWindowDecision": {
-      "constant": "RECENT_BOT_BATTLE_WINDOW",
-      "value": 3,
-      "canonicalOrdering": ["event.executeAt", "event.sequence", "report.id"],
-      "helper": "src/simulation/bots/outcomeSignals.ts#deriveRecentBotBattleOutcomeSignal(state, empireId)",
-      "effectiveMode": "explicit mode authoritative; omitted+pirate participant=pve; omitted+non-pirate participants=pvp",
-      "pirateTruthSource": "src/simulation/pve/neutralForces.ts#PIRATE_EMPIRE_ID",
-      "attackerDefenderPerspectiveClassification": true,
-      "drawNeutral": true,
-      "pveExcluded": true,
-      "unrelatedEmpireExcluded": true,
-      "permutationInvariant": true,
-      "latestThreeOnly": true,
-      "agingOutRestoresBaseline": true,
-      "recoveryBias": "loss-dominant iff losses > wins; otherwise none",
-      "winsAggressionBonus": false,
-      "directRuntimeConsumer": "src/simulation/bots/threatRecoveryPlanner.ts",
-      "scheduler": "read-verify-only-runtime-unchanged",
-      "saveLoadSignalEqual": true,
-      "saveLoadLegacyModeLessSignalCovered": true,
-      "saveLoadNextDecisionEqual": true
-    }
-  },
-  "previousReadyEvidence": {
-    "head": "cc3b6e3b3bcce5256ced5e6430f4ba19293a2a87",
-    "ci": "#2235 SUCCESS",
-    "graphify": "#1370 SUCCESS",
-    "browserE2e": "#1465 SUCCESS",
-    "productionSmoke": "SUCCESS",
-    "note": "historical after review-fix commit; fresh final exact-head gates required"
+    "workItems": [
+      {
+        "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+        "order": 1,
+        "status": "proposal-not-authorized"
+      },
+      {
+        "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
+        "order": 2,
+        "status": "proposal-not-authorized"
+      },
+      {
+        "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
+        "order": 3,
+        "status": "proposal-not-authorized"
+      }
+    ]
   },
   "sequence": [
-    {
-      "pr": 178,
-      "kind": "audit",
-      "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
-      "status": "merged-archived",
-      "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77"
-    },
-    {
-      "pr": 179,
-      "kind": "implementation",
-      "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
-      "status": "merged",
-      "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db"
-    },
-    {
-      "pr": 180,
-      "kind": "implementation",
-      "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-      "status": "merged",
-      "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
-    },
-    {
-      "pr": 181,
-      "kind": "implementation-closure",
-      "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-      "status": "closure-staged-complete-for-controller-review",
-      "mergeSha": null
-    }
+    { "pr": 178, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT", "status": "merged-archived", "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77" },
+    { "pr": 179, "kind": "implementation", "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "status": "merged", "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
+    { "pr": 180, "kind": "implementation", "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "status": "merged", "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
+    { "pr": 181, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "status": "merged", "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" },
+    { "pr": 182, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-2", "status": "active-docs-only-audit", "mergeSha": null }
   ],
   "next": {
     "pr": null,
-    "kind": "new-audit-after-controller-merge",
-    "workItem": null,
+    "kind": "implementation",
+    "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
     "implementationAuthorized": false,
-    "prerequisite": "controller-approved merge of #181, then resolve generated new main before opening a fresh docs-only Audit",
-    "instruction": "Do not merge #181 here. Do not start a new Audit while #181 is open. After merge, next category is Audit only; do not guess implementation from backlog."
+    "prerequisite": "controller-approved merge of Audit #182, then resolve fresh main",
+    "instruction": "Do not create the implementation PR from this Audit branch. Stop after Audit #182 is Ready."
   }
 }

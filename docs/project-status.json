@@ -1,172 +1,121 @@
 {
-  "statusVersion": 90,
+  "statusVersion": 91,
   "updatedAt": "2026-08-23",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 180,
-  "lastMergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
-  "verifiedMainBaseline": "PR #180 squash; exact starting main for PR #181",
-  "runtimeBaselinePr": 180,
-  "runtimeBaselineSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
-  "activePr": 181,
-  "activePrKind": "implementation-closure",
-  "activeWorkItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-  "activeBranch": "agent/post-1.0-bot-outcome-adaptation",
+  "lastMergedPr": 181,
+  "lastMergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
+  "verifiedMainBaseline": "PR #181 squash / exact fresh starting main for POST-1.0-NEXT-PRODUCT-2",
+  "runtimeBaselinePr": 181,
+  "runtimeBaselineSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
+  "activePr": 182,
+  "activePrKind": "audit",
+  "activeWorkItem": "POST-1.0-NEXT-PRODUCT-2",
+  "activeBranch": "audit/post-1.0-next-product-2",
   "nextPrAfterActive": null,
-  "nextPrKind": "new-audit-after-controller-merge",
-  "nextWorkItem": null,
-  "currentMilestone": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION / closure staged in PR #181",
+  "nextPrKind": "implementation-only-after-controller-approved-audit-merge",
+  "nextWorkItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+  "currentMilestone": "POST-1.0 fresh product audit / strategic feedback truth proposal",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
   "currentExecutionState": "docs/audits/current-execution-state.md",
-  "currentAuditState": {
+  "previousBatch": {
     "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
+    "status": "completed",
     "auditPr": 178,
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
     "archive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
-    "status": "closure-staged-in-pr181-awaiting-controller-merge",
+    "implementation": [
+      { "pr": 179, "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
+      { "pr": 180, "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
+      { "pr": 181, "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" }
+    ]
+  },
+  "currentAuditState": {
+    "workItem": "POST-1.0-NEXT-PRODUCT-2",
+    "auditPr": 182,
+    "startingMain": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
+    "startingTree": "2d3d6c33668ef295bdad10f0319fd6993c10b187",
+    "status": "docs-only-audit-pr182-controller-review-preparation",
     "implementationAuthorized": false,
-    "furtherImplementationAuthorized": false,
-    "activeClosurePr": 181,
-    "activeClosureMergeSha": null,
+    "proposedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
+    "proposedImplementationCount": 3,
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
-    "contract": "Audit #178 is archived. PR1 #179 and PR2 #180 are merged. PR3 #181 is the final implementation/closure PR. No PR4 or further implementation is authorized. After controller merge, next valid category is a fresh docs-only Audit from new main."
+    "graphify": {
+      "version": "0.8.38",
+      "runtimeEvidenceRun": 1371,
+      "runtimeTree": "2d3d6c33668ef295bdad10f0319fd6993c10b187",
+      "nodes": 3602,
+      "edges": 12603,
+      "communities": 141
+    }
   },
-  "activeImplementationState": {
-    "stateSchema": 19,
-    "saveFormat": 6,
-    "migration": "none",
-    "activeImplementationPr": 181,
-    "activeImplementationWorkItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
+  "proposedBatch": {
+    "id": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
+    "complexity": "medium",
     "implementationAuthorized": false,
-    "furtherImplementationAuthorized": false,
-    "status": "final-closure-pr-complete-for-controller-review-pending-fresh-review-fix-gates",
-    "mergeSha": null
-  },
-  "batchOutcome": {
-    "compressedPersonalityDifferentiation": true,
-    "tacticalRiskPermille": {
-      "industrial": 700,
-      "explorer": 800,
-      "aggressive": 900
-    },
-    "ordinaryCommandsAndReducerAuthorityPreserved": true,
-    "currentFullIntelSemanticsPreserved": true,
+    "workItems": [
+      {
+        "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+        "order": 1,
+        "purpose": "snapshot full stable Arena fleet identity for new entries while preserving exact legacy active-entry resolution fallback"
+      },
+      {
+        "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
+        "order": 2,
+        "purpose": "include Arena in canonical reports and persist/render immutable tactical combat context"
+      },
+      {
+        "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
+        "order": 3,
+        "purpose": "make player-visible combat victory counts and ranking score derive from combat victories only"
+      }
+    ],
     "stateSchema": 19,
     "saveFormat": 6,
     "migration": "none"
   },
-  "pr3OutcomeAdaptation": {
-    "regressionFirstCommit": "846ec783df14b6c35f993b6353c383369147de3c",
-    "truthSource": "existing GameState.eventLog",
-    "constant": "RECENT_BOT_BATTLE_WINDOW",
-    "window": 3,
-    "helperPath": "src/simulation/bots/outcomeSignals.ts",
-    "helperFunction": "deriveRecentBotBattleOutcomeSignal(state, empireId)",
-    "ordering": ["event.executeAt", "event.sequence", "report.id"],
-    "effectiveBattleMode": "explicit mode authoritative; omitted mode with pirate attacker/defender => pve; omitted mode with non-pirate participants => pvp",
-    "pirateTruthSource": "src/simulation/pve/neutralForces.ts#PIRATE_EMPIRE_ID",
-    "attackerDefenderPerspectiveClassification": true,
-    "drawNeutral": true,
-    "pveExcluded": true,
-    "unrelatedEmpireExcluded": true,
-    "permutationInvariant": true,
-    "latestThreeOnly": true,
-    "lossAgingOutRestoresBaseline": true,
-    "recoveryBiasRule": "loss-dominant iff losses > wins; otherwise none",
-    "winsAggressionBonus": false,
-    "directRuntimeConsumer": "src/simulation/bots/threatRecoveryPlanner.ts",
-    "schedulerRuntimeChanged": false,
-    "boundedOrdering": [
-      "critical/economic recovery",
-      "fleet/high-threat recovery",
-      "ordinary fleet action",
-      "ordinary research action",
-      "stable loss-dominant bounded military-recovery fallback",
-      "no action"
-    ],
-    "saveLoadSignalEqual": true,
-    "saveLoadLegacyModeLessSignalCovered": true,
-    "saveLoadNextDecisionEqual": true,
-    "newPersistedAiMemory": false
-  },
-  "previousReadyEvidence": {
-    "head": "cc3b6e3b3bcce5256ced5e6430f4ba19293a2a87",
-    "ciRun": 2235,
-    "ci": "success",
-    "graphifyRun": 1370,
-    "graphify": "success",
-    "browserE2eRun": 1465,
-    "browserE2e": "success",
-    "productionPagesSmoke": "success",
-    "note": "historical after review-fix commit; fresh final exact-head gates required"
-  },
+  "verifiedProductGaps": [
+    "Arena resolution still uses fleet.id.length instead of full stable fleet identity when no seed snapshot exists",
+    "Arena history is omitted from createUnifiedMissionReports and canonical report summaries",
+    "battle reports do not preserve/display historical command doctrine, Admiral level and flagship context even though those choices affect combat",
+    "command ranking field labeled victories counts generic successful operations and omits Arena victories"
+  ],
+  "researchOnly": [
+    "achievements / extra score layers",
+    "moving-object / trajectory lifecycle gameplay",
+    "Bank / credit system semantics",
+    "additional bot differentiation beyond the proven bounded policy"
+  ],
   "productDecisions": {
-    "botUsesOrdinaryCommands": true,
-    "botHiddenForeignStateAccess": false,
-    "post1ImplementationRequiresNewAudit": true,
-    "externalControllerApprovalRequired": true,
-    "releaseVersionTarget": "1.0.0"
+    "doNotGuessNemexiaFormulas": true,
+    "doNotCreateCreditSubsystemForGhostField": true,
+    "doNotInferHistoricalDoctrineFromCurrentState": true,
+    "arenaLegacyActiveEntryCompatibilityRequired": true,
+    "arenaUnifiedReportKind": "battle/pve",
+    "rankingVictoriesMeaning": "combat victories only",
+    "externalControllerApprovalRequired": true
   },
-  "activeDelivery": [
-    {
-      "pr": 178,
-      "kind": "audit",
-      "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
-      "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
-      "status": "merged-archived",
-      "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77"
-    },
-    {
-      "pr": 179,
-      "kind": "implementation",
-      "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
-      "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
-      "status": "merged",
-      "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db"
-    },
-    {
-      "pr": 180,
-      "kind": "implementation",
-      "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
-      "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-      "status": "merged",
-      "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
-    },
-    {
-      "pr": 181,
-      "kind": "implementation-closure",
-      "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
-      "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-      "status": "complete-for-controller-review-pending-fresh-review-fix-gates",
-      "mergeSha": null
-    }
-  ],
-  "knownLimitations": [
-    "PR #181 is not merged; its generated squash SHA is intentionally unknown",
-    "POST-1.0-BOT-STRATEGY-DIFFERENTIATION becomes GitHub-complete only after controller merge of #181",
-    "No PR4, subsequent implementation or next Audit has been started or authorized"
-  ],
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-batch-audit.md",
     "docs/audits/current-execution-state.md",
-    "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
+    "docs/audits/batch-history.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/16-execution-roadmap.md",
     "docs/17-continuation-guide.md",
-    "actual main and PR #181 exact workflow/review state"
+    "actual GitHub main and Audit PR #182 state"
   ],
-  "nextAction": "Run fresh exact-head CI, Graphify and Browser E2E including production smoke after the review-fix/closure commit; verify main remains f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd, unresolved threads=0, mergeable=true and draft=false; STOP for controller review. Do not merge #181 and do not start a new Audit/batch."
+  "nextAction": "Finish only docs-only Audit #182, require fresh exact-head gates, mark Ready and STOP. Do not merge and do not create PR1."
 }
