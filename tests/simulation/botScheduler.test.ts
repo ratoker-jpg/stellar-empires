@@ -5,6 +5,7 @@ import {
   runBotScheduler,
 } from '../../src/simulation/bots/scheduler';
 import type { BotProfile } from '../../src/simulation/bots/profiles';
+import { getBotProgressionPhase } from '../../src/simulation/bots/progressionPhase';
 import { planBotResearchAndProduction } from '../../src/simulation/bots/researchProductionPlanner';
 import { createStateChecksum } from '../../src/simulation/checksum';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
@@ -42,12 +43,14 @@ function createEqualizedCompressedStrategyFixture(): GameState {
                   building.buildingId !== roles.buildings.command &&
                   building.buildingId !== roles.buildings.laboratory &&
                   building.buildingId !== roles.buildings.shipyard &&
-                  building.buildingId !== roles.buildings.sensorGrid,
+                  building.buildingId !== roles.buildings.sensorGrid &&
+                  building.buildingId !== roles.buildings.depot,
               ),
               { buildingId: roles.buildings.command, level: 3 },
               { buildingId: roles.buildings.laboratory, level: 3 },
               { buildingId: roles.buildings.shipyard, level: 3 },
               { buildingId: roles.buildings.sensorGrid, level: 1 },
+              { buildingId: roles.buildings.depot, level: 1 },
             ],
             economy: {
               ...planet.economy,
@@ -89,10 +92,14 @@ function createEqualizedCompressedStrategyFixture(): GameState {
     ),
   };
 
+  expect(getBotProgressionPhase(prepared, empireId)).toBe('first-combat');
   expect(planBotEconomy(prepared, empireId).command).not.toBeNull();
   const science = planBotResearchAndProduction(prepared, empireId);
   expect(science.research.command).not.toBeNull();
   expect(science.production.command).not.toBeNull();
+  if (science.production.command?.type === 'QUEUE_UNIT_BATCH') {
+    expect(science.production.command.unitId).not.toBe(roles.ships.colonizer);
+  }
   return prepared;
 }
 
