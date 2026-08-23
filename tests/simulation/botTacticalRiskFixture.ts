@@ -87,10 +87,12 @@ function buildFixture(
     throw new Error('Missing canonical Aegis origin or player target.');
   }
 
-  const ownRoles = getFactionMechanicalRoles(origin.factionId);
-  const targetRoles = getFactionMechanicalRoles(target.factionId);
-  const fighterId = ownRoles.ships.fighter;
-  const defenseId = targetRoles.defenses.light;
+  // Pin both power domains to the same real Aegis catalog entries instead of
+  // depending on the seed-selected player faction. This keeps the fixture
+  // deterministic while the target remains a separate player-owned empire.
+  const aegisRoles = getFactionMechanicalRoles('aegis');
+  const fighterId = aegisRoles.ships.fighter;
+  const defenseId = aegisRoles.defenses.light;
   const configuration = findConfiguration(fighterId, defenseId, acceptsRisk);
   const fighter = getUnitDefinition(fighterId);
   if (fighter === undefined) throw new Error(`Missing fighter definition: ${fighterId}`);
@@ -100,24 +102,26 @@ function buildFixture(
   const expiresAt = observedAt + 10_000;
   state = {
     ...state,
-    planets: state.planets.map((planet) =>
-      planet.ownerEmpireId === empireId
-        ? {
-            ...planet,
-            inventory: { ships: {}, defenses: {} },
-            economy: {
-              ...planet.economy,
-              resources: {
-                ...planet.economy.resources,
-                gas: {
-                  ...planet.economy.resources.gas,
-                  amount: planet.economy.resources.gas.capacity,
-                },
-              },
+    planets: state.planets.map((planet) => {
+      if (planet.id === target.id) {
+        return { ...planet, factionId: 'aegis' as const };
+      }
+      if (planet.ownerEmpireId !== empireId) return planet;
+      return {
+        ...planet,
+        inventory: { ships: {}, defenses: {} },
+        economy: {
+          ...planet.economy,
+          resources: {
+            ...planet.economy.resources,
+            gas: {
+              ...planet.economy.resources.gas,
+              amount: planet.economy.resources.gas.capacity,
             },
-          }
-        : planet,
-    ),
+          },
+        },
+      };
+    }),
     fleets: [{
       id: attackFleetId,
       empireId,
@@ -148,7 +152,7 @@ function buildFixture(
                 coordinate: target.coordinate,
                 name: target.name,
                 ownerEmpireId: target.ownerEmpireId,
-                factionId: target.factionId,
+                factionId: 'aegis' as const,
                 level: 3 as const,
                 defenses: { [defenseId]: configuration.targetCount },
                 stationedFleets: [],
