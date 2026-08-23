@@ -1,5 +1,5 @@
 {
-  "indexVersion": 24,
+  "indexVersion": 26,
   "updatedAt": "2026-08-23",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,42 +7,32 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 179,
-    "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db",
-    "runtimeBaselinePr": 179,
-    "runtimeBaselineSha": "7620975e1cd604c8bcdce0bac748e32e276061db",
+    "lastMergedPr": 180,
+    "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
+    "runtimeBaselinePr": 180,
+    "runtimeBaselineSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
     "lastCompletedAuditPr": 178,
     "lastCompletedAuditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "freshMainMustBeResolvedAfterThisDocsRecord": false
+    "auditArchive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
+    "freshMainMustBeResolvedAfterClosureMerge": true
   },
   "active": {
-    "pr": 180,
-    "kind": "implementation",
-    "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-    "branch": "agent/post-1.0-personality-tactical-risk",
-    "startingMain": "7620975e1cd604c8bcdce0bac748e32e276061db",
-    "status": "complete-for-controller-review-pending-final-exact-head-gates",
+    "pr": 181,
+    "kind": "implementation-closure",
+    "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
+    "branch": "agent/post-1.0-bot-outcome-adaptation",
+    "startingMain": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
+    "status": "closure-staged-complete-for-controller-review-pending-fresh-review-fix-gates",
     "mergeSha": null
-  },
-  "previousPhase": {
-    "id": "POST-1.0-NEXT-PRODUCT-AUDIT",
-    "milestone": "POST-1.0",
-    "auditPr": 178,
-    "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "status": "complete",
-    "implementationAuthorized": true,
-    "implementationAuthorizationScope": "PR1 then controller-authorized PR2",
-    "targetStateSchema": 19,
-    "targetSaveFormat": 6,
-    "schemaMigrationRequired": false
   },
   "currentPhase": {
     "id": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
     "milestone": "POST-1.0",
     "auditPr": 178,
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "status": "pr2-complete-for-controller-review-pending-final-exact-head-gates",
-    "implementationAuthorized": true,
+    "auditArchive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
+    "status": "closure-staged-in-pr181-awaiting-controller-merge",
+    "implementationAuthorized": false,
     "furtherImplementationAuthorized": false,
     "implementationCount": 3,
     "workItems": [
@@ -55,13 +45,13 @@
       {
         "id": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
         "pr": 180,
-        "status": "active-complete-for-controller-review",
-        "mergeSha": null
+        "status": "merged",
+        "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
       },
       {
         "id": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-        "pr": null,
-        "status": "pending-not-started",
+        "pr": 181,
+        "status": "final-closure-pr-open-complete-for-controller-review",
         "mergeSha": null
       }
     ],
@@ -70,31 +60,10 @@
     "schemaMigrationRequired": false,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
-    "pr1Policy": {
-      "developmentPreference": {
-        "industrial": ["economy", "research", "production", "logistics"],
-        "explorer": ["research", "economy", "production", "logistics"],
-        "aggressive": ["production", "research", "economy", "logistics"]
-      },
-      "closureSafeDevelopmentPreference": ["production", "research", "economy", "logistics"],
-      "activation": "first-combat first command with economy/research/production actionable and economy candidate SET_PLANET_SPECIALIZATION",
-      "opportunityPreference": ["pve", "fleet"]
-    },
     "tacticalRiskDecision": {
-      "truthSource": "src/simulation/bots/strategyPolicy.ts",
-      "field": "maxAttackRiskPermille",
       "industrial": 700,
       "explorer": 800,
       "aggressive": 900,
-      "wiredInPr2": true,
-      "riskSemantics": "min(9999, floor(targetPower * 1000 / max(1, ownPower)))",
-      "sharedConsumers": [
-        "src/simulation/bots/fleetMissionPlanner.ts",
-        "src/simulation/bots/threatRecoveryPlanner.ts"
-      ],
-      "schedulerActualProfilePropagation": true,
-      "directCallerDefaultProfileResolution": true,
-      "unknownOrMismatchedProfileGetsGuessedThreshold": false,
       "currentFullLevel3IntelRequired": true,
       "missionAndReducerValidationPreserved": true
     },
@@ -103,31 +72,38 @@
       "value": 3,
       "canonicalOrdering": ["event.executeAt", "event.sequence", "report.id"],
       "helper": "src/simulation/bots/outcomeSignals.ts#deriveRecentBotBattleOutcomeSignal(state, empireId)",
+      "effectiveMode": "explicit mode authoritative; omitted+pirate participant=pve; omitted+non-pirate participants=pvp",
+      "pirateTruthSource": "src/simulation/pve/neutralForces.ts#PIRATE_EMPIRE_ID",
+      "attackerDefenderPerspectiveClassification": true,
+      "drawNeutral": true,
+      "pveExcluded": true,
+      "unrelatedEmpireExcluded": true,
+      "permutationInvariant": true,
+      "latestThreeOnly": true,
+      "agingOutRestoresBaseline": true,
+      "recoveryBias": "loss-dominant iff losses > wins; otherwise none",
+      "winsAggressionBonus": false,
       "directRuntimeConsumer": "src/simulation/bots/threatRecoveryPlanner.ts",
-      "scheduler": "read-verify-only",
-      "status": "PR3 pending-not-started"
-    },
-    "audit": "docs/audits/current-batch-audit.md"
+      "scheduler": "read-verify-only-runtime-unchanged",
+      "saveLoadSignalEqual": true,
+      "saveLoadLegacyModeLessSignalCovered": true,
+      "saveLoadNextDecisionEqual": true
+    }
   },
-  "runtimeEvidence": {
-    "head": "eaa8a9b2edfcabce72cef11fb8026be96f9673c7",
-    "ci": "#2220 SUCCESS",
-    "graphify": "#1356 SUCCESS",
-    "browserE2e": "#1450 SUCCESS",
+  "previousReadyEvidence": {
+    "head": "cc3b6e3b3bcce5256ced5e6430f4ba19293a2a87",
+    "ci": "#2235 SUCCESS",
+    "graphify": "#1370 SUCCESS",
+    "browserE2e": "#1465 SUCCESS",
     "productionSmoke": "SUCCESS",
-    "organicFreshGameToTerminal": "SUCCESS",
-    "organicTerminalDeterminism": "SUCCESS",
-    "boundedFactionMatrix": "SUCCESS",
-    "compressedProgression": "SUCCESS",
-    "organicObelisk": "SUCCESS — Synod 346920→353700 / Veyra 174300→181080",
-    "campaignPerformance": "SUCCESS — one day 5364.431 ms / seven days 20285.642 ms; seven-day operations 3174; botAudit 984; botDiagnostics 1156"
+    "note": "historical after review-fix commit; fresh final exact-head gates required"
   },
   "sequence": [
     {
       "pr": 178,
       "kind": "audit",
       "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
-      "status": "merged",
+      "status": "merged-archived",
       "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77"
     },
     {
@@ -141,16 +117,23 @@
       "pr": 180,
       "kind": "implementation",
       "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-      "status": "complete-for-controller-review-pending-final-exact-head-gates",
+      "status": "merged",
+      "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
+    },
+    {
+      "pr": 181,
+      "kind": "implementation-closure",
+      "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
+      "status": "closure-staged-complete-for-controller-review",
       "mergeSha": null
     }
   ],
   "next": {
     "pr": null,
-    "kind": "controller-decision",
+    "kind": "new-audit-after-controller-merge",
     "workItem": null,
     "implementationAuthorized": false,
-    "prerequisite": "fresh exact-head CI + Graphify + Browser E2E/production smoke, zero unresolved threads, mergeable=true, PR #180 Ready, then controller review",
-    "instruction": "Do not merge #180. Do not start PR3 until explicit controller authorization."
+    "prerequisite": "controller-approved merge of #181, then resolve generated new main before opening a fresh docs-only Audit",
+    "instruction": "Do not merge #181 here. Do not start a new Audit while #181 is open. After merge, next category is Audit only; do not guess implementation from backlog."
   }
 }

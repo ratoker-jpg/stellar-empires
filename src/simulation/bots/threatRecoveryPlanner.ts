@@ -7,6 +7,7 @@ import { getLegacyUnitIdsForCanonical } from '../units/unitAliases';
 import { queueUnitBatch } from '../units/productionCommands';
 import { planBotEconomy } from './economyPlanner';
 import { planBotFleetMission } from './fleetMissionPlanner';
+import { deriveRecentBotBattleOutcomeSignal } from './outcomeSignals';
 import { createBotPerception, type BotPerception } from './perception';
 import { planBotResearchAndProduction } from './researchProductionPlanner';
 import {
@@ -296,6 +297,7 @@ function selectAction(
   empireId: string,
   phase: BotRecoveryPhase,
   threat: BotThreatLevel,
+  recoveryBias: 'none' | 'loss-dominant',
   hasTarget: boolean,
   dependencies: BotThreatRecoveryDependencies,
   profile?: BotTacticalProfile,
@@ -354,6 +356,18 @@ function selectAction(
     };
   }
 
+  if (recoveryBias === 'loss-dominant' && phase === 'stable') {
+    const combatCommand = militaryRecoveryCommand(state, empireId);
+    if (combatCommand !== null) {
+      return {
+        reasonCode: 'military-recovery',
+        explanation:
+          'Последние PvP-результаты смещены к потерям: при отсутствии обычного действия восстанавливается ограниченный боевой резерв.',
+        command: combatCommand,
+      };
+    }
+  }
+
   return {
     reasonCode: 'no-action',
     explanation: 'Нет валидного действия восстановления или безопасной цели.',
@@ -369,6 +383,7 @@ export function planBotThreatAndRecovery(
 ): BotThreatRecoveryPlan {
   const perception = createBotPerception(state, empireId);
   const policy = resolveBotStrategyPolicy(empireId, profile);
+  const outcomeSignal = deriveRecentBotBattleOutcomeSignal(state, empireId);
   const militaryPower = ownMilitaryPower(perception);
   const targets = assessTargets(
     perception,
@@ -402,6 +417,7 @@ export function planBotThreatAndRecovery(
       empireId,
       phase,
       threat,
+      outcomeSignal.recoveryBias,
       target !== null,
       dependencies,
       profile,
