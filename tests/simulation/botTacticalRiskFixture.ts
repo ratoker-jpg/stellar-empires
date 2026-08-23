@@ -4,13 +4,14 @@ import {
   type BotProfile,
 } from '../../src/simulation/bots/profiles';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
-import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import type { GameState } from '../../src/simulation/types';
 import { getUnitDefinition } from '../../src/simulation/units/catalog';
 
 const ZERO_CARGO = { metal: 0, crystal: 0, gas: 0 } as const;
 const CANONICAL_SEED = 'bot-tactical-risk-shared-canonical';
 const EXPLORER_BOUNDARY_SEED = 'bot-tactical-risk-shared-explorer-boundary';
+const CANONICAL_FIGHTER_ID = 'ship.aegis.fighter';
+const CANONICAL_DEFENSE_ID = 'defense.aegis.gun-battery';
 
 export interface SharedTacticalRiskFixture {
   readonly state: GameState;
@@ -87,12 +88,12 @@ function buildFixture(
     throw new Error('Missing canonical Aegis origin or player target.');
   }
 
-  // Pin both power domains to the same real Aegis catalog entries instead of
-  // depending on the seed-selected player faction. This keeps the fixture
-  // deterministic while the target remains a separate player-owned empire.
-  const aegisRoles = getFactionMechanicalRoles('aegis');
-  const fighterId = aegisRoles.ships.fighter;
-  const defenseId = aegisRoles.defenses.light;
+  // Use the exact real-catalog pair from the regression-first proof. These
+  // legacy Aegis definitions remain registered runtime units and have stable
+  // planner powers of 100 (fighter) and 124 (gun battery), independent of the
+  // complete-catalog role mapping or the seed-selected player faction.
+  const fighterId = CANONICAL_FIGHTER_ID;
+  const defenseId = CANONICAL_DEFENSE_ID;
   const configuration = findConfiguration(fighterId, defenseId, acceptsRisk);
   const fighter = getUnitDefinition(fighterId);
   if (fighter === undefined) throw new Error(`Missing fighter definition: ${fighterId}`);
