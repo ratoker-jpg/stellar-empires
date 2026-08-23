@@ -81,12 +81,7 @@ export function deriveCompressedDevelopmentPreference(
   profile: Pick<BotProfile, 'personality'>,
   phase: BotProgressionPhase,
 ): readonly BotCompressedDevelopmentSource[] {
-  const personalitySafePhase =
-    phase === 'foundation' ||
-    phase === 'reconnaissance' ||
-    phase === 'first-combat' ||
-    (phase === 'colonization' && profile.personality === 'explorer');
-  return personalitySafePhase
+  return phase === 'first-combat'
     ? deriveBotStrategyPolicy(profile).compressedDevelopmentPreference
     : COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE;
 }
