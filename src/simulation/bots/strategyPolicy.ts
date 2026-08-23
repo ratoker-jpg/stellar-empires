@@ -1,4 +1,4 @@
-import type { BotPersonality, BotProfile } from './profiles';
+import { getBotProfile, type BotPersonality, type BotProfile } from './profiles';
 import type { BotProgressionPhase } from './progressionPhase';
 
 export type BotCompressedDevelopmentSource =
@@ -15,6 +15,8 @@ export interface BotStrategyPolicy {
   readonly compressedOpportunityPreference: readonly BotCompressedOpportunitySource[];
   readonly maxAttackRiskPermille: number;
 }
+
+export type BotTacticalProfile = Pick<BotProfile, 'empireId' | 'personality'>;
 
 export const COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE = Object.freeze([
   'production',
@@ -80,6 +82,25 @@ export function deriveBotStrategyPolicy(
   profile: Pick<BotProfile, 'personality'>,
 ): BotStrategyPolicy {
   return STRATEGY_POLICY_BY_PERSONALITY[profile.personality];
+}
+
+export function resolveBotStrategyPolicy(
+  empireId: string,
+  profile?: BotTacticalProfile,
+): BotStrategyPolicy | null {
+  const resolvedProfile = profile ?? getBotProfile(empireId);
+  if (resolvedProfile === undefined || resolvedProfile.empireId !== empireId) return null;
+  return deriveBotStrategyPolicy(resolvedProfile);
+}
+
+export function calculateBotAttackRiskPermille(
+  targetPower: number,
+  ownPower: number,
+): number {
+  return Math.min(
+    9_999,
+    Math.floor((Math.max(0, targetPower) * 1_000) / Math.max(1, ownPower)),
+  );
 }
 
 export function deriveCompressedDevelopmentPreference(
