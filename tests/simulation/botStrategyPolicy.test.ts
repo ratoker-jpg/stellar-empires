@@ -66,18 +66,18 @@ describe('bot strategy policy', () => {
     }
   });
 
-  it('uses personality development only before first combat and closure-safe ordering afterwards', () => {
+  it('keeps personality development through first combat and uses closure-safe ordering afterwards', () => {
     const industrial = profileFor('industrial');
     const explorer = profileFor('explorer');
     const aggressive = profileFor('aggressive');
 
-    for (const phase of ['foundation', 'reconnaissance'] as const) {
+    for (const phase of ['foundation', 'reconnaissance', 'first-combat'] as const) {
       expect(deriveCompressedDevelopmentPreference(industrial, phase)[0]).toBe('economy');
       expect(deriveCompressedDevelopmentPreference(explorer, phase)[0]).toBe('research');
       expect(deriveCompressedDevelopmentPreference(aggressive, phase)[0]).toBe('production');
     }
 
-    for (const phase of BOT_PROGRESSION_PHASES.slice(2)) {
+    for (const phase of BOT_PROGRESSION_PHASES.slice(3)) {
       for (const personality of ['industrial', 'explorer', 'aggressive'] as const) {
         expect(deriveCompressedDevelopmentPreference(profileFor(personality), phase)).toBe(
           COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE,
