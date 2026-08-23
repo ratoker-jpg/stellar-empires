@@ -236,7 +236,7 @@ function compressedCandidate(
     economy,
     researchProduction: science,
     ...(precomputedFleet === undefined ? {} : { fleet: precomputedFleet }),
-  });
+  }, profile);
   const threatCandidate = selectCandidate(
     'threat',
     priorityThreatCommand(threat),
@@ -252,7 +252,7 @@ function compressedCandidate(
     return { candidates: [pveCandidate], fleet: precomputedFleet ?? null, pve };
   }
 
-  const fleet = precomputedFleet ?? planBotFleetMission(state, profile.empireId);
+  const fleet = precomputedFleet ?? planBotFleetMission(state, profile.empireId, profile);
   const fleetCandidate = selectCandidate('fleet', fleet.command, attempted);
   return {
     candidates: fleetCandidate === null ? [] : [fleetCandidate],
@@ -269,12 +269,12 @@ function legacyCandidatesForPersonality(
 ): PlannerCandidates {
   const economy = planBotEconomy(state, profile.empireId);
   const science = planBotResearchAndProduction(state, profile.empireId);
-  const fleet = planBotFleetMission(state, profile.empireId);
+  const fleet = planBotFleetMission(state, profile.empireId, profile);
   const threat = planBotThreatAndRecovery(state, profile.empireId, {
     economy,
     researchProduction: science,
     fleet,
-  });
+  }, profile);
   const logistics = allowLogistics
     ? planBotColonyLogistics(state, profile.empireId).command
     : null;
@@ -490,7 +490,7 @@ function runProfileDecision(
     decidedAt,
     pveCadence,
   ) && hasRelevantPveAsset(state, profile.empireId);
-  const diagnosticFleet = planBotFleetMission(working, profile.empireId);
+  const diagnosticFleet = planBotFleetMission(working, profile.empireId, profile);
   const diagnostic = diagnosticForBlockedFleet(profile, decidedAt, diagnosticFleet);
   if (diagnostic !== null) diagnostics.push(diagnostic);
 
