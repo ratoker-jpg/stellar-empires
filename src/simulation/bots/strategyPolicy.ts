@@ -23,6 +23,11 @@ export const COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE = Object.freeze([
   'logistics',
 ] as const satisfies readonly BotCompressedDevelopmentSource[]);
 
+export const COMPRESSED_CLOSURE_OPPORTUNITY_PREFERENCE = Object.freeze([
+  'pve',
+  'fleet',
+] as const satisfies readonly BotCompressedOpportunitySource[]);
+
 function freezePolicy(policy: BotStrategyPolicy): BotStrategyPolicy {
   return Object.freeze({
     ...policy,
@@ -44,7 +49,7 @@ const STRATEGY_POLICY_BY_PERSONALITY: Readonly<Record<BotPersonality, BotStrateg
       'production',
       'logistics',
     ],
-    compressedOpportunityPreference: ['pve', 'fleet'],
+    compressedOpportunityPreference: COMPRESSED_CLOSURE_OPPORTUNITY_PREFERENCE,
     maxAttackRiskPermille: 700,
   }),
   explorer: freezePolicy({
@@ -55,7 +60,7 @@ const STRATEGY_POLICY_BY_PERSONALITY: Readonly<Record<BotPersonality, BotStrateg
       'production',
       'logistics',
     ],
-    compressedOpportunityPreference: ['fleet', 'pve'],
+    compressedOpportunityPreference: COMPRESSED_CLOSURE_OPPORTUNITY_PREFERENCE,
     maxAttackRiskPermille: 800,
   }),
   aggressive: freezePolicy({
@@ -66,7 +71,7 @@ const STRATEGY_POLICY_BY_PERSONALITY: Readonly<Record<BotPersonality, BotStrateg
       'economy',
       'logistics',
     ],
-    compressedOpportunityPreference: ['pve', 'fleet'],
+    compressedOpportunityPreference: COMPRESSED_CLOSURE_OPPORTUNITY_PREFERENCE,
     maxAttackRiskPermille: 900,
   }),
 };
