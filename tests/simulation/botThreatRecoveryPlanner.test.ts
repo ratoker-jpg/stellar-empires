@@ -381,13 +381,10 @@ describe('bot threat, target and recovery planner', () => {
                 ...observation,
                 snapshot: {
                   planetId: observation.snapshot.planetId,
-                  coordinate: observation.snapshot.coordinate,
                   name: observation.snapshot.name,
                   ownerEmpireId: observation.snapshot.ownerEmpireId,
                   factionId: observation.snapshot.factionId,
                   level: 2 as const,
-                  resources: { metal: 1, crystal: 1, gas: 1 },
-                  buildings: {},
                 },
               })),
             }

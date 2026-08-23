@@ -507,7 +507,7 @@ describe('bot fleet and mission planner', () => {
     expect(getMissionAvailability(fixture.state, accepted.command).allowed).toBe(true);
     expect(executeCommand(fixture.state, accepted.command).ok).toBe(true);
 
-    const partial = {
+    const partial: GameState = {
       ...fixture.state,
       intelligence: fixture.state.intelligence.map((entry) =>
         entry.empireId === fixture.empireId
@@ -517,13 +517,10 @@ describe('bot fleet and mission planner', () => {
                 ...observation,
                 snapshot: {
                   planetId: observation.snapshot.planetId,
-                  coordinate: observation.snapshot.coordinate,
                   name: observation.snapshot.name,
                   ownerEmpireId: observation.snapshot.ownerEmpireId,
                   factionId: observation.snapshot.factionId,
                   level: 2 as const,
-                  resources: { metal: 1, crystal: 1, gas: 1 },
-                  buildings: {},
                 },
               })),
             }
