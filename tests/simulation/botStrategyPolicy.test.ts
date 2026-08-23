@@ -6,6 +6,7 @@ import {
 import { BOT_PROGRESSION_PHASES } from '../../src/simulation/bots/progressionPhase';
 import {
   COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE,
+  COMPRESSED_CLOSURE_OPPORTUNITY_PREFERENCE,
   deriveBotStrategyPolicy,
   deriveCompressedDevelopmentPreference,
   type BotStrategyPolicy,
@@ -24,7 +25,7 @@ function policyFor(personality: BotPersonality): BotStrategyPolicy {
 }
 
 describe('bot strategy policy', () => {
-  it('derives deterministic distinct compressed preferences from existing personality only', () => {
+  it('derives deterministic distinct compressed development preferences from existing personality only', () => {
     const industrial = policyFor('industrial');
     const explorer = policyFor('explorer');
     const aggressive = policyFor('aggressive');
@@ -35,23 +36,18 @@ describe('bot strategy policy', () => {
       'production',
       'logistics',
     ]);
-    expect(industrial.compressedOpportunityPreference).toEqual(['pve', 'fleet']);
-
     expect(explorer.compressedDevelopmentPreference).toEqual([
       'research',
       'economy',
       'production',
       'logistics',
     ]);
-    expect(explorer.compressedOpportunityPreference).toEqual(['fleet', 'pve']);
-
     expect(aggressive.compressedDevelopmentPreference).toEqual([
       'production',
       'research',
       'economy',
       'logistics',
     ]);
-    expect(aggressive.compressedOpportunityPreference).toEqual(['pve', 'fleet']);
 
     expect(new Set([
       industrial.compressedDevelopmentPreference[0],
@@ -84,6 +80,13 @@ describe('bot strategy policy', () => {
     }
   });
 
+  it('keeps compressed opportunity ordering on the closure-safe baseline for every personality', () => {
+    for (const personality of ['industrial', 'explorer', 'aggressive'] as const) {
+      expect(policyFor(personality).compressedOpportunityPreference).toEqual(['pve', 'fleet']);
+    }
+    expect(COMPRESSED_CLOSURE_OPPORTUNITY_PREFERENCE).toEqual(['pve', 'fleet']);
+  });
+
   it('records the accepted future tactical-risk truth without wiring planner behavior', () => {
     expect(policyFor('industrial').maxAttackRiskPermille).toBe(700);
     expect(policyFor('explorer').maxAttackRiskPermille).toBe(800);
@@ -100,5 +103,6 @@ describe('bot strategy policy', () => {
     expect(Object.isFrozen(policy.compressedDevelopmentPreference)).toBe(true);
     expect(Object.isFrozen(policy.compressedOpportunityPreference)).toBe(true);
     expect(Object.isFrozen(COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE)).toBe(true);
+    expect(Object.isFrozen(COMPRESSED_CLOSURE_OPPORTUNITY_PREFERENCE)).toBe(true);
   });
 });
