@@ -115,10 +115,10 @@ function createReconnaissanceStrategyFixture(): GameState {
   return prepared;
 }
 
-function createFirstCombatClosureFixture(): GameState {
+function createColonizationClosureFixture(): GameState {
   const empireId = 'aegis-bot';
   const roles = getFactionMechanicalRoles('aegis');
-  const initial = createInitialGameState('bot-scheduler-first-combat-closure');
+  const initial = createInitialGameState('bot-scheduler-colonization-closure');
   const prepared = fillBotResources({
     ...initial,
     planets: initial.planets.map((planet) =>
@@ -143,7 +143,7 @@ function createFirstCombatClosureFixture(): GameState {
               ships: {
                 ...planet.inventory.ships,
                 [roles.ships.scout]: 1,
-                [roles.ships.fighter]: 1,
+                [roles.ships.colonizer]: 1,
               },
             },
           }
@@ -165,7 +165,7 @@ function createFirstCombatClosureFixture(): GameState {
     ),
   }, empireId);
 
-  expect(getBotProgressionPhase(prepared, empireId)).toBe('first-combat');
+  expect(getBotProgressionPhase(prepared, empireId)).toBe('colonization');
   expect(planBotEconomy(prepared, empireId).command).not.toBeNull();
   const science = planBotResearchAndProduction(prepared, empireId);
   expect(science.research.command).not.toBeNull();
@@ -343,8 +343,8 @@ describe('autonomous bot scheduler', () => {
       .toEqual(aggressive.audit);
   });
 
-  it('uses shared closure-safe development ordering from first combat onward', () => {
-    const state = createFirstCombatClosureFixture();
+  it('uses shared closure-safe development ordering from colonization onward', () => {
+    const state = createColonizationClosureFixture();
     for (const personality of ['industrial', 'explorer', 'aggressive'] as const) {
       const result = runBotScheduler(state, [equalizedProfile(personality)]);
       expect(result.audit).toHaveLength(1);
