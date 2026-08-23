@@ -314,18 +314,6 @@ function selectAction(
     }
   }
 
-  if (recoveryBias === 'loss-dominant' && phase !== 'fleet' && threat !== 'high') {
-    const combatCommand = militaryRecoveryCommand(state, empireId);
-    if (combatCommand !== null) {
-      return {
-        reasonCode: 'military-recovery',
-        explanation:
-          'Последние PvP-результаты смещены к потерям: приоритет отдан восстановлению ограниченного боевого резерва.',
-        command: combatCommand,
-      };
-    }
-  }
-
   if (phase === 'fleet' || threat === 'high') {
     const combatCommand = militaryRecoveryCommand(state, empireId);
     if (combatCommand !== null) {
@@ -366,6 +354,18 @@ function selectAction(
       explanation: research.research.explanation,
       command: research.research.command,
     };
+  }
+
+  if (recoveryBias === 'loss-dominant' && phase === 'stable') {
+    const combatCommand = militaryRecoveryCommand(state, empireId);
+    if (combatCommand !== null) {
+      return {
+        reasonCode: 'military-recovery',
+        explanation:
+          'Последние PvP-результаты смещены к потерям: при отсутствии обычного действия восстанавливается ограниченный боевой резерв.',
+        command: combatCommand,
+      };
+    }
   }
 
   return {
