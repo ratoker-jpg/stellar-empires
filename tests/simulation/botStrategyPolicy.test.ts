@@ -3,8 +3,11 @@ import {
   DEFAULT_BOT_PROFILES,
   type BotPersonality,
 } from '../../src/simulation/bots/profiles';
+import { BOT_PROGRESSION_PHASES } from '../../src/simulation/bots/progressionPhase';
 import {
+  COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE,
   deriveBotStrategyPolicy,
+  deriveCompressedDevelopmentPreference,
   type BotStrategyPolicy,
 } from '../../src/simulation/bots/strategyPolicy';
 
@@ -63,6 +66,26 @@ describe('bot strategy policy', () => {
     }
   });
 
+  it('uses personality development only before first combat and closure-safe ordering afterwards', () => {
+    const industrial = profileFor('industrial');
+    const explorer = profileFor('explorer');
+    const aggressive = profileFor('aggressive');
+
+    for (const phase of ['foundation', 'reconnaissance'] as const) {
+      expect(deriveCompressedDevelopmentPreference(industrial, phase)[0]).toBe('economy');
+      expect(deriveCompressedDevelopmentPreference(explorer, phase)[0]).toBe('research');
+      expect(deriveCompressedDevelopmentPreference(aggressive, phase)[0]).toBe('production');
+    }
+
+    for (const phase of BOT_PROGRESSION_PHASES.slice(2)) {
+      for (const personality of ['industrial', 'explorer', 'aggressive'] as const) {
+        expect(deriveCompressedDevelopmentPreference(profileFor(personality), phase)).toBe(
+          COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE,
+        );
+      }
+    }
+  });
+
   it('records the accepted future tactical-risk truth without wiring planner behavior', () => {
     expect(policyFor('industrial').maxAttackRiskPermille).toBe(700);
     expect(policyFor('explorer').maxAttackRiskPermille).toBe(800);
@@ -78,5 +101,6 @@ describe('bot strategy policy', () => {
     expect(Object.isFrozen(policy)).toBe(true);
     expect(Object.isFrozen(policy.compressedDevelopmentPreference)).toBe(true);
     expect(Object.isFrozen(policy.compressedOpportunityPreference)).toBe(true);
+    expect(Object.isFrozen(COMPRESSED_CLOSURE_DEVELOPMENT_PREFERENCE)).toBe(true);
   });
 });
