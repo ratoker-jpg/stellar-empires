@@ -1,9 +1,10 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Release 1.0 closed; fresh post-#181 product Audit active  
+**Status:** Release 1.0 closed; fresh post-#181 product Audit #182 active  
 **Updated:** 2026-08-23  
 **Verified current main:** `a1249615d55e9ffebc60889c3ab4d5ff72d8933d`  
 **Last merged PR:** #181 `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE`  
+**Active PR:** #182 `POST-1.0-NEXT-PRODUCT-2` docs-only Audit  
 **Runtime:** schema v19 / save format v6 / migration none  
 **Implementation authorized:** false
 
@@ -37,7 +38,7 @@ No PR4 exists from that batch.
 
 ## Current entrypoint
 
-Only a fresh docs-only Audit is active:
+Only fresh docs-only Audit #182 is active:
 
 `POST-1.0-NEXT-PRODUCT-2`
 
@@ -92,7 +93,7 @@ criticalUnknownsResolved = true
 criticalUnknowns = []
 ```
 
-Audit decisions already resolve:
+Audit #182 decisions already resolve:
 
 - legacy Arena active-entry seed compatibility;
 - immutable historical doctrine snapshot authority;
@@ -102,7 +103,7 @@ Audit decisions already resolve:
 
 ## Permanent boundaries
 
-- no implementation branch while the Audit is unmerged;
+- no implementation branch while Audit #182 is unmerged;
 - no guessed Nemexia formula;
 - no Bank/credit subsystem from a producer-only field;
 - no current-state inference for historical doctrine;
@@ -114,10 +115,10 @@ Audit decisions already resolve:
 
 ```text
 fresh research from a1249615...
-→ docs-only Audit PR
+→ docs-only Audit PR #182
 → exact-head CI + Graphify + Browser/smoke
 → verify main unchanged + unresolved threads=0 + mergeable=true
-→ mark Audit Ready
+→ mark Audit #182 Ready
 → STOP for controller review
 ```
 
@@ -125,6 +126,6 @@ Audit readiness does not authorize implementation.
 
 ## Next action
 
-Finish only the current docs-only Audit, synchronize its assigned PR number into the control plane, require final exact-head gates, mark Ready and STOP.
+Finish only Audit #182 final exact-head gates, mark Ready and STOP.
 
-**Do not merge the Audit. Do not create PR1. Do not implement the proposed batch.**
+**Do not merge Audit #182. Do not create PR1. Do not implement the proposed batch.**

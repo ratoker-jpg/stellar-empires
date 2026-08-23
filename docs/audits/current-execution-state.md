@@ -1,10 +1,11 @@
 # Current execution state
 
-**State:** fresh docs-only Audit active on `audit/post-1.0-next-product-2`  
+**State:** fresh docs-only Audit #182 active  
 **Updated:** 2026-08-23  
 **Exact starting main:** `a1249615d55e9ffebc60889c3ab4d5ff72d8933d`  
 **Starting tree:** `2d3d6c33668ef295bdad10f0319fd6993c10b187`  
-**Audit PR:** pending GitHub assignment  
+**Audit PR:** #182 `docs: audit next post-1.0 product batch`  
+**Audit branch:** `audit/post-1.0-next-product-2`  
 **Implementation authorized:** false  
 **Runtime:** schema v19 / save format v6 / migration none
 
@@ -53,8 +54,8 @@ There is no PR4 in the proposal.
 
 1. Arena resolution still derives fleet entropy from `fleet.id.length`, unlike normal attack full stable identity.
 2. Arena history is absent from `createUnifiedMissionReports()` and therefore absent from the canonical report timeline/summary stream.
-3. existing combat doctrine/Admiral/flagship/formation/priority choices affect resolution but are not preserved/displayed as immutable tactical report context;
-4. ranking `Победы` currently counts generic successful operations such as expeditions/space-object missions while omitting Arena victories.
+3. Existing combat doctrine/Admiral/flagship/formation/priority choices affect resolution but are not preserved/displayed as immutable tactical report context.
+4. Ranking `Победы` currently counts generic successful operations such as expeditions/space-object missions while omitting Arena victories.
 
 Lower-priority evidence:
 
@@ -104,7 +105,7 @@ Important consumer truth:
 - no credit/loan consumer was found for Bank credit efficiency;
 - no achievement or trajectory/velocity runtime graph was found.
 
-Final Audit head must run a fresh Graphify workflow again because `docs/audits/**` changes trigger the audit workflow.
+Final Audit #182 head must run a fresh Graphify workflow again because `docs/audits/**` changes trigger the audit workflow.
 
 ## Critical UNKNOWN state
 
@@ -117,7 +118,7 @@ Resolved decisions are recorded in `current-batch-audit.md`, including legacy Ar
 
 ## Runtime boundary
 
-No runtime/test/dependency/workflow file may change in this Audit PR.
+No runtime/test/dependency/workflow file may change in Audit #182.
 
 Target remains:
 
@@ -127,6 +128,6 @@ Target remains:
 
 ## Next action
 
-Complete only this docs-only Audit PR, synchronize its assigned PR number into the control plane, require fresh exact-head CI + Graphify + Browser/smoke, verify unresolved review threads = 0, `mergeable=true`, `draft=false` and live `main` unchanged, mark Ready, then STOP.
+Finish only docs-only Audit #182, require fresh exact-head CI + Graphify + Browser/smoke, verify unresolved review threads = 0, `mergeable=true`, `draft=false` after Ready and live `main` unchanged, then STOP.
 
-**Do not merge the Audit. Do not create PR1. Do not implement the proposed batch.**
+**Do not merge Audit #182. Do not create PR1. Do not implement the proposed batch.**

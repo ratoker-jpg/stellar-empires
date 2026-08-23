@@ -1,7 +1,7 @@
 # POST-1.0-NEXT-PRODUCT-2 — fresh product Audit
 
 **State:** docs-only Audit / controller review required  
-**Audit PR:** pending GitHub assignment on `audit/post-1.0-next-product-2`  
+**Audit PR:** #182 `docs: audit next post-1.0 product batch`  
 **Starting `main`:** `a1249615d55e9ffebc60889c3ab4d5ff72d8933d`  
 **Starting tree:** `2d3d6c33668ef295bdad10f0319fd6993c10b187`  
 **Previous completed batch:** `POST-1.0-BOT-STRATEGY-DIFFERENTIATION`  
@@ -12,7 +12,7 @@
 **Implementation authorized:** false  
 **Critical UNKNOWNs resolved:** true
 
-This document is a fresh product Audit after merged PR #181. It is not an implementation authorization until the controller merges the Audit PR. No implementation branch exists.
+This document is a fresh product Audit after merged PR #181. It is not an implementation authorization until the controller merges Audit PR #182. No implementation branch exists.
 
 ## 1. Fresh-main and evidence boundary
 

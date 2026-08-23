@@ -24,13 +24,12 @@ There is no PR4 in that batch.
 
 ```text
 POST-1.0-NEXT-PRODUCT-2
+Audit PR #182
 branch audit/post-1.0-next-product-2
 starting main a1249615d55e9ffebc60889c3ab4d5ff72d8933d
 kind docs-only Audit
 implementationAuthorized = false
 ```
-
-The Audit PR number is pending GitHub assignment until the first docs commit is opened as a draft PR. It must be synchronized into the control plane before final Ready.
 
 ## Current authority
 
@@ -46,7 +45,7 @@ Read in this order before continuation:
 8. `docs/roadmap-pr-index.json`;
 9. `docs/16-execution-roadmap.md`;
 10. `docs/29-post-1.0-nemexia-reference-roadmap.md`;
-11. actual GitHub `main`, active Audit PR, review threads and exact workflow state.
+11. actual GitHub `main`, Audit PR #182, review threads and exact workflow state.
 
 Actual GitHub state wins over stale prose.
 
@@ -63,7 +62,7 @@ The proposed medium batch is:
 
 `POST-1.0-STRATEGIC-FEEDBACK-TRUTH`
 
-Ordered work items, **not authorized until controller-approved Audit merge**:
+Ordered work items, **not authorized until controller-approved Audit #182 merge**:
 
 1. `POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH`;
 2. `POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK`;
@@ -127,14 +126,13 @@ PR2 historical truth rule:
 - never derive old report context from current mutable command state;
 - old reports without snapshot remain valid and visibly partial.
 
-## Stop rule for current Audit
+## Stop rule for Audit #182
 
 1. finish docs-only control plane;
-2. create/open only the Audit PR;
-3. synchronize its assigned PR number;
-4. require fresh exact-head CI + pinned Graphify + Browser E2E/production smoke if triggered;
-5. verify unresolved review threads = 0, `mergeable=true`, `draft=false` and live `main` unchanged unless explicitly reconciled;
-6. mark Ready;
-7. STOP for controller review.
+2. require fresh exact-head CI + pinned Graphify + Browser E2E/production smoke if triggered;
+3. verify unresolved review threads = 0, `mergeable=true` and live `main` unchanged unless explicitly reconciled;
+4. mark Audit #182 Ready;
+5. verify `draft=false` and no new unresolved review finding;
+6. STOP for controller review.
 
-**Do not merge the Audit. Do not create PR1. Do not implement any proposed runtime change.**
+**Do not merge Audit #182. Do not create PR1. Do not implement any proposed runtime change.**

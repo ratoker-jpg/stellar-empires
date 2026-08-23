@@ -11,7 +11,7 @@
   "verifiedMainBaseline": "PR #181 squash / exact fresh starting main for POST-1.0-NEXT-PRODUCT-2",
   "runtimeBaselinePr": 181,
   "runtimeBaselineSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
-  "activePr": null,
+  "activePr": 182,
   "activePrKind": "audit",
   "activeWorkItem": "POST-1.0-NEXT-PRODUCT-2",
   "activeBranch": "audit/post-1.0-next-product-2",
@@ -38,10 +38,10 @@
   },
   "currentAuditState": {
     "workItem": "POST-1.0-NEXT-PRODUCT-2",
-    "auditPr": null,
+    "auditPr": 182,
     "startingMain": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
     "startingTree": "2d3d6c33668ef295bdad10f0319fd6993c10b187",
-    "status": "docs-only-audit-in-progress",
+    "status": "docs-only-audit-pr182-controller-review-preparation",
     "implementationAuthorized": false,
     "proposedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
     "proposedImplementationCount": 3,
@@ -115,7 +115,7 @@
     "docs/roadmap-pr-index.json",
     "docs/16-execution-roadmap.md",
     "docs/17-continuation-guide.md",
-    "actual GitHub main and active Audit PR state"
+    "actual GitHub main and Audit PR #182 state"
   ],
-  "nextAction": "Finish only the fresh docs-only Audit, synchronize its GitHub PR number, require fresh exact-head gates, mark Ready and STOP. Do not merge and do not create PR1."
+  "nextAction": "Finish only docs-only Audit #182, require fresh exact-head gates, mark Ready and STOP. Do not merge and do not create PR1."
 }

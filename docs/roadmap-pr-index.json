@@ -16,12 +16,12 @@
     "lastCompletedAuditArchive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md"
   },
   "active": {
-    "pr": null,
+    "pr": 182,
     "kind": "audit",
     "workItem": "POST-1.0-NEXT-PRODUCT-2",
     "branch": "audit/post-1.0-next-product-2",
     "startingMain": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
-    "status": "docs-only-audit-in-progress",
+    "status": "docs-only-audit-pr182-controller-review-preparation",
     "implementationAuthorized": false
   },
   "completedPreviousPhase": {
@@ -38,6 +38,7 @@
   },
   "currentAudit": {
     "id": "POST-1.0-NEXT-PRODUCT-2",
+    "pr": 182,
     "status": "active-docs-only-audit",
     "implementationAuthorized": false,
     "proposedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
@@ -70,14 +71,15 @@
     { "pr": 178, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT", "status": "merged-archived", "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77" },
     { "pr": 179, "kind": "implementation", "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "status": "merged", "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
     { "pr": 180, "kind": "implementation", "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "status": "merged", "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
-    { "pr": 181, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "status": "merged", "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" }
+    { "pr": 181, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "status": "merged", "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" },
+    { "pr": 182, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-2", "status": "active-docs-only-audit", "mergeSha": null }
   ],
   "next": {
     "pr": null,
     "kind": "implementation",
     "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
     "implementationAuthorized": false,
-    "prerequisite": "controller-approved merge of the active POST-1.0-NEXT-PRODUCT-2 Audit, then resolve fresh main",
-    "instruction": "Do not create the implementation PR from this Audit branch. Stop after the Audit is Ready."
+    "prerequisite": "controller-approved merge of Audit #182, then resolve fresh main",
+    "instruction": "Do not create the implementation PR from this Audit branch. Stop after Audit #182 is Ready."
   }
 }
