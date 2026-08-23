@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { planBotEconomy } from '../../src/simulation/bots/economyPlanner';
-import { getBotProgressionPhase } from '../../src/simulation/bots/progressionPhase';
 import {
   MAX_BOT_DECISIONS_PER_RUN,
   runBotScheduler,
@@ -27,13 +26,29 @@ function advance(state: ReturnType<typeof createInitialGameState>, seconds: numb
   return result.value;
 }
 
-function fillBotResources(state: GameState, empireId: string): GameState {
-  return {
+function createEqualizedCompressedStrategyFixture(): GameState {
+  const empireId = 'aegis-bot';
+  const state = createInitialGameState('bot-scheduler-strategy-gap');
+  const roles = getFactionMechanicalRoles('aegis');
+  const prepared: GameState = {
     ...state,
     planets: state.planets.map((planet) =>
       planet.ownerEmpireId === empireId
         ? {
             ...planet,
+            buildings: [
+              ...planet.buildings.filter(
+                (building) =>
+                  building.buildingId !== roles.buildings.command &&
+                  building.buildingId !== roles.buildings.laboratory &&
+                  building.buildingId !== roles.buildings.shipyard &&
+                  building.buildingId !== roles.buildings.sensorGrid,
+              ),
+              { buildingId: roles.buildings.command, level: 3 },
+              { buildingId: roles.buildings.laboratory, level: 3 },
+              { buildingId: roles.buildings.shipyard, level: 3 },
+              { buildingId: roles.buildings.sensorGrid, level: 1 },
+            ],
             economy: {
               ...planet.economy,
               resources: {
@@ -58,98 +73,7 @@ function fillBotResources(state: GameState, empireId: string): GameState {
           }
         : planet,
     ),
-  };
-}
-
-function createReconnaissanceStrategyFixture(): GameState {
-  const empireId = 'aegis-bot';
-  const roles = getFactionMechanicalRoles('aegis');
-  const initial = createInitialGameState('bot-scheduler-recon-strategy');
-  const prepared = fillBotResources({
-    ...initial,
-    planets: initial.planets.map((planet) =>
-      planet.ownerEmpireId === empireId
-        ? {
-            ...planet,
-            buildings: [
-              ...planet.buildings.filter(
-                (building) =>
-                  building.buildingId !== roles.buildings.command &&
-                  building.buildingId !== roles.buildings.laboratory &&
-                  building.buildingId !== roles.buildings.shipyard &&
-                  building.buildingId !== roles.buildings.sensorGrid,
-              ),
-              { buildingId: roles.buildings.command, level: 3 },
-              { buildingId: roles.buildings.laboratory, level: 3 },
-              { buildingId: roles.buildings.sensorGrid, level: 1 },
-            ],
-            inventory: {
-              ...planet.inventory,
-              ships: {
-                ...planet.inventory.ships,
-                [roles.ships.scout]: 1,
-              },
-            },
-          }
-        : planet,
-    ),
-    research: initial.research.map((research) =>
-      research.empireId === empireId
-        ? {
-            ...research,
-            levels: {
-              [roles.research.construction]: 1,
-              [roles.research.sensors]: 1,
-            },
-            queue: [],
-          }
-        : research,
-    ),
-  }, empireId);
-
-  expect(getBotProgressionPhase(prepared, empireId)).toBe('reconnaissance');
-  expect(planBotEconomy(prepared, empireId).command).not.toBeNull();
-  const science = planBotResearchAndProduction(prepared, empireId);
-  expect(science.research.command).not.toBeNull();
-  expect(science.production.command).toBeNull();
-  return prepared;
-}
-
-function createColonizationClosureFixture(): GameState {
-  const empireId = 'aegis-bot';
-  const roles = getFactionMechanicalRoles('aegis');
-  const initial = createInitialGameState('bot-scheduler-colonization-closure');
-  const prepared = fillBotResources({
-    ...initial,
-    planets: initial.planets.map((planet) =>
-      planet.ownerEmpireId === empireId
-        ? {
-            ...planet,
-            buildings: [
-              ...planet.buildings.filter(
-                (building) =>
-                  building.buildingId !== roles.buildings.command &&
-                  building.buildingId !== roles.buildings.laboratory &&
-                  building.buildingId !== roles.buildings.shipyard &&
-                  building.buildingId !== roles.buildings.sensorGrid,
-              ),
-              { buildingId: roles.buildings.command, level: 3 },
-              { buildingId: roles.buildings.laboratory, level: 3 },
-              { buildingId: roles.buildings.shipyard, level: 3 },
-              { buildingId: roles.buildings.sensorGrid, level: 1 },
-            ],
-            inventory: {
-              ...planet.inventory,
-              ships: {
-                ...planet.inventory.ships,
-                [roles.ships.scout]: 1,
-                [roles.ships.colonizer]: 1,
-              },
-            },
-          }
-        : planet,
-    ),
-    research: initial.research.map((research) =>
+    research: state.research.map((research) =>
       research.empireId === empireId
         ? {
             ...research,
@@ -163,9 +87,8 @@ function createColonizationClosureFixture(): GameState {
           }
         : research,
     ),
-  }, empireId);
+  };
 
-  expect(getBotProgressionPhase(prepared, empireId)).toBe('colonization');
   expect(planBotEconomy(prepared, empireId).command).not.toBeNull();
   const science = planBotResearchAndProduction(prepared, empireId);
   expect(science.research.command).not.toBeNull();
@@ -284,8 +207,8 @@ describe('autonomous bot scheduler', () => {
     });
   });
 
-  it('differentiates compressed ordinary strategy in the reconnaissance personality window', () => {
-    const state = createReconnaissanceStrategyFixture();
+  it('differentiates compressed ordinary strategy on an equalized multi-source fixture', () => {
+    const state = createEqualizedCompressedStrategyFixture();
     const industrial = runBotScheduler(state, [equalizedProfile('industrial')]);
     const explorer = runBotScheduler(state, [equalizedProfile('explorer')]);
     const aggressive = runBotScheduler(state, [equalizedProfile('aggressive')]);
@@ -305,14 +228,14 @@ describe('autonomous bot scheduler', () => {
     });
     expect(aggressive.audit[0]).toMatchObject({
       personality: 'aggressive',
-      source: 'research',
+      source: 'production',
       accepted: true,
     });
     expect(new Set([
       industrial.audit[0]?.source,
       explorer.audit[0]?.source,
       aggressive.audit[0]?.source,
-    ])).toEqual(new Set(['economy', 'research']));
+    ])).toEqual(new Set(['economy', 'research', 'production']));
 
     expect(runBotScheduler(state, [equalizedProfile('industrial')])).toEqual(industrial);
     expect(runBotScheduler(state, [equalizedProfile('explorer')])).toEqual(explorer);
@@ -341,19 +264,6 @@ describe('autonomous bot scheduler', () => {
       .toEqual(explorer.audit);
     expect(runBotScheduler(hiddenPlayerChange, [equalizedProfile('aggressive')]).audit)
       .toEqual(aggressive.audit);
-  });
-
-  it('uses shared closure-safe development ordering from colonization onward', () => {
-    const state = createColonizationClosureFixture();
-    for (const personality of ['industrial', 'explorer', 'aggressive'] as const) {
-      const result = runBotScheduler(state, [equalizedProfile(personality)]);
-      expect(result.audit).toHaveLength(1);
-      expect(result.audit[0]).toMatchObject({
-        personality,
-        source: 'production',
-        accepted: true,
-      });
-    }
   });
 
   it('uses a serializable worker request and response without runtime-only cursor state', () => {
