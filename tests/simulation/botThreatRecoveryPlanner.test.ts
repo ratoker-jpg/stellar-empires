@@ -8,13 +8,19 @@ import {
   planAllBotThreatsAndRecovery,
   planBotThreatAndRecovery,
 } from '../../src/simulation/bots/threatRecoveryPlanner';
+import type { BattleReport } from '../../src/simulation/combat/types';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { getFactionIdForEmpire } from '../../src/simulation/factions/factionMechanicalCatalogRegistry';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
 import { executeCommand } from '../../src/simulation/reducer';
 import { getCompleteResearchId } from '../../src/simulation/research/completeResearchCatalog';
-import type { GameState } from '../../src/simulation/types';
+import type { ExecutedGameEvent, GameState } from '../../src/simulation/types';
 import { getUnitDefinition } from '../../src/simulation/units/catalog';
+import {
+  createSaveEnvelope,
+  parseSaveJson,
+  serializeSave,
+} from '../../src/storage/saveFormat';
 
 const ZERO_CARGO = { metal: 0, crystal: 0, gas: 0 } as const;
 
@@ -78,6 +84,68 @@ function prepareMilitaryIndustry(state: GameState, empireId: string): GameState 
           }
         : research,
     ),
+  };
+}
+
+function prepareOutcomeRecoveryState(seed: string, empireId: string): GameState {
+  const state = prepareMilitaryIndustry(createInitialGameState(seed), empireId);
+  const origin = state.planets.find((planet) => planet.ownerEmpireId === empireId);
+  if (origin === undefined) throw new Error('Missing outcome recovery origin.');
+  const roles = getFactionMechanicalRoles(origin.factionId);
+  return {
+    ...state,
+    planets: state.planets.map((planet) =>
+      planet.ownerEmpireId === empireId
+        ? {
+            ...planet,
+            inventory: {
+              ships: planet.id === origin.id ? { [roles.ships.fighter]: 2 } : {},
+              defenses: {},
+            },
+          }
+        : planet,
+    ),
+    fleets: state.fleets.filter((fleet) => fleet.empireId !== empireId),
+    intelligence: state.intelligence.map((entry) =>
+      entry.empireId === empireId
+        ? { ...entry, observations: [], alerts: [] }
+        : entry,
+    ),
+  };
+}
+
+function pvpBattleEvent(
+  id: string,
+  executeAt: number,
+  sequence: number,
+  attackerEmpireId: string,
+  defenderEmpireId: string,
+  winner: BattleReport['winner'],
+  targetPlanetId: string,
+): ExecutedGameEvent {
+  const report: BattleReport = {
+    id,
+    seed: sequence,
+    resolvedAt: executeAt,
+    targetPlanetId,
+    attackerEmpireId,
+    defenderEmpireId,
+    winner,
+    rounds: [],
+    attackerInitial: {},
+    defenderInitial: {},
+    attackerRemaining: {},
+    defenderRemaining: {},
+    mode: 'pvp',
+  };
+  return {
+    event: {
+      id: `event-${id}`,
+      executeAt,
+      sequence,
+      payload: { type: 'BATTLE_REPORT', report },
+    },
+    executedAt: executeAt,
   };
 }
 
@@ -438,6 +506,102 @@ describe('bot threat, target and recovery planner', () => {
       ),
     };
     expect(planBotThreatAndRecovery(hiddenChanged, fixture.empireId, {}, aggressive)).toEqual(first);
+  });
+
+  it('uses a latest-three loss-dominant outcome only for bounded military recovery', () => {
+    const empireId = 'aegis-bot';
+    const state = prepareOutcomeRecoveryState('bot-threat-outcome-loss', empireId);
+    const target = state.planets.find((planet) => planet.ownerEmpireId === 'player');
+    if (target === undefined) throw new Error('Missing outcome target.');
+    const baseline = planBotThreatAndRecovery(state, empireId);
+    expect(baseline.recoveryPhase).toBe('stable');
+    expect(baseline.reasonCode).not.toBe('military-recovery');
+
+    const lossDominant: GameState = {
+      ...state,
+      eventLog: [
+        pvpBattleEvent('outcome-win', 100, 1, empireId, 'player', 'attacker', target.id),
+        pvpBattleEvent('outcome-loss-1', 200, 2, empireId, 'player', 'defender', target.id),
+        pvpBattleEvent('outcome-loss-2', 300, 3, 'player', empireId, 'attacker', target.id),
+      ],
+    };
+    const adapted = planBotThreatAndRecovery(lossDominant, empireId);
+    expect(adapted.recoveryPhase).toBe('stable');
+    expect(adapted.reasonCode).toBe('military-recovery');
+    expect(adapted.command).toMatchObject({
+      type: 'QUEUE_UNIT_BATCH',
+      empireId,
+      quantity: 3,
+    });
+    if (adapted.command !== null) {
+      expect(executeCommand(lossDominant, adapted.command).ok).toBe(true);
+    }
+  });
+
+  it('returns exactly to baseline when losses age out and gives wins no aggression bonus', () => {
+    const empireId = 'aegis-bot';
+    const state = prepareOutcomeRecoveryState('bot-threat-outcome-aging', empireId);
+    const target = state.planets.find((planet) => planet.ownerEmpireId === 'player');
+    if (target === undefined) throw new Error('Missing outcome target.');
+    const profile = tacticalProfile('aggressive');
+    const baseline = planBotThreatAndRecovery(state, empireId, {}, profile);
+
+    const lossDominant: GameState = {
+      ...state,
+      eventLog: [
+        pvpBattleEvent('aging-loss-1', 100, 1, empireId, 'player', 'defender', target.id),
+        pvpBattleEvent('aging-loss-2', 200, 2, 'player', empireId, 'attacker', target.id),
+        pvpBattleEvent('aging-win-1', 300, 3, empireId, 'player', 'attacker', target.id),
+      ],
+    };
+    expect(planBotThreatAndRecovery(lossDominant, empireId, {}, profile).reasonCode)
+      .toBe('military-recovery');
+
+    const aged: GameState = {
+      ...lossDominant,
+      eventLog: [
+        ...lossDominant.eventLog,
+        pvpBattleEvent('aging-win-2', 400, 4, empireId, 'player', 'attacker', target.id),
+      ],
+    };
+    expect(planBotThreatAndRecovery(aged, empireId, {}, profile)).toEqual(baseline);
+
+    const winsOnly: GameState = {
+      ...state,
+      eventLog: [
+        pvpBattleEvent('wins-1', 100, 1, empireId, 'player', 'attacker', target.id),
+        pvpBattleEvent('wins-2', 200, 2, empireId, 'player', 'attacker', target.id),
+        pvpBattleEvent('wins-3', 300, 3, 'player', empireId, 'defender', target.id),
+      ],
+    };
+    expect(planBotThreatAndRecovery(winsOnly, empireId, {}, profile)).toEqual(baseline);
+  });
+
+  it('preserves the same next outcome-biased recovery decision across save and load', () => {
+    const empireId = 'aegis-bot';
+    const state = prepareOutcomeRecoveryState('bot-threat-outcome-save', empireId);
+    const target = state.planets.find((planet) => planet.ownerEmpireId === 'player');
+    if (target === undefined) throw new Error('Missing outcome target.');
+    const lossDominant: GameState = {
+      ...state,
+      eventLog: [
+        pvpBattleEvent('save-loss-1', 100, 1, empireId, 'player', 'defender', target.id),
+        pvpBattleEvent('save-win', 200, 2, empireId, 'player', 'attacker', target.id),
+        pvpBattleEvent('save-loss-2', 300, 3, 'player', empireId, 'attacker', target.id),
+      ],
+    };
+    const expected = planBotThreatAndRecovery(lossDominant, empireId);
+    expect(expected.reasonCode).toBe('military-recovery');
+
+    const save = createSaveEnvelope(
+      'bot-outcome-recovery',
+      lossDominant,
+      '2026-08-23T12:00:00.000Z',
+    );
+    const parsed = parseSaveJson(serializeSave(save));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(planBotThreatAndRecovery(parsed.value.state, empireId)).toEqual(expected);
   });
 
   it('rebuilds military production after fleet losses', () => {
