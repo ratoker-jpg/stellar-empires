@@ -1,24 +1,24 @@
 {
-  "statusVersion": 88,
+  "statusVersion": 89,
   "updatedAt": "2026-08-23",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 179,
-  "lastMergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db",
-  "verifiedMainBaseline": "PR #179 POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY squash; exact starting main for PR #180",
-  "runtimeBaselinePr": 179,
-  "runtimeBaselineSha": "7620975e1cd604c8bcdce0bac748e32e276061db",
-  "activePr": 180,
+  "lastMergedPr": 180,
+  "lastMergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
+  "verifiedMainBaseline": "PR #180 POST-1.0-PR2-PERSONALITY-TACTICAL-RISK squash; exact starting main for PR #181",
+  "runtimeBaselinePr": 180,
+  "runtimeBaselineSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
+  "activePr": 181,
   "activePrKind": "implementation",
-  "activeWorkItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-  "activeBranch": "agent/post-1.0-personality-tactical-risk",
+  "activeWorkItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
+  "activeBranch": "agent/post-1.0-bot-outcome-adaptation",
   "nextPrAfterActive": null,
   "nextPrKind": "controller-decision",
   "nextWorkItem": null,
-  "currentMilestone": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION / PR2 controller review",
+  "currentMilestone": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION / PR3 controller review",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -28,10 +28,10 @@
     "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
     "auditPr": 178,
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "status": "merged-controller-authorized-pr2-only",
+    "status": "merged-controller-authorized-pr3-only",
     "implementationAuthorized": true,
     "furtherImplementationAuthorized": false,
-    "exactStartingMain": "7620975e1cd604c8bcdce0bac748e32e276061db",
+    "exactStartingMain": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false,
@@ -42,22 +42,22 @@
       "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
       "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE"
     ],
-    "activeImplementationPr": 180,
+    "activeImplementationPr": 181,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
-    "contract": "Audit #178 and PR1 #179 are merged. Controller authorized PR2 #180 only. PR3 remains pending and not started.",
+    "contract": "Audit #178, PR1 #179 and PR2 #180 are merged. Controller accepted PR3 runtime and authorized final control-plane synchronization, exact-head gates, Ready, then STOP. No further batch is authorized.",
     "archive": null
   },
   "activeImplementationState": {
     "stateSchema": 19,
     "saveFormat": 6,
     "migration": "none",
-    "activeImplementationPr": 180,
-    "activeImplementationWorkItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
+    "activeImplementationPr": 181,
+    "activeImplementationWorkItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
     "implementationAuthorized": true,
     "furtherImplementationAuthorized": false,
     "releaseVersion": "1.0.0",
-    "runtimeEvidenceHead": "eaa8a9b2edfcabce72cef11fb8026be96f9673c7",
+    "runtimeEvidenceHead": "83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f",
     "status": "complete-for-controller-review-pending-final-exact-head-gates"
   },
   "pr1StrategyPolicy": {
@@ -94,44 +94,78 @@
     "unknownOrMismatchedProfileGetsGuessedThreshold": false,
     "requiresCurrentFullLevel3Intel": true,
     "missionAvailabilityBypass": false,
-    "reducerBypass": false
+    "reducerBypass": false,
+    "mergedPr": 180,
+    "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
+  },
+  "pr3OutcomeAdaptation": {
+    "regressionFirstCommit": "846ec783df14b6c35f993b6353c383369147de3c",
+    "baselineGap": "GameState.eventLog did not affect planBotThreatAndRecovery recovery decisions",
+    "truthSource": "existing GameState.eventLog",
+    "constant": "RECENT_BOT_BATTLE_WINDOW",
+    "window": 3,
+    "helperPath": "src/simulation/bots/outcomeSignals.ts",
+    "helperFunction": "deriveRecentBotBattleOutcomeSignal(state, empireId)",
+    "ordering": ["event.executeAt", "event.sequence", "report.id"],
+    "relevantReports": "BATTLE_REPORT where mode=pvp and empire is attacker or defender",
+    "attackerDefenderPerspectiveClassification": true,
+    "drawNeutral": true,
+    "pveExcluded": true,
+    "unrelatedEmpireExcluded": true,
+    "permutationInvariant": true,
+    "latestThreeOnly": true,
+    "lossAgingOutRestoresBaseline": true,
+    "recoveryBiasRule": "loss-dominant iff losses > wins; otherwise none",
+    "winsAggressionBonus": false,
+    "directRuntimeConsumer": "src/simulation/bots/threatRecoveryPlanner.ts",
+    "schedulerRuntimeChanged": false,
+    "boundedOrdering": [
+      "critical/economic recovery",
+      "fleet/high-threat recovery",
+      "ordinary fleet action",
+      "ordinary research action",
+      "stable loss-dominant bounded military-recovery fallback",
+      "no action"
+    ],
+    "earlyVariantRejected": "earlier recovery placement displaced normal development and broke Organic Obelisk evidence",
+    "finalVariantRestoredOrganicObelisk": true,
+    "saveLoadSignalEqual": true,
+    "saveLoadNextDecisionEqual": true,
+    "newPersistedAiMemory": false,
+    "runtimeEvidenceHead": "83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f",
+    "status": "runtime-accepted-complete-for-controller-review"
   },
   "runtimeEvidence": {
-    "head": "eaa8a9b2edfcabce72cef11fb8026be96f9673c7",
-    "ciRun": 2220,
+    "head": "83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f",
+    "ciRun": 2234,
     "ci": "success",
     "assets": "success",
     "lint": "success",
     "typecheck": "success",
     "fullTests": "success",
     "build": "success",
+    "compressedProgression": "success",
     "organicFreshGameToTerminal": "success",
     "organicTerminalDeterminism": "success",
     "boundedOrganicFactionMatrix": "success",
-    "compressedProgression": "success",
-    "organicObelisk": {
-      "status": "success",
-      "synodQueuedAtRealSeconds": 346920,
-      "synodCompletesAtRealSeconds": 353700,
-      "veyraQueuedAtRealSeconds": 174300,
-      "veyraCompletesAtRealSeconds": 181080
-    },
+    "organicObelisk": "success",
     "campaignPerformance": {
       "status": "success",
-      "oneDayMilliseconds": 5364.431,
+      "oneDayMilliseconds": 5254.070,
       "oneDayOperations": 1559,
       "oneDayBotAudit": 537,
       "oneDayBotDiagnostics": 559,
-      "sevenDayMilliseconds": 20285.642,
-      "operations": 3174,
-      "botAudit": 984,
-      "botDiagnostics": 1156
+      "sevenDayMilliseconds": 20000.787,
+      "sevenDayOperations": 3174,
+      "sevenDayBotAudit": 984,
+      "sevenDayBotDiagnostics": 1156
     },
-    "graphifyRun": 1356,
+    "graphifyRun": 1369,
     "graphify": "success",
-    "browserE2eRun": 1450,
+    "browserE2eRun": 1464,
     "browserE2e": "success",
-    "productionPagesSmoke": "success"
+    "productionPagesSmoke": "success",
+    "note": "accepted runtime evidence only; final exact-head gates must rerun after the control-plane commit"
   },
   "productDecisions": {
     "localBrowserCampaign": true,
@@ -176,10 +210,10 @@
       "helperPath": "src/simulation/bots/outcomeSignals.ts",
       "helperFunction": "deriveRecentBotBattleOutcomeSignal(state, empireId)",
       "directRuntimeConsumer": "src/simulation/bots/threatRecoveryPlanner.ts",
-      "schedulerRole": "read-verify-only",
+      "schedulerRole": "read-verify-only-runtime-unchanged",
       "ordering": ["event.executeAt", "event.sequence", "report.id"],
       "persistence": "derive-from-existing-eventLog-no-new-memory",
-      "status": "PR3 pending-not-started"
+      "status": "PR3 runtime accepted; pending final exact-head gates and Ready"
     }
   },
   "activeDelivery": [
@@ -204,6 +238,14 @@
       "kind": "implementation",
       "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
       "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
+      "status": "merged",
+      "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
+    },
+    {
+      "pr": 181,
+      "kind": "implementation",
+      "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
+      "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
       "status": "complete-for-controller-review-pending-final-exact-head-gates",
       "mergeSha": null
     }
@@ -211,8 +253,8 @@
   "knownLimitations": [
     "Repository license remains an owner-controlled unresolved choice",
     "Several original Nemexia combat/economy/scoring formulas remain unverified and must not be guessed",
-    "PR3 outcome adaptation is pending and not started",
-    "No merge SHA exists for PR #180 because it must not be merged before controller review"
+    "PR #181 is not merged and therefore POST-1.0-BOT-STRATEGY-DIFFERENTIATION must not be marked merged-complete",
+    "No subsequent Audit/batch is authorized"
   ],
   "requiredStartupReading": [
     "AGENTS.md",
@@ -223,7 +265,7 @@
     "docs/roadmap-pr-index.json",
     "docs/16-execution-roadmap.md",
     "docs/17-continuation-guide.md",
-    "actual main and PR #180 exact workflow/review state"
+    "actual main and PR #181 exact workflow/review state"
   ],
-  "nextAction": "Require fresh exact-head CI, Graphify and Browser E2E including production smoke after this control-plane commit; verify main remains 7620975e1cd604c8bcdce0bac748e32e276061db, unresolved threads=0 and mergeable=true; update PR #180 body and mark Ready only when every final-head gate is green, then STOP for controller review. Do not merge and do not start PR3."
+  "nextAction": "Require fresh exact-head CI, Graphify and Browser E2E including production smoke after this control-plane commit; verify main remains f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd, unresolved threads=0 and mergeable=true; ensure PR #181 body is final and mark Ready only when every final-head gate is green, then STOP for controller review. Do not merge and do not start another Audit/batch."
 }

@@ -1,5 +1,5 @@
 {
-  "indexVersion": 24,
+  "indexVersion": 25,
   "updatedAt": "2026-08-23",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,20 +7,21 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 179,
-    "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db",
-    "runtimeBaselinePr": 179,
-    "runtimeBaselineSha": "7620975e1cd604c8bcdce0bac748e32e276061db",
+    "lastMergedPr": 180,
+    "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
+    "runtimeBaselinePr": 180,
+    "runtimeBaselineSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
     "lastCompletedAuditPr": 178,
     "lastCompletedAuditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
     "freshMainMustBeResolvedAfterThisDocsRecord": false
   },
   "active": {
-    "pr": 180,
+    "pr": 181,
     "kind": "implementation",
-    "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-    "branch": "agent/post-1.0-personality-tactical-risk",
-    "startingMain": "7620975e1cd604c8bcdce0bac748e32e276061db",
+    "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
+    "branch": "agent/post-1.0-bot-outcome-adaptation",
+    "startingMain": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd",
+    "acceptedRuntimeHead": "83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f",
     "status": "complete-for-controller-review-pending-final-exact-head-gates",
     "mergeSha": null
   },
@@ -31,7 +32,7 @@
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
     "status": "complete",
     "implementationAuthorized": true,
-    "implementationAuthorizationScope": "PR1 then controller-authorized PR2",
+    "implementationAuthorizationScope": "three implementation PRs under Audit #178",
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false
@@ -41,7 +42,7 @@
     "milestone": "POST-1.0",
     "auditPr": 178,
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "status": "pr2-complete-for-controller-review-pending-final-exact-head-gates",
+    "status": "pr3-complete-for-controller-review-pending-final-exact-head-gates",
     "implementationAuthorized": true,
     "furtherImplementationAuthorized": false,
     "implementationCount": 3,
@@ -55,13 +56,13 @@
       {
         "id": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
         "pr": 180,
-        "status": "active-complete-for-controller-review",
-        "mergeSha": null
+        "status": "merged",
+        "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
       },
       {
         "id": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-        "pr": null,
-        "status": "pending-not-started",
+        "pr": 181,
+        "status": "active-complete-for-controller-review",
         "mergeSha": null
       }
     ],
@@ -96,31 +97,54 @@
       "directCallerDefaultProfileResolution": true,
       "unknownOrMismatchedProfileGetsGuessedThreshold": false,
       "currentFullLevel3IntelRequired": true,
-      "missionAndReducerValidationPreserved": true
+      "missionAndReducerValidationPreserved": true,
+      "mergedPr": 180,
+      "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
     },
     "outcomeWindowDecision": {
       "constant": "RECENT_BOT_BATTLE_WINDOW",
       "value": 3,
       "canonicalOrdering": ["event.executeAt", "event.sequence", "report.id"],
       "helper": "src/simulation/bots/outcomeSignals.ts#deriveRecentBotBattleOutcomeSignal(state, empireId)",
+      "relevantReports": "BATTLE_REPORT mode=pvp where empire is attacker or defender",
+      "attackerDefenderPerspectiveClassification": true,
+      "drawNeutral": true,
+      "pveExcluded": true,
+      "unrelatedEmpireExcluded": true,
+      "permutationInvariant": true,
+      "latestThreeOnly": true,
+      "agingOutRestoresBaseline": true,
+      "recoveryBias": "loss-dominant iff losses > wins; otherwise none",
+      "winsAggressionBonus": false,
       "directRuntimeConsumer": "src/simulation/bots/threatRecoveryPlanner.ts",
-      "scheduler": "read-verify-only",
-      "status": "PR3 pending-not-started"
+      "scheduler": "read-verify-only-runtime-unchanged",
+      "boundedFallbackOrdering": [
+        "critical/economic recovery",
+        "fleet/high-threat recovery",
+        "ordinary fleet action",
+        "ordinary research action",
+        "stable loss-dominant bounded military-recovery fallback",
+        "no action"
+      ],
+      "saveLoadSignalEqual": true,
+      "saveLoadNextDecisionEqual": true,
+      "status": "PR3 runtime accepted; pending final exact-head gates and Ready"
     },
     "audit": "docs/audits/current-batch-audit.md"
   },
   "runtimeEvidence": {
-    "head": "eaa8a9b2edfcabce72cef11fb8026be96f9673c7",
-    "ci": "#2220 SUCCESS",
-    "graphify": "#1356 SUCCESS",
-    "browserE2e": "#1450 SUCCESS",
+    "head": "83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f",
+    "ci": "#2234 SUCCESS",
+    "graphify": "#1369 SUCCESS",
+    "browserE2e": "#1464 SUCCESS",
     "productionSmoke": "SUCCESS",
     "organicFreshGameToTerminal": "SUCCESS",
     "organicTerminalDeterminism": "SUCCESS",
     "boundedFactionMatrix": "SUCCESS",
     "compressedProgression": "SUCCESS",
-    "organicObelisk": "SUCCESS — Synod 346920→353700 / Veyra 174300→181080",
-    "campaignPerformance": "SUCCESS — one day 5364.431 ms / seven days 20285.642 ms; seven-day operations 3174; botAudit 984; botDiagnostics 1156"
+    "organicObelisk": "SUCCESS",
+    "campaignPerformance": "SUCCESS — one day 5254.070 ms / seven days 20000.787 ms; operations 1559/3174; botAudit 537/984; botDiagnostics 559/1156",
+    "note": "accepted runtime evidence; docs commit requires new final exact-head gates"
   },
   "sequence": [
     {
@@ -141,6 +165,13 @@
       "pr": 180,
       "kind": "implementation",
       "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
+      "status": "merged",
+      "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
+    },
+    {
+      "pr": 181,
+      "kind": "implementation",
+      "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
       "status": "complete-for-controller-review-pending-final-exact-head-gates",
       "mergeSha": null
     }
@@ -150,7 +181,7 @@
     "kind": "controller-decision",
     "workItem": null,
     "implementationAuthorized": false,
-    "prerequisite": "fresh exact-head CI + Graphify + Browser E2E/production smoke, zero unresolved threads, mergeable=true, PR #180 Ready, then controller review",
-    "instruction": "Do not merge #180. Do not start PR3 until explicit controller authorization."
+    "prerequisite": "fresh exact-head CI + Graphify + Browser E2E/production smoke, zero unresolved threads, mergeable=true, PR #181 Ready, then controller review",
+    "instruction": "Do not merge #181. Do not start another Audit/batch. Batch is not merged-complete until #181 is explicitly merged by an authorized controller action."
   }
 }

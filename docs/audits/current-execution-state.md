@@ -1,9 +1,9 @@
 # Current execution state
 
 **Updated:** 2026-08-23  
-**Safe to continue:** PR #180 final validation only; do not merge or start PR3  
+**Safe to continue:** PR #181 final validation / controller review only; do not merge or start another Audit/batch  
 **Phase:** `POST-1.0-BOT-STRATEGY-DIFFERENTIATION`  
-**Exact starting `main` for PR2:** `7620975e1cd604c8bcdce0bac748e32e276061db`  
+**Exact starting `main` for PR3:** `f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd`  
 **Runtime:** schema v19 / save format v6  
 **Migration:** none  
 **Release:** 1.0.0 remains closed
@@ -12,88 +12,84 @@
 |---|---|
 | Audit #178 | MERGED → `4b96d457fad1577a0663210864381a0d3a33cb77` |
 | PR1 #179 | MERGED → `7620975e1cd604c8bcdce0bac748e32e276061db` |
+| PR2 #180 | MERGED → `f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd` |
 | Batch | `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` |
-| Active implementation work item | `POST-1.0-PR2-PERSONALITY-TACTICAL-RISK` |
-| Active implementation PR | #180 |
-| Branch | `agent/post-1.0-personality-tactical-risk` |
-| PR2 controller state | complete-for-controller-review; final exact-head validation required after this docs commit |
-| PR3 | pending / not started |
+| Active implementation work item | `POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE` |
+| Active implementation PR | #181 |
+| Branch | `agent/post-1.0-bot-outcome-adaptation` |
+| PR3 controller state | runtime accepted; complete-for-controller-review pending fresh docs-head gates |
 | Further implementation authorized | false |
-| Runtime implementation evidence head | `eaa8a9b2edfcabce72cef11fb8026be96f9673c7` |
-| PR2 merge SHA | none — PR #180 is not merged |
+| Accepted runtime evidence head | `83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f` |
+| PR3 merge SHA | none — PR #181 is not merged |
 
-## PR2 tactical-risk contract
+## PR3 recent-outcome contract
 
-The single policy truth is `deriveBotStrategyPolicy(profile).maxAttackRiskPermille`:
+Regression-first commit: `846ec783df14b6c35f993b6353c383369147de3c`.
 
-- Industrial: `700`;
-- Explorer: `800`;
-- Aggressive: `900`.
+The red evidence established the baseline gap cleanly: persisted `GameState.eventLog` battle history did not affect `planBotThreatAndRecovery()` recovery selection.
 
-Both tactical consumers now use the same integer risk semantics:
+The public pure helper is:
 
-`riskPermille = min(9999, floor(targetPower * 1000 / max(1, ownPower)))`.
+`deriveRecentBotBattleOutcomeSignal(state, empireId)`
 
-`fleetMissionPlanner.ts` no longer uses the legacy `ownPower * 10 >= targetPower * 12` cutoff. `threatRecoveryPlanner.ts` no longer uses a hardcoded `riskPermille <= 800` recommendation gate.
+with `RECENT_BOT_BATTLE_WINDOW = 3`.
 
-The actual scheduler `BotProfile` is propagated to fleet/threat planner paths. Compatible direct callers resolve the default profile for the matching empire. Unknown or mismatched profiles do not receive a guessed attack threshold.
+Relevant history is limited to `BATTLE_REPORT` entries where `report.mode === 'pvp'` and the target empire is the attacker or defender. Relevant reports are canonically ordered by:
 
-The threshold does not bypass existing combat-information or command rules:
+1. `event.executeAt`;
+2. `event.sequence`;
+3. `report.id`;
 
-- attack targeting still requires current full level-3 intelligence;
-- stale or partial intelligence cannot produce a tactical attack recommendation;
-- `getMissionAvailability()` remains authoritative for ordinary mission legality;
-- reducer validation remains authoritative for command acceptance;
-- PR1 scheduler ordering is unchanged;
-- no schema/save changes were introduced.
+then the latest three are selected. Classification is from the target empire's attacker/defender perspective; draws are neutral. PvE reports and unrelated empires are excluded. Event-array permutation does not alter the considered canonical window or signal.
 
-## Regression-first evidence
+`recoveryBias` is `loss-dominant` iff `losses > wins`; otherwise it is `none`. Wins create no positive or unbounded aggression bonus. Once a loss ages out of the latest-three relevant window, baseline personality behavior returns automatically.
 
-Regression-first commit: `7786534f98c0b5e95e16b28fa8ffa4e3a80ce00d`.
+The only direct runtime consumer is `src/simulation/bots/threatRecoveryPlanner.ts`. `src/simulation/bots/scheduler.ts` runtime is unchanged.
 
-Its red CI established both baseline gaps using real catalog stats:
+The accepted bounded integration order is:
 
-1. fleet path: legacy `10/12` accepted an Industrial marginal target above `700‰`;
-2. threat path: hardcoded `riskPermille <= 800` rejected an Aggressive marginal target above `800‰` and at/below `900‰`.
+1. existing critical/economic recovery;
+2. existing fleet/high-threat recovery;
+3. ordinary fleet action;
+4. ordinary research action;
+5. only then, in stable state, loss-dominant bounded military-recovery fallback;
+6. otherwise no action.
 
-Final focused tests prove the same deterministic marginal-risk concept across personalities:
+An earlier implementation placed outcome recovery too early and broke Organic Obelisk trajectory evidence; that variant was rejected. The final bounded fallback restores the normal development trajectory while retaining the accepted outcome response.
 
-- Industrial rejects targets above `700‰`;
-- Explorer accepts through `800‰` and rejects above `800‰`;
-- Aggressive accepts through `900‰` and rejects above `900‰`;
-- a shared `800–900‰` marginal target is rejected by Industrial/Explorer and accepted by Aggressive;
-- repeated planning is deterministic;
-- unobserved foreign runtime state changes do not alter the tactical decision.
+Save/load preserves both the derived signal and the next bounded recovery decision. No persistent AI memory/counters were added.
 
-## Green runtime-head evidence
+## Accepted runtime-head evidence
 
-Exact runtime evidence head: `eaa8a9b2edfcabce72cef11fb8026be96f9673c7`.
+Exact accepted runtime head: `83905a60b41dcb0ed67901ed4c04e2d05c1bbb5f`.
 
-- CI #2220 — SUCCESS;
+- CI #2234 — SUCCESS;
 - asset audit / lint / typecheck / full tests / build — SUCCESS;
 - compressed progression scenario — SUCCESS;
+- Organic Obelisk evidence — SUCCESS;
 - Organic Fresh Game → Terminal — SUCCESS;
 - Organic terminal save/load + partition determinism — SUCCESS;
 - bounded organic terminal faction matrix — SUCCESS;
-- Organic Obelisk evidence — SUCCESS:
-  - Synod queued `346920`, completes `353700` real seconds;
-  - Veyra queued `174300`, completes `181080` real seconds;
 - campaign catch-up performance — SUCCESS:
-  - one day `5364.431 ms`, operations `1559`, botAudit `537`, botDiagnostics `559`;
-  - seven days `20285.642 ms`, operations `3174`, botAudit `984`, botDiagnostics `1156`;
-- Graphify #1356 — SUCCESS;
-- Browser E2E #1450 — SUCCESS;
-- production Pages smoke in #1450 — SUCCESS.
+  - one day `5254.070 ms`, operations `1559`, botAudit `537`, botDiagnostics `559`;
+  - seven days `20000.787 ms`, operations `3174`, botAudit `984`, botDiagnostics `1156`;
+- Graphify #1369 — SUCCESS;
+- Browser E2E #1464 — SUCCESS;
+- production Pages smoke in #1464 — SUCCESS;
+- unresolved review threads — 0;
+- mergeable — true;
+- verified `main` remained `f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd`.
 
 ## Next safe action
 
-This control-plane synchronization changes the PR head, therefore the runtime-head checks above are evidence but are not the final exact-head handoff gate.
+This control-plane synchronization changes the PR head, therefore #2234/#1369/#1464 remain accepted runtime evidence but are not the final exact-head handoff gates.
 
-1. require fresh CI, Graphify and Browser E2E including production smoke on the docs head;
-2. verify `main` still equals `7620975e1cd604c8bcdce0bac748e32e276061db`;
-3. verify unresolved review threads = 0 and `mergeable=true`;
-4. ensure PR #180 body reflects the final PR2 implementation/evidence;
-5. only when all final-head gates are green, mark #180 Ready for review;
-6. STOP for controller review.
+1. require fresh CI, Graphify and Browser E2E including production Pages smoke on the final docs head;
+2. require every CI job green: assets, lint, typecheck, full tests, build, compressed progression, campaign performance, Organic Obelisk, Organic Fresh Game → Terminal, terminal determinism and bounded faction matrix;
+3. verify `main` still equals `f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd`;
+4. verify unresolved review threads = 0 and `mergeable=true`;
+5. ensure PR #181 body records the accepted contract, rejected early variant and final exact-head evidence;
+6. only when all final-head gates are green, mark #181 Ready for review;
+7. STOP for controller review.
 
-Do not merge #180. Do not start PR3.
+Do not merge #181. Do not start another Audit/batch.
