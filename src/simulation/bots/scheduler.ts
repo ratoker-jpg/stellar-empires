@@ -22,10 +22,7 @@ import {
   type BotPveReasonCode,
 } from './pveOperationsPlanner';
 import { planBotResearchAndProduction } from './researchProductionPlanner';
-import {
-  deriveBotStrategyPolicy,
-  type BotCompressedDevelopmentSource,
-} from './strategyPolicy';
+import { deriveBotStrategyPolicy } from './strategyPolicy';
 import {
   planBotThreatAndRecovery,
   type BotThreatRecoveryPlan,
@@ -176,23 +173,30 @@ function compressedCandidate(
   const science = planBotResearchAndProduction(state, profile.empireId);
   let economy: ReturnType<typeof planBotEconomy> | null = null;
 
-  if (phase === 'first-combat') {
-    economy = planBotEconomy(state, profile.empireId);
-    const equalizedDevelopmentChoice =
-      science.production.command !== null &&
-      science.research.command !== null &&
-      economy.command !== null;
-    if (equalizedDevelopmentChoice) {
-      const developmentCommand = (source: BotCompressedDevelopmentSource): GameCommand | null => {
-        if (source === 'production') return science.production.command;
-        if (source === 'research') return science.research.command;
-        if (source === 'economy') return economy?.command ?? null;
-        return logistics?.command ?? null;
-      };
-      for (const source of deriveBotStrategyPolicy(profile).compressedDevelopmentPreference) {
-        const candidate = selectCandidate(source, developmentCommand(source), attempted);
-        if (candidate !== null) {
-          return { candidates: [candidate], fleet: precomputedFleet ?? null, pve: null };
+  if (
+    phase === 'first-combat' &&
+    attempted.length === 0 &&
+    science.production.command !== null &&
+    science.research.command !== null
+  ) {
+    const preferredSource = deriveBotStrategyPolicy(profile).compressedDevelopmentPreference[0];
+    if (preferredSource !== 'production') {
+      economy = planBotEconomy(state, profile.empireId);
+      if (economy.command !== null) {
+        const preferredCommand = preferredSource === 'economy'
+          ? economy.command
+          : science.research.command;
+        const preferredCandidate = selectCandidate(
+          preferredSource,
+          preferredCommand,
+          attempted,
+        );
+        if (preferredCandidate !== null) {
+          return {
+            candidates: [preferredCandidate],
+            fleet: precomputedFleet ?? null,
+            pve: null,
+          };
         }
       }
     }
