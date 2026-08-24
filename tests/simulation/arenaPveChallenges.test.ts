@@ -30,6 +30,7 @@ type ArenaResolutionEvent = ScheduledGameEvent & {
 function createArenaState(
   seed: string,
   ships: Readonly<Record<string, number>>,
+  fleetId = 'arena-player-fleet',
 ): { readonly state: GameState; readonly fleet: FleetState; readonly originId: string } {
   const initial = createInitialGameState(seed);
   const origin = initial.planets.find((planet) => planet.ownerEmpireId === 'player');
@@ -46,7 +47,7 @@ function createArenaState(
     },
   };
   const fleet: FleetState = {
-    id: 'arena-player-fleet',
+    id: fleetId,
     empireId: 'player',
     originPlanetId: origin.id,
     location: { type: 'planet', planetId: origin.id },
@@ -161,6 +162,31 @@ describe('local deterministic Arena challenges', () => {
     expect(getArenaChallenges(nextCycle).map((challenge) => challenge.id)).not.toEqual(
       first.map((challenge) => challenge.id),
     );
+  });
+
+  it('distinguishes equal-length fleet IDs in the stored Arena resolution seed', () => {
+    const roles = getFactionMechanicalRoles('aegis').ships;
+    const ships = { [roles.cruiser]: 20 };
+    const left = createArenaState('arena-full-identity', ships, 'arena-fleet-aa');
+    const right = createArenaState('arena-full-identity', ships, 'arena-fleet-bb');
+    expect(left.fleet.id).toHaveLength(right.fleet.id.length);
+
+    const leftChallenge = getArenaChallenges(left.state)[1]!;
+    const rightChallenge = getArenaChallenges(right.state)[1]!;
+    expect(rightChallenge).toEqual(leftChallenge);
+
+    const leftEntered = enter(left.state, left.fleet.id, leftChallenge.id);
+    const rightEntered = enter(right.state, right.fleet.id, rightChallenge.id);
+    const leftEntry = leftEntered.pveMeta?.activeArenaEntries[0] as
+      | { readonly resolutionSeed?: number }
+      | undefined;
+    const rightEntry = rightEntered.pveMeta?.activeArenaEntries[0] as
+      | { readonly resolutionSeed?: number }
+      | undefined;
+
+    expect(leftEntry?.resolutionSeed).toBeTypeOf('number');
+    expect(rightEntry?.resolutionSeed).toBeTypeOf('number');
+    expect(leftEntry?.resolutionSeed).not.toBe(rightEntry?.resolutionSeed);
   });
 
   it('charges the canonical cost, holds the fleet and enforces one active entry', () => {
