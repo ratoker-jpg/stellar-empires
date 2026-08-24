@@ -1,5 +1,5 @@
 {
-  "indexVersion": 31,
+  "indexVersion": 32,
   "updatedAt": "2026-08-24",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -21,7 +21,7 @@
     "workItem": "POST-1.0-NEXT-PRODUCT-3",
     "branch": "audit/post-1.0-next-product-3",
     "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "status": "docs-only-controller-review-required",
+    "status": "controller-blockers-resolved-fresh-exact-head-gates-required",
     "implementationAuthorized": false
   },
   "completedPreviousPhase": {
@@ -40,7 +40,7 @@
   "currentAudit": {
     "id": "POST-1.0-NEXT-PRODUCT-3",
     "pr": 186,
-    "status": "docs-only-controller-review-required",
+    "status": "docs-only-controller-blockers-resolved",
     "mergeSha": null,
     "implementationAuthorized": false,
     "proposedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
@@ -51,12 +51,25 @@
     "schemaMigrationRequired": false,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
+    "controllerFindingsResolved": [
+      "autosave resurrection race",
+      "E2E interactive new-game dialog bypass"
+    ],
     "workItems": [
       {
         "id": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
         "order": 1,
         "pr": null,
-        "status": "pending-controller-audit-approval"
+        "status": "pending-controller-audit-approval",
+        "contracts": {
+          "safeReset": "quiesce writer -> delete autosave.snapshot -> delete autosave -> reload",
+          "failureRecovery": "no reserved deletion on quiesce failure; surviving primary remains recovery authority; no silent disabled autosave page",
+          "e2e": "VITE_E2E remains enabled; one explicit interactive-new-game query mode reaches real dialog with fixed uint32 seed",
+          "seed": "explicit uint32 -> exact GameState.seed; legacy string seed source compatible",
+          "schema": 19,
+          "save": 6,
+          "migration": "none"
+        }
       }
     ]
   },
