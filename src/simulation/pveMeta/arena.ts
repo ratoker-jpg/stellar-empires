@@ -3,6 +3,7 @@ import {
   recoverFleetShipsWithCommander,
 } from '../command/commanderShips';
 import { getCommandCombatEffects } from '../command/commandDoctrine';
+import { stableFleetIdentityContribution } from '../combat/combatIdentity';
 import type { FleetFormation, FleetTargetPriority } from '../combat/fleetDoctrine';
 import { resolveBattle } from '../combat/resolveBattle';
 import type { ResourceCost, ResourceId } from '../economy/types';
@@ -268,6 +269,9 @@ export function enterArenaChallenge(
     challenge,
     enteredAt: state.clock.elapsedSeconds,
     resolvesAt: state.clock.elapsedSeconds + challenge.durationSeconds,
+    resolutionSeed: mixSeed(
+      challenge.combatSeed ^ sequence ^ stableFleetIdentityContribution(fleet.id),
+    ),
   };
   const event: ScheduledGameEvent = {
     id: `event-${sequence}`,
@@ -431,7 +435,8 @@ export function applyArenaResolutionEvent(
   const research = getResearchEffectsForEmpire(state, entry.empireId);
   const command = getCommandCombatEffects(state.commanders, entry.empireId, fleet.id);
   const commander = getCommanderFleetEffects(state, fleet);
-  const seed = mixSeed(entry.challenge.combatSeed ^ event.sequence ^ fleet.id.length);
+  const seed = entry.resolutionSeed ??
+    mixSeed(entry.challenge.combatSeed ^ event.sequence ^ fleet.id.length);
   const resolution = resolveBattle(
     seed,
     {
