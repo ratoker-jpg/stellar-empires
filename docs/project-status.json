@@ -1,128 +1,122 @@
 {
-  "statusVersion": 94,
+  "statusVersion": 95,
   "updatedAt": "2026-08-24",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 184,
-  "lastMergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0",
-  "verifiedMainBaseline": "PR #184 squash / exact starting main for POST-1.0-PR3-COMBAT-RANKING-TRUTH",
-  "runtimeBaselinePr": 184,
-  "runtimeBaselineSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0",
-  "activePr": 185,
-  "activePrKind": "implementation-closure",
-  "activeWorkItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
-  "activeBranch": "agent/post-1.0-combat-ranking-truth",
+  "lastMergedPr": 185,
+  "lastMergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
+  "verifiedMainBaseline": "PR #185 squash / exact starting main for fresh Audit #186",
+  "runtimeBaselinePr": 185,
+  "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
+  "activePr": 186,
+  "activePrKind": "audit",
+  "activeWorkItem": "POST-1.0-NEXT-PRODUCT-3",
+  "activeBranch": "audit/post-1.0-next-product-3",
   "nextPrAfterActive": null,
-  "nextPrKind": "fresh-docs-only-audit-after-controller-approved-pr3-merge",
-  "nextWorkItem": null,
-  "currentMilestone": "POST-1.0 strategic feedback truth / PR3 combat ranking truth and batch closure",
+  "nextPrKind": "implementation-only-after-controller-approved-audit-merge",
+  "nextWorkItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
+  "currentMilestone": "fresh post-1.0 product Audit / replayable campaign lifecycle decision",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
   "currentExecutionState": "docs/audits/current-execution-state.md",
   "previousBatch": {
-    "batchId": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
+    "batchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
     "status": "completed",
-    "auditPr": 178,
-    "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "archive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
+    "auditPr": 182,
+    "auditMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
+    "archive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
     "implementation": [
-      { "pr": 179, "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
-      { "pr": 180, "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
-      { "pr": 181, "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" }
-    ]
+      { "pr": 183, "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5" },
+      { "pr": 184, "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0" },
+      { "pr": 185, "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6" }
+    ],
+    "hasPr4": false
   },
   "currentAuditState": {
-    "workItem": "POST-1.0-NEXT-PRODUCT-2",
-    "auditPr": 182,
-    "startingMain": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
-    "mergeSha": "b09887489db7754f0c0b2672649db9283b879732",
-    "status": "merged-controller-accepted-archived-for-closure",
-    "archive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
-    "implementationAuthorized": true,
-    "acceptedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
-    "acceptedImplementationCount": 3,
+    "workItem": "POST-1.0-NEXT-PRODUCT-3",
+    "auditPr": 186,
+    "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
+    "status": "docs-only-controller-review-required",
+    "implementationAuthorized": false,
+    "proposedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
+    "proposedImplementationCount": 1,
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false,
     "criticalUnknownsResolved": true,
-    "criticalUnknowns": []
+    "criticalUnknowns": [],
+    "graphify": {
+      "version": "0.8.38",
+      "sourceRun": 1402,
+      "sameRuntimeTreeAsStartingMain": true,
+      "files": 464,
+      "nodes": 3639,
+      "edges": 12757,
+      "communities": 145,
+      "extraction": "100%"
+    }
   },
   "proposedBatch": {
-    "id": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
-    "status": "closure-staged-completes-on-pr185-merge",
-    "complexity": "medium",
-    "implementationAuthorized": true,
-    "archive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
+    "id": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
+    "status": "proposed-not-authorized",
+    "complexity": "bounded-cross-layer",
+    "implementationAuthorized": false,
     "workItems": [
       {
-        "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+        "id": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
         "order": 1,
-        "pr": 183,
-        "status": "merged",
-        "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5"
-      },
-      {
-        "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
-        "order": 2,
-        "pr": 184,
-        "status": "merged",
-        "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0"
-      },
-      {
-        "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
-        "order": 3,
-        "pr": 185,
-        "status": "active-closure-staged",
-        "mergeSha": null
+        "pr": null,
+        "status": "pending-controller-audit-approval",
+        "purpose": "allow an explicit safe new-campaign lifecycle with reproducible variable numeric world seeds while preserving manual saves and deterministic simulation"
       }
     ],
     "stateSchema": 19,
     "saveFormat": 6,
     "migration": "none",
-    "hasPr4": false
+    "hasSecondImplementationPr": false
   },
-  "activeImplementationState": {
-    "pr": 185,
-    "startingMain": "691078ab9ce5b0ab48e7aa69e71fe72322528af0",
-    "runtimeHeadBeforeControlPlane": "280b9e9c1e6605ced9837e845bb2d430c315406d",
-    "status": "runtime-complete-closure-staged",
-    "regressionFirstCommit": "3e64edea741c80bfda6d5966db42ef45470cf5a3",
-    "schema": 19,
-    "save": 6,
-    "migration": "none",
-    "runtimeHeadGates": {
-      "ciRun": 2270,
-      "ci": "success",
-      "graphifyRun": 1401,
-      "graphify": "success",
-      "graphifyVersion": "0.8.38",
-      "browserRun": 1500,
-      "browser": "success",
-      "productionSmoke": "success"
-    },
-    "finalExactHeadGatesRequiredAfterControlPlane": true
-  },
-  "verifiedProductGaps": [],
+  "verifiedProductGaps": [
+    "real browser fresh-game bootstrap hard-codes one seed source so repeated same-setting campaigns reuse the same generated world",
+    "after recoverable autosave exists, including terminal campaigns, player UI has no safe route to clear both reserved recovery slots and return to the normal new-game selector"
+  ],
+  "disprovedStaleGaps": [
+    "Organic Fresh Game to Terminal blocked",
+    "Organic Obelisk unavailable",
+    "terminal save-load or partition determinism missing",
+    "normal or Arena stable combat identity missing",
+    "Arena absent from unified reports",
+    "historical tactical combat feedback missing",
+    "ranking victories count generic successful operations",
+    "bots cannot perform legal PvP",
+    "bot personalities have no runtime effect",
+    "research UI/runtime requirements drift",
+    "multiple active construction queues falsely exist",
+    "world gameplay is wholly static"
+  ],
   "researchOnly": [
-    "achievements / extra score layers",
+    "achievements / meta progression",
     "moving-object / trajectory lifecycle gameplay",
-    "Bank / credit system semantics",
-    "additional bot differentiation beyond the proven bounded policy"
+    "Bank / credit semantics",
+    "additional bot differentiation beyond the proven bounded policy",
+    "player-selectable bot difficulty semantics"
   ],
   "productDecisions": {
     "doNotGuessNemexiaFormulas": true,
     "doNotCreateCreditSubsystemForGhostField": true,
-    "doNotInferHistoricalDoctrineFromCurrentState": true,
-    "arenaLegacyActiveEntryCompatibilityRequired": true,
-    "arenaUnifiedReportKind": "battle/pve",
-    "rankingVictoriesMeaning": "combat victories only",
-    "rankingVictoryWeight": 500,
-    "nextAfterClosure": "fresh docs-only Audit from fresh main",
+    "nextBatchImplementationCount": 1,
+    "numericCampaignSeedIsPersistedAuthority": true,
+    "suggestedSeedMayUseWebCryptoBeforeStateCreation": true,
+    "wallclockSeedForbidden": true,
+    "manualSaveSlotsMustSurviveNewCampaignReset": true,
+    "recoverySnapshotMustBeClearedBeforePrimaryAutosave": true,
+    "targetStateSchema": 19,
+    "targetSaveFormat": 6,
+    "migration": "none",
     "externalControllerApprovalRequired": true
   },
   "requiredStartupReading": [
@@ -131,11 +125,12 @@
     "docs/audits/current-batch-audit.md",
     "docs/audits/current-execution-state.md",
     "docs/audits/batch-history.md",
+    "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/16-execution-roadmap.md",
     "docs/17-continuation-guide.md",
-    "actual GitHub main and PR state"
+    "actual GitHub main and Audit PR state"
   ],
-  "nextAction": "Require fresh exact-head CI, Graphify, Browser E2E and production smoke on PR #185 after closure docs; verify review state, mergeability and live main; mark #185 Ready; then STOP for controller review. Do not merge #185, do not create PR4, and do not start the next Audit before controller merge."
+  "nextAction": "Require fresh exact-head CI, Graphify, Browser E2E and production smoke on Audit #186 after final docs; verify review state, mergeability and live main; mark #186 Ready; then STOP. Do not merge #186 and do not create or start the implementation branch."
 }

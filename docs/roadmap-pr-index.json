@@ -1,5 +1,5 @@
 {
-  "indexVersion": 30,
+  "indexVersion": 31,
   "updatedAt": "2026-08-24",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,45 +7,45 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 184,
-    "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0",
-    "runtimeBaselinePr": 184,
-    "runtimeBaselineSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0",
+    "lastMergedPr": 185,
+    "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
+    "runtimeBaselinePr": 185,
+    "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
     "lastCompletedAuditPr": 182,
     "lastCompletedAuditMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
     "lastCompletedAuditArchive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md"
   },
   "active": {
-    "pr": 185,
-    "kind": "implementation-closure",
-    "workItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
-    "branch": "agent/post-1.0-combat-ranking-truth",
-    "startingMain": "691078ab9ce5b0ab48e7aa69e71fe72322528af0",
-    "status": "closure-staged-complete-for-controller-review",
-    "implementationAuthorized": true
+    "pr": 186,
+    "kind": "audit",
+    "workItem": "POST-1.0-NEXT-PRODUCT-3",
+    "branch": "audit/post-1.0-next-product-3",
+    "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
+    "status": "docs-only-controller-review-required",
+    "implementationAuthorized": false
   },
   "completedPreviousPhase": {
-    "id": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
+    "id": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
     "status": "completed",
-    "auditPr": 178,
-    "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "archive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
+    "auditPr": 182,
+    "auditMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
+    "archive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
     "workItems": [
-      { "id": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "pr": 179, "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
-      { "id": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "pr": 180, "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
-      { "id": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "pr": 181, "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" }
-    ]
+      { "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH", "pr": 183, "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5" },
+      { "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK", "pr": 184, "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0" },
+      { "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH", "pr": 185, "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6" }
+    ],
+    "hasPr4": false
   },
   "currentAudit": {
-    "id": "POST-1.0-NEXT-PRODUCT-2",
-    "pr": 182,
-    "status": "merged-controller-accepted-archived-for-closure",
-    "mergeSha": "b09887489db7754f0c0b2672649db9283b879732",
-    "archive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
-    "implementationAuthorized": true,
-    "acceptedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
-    "complexity": "medium",
-    "implementationCount": 3,
+    "id": "POST-1.0-NEXT-PRODUCT-3",
+    "pr": 186,
+    "status": "docs-only-controller-review-required",
+    "mergeSha": null,
+    "implementationAuthorized": false,
+    "proposedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
+    "complexity": "bounded-cross-layer",
+    "implementationCount": 1,
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false,
@@ -53,25 +53,10 @@
     "criticalUnknowns": [],
     "workItems": [
       {
-        "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+        "id": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
         "order": 1,
-        "pr": 183,
-        "status": "merged",
-        "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5"
-      },
-      {
-        "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
-        "order": 2,
-        "pr": 184,
-        "status": "merged",
-        "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0"
-      },
-      {
-        "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
-        "order": 3,
-        "pr": 185,
-        "status": "active-closure-staged",
-        "mergeSha": null
+        "pr": null,
+        "status": "pending-controller-audit-approval"
       }
     ]
   },
@@ -80,17 +65,18 @@
     { "pr": 179, "kind": "implementation", "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "status": "merged", "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
     { "pr": 180, "kind": "implementation", "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "status": "merged", "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
     { "pr": 181, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "status": "merged", "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" },
-    { "pr": 182, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-2", "status": "merged-archived-for-closure", "mergeSha": "b09887489db7754f0c0b2672649db9283b879732" },
+    { "pr": 182, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-2", "status": "merged-archived", "mergeSha": "b09887489db7754f0c0b2672649db9283b879732" },
     { "pr": 183, "kind": "implementation", "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH", "status": "merged", "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5" },
     { "pr": 184, "kind": "implementation", "workItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK", "status": "merged", "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0" },
-    { "pr": 185, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH", "status": "active-closure-staged", "mergeSha": null }
+    { "pr": 185, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH", "status": "merged", "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6" },
+    { "pr": 186, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-3", "status": "active-docs-only", "mergeSha": null }
   ],
   "next": {
     "pr": null,
-    "kind": "audit",
-    "workItem": null,
+    "kind": "implementation",
+    "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
     "implementationAuthorized": false,
-    "prerequisite": "controller-approved merge of PR #185, then resolve fresh main and create a fresh docs-only Audit",
-    "instruction": "No PR4 exists. Do not start any successor implementation from this batch."
+    "prerequisite": "controller-approved merge of Audit #186, then resolve fresh main",
+    "instruction": "Do not merge #186 autonomously. Do not create or start the implementation branch before controller approval and Audit merge."
   }
 }

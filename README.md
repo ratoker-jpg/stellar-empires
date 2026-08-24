@@ -47,16 +47,19 @@ npm run e2e:production
 
 ## Roadmap и продолжение работы
 
-Канонический release-state находится в:
+Release 1.0 закрыт. Последний завершённый post-1.0 batch — `POST-1.0-STRATEGIC-FEEDBACK-TRUTH`, закрытый PR #185 squash `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6`.
+
+Текущая работа — только fresh docs-only Audit #186 `POST-1.0-NEXT-PRODUCT-3`. Он исследует фактический current main и не авторизует реализацию до controller review и merge. Канонический control-plane находится в:
 
 1. [`AGENTS.md`](AGENTS.md)
-2. [`docs/audits/current-execution-state.md`](docs/audits/current-execution-state.md)
+2. [`docs/28-audit-first-autonomous-delivery-protocol.md`](docs/28-audit-first-autonomous-delivery-protocol.md)
 3. [`docs/audits/current-batch-audit.md`](docs/audits/current-batch-audit.md)
-4. [`docs/audits/completed/m9-release-candidate.md`](docs/audits/completed/m9-release-candidate.md)
-5. [`docs/17-continuation-guide.md`](docs/17-continuation-guide.md)
-6. [`docs/27-playable-game-roadmap-v5.md`](docs/27-playable-game-roadmap-v5.md)
+4. [`docs/audits/current-execution-state.md`](docs/audits/current-execution-state.md)
+5. [`docs/audits/batch-history.md`](docs/audits/batch-history.md)
+6. [`docs/17-continuation-guide.md`](docs/17-continuation-guide.md)
+7. [`docs/29-post-1.0-nemexia-reference-roadmap.md`](docs/29-post-1.0-nemexia-reference-roadmap.md)
 
-M9 закрывается PR #171 `RELEASE-1.0-CLOSURE`: финальный exact-head должен пройти стандартный Browser E2E, production-base Browser smoke, CI, progression/performance и Graphify, после чего squash-merge фиксирует технический Release 1.0. Новая M9-реализация после #171 не разрешена.
+Audit #186 предлагает один coherent successor work item — replayable campaign lifecycle — но implementation остаётся неавторизованным, пока Audit не будет controller-approved и merged.
 
 ## Research and assets
 

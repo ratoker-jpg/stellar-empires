@@ -1,11 +1,12 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Release 1.0 closed; `POST-1.0-STRATEGIC-FEEDBACK-TRUTH` final PR #185 closure staged  
+**Status:** Release 1.0 closed; fresh docs-only Audit #186 active  
 **Updated:** 2026-08-24  
-**Verified current main / exact PR3 starting main:** `691078ab9ce5b0ab48e7aa69e71fe72322528af0`  
-**Last merged PR:** #184 `feat: unify combat reports and tactical feedback`  
-**Active PR:** #185 `fix: make combat ranking victories truthful`  
-**Runtime:** schema v19 / save format v6 / migration none
+**Verified current main / exact Audit starting main:** `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6`  
+**Last merged PR:** #185 `fix: make combat ranking victories truthful`  
+**Active PR:** #186 `docs: audit next post-1.0 product batch`  
+**Runtime:** schema v19 / save format v6  
+**Implementation authorized:** false
 
 ## Authoritative files
 
@@ -21,73 +22,91 @@ docs/roadmap-pr-index.json
 docs/17-continuation-guide.md
 ```
 
-Actual GitHub state wins over recorded prose.
+Actual GitHub state wins over prose.
 
-## Current audited chain
+## Completed boundary
 
-`POST-1.0-STRATEGIC-FEEDBACK-TRUTH` was authorized by Audit #182 as exactly three implementation PRs:
+`POST-1.0-STRATEGIC-FEEDBACK-TRUTH` is complete:
 
 ```text
 Audit #182 → b09887489db7754f0c0b2672649db9283b879732
 PR1 #183  → 83a4942c35aac8d7f0b02f7730f0646c171c98b5
 PR2 #184  → 691078ab9ce5b0ab48e7aa69e71fe72322528af0
-PR3 #185  → active final implementation/closure PR; squash SHA unknown until merge
+PR3 #185  → e974c09e7779b4cf3bbc6d0279b8d35f177a29e6
 ```
 
-There is no PR4.
+There is no PR4. Audit #182 is archived at `docs/audits/completed/post-1.0-strategic-feedback-truth.md` and is no longer successor implementation authorization.
 
-The accepted Audit contract is archived verbatim at:
+## Current entrypoint
 
-`docs/audits/completed/post-1.0-strategic-feedback-truth.md`
+Only docs-only Audit #186 is active:
 
-## Delivered product truth
+`POST-1.0-NEXT-PRODUCT-3`
 
-### PR1 — Arena combat identity
+Branch:
 
-New Arena entries persist a full stable fleet-identity resolution seed while legacy active entries without it retain the exact old compatibility fallback. No schema/save bump or migration was needed.
+`audit/post-1.0-next-product-3`
 
-### PR2 — unified combat feedback
+Starting main:
 
-Arena is part of canonical unified reports as `battle/pve`; normal combat, Arena and Solar War persist immutable resolution-time tactical feedback without reconstructing historical enemy/current command state.
+`e974c09e7779b4cf3bbc6d0279b8d35f177a29e6`
 
-### PR3 — combat ranking truth
+The Audit used pinned Graphify 0.8.38 plus direct source/tests/UI instead of replaying old backlog.
 
-The ranking metric is now explicitly `Боевые победы` and consumes only canonical unified reports. It counts:
+## Fresh decision
 
-- primary success for `battle` reports;
-- secondary victory for `battle` reports where primary outcome is failure;
-- primary success for `solar-war` reports.
+The strongest current product gap is one coherent replayability/lifecycle problem:
 
-It excludes generic expedition/space-object success and all non-winning Arena/Solar War outcomes. Duplicate report IDs count at most once. The existing `500` score weight per combat victory and deterministic score/rank ordering are unchanged.
+- the only real fresh-game bootstrap uses hard-coded seed source `stellar-empires-m1`, while seed controls generated universe/neutral/PvE/world-event variation;
+- a valid autosave or recovery snapshot is always restored, reserved autosaves are non-deletable in UI, terminal state freezes permanently, and there is no normal in-game “Новая партия” path.
 
-## Closure boundary
+Proposed successor batch, **not authorized until controller-approved Audit #186 merge**:
 
-PR #185 stages the batch closure documents. The batch becomes GitHub-complete only after controller-approved merge of #185; its future squash SHA is intentionally not guessed.
+`POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE`
 
-After #185 merges:
+Exactly one proposed implementation PR:
 
-1. resolve the resulting fresh `main`;
-2. reconcile #185 generated squash SHA in the next permitted control-plane record;
-3. begin only a fresh docs-only product Audit;
-4. do not continue directly into any implementation or implied PR4.
+`POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE`
 
-Research-only candidates remain research until a fresh Audit selects and authorizes a coherent batch:
+One PR is intentional: restart + seed variation are one player-facing outcome through one bootstrap/persistence/browser data flow. Splitting them would produce incomplete intermediate products and no real dependency checkpoint.
 
-- achievements / extra score layers;
-- moving-object trajectories;
-- Bank/credit semantics;
-- additional bot differentiation.
+## Proposed player contract
+
+If Audit #186 is accepted later, the one implementation PR should:
+
+- expose an explicit/reusable uint32 campaign seed in new-game UI;
+- suggest a different seed without wallclock input (Web Crypto is allowed only before state creation; tests use explicit fixed seeds);
+- use the selected numeric seed directly as existing persisted `GameState.seed`;
+- provide confirmed `System → Saves → Новая партия` lifecycle;
+- clear recovery snapshot before primary autosave so old campaign cannot be silently recovered;
+- preserve every manual/user-named save slot;
+- route back through the existing bootstrap/new-game selector;
+- preserve schema v19 / save v6 / migration none and all permanent terminal/performance gates.
+
+## Research / rejected items
+
+Not current implementation:
+
+- achievements/meta progression — RESEARCH;
+- moving-object trajectories — RESEARCH;
+- more bot differentiation — RESEARCH;
+- `BotDifficulty` semantics — internal dead metadata without current player promise;
+- Bank/credit gameplay — REJECT without authoritative semantics; do not invent a subsystem for the evidence-gated producer field.
+
+Recently closed Arena/report/tactical/ranking/endgame/bot/UI truth gaps remain closed unless new evidence appears.
 
 ## Current delivery sequence
 
 ```text
-PR3 runtime implementation
-→ runtime-head CI / Graphify / Browser / Pages green
-→ stage Audit archive + batch closure control plane
-→ fresh exact-head CI / Graphify / Browser / Pages
+fresh main e974c09...
+→ docs-only Audit #186
+→ exact-tree Graphify + direct-source product sweep
+→ one-PR replayable-campaign proposal
+→ final docs/control-plane
+→ fresh exact-head CI + Graphify + Browser/Pages
 → unresolved threads = 0 + mergeable + main unchanged
-→ mark #185 Ready
+→ mark #186 Ready
 → STOP for controller review
 ```
 
-**Do not merge #185. Do not create PR4. Do not start the next Audit before controller merge.**
+**Do not merge #186. Do not create the implementation branch. Do not start PR1.**
