@@ -4,8 +4,10 @@ import type {
   FleetTargetPriority,
 } from '../../src/simulation/combat/fleetDoctrine';
 import { resolveAttackMission } from '../../src/simulation/combat/resolveAttackMission';
+import type { BattleReport } from '../../src/simulation/combat/types';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import type { FleetState } from '../../src/simulation/fleets/types';
+import { createUnifiedMissionReports } from '../../src/simulation/reports/missionReports';
 import type { GameState } from '../../src/simulation/types';
 import {
   createSaveEnvelope,
@@ -136,6 +138,26 @@ function reloadPrepared(input: ReturnType<typeof prepareCombatState>) {
   };
 }
 
+type ExpectedTacticalSnapshot = {
+  readonly doctrineId: 'vanguard' | 'sentinel' | 'adaptive';
+  readonly commandLevel: number;
+  readonly isFlagship: boolean;
+  readonly formation: FleetFormation;
+  readonly targetPriority: FleetTargetPriority;
+  readonly commanderId: string | null;
+};
+
+type BattleReportWithExpectedSnapshot = BattleReport & {
+  readonly attackerTacticalSnapshot?: ExpectedTacticalSnapshot;
+};
+
+type UnifiedReportWithExpectedContext = ReturnType<typeof createUnifiedMissionReports>[number] & {
+  readonly tacticalContext?: {
+    readonly primary?: ExpectedTacticalSnapshot;
+    readonly secondary?: ExpectedTacticalSnapshot;
+  };
+};
+
 describe('POST-1.0-PR2 combat identity and defender doctrine regressions', () => {
   it('uses deterministic full attacker fleet identity entropy in the battle seed', () => {
     const firstId = 'attack-id-a';
@@ -169,5 +191,91 @@ describe('POST-1.0-PR2 combat identity and defender doctrine regressions', () =>
     const reloaded = resolvePrepared(reloadPrepared(prepared));
 
     expect(reloaded.report).toEqual(direct.report);
+  });
+
+  it('requires historical tactical context from resolution time after current command state changes', () => {
+    const prepared = prepareCombatState('historical-context-attack');
+    const attacker: FleetState = {
+      ...prepared.attacker,
+      ships: {
+        ...prepared.attacker.ships,
+        'commander.shared.executor': 1,
+      },
+      formation: 'wedge',
+      targetPriority: 'capitals',
+    };
+    const resolutionState: GameState = {
+      ...prepared.state,
+      fleets: prepared.state.fleets.map((fleet) =>
+        fleet.id === attacker.id ? attacker : fleet,
+      ),
+      commanders: prepared.state.commanders.map((command) =>
+        command.empireId === 'player'
+          ? {
+              ...command,
+              doctrineId: 'vanguard',
+              experience: 1_500,
+              level: 5,
+              flagshipFleetId: attacker.id,
+            }
+          : command,
+      ),
+    };
+    const target = resolutionState.planets.find(
+      (planet) => planet.id === prepared.targetPlanetId,
+    );
+    if (target === undefined) throw new Error('Historical context target is missing.');
+    const resolved = resolveAttackMission(
+      resolutionState,
+      attacker,
+      target,
+      EVENT_SEQUENCE,
+    );
+    expect(resolved.report.attackerFormation).toBe('wedge');
+    expect(resolved.report.attackerTargetPriority).toBe('capitals');
+    expect(resolved.report.attackerCommanderId).toBe('commander.shared.executor');
+
+    const storedSnapshot = (resolved.report as BattleReportWithExpectedSnapshot)
+      .attackerTacticalSnapshot;
+    expect(storedSnapshot).toEqual({
+      doctrineId: 'vanguard',
+      commandLevel: 5,
+      isFlagship: true,
+      formation: 'wedge',
+      targetPriority: 'capitals',
+      commanderId: 'commander.shared.executor',
+    });
+
+    const historicalState: GameState = {
+      ...resolved.state,
+      commanders: resolved.state.commanders.map((command) =>
+        command.empireId === 'player'
+          ? {
+              ...command,
+              doctrineId: 'sentinel',
+              experience: 12_000,
+              level: 9,
+              flagshipFleetId: null,
+            }
+          : command,
+      ),
+      eventLog: [{
+        event: {
+          id: 'event-historical-context-report',
+          executeAt: resolved.report.resolvedAt,
+          sequence: EVENT_SEQUENCE,
+          payload: { type: 'BATTLE_REPORT', report: resolved.report },
+        },
+        executedAt: resolved.report.resolvedAt,
+      }],
+    };
+    const unified = createUnifiedMissionReports(historicalState).find(
+      (report) => report.id === resolved.report.id,
+    ) as UnifiedReportWithExpectedContext | undefined;
+
+    expect(unified?.tacticalContext?.primary).toEqual(storedSnapshot);
+    expect(unified?.tacticalContext?.primary?.doctrineId).toBe('vanguard');
+    expect(unified?.tacticalContext?.primary?.commandLevel).toBe(5);
+    expect(unified?.tacticalContext?.primary?.isFlagship).toBe(true);
   });
 });

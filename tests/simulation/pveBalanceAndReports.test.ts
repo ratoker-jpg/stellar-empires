@@ -11,6 +11,7 @@ import {
   calculatePveRewardMultiplier,
   scalePveUnits,
 } from '../../src/simulation/pve/pveBalance';
+import type { ArenaResult } from '../../src/simulation/pveMeta/reputation';
 import {
   compareEmpirePvePvp,
   createUnifiedMissionReports,
@@ -128,6 +129,39 @@ function spaceObjectEvent(
   });
 }
 
+function arenaResult(
+  resolvedAt: number,
+  outcome: ArenaResult['outcome'] = 'victory',
+): ArenaResult {
+  return {
+    id: 'arena-result-unified-regression',
+    entryId: 'arena-entry-unified-regression',
+    challengeId: 'arena-4-1',
+    empireId: 'player',
+    fleetId: 'arena-report-fleet',
+    difficulty: 'assault',
+    resolvedAt,
+    outcome,
+    attackerInitial: {
+      'ship.aegis.fighter': 10,
+      'ship.aegis.frigate': 4,
+    },
+    enemyInitial: {
+      'ship.synod.fighter': 8,
+      'ship.synod.frigate': 3,
+    },
+    attackerRemaining: {
+      'ship.aegis.fighter': 7,
+      'ship.aegis.frigate': 3,
+    },
+    enemyRemaining: {
+      'ship.synod.fighter': 2,
+    },
+    rewardGranted: { metal: 4_000, crystal: 2_000, gas: 700 },
+    reputationAward: 20,
+  };
+}
+
 function withEventLog(
   state: GameState,
   eventLog: readonly ExecutedGameEvent[],
@@ -225,6 +259,29 @@ describe('PvE balance policy', () => {
 });
 
 describe('unified mission reports', () => {
+  it('requires persisted Arena history to appear exactly once as PvE combat', () => {
+    const base = createInitialGameState('arena-unified-report-regression');
+    const result = arenaResult(4_500);
+    const state: GameState = {
+      ...base,
+      pveMeta: {
+        ...base.pveMeta!,
+        arenaHistory: [result],
+      },
+    };
+
+    const arenaReports = createUnifiedMissionReports(state).filter(
+      (report) => report.id === result.id,
+    );
+    expect(arenaReports).toHaveLength(1);
+    expect(arenaReports[0]).toMatchObject({
+      kind: 'battle',
+      mode: 'pve',
+      primaryEmpireId: 'player',
+      outcome: 'success',
+    });
+  });
+
   it('combines battle, expedition, space-object and world-event histories once', () => {
     const base = createInitialGameState('unified-reports');
     const state: GameState = {
