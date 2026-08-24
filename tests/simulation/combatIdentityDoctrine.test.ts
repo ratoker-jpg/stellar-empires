@@ -278,11 +278,31 @@ describe('POST-1.0-PR2 combat identity and defender doctrine regressions', () =>
       persisted,
       SAVE_TIME,
     )));
+    const {
+      attackerTacticalSnapshot: _attackerTacticalSnapshot,
+      defenderTacticalSnapshot: _defenderTacticalSnapshot,
+      ...legacyReport
+    } = resolved.report;
+    const legacyProbe = parseSaveJson(serializeSave(createSaveEnvelope(
+      'combat-tactical-snapshot-legacy-probe',
+      stateWithBattleReport(resolved.state, legacyReport),
+      SAVE_TIME,
+    )));
     if (!parsed.ok) {
-      throw new Error(`parseSaveJson failed: ${JSON.stringify({
-        code: parsed.code,
-        message: parsed.message,
-        details: parsed.details,
+      throw new Error(`parseSaveJson diagnostic: ${JSON.stringify({
+        current: {
+          code: parsed.code,
+          message: parsed.message,
+          details: parsed.details,
+        },
+        legacySameState: legacyProbe.ok
+          ? { ok: true, formatVersion: legacyProbe.value.formatVersion }
+          : {
+              ok: false,
+              code: legacyProbe.code,
+              message: legacyProbe.message,
+              details: legacyProbe.details,
+            },
       })}`);
     }
     expect(parsed.value.formatVersion).toBe(6);
@@ -296,11 +316,6 @@ describe('POST-1.0-PR2 combat identity and defender doctrine regressions', () =>
     expect(loadedBattle.event.payload.report.attackerTacticalSnapshot)
       .toEqual(resolved.report.attackerTacticalSnapshot);
 
-    const {
-      attackerTacticalSnapshot: _attackerTacticalSnapshot,
-      defenderTacticalSnapshot: _defenderTacticalSnapshot,
-      ...legacyReport
-    } = resolved.report;
     const legacyCurrentState = stateWithBattleReport({
       ...resolved.state,
       commanders: resolved.state.commanders.map((command) =>
