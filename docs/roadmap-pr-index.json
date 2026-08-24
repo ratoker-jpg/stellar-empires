@@ -1,28 +1,28 @@
 {
-  "indexVersion": 27,
-  "updatedAt": "2026-08-23",
+  "indexVersion": 28,
+  "updatedAt": "2026-08-24",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 181,
-    "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
-    "runtimeBaselinePr": 181,
-    "runtimeBaselineSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
-    "lastCompletedAuditPr": 178,
-    "lastCompletedAuditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
-    "lastCompletedAuditArchive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md"
+    "lastMergedPr": 182,
+    "mergeSha": "b09887489db7754f0c0b2672649db9283b879732",
+    "runtimeBaselinePr": 182,
+    "runtimeBaselineSha": "b09887489db7754f0c0b2672649db9283b879732",
+    "lastCompletedAuditPr": 182,
+    "lastCompletedAuditMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
+    "lastCompletedAuditArchive": "docs/audits/current-batch-audit.md"
   },
   "active": {
-    "pr": 182,
-    "kind": "audit",
-    "workItem": "POST-1.0-NEXT-PRODUCT-2",
-    "branch": "audit/post-1.0-next-product-2",
-    "startingMain": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
-    "status": "docs-only-audit-pr182-controller-review-preparation",
-    "implementationAuthorized": false
+    "pr": 183,
+    "kind": "implementation",
+    "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+    "branch": "agent/post-1.0-arena-combat-identity-truth",
+    "startingMain": "b09887489db7754f0c0b2672649db9283b879732",
+    "status": "complete-for-controller-review",
+    "implementationAuthorized": true
   },
   "completedPreviousPhase": {
     "id": "POST-1.0-BOT-STRATEGY-DIFFERENTIATION",
@@ -39,9 +39,10 @@
   "currentAudit": {
     "id": "POST-1.0-NEXT-PRODUCT-2",
     "pr": 182,
-    "status": "active-docs-only-audit",
-    "implementationAuthorized": false,
-    "proposedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
+    "status": "merged-controller-accepted",
+    "mergeSha": "b09887489db7754f0c0b2672649db9283b879732",
+    "implementationAuthorized": true,
+    "acceptedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
     "complexity": "medium",
     "implementationCount": 3,
     "targetStateSchema": 19,
@@ -53,17 +54,20 @@
       {
         "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
         "order": 1,
-        "status": "proposal-not-authorized"
+        "pr": 183,
+        "status": "complete-for-controller-review"
       },
       {
         "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
         "order": 2,
-        "status": "proposal-not-authorized"
+        "pr": null,
+        "status": "pending-not-started"
       },
       {
         "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
         "order": 3,
-        "status": "proposal-not-authorized"
+        "pr": null,
+        "status": "pending-not-started"
       }
     ]
   },
@@ -72,14 +76,15 @@
     { "pr": 179, "kind": "implementation", "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "status": "merged", "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
     { "pr": 180, "kind": "implementation", "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "status": "merged", "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
     { "pr": 181, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "status": "merged", "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" },
-    { "pr": 182, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-2", "status": "active-docs-only-audit", "mergeSha": null }
+    { "pr": 182, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-2", "status": "merged-controller-accepted", "mergeSha": "b09887489db7754f0c0b2672649db9283b879732" },
+    { "pr": 183, "kind": "implementation", "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH", "status": "complete-for-controller-review", "mergeSha": null }
   ],
   "next": {
     "pr": null,
     "kind": "implementation",
-    "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+    "workItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
     "implementationAuthorized": false,
-    "prerequisite": "controller-approved merge of Audit #182, then resolve fresh main",
-    "instruction": "Do not create the implementation PR from this Audit branch. Stop after Audit #182 is Ready."
+    "prerequisite": "controller-approved merge of PR #183, then resolve fresh main",
+    "instruction": "Do not create PR2 from the PR1 branch. Stop after #183 is Ready."
   }
 }

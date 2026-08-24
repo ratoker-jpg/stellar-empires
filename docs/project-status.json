@@ -1,24 +1,24 @@
 {
-  "statusVersion": 91,
-  "updatedAt": "2026-08-23",
+  "statusVersion": 92,
+  "updatedAt": "2026-08-24",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 181,
-  "lastMergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
-  "verifiedMainBaseline": "PR #181 squash / exact fresh starting main for POST-1.0-NEXT-PRODUCT-2",
-  "runtimeBaselinePr": 181,
-  "runtimeBaselineSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
-  "activePr": 182,
-  "activePrKind": "audit",
-  "activeWorkItem": "POST-1.0-NEXT-PRODUCT-2",
-  "activeBranch": "audit/post-1.0-next-product-2",
+  "lastMergedPr": 182,
+  "lastMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
+  "verifiedMainBaseline": "PR #182 squash / exact starting main for POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+  "runtimeBaselinePr": 182,
+  "runtimeBaselineSha": "b09887489db7754f0c0b2672649db9283b879732",
+  "activePr": 183,
+  "activePrKind": "implementation",
+  "activeWorkItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+  "activeBranch": "agent/post-1.0-arena-combat-identity-truth",
   "nextPrAfterActive": null,
-  "nextPrKind": "implementation-only-after-controller-approved-audit-merge",
-  "nextWorkItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
-  "currentMilestone": "POST-1.0 fresh product audit / strategic feedback truth proposal",
+  "nextPrKind": "implementation-only-after-controller-approved-pr1-merge",
+  "nextWorkItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
+  "currentMilestone": "POST-1.0 strategic feedback truth / PR1 Arena combat identity",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -40,43 +40,42 @@
     "workItem": "POST-1.0-NEXT-PRODUCT-2",
     "auditPr": 182,
     "startingMain": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d",
-    "startingTree": "2d3d6c33668ef295bdad10f0319fd6993c10b187",
-    "status": "docs-only-audit-pr182-controller-review-preparation",
-    "implementationAuthorized": false,
-    "proposedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
-    "proposedImplementationCount": 3,
+    "mergeSha": "b09887489db7754f0c0b2672649db9283b879732",
+    "status": "merged-controller-accepted",
+    "implementationAuthorized": true,
+    "acceptedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
+    "acceptedImplementationCount": 3,
     "targetStateSchema": 19,
     "targetSaveFormat": 6,
     "schemaMigrationRequired": false,
     "criticalUnknownsResolved": true,
-    "criticalUnknowns": [],
-    "graphify": {
-      "version": "0.8.38",
-      "runtimeEvidenceRun": 1371,
-      "runtimeTree": "2d3d6c33668ef295bdad10f0319fd6993c10b187",
-      "nodes": 3602,
-      "edges": 12603,
-      "communities": 141
-    }
+    "criticalUnknowns": []
   },
   "proposedBatch": {
     "id": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
+    "status": "active",
     "complexity": "medium",
-    "implementationAuthorized": false,
+    "implementationAuthorized": true,
     "workItems": [
       {
         "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
         "order": 1,
+        "pr": 183,
+        "status": "complete-for-controller-review",
         "purpose": "snapshot full stable Arena fleet identity for new entries while preserving exact legacy active-entry resolution fallback"
       },
       {
         "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
         "order": 2,
+        "pr": null,
+        "status": "pending-not-started",
         "purpose": "include Arena in canonical reports and persist/render immutable tactical combat context"
       },
       {
         "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
         "order": 3,
+        "pr": null,
+        "status": "pending-not-started",
         "purpose": "make player-visible combat victory counts and ranking score derive from combat victories only"
       }
     ],
@@ -84,8 +83,28 @@
     "saveFormat": 6,
     "migration": "none"
   },
+  "activeImplementationState": {
+    "pr": 183,
+    "startingMain": "b09887489db7754f0c0b2672649db9283b879732",
+    "runtimeHeadBeforeControlPlane": "f0d9d9c7d80d42c31250e853a8db502dfde72a16",
+    "status": "complete-for-controller-review",
+    "regressionFirstCommit": "c4ac9ac234c0ab160d64c9a15a8dfc90d8847693",
+    "schema": 19,
+    "save": 6,
+    "migration": "none",
+    "runtimeHeadGates": {
+      "ciRun": 2244,
+      "ci": "success",
+      "graphifyRun": 1377,
+      "graphify": "success",
+      "graphifyVersion": "0.8.38",
+      "browserRun": 1474,
+      "browser": "success",
+      "productionSmoke": "success"
+    },
+    "finalExactHeadGatesRequiredAfterControlPlane": true
+  },
   "verifiedProductGaps": [
-    "Arena resolution still uses fleet.id.length instead of full stable fleet identity when no seed snapshot exists",
     "Arena history is omitted from createUnifiedMissionReports and canonical report summaries",
     "battle reports do not preserve/display historical command doctrine, Admiral level and flagship context even though those choices affect combat",
     "command ranking field labeled victories counts generic successful operations and omits Arena victories"
@@ -115,7 +134,7 @@
     "docs/roadmap-pr-index.json",
     "docs/16-execution-roadmap.md",
     "docs/17-continuation-guide.md",
-    "actual GitHub main and Audit PR #182 state"
+    "actual GitHub main and PR state"
   ],
-  "nextAction": "Finish only docs-only Audit #182, require fresh exact-head gates, mark Ready and STOP. Do not merge and do not create PR1."
+  "nextAction": "Require fresh exact-head gates on PR #183 after the control-plane commit, verify review threads/main/mergeable, mark Ready, then STOP for controller review. Do not merge and do not start PR2."
 }
