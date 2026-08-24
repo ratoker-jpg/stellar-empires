@@ -1,114 +1,94 @@
 # Current execution state
 
-**State:** PR2 complete-for-controller-review  
+**State:** PR3 / final batch closure staged for controller review  
 **Updated:** 2026-08-24  
-**Accepted Audit:** #182 `docs: audit next post-1.0 product batch` — MERGED  
-**Audit squash:** `b09887489db7754f0c0b2672649db9283b879732`  
-**PR1:** #183 `fix: preserve full Arena combat identity` — MERGED  
-**PR1 squash / exact PR2 starting main:** `83a4942c35aac8d7f0b02f7730f0646c171c98b5`  
-**Active implementation PR:** #184 `feat: unify combat reports and tactical feedback`  
-**Branch:** `agent/post-1.0-unified-combat-feedback`  
-**Work item:** `POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK`  
+**Batch:** `POST-1.0-STRATEGIC-FEEDBACK-TRUTH`  
+**Accepted Audit:** #182 — MERGED at `b09887489db7754f0c0b2672649db9283b879732`  
+**PR1:** #183 — MERGED at `83a4942c35aac8d7f0b02f7730f0646c171c98b5`  
+**PR2:** #184 — MERGED at `691078ab9ce5b0ab48e7aa69e71fe72322528af0`  
+**Active PR:** #185 `fix: make combat ranking victories truthful`  
+**Branch:** `agent/post-1.0-combat-ranking-truth`  
+**Work item:** `POST-1.0-PR3-COMBAT-RANKING-TRUTH`  
+**Exact starting main:** `691078ab9ce5b0ab48e7aa69e71fe72322528af0`  
 **Runtime:** schema v19 / save format v6 / migration none
 
-## Current batch
+## Regression-first evidence
 
-Batch: `POST-1.0-STRATEGIC-FEEDBACK-TRUTH`.
+RED commit: `3e64edea741c80bfda6d5966db42ef45470cf5a3`.
 
-Ordered state:
+CI #2269 reached the real test suite with assets, lint and typecheck green. The targeted ranking regression failed exactly because the existing metric counted two successful non-combat operations plus one Arena victory as three victories:
 
-1. `POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH` — #183 MERGED at `83a4942c35aac8d7f0b02f7730f0646c171c98b5`;
-2. `POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK` — #184 active / complete-for-controller-review;
-3. `POST-1.0-PR3-COMBAT-RANKING-TRUTH` — pending / NOT STARTED.
+```text
+expected 1
+received 3
+```
 
-The batch is not closed. PR3 must not start before controller handling of PR2.
+Failing test: `counts only combat victories when successful operations and Arena history are mixed`.
 
-## PR2 implementation truth
+## PR3 implementation truth
 
-Regression-first RED commit:
+Runtime implementation head before closure docs:
 
-`c23f39db6863562f9ebd4ffdd8903126f0b1e5ba`
+`280b9e9c1e6605ced9837e845bb2d430c315406d`
 
-The baseline tests exposed two accepted gaps:
+The ranking producer still derives from `createUnifiedMissionReports()`; no second Arena or Solar War history path was added.
 
-- persisted Arena history was missing from `createUnifiedMissionReports()`;
-- historical tactical context could not remain resolution-time truth after later doctrine/flagship changes.
+A report counts as one combat victory for an empire only when:
 
-`CombatTacticalSnapshot` is optional persisted report context with exactly:
+- `kind === 'battle'`, the empire is primary, and `outcome === 'success'`; or
+- `kind === 'battle'`, the empire is secondary, and the primary outcome is `failure`; or
+- `kind === 'solar-war'`, the empire is primary, and `outcome === 'success'`.
 
-- `doctrineId`;
-- `commandLevel`;
-- `isFlagship`;
-- `formation`;
-- `targetPriority`;
-- `commanderId`.
+Therefore normal PvP attacker wins, defender wins, pirate/PvE battle wins, Arena victories and Solar War victories count. Expedition success, space-object success, intelligence/system/world-event results, battle draws/failures for the losing side, Arena draw/defeat/withdrawal and Solar War draw/defeat do not count.
 
-Snapshot points:
+Canonical report IDs are consumed once through a deterministic `Set`, preventing duplicate report identity from inflating the score. Existing ranking ordering remains score descending then empire ID. The existing score weight remains exactly `victories * 500`.
 
-- normal attack: immediately before battle resolution in `resolveAttackMission()`, for attacker and defender when command state exists;
-- Solar War: immediately before battle resolution in `resolveEntry()`, for the player participant;
-- Arena: immediately before battle resolution in `applyArenaResolutionEvent()`, for the player entry.
+Player-facing wording is now explicit: `Боевые победы` and `боев. побед`.
 
-Historical report rendering consumes only the persisted snapshot. It does not reconstruct doctrine, Admiral level, flagship, formation, priority or commander from current mutable command state.
+## Targeted acceptance
 
-Legacy compatibility:
+`src/ui/commandRanking.test.ts` proves:
 
-- old `BattleReport` values without tactical snapshots remain valid and render “Тактический контекст: не зафиксирован.”;
-- old `ArenaResult` values without `tacticalSnapshot` remain valid;
-- malformed snapshots fail normalization rather than being partially guessed;
-- Solar War legacy battle reports without snapshots remain valid.
+- successful expedition and space-object operations do not inflate victories;
+- Arena victory counts once;
+- Arena draw/defeat/withdrawn do not count;
+- PvP attacker victory increments attacker only;
+- PvP defender victory increments defender only;
+- pirate combat victory counts, including legacy battle-mode inference;
+- Solar War victory counts while draw/defeat do not;
+- duplicate canonical report ID counts at most once;
+- event history order does not affect victories or score;
+- one combat victory changes the existing score component by exactly 500;
+- real schema-v19/save-v6 round trip preserves derived victories and score;
+- existing deterministic ranking behavior remains green.
 
-Arena is now synthesized exactly once by `createUnifiedMissionReports()` as canonical `kind='battle'`, `mode='pve'`. Victory/draw/defeat/withdrawn map to success/draw/failure/failure. Rewards, own losses and enemy losses flow through the same canonical summaries and `compareEmpirePvePvp()` aggregation. Ordering stays deterministic by `resolvedAt` descending, then `id`.
+`tests/e2e/combatFeedback.spec.ts` checks the real `#/ranking` route and the explicit `Боевые победы` label/count while retaining PR2 combat-feedback assertions.
 
-Both report UI consumers render the same player tactical feedback:
+## Runtime-head gates before closure docs
 
-- `src/ui/missionReportsPanel.ts`;
-- `src/ui/reportsWorkspace.ts`.
+Exact runtime head `280b9e9c1e6605ced9837e845bb2d430c315406d`:
 
-Privacy boundary: player-visible report feedback selects only the player's persisted tactical snapshot. It does not expose a hidden enemy-current-state reconstruction.
+- CI #2270 — SUCCESS: assets, lint, typecheck, full tests, build, compressed progression, campaign performance, Organic Obelisk, Organic Fresh Game → Terminal, terminal save/load + partition determinism and bounded faction matrix all green;
+- Graphify #1401 — SUCCESS with repository-pinned Graphify 0.8.38;
+- Browser E2E #1500 — SUCCESS;
+- production Pages smoke in #1500 — SUCCESS.
 
-PR1 Arena `resolutionSeed` semantics are unchanged. Ranking semantics are unchanged and remain reserved for PR3.
+## Batch closure
 
-A real save round-trip exposed `CHECKSUM_MISMATCH` because `resolveAttackMission()` emitted the optional `demolition` field with value `undefined`, while JSON serialization omitted that property. The fix preserves the existing optional-field contract by omitting `demolition` from the in-memory report when no demolition report exists. No checksum algorithm, schema or save version changed.
+The accepted Audit #182 is preserved verbatim at:
 
-Runtime implementation head before this control-plane commit:
+`docs/audits/completed/post-1.0-strategic-feedback-truth.md`
 
-`545283603f7fd7de33edc409117152e3efc32081`
+The closing chain is:
 
-Runtime-head evidence is fully green:
+```text
+#182 audit → #183 PR1 → #184 PR2 → #185 PR3/closure
+```
 
-- CI #2266 — asset audit, lint, typecheck, full tests and build SUCCESS;
-- compressed progression SUCCESS;
-- campaign catch-up performance SUCCESS;
-- Organic Obelisk SUCCESS;
-- Organic Fresh Game → Terminal SUCCESS;
-- terminal save/load + partition determinism SUCCESS;
-- bounded organic faction matrix SUCCESS;
-- Graphify #1398 with repository-pinned `graphifyy==0.8.38` SUCCESS;
-- Browser E2E #1496 SUCCESS;
-- production Pages smoke job in Browser #1496 SUCCESS.
+#185 has no merge SHA yet and none is invented. The batch is closure-staged now and becomes complete only after controller-approved merge of #185. There is no PR4. After merge, the only permitted successor is a fresh docs-only Audit from fresh `main`.
 
-Save/load evidence includes real schema v19 / save format v6 round trips for normal battle, Arena and Solar War tactical snapshots, plus legacy values without snapshots. Migration remains none.
+## Exact next action
 
-Because this control-plane commit changes the exact head, fresh exact-head CI, Graphify, Browser E2E and production smoke are required again before #184 is marked Ready.
+This closure-doc commit changes the head. Require fresh exact-head CI + Graphify + Browser E2E + production Pages smoke, then inspect review threads/reviews/comments, verify live `main` remains `691078ab9ce5b0ab48e7aa69e71fe72322528af0`, require `mergeable=true`, finalize the PR body, mark #185 Ready, verify the same head again, and STOP for controller review.
 
-## Scope boundary
-
-PR2 changes combat feedback/report truth only.
-
-Unchanged:
-
-- PR1 Arena `resolutionSeed`;
-- combat formulas and RNG;
-- ranking victory semantics and score;
-- Arena/Solar War balance;
-- schema v19;
-- save format v6;
-- migration state (`none`);
-- PR3.
-
-## Next action
-
-Require fresh exact-head CI + Graphify + Browser E2E + production Pages smoke after this control-plane commit. Then inspect review threads/reviews/comments, re-check live `main`, require `mergeable=true`, update the PR body with final evidence, mark #184 Ready, verify the Ready state against the same exact head, and STOP for controller review.
-
-**Do not merge #184. Do not create or start PR3.**
+**Do not merge #185. Do not create PR4 or the next Audit before controller handling.**

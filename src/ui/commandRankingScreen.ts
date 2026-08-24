@@ -76,7 +76,7 @@ export function mountCommandRankingScreen(
       createStat('Уровни наук', String(profile.researchLevels)),
       createStat('Юниты', String(profile.units)),
       createStat('Флоты', String(profile.fleets)),
-      createStat('Победы', String(profile.victories)),
+      createStat('Боевые победы', String(profile.victories)),
     );
     body.append(identityRow, stats);
     profileHost.append(hero, body);
@@ -106,7 +106,7 @@ export function mountCommandRankingScreen(
         ? `${entry.factionName} · игрок`
         : `${entry.factionName} · ${entry.empireId}`;
       const detail = document.createElement('small');
-      detail.textContent = `${entry.colonies} кол. · ${entry.units} юн. · ${entry.victories} побед`;
+      detail.textContent = `${entry.colonies} кол. · ${entry.units} юн. · ${entry.victories} боев. побед`;
       rowCopy.append(name, detail);
       const score = document.createElement('b');
       score.textContent = NUMBER_FORMAT.format(entry.score);

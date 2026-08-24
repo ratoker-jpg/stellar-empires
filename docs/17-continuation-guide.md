@@ -2,137 +2,86 @@
 
 ## Current handoff
 
-Release 1.0 remains closed. Runtime baseline is schema v19 / save format v6 / migration none.
+Release 1.0 remains closed. Runtime remains schema v19 / save format v6 / migration none.
 
-Current exact `main`:
+Current exact `main` / starting main for the active closure PR:
 
-`a1249615d55e9ffebc60889c3ab4d5ff72d8933d`
+`691078ab9ce5b0ab48e7aa69e71fe72322528af0`
 
-That is merged PR #181. The previous batch is complete:
+That is merged PR #184.
 
-```text
-POST-1.0-BOT-STRATEGY-DIFFERENTIATION
-Audit #178 → 4b96d457fad1577a0663210864381a0d3a33cb77
-#179 → 7620975e1cd604c8bcdce0bac748e32e276061db
-#180 → f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd
-#181 → a1249615d55e9ffebc60889c3ab4d5ff72d8933d
-```
-
-There is no PR4 in that batch.
-
-## Only active work
+## Active work
 
 ```text
-POST-1.0-NEXT-PRODUCT-2
-Audit PR #182
-branch audit/post-1.0-next-product-2
-starting main a1249615d55e9ffebc60889c3ab4d5ff72d8933d
-kind docs-only Audit
-implementationAuthorized = false
+POST-1.0-STRATEGIC-FEEDBACK-TRUTH
+Audit #182 → merged b09887489db7754f0c0b2672649db9283b879732
+PR1 #183  → merged 83a4942c35aac8d7f0b02f7730f0646c171c98b5
+PR2 #184  → merged 691078ab9ce5b0ab48e7aa69e71fe72322528af0
+PR3 #185  → active final implementation/closure PR
+branch agent/post-1.0-combat-ranking-truth
+work item POST-1.0-PR3-COMBAT-RANKING-TRUTH
 ```
 
-## Current authority
+There is no PR4.
 
-Read in this order before continuation:
+The full accepted Audit #182 contract is preserved at:
+
+`docs/audits/completed/post-1.0-strategic-feedback-truth.md`
+
+`docs/audits/current-batch-audit.md` is now the compact closure boundary rather than a reusable implementation authorization.
+
+## Completed product outcome staged by #185
+
+The batch closes three direct-source combat truth gaps:
+
+1. Arena full stable fleet identity is persisted for new entries without changing legacy active-entry outcomes.
+2. Arena joins canonical unified reports and real combat persists resolution-time tactical context without current-state reconstruction.
+3. Ranking now means combat victories only and is labelled `Боевые победы`.
+
+PR3 victory semantics are canonical-report based:
+
+- `battle` primary success counts;
+- `battle` secondary side counts when primary outcome is failure;
+- `solar-war` primary success counts;
+- expedition and space-object success do not count;
+- Arena draw/defeat/withdrawn do not count;
+- Solar War draw/defeat do not count;
+- the same report ID counts at most once;
+- score weight remains 500 per combat victory;
+- deterministic ranking ordering is unchanged.
+
+PR3 regression-first RED: `3e64edea741c80bfda6d5966db42ef45470cf5a3`, where two successful non-combat operations plus one Arena victory incorrectly produced `3` instead of `1`.
+
+Runtime implementation head before closure docs: `280b9e9c1e6605ced9837e845bb2d430c315406d`.
+
+Runtime-head gates were green before closure synchronization: CI #2270, Graphify #1401, Browser #1500 and production Pages smoke #1500.
+
+## Closure semantics
+
+#185 contains the archive/control-plane work required by the autonomous delivery protocol. The batch is **closure-staged**, not yet merged-complete. The generated #185 squash SHA must remain unknown until the controller merges the PR.
+
+After controller-approved merge of #185:
+
+- treat `POST-1.0-STRATEGIC-FEEDBACK-TRUTH` as complete;
+- resolve the new exact `main` and record the generated #185 squash SHA in the next permitted record;
+- start only a fresh docs-only Audit from that fresh main;
+- do not create a PR4 or directly continue implementation from Audit #182.
+
+## Required reading for the next session
 
 1. `AGENTS.md`;
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`;
 3. `docs/audits/current-batch-audit.md`;
 4. `docs/audits/current-execution-state.md`;
 5. `docs/audits/batch-history.md`;
-6. `docs/audits/completed/post-1.0-bot-strategy-differentiation.md`;
+6. `docs/audits/completed/post-1.0-strategic-feedback-truth.md`;
 7. `docs/project-status.json`;
 8. `docs/roadmap-pr-index.json`;
 9. `docs/16-execution-roadmap.md`;
-10. `docs/29-post-1.0-nemexia-reference-roadmap.md`;
-11. actual GitHub `main`, Audit PR #182, review threads and exact workflow state.
+10. actual GitHub `main`, PR #185, review threads and exact workflow state.
 
-Actual GitHub state wins over stale prose.
+## Current stop rule
 
-## Fresh Audit result
+Finish #185 exact-head gates, review loop and Ready transition, then STOP for controller review.
 
-The strongest verified current gaps are not Organic Terminal, generic bot competence or another broad parity sweep. They are concentrated in strategic combat feedback truth:
-
-1. Arena still uses length-only fleet identity entropy at resolution when no persisted seed snapshot exists;
-2. Arena history is excluded from `createUnifiedMissionReports()`;
-3. combat doctrine/Admiral/flagship/formation/priority choices affect real combat but are not preserved/displayed as immutable historical tactical context;
-4. ranking `Победы` counts generic successful operations and misses Arena victories.
-
-The proposed medium batch is:
-
-`POST-1.0-STRATEGIC-FEEDBACK-TRUTH`
-
-Ordered work items, **not authorized until controller-approved Audit #182 merge**:
-
-1. `POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH`;
-2. `POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK`;
-3. `POST-1.0-PR3-COMBAT-RANKING-TRUTH`.
-
-No PR4 exists in the proposal.
-
-The detailed implementation contract, exact expected files, tests, persistence rules, risks and acceptance gates are only in:
-
-`docs/audits/current-batch-audit.md`
-
-## Important fresh classifications
-
-### VERIFIED / KEEP_STELLAR
-
-- Organic Fresh Game → Terminal and Obelisk evidence;
-- terminal save/load/partition determinism and faction matrix;
-- normal combat full fleet identity + stable primary defender doctrine;
-- intelligence level-3/current-state semantics;
-- logistics, colonization, market and planet specialization consumers;
-- bounded bot personality strategy, tactical risk 700/800/900 and latest-three outcome recovery;
-- Admiral/command doctrine/flagship system;
-- dynamic world events and static harvestable/control space objects.
-
-### DISPROVED stale gaps
-
-- terminal campaign blocked;
-- Obelisk requires injected state;
-- normal attack still hashes only fleet ID length;
-- research UI/runtime definition mismatch;
-- UI presents several functional building queues;
-- bots cannot do legal PvP;
-- personalities have no runtime effect;
-- world gameplay is entirely static.
-
-### RESEARCH / not current batch
-
-- achievements / extra scoring layers;
-- moving-object trajectories;
-- Bank/credit subsystem semantics;
-- more bot differentiation.
-
-Direct Nemexia port is not authorized for any of them.
-
-## Persistence decisions
-
-The proposed batch remains:
-
-- state schema v19;
-- save format v6;
-- migration none.
-
-PR1 compatibility rule:
-
-- new Arena entries snapshot an optional full-identity resolution seed;
-- legacy active entries without it use the exact previous length-based seed path.
-
-PR2 historical truth rule:
-
-- tactical doctrine/Admiral/flagship context is snapshotted at resolution;
-- never derive old report context from current mutable command state;
-- old reports without snapshot remain valid and visibly partial.
-
-## Stop rule for Audit #182
-
-1. finish docs-only control plane;
-2. require fresh exact-head CI + pinned Graphify + Browser E2E/production smoke if triggered;
-3. verify unresolved review threads = 0, `mergeable=true` and live `main` unchanged unless explicitly reconciled;
-4. mark Audit #182 Ready;
-5. verify `draft=false` and no new unresolved review finding;
-6. STOP for controller review.
-
-**Do not merge Audit #182. Do not create PR1. Do not implement any proposed runtime change.**
+**Do not merge #185. Do not create PR4. Do not start the next Audit before controller merge.**

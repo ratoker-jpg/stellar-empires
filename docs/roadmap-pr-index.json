@@ -1,5 +1,5 @@
 {
-  "indexVersion": 29,
+  "indexVersion": 30,
   "updatedAt": "2026-08-24",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,21 +7,21 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 183,
-    "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5",
-    "runtimeBaselinePr": 183,
-    "runtimeBaselineSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5",
+    "lastMergedPr": 184,
+    "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0",
+    "runtimeBaselinePr": 184,
+    "runtimeBaselineSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0",
     "lastCompletedAuditPr": 182,
     "lastCompletedAuditMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
-    "lastCompletedAuditArchive": "docs/audits/current-batch-audit.md"
+    "lastCompletedAuditArchive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md"
   },
   "active": {
-    "pr": 184,
-    "kind": "implementation",
-    "workItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
-    "branch": "agent/post-1.0-unified-combat-feedback",
-    "startingMain": "83a4942c35aac8d7f0b02f7730f0646c171c98b5",
-    "status": "complete-for-controller-review",
+    "pr": 185,
+    "kind": "implementation-closure",
+    "workItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
+    "branch": "agent/post-1.0-combat-ranking-truth",
+    "startingMain": "691078ab9ce5b0ab48e7aa69e71fe72322528af0",
+    "status": "closure-staged-complete-for-controller-review",
     "implementationAuthorized": true
   },
   "completedPreviousPhase": {
@@ -31,28 +31,17 @@
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
     "archive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
     "workItems": [
-      {
-        "id": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
-        "pr": 179,
-        "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db"
-      },
-      {
-        "id": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-        "pr": 180,
-        "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
-      },
-      {
-        "id": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-        "pr": 181,
-        "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d"
-      }
+      { "id": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "pr": 179, "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
+      { "id": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "pr": 180, "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
+      { "id": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "pr": 181, "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" }
     ]
   },
   "currentAudit": {
     "id": "POST-1.0-NEXT-PRODUCT-2",
     "pr": 182,
-    "status": "merged-controller-accepted",
+    "status": "merged-controller-accepted-archived-for-closure",
     "mergeSha": "b09887489db7754f0c0b2672649db9283b879732",
+    "archive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
     "implementationAuthorized": true,
     "acceptedBatchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
     "complexity": "medium",
@@ -74,73 +63,34 @@
         "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
         "order": 2,
         "pr": 184,
-        "status": "complete-for-controller-review"
+        "status": "merged",
+        "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0"
       },
       {
         "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
         "order": 3,
-        "pr": null,
-        "status": "pending-not-started"
+        "pr": 185,
+        "status": "active-closure-staged",
+        "mergeSha": null
       }
     ]
   },
   "sequence": [
-    {
-      "pr": 178,
-      "kind": "audit",
-      "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
-      "status": "merged-archived",
-      "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77"
-    },
-    {
-      "pr": 179,
-      "kind": "implementation",
-      "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
-      "status": "merged",
-      "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db"
-    },
-    {
-      "pr": 180,
-      "kind": "implementation",
-      "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
-      "status": "merged",
-      "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
-    },
-    {
-      "pr": 181,
-      "kind": "implementation-closure",
-      "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
-      "status": "merged",
-      "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d"
-    },
-    {
-      "pr": 182,
-      "kind": "audit",
-      "workItem": "POST-1.0-NEXT-PRODUCT-2",
-      "status": "merged-controller-accepted",
-      "mergeSha": "b09887489db7754f0c0b2672649db9283b879732"
-    },
-    {
-      "pr": 183,
-      "kind": "implementation",
-      "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
-      "status": "merged",
-      "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5"
-    },
-    {
-      "pr": 184,
-      "kind": "implementation",
-      "workItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
-      "status": "complete-for-controller-review",
-      "mergeSha": null
-    }
+    { "pr": 178, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT", "status": "merged-archived", "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77" },
+    { "pr": 179, "kind": "implementation", "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "status": "merged", "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
+    { "pr": 180, "kind": "implementation", "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "status": "merged", "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
+    { "pr": 181, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "status": "merged", "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" },
+    { "pr": 182, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-2", "status": "merged-archived-for-closure", "mergeSha": "b09887489db7754f0c0b2672649db9283b879732" },
+    { "pr": 183, "kind": "implementation", "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH", "status": "merged", "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5" },
+    { "pr": 184, "kind": "implementation", "workItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK", "status": "merged", "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0" },
+    { "pr": 185, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH", "status": "active-closure-staged", "mergeSha": null }
   ],
   "next": {
     "pr": null,
-    "kind": "implementation",
-    "workItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
+    "kind": "audit",
+    "workItem": null,
     "implementationAuthorized": false,
-    "prerequisite": "controller-approved merge of PR #184, then resolve fresh main",
-    "instruction": "Do not merge #184 and do not create or start PR3. Stop after #184 is Ready."
+    "prerequisite": "controller-approved merge of PR #185, then resolve fresh main and create a fresh docs-only Audit",
+    "instruction": "No PR4 exists. Do not start any successor implementation from this batch."
   }
 }
