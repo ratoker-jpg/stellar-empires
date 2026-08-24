@@ -11,17 +11,17 @@
 **Implementation authorized:** false  
 **Critical UNKNOWNs resolved:** true
 
-This is a fresh product Audit after merged PR #185. It does not reuse Audit #182 as authorization and it implements no gameplay/runtime change. The purpose is to re-scan the current product from actual source/tests/UI and decide whether another implementation batch is justified at all.
+This is a fresh product Audit after merged PR #185. It implements no gameplay/runtime change and does not reuse Audit #182 as successor authorization.
 
 ## 1. Fresh-main reconciliation
 
-Live `main` was independently verified before research:
+Live `main` was independently verified at:
 
 `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6`
 
-That is the controller-approved squash of PR #185 `fix: make combat ranking victories truthful`, with parent `691078ab9ce5b0ab48e7aa69e71fe72322528af0`.
+That is the controller-approved squash of PR #185, with parent `691078ab9ce5b0ab48e7aa69e71fe72322528af0`.
 
-The previous batch is now GitHub-complete:
+Completed chain:
 
 ```text
 Audit #182 → b09887489db7754f0c0b2672649db9283b879732
@@ -30,549 +30,414 @@ PR2 #184  → 691078ab9ce5b0ab48e7aa69e71fe72322528af0
 PR3 #185  → e974c09e7779b4cf3bbc6d0279b8d35f177a29e6
 ```
 
-`POST-1.0-STRATEGIC-FEEDBACK-TRUTH` is COMPLETE. Its accepted Audit is archived at `docs/audits/completed/post-1.0-strategic-feedback-truth.md`. There is no PR4. No successor implementation is authorized by #182.
+`POST-1.0-STRATEGIC-FEEDBACK-TRUTH` is COMPLETE. Archive: `docs/audits/completed/post-1.0-strategic-feedback-truth.md`. There is no PR4.
 
-## 2. Graphify evidence
+## 2. Graphify + direct-source evidence
 
-Repository-pinned Graphify is `graphifyy==0.8.38` from `.graphify-version`, executed by `scripts/graphify-audit.sh code` and the committed project skill under `.agents/skills/graphify/`.
+Repository-pinned Graphify is `graphifyy==0.8.38`, driven by `.graphify-version`, `.agents/skills/graphify/` and `scripts/graphify-audit.sh code`.
 
-The final #185 Graphify run #1402 is valid exact-runtime-tree evidence for this Audit because final PR head `94f6bd0e9b6cb97b37f93e160e724d44699541d7` and squash `main` share tree `150ce0012cf2fb9e607b0dda33b9e7ecc013c92f`.
+The final #185 runtime tree and squash `main` share tree `150ce0012cf2fb9e607b0dda33b9e7ecc013c92f`. Graphify evidence for that tree:
 
-Graphify #1402:
-
-- version: 0.8.38;
-- 464 code files scanned;
+- 464 code files;
 - 3,639 nodes;
 - 12,757 edges;
 - 145 communities;
-- extraction: 100% EXTRACTED, 0% inferred/ambiguous nodes;
-- three inferred edges, average confidence 0.8;
-- exit code 0.
+- 100% extraction.
 
-Dominant hubs:
-
-1. `GameState` — 328 edges;
-2. `createInitialGameState()` — 240;
-3. `executeCommand()` — 164;
-4. `getFactionMechanicalRoles()` — 130;
-5. `GameCommand` — 95;
-6. `getUnitDefinition()` — 94;
-7. `ResourceCost` — 80;
-8. `FleetState` — 78;
-9. `PlanetState` — 76;
-10. `FactionId` — 73.
-
-Relevant graph flows confirmed against source:
+Key verified flows:
 
 ```text
 bootstrap()
 → createFreshGame()
 → selectNewGameCampaign()
 → createInitialGameState()
-→ normalizeSeed()
-→ createUniverseModel() / neutral forces / space objects
+→ seed
+→ universe / neutral forces / space objects / world-event selection
 ```
 
 ```text
-AUTOSAVE_SLOT_ID
-→ loadAutosave() / campaignBootstrap
-→ SaveManager recovery snapshot
-→ save-manager UI
+application transitions / campaign clock / page lifecycle
+→ AutoSaveController.request()/stage()/flush()
+→ autosave.snapshot + autosave
+→ loadAutosave() recovery
 ```
 
 ```text
-getCommandCombatEffects()
-→ normal attack
-→ Arena
-→ Solar War
+VITE_E2E=1
+→ E2E_RUNTIME_ENABLED=true
+→ createFreshGame() fixed E2E selection
+→ interactive new-game picker currently bypassed
 ```
 
-```text
-createUnifiedMissionReports()
-→ ranking
-→ reports workspace / legacy report panel
-→ HUD / summaries / PvE-vs-PvP comparison
-```
-
-```text
-getPlanetSpecializationEffects()
-→ economy
-→ building timing
-→ unit production timing
-```
-
-Graphify also confirms `BotDifficulty` currently has no strategy consumer beyond its declaration/profile containment, while personality policy has live consumers. This is recorded below as a low-value seam rather than promoted into a feature by default.
-
-Graphify is only an accelerator; every selected high-priority finding below is confirmed by direct source/tests.
+Graphify is an accelerator only. The selected findings and controller blockers below were verified directly in current source.
 
 ## 3. Fresh product sweep
 
-Classification vocabulary: `VERIFIED`, `INFERRED`, `UNKNOWN`, `DECISION`, `DISPROVED`.
-
-| Domain | Classification | Fresh current-main finding |
+| Domain | Classification | Current-main finding |
 |---|---|---|
-| economy / resources / storage | VERIFIED | Production, energy/stability, storage, specialization, market and endgame storage planning have real runtime/test consumers. No new blocker found. |
-| research | VERIFIED / DISPROVED | Registered research definitions, requirements and queues remain covered; the old UI/runtime definition-drift hypothesis is not a current gap. |
-| buildings / production | VERIFIED / DISPROVED | Real construction and ship/defense production paths are live; reserve build-slot presentation is not a fake multi-queue promise. |
-| fleets / missions | VERIFIED | Creation, send/return, transport, scout, attack, recycle, colonize and special mission lifecycles remain wired and tested. |
-| combat / PvP | VERIFIED / DISPROVED | Full stable combat identity, stable defender doctrine, tactical effects and combat-only ranking semantics are current. No new correctness exception found. |
-| PvE / Arena / expeditions / pirates / space objects | VERIFIED / DISPROVED | Arena is in canonical reports, its stable identity is persisted, and existing PvE loops have real outcomes/recovery. No reopened #182 gap. |
-| intelligence | VERIFIED | Levelled observation, freshness, counter-intelligence and presentation consumers remain live. |
-| logistics / routes | VERIFIED | Recurring deterministic routes, reserves, priorities and receipts remain real consumers. |
-| colonization | VERIFIED | Ordinary colonization, races/capacity and post-destruction recovery paths remain covered. |
-| commanders / doctrine / flagship | VERIFIED | Command doctrine, Admiral level, flagship and Commander Ship effects are real combat inputs and now historical report feedback is persisted. |
-| ranking / reports | VERIFIED / DISPROVED | Ranking consumes canonical combat truth and reports include Arena/tactical context. The generic-success inflation gap is closed. |
-| world events | VERIFIED | Deterministic scheduled world events and harvest/control space objects provide dynamic pressure. Absence of physical trajectories remains research, not a correctness bug. |
-| bots | VERIFIED + RESEARCH | Personality risk/development/outcome recovery has consumers; `difficulty` is currently dead metadata, but no player-facing difficulty promise makes it a priority correctness gap. |
-| factions | VERIFIED | Three mechanically separate factions, catalogs, assets and bounded terminal matrix remain covered. |
-| endgame | VERIFIED / DISPROVED | Organic Fresh Game → Terminal, Organic Obelisk, Solar War, terminal freeze/save/load and bounded faction terminal matrix are permanent green gates. |
-| save/load / determinism | VERIFIED | schema v19/save v6 normalization, autosave/recovery/manual slots and partition determinism remain active. |
-| replayability / browser UX | VERIFIED GAP | A finished/current autosaved campaign has no in-app path to start a fresh campaign, and every real fresh game uses the same hard-coded seed source. |
-| advertised mechanics | VERIFIED seam / DECISION | Bank still produces `bankCreditEfficiencyPercent` without a credit consumer; current tests intentionally evidence-gate it. No credit system is justified. |
+| economy / research / production | VERIFIED | Existing producer→consumer paths remain wired; no new blocker found. |
+| fleets / combat / PvE / Arena | VERIFIED / DISPROVED stale gaps | Stable combat identity, Arena canonical reports, tactical snapshots and combat-only ranking remain closed. |
+| intelligence / logistics / colonization | VERIFIED | Existing deterministic runtime and UI consumers remain live. |
+| bots | VERIFIED + RESEARCH | Personality/risk/outcome recovery has consumers; `difficulty` remains internal dead metadata without a current player-facing contract. |
+| endgame | VERIFIED | Organic Obelisk, Fresh Game → Terminal, terminal freeze/save-load and bounded faction matrix remain permanent gates. |
+| save/load | VERIFIED + VERIFIED GAP | Autosave/recovery/manual slots work, but safe destructive replacement of the active campaign is not exposed and requires writer quiescence before reserved-slot deletion. |
+| replayability / browser UX | VERIFIED GAP | Real fresh games reuse one hard-coded seed source; current E2E harness also bypasses the interactive picker that the lifecycle Browser acceptance must exercise. |
+| advertised mechanics | VERIFIED seam / DECISION | Bank credit-efficiency remains evidence-gated; no credit system is authorized. |
 
 ## 4. Strongest VERIFIED gap — replayable campaign lifecycle
 
-The Audit found one high-value current problem with two inseparable symptoms.
+### 4.1 Hard-coded real-browser seed
 
-### 4.1 Fresh campaigns all use one hard-coded seed
-
-Real browser bootstrap in `src/main.ts#createFreshGame()` calls:
+`src/main.ts#createFreshGame()` currently calls:
 
 ```text
 createInitialGameState('stellar-empires-m1', ...)
 ```
 
-for every non-E2E fresh campaign. The player can choose faction, world topology and speed, but there is no campaign seed input or reroll in `src/ui/newGameFactionPicker.ts`.
-
-This is not cosmetic. `createInitialGameState()` normalizes the seed and passes it into:
-
-- `createUniverseModel()`;
-- `createInitialNeutralForces()`;
-- `createInitialSpaceObjects()`.
-
-Universe generation then derives galaxy/system/planet occupancy, placement, star classes, biome and size from the seed. World-event evaluation also hashes `state.seed` when choosing event definitions/targets. Existing bootstrap tests explicitly prove same seed source gives identical initial state and different seed sources give different numeric seeds.
-
-Therefore identical topology/faction settings repeatedly create the same generated strategic world rather than a fresh campaign variation.
+for normal fresh campaigns. The seed drives generated universe, neutral forces, space objects and deterministic world-event choice. Same seed source reproduces the same initial state; different seed sources produce different numeric seeds.
 
 **Classification:** VERIFIED replayability gap.
 
-### 4.2 There is no normal in-app “start another campaign” path
+### 4.2 No normal second-campaign lifecycle
 
-Terminal behavior is intentionally final: `terminalFreezeSystems.test.ts` proves events, logistics, world events and bot decisions remain inert forever after terminal.
+Bootstrap restores `autosave`, or `autosave.snapshot` if needed, before it reaches fresh-game selection. Both reserved slots are protected from deletion in the current UI. Terminal campaigns intentionally freeze.
 
-But the browser lifecycle does not expose a replacement/new-campaign action after the first autosave exists:
+A player therefore has no normal in-app route to replace the current local campaign and reach the normal new-game picker while preserving manual slots.
 
-- bootstrap restores a valid primary autosave or its recovery snapshot before it considers `createFreshGame()`;
-- `loadAutosave()` deliberately recovers from `autosave.snapshot` when primary is absent/invalid;
-- `src/ui/saveManager.ts` treats both reserved autosave slots as non-deletable in the UI;
-- save UI offers manual save/load/import/export/delete but no new-campaign action;
-- `src/ui/systemWorkspace.ts` only exposes Saves and presentation Settings.
+**Classification:** VERIFIED lifecycle gap.
 
-The storage layer already has safe delete primitives. The missing piece is a player-facing lifecycle, not a new persistence subsystem.
+### 4.3 Controller blocker — autosave resurrection race
 
-**Classification:** VERIFIED browser UX/replayability gap.
+Controller direct-source inspection identified a persistence race that the first Audit draft did not bind strongly enough.
 
-### 4.3 Why these are one work item
+`src/main.ts` installs:
 
-A restart button alone would repeatedly recreate the same world seed. Seed variation alone would be unreachable after the first autosave/terminal without clearing browser storage externally. Together they form one player-visible contract:
+- `pagehide → flushAutosave()`;
+- `visibilitychange(hidden) → flushAutosave()`.
 
-> A player can deliberately end/replace the current local campaign and create a new, independently seeded but fully reproducible campaign using normal in-game UI.
+`flushAutosave()` requests the current campaign and flushes it. `GameApplicationController` transitions and `CampaignClockController` checkpoints can also stage/request autosave. `AutoSaveController` can have a delayed timer, pending save, active write and write chain.
 
-This flows through one bootstrap/persistence/UI boundary and one Browser acceptance story.
+Therefore this sequence is unsafe:
 
-## 5. Lower-priority VERIFIED / research seams
+```text
+delete autosave.snapshot
+→ delete autosave
+→ reload
+```
 
-### Bank / credit efficiency
+because reload/pagehide can re-write the old campaign after deletion.
 
-`completeBuildingCatalog.ts` still gives the Bank `bankCreditEfficiencyPercent: 5`; `buildingOperations.ts` aggregates it. No current credit/loan runtime consumer exists. `advertisedEffectTruth.test.ts` intentionally says this Bank effect is evidence-gated and must remain untouched unless evidence justifies semantics.
+**Classification:** VERIFIED persistence/lifecycle blocker. Resolved by the binding reset-authority contract in section 9.
 
-The thematic names (`Кредитная цитадель`, `Финансовый нексус`, `Шпиль дани`) do not establish a formula or a player promise for a credit subsystem.
+### 4.4 Controller blocker — current Browser harness bypasses new-game dialog
 
-**Classification:** VERIFIED producer-without-consumer seam.  
-**Decision:** REJECT a speculative Bank/credit implementation batch. Do not guess a formula.
+`playwright.config.ts` starts the app with:
 
-### Bot `difficulty`
+```text
+VITE_E2E=1 npm run dev ...
+```
 
-`BotProfile` carries `difficulty`; current fixed profiles use `normal/hard/normal`. Graphify finds no policy consumer for `BotDifficulty`. Personality, cadence, command budget and tactical risk do have real consumers.
+so `E2E_RUNTIME_ENABLED` is always true in the Browser suite. Current `createFreshGame()` uses the fixed E2E selection whenever that flag is true and does not call `selectNewGameCampaign()`.
 
-**Classification:** VERIFIED dead/internal metadata, not a player-facing broken promise.  
-**Decision:** do not spend a product batch on it. If a future Audit exposes selectable difficulty, define semantics then; otherwise cleanup may be considered only when naturally adjacent.
+Therefore an acceptance test that claims:
 
-### Further bot differentiation
+```text
+reset → normal new-game dialog → enter seed → start
+```
 
-Personality-specific first-combat development, 700/800/900 attack risk and recent-outcome recovery remain real. Later compressed closure ordering is intentionally shared.
+is unreachable under the current Browser harness unless a narrow deterministic E2E seam is added.
 
-**Classification:** VERIFIED depth opportunity, not correctness.  
-**Decision:** RESEARCH after replay lifecycle; preserve Organic Terminal guarantees.
+**Classification:** VERIFIED Browser-acceptance blocker. Resolved by the binding E2E contract in section 9.
 
-### Achievements / meta progression
+## 5. Lower-priority findings
 
-No achievement runtime graph exists. Stellar already has faction choice, command/Admiral progression, PvE reputation, Solar War score and local ranking.
+- Bank / credit efficiency: producer exists, authoritative credit semantics do not. **REJECT direct implementation**.
+- `BotDifficulty`: dead/internal metadata, no current player promise. **RESEARCH / no standalone PR**.
+- achievements/meta progression: **RESEARCH**.
+- moving-object trajectories: **RESEARCH**.
+- further bot differentiation: **RESEARCH**.
 
-**Classification:** absence VERIFIED; need/value still UNKNOWN.  
-**Decision:** RESEARCH, not implementation.
-
-### Moving-object trajectories
-
-Space objects have position, yield, hazard, control and cooldown; there is no trajectory/velocity lifecycle. The world is nevertheless dynamic through scheduled events and target recovery.
-
-**Classification:** absence VERIFIED; player-value/reference semantics UNKNOWN.  
-**Decision:** RESEARCH. Heavy persistence/targeting/UI coupling makes it inappropriate while a smaller verified replayability gap exists.
+Nemexia remains reference, never specification. Replayable campaign lifecycle is `KEEP_STELLAR`; achievements/trajectories remain `RESEARCH`; direct Bank/credit formula port is `REJECT`.
 
 ## 6. DISPROVED stale gaps
 
-Fresh main does not support reopening the following without new evidence:
+Do not reopen without new evidence:
 
-1. Organic Fresh Game → Terminal is blocked — **DISPROVED** by permanent organic terminal gates.
-2. Organic Obelisk requires injected state — **DISPROVED**.
-3. terminal save/load/partition determinism is unproven — **DISPROVED**.
-4. faction terminal closure is Aegis-only — **DISPROVED** by bounded faction matrix.
-5. normal combat seed uses only fleet-ID length — **DISPROVED**.
-6. Arena still uses length-only fleet identity for new entries — **DISPROVED** by PR #183 persisted resolution seed path.
-7. Arena is missing from unified reports — **DISPROVED** by PR #184 canonical Arena synthesis.
-8. tactical choices have no historical combat feedback — **DISPROVED** by PR #184 immutable tactical snapshots/report consumers.
-9. ranking `Победы` counts generic successful operations — **DISPROVED** by PR #185 canonical combat-only classification.
-10. bots cannot do legal PvP — **DISPROVED** by intelligence-gated fleet planner/reducer path.
-11. bot personalities are only labels — **DISPROVED** by live strategy/risk/outcome consumers.
-12. research UI/runtime requirement paths drift — **DISPROVED**.
-13. planet UI promises several active building queues — **DISPROVED**; reserve slots remain visibly locked.
-14. the world is wholly static — **DISPROVED** by scheduled world events plus space-object depletion/control/recovery.
-15. broad advertised-effect ghosts remain — **DISPROVED** for Scrapyard/Trade Center/Ecology; Bank is the explicit evidence-gated exception, not authorization for a credit system.
+- Organic Fresh Game → Terminal blocked;
+- Organic Obelisk unavailable;
+- terminal save/load/partition determinism missing;
+- faction terminal closure Aegis-only;
+- normal/Arena stable combat identity missing;
+- Arena absent from unified reports;
+- immutable tactical combat feedback missing;
+- ranking generic-success inflation;
+- bots unable to perform legal PvP;
+- bot personalities having no runtime effect;
+- research UI/runtime requirement drift;
+- fake multiple construction queues;
+- wholly static world;
+- broad Scrapyard/Trade Center/Ecology advertised-effect ghosts.
 
-## 7. Nemexia-reference classification
+## 7. DECISION — one implementation PR
 
-Nemexia remains reference, never specification.
-
-| Candidate | Classification | Fresh decision |
-|---|---|---|
-| replayable campaign/new-world seed lifecycle | KEEP_STELLAR | This need is proven by Stellar’s own local-campaign lifecycle; no Nemexia formula is required. |
-| achievements / Achievement Points | RESEARCH | Optional replayability/meta layer; current product value is not proven. |
-| Resource/Battle/Total score formulas | RESEARCH / REJECT direct port | Current native ranking is truthful; do not copy unverified reference formulas. |
-| moving objects / trajectories | RESEARCH | Possible world-depth feature, but evidence/value and persistence design are not complete. |
-| Bank / credit mechanics | REJECT | No authoritative formula or current player contract justifies inventing credit gameplay. |
-| existing command doctrine/Admiral/flagship | KEEP_STELLAR | Already real, persisted and observable; no replacement needed. |
-| deterministic world events / Arena / PvE | KEEP_STELLAR | Existing integrated Stellar-native loops remain stronger than copying names. |
-| more bot personality depth | KEEP_STELLAR baseline + RESEARCH expansion | Preserve current policy; expand only after a separate value/evidence Audit. |
-
-## 8. DECISION — next batch exists, exactly one implementation PR
-
-Chosen proposed batch:
+Proposed batch:
 
 `POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE`
 
-Exact implementation count: **1**.
-
-Work item:
+Only work item:
 
 `POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE`
 
-This is smaller than the old administrative defaults because the current acceleration policy requires the minimum coherent review boundary. Splitting it into two PRs is not justified:
+Exact implementation count: **1**.
 
-- “restart current campaign” without seed variation leaves repeat worlds;
-- seed variation without a restart lifecycle remains inaccessible once autosave exists;
-- both use one bootstrap/state-construction/persistence/browser path;
-- both can be regression-tested and reviewed as one bounded change;
-- no intermediate merged state is required by persistence or architecture;
-- one PR remains safely reversible and does not mix an unrelated subsystem.
+One PR is the minimum coherent boundary. Restart without seed variation remains repetitive; seed variation without a reachable restart remains inaccessible. Both use the same bootstrap/persistence/new-game/browser lifecycle and need no schema migration checkpoint.
 
-A zero-PR/no-batch outcome was explicitly considered and rejected because the lack of an in-app second-campaign path is a direct player-facing lifecycle failure, not merely an optional enhancement.
+Implementation remains unauthorized until controller-approved merge of Audit #186.
 
-## 9. Implementation contract — `POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE`
+## 8. Player-facing seed contract
 
-### Purpose / player-visible outcome
+The player-facing campaign seed is an explicit **uint32 numeric seed**.
 
-A player can start another campaign from normal in-game UI—including after terminal—without clearing browser storage externally. Each new real campaign receives a different suggested world seed by default, the seed is visible/editable/reusable, and entering the same seed reproduces the same generated initial world.
+Binding semantics:
 
-### VERIFIED current problem
+- explicit numeric seed becomes existing persisted `GameState.seed` exactly;
+- legacy string seed source remains compatible and continues through existing `normalizeSeed(string)` semantics;
+- real UI generates a fresh uint32 seed **suggestion** before GameState creation;
+- player may reroll the suggestion;
+- same explicit seed + same faction/settings reproduces the same deterministic initial world;
+- different explicit seeds must produce demonstrably different deterministic world evidence;
+- if restart knows the current campaign seed, implementation may guarantee the immediate suggested replacement differs from that current seed;
+- no global-history uniqueness promise is made for a 32-bit space;
+- Web Crypto may be used only for the real-user pre-state suggestion;
+- `Date.now()`, wallclock-derived seed and `Math.random()` are forbidden;
+- unit/Browser tests use explicit fixed seeds only.
 
-- real `createFreshGame()` hard-codes seed source `stellar-empires-m1`;
-- new-game dialog has no seed control;
-- valid autosave or recovery snapshot prevents fresh-game selection;
-- reserved autosave/snapshot cannot be deleted in player UI;
-- terminal state is intentionally frozen forever;
-- `GameState.seed` already exists and is persisted, so this does not need a new save concept.
+Persistence stays schema v19 / save v6 / migration none.
 
-### Expected runtime paths
+## 9. Binding safe-reset authority contract
 
-Primary expected changes:
+### 9.1 Root cause
 
-- `src/main.ts`;
-- `src/simulation/createInitialGameState.ts`;
-- `src/simulation/seed.ts` only if a small numeric-seed validator/helper is needed;
-- `src/ui/newGameFactionPicker.ts`;
-- `src/ui/saveManager.ts`;
-- `src/storage/SaveManager.ts` only for a safe ordered clear helper if implementation benefits from centralizing it.
+Reserved-slot deletion is not sufficient while the old campaign still has a live autosave writer. Page lifecycle, campaign clock or application transitions can stage/request that state again.
+
+### 9.2 Required success ordering
+
+After the player confirms destructive new-campaign reset:
+
+1. **Quiesce the current autosave writer before deleting any reserved save.**
+2. Disable the live autosave bridge/reference, or an equivalent guard, so pagehide, visibilitychange, campaign-clock checkpoints and application transitions cannot enqueue the old state while reset is in progress.
+3. Safely drain any delayed timer, pending save, active write and write chain with error propagation according to actual `AutoSaveController` semantics.
+4. Put the writer into a disposed/inert state before the destructive phase. A main-level coordination seam such as disabling the live `autosave` reference, successfully draining via the existing throwing flush semantics, then `await writer.dispose()` is allowed. The exact implementation may differ, but it must prove equivalent quiescence.
+5. Only after successful quiescence delete `autosave.snapshot`.
+6. Only after snapshot deletion succeeds delete primary `autosave`.
+7. Keep every manual/user-named slot untouched.
+8. Reload/return through the existing bootstrap only after both reserved deletions succeed.
+9. During reload/pagehide/visibilitychange, no callback may be capable of resurrecting the old campaign.
+
+Binding semantic flow:
+
+```text
+confirm
+→ stop new autosave requests from current page
+→ drain + quiesce/dispose writer
+→ delete autosave.snapshot
+→ delete autosave
+→ reload existing bootstrap
+→ loadAutosave() == missing
+→ interactive new-game picker
+```
+
+`src/storage/AutoSaveController.ts` is **read/verify by default**. Do not require changes there if main-level lifecycle coordination proves the contract. A change there is allowed only if a regression demonstrates the existing API cannot safely express the required quiescence.
+
+### 9.3 Failure semantics
+
+The destructive lifecycle must be explicit:
+
+- cancel **before quiesce** → no state changes; current autosave continues normally;
+- autosave quiesce/drain failure → do not delete snapshot or primary; keep/re-enable a working autosave path or reload the current surviving campaign; never silently continue with autosave disabled;
+- snapshot delete failure → primary must remain untouched and recoverable; because the writer is already quiesced, prefer/allow reload of the surviving primary to restore a normal active autosave controller;
+- primary delete failure after snapshot deletion → primary remains the recovery authority; prefer/allow reload of that surviving primary so the page is not left indefinitely with autosave disabled;
+- after any destructive-phase failure, do not leave the current page in a silent disabled-autosave state;
+- no new persistence subsystem is authorized.
+
+## 10. Binding deterministic E2E seam
+
+Existing Browser tests must retain their current deterministic fixture bootstrap.
+
+Add one narrow E2E-only interactive-new-game mode. Accepted semantic shape:
+
+```text
+VITE_E2E=1
++ query flag interactiveNewGame=1
++ explicit fixed uint32 campaignSeed=<value>
+```
+
+Exact parameter spelling may be adjusted, but the semantics are binding:
+
+- `VITE_E2E` remains enabled for the suite;
+- default existing E2E tests still bypass the interactive picker and receive the current deterministic fixture selection;
+- only the focused campaign-lifecycle test opts into interactive new-game mode;
+- in that mode `createFreshGame()` must call the real `selectNewGameCampaign()` path instead of the fixed E2E selection;
+- the focused test supplies/injects an explicit fixed uint32 seed into the picker so it does not depend on Web Crypto;
+- no production-only behavior depends on the E2E seam;
+- the seam may live in `src/runtime/e2eScenario.ts` plus narrow `src/main.ts` query/selection coordination;
+- `playwright.config.ts` remains read/verify unless a regression proves config change is actually required.
+
+This resolves the Browser reachability UNKNOWN now; it must not be deferred into implementation discovery.
+
+## 11. Expected implementation/read-write paths
+
+Primary authorized runtime paths if Audit is later merged:
+
+- `src/main.ts` — reset orchestration, autosave quiescence guard/reference, E2E interactive-picker selection;
+- `src/simulation/createInitialGameState.ts` — narrow explicit numeric-seed path while preserving string-source compatibility;
+- `src/simulation/seed.ts` — only if a uint32 validator/helper is needed;
+- `src/ui/newGameFactionPicker.ts` — visible seed field, reroll and injectable fixed suggestion;
+- `src/ui/saveManager.ts` — confirmed `Новая партия` action and failure presentation;
+- `src/storage/SaveManager.ts` — only if ordered reserved-slot deletion benefits from a narrow helper;
+- `src/runtime/e2eScenario.ts` — E2E-only `interactiveNewGame` + fixed-seed query seam.
 
 Expected tests:
 
 - `tests/simulation/createInitialGameState.test.ts`;
 - `src/ui/newGameFactionPicker.test.ts`;
 - `tests/storage/saveManager.test.ts`;
-- new focused Browser test such as `tests/e2e/campaignLifecycle.spec.ts` (or an equally focused existing E2E file if reuse is cleaner).
+- focused lifecycle/autosave regression covering resurrection;
+- focused Browser test such as `tests/e2e/campaignLifecycle.spec.ts`.
 
-Read/verify only unless a regression proves another necessary change:
+Read/verify unless a failing regression proves a necessary change:
 
-- `src/storage/loadAutosave.ts`;
 - `src/storage/AutoSaveController.ts`;
+- `src/storage/loadAutosave.ts`;
 - `src/runtime/campaignBootstrap.ts`;
-- `src/simulation/universe/model.ts`;
-- `src/simulation/pve/worldEvents.ts`;
-- terminal/endgame runtime.
+- `playwright.config.ts`;
+- universe/world-event/endgame runtime.
 
-### Important functions/types
+No broad persistence rewrite is authorized.
 
-- `createFreshGame()` / `bootstrap()`;
-- `createInitialGameState()`;
-- a new explicit numeric-seed bootstrap helper or overload (implementation may choose the smallest typed form without changing string-seed compatibility);
-- `normalizeSeed()` / seeded generation utilities;
-- `selectNewGameCampaign()` / `NewGameCampaignSelection`;
-- `SaveManager.delete()` and/or one narrow safe campaign-reset helper;
-- `loadAutosave()`;
-- `AUTOSAVE_SLOT_ID`;
-- `AUTOSAVE_SNAPSHOT_SLOT_ID`.
+## 12. Regression-first implementation contract
 
-### DECISION — seed contract
+The implementation PR must start with RED semantic regressions before runtime code changes.
 
-The new player-facing campaign seed is a **uint32 numeric seed** and the exact numeric value becomes `GameState.seed`.
+Required RED coverage:
 
-Reason: `GameState.seed` is already the persisted deterministic authority. Re-hashing a displayed numeric value as text would make a shown seed non-reproducible. Implementation should therefore add the smallest explicit numeric-seed state-construction path while keeping the existing string-source helper for current tests/fixtures/backward compatibility.
+1. current real-browser fresh path resolves to the same hard-coded seed/world;
+2. current UI has no safe second-campaign path after reserved autosave exists;
+3. **autosave resurrection regression:** primary + snapshot + manual slot exist; `AutoSaveController` has pending/current old state; confirmed reset begins; writer is quiesced; snapshot removed; primary removed; simulated pagehide/reload lifecycle occurs; `loadAutosave()` returns `missing`; old campaign is not recreated; manual slot survives;
+4. current `VITE_E2E=1` bootstrap bypasses the interactive picker, proving why the dedicated query seam is needed.
 
-Real browser new-game UI:
+RED failure must be on semantic assertions, not lint/type/fixture noise.
 
-- shows a numeric seed field;
-- pre-fills a suggested uint32 seed;
-- offers an explicit reroll/generate action;
-- allows the player to type/reuse a valid uint32 seed;
-- rejects invalid/out-of-range input before campaign creation.
+## 13. Focused acceptance tests
 
-Suggested seed generation may use Web Crypto (`crypto.getRandomValues`) **only before GameState creation**. It must not use wallclock time and must not introduce nondeterministic simulation behavior. Once selected, the numeric seed is authoritative/persisted and all runtime generation remains deterministic.
+Minimum unit/integration coverage:
 
-E2E/test environments must inject/select an explicit fixed seed rather than rely on Web Crypto so acceptance is reproducible.
+1. explicit uint32 is preserved exactly as `GameState.seed`;
+2. same numeric seed produces identical initial state/world evidence;
+3. different numeric seeds produce different deterministic world evidence;
+4. legacy string seed-source behavior is unchanged;
+5. seed UI accepts uint32 bounds and rejects invalid input;
+6. real-user generator/reroll returns a uint32 and is injectable/stubbable;
+7. quiescence happens before any reserved deletion;
+8. snapshot deletion happens before primary deletion;
+9. quiesce failure deletes neither reserved slot;
+10. snapshot delete failure leaves primary untouched;
+11. primary delete failure leaves primary recoverable;
+12. failed destructive reset does not leave the page silently without autosave;
+13. successful reset leaves `loadAutosave()` missing after simulated pagehide/reload;
+14. manual slots survive every reset path;
+15. existing save/import/export/recovery tests remain green.
 
-### DECISION — new-campaign reset contract
+Browser acceptance must prove the real reachable path under `VITE_E2E=1`:
 
-Starting a new campaign is explicit/destructive for the active autosave and requires confirmation.
+1. start from a persisted running or terminal campaign with primary + recovery state and a manual save;
+2. navigate to `System → Saves`;
+3. cancel `Новая партия` and prove current campaign remains;
+4. confirm reset;
+5. exercise the real reload/pagehide lifecycle and prove old autosave is not resurrected;
+6. reach the **actual new-game dialog** through the explicit interactive E2E seam;
+7. use an explicit fixed uint32 seed supplied by the test, not Web Crypto;
+8. start campaign and prove runtime/visible seed equals that value;
+9. repeat same seed and prove same deterministic world evidence;
+10. use a different fixed seed and prove different deterministic world evidence;
+11. prove the manual save survived.
 
-On confirm:
+Production Pages smoke and the existing Browser suite remain mandatory.
 
-1. preserve all user-named/manual save slots;
-2. remove recovery snapshot first;
-3. only after snapshot removal succeeds, remove primary autosave;
-4. reload/return through the existing bootstrap;
-5. with both reserved slots absent, show the normal new-game dialog;
-6. cancel or any failure leaves a recoverable current campaign.
+## 14. Determinism / persistence / performance
 
-Snapshot-first order is required because deleting primary first while leaving snapshot would make `loadAutosave()` recover the old campaign on reload.
-
-No terminal-only special state path is needed: the action should be available from System/Saves for active and terminal campaigns alike.
-
-### Dependency / data flow
-
-```text
-System → Saves → “Новая партия” → confirmation
-→ clear autosave.snapshot, then autosave
-→ reload existing bootstrap
-→ no recoverable autosave
-→ selectNewGameCampaign(faction/topology/speed/seed)
-→ numeric seed + existing campaign settings
-→ createInitialGameState numeric-seed path
-→ universe + neutral forces + space objects + world-event seed authority
-→ existing autosave/runtime metadata
-```
-
-### Consumers
-
-- browser player new-game flow;
-- System/Saves workspace;
-- universe generation;
-- neutral/PvE initialization;
-- world-event deterministic selection;
-- existing autosave/manual save/export/import flow.
-
-Bots do not need a separate path; they inherit the generated campaign state.
-
-### Persistence / schema / save / migration
-
-**DECISION:** schema v19, save format v6, migration none.
-
-Evidence:
-
-- numeric `GameState.seed` already exists and save validation already requires an integer seed;
-- campaign settings need no new required persisted property;
-- the reset action deletes only current local reserved slots by explicit player request;
-- manual saves and imported legacy/current saves remain unchanged.
-
-Do not bump schema/save merely to expose or vary an already-persisted seed.
-
-### Deterministic constraints
-
-- same explicit numeric seed + same faction/settings => identical initial state/world;
-- distinct numeric seeds must demonstrably vary generated world evidence;
-- no `Date.now()`/wallclock-derived seed;
-- Web Crypto, if used, is only a pre-state seed suggestion and never runtime RNG;
-- existing seeded simulation paths remain unchanged after state creation;
-- manual saves are not touched by new-campaign reset;
-- reset ordering cannot accidentally restore the old snapshot;
-- existing terminal and partition determinism gates remain identical.
-
-### Performance constraints
-
+- schema v19;
+- save format v6;
+- migration none;
+- existing `GameState.seed` remains persisted deterministic authority;
+- no wallclock RNG after or before GameState creation;
+- Web Crypto only suggests a real-user pre-state seed;
+- tests use explicit fixed seeds;
 - no new simulation loop;
-- numeric seed handling is O(1);
-- campaign creation remains existing universe initialization complexity;
-- clearing two reserved save records is bounded;
-- campaign catch-up performance budgets are unchanged.
+- reset touches only two reserved slots and preserves manual saves;
+- Organic Fresh Game → Terminal, Organic Obelisk, terminal save-load/partition determinism, bounded faction matrix and campaign catch-up performance remain mandatory.
 
-### Regression-first strategy
+## 15. Risks / non-goals
 
-The implementation PR must begin with a clean RED regression commit proving both current failures before runtime code changes:
+Primary risks:
 
-1. browser/bootstrap-level test demonstrates two ordinary fresh campaign starts with default current path resolve to the same hard-coded seed / generated world;
-2. save/new-campaign lifecycle test demonstrates that an existing reserved autosave + snapshot has no player-visible action that reaches the fresh-game selector after terminal/current campaign.
+- old campaign resurrection from pagehide/visibility autosave;
+- snapshot recovery if primary is deleted first;
+- silent disabled autosave after failed destructive reset;
+- false seed reproducibility if displayed numeric seed is re-hashed;
+- E2E acceptance that never reaches the real picker;
+- random/flaky Browser seed generation;
+- accidental deletion of manual saves.
 
-The RED must fail on those semantic assertions, not lint/type/fixture noise. Record commit SHA, CI run and failing assertions in the implementation PR body.
+Non-goals:
 
-### Focused unit/integration tests
-
-Minimum deterministic coverage:
-
-1. explicit numeric seed is preserved exactly as `GameState.seed`;
-2. same numeric seed produces identical initial state;
-3. different numeric seeds change deterministic universe evidence;
-4. legacy string seed-source API remains unchanged;
-5. seed UI accepts min/max valid uint32 and rejects invalid values;
-6. reroll/generator returns valid uint32 and can be injected/stubbed in tests;
-7. campaign reset deletes recovery snapshot before primary autosave;
-8. reset preserves manual slots;
-9. failed/cancelled reset keeps a recoverable current campaign;
-10. after successful reset, `loadAutosave()` returns missing rather than recovering old snapshot;
-11. existing save manager/import/export/recovery tests remain green.
-
-### Browser acceptance
-
-Focused Browser acceptance must prove the real player flow:
-
-1. open a running or terminal E2E campaign with persisted autosave/recovery state;
-2. navigate to `System → Saves` and see `Новая партия`;
-3. cancel confirmation and verify current campaign remains;
-4. confirm new campaign and verify the normal new-game dialog is reached rather than snapshot recovery;
-5. select an explicit fixed seed and start;
-6. verify the visible/runtime seed equals the chosen numeric seed;
-7. prove a second explicit seed yields different deterministic world evidence while repeating the first seed reproduces the first evidence;
-8. verify a manual save slot survives the new-campaign reset.
-
-Production Pages smoke and existing full Browser E2E remain mandatory.
-
-### Risks
-
-- deleting primary autosave before snapshot would silently recover the old campaign;
-- a displayed seed that is re-hashed rather than used directly would falsely promise reproducibility;
-- using time as seed would violate deterministic constraints;
-- changing existing string-seed semantics could destabilize hundreds of deterministic fixtures;
-- random E2E seed generation would make Browser acceptance flaky;
-- accidentally deleting manual slots would be data-destructive.
-
-### Non-goals
-
-- no achievements/meta-progression;
-- no global account/profile history;
+- no achievements/meta progression;
+- no global history/seed uniqueness database;
 - no cloud saves;
-- no Bank/credit system;
-- no moving-object trajectories;
-- no combat/economy balance changes;
-- no bot strategy rewrite;
+- no Bank/credit subsystem;
+- no moving trajectories;
+- no combat/economy/bot rebalance;
+- no campaign difficulty system;
 - no schema/save bump;
-- no new campaign difficulty system;
-- no procedural formula redesign beyond choosing the already-supported seed authority.
+- no persistence architecture rewrite.
 
-### Ordered implementation steps
-
-1. regression-first RED for fixed real seed + unreachable fresh-campaign lifecycle;
-2. add the narrow numeric seed construction/validation contract while preserving string-seed fixtures;
-3. expose seed input + deterministic test injection in new-game UI;
-4. add safe confirmed reserved-save reset preserving manual slots;
-5. route successful reset back through existing bootstrap/new-game selector;
-6. show/reuse the authoritative seed in player-facing campaign information;
-7. add focused unit/storage/browser acceptance;
-8. run full CI, pinned Graphify, Browser E2E, production Pages smoke and permanent terminal/performance gates;
-9. close this one-PR batch in the same implementation PR if controller authorizes the Audit.
-
-### Acceptance gate
-
-The one implementation PR is acceptable only when:
-
-- RED evidence is recorded;
-- all focused seed/reset/save/browser tests pass;
-- full asset/lint/typecheck/test/build passes;
-- campaign catch-up performance passes;
-- Organic Obelisk passes;
-- Organic Fresh Game → Terminal passes;
-- terminal save/load + partition determinism passes;
-- bounded organic faction terminal matrix passes;
-- Graphify pinned 0.8.38 passes;
-- Browser E2E passes;
-- production Pages smoke passes;
-- no existing manual save/recovery compatibility regression exists.
-
-### Unresolved questions
+## 16. Critical UNKNOWN closure
 
 ```text
 criticalUnknownsResolved = true
 criticalUnknowns = []
 ```
 
-Non-critical display copy/layout may be refined inside the fixed contract. It may not change the authoritative numeric-seed semantics, deletion order or manual-save preservation.
+Resolved before Audit readiness:
 
-### Verification method
+1. numeric seed authority: explicit uint32 → exact `GameState.seed`; legacy string source remains compatible;
+2. default seed wording: fresh suggestion/reroll, not global uniqueness;
+3. reset authority: autosave writer must be quiesced before snapshot/primary deletion;
+4. reset failure semantics: no reserved deletion on quiesce failure; surviving primary remains recovery authority; no silent disabled-autosave page;
+5. resurrection regression: simulated pagehide/reload must leave `loadAutosave()` missing after success;
+6. Browser reachability: one deterministic `VITE_E2E=1` query mode reaches the real dialog with an explicit fixed seed.
 
-Direct seed/state assertions, save repository state before/after reset, repeated deterministic world construction, Browser flow through System/Saves → new-game dialog, plus the permanent exact-head gate matrix.
+## 17. Audit acceptance gate
 
-## 10. Why no second implementation PR
+Before Audit #186 may be Ready:
 
-A second PR would be administrative decomposition rather than a dependency boundary. No new persisted schema must merge before UI can consume it, and there is no large subsystem replacement. The producer (campaign creation seed), lifecycle boundary (reserved autosave reset), consumer (new-game UI) and Browser acceptance are one bounded path.
-
-One PR is therefore the minimum and the safest review/revert unit.
-
-## 11. Batch-wide invariants
-
-The proposed implementation must preserve:
-
-- schema v19 / save v6;
-- existing old-save migrations and normalization;
-- deterministic seeded simulation after GameState creation;
-- no wallclock RNG/state dependency;
-- ordinary command/reducer authority;
-- intelligence information boundaries;
-- combat/Arena/Solar War formulas and PR1/PR2/PR3 truth contracts;
-- ranking/report deterministic ordering;
-- Organic Fresh Game → Terminal;
-- Organic Obelisk;
-- terminal save/load/partition determinism;
-- bounded faction terminal matrix;
-- campaign catch-up performance;
-- manual save/import/export/recovery behavior;
-- production Browser/Pages baseline.
-
-## 12. Audit acceptance gate
-
-Before Audit PR #186 may be Ready:
-
-- diff remains docs-only;
-- #185 squash/batch closure reconciliation is recorded across control-plane;
-- fresh exact-head normal CI SUCCESS;
+- final diff remains docs/control-plane only;
+- controller blockers above are reflected in Audit and mirrored control-plane docs;
+- fresh exact-head CI SUCCESS after the last docs commit;
 - fresh exact-head Graphify SUCCESS using pinned 0.8.38;
-- Browser E2E and production Pages smoke SUCCESS if triggered;
+- fresh exact-head Browser E2E SUCCESS;
+- production Pages smoke SUCCESS;
 - unresolved review threads = 0;
-- submitted blocking reviews = 0;
+- no blocking submitted reviews/comments;
 - `mergeable=true`;
 - base remains `main`;
 - live `main` remains `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6` unless explicitly reconciled;
 - PR head is stable;
-- PR body contains final evidence;
+- final PR body records controller findings + exact-head evidence;
 - PR is Ready (`draft=false`) and not merged.
 
-Audit merge, if controller-approved later, authorizes only `POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE`. It does not authorize a second PR, PR4 from the old batch, or any research-only feature.
+If controller later merges this Audit, it authorizes only `POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE` under this fixed contract.
 
-## 13. Stop boundary
+## 18. Stop boundary
 
-After Audit #186 is Ready: **STOP for controller review. Do not merge the Audit. Do not create the implementation branch. Do not start PR1.**
+After Audit #186 is Ready: **STOP for controller review. Do not merge #186. Do not create the implementation branch. Do not start PR1.**
