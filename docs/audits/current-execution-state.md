@@ -1,7 +1,7 @@
 # Current execution state
 
-**State:** Audit #186 controller blockers resolved / fresh exact-head gates required before Ready  
-**Updated:** 2026-08-24  
+**State:** Audit #186 post-Ready P1 resolved in docs / fresh exact-head gates required before Ready  
+**Updated:** 2026-08-25  
 **Active Audit:** #186 `docs: audit next post-1.0 product batch`  
 **Audit work item:** `POST-1.0-NEXT-PRODUCT-3`  
 **Branch:** `audit/post-1.0-next-product-3`  
@@ -32,45 +32,70 @@ Exactly one proposed implementation item:
 
 Implementation remains unauthorized until controller-approved Audit merge.
 
-Strongest verified product gap remains one replay/new-campaign lifecycle:
+Strongest verified product problem is now broader and more precise: **campaign switching lifecycle is unsafe/incomplete**.
 
-1. real browser fresh-game bootstrap hard-codes one seed source even though seed drives generated world/PvE variation;
-2. after reserved autosave/recovery exists, player UI cannot safely reach another campaign while preserving manual slots.
+1. ordinary fresh-game bootstrap hard-codes one seed source even though seed drives generated world/PvE variation;
+2. there is no safe new-campaign replacement flow after reserved autosave/recovery exists;
+3. current manual-slot activation writes selected B into primary autosave and reloads while the old page can still pagehide-flush in-memory A over B.
 
-## Controller findings resolved in Audit contract
+These remain one coherent persistence/bootstrap/browser lifecycle and one implementation PR.
 
-### Autosave resurrection race
+## Binding common campaign-switch authority
 
-Current `main.ts` has `pagehide` and hidden `visibilitychange` autosave flushes; application transitions and campaign-clock checkpoints also stage/request saves. `AutoSaveController` can own a timer, pending save, active write and write chain.
+Any switch away from current in-memory campaign A must obey:
 
-Binding safe reset is now:
+```text
+validate target/intent
+→ block new old-page autosave requests
+→ drain pending/active autosave work with failure propagation
+→ dispose/quiesce old AutoSaveController
+→ perform authoritative persistence switch
+→ reload through existing bootstrap
+```
+
+After quiescence, pagehide, hidden visibilitychange, campaign clock and application transitions must not be able to write A again.
+
+### New campaign reset
 
 ```text
 confirm
-→ disable new writes from current page
-→ drain + quiesce/dispose autosave writer
+→ quiesce A writer
 → delete autosave.snapshot
 → delete autosave
-→ reload existing bootstrap
+→ reload
+→ loadAutosave() == missing
 ```
 
-Manual saves remain untouched.
+Manual/user-named saves remain untouched.
 
-Failure semantics are fixed:
+### Manual slot activation
 
-- cancel before quiesce changes nothing;
-- quiesce failure deletes neither reserved slot and must not leave autosave silently disabled;
-- snapshot delete failure leaves primary untouched;
-- primary delete failure leaves primary as recovery authority;
-- after destructive-phase failure, reload of the surviving primary is allowed/preferred to rebuild a normal autosave controller.
+Current direct-source recovery semantics prefer valid primary and only use snapshot when primary is missing/invalid. To prevent stale A from remaining recovery authority after selecting manual B, the Audit fixes snapshot handling as:
 
-Implementation must include a pagehide/reload resurrection regression proving successful reset leaves `loadAutosave()` missing and the old campaign does not reappear.
+```text
+validate/load manual B
+→ quiesce A writer
+→ delete stale autosave.snapshot(A)
+→ write B state + B runtimeMetadata to primary autosave
+→ reload
+→ loadAutosave() resolves primary B
+```
 
-### E2E new-game reachability
+Manual source slot B remains preserved. Immediate recreation of a B snapshot is not required; if implementation creates one immediately, it may contain only B.
 
-`playwright.config.ts` runs the Browser suite with `VITE_E2E=1`, while current `createFreshGame()` bypasses `selectNewGameCampaign()` whenever E2E runtime is enabled.
+Failure semantics:
 
-The fixed contract authorizes a narrow deterministic E2E-only seam, semantically:
+- validation failure → no switch;
+- quiesce failure → mutate no persistence; A remains authoritative;
+- stale-snapshot delete failure → do not overwrite primary A;
+- primary B write failure after snapshot deletion → do not reload into ambiguity; surviving committed primary A remains authority and reload A is preferred to restore a normal autosave controller;
+- no failure path may leave autosave silently disabled indefinitely.
+
+Implementation must include storage/unit regression proving A cannot overwrite B on simulated pagehide/reload and `loadAutosave()` resolves B while manual B remains present.
+
+## Deterministic Browser seam
+
+Browser suite still runs with `VITE_E2E=1`, while current E2E bootstrap bypasses `selectNewGameCampaign()`. The fixed contract retains the narrow deterministic test-only seam:
 
 ```text
 VITE_E2E=1
@@ -78,20 +103,43 @@ VITE_E2E=1
 + explicit campaignSeed=<uint32>
 ```
 
-Default Browser fixtures remain unchanged. Only the focused lifecycle test opts into the real interactive picker. The test supplies a fixed seed and never depends on Web Crypto.
+Existing Browser fixtures remain unchanged; only lifecycle acceptance reaches the real picker. Fixed Browser seeds never depend on Web Crypto.
 
-`src/runtime/e2eScenario.ts` is now an authorized implementation path for this seam; `playwright.config.ts` remains read/verify unless a regression proves a config change necessary.
+Focused Browser acceptance must cover both campaign switches:
+
+- new-campaign reset survives real reload without resurrection and reaches the actual dialog;
+- manual B activation after distinguishable current A reloads into B, never A, with stale snapshot unable to recover A and manual B still present.
 
 ## Seed/persistence contract
 
 - player-facing seed is uint32;
 - explicit numeric seed becomes exact persisted `GameState.seed`;
-- legacy string seed source retains existing `normalizeSeed(string)` behavior;
-- real UI may generate/reroll a fresh uint32 suggestion using Web Crypto before state creation;
+- legacy string seed source keeps existing `normalizeSeed(string)` behavior;
+- real UI may generate/reroll a fresh uint32 suggestion with Web Crypto before state creation;
 - no global uniqueness promise;
 - no `Date.now()`, wallclock seed or `Math.random()`;
 - Browser/unit tests use explicit fixed seeds;
 - schema v19 / save v6 / migration none.
+
+## Authorized implementation paths after Audit merge only
+
+Primary read/write:
+
+- `src/main.ts`;
+- `src/ui/saveManager.ts`;
+- `src/storage/SaveManager.ts`;
+- `src/simulation/createInitialGameState.ts`;
+- `src/simulation/seed.ts` only if narrow uint32 helper is needed;
+- `src/ui/newGameFactionPicker.ts`;
+- `src/runtime/e2eScenario.ts`.
+
+Read/verify unless direct regression proves a necessary minimal change:
+
+- `src/storage/AutoSaveController.ts`;
+- `src/storage/loadAutosave.ts`;
+- `src/runtime/campaignBootstrap.ts`;
+- `src/storage/IndexedDbSaveRepository.ts`;
+- `playwright.config.ts`.
 
 Critical UNKNOWN state:
 
@@ -102,10 +150,10 @@ criticalUnknowns = []
 
 ## Current safety boundary
 
-Audit #186 remains docs-only. No `src/`, `tests/`, package/workflow or runtime dependency change is allowed in this PR. No implementation branch exists.
+Audit #186 remains docs-only. No `src/`, `tests/`, package/workflow or runtime dependency changes are allowed in this PR. No implementation branch exists.
 
 ## Next action
 
-After the final docs/control-plane commit, require new exact-head CI + pinned Graphify + Browser E2E + production Pages smoke. Then check threads/reviews/comments, mergeability, stable head and live main; finalize PR body; mark #186 Ready; re-check the same exact head; STOP.
+After final docs/control-plane commit: fresh exact-head CI + pinned Graphify + Browser E2E + production Pages smoke; reply to and resolve the manual-activation P1 thread only after binding docs contain quiescence/snapshot/regression coverage; check reviews/comments, mergeability, stable head and live main; finalize PR body; mark #186 Ready; post-Ready recheck; STOP.
 
 **Do not merge #186. Do not create the implementation branch. Do not start PR1.**
