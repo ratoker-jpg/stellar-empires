@@ -288,6 +288,11 @@ describe('POST-1.0-PR2 combat identity and defender doctrine regressions', () =>
       stateWithBattleReport(resolved.state, legacyReport),
       SAVE_TIME,
     )));
+    const stateOnlyProbe = parseSaveJson(serializeSave(createSaveEnvelope(
+      'combat-tactical-snapshot-state-only-probe',
+      resolved.state,
+      SAVE_TIME,
+    )));
     if (!parsed.ok) {
       throw new Error(`parseSaveJson diagnostic: ${JSON.stringify({
         current: {
@@ -302,6 +307,14 @@ describe('POST-1.0-PR2 combat identity and defender doctrine regressions', () =>
               code: legacyProbe.code,
               message: legacyProbe.message,
               details: legacyProbe.details,
+            },
+        stateOnly: stateOnlyProbe.ok
+          ? { ok: true, formatVersion: stateOnlyProbe.value.formatVersion }
+          : {
+              ok: false,
+              code: stateOnlyProbe.code,
+              message: stateOnlyProbe.message,
+              details: stateOnlyProbe.details,
             },
       })}`);
     }
