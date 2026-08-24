@@ -458,7 +458,7 @@ export function resolveAttackMission(
     defensesRecovered,
     debrisCreated,
     plunderedCargo,
-    demolition: demolition.report,
+    ...(demolition.report === undefined ? {} : { demolition: demolition.report }),
     destruction,
     mode: isPve ? 'pve' : 'pvp',
     threatMultiplierPermille,
