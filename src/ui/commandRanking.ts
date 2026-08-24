@@ -1,6 +1,9 @@
 import { FACTION_SHOWCASES } from '../assets/factionShowcase';
 import type { FactionId } from '../simulation/planet/types';
-import { createUnifiedMissionReports } from '../simulation/reports/missionReports';
+import {
+  createUnifiedMissionReports,
+  type UnifiedMissionReport,
+} from '../simulation/reports/missionReports';
 import type { GameState } from '../simulation/types';
 
 export interface EmpireRankingEntry {
@@ -32,15 +35,27 @@ function getFactionId(state: GameState, empireId: string): FactionId {
   return state.planets.find((planet) => planet.ownerEmpireId === empireId)?.factionId ?? 'aegis';
 }
 
-function countVictories(state: GameState, empireId: string): number {
-  return createUnifiedMissionReports(state).filter((report) => {
-    if (report.primaryEmpireId === empireId && report.outcome === 'success') return true;
+function isCombatVictory(report: UnifiedMissionReport, empireId: string): boolean {
+  if (report.kind === 'battle') {
     return (
-      report.kind === 'battle' &&
-      report.secondaryEmpireId === empireId &&
-      report.outcome === 'failure'
+      (report.primaryEmpireId === empireId && report.outcome === 'success') ||
+      (report.secondaryEmpireId === empireId && report.outcome === 'failure')
     );
-  }).length;
+  }
+  return report.kind === 'solar-war' &&
+    report.primaryEmpireId === empireId &&
+    report.outcome === 'success';
+}
+
+function countVictories(state: GameState, empireId: string): number {
+  const seenReportIds = new Set<string>();
+  let victories = 0;
+  for (const report of createUnifiedMissionReports(state)) {
+    if (seenReportIds.has(report.id)) continue;
+    seenReportIds.add(report.id);
+    if (isCombatVictory(report, empireId)) victories += 1;
+  }
+  return victories;
 }
 
 function createRawEntry(state: GameState, empireId: string): Omit<EmpireRankingEntry, 'rank'> {

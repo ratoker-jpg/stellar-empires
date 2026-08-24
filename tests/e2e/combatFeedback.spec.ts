@@ -50,3 +50,21 @@ test('legacy combat context renders safely without reconstructing current doctri
   await expect(tactical).not.toContainText('Доктрина:');
   await expect(tactical).not.toContainText('Флагман:');
 });
+
+test('ranking labels victories as combat-only and includes canonical combat history', async ({ page }) => {
+  await page.goto('/?e2e=1#/ranking');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/ranking$/);
+
+  const combatVictoryStat = page
+    .locator('#ranking-profile-view .command-profile-stats > div')
+    .filter({ hasText: 'Боевые победы' });
+  await expect(combatVictoryStat).toHaveCount(1);
+  await expect(combatVictoryStat.locator('span')).toHaveText('Боевые победы');
+  await expect(combatVictoryStat.locator('strong')).toHaveText('2');
+
+  const playerRow = page.locator('#ranking-list-view .command-ranking-entry.is-player');
+  await expect(playerRow).toBeVisible();
+  await expect(playerRow).toContainText('2 боев. побед');
+  await expect(page.locator('#ranking-view')).not.toContainText('Победы');
+});
