@@ -134,8 +134,8 @@ function arenaResult(
   outcome: ArenaResult['outcome'] = 'victory',
 ): ArenaResult {
   return {
-    id: 'arena-result-unified-regression',
-    entryId: 'arena-entry-unified-regression',
+    id: `arena-result-${outcome}`,
+    entryId: `arena-entry-${outcome}`,
     challengeId: 'arena-4-1',
     empireId: 'player',
     fleetId: 'arena-report-fleet',
@@ -157,8 +157,18 @@ function arenaResult(
     enemyRemaining: {
       'ship.synod.fighter': 2,
     },
-    rewardGranted: { metal: 4_000, crystal: 2_000, gas: 700 },
-    reputationAward: 20,
+    rewardGranted: outcome === 'victory'
+      ? { metal: 4_000, crystal: 2_000, gas: 700 }
+      : { metal: 0, crystal: 0, gas: 0 },
+    reputationAward: outcome === 'victory' ? 20 : 0,
+    tacticalSnapshot: {
+      doctrineId: 'vanguard',
+      commandLevel: 5,
+      isFlagship: true,
+      formation: 'wedge',
+      targetPriority: 'capitals',
+      commanderId: 'commander.shared.executor',
+    },
   };
 }
 
@@ -259,7 +269,7 @@ describe('PvE balance policy', () => {
 });
 
 describe('unified mission reports', () => {
-  it('requires persisted Arena history to appear exactly once as PvE combat', () => {
+  it('includes persisted Arena victory exactly once as battle/PvE with one reward and loss contribution', () => {
     const base = createInitialGameState('arena-unified-report-regression');
     const result = arenaResult(4_500);
     const state: GameState = {
@@ -270,16 +280,80 @@ describe('unified mission reports', () => {
       },
     };
 
-    const arenaReports = createUnifiedMissionReports(state).filter(
-      (report) => report.id === result.id,
-    );
+    const allReports = createUnifiedMissionReports(state);
+    const arenaReports = allReports.filter((report) => report.id === result.id);
     expect(arenaReports).toHaveLength(1);
     expect(arenaReports[0]).toMatchObject({
       kind: 'battle',
       mode: 'pve',
       primaryEmpireId: 'player',
+      secondaryEmpireId: null,
       outcome: 'success',
+      reward: { metal: 4_000, crystal: 2_000, gas: 700, exoticMatter: 0 },
+      primaryLosses: {
+        'ship.aegis.fighter': 3,
+        'ship.aegis.frigate': 1,
+      },
+      secondaryLosses: {
+        'ship.synod.fighter': 6,
+        'ship.synod.frigate': 3,
+      },
+      tacticalContext: { primary: result.tacticalSnapshot },
     });
+
+    expect(summarizeMissionReports(allReports)).toEqual({
+      total: 1,
+      pve: 1,
+      pvp: 0,
+      system: 0,
+      successes: 1,
+      rewards: { metal: 4_000, crystal: 2_000, gas: 700, exoticMatter: 0 },
+      losses: 4,
+    });
+    expect(compareEmpirePvePvp(state).find((entry) => entry.empireId === 'player')).toMatchObject({
+      pveOperations: 1,
+      pveSuccesses: 1,
+      reward: { metal: 4_000, crystal: 2_000, gas: 700, exoticMatter: 0 },
+      losses: 4,
+    });
+  });
+
+  it('maps all Arena outcomes without treating draw, defeat or withdrawal as success', () => {
+    const base = createInitialGameState('arena-outcome-mapping');
+    const history = [
+      arenaResult(4_000, 'victory'),
+      arenaResult(3_000, 'draw'),
+      arenaResult(2_000, 'defeat'),
+      arenaResult(1_000, 'withdrawn'),
+    ];
+    const reports = createUnifiedMissionReports({
+      ...base,
+      pveMeta: { ...base.pveMeta!, arenaHistory: history },
+    }).filter((report) => report.title.startsWith('Арена'));
+
+    expect(reports.map((report) => [report.id, report.outcome])).toEqual([
+      ['arena-result-victory', 'success'],
+      ['arena-result-draw', 'draw'],
+      ['arena-result-defeat', 'failure'],
+      ['arena-result-withdrawn', 'failure'],
+    ]);
+    expect(summarizeMissionReports(reports).successes).toBe(1);
+  });
+
+  it('keeps canonical deterministic ordering when Arena and event reports share a timestamp', () => {
+    const base = createInitialGameState('arena-ordering');
+    const result = arenaResult(5_000);
+    const state: GameState = {
+      ...withEventLog(base, [battleEvent(7, 5_000)]),
+      pveMeta: { ...base.pveMeta!, arenaHistory: [result] },
+    };
+    const first = createUnifiedMissionReports(state);
+    const second = createUnifiedMissionReports(state);
+    expect(second).toEqual(first);
+    expect(first.map((report) => report.id)).toEqual([
+      result.id,
+      'battle-7',
+    ]);
   });
 
   it('combines battle, expedition, space-object and world-event histories once', () => {
