@@ -1,3 +1,4 @@
+import type { CommandDoctrineId } from '../command/types';
 import type { ResourceCost } from '../economy/types';
 import type { FactionId } from '../planet/types';
 import type { SpaceCoordinate } from '../space/coordinates';
@@ -7,10 +8,55 @@ import type {
   WeaponType,
 } from './combatProfiles';
 import type { DebrisAmount } from './debris';
-import type { FleetFormation, FleetTargetPriority } from './fleetDoctrine';
+import {
+  isFleetFormation,
+  isFleetTargetPriority,
+  type FleetFormation,
+  type FleetTargetPriority,
+} from './fleetDoctrine';
 
 export type BattleWinner = 'attacker' | 'defender' | 'draw';
 export type BattleMode = 'pve' | 'pvp';
+
+export interface CombatTacticalSnapshot {
+  readonly doctrineId: CommandDoctrineId;
+  readonly commandLevel: number;
+  readonly isFlagship: boolean;
+  readonly formation: FleetFormation;
+  readonly targetPriority: FleetTargetPriority;
+  readonly commanderId: string | null;
+}
+
+function isCommandDoctrineId(value: unknown): value is CommandDoctrineId {
+  return value === 'vanguard' || value === 'sentinel' || value === 'adaptive';
+}
+
+export function normalizeCombatTacticalSnapshot(
+  value: unknown,
+): CombatTacticalSnapshot | undefined {
+  if (typeof value !== 'object' || value === null) return undefined;
+  const snapshot = value as Record<string, unknown>;
+  if (!isCommandDoctrineId(snapshot.doctrineId)) return undefined;
+  if (
+    !Number.isSafeInteger(snapshot.commandLevel) ||
+    (snapshot.commandLevel as number) < 1
+  ) return undefined;
+  if (typeof snapshot.isFlagship !== 'boolean') return undefined;
+  if (!isFleetFormation(snapshot.formation)) return undefined;
+  if (!isFleetTargetPriority(snapshot.targetPriority)) return undefined;
+  if (
+    snapshot.commanderId !== null &&
+    (typeof snapshot.commanderId !== 'string' || snapshot.commanderId.length === 0)
+  ) return undefined;
+  return {
+    doctrineId: snapshot.doctrineId,
+    commandLevel: snapshot.commandLevel as number,
+    isFlagship: snapshot.isFlagship,
+    formation: snapshot.formation,
+    targetPriority: snapshot.targetPriority,
+    commanderId: snapshot.commanderId as string | null,
+  };
+}
 
 export interface BattleSideInput {
   readonly empireId: string;
@@ -142,6 +188,8 @@ export interface BattleReport {
   readonly defenderRemaining: Readonly<Record<string, number>>;
   readonly attackerCommanderId?: string | null;
   readonly defenderCommanderId?: string | null;
+  readonly attackerTacticalSnapshot?: CombatTacticalSnapshot;
+  readonly defenderTacticalSnapshot?: CombatTacticalSnapshot;
   readonly commanderRecoveredShips?: {
     readonly attacker: Readonly<Record<string, number>>;
     readonly defender: Readonly<Record<string, number>>;
