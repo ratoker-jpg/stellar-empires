@@ -8,25 +8,7 @@
 **Runtime:** schema v19 / save format v6  
 **Implementation authorized:** false
 
-## Authoritative files
-
-```text
-AGENTS.md
-docs/28-audit-first-autonomous-delivery-protocol.md
-docs/audits/current-batch-audit.md
-docs/audits/current-execution-state.md
-docs/audits/batch-history.md
-docs/audits/completed/post-1.0-strategic-feedback-truth.md
-docs/project-status.json
-docs/roadmap-pr-index.json
-docs/17-continuation-guide.md
-```
-
-Actual GitHub state wins over prose.
-
 ## Completed boundary
-
-`POST-1.0-STRATEGIC-FEEDBACK-TRUTH` is complete:
 
 ```text
 Audit #182 → b09887489db7754f0c0b2672649db9283b879732
@@ -35,7 +17,7 @@ PR2 #184  → 691078ab9ce5b0ab48e7aa69e71fe72322528af0
 PR3 #185  → e974c09e7779b4cf3bbc6d0279b8d35f177a29e6
 ```
 
-There is no PR4. Audit #182 is archived at `docs/audits/completed/post-1.0-strategic-feedback-truth.md` and is no longer successor implementation authorization.
+`POST-1.0-STRATEGIC-FEEDBACK-TRUTH` is complete. There is no PR4. Audit #182 is archived and is not reusable successor authorization.
 
 ## Current entrypoint
 
@@ -43,24 +25,17 @@ Only docs-only Audit #186 is active:
 
 `POST-1.0-NEXT-PRODUCT-3`
 
-Branch:
+Branch: `audit/post-1.0-next-product-3`  
+Starting main: `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6`
 
-`audit/post-1.0-next-product-3`
+Pinned Graphify 0.8.38 plus direct source/tests/UI identified one coherent replayability/lifecycle gap:
 
-Starting main:
+- real fresh-game bootstrap uses the same hard-coded seed source;
+- existing/terminal autosave has no safe normal UI path to another campaign while preserving manual saves.
 
-`e974c09e7779b4cf3bbc6d0279b8d35f177a29e6`
+## Proposed successor — not authorized
 
-The Audit used pinned Graphify 0.8.38 plus direct source/tests/UI instead of replaying old backlog.
-
-## Fresh decision
-
-The strongest current product gap is one coherent replayability/lifecycle problem:
-
-- the only real fresh-game bootstrap uses hard-coded seed source `stellar-empires-m1`, while seed controls generated universe/neutral/PvE/world-event variation;
-- a valid autosave or recovery snapshot is always restored, reserved autosaves are non-deletable in UI, terminal state freezes permanently, and there is no normal in-game “Новая партия” path.
-
-Proposed successor batch, **not authorized until controller-approved Audit #186 merge**:
+Batch:
 
 `POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE`
 
@@ -68,20 +43,82 @@ Exactly one proposed implementation PR:
 
 `POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE`
 
-One PR is intentional: restart + seed variation are one player-facing outcome through one bootstrap/persistence/browser data flow. Splitting them would produce incomplete intermediate products and no real dependency checkpoint.
+## Binding lifecycle contract
 
-## Proposed player contract
+Controller direct-source review resolved two blockers before Audit readiness.
 
-If Audit #186 is accepted later, the one implementation PR should:
+### Safe autosave reset
 
-- expose an explicit/reusable uint32 campaign seed in new-game UI;
-- suggest a different seed without wallclock input (Web Crypto is allowed only before state creation; tests use explicit fixed seeds);
-- use the selected numeric seed directly as existing persisted `GameState.seed`;
-- provide confirmed `System → Saves → Новая партия` lifecycle;
-- clear recovery snapshot before primary autosave so old campaign cannot be silently recovered;
-- preserve every manual/user-named save slot;
-- route back through the existing bootstrap/new-game selector;
-- preserve schema v19 / save v6 / migration none and all permanent terminal/performance gates.
+The old campaign can be resurrected during reload because `pagehide`, hidden `visibilitychange`, campaign-clock checkpoints and application transitions can feed a live `AutoSaveController`.
+
+If Audit #186 is accepted, reset must follow:
+
+```text
+confirm
+→ disable new autosave requests from current page
+→ drain + quiesce/dispose current autosave writer
+→ delete autosave.snapshot
+→ delete autosave
+→ reload existing bootstrap
+```
+
+Manual/user-named slots remain untouched.
+
+Failure rules:
+
+- cancel before quiesce: no change;
+- quiesce failure: delete nothing;
+- snapshot delete failure: primary stays untouched;
+- primary delete failure: primary remains recovery authority;
+- no failure path may leave the page silently with autosave disabled; reloading the surviving primary is allowed/preferred after destructive-phase failure.
+
+Implementation acceptance must include an explicit pagehide/reload regression proving the old campaign cannot be written back after successful deletion.
+
+### Deterministic interactive E2E seam
+
+The Browser suite runs with `VITE_E2E=1`, and current E2E bootstrap bypasses the real new-game dialog. The focused lifecycle test therefore gets one narrow test-only mode, semantically:
+
+```text
+VITE_E2E=1
++ interactiveNewGame=1
++ campaignSeed=<fixed uint32>
+```
+
+All existing E2E fixtures retain their current deterministic bootstrap. Only the lifecycle test reaches the real picker, and it supplies an explicit fixed seed so Browser acceptance does not depend on Web Crypto.
+
+`src/runtime/e2eScenario.ts` is an authorized implementation path for that seam; `playwright.config.ts` remains read/verify by default.
+
+## Seed contract
+
+- player-facing seed is uint32;
+- explicit numeric value becomes exact persisted `GameState.seed`;
+- legacy string seed-source behavior remains compatible;
+- real UI may suggest/reroll a fresh uint32 via Web Crypto before state creation;
+- same explicit seed reproduces the same world;
+- different explicit seeds must produce different deterministic world evidence;
+- no global uint32 uniqueness promise;
+- no wallclock/`Date.now()`/`Math.random()` seed;
+- tests use fixed seeds;
+- schema v19 / save v6 / migration none.
+
+## Authorized implementation paths after Audit merge only
+
+Primary:
+
+- `src/main.ts`;
+- `src/simulation/createInitialGameState.ts`;
+- `src/simulation/seed.ts` if a narrow uint32 helper is needed;
+- `src/ui/newGameFactionPicker.ts`;
+- `src/ui/saveManager.ts`;
+- `src/storage/SaveManager.ts` if ordered deletion is centralized;
+- `src/runtime/e2eScenario.ts` for the E2E-only interactive mode.
+
+Read/verify unless a regression proves otherwise:
+
+- `src/storage/AutoSaveController.ts`;
+- `src/storage/loadAutosave.ts`;
+- `src/runtime/campaignBootstrap.ts`;
+- `playwright.config.ts`.
 
 ## Research / rejected items
 
@@ -90,22 +127,20 @@ Not current implementation:
 - achievements/meta progression — RESEARCH;
 - moving-object trajectories — RESEARCH;
 - more bot differentiation — RESEARCH;
-- `BotDifficulty` semantics — internal dead metadata without current player promise;
-- Bank/credit gameplay — REJECT without authoritative semantics; do not invent a subsystem for the evidence-gated producer field.
-
-Recently closed Arena/report/tactical/ranking/endgame/bot/UI truth gaps remain closed unless new evidence appears.
+- `BotDifficulty` semantics — no current player promise;
+- Bank/credit gameplay — REJECT without authoritative semantics.
 
 ## Current delivery sequence
 
 ```text
 fresh main e974c09...
 → docs-only Audit #186
-→ exact-tree Graphify + direct-source product sweep
-→ one-PR replayable-campaign proposal
-→ final docs/control-plane
+→ controller blockers resolved in binding docs
+→ final docs/control-plane commit
 → fresh exact-head CI + Graphify + Browser/Pages
-→ unresolved threads = 0 + mergeable + main unchanged
+→ threads/reviews/comments clean + mergeable + main unchanged
 → mark #186 Ready
+→ re-check exact head and gates
 → STOP for controller review
 ```
 
