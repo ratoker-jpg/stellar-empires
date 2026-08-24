@@ -1,9 +1,9 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const ARENA_REPORT_ID = 'arena-result-e2e-combat-feedback';
 const LEGACY_REPORT_ID = 'report-e2e-map-backlink';
 
-async function openCombatReports(page: import('@playwright/test').Page): Promise<void> {
+async function openCombatReports(page: Page): Promise<void> {
   await page.goto('/?e2e=1#/reports/combat');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   await expect(page).toHaveURL(/#\/reports\/combat$/);
