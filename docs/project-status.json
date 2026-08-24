@@ -1,6 +1,6 @@
 {
-  "statusVersion": 96,
-  "updatedAt": "2026-08-24",
+  "statusVersion": 97,
+  "updatedAt": "2026-08-25",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
@@ -18,7 +18,7 @@
   "nextPrAfterActive": null,
   "nextPrKind": "implementation-only-after-controller-approved-audit-merge",
   "nextWorkItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
-  "currentMilestone": "fresh post-1.0 Audit / replayable campaign lifecycle with safe reset authority",
+  "currentMilestone": "fresh post-1.0 Audit / safe campaign switching lifecycle and replayable seed authority",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -41,7 +41,7 @@
     "workItem": "POST-1.0-NEXT-PRODUCT-3",
     "auditPr": 186,
     "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "status": "docs-only-controller-blockers-resolved-fresh-gates-required",
+    "status": "docs-only-post-ready-p1-resolved-fresh-gates-required",
     "implementationAuthorized": false,
     "proposedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
     "proposedImplementationCount": 1,
@@ -51,8 +51,9 @@
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
     "controllerFindingsResolved": [
-      "autosave resurrection race during destructive reset",
-      "VITE_E2E interactive new-game dialog reachability"
+      "new-campaign autosave resurrection race",
+      "VITE_E2E interactive new-game dialog reachability",
+      "manual-slot activation resurrection race and stale snapshot authority"
     ],
     "graphify": {
       "version": "0.8.38",
@@ -77,7 +78,7 @@
         "order": 1,
         "pr": null,
         "status": "pending-controller-audit-approval",
-        "purpose": "safe second-campaign lifecycle with reproducible variable uint32 seeds, autosave writer quiescence and deterministic interactive Browser coverage"
+        "purpose": "safe common campaign-switch lifecycle for new-campaign reset and manual-slot activation, with reproducible variable uint32 seeds and deterministic Browser coverage"
       }
     ],
     "stateSchema": 19,
@@ -87,8 +88,9 @@
   },
   "verifiedProductGaps": [
     "real browser fresh-game bootstrap hard-codes one seed source so repeated same-setting campaigns reuse the same generated world",
-    "after recoverable autosave exists player UI has no safe route to another campaign while preserving manual slots",
+    "after recoverable autosave exists player UI has no safe new-campaign replacement lifecycle while preserving manual slots",
     "deleting reserved saves without first quiescing the live AutoSaveController can resurrect the old campaign through pagehide visibility clock or transition writes",
+    "manual-slot activation currently writes selected B into primary autosave then reloads while old in-memory A can pagehide-flush over B",
     "the Browser harness always enables VITE_E2E and current createFreshGame bypasses the interactive new-game picker"
   ],
   "researchOnly": [
@@ -102,6 +104,8 @@
     "doNotGuessNemexiaFormulas": true,
     "doNotCreateCreditSubsystemForGhostField": true,
     "nextBatchImplementationCount": 1,
+    "commonCampaignSwitchRequiresWriterQuiescence": true,
+    "newCampaignAndManualActivationShareOneLifecyclePr": true,
     "numericCampaignSeedIsPersistedAuthority": true,
     "legacyStringSeedSourceCompatibilityRequired": true,
     "suggestedSeedMayUseWebCryptoBeforeStateCreation": true,
@@ -109,9 +113,13 @@
     "wallclockSeedForbidden": true,
     "mathRandomSeedForbidden": true,
     "manualSaveSlotsMustSurviveNewCampaignReset": true,
-    "autosaveWriterMustBeQuiescedBeforeReservedDeletion": true,
-    "recoverySnapshotMustBeClearedBeforePrimaryAutosave": true,
-    "failedResetMustNotLeaveAutosaveSilentlyDisabled": true,
+    "manualSourceSlotMustSurviveActivation": true,
+    "autosaveWriterMustBeQuiescedBeforeReservedMutation": true,
+    "newCampaignRecoverySnapshotMustBeClearedBeforePrimaryAutosave": true,
+    "manualActivationMustDeleteStaleSnapshotBeforePrimaryReplacement": true,
+    "manualActivationImmediateSnapshotRecreationRequired": false,
+    "manualActivationPrimaryMustResolveSelectedCampaign": true,
+    "failedCampaignSwitchMustNotLeaveAutosaveSilentlyDisabled": true,
     "e2eInteractiveNewGameSeamRequired": true,
     "e2eInteractiveNewGameUsesExplicitFixedSeed": true,
     "existingE2eFixtureBootstrapMustRemainDefault": true,
@@ -122,17 +130,18 @@
   },
   "authorizedImplementationPathsAfterAuditMerge": [
     "src/main.ts",
+    "src/ui/saveManager.ts",
+    "src/storage/SaveManager.ts",
     "src/simulation/createInitialGameState.ts",
     "src/simulation/seed.ts only if narrow uint32 helper is needed",
     "src/ui/newGameFactionPicker.ts",
-    "src/ui/saveManager.ts",
-    "src/storage/SaveManager.ts only if ordered deletion helper is needed",
     "src/runtime/e2eScenario.ts"
   ],
   "readVerifyByDefault": [
     "src/storage/AutoSaveController.ts",
     "src/storage/loadAutosave.ts",
     "src/runtime/campaignBootstrap.ts",
+    "src/storage/IndexedDbSaveRepository.ts",
     "playwright.config.ts"
   ],
   "requiredStartupReading": [
@@ -148,5 +157,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and Audit PR state"
   ],
-  "nextAction": "Run fresh exact-head CI, Graphify, Browser E2E and production smoke after the final blocker-resolution docs commit; verify review state, mergeability, head and live main; finalize PR body; mark #186 Ready; recheck; STOP. Do not merge #186 and do not create or start the implementation branch."
+  "nextAction": "Run fresh exact-head CI, Graphify, Browser E2E and production smoke after the final manual-activation blocker-resolution docs commit; reply to and resolve the P1 thread after binding docs exist; verify reviews/comments, mergeability, head and live main; finalize PR body; mark #186 Ready; post-Ready recheck; STOP. Do not merge #186 and do not create or start the implementation branch."
 }
