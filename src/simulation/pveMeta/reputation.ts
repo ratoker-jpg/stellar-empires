@@ -1,3 +1,7 @@
+import {
+  normalizeCombatTacticalSnapshot,
+  type CombatTacticalSnapshot,
+} from '../combat/types';
 import type { ResourceCost } from '../economy/types';
 import type { FactionId } from '../planet/types';
 
@@ -49,6 +53,7 @@ export interface ArenaResult {
   readonly enemyRemaining: Readonly<Record<string, number>>;
   readonly rewardGranted: ResourceCost;
   readonly reputationAward: number;
+  readonly tacticalSnapshot?: CombatTacticalSnapshot;
 }
 
 export interface PveMetaState {
@@ -167,6 +172,10 @@ function normalizeArenaResult(value: unknown): ArenaResult | undefined {
     !isReputation(value.reputationAward)) {
     return undefined;
   }
+  const tacticalSnapshot = value.tacticalSnapshot === undefined
+    ? undefined
+    : normalizeCombatTacticalSnapshot(value.tacticalSnapshot);
+  if (value.tacticalSnapshot !== undefined && tacticalSnapshot === undefined) return undefined;
   return {
     id: value.id,
     entryId: value.entryId,
@@ -182,6 +191,7 @@ function normalizeArenaResult(value: unknown): ArenaResult | undefined {
     enemyRemaining: value.enemyRemaining,
     rewardGranted: value.rewardGranted,
     reputationAward: value.reputationAward,
+    ...(tacticalSnapshot === undefined ? {} : { tacticalSnapshot }),
   };
 }
 

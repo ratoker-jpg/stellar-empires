@@ -2,9 +2,17 @@ import {
   getCommanderFleetEffects,
   recoverFleetShipsWithCommander,
 } from '../command/commanderShips';
-import { getCommandCombatEffects } from '../command/commandDoctrine';
+import {
+  getCommandCombatEffects,
+  getEmpireCommandState,
+} from '../command/commandDoctrine';
 import { resolveBattle } from '../combat/resolveBattle';
-import type { BattleReport, BattleWinner } from '../combat/types';
+import {
+  normalizeCombatTacticalSnapshot,
+  type BattleReport,
+  type BattleWinner,
+  type CombatTacticalSnapshot,
+} from '../combat/types';
 import { enqueueEvent } from '../eventQueue';
 import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
@@ -195,6 +203,10 @@ function isBattleReport(value: unknown, result: Record<string, unknown>): value 
     isUnitRecord(value.defenderInitial, false) &&
     isUnitRecord(value.attackerRemaining) &&
     isUnitRecord(value.defenderRemaining) &&
+    (value.attackerTacticalSnapshot === undefined ||
+      normalizeCombatTacticalSnapshot(value.attackerTacticalSnapshot) !== undefined) &&
+    (value.defenderTacticalSnapshot === undefined ||
+      normalizeCombatTacticalSnapshot(value.defenderTacticalSnapshot) !== undefined) &&
     value.mode === 'pve';
 }
 
@@ -465,7 +477,20 @@ function resolveEntry(
 
   const research = getResearchEffectsForEmpire(state, entry.empireId);
   const command = getCommandCombatEffects(state.commanders, entry.empireId, fleet.id);
+  const commandState = getEmpireCommandState(state.commanders, entry.empireId);
   const commander = getCommanderFleetEffects(state, fleet);
+  const attackerFormation = fleet.formation ?? 'line';
+  const attackerTargetPriority = fleet.targetPriority ?? 'balanced';
+  const attackerTacticalSnapshot: CombatTacticalSnapshot | undefined = commandState === undefined
+    ? undefined
+    : {
+        doctrineId: commandState.doctrineId,
+        commandLevel: commandState.level,
+        isFlagship: command.isFlagship,
+        formation: attackerFormation,
+        targetPriority: attackerTargetPriority,
+        commanderId: commander.activeCommanderId,
+      };
   const resolution = resolveBattle(
     seed,
     {
@@ -487,8 +512,8 @@ function resolveEntry(
         fleet.ships,
         'armor',
       ),
-      formation: fleet.formation ?? 'line',
-      targetPriority: fleet.targetPriority ?? 'balanced',
+      formation: attackerFormation,
+      targetPriority: attackerTargetPriority,
     },
     {
       empireId: `solar-war-${entry.cycle.factionId}`,
@@ -530,9 +555,10 @@ function resolveEntry(
     defenderInitial: { ...entry.cycle.enemyUnits },
     attackerRemaining: { ...attackerRemaining },
     defenderRemaining: { ...resolution.defenderRemaining },
+    ...(attackerTacticalSnapshot === undefined ? {} : { attackerTacticalSnapshot }),
     mode: 'pve',
-    attackerFormation: fleet.formation ?? 'line',
-    attackerTargetPriority: fleet.targetPriority ?? 'balanced',
+    attackerFormation,
+    attackerTargetPriority,
     defenderFormation: 'wedge',
     defenderTargetPriority: 'balanced',
   };

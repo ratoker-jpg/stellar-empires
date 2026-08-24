@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
+import {
+  getCommanderFleetEffects,
+  recoverFleetShipsWithCommander,
+} from '../../src/simulation/command/commanderShips';
+import { getCommandCombatEffects } from '../../src/simulation/command/commandDoctrine';
 import { createStateChecksum } from '../../src/simulation/checksum';
 import { stableFleetIdentityContribution } from '../../src/simulation/combat/combatIdentity';
+import { resolveBattle } from '../../src/simulation/combat/resolveBattle';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
+import { getResearchEffectsForEmpire } from '../../src/simulation/factions/factionResearchEffects';
 import type { FleetState } from '../../src/simulation/fleets/types';
 import { compactGameStateHistory } from '../../src/simulation/history/stateHistory';
 import {
@@ -17,6 +24,7 @@ import {
 } from '../../src/simulation/pveMeta/reputation';
 import { executeCommand } from '../../src/simulation/reducer';
 import type { GameState, ScheduledGameEvent } from '../../src/simulation/types';
+import { getShipUpgradeBonusMap } from '../../src/simulation/upgrades/shipUpgrades';
 import {
   createSaveEnvelope,
   parseSaveJson,
@@ -142,9 +150,14 @@ function resolveArenaWithoutEconomyAccrual(
   );
 }
 
-function latestArenaCombat(state: GameState) {
+function latestArenaResult(state: GameState): ArenaResult {
   const result = state.pveMeta?.arenaHistory.at(-1);
   if (result === undefined) throw new Error('Arena result missing.');
+  return result;
+}
+
+function latestArenaCombat(state: GameState) {
+  const result = latestArenaResult(state);
   return {
     outcome: result.outcome,
     attackerInitial: result.attackerInitial,
@@ -163,6 +176,46 @@ function resourcesAt(state: GameState, planetId: string) {
     metal: planet.economy.resources.metal.amount,
     crystal: planet.economy.resources.crystal.amount,
     gas: planet.economy.resources.gas.amount,
+  };
+}
+
+function createTacticalArenaEntry(seed: string) {
+  const roles = getFactionMechanicalRoles('aegis').ships;
+  const fixture = createArenaState(seed, {
+    [roles.dreadnought]: 60,
+    [roles.cruiser]: 100,
+    'commander.shared.executor': 1,
+  }, 'arena-tactical-fleet');
+  const tacticalFleet: FleetState = {
+    ...fixture.fleet,
+    formation: 'wedge',
+    targetPriority: 'capitals',
+  };
+  const tacticalState: GameState = {
+    ...fixture.state,
+    fleets: fixture.state.fleets.map((fleet) =>
+      fleet.id === tacticalFleet.id ? tacticalFleet : fleet,
+    ),
+    commanders: fixture.state.commanders.map((command) =>
+      command.empireId === 'player'
+        ? {
+            ...command,
+            doctrineId: 'vanguard',
+            experience: 1_500,
+            level: 5,
+            flagshipFleetId: tacticalFleet.id,
+          }
+        : command,
+    ),
+  };
+  const challenge = getArenaChallenges(tacticalState)[1]!;
+  const entered = enter(tacticalState, tacticalFleet.id, challenge.id);
+  return {
+    fixture: { ...fixture, state: tacticalState, fleet: tacticalFleet },
+    challenge,
+    entered,
+    event: findResolutionEvent(entered),
+    entry: activeArenaEntry(entered),
   };
 }
 
@@ -394,6 +447,141 @@ describe('local deterministic Arena challenges', () => {
     expect(loaded.fleets).toEqual(direct.fleets);
   });
 
+  it('captures and persists resolution-time player tactical context without changing PR1 seed or combat math', () => {
+    const tactical = createTacticalArenaEntry('arena-pr2-tactical-context');
+    const expectedSeed = mixArenaSeed(
+      tactical.challenge.combatSeed ^ tactical.fixture.state.nextEventSequence ^
+      stableFleetIdentityContribution(tactical.fixture.fleet.id),
+    );
+    expect(tactical.entry.resolutionSeed).toBe(expectedSeed);
+
+    const heldFleet = tactical.entered.fleets.find((fleet) => fleet.id === tactical.entry.fleetId);
+    if (heldFleet === undefined) throw new Error('Held Arena tactical fleet missing.');
+    const research = getResearchEffectsForEmpire(tactical.entered, 'player');
+    const command = getCommandCombatEffects(tactical.entered.commanders, 'player', heldFleet.id);
+    const commander = getCommanderFleetEffects(tactical.entered, heldFleet);
+    if (tactical.entry.resolutionSeed === undefined) throw new Error('PR1 seed missing.');
+    const directBattle = resolveBattle(
+      tactical.entry.resolutionSeed,
+      {
+        empireId: 'player',
+        units: heldFleet.ships,
+        weaponBonusPercent:
+          research.weaponStrengthPercent + command.weaponBonusPercent + commander.weaponBonusPercent,
+        armorBonusPercent:
+          research.armorStrengthPercent + command.armorBonusPercent + commander.armorBonusPercent,
+        unitWeaponBonusPercent: getShipUpgradeBonusMap(
+          tactical.entered.shipUpgrades,
+          'player',
+          heldFleet.ships,
+          'weapons',
+        ),
+        unitArmorBonusPercent: getShipUpgradeBonusMap(
+          tactical.entered.shipUpgrades,
+          'player',
+          heldFleet.ships,
+          'armor',
+        ),
+        formation: 'wedge',
+        targetPriority: 'capitals',
+      },
+      {
+        empireId: `arena-${tactical.challenge.factionId}`,
+        units: tactical.challenge.enemyUnits,
+        weaponBonusPercent: 0,
+        armorBonusPercent: 0,
+        unitWeaponBonusPercent: {},
+        unitArmorBonusPercent: {},
+        formation: 'line',
+        targetPriority: 'balanced',
+      },
+    );
+    const expectedAttackerRemaining = recoverFleetShipsWithCommander(
+      heldFleet.ships,
+      directBattle.attackerRemaining,
+      commander.recoveryPermille,
+      tactical.entry.resolutionSeed ^ 0xa5a5a5a5,
+    );
+
+    const resolved = resolveArenaWithoutEconomyAccrual(tactical.entered, tactical.event);
+    const result = latestArenaResult(resolved);
+    expect(result.tacticalSnapshot).toEqual({
+      doctrineId: 'vanguard',
+      commandLevel: 5,
+      isFlagship: true,
+      formation: 'wedge',
+      targetPriority: 'capitals',
+      commanderId: 'commander.shared.executor',
+    });
+    expect(result.outcome).toBe(
+      directBattle.winner === 'attacker'
+        ? 'victory'
+        : directBattle.winner === 'defender'
+          ? 'defeat'
+          : 'draw',
+    );
+    expect(result.attackerRemaining).toEqual(expectedAttackerRemaining);
+    expect(result.enemyRemaining).toEqual(directBattle.defenderRemaining);
+
+    const normalized = normalizePveMetaState(resolved.pveMeta, resolved.empires);
+    expect(normalized?.arenaHistory.at(-1)?.tacticalSnapshot).toEqual(result.tacticalSnapshot);
+    expect(normalizePveMetaState({
+      ...resolved.pveMeta!,
+      arenaHistory: [{
+        ...result,
+        tacticalSnapshot: { ...result.tacticalSnapshot!, commandLevel: -1 },
+      }],
+    }, resolved.empires)).toBeUndefined();
+
+    const { tacticalSnapshot: _tacticalSnapshot, ...legacyResult } = result;
+    const normalizedLegacy = normalizePveMetaState({
+      ...resolved.pveMeta!,
+      arenaHistory: [legacyResult],
+    }, resolved.empires);
+    expect(normalizedLegacy).toBeDefined();
+    expect('tacticalSnapshot' in normalizedLegacy!.arenaHistory[0]!).toBe(false);
+
+    const parsed = parseSaveJson(serializeSave(createSaveEnvelope(
+      'arena-tactical-result',
+      resolved,
+      SAVE_TIME,
+    )));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.formatVersion).toBe(6);
+    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(latestArenaResult(parsed.value.state).tacticalSnapshot).toEqual(result.tacticalSnapshot);
+  });
+
+  it('keeps historical Arena tactical context immutable after later doctrine and flagship commands', () => {
+    const tactical = createTacticalArenaEntry('arena-pr2-historical-context');
+    const resolved = resolveArenaWithoutEconomyAccrual(tactical.entered, tactical.event);
+    const snapshot = latestArenaResult(resolved).tacticalSnapshot;
+    expect(snapshot).toBeDefined();
+
+    const doctrineChanged = executeCommand(resolved, {
+      type: 'SET_COMMAND_DOCTRINE',
+      empireId: 'player',
+      doctrineId: 'sentinel',
+    });
+    expect(doctrineChanged.ok).toBe(true);
+    if (!doctrineChanged.ok) return;
+    const flagshipCleared = executeCommand(doctrineChanged.value, {
+      type: 'ASSIGN_FLAGSHIP',
+      empireId: 'player',
+      fleetId: null,
+    });
+    expect(flagshipCleared.ok).toBe(true);
+    if (!flagshipCleared.ok) return;
+
+    expect(latestArenaResult(flagshipCleared.value).tacticalSnapshot).toEqual(snapshot);
+    expect(latestArenaResult(flagshipCleared.value).tacticalSnapshot).toMatchObject({
+      doctrineId: 'vanguard',
+      commandLevel: 5,
+      isFlagship: true,
+    });
+  });
+
   it('charges the canonical cost, holds the fleet and enforces one active entry', () => {
     const roles = getFactionMechanicalRoles('aegis').ships;
     const fixture = createArenaState('arena-entry', { [roles.cruiser]: 20 });
@@ -426,7 +614,7 @@ describe('local deterministic Arena challenges', () => {
     })).toMatchObject({ ok: false, code: 'RESERVED_EVENT_TYPE' });
   });
 
-  it('withdraws without refund or reward and restores the fleet', () => {
+  it('withdraws without refund or reward and restores the fleet without fake tactical context', () => {
     const roles = getFactionMechanicalRoles('aegis').ships;
     const fixture = createArenaState('arena-withdraw', { [roles.frigate]: 10 });
     const challenge = getArenaChallenges(fixture.state)[1]!;
@@ -448,6 +636,7 @@ describe('local deterministic Arena challenges', () => {
       rewardGranted: { metal: 0, crystal: 0, gas: 0 },
       reputationAward: 0,
     });
+    expect('tacticalSnapshot' in latestArenaResult(withdrawn.value)).toBe(false);
     expect(withdrawn.value.pveMeta?.reputations.find(
       (candidate) => candidate.empireId === 'player',
     )?.reputation).toBe(0);

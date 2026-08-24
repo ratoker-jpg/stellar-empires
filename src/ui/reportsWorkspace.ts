@@ -192,6 +192,26 @@ function worldEventPresentation(
   };
 }
 
+function playerTacticalSnapshot(report: UnifiedMissionReport) {
+  if (report.primaryEmpireId === 'player') return report.tacticalContext?.primary;
+  if (report.secondaryEmpireId === 'player') return report.tacticalContext?.secondary;
+  return undefined;
+}
+
+function createTacticalFeedback(report: UnifiedMissionReport): HTMLElement | null {
+  if (report.kind !== 'battle' && report.kind !== 'solar-war') return null;
+  const playerInvolved = report.primaryEmpireId === 'player' || report.secondaryEmpireId === 'player';
+  if (!playerInvolved) return null;
+  const snapshot = playerTacticalSnapshot(report);
+  const feedback = document.createElement('p');
+  feedback.className = 'mission-report-tactical';
+  feedback.dataset.testid = 'combat-tactical-context';
+  feedback.textContent = snapshot === undefined
+    ? 'Тактический контекст: не зафиксирован.'
+    : `Доктрина: ${snapshot.doctrineId} · Уровень Адмирала: ${snapshot.commandLevel} · Флагман: ${snapshot.isFlagship ? 'да' : 'нет'} · Строй: ${snapshot.formation} · Приоритет цели: ${snapshot.targetPriority} · Командир: ${snapshot.commanderId ?? 'не назначен'}`;
+  return feedback;
+}
+
 function createReportCard(
   state: GameState,
   report: UnifiedMissionReport,
@@ -241,6 +261,8 @@ function createReportCard(
     losses.textContent = `Потери: свои ${lossesText(report.primaryLosses)} · противник ${lossesText(report.secondaryLosses)}`;
     card.append(rewards, losses);
   }
+  const tacticalFeedback = createTacticalFeedback(report);
+  if (tacticalFeedback !== null) card.append(tacticalFeedback);
   card.append(balance, mapLink);
   if ((report.combatBreakdown?.length ?? 0) > 0) {
     const details = document.createElement('details');

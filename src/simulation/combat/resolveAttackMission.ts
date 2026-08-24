@@ -6,6 +6,7 @@ import {
 import {
   awardBattleCommandExperience,
   getCommandCombatEffects,
+  getEmpireCommandState,
 } from '../command/commandDoctrine';
 import {
   addDamagedDefenses,
@@ -34,11 +35,15 @@ import {
   type DebrisAmount,
 } from './debris';
 import { getPlanetaryDefenseTargetPriority } from './defenseAbilities';
-import { selectPrimaryFleetByStableId } from './fleetDoctrine';
+import {
+  selectPrimaryFleetByStableId,
+  type FleetFormation,
+  type FleetTargetPriority,
+} from './fleetDoctrine';
 import { resolvePlanetDemolition } from './planetDemolition';
 import { resolvePlanetDestruction } from './planetDestruction';
 import { resolveBattle } from './resolveBattle';
-import type { BattleReport } from './types';
+import type { BattleReport, CombatTacticalSnapshot } from './types';
 
 function getCombatEffects(
   state: GameState,
@@ -73,6 +78,26 @@ function getCombatEffects(
       units,
       'armor',
     ),
+  };
+}
+
+function createTacticalSnapshot(
+  state: GameState,
+  empireId: string,
+  fleetId: string | undefined,
+  formation: FleetFormation,
+  targetPriority: FleetTargetPriority,
+  commanderId: string | null,
+): CombatTacticalSnapshot | undefined {
+  const command = getEmpireCommandState(state.commanders, empireId);
+  if (command === undefined) return undefined;
+  return {
+    doctrineId: command.doctrineId,
+    commandLevel: command.level,
+    isFlagship: fleetId !== undefined && command.flagshipFleetId === fleetId,
+    formation,
+    targetPriority,
+    commanderId,
   };
 }
 
@@ -232,6 +257,22 @@ export function resolveAttackMission(
   const defenderCommander = defenderDoctrine === undefined
     ? getCommanderFleetEffects(state, target.ownerEmpireId, undefined, effectiveDefenderUnits)
     : getCommanderFleetEffects(state, defenderDoctrine);
+  const attackerTacticalSnapshot = createTacticalSnapshot(
+    state,
+    attackerFleet.empireId,
+    attackerFleet.id,
+    attackerFormation,
+    attackerTargetPriority,
+    attackerCommander.activeCommanderId,
+  );
+  const defenderTacticalSnapshot = createTacticalSnapshot(
+    state,
+    target.ownerEmpireId,
+    defenderDoctrine?.id,
+    defenderFormation,
+    defenderTargetPriority,
+    defenderCommander.activeCommanderId,
+  );
 
   const seed = (
     state.seed ^
@@ -408,6 +449,8 @@ export function resolveAttackMission(
     defenderRemaining: finalDefenderRemaining,
     attackerCommanderId: attackerCommander.activeCommanderId,
     defenderCommanderId: defenderCommander.activeCommanderId,
+    ...(attackerTacticalSnapshot === undefined ? {} : { attackerTacticalSnapshot }),
+    ...(defenderTacticalSnapshot === undefined ? {} : { defenderTacticalSnapshot }),
     commanderRecoveredShips: {
       attacker: recoveredDelta(resolution.attackerRemaining, attackerAfterCommanderRecovery),
       defender: recoveredDelta(resolution.defenderRemaining, defenderAfterCommanderRecovery),
@@ -415,7 +458,7 @@ export function resolveAttackMission(
     defensesRecovered,
     debrisCreated,
     plunderedCargo,
-    demolition: demolition.report,
+    ...(demolition.report === undefined ? {} : { demolition: demolition.report }),
     destruction,
     mode: isPve ? 'pve' : 'pvp',
     threatMultiplierPermille,

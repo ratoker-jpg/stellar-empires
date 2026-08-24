@@ -1,24 +1,24 @@
 {
-  "statusVersion": 92,
+  "statusVersion": 93,
   "updatedAt": "2026-08-24",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 182,
-  "lastMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
-  "verifiedMainBaseline": "PR #182 squash / exact starting main for POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
-  "runtimeBaselinePr": 182,
-  "runtimeBaselineSha": "b09887489db7754f0c0b2672649db9283b879732",
-  "activePr": 183,
+  "lastMergedPr": 183,
+  "lastMergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5",
+  "verifiedMainBaseline": "PR #183 squash / exact starting main for POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
+  "runtimeBaselinePr": 183,
+  "runtimeBaselineSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5",
+  "activePr": 184,
   "activePrKind": "implementation",
-  "activeWorkItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
-  "activeBranch": "agent/post-1.0-arena-combat-identity-truth",
+  "activeWorkItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
+  "activeBranch": "agent/post-1.0-unified-combat-feedback",
   "nextPrAfterActive": null,
-  "nextPrKind": "implementation-only-after-controller-approved-pr1-merge",
-  "nextWorkItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
-  "currentMilestone": "POST-1.0 strategic feedback truth / PR1 Arena combat identity",
+  "nextPrKind": "implementation-only-after-controller-approved-pr2-merge",
+  "nextWorkItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
+  "currentMilestone": "POST-1.0 strategic feedback truth / PR2 unified combat feedback",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -31,9 +31,18 @@
     "auditMergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77",
     "archive": "docs/audits/completed/post-1.0-bot-strategy-differentiation.md",
     "implementation": [
-      { "pr": 179, "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
-      { "pr": 180, "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
-      { "pr": 181, "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" }
+      {
+        "pr": 179,
+        "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db"
+      },
+      {
+        "pr": 180,
+        "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
+      },
+      {
+        "pr": 181,
+        "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d"
+      }
     ]
   },
   "currentAuditState": {
@@ -61,14 +70,15 @@
         "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
         "order": 1,
         "pr": 183,
-        "status": "complete-for-controller-review",
-        "purpose": "snapshot full stable Arena fleet identity for new entries while preserving exact legacy active-entry resolution fallback"
+        "status": "merged",
+        "purpose": "snapshot full stable Arena fleet identity for new entries while preserving exact legacy active-entry resolution fallback",
+        "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5"
       },
       {
         "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
         "order": 2,
-        "pr": null,
-        "status": "pending-not-started",
+        "pr": 184,
+        "status": "complete-for-controller-review",
         "purpose": "include Arena in canonical reports and persist/render immutable tactical combat context"
       },
       {
@@ -84,29 +94,27 @@
     "migration": "none"
   },
   "activeImplementationState": {
-    "pr": 183,
-    "startingMain": "b09887489db7754f0c0b2672649db9283b879732",
-    "runtimeHeadBeforeControlPlane": "f0d9d9c7d80d42c31250e853a8db502dfde72a16",
+    "pr": 184,
+    "startingMain": "83a4942c35aac8d7f0b02f7730f0646c171c98b5",
+    "runtimeHeadBeforeControlPlane": "545283603f7fd7de33edc409117152e3efc32081",
     "status": "complete-for-controller-review",
-    "regressionFirstCommit": "c4ac9ac234c0ab160d64c9a15a8dfc90d8847693",
+    "regressionFirstCommit": "c23f39db6863562f9ebd4ffdd8903126f0b1e5ba",
     "schema": 19,
     "save": 6,
     "migration": "none",
     "runtimeHeadGates": {
-      "ciRun": 2244,
+      "ciRun": 2266,
       "ci": "success",
-      "graphifyRun": 1377,
+      "graphifyRun": 1398,
       "graphify": "success",
       "graphifyVersion": "0.8.38",
-      "browserRun": 1474,
+      "browserRun": 1496,
       "browser": "success",
       "productionSmoke": "success"
     },
     "finalExactHeadGatesRequiredAfterControlPlane": true
   },
   "verifiedProductGaps": [
-    "Arena history is omitted from createUnifiedMissionReports and canonical report summaries",
-    "battle reports do not preserve/display historical command doctrine, Admiral level and flagship context even though those choices affect combat",
     "command ranking field labeled victories counts generic successful operations and omits Arena victories"
   ],
   "researchOnly": [
@@ -136,5 +144,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and PR state"
   ],
-  "nextAction": "Require fresh exact-head gates on PR #183 after the control-plane commit, verify review threads/main/mergeable, mark Ready, then STOP for controller review. Do not merge and do not start PR2."
+  "nextAction": "Require fresh exact-head CI, Graphify, Browser E2E and production smoke on PR #184 after this control-plane commit; verify review threads, live main and mergeability; mark #184 Ready; then STOP for controller review. Do not merge #184 and do not start PR3."
 }

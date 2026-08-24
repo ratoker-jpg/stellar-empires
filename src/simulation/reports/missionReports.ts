@@ -3,9 +3,13 @@ import type {
   TargetSize,
   WeaponType,
 } from '../combat/combatProfiles';
-import type { BattleRoundReport } from '../combat/types';
+import type {
+  BattleRoundReport,
+  CombatTacticalSnapshot,
+} from '../combat/types';
 import type { ResourceCost } from '../economy/types';
 import { PIRATE_EMPIRE_ID } from '../pve/neutralForces';
+import type { ArenaResultOutcome } from '../pveMeta/reputation';
 import { parsePlanetCoordinate, type SpaceCoordinate } from '../space/coordinates';
 import type { GameState } from '../types';
 
@@ -48,6 +52,11 @@ export interface MissionCombatBreakdownLine {
   readonly weaponContributions: readonly MissionCombatWeaponContribution[];
 }
 
+export interface MissionReportTacticalContext {
+  readonly primary?: CombatTacticalSnapshot;
+  readonly secondary?: CombatTacticalSnapshot;
+}
+
 export interface UnifiedMissionReport {
   readonly id: string;
   readonly resolvedAt: number;
@@ -66,6 +75,7 @@ export interface UnifiedMissionReport {
   readonly threatMultiplierPermille: number;
   readonly rewardMultiplierPermille: number;
   readonly combatBreakdown?: readonly MissionCombatBreakdownLine[];
+  readonly tacticalContext?: MissionReportTacticalContext;
 }
 
 export interface MissionReportQuery {
@@ -164,6 +174,23 @@ function battleOutcome(
   return 'draw';
 }
 
+function arenaOutcome(outcome: ArenaResultOutcome): MissionReportOutcome {
+  if (outcome === 'victory') return 'success';
+  if (outcome === 'draw') return 'draw';
+  return 'failure';
+}
+
+function tacticalContext(
+  primary: CombatTacticalSnapshot | undefined,
+  secondary: CombatTacticalSnapshot | undefined,
+): MissionReportTacticalContext | undefined {
+  if (primary === undefined && secondary === undefined) return undefined;
+  return {
+    ...(primary === undefined ? {} : { primary }),
+    ...(secondary === undefined ? {} : { secondary }),
+  };
+}
+
 function createCombatBreakdown(
   rounds: readonly BattleRoundReport[],
 ): readonly MissionCombatBreakdownLine[] {
@@ -221,6 +248,10 @@ function createEventReports(state: GameState): UnifiedMissionReport[] {
       );
       const defensesRecovered = report.defensesRecovered ?? {};
       const recoveredCount = totalUnits(defensesRecovered);
+      const context = tacticalContext(
+        report.attackerTacticalSnapshot,
+        report.defenderTacticalSnapshot,
+      );
       reports.push({
         id: report.id,
         resolvedAt: entry.executedAt,
@@ -246,6 +277,7 @@ function createEventReports(state: GameState): UnifiedMissionReport[] {
         threatMultiplierPermille: report.threatMultiplierPermille ?? 1_000,
         rewardMultiplierPermille: report.rewardMultiplierPermille ?? 1_000,
         combatBreakdown: createCombatBreakdown(report.rounds),
+        ...(context === undefined ? {} : { tacticalContext: context }),
       });
       continue;
     }
@@ -315,24 +347,55 @@ function createWorldEventReports(state: GameState): UnifiedMissionReport[] {
 }
 
 function createSolarWarReports(state: GameState): UnifiedMissionReport[] {
-  return (state.endgameParticipation?.solarWar.history ?? []).map((result): UnifiedMissionReport => ({
-    id: result.id,
-    resolvedAt: result.resolvedAt,
-    kind: 'solar-war',
-    mode: 'pve',
-    title: 'Солнечная война',
-    summary: `${result.cycleId} · ${result.participationKind} ${result.participationId} · ${result.outcome} · очки ${result.score}`,
-    targetId: result.cycleId,
-    primaryEmpireId: result.empireId,
-    secondaryEmpireId: null,
-    outcome: battleOutcome(result.battleReport.winner),
-    reward: ZERO_REWARD,
-    primaryLosses: unitLosses(result.attackerInitial, result.attackerRemaining),
-    secondaryLosses: unitLosses(result.enemyInitial, result.enemyRemaining),
-    threatMultiplierPermille: 1_000,
-    rewardMultiplierPermille: 1_000,
-    combatBreakdown: createCombatBreakdown(result.battleReport.rounds),
-  }));
+  return (state.endgameParticipation?.solarWar.history ?? []).map((result): UnifiedMissionReport => {
+    const context = tacticalContext(
+      result.battleReport.attackerTacticalSnapshot,
+      result.battleReport.defenderTacticalSnapshot,
+    );
+    return {
+      id: result.id,
+      resolvedAt: result.resolvedAt,
+      kind: 'solar-war',
+      mode: 'pve',
+      title: 'Солнечная война',
+      summary: `${result.cycleId} · ${result.participationKind} ${result.participationId} · ${result.outcome} · очки ${result.score}`,
+      targetId: result.cycleId,
+      primaryEmpireId: result.empireId,
+      secondaryEmpireId: null,
+      outcome: battleOutcome(result.battleReport.winner),
+      reward: ZERO_REWARD,
+      primaryLosses: unitLosses(result.attackerInitial, result.attackerRemaining),
+      secondaryLosses: unitLosses(result.enemyInitial, result.enemyRemaining),
+      threatMultiplierPermille: 1_000,
+      rewardMultiplierPermille: 1_000,
+      combatBreakdown: createCombatBreakdown(result.battleReport.rounds),
+      ...(context === undefined ? {} : { tacticalContext: context }),
+    };
+  });
+}
+
+function createArenaReports(state: GameState): UnifiedMissionReport[] {
+  return (state.pveMeta?.arenaHistory ?? []).map((result): UnifiedMissionReport => {
+    const context = tacticalContext(result.tacticalSnapshot, undefined);
+    return {
+      id: result.id,
+      resolvedAt: result.resolvedAt,
+      kind: 'battle',
+      mode: 'pve',
+      title: `Арена · ${result.difficulty}`,
+      summary: `${result.outcome} · флот ${result.fleetId} · вызов ${result.challengeId}`,
+      targetId: result.challengeId,
+      primaryEmpireId: result.empireId,
+      secondaryEmpireId: null,
+      outcome: arenaOutcome(result.outcome),
+      reward: { ...result.rewardGranted, exoticMatter: 0 },
+      primaryLosses: unitLosses(result.attackerInitial, result.attackerRemaining),
+      secondaryLosses: unitLosses(result.enemyInitial, result.enemyRemaining),
+      threatMultiplierPermille: 1_000,
+      rewardMultiplierPermille: 1_000,
+      ...(context === undefined ? {} : { tacticalContext: context }),
+    };
+  });
 }
 
 function freshnessLabel(state: GameState, expiresAt: number): string {
@@ -389,6 +452,7 @@ export function createUnifiedMissionReports(
     ...createEventReports(state),
     ...createWorldEventReports(state),
     ...createSolarWarReports(state),
+    ...createArenaReports(state),
     ...createIntelligenceReports(state),
   ].sort((left, right) => right.resolvedAt - left.resolvedAt || left.id.localeCompare(right.id));
 }

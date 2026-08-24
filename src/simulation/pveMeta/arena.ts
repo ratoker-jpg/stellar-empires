@@ -2,10 +2,14 @@ import {
   getCommanderFleetEffects,
   recoverFleetShipsWithCommander,
 } from '../command/commanderShips';
-import { getCommandCombatEffects } from '../command/commandDoctrine';
+import {
+  getCommandCombatEffects,
+  getEmpireCommandState,
+} from '../command/commandDoctrine';
 import { stableFleetIdentityContribution } from '../combat/combatIdentity';
 import type { FleetFormation, FleetTargetPriority } from '../combat/fleetDoctrine';
 import { resolveBattle } from '../combat/resolveBattle';
+import type { CombatTacticalSnapshot } from '../combat/types';
 import type { ResourceCost, ResourceId } from '../economy/types';
 import { getResearchEffectsForEmpire } from '../factions/factionResearchEffects';
 import { getFactionMechanicalRoles } from '../factions/factionMechanicalRoles';
@@ -190,6 +194,7 @@ function createResult(
   enemyRemaining: Readonly<Record<string, number>>,
   rewardGranted: ResourceCost,
   reputationAward: number,
+  tacticalSnapshot?: CombatTacticalSnapshot,
 ): ArenaResult {
   return {
     id: `arena-result-${entry.id}`,
@@ -206,6 +211,7 @@ function createResult(
     enemyRemaining: { ...enemyRemaining },
     rewardGranted: copyCost(rewardGranted),
     reputationAward,
+    ...(tacticalSnapshot === undefined ? {} : { tacticalSnapshot }),
   };
 }
 
@@ -434,7 +440,20 @@ export function applyArenaResolutionEvent(
 
   const research = getResearchEffectsForEmpire(state, entry.empireId);
   const command = getCommandCombatEffects(state.commanders, entry.empireId, fleet.id);
+  const commandState = getEmpireCommandState(state.commanders, entry.empireId);
   const commander = getCommanderFleetEffects(state, fleet);
+  const attackerFormation = fleet.formation ?? 'line';
+  const attackerTargetPriority = fleet.targetPriority ?? 'balanced';
+  const tacticalSnapshot: CombatTacticalSnapshot | undefined = commandState === undefined
+    ? undefined
+    : {
+        doctrineId: commandState.doctrineId,
+        commandLevel: commandState.level,
+        isFlagship: command.isFlagship,
+        formation: attackerFormation,
+        targetPriority: attackerTargetPriority,
+        commanderId: commander.activeCommanderId,
+      };
   const seed = entry.resolutionSeed ??
     mixSeed(entry.challenge.combatSeed ^ event.sequence ^ fleet.id.length);
   const resolution = resolveBattle(
@@ -458,8 +477,8 @@ export function applyArenaResolutionEvent(
         fleet.ships,
         'armor',
       ),
-      formation: fleet.formation ?? 'line',
-      targetPriority: fleet.targetPriority ?? 'balanced',
+      formation: attackerFormation,
+      targetPriority: attackerTargetPriority,
     },
     {
       empireId: `arena-${entry.challenge.factionId}`,
@@ -507,6 +526,7 @@ export function applyArenaResolutionEvent(
     resolution.defenderRemaining,
     granted.rewardGranted,
     reputationAward,
+    tacticalSnapshot,
   );
   const awarded = reputationAward > 0
     ? awardPveReputation(withoutEntry, entry.empireId, reputationAward)
