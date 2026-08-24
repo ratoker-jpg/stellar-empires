@@ -31,6 +31,7 @@ export interface ArenaEntry {
   readonly challenge: ArenaChallenge;
   readonly enteredAt: number;
   readonly resolvesAt: number;
+  readonly resolutionSeed?: number;
 }
 
 export interface ArenaResult {
@@ -137,7 +138,8 @@ function normalizeArenaEntry(value: unknown): ArenaEntry | undefined {
   if (!isRecord(value) || typeof value.id !== 'string' || value.id.length === 0 ||
     typeof value.empireId !== 'string' || typeof value.fleetId !== 'string' ||
     typeof value.originPlanetId !== 'string' || !isReputation(value.enteredAt) ||
-    !isReputation(value.resolvesAt) || value.resolvesAt < value.enteredAt) {
+    !isReputation(value.resolvesAt) || value.resolvesAt < value.enteredAt ||
+    (value.resolutionSeed !== undefined && !isReputation(value.resolutionSeed))) {
     return undefined;
   }
   const challenge = normalizeArenaChallenge(value.challenge);
@@ -150,6 +152,7 @@ function normalizeArenaEntry(value: unknown): ArenaEntry | undefined {
     challenge,
     enteredAt: value.enteredAt,
     resolvesAt: value.resolvesAt,
+    ...(value.resolutionSeed === undefined ? {} : { resolutionSeed: value.resolutionSeed }),
   };
 }
 
