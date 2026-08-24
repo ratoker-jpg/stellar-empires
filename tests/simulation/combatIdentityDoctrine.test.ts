@@ -278,8 +278,13 @@ describe('POST-1.0-PR2 combat identity and defender doctrine regressions', () =>
       persisted,
       SAVE_TIME,
     )));
-    expect(parsed.ok).toBe(true);
-    if (!parsed.ok) return;
+    if (!parsed.ok) {
+      throw new Error(`parseSaveJson failed: ${JSON.stringify({
+        code: parsed.code,
+        message: parsed.message,
+        details: parsed.details,
+      })}`);
+    }
     expect(parsed.value.formatVersion).toBe(6);
     expect(parsed.value.state.schemaVersion).toBe(19);
     const loadedBattle = parsed.value.state.eventLog.find(
