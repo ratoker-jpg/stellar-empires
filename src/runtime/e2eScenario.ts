@@ -5,6 +5,7 @@ import type { FinalObjectProject } from '../simulation/endgame/types';
 import type { FleetState } from '../simulation/fleets/types';
 import type { IntelObservation } from '../simulation/intelligence/types';
 import { getCompleteBuildingIds } from '../simulation/planet/completeBuildingCatalog';
+import type { ArenaResult } from '../simulation/pveMeta/reputation';
 import { executeCommand } from '../simulation/reducer';
 import type { GameState } from '../simulation/types';
 import {
@@ -17,6 +18,7 @@ export const E2E_FLEET_ID = 'fleet-e2e-player';
 export const E2E_SOLAR_WAR_FLEET_ID = 'fleet-e2e-solar-war';
 export const E2E_INCOMING_FLEET_ID = 'fleet-e2e-incoming';
 export const E2E_REPORT_ID = 'report-e2e-map-backlink';
+export const E2E_ARENA_REPORT_ID = 'arena-result-e2e-combat-feedback';
 export const E2E_SECONDARY_PLANET_ID = 'planet-e2e-secondary';
 const E2E_BOT_IDLE_SECONDS = 86_400;
 const E2E_SCOUT_COOLDOWN_CEILING_SECONDS = 7_200;
@@ -211,6 +213,9 @@ export function createE2eFixtureState(state: GameState): GameState {
   );
   const fixtureState = advanceFixtureState(state, fixtureElapsedSeconds);
   const { origin, target } = requireScenarioPlanets(fixtureState);
+  if (fixtureState.pveMeta === undefined) {
+    throw new Error('E2E scenario requires schema-v19 PvE meta state.');
+  }
   const originWithFuel = {
     ...origin,
     economy: {
@@ -335,6 +340,39 @@ export function createE2eFixtureState(state: GameState): GameState {
     threatMultiplierPermille: 1_000,
     rewardMultiplierPermille: 1_000,
   };
+  const arenaResult: ArenaResult = {
+    id: E2E_ARENA_REPORT_ID,
+    entryId: 'arena-entry-e2e-combat-feedback',
+    challengeId: 'arena-e2e-assault',
+    empireId: 'player',
+    fleetId: 'fleet-e2e-arena-history',
+    difficulty: 'assault',
+    resolvedAt: fixtureElapsedSeconds - 60,
+    outcome: 'victory',
+    attackerInitial: {
+      'ship.aegis.fighter': 12,
+      'commander.shared.executor': 1,
+    },
+    enemyInitial: {
+      'ship.synod.fighter': 9,
+      'ship.synod.frigate': 3,
+    },
+    attackerRemaining: {
+      'ship.aegis.fighter': 8,
+      'commander.shared.executor': 1,
+    },
+    enemyRemaining: { 'ship.synod.fighter': 1 },
+    rewardGranted: { metal: 4_000, crystal: 2_000, gas: 700 },
+    reputationAward: 20,
+    tacticalSnapshot: {
+      doctrineId: 'vanguard',
+      commandLevel: 5,
+      isFlagship: true,
+      formation: 'wedge',
+      targetPriority: 'capitals',
+      commanderId: 'commander.shared.executor',
+    },
+  };
   const stableBotDecisionAt = fixtureElapsedSeconds + E2E_BOT_IDLE_SECONDS;
   const fleets = [...fixtureState.fleets];
   if (!fleets.some((entry) => entry.id === E2E_FLEET_ID)) fleets.push(fleet);
@@ -351,6 +389,12 @@ export function createE2eFixtureState(state: GameState): GameState {
     ...fixtureState,
     planets,
     fleets,
+    pveMeta: {
+      ...fixtureState.pveMeta,
+      arenaHistory: fixtureState.pveMeta.arenaHistory.some((entry) => entry.id === E2E_ARENA_REPORT_ID)
+        ? fixtureState.pveMeta.arenaHistory
+        : [...fixtureState.pveMeta.arenaHistory, arenaResult],
+    },
     intelligence: fixtureState.intelligence.map((entry) =>
       entry.empireId !== 'player' || entry.observations.some((item) => item.id === observation.id)
         ? entry
