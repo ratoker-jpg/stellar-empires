@@ -1,15 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { createStateChecksum } from '../../src/simulation/checksum';
+import { stableFleetIdentityContribution } from '../../src/simulation/combat/combatIdentity';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
-import type { FleetState } from '../../src/simulation/fleets/types';
 import { getFactionMechanicalRoles } from '../../src/simulation/factions/factionMechanicalRoles';
+import type { FleetState } from '../../src/simulation/fleets/types';
 import { compactGameStateHistory } from '../../src/simulation/history/stateHistory';
 import {
   ARENA_CYCLE_SECONDS,
   applyArenaResolutionEvent,
   getArenaChallenges,
 } from '../../src/simulation/pveMeta/arena';
-import type { ArenaResult } from '../../src/simulation/pveMeta/reputation';
+import {
+  normalizePveMetaState,
+  type ArenaEntry,
+  type ArenaResult,
+} from '../../src/simulation/pveMeta/reputation';
 import { executeCommand } from '../../src/simulation/reducer';
 import type { GameState, ScheduledGameEvent } from '../../src/simulation/types';
 import {
@@ -26,6 +31,16 @@ type ArenaResolutionEvent = ScheduledGameEvent & {
     readonly entryId: string;
   };
 };
+
+function mixArenaSeed(value: number): number {
+  let mixed = value >>> 0;
+  mixed ^= mixed >>> 16;
+  mixed = Math.imul(mixed, 0x7feb352d);
+  mixed ^= mixed >>> 15;
+  mixed = Math.imul(mixed, 0x846ca68b);
+  mixed ^= mixed >>> 16;
+  return mixed >>> 0;
+}
 
 function createArenaState(
   seed: string,
@@ -102,6 +117,17 @@ function findResolutionEvent(state: GameState): ArenaResolutionEvent {
   return event;
 }
 
+function activeArenaEntry(state: GameState): ArenaEntry {
+  const entry = state.pveMeta?.activeArenaEntries[0];
+  if (entry === undefined) throw new Error('Arena entry missing.');
+  return entry;
+}
+
+function withoutResolutionSeed(entry: ArenaEntry): ArenaEntry {
+  const { resolutionSeed: _resolutionSeed, ...legacyEntry } = entry;
+  return legacyEntry;
+}
+
 function resolveArenaWithoutEconomyAccrual(
   state: GameState,
   event: ArenaResolutionEvent,
@@ -114,6 +140,20 @@ function resolveArenaWithoutEconomyAccrual(
     },
     event,
   );
+}
+
+function latestArenaCombat(state: GameState) {
+  const result = state.pveMeta?.arenaHistory.at(-1);
+  if (result === undefined) throw new Error('Arena result missing.');
+  return {
+    outcome: result.outcome,
+    attackerInitial: result.attackerInitial,
+    enemyInitial: result.enemyInitial,
+    attackerRemaining: result.attackerRemaining,
+    enemyRemaining: result.enemyRemaining,
+    rewardGranted: result.rewardGranted,
+    reputationAward: result.reputationAward,
+  };
 }
 
 function resourcesAt(state: GameState, planetId: string) {
@@ -164,7 +204,7 @@ describe('local deterministic Arena challenges', () => {
     );
   });
 
-  it('distinguishes equal-length fleet IDs in the stored Arena resolution seed', () => {
+  it('distinguishes equal-length fleet IDs in the exact stored Arena resolution seed', () => {
     const roles = getFactionMechanicalRoles('aegis').ships;
     const ships = { [roles.cruiser]: 20 };
     const left = createArenaState('arena-full-identity', ships, 'arena-fleet-aa');
@@ -174,19 +214,184 @@ describe('local deterministic Arena challenges', () => {
     const leftChallenge = getArenaChallenges(left.state)[1]!;
     const rightChallenge = getArenaChallenges(right.state)[1]!;
     expect(rightChallenge).toEqual(leftChallenge);
+    const sequence = left.state.nextEventSequence;
+    expect(right.state.nextEventSequence).toBe(sequence);
 
     const leftEntered = enter(left.state, left.fleet.id, leftChallenge.id);
     const rightEntered = enter(right.state, right.fleet.id, rightChallenge.id);
-    const leftEntry = leftEntered.pveMeta?.activeArenaEntries[0] as
-      | { readonly resolutionSeed?: number }
-      | undefined;
-    const rightEntry = rightEntered.pveMeta?.activeArenaEntries[0] as
-      | { readonly resolutionSeed?: number }
-      | undefined;
+    const leftEntry = activeArenaEntry(leftEntered);
+    const rightEntry = activeArenaEntry(rightEntered);
+    const leftExpected = mixArenaSeed(
+      leftChallenge.combatSeed ^ sequence ^ stableFleetIdentityContribution(left.fleet.id),
+    );
+    const rightExpected = mixArenaSeed(
+      rightChallenge.combatSeed ^ sequence ^ stableFleetIdentityContribution(right.fleet.id),
+    );
 
-    expect(leftEntry?.resolutionSeed).toBeTypeOf('number');
-    expect(rightEntry?.resolutionSeed).toBeTypeOf('number');
-    expect(leftEntry?.resolutionSeed).not.toBe(rightEntry?.resolutionSeed);
+    expect(leftEntry.resolutionSeed).toBe(leftExpected);
+    expect(rightEntry.resolutionSeed).toBe(rightExpected);
+    expect(leftEntry.resolutionSeed).not.toBe(rightEntry.resolutionSeed);
+  });
+
+  it('derives the same resolution seed for the same fleet identity and entry inputs', () => {
+    const roles = getFactionMechanicalRoles('aegis').ships;
+    const ships = { [roles.cruiser]: 20 };
+    const first = createArenaState('arena-same-identity', ships, 'arena-fleet-same');
+    const repeated = createArenaState('arena-same-identity', ships, 'arena-fleet-same');
+    const challenge = getArenaChallenges(first.state)[0]!;
+    expect(getArenaChallenges(repeated.state)[0]).toEqual(challenge);
+
+    const firstEntered = enter(first.state, first.fleet.id, challenge.id);
+    const repeatedEntered = enter(repeated.state, repeated.fleet.id, challenge.id);
+    const expected = mixArenaSeed(
+      challenge.combatSeed ^ first.state.nextEventSequence ^
+      stableFleetIdentityContribution(first.fleet.id),
+    );
+
+    expect(activeArenaEntry(firstEntered).resolutionSeed).toBe(expected);
+    expect(activeArenaEntry(repeatedEntered).resolutionSeed).toBe(expected);
+  });
+
+  it('consumes the persisted resolution seed instead of recomputing mutable fleet identity', () => {
+    const roles = getFactionMechanicalRoles('aegis').ships;
+    const fixture = createArenaState('arena-snapshot-consumption', {
+      [roles.cruiser]: 28,
+      [roles.frigate]: 40,
+    }, 'arena-fleet-aa');
+    const challenge = getArenaChallenges(fixture.state)[1]!;
+    const entered = enter(fixture.state, fixture.fleet.id, challenge.id);
+    const event = findResolutionEvent(entered);
+    const entry = activeArenaEntry(entered);
+    if (entry.resolutionSeed === undefined) throw new Error('New Arena seed snapshot missing.');
+
+    const renamedFleetId = 'arena-fleet-bb';
+    expect(renamedFleetId).toHaveLength(fixture.fleet.id.length);
+    const recomputedFromRenamedIdentity = mixArenaSeed(
+      challenge.combatSeed ^ event.sequence ^ stableFleetIdentityContribution(renamedFleetId),
+    );
+    expect(recomputedFromRenamedIdentity).not.toBe(entry.resolutionSeed);
+
+    const renamedState: GameState = {
+      ...entered,
+      fleets: entered.fleets.map((fleet) =>
+        fleet.id === entry.fleetId ? { ...fleet, id: renamedFleetId } : fleet,
+      ),
+      pveMeta: {
+        ...entered.pveMeta!,
+        activeArenaEntries: [{ ...entry, fleetId: renamedFleetId }],
+      },
+    };
+    const originalResolved = resolveArenaWithoutEconomyAccrual(entered, event);
+    const renamedResolved = resolveArenaWithoutEconomyAccrual(renamedState, event);
+
+    expect(latestArenaCombat(renamedResolved)).toEqual(latestArenaCombat(originalResolved));
+    expect(renamedResolved.fleets.find((fleet) => fleet.id === renamedFleetId)?.ships)
+      .toEqual(originalResolved.fleets.find((fleet) => fleet.id === fixture.fleet.id)?.ships);
+  });
+
+  it('accepts legacy entries without a seed and validates present seed values', () => {
+    const roles = getFactionMechanicalRoles('aegis').ships;
+    const fixture = createArenaState('arena-seed-normalization', { [roles.frigate]: 20 });
+    const challenge = getArenaChallenges(fixture.state)[0]!;
+    const entered = enter(fixture.state, fixture.fleet.id, challenge.id);
+    const entry = activeArenaEntry(entered);
+    const legacyEntry = withoutResolutionSeed(entry);
+    const legacyMeta = {
+      ...entered.pveMeta!,
+      activeArenaEntries: [legacyEntry],
+    };
+    const normalizedLegacy = normalizePveMetaState(legacyMeta, entered.empires);
+    expect(normalizedLegacy).toBeDefined();
+    expect('resolutionSeed' in normalizedLegacy!.activeArenaEntries[0]!).toBe(false);
+
+    expect(normalizePveMetaState({
+      ...legacyMeta,
+      activeArenaEntries: [{ ...legacyEntry, resolutionSeed: -1 }],
+    }, entered.empires)).toBeUndefined();
+    expect(normalizePveMetaState({
+      ...legacyMeta,
+      activeArenaEntries: [{ ...legacyEntry, resolutionSeed: Number.MAX_SAFE_INTEGER + 1 }],
+    }, entered.empires)).toBeUndefined();
+    expect(normalizePveMetaState(entered.pveMeta, entered.empires)?.activeArenaEntries[0]?.resolutionSeed)
+      .toBe(entry.resolutionSeed);
+  });
+
+  it('uses the exact old length-based seed for legacy entries and ignores full identity', () => {
+    const roles = getFactionMechanicalRoles('aegis').ships;
+    const fixture = createArenaState('arena-legacy-fallback', {
+      [roles.cruiser]: 28,
+      [roles.frigate]: 40,
+    }, 'arena-fleet-aa');
+    const challenge = getArenaChallenges(fixture.state)[1]!;
+    const entered = enter(fixture.state, fixture.fleet.id, challenge.id);
+    const event = findResolutionEvent(entered);
+    const entry = activeArenaEntry(entered);
+    const legacyEntry = withoutResolutionSeed(entry);
+    const legacySeed = mixArenaSeed(
+      challenge.combatSeed ^ event.sequence ^ fixture.fleet.id.length,
+    );
+    const fullIdentitySeed = mixArenaSeed(
+      challenge.combatSeed ^ event.sequence ^ stableFleetIdentityContribution(fixture.fleet.id),
+    );
+    expect(fullIdentitySeed).toBe(entry.resolutionSeed);
+    expect(legacySeed).not.toBe(fullIdentitySeed);
+
+    const legacyState: GameState = {
+      ...entered,
+      pveMeta: {
+        ...entered.pveMeta!,
+        activeArenaEntries: [legacyEntry],
+      },
+    };
+    const explicitOldSeedState: GameState = {
+      ...legacyState,
+      pveMeta: {
+        ...legacyState.pveMeta!,
+        activeArenaEntries: [{ ...legacyEntry, resolutionSeed: legacySeed }],
+      },
+    };
+    const legacyResolved = resolveArenaWithoutEconomyAccrual(legacyState, event);
+    const explicitOldSeedResolved = resolveArenaWithoutEconomyAccrual(explicitOldSeedState, event);
+
+    expect(latestArenaCombat(legacyResolved)).toEqual(latestArenaCombat(explicitOldSeedResolved));
+    expect(legacyResolved.fleets).toEqual(explicitOldSeedResolved.fleets);
+    expect(legacyResolved.planets).toEqual(explicitOldSeedResolved.planets);
+  });
+
+  it('preserves legacy seed absence and exact outcome through schema19/save6 load', () => {
+    const roles = getFactionMechanicalRoles('aegis').ships;
+    const fixture = createArenaState('arena-legacy-save-load', {
+      [roles.dreadnought]: 40,
+      [roles.cruiser]: 80,
+    });
+    const challenge = getArenaChallenges(fixture.state)[1]!;
+    const entered = enter(fixture.state, fixture.fleet.id, challenge.id);
+    const legacyEntry = withoutResolutionSeed(activeArenaEntry(entered));
+    const legacyState: GameState = {
+      ...entered,
+      pveMeta: {
+        ...entered.pveMeta!,
+        activeArenaEntries: [legacyEntry],
+      },
+    };
+    const parsed = parseSaveJson(serializeSave(createSaveEnvelope(
+      'arena-legacy-active',
+      legacyState,
+      SAVE_TIME,
+    )));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+
+    expect(parsed.value.formatVersion).toBe(6);
+    expect(parsed.value.state.schemaVersion).toBe(19);
+    const loadedEntry = activeArenaEntry(parsed.value.state);
+    expect('resolutionSeed' in loadedEntry).toBe(false);
+
+    const direct = advance(legacyState, challenge.durationSeconds);
+    const loaded = advance(parsed.value.state, challenge.durationSeconds);
+    expect(createStateChecksum(loaded)).toBe(createStateChecksum(direct));
+    expect(loaded.pveMeta).toEqual(direct.pveMeta);
+    expect(loaded.fleets).toEqual(direct.fleets);
   });
 
   it('charges the canonical cost, holds the fleet and enforces one active entry', () => {
@@ -227,8 +432,7 @@ describe('local deterministic Arena challenges', () => {
     const challenge = getArenaChallenges(fixture.state)[1]!;
     const entered = enter(fixture.state, fixture.fleet.id, challenge.id);
     const afterCost = resourcesAt(entered, fixture.originId);
-    const entry = entered.pveMeta?.activeArenaEntries[0];
-    if (entry === undefined) throw new Error('Arena entry missing.');
+    const entry = activeArenaEntry(entered);
 
     const withdrawn = executeCommand(entered, {
       type: 'WITHDRAW_ARENA_ENTRY',
@@ -245,7 +449,7 @@ describe('local deterministic Arena challenges', () => {
       reputationAward: 0,
     });
     expect(withdrawn.value.pveMeta?.reputations.find(
-      (entry) => entry.empireId === 'player',
+      (candidate) => candidate.empireId === 'player',
     )?.reputation).toBe(0);
     expect(withdrawn.value.fleets.find((fleet) => fleet.id === fixture.fleet.id)?.status)
       .toBe('stationed');
@@ -280,7 +484,7 @@ describe('local deterministic Arena challenges', () => {
       gas: beforeResolution.gas + challenge.reward.gas,
     });
     expect(resolved.pveMeta?.reputations.find(
-      (entry) => entry.empireId === 'player',
+      (candidate) => candidate.empireId === 'player',
     )?.reputation).toBe(10);
     expect(resolved.fleets.find((fleet) => fleet.id === fixture.fleet.id)?.status).toBe('stationed');
 
@@ -305,11 +509,11 @@ describe('local deterministic Arena challenges', () => {
     });
     expect(resourcesAt(resolved, fixture.originId)).toEqual(beforeResolution);
     expect(resolved.pveMeta?.reputations.find(
-      (entry) => entry.empireId === 'player',
+      (candidate) => candidate.empireId === 'player',
     )?.reputation).toBe(0);
   });
 
-  it('preserves an active entry through save/load and resolves identically', () => {
+  it('preserves a new entry seed through save/load and resolves identically', () => {
     const roles = getFactionMechanicalRoles('aegis').ships;
     const fixture = createArenaState('arena-save-partition', {
       [roles.dreadnought]: 50,
@@ -317,16 +521,35 @@ describe('local deterministic Arena challenges', () => {
     });
     const challenge = getArenaChallenges(fixture.state)[1]!;
     const entered = enter(fixture.state, fixture.fleet.id, challenge.id);
+    const enteredSeed = activeArenaEntry(entered).resolutionSeed;
+    expect(enteredSeed).toBeTypeOf('number');
     const envelope = createSaveEnvelope('arena-active', entered, SAVE_TIME);
     const parsed = parseSaveJson(serializeSave(envelope));
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
 
+    expect(activeArenaEntry(parsed.value.state).resolutionSeed).toBe(enteredSeed);
     const direct = advance(entered, challenge.durationSeconds);
     const loaded = advance(parsed.value.state, challenge.durationSeconds);
     expect(createStateChecksum(loaded)).toBe(createStateChecksum(direct));
     expect(loaded.pveMeta).toEqual(direct.pveMeta);
     expect(loaded.fleets).toEqual(direct.fleets);
+  });
+
+  it('repeats the same snapshotted Arena resolution deterministically', () => {
+    const roles = getFactionMechanicalRoles('aegis').ships;
+    const fixture = createArenaState('arena-repeat-resolution', {
+      [roles.cruiser]: 32,
+      [roles.frigate]: 48,
+    });
+    const challenge = getArenaChallenges(fixture.state)[1]!;
+    const entered = enter(fixture.state, fixture.fleet.id, challenge.id);
+    const event = findResolutionEvent(entered);
+    const first = resolveArenaWithoutEconomyAccrual(structuredClone(entered), event);
+    const second = resolveArenaWithoutEconomyAccrual(structuredClone(entered), event);
+
+    expect(createStateChecksum(second)).toBe(createStateChecksum(first));
+    expect(latestArenaCombat(second)).toEqual(latestArenaCombat(first));
   });
 
   it('retains only the newest 64 Arena results', () => {
