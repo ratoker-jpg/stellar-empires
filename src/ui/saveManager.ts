@@ -63,6 +63,7 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
   const host = document.querySelector<HTMLElement>('#system-saves-view');
   if (host === null) throw new Error('System saves workspace is missing.');
   let active = false;
+  let renderGeneration = 0;
   host.innerHTML = `
     <section class="save-manager-campaign" aria-label="Настройки текущей кампании"></section>
     <section class="save-manager-controls">
@@ -121,9 +122,10 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
 
   const render = async (): Promise<void> => {
     if (!active) return;
+    const generation = ++renderGeneration;
     renderCampaign();
-    list.replaceChildren();
     if (options.manager === undefined) {
+      list.replaceChildren();
       saveButton.disabled = true;
       newCampaignButton.disabled = true;
       importInput.disabled = true;
@@ -134,6 +136,8 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
     newCampaignButton.disabled = options.onNewCampaign === undefined;
     importInput.disabled = false;
     const summaries = await options.manager.list();
+    if (!active || generation !== renderGeneration) return;
+    list.replaceChildren();
     if (summaries.length === 0) {
       list.textContent = 'Сохранённых партий пока нет.';
       return;
@@ -232,9 +236,16 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
       host.hidden = false;
       void render().catch((error: unknown) => showMessage(error instanceof Error ? error.message : 'Ошибка чтения сохранений', true));
     },
-    deactivate: () => { active = false; host.hidden = true; confirmPanel.hidden = true; },
+    deactivate: () => {
+      active = false;
+      renderGeneration += 1;
+      host.hidden = true;
+      confirmPanel.hidden = true;
+    },
     refresh: () => { void render(); },
     dispose: () => {
+      active = false;
+      renderGeneration += 1;
       saveButton.removeEventListener('click', onSave);
       newCampaignButton.removeEventListener('click', onNewCampaign);
       cancelNewCampaign.removeEventListener('click', onCancelNewCampaign);
