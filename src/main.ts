@@ -37,6 +37,10 @@ import {
 } from './navigation/spaceMapRoute';
 import { bootstrapRestoredCampaign, shouldShowCampaignCatchUp } from './runtime/campaignBootstrap';
 import { CampaignClockController } from './runtime/CampaignClockController';
+import {
+  E2E_DEFAULT_CAMPAIGN_SEED_SOURCE,
+  readE2eInteractiveNewGameConfig,
+} from './runtime/e2eCampaignLifecycle';
 import { GameApplicationController } from './runtime/GameApplicationController';
 import {
   E2E_RUNTIME_ENABLED,
@@ -55,6 +59,10 @@ import {
   AutoSaveController,
   type AutoSaveStatus,
 } from './storage/AutoSaveController';
+import {
+  activateManualCampaign,
+  resetCampaignAuthority,
+} from './storage/campaignLifecycle';
 import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
 import { loadAutosave } from './storage/loadAutosave';
 import { createCampaignRuntimeMetadata } from './storage/runtimeMetadata';
@@ -151,25 +159,40 @@ async function createFreshGame(statusPrefix = 'Новая партия'): Promis
   readonly runtimeMetadata: CampaignRuntimeMetadata;
   readonly status: string;
 }> {
-  const selection = E2E_RUNTIME_ENABLED
-    ? {
-        faction: 'aegis' as const,
-        campaignSettings: createCampaignSettings({
-          scenarioPreset: 'campaign',
-          worldSpeed: 1,
-          createdAtReal: DEFAULT_CAMPAIGN_CREATED_AT_REAL,
-        }),
-      }
-    : await selectNewGameCampaign();
-  const state = prepareE2eState(createInitialGameState('stellar-empires-m1', {
+  const interactiveE2e = E2E_RUNTIME_ENABLED
+    ? readE2eInteractiveNewGameConfig()
+    : { enabled: false as const };
+  let seedSource: string | number;
+  let selection: Awaited<ReturnType<typeof selectNewGameCampaign>>;
+  if (E2E_RUNTIME_ENABLED && !interactiveE2e.enabled) {
+    seedSource = E2E_DEFAULT_CAMPAIGN_SEED_SOURCE;
+    selection = {
+      faction: 'aegis',
+      seed: 0,
+      campaignSettings: createCampaignSettings({
+        scenarioPreset: 'campaign',
+        worldSpeed: 1,
+        createdAtReal: DEFAULT_CAMPAIGN_CREATED_AT_REAL,
+      }),
+    };
+  } else {
+    if (E2E_RUNTIME_ENABLED && interactiveE2e.seed === undefined) {
+      throw new Error('interactiveNewGame=1 requires a valid uint32 campaignSeed.');
+    }
+    const fixedSeed = interactiveE2e.seed;
+    selection = await selectNewGameCampaign(fixedSeed === undefined ? {} : {
+      initialSeed: fixedSeed,
+      suggestSeed: () => fixedSeed,
+    });
+    seedSource = selection.seed;
+  }
+  const state = prepareE2eState(createInitialGameState(seedSource, {
     playerFaction: selection.faction,
     campaignSettings: selection.campaignSettings,
   }));
   return {
     state,
-    runtimeMetadata: createCampaignRuntimeMetadata(
-      selection.campaignSettings.createdAtReal,
-    ),
+    runtimeMetadata: createCampaignRuntimeMetadata(selection.campaignSettings.createdAtReal),
     status: `${statusPrefix} · ${selection.faction.toUpperCase()} · ${formatWorldSpeed(selection.campaignSettings.worldSpeed)} · ${formatProgressionProfile(selection.campaignSettings.progressionProfile)} · seed ${state.seed}`,
   };
 }
@@ -210,9 +233,7 @@ async function bootstrap(): Promise<void> {
         catchUpUi?.dispose();
       }
       const speed = formatWorldSpeed(initialState.campaignSettings.worldSpeed);
-      const progressionProfile = formatProgressionProfile(
-        initialState.campaignSettings.progressionProfile,
-      );
+      const progressionProfile = formatProgressionProfile(initialState.campaignSettings.progressionProfile);
       startupStatus = restored.source === 'snapshot'
         ? `Партия восстановлена из резерва · ${speed} · ${progressionProfile} · seed ${initialState.seed}`
         : `Партия восстановлена · ${speed} · ${progressionProfile} · seed ${initialState.seed}`;
@@ -243,6 +264,53 @@ async function bootstrap(): Promise<void> {
   }
 
   let runtimeMetadata = initialRuntimeMetadata;
+  let autosaveRequestsBlocked = false;
+  const requestAutosave = (state: GameState, metadata = runtimeMetadata): void => {
+    if (!autosaveRequestsBlocked) autosave?.request(state, metadata);
+  };
+  const stageAutosave = (state: GameState, metadata = runtimeMetadata): void => {
+    if (!autosaveRequestsBlocked) autosave?.stage(state, metadata);
+  };
+  const flushAutosaveWriter = async (): Promise<void> => {
+    if (!autosaveRequestsBlocked) await autosave?.flush();
+  };
+  const quiesceOldWriter = async (): Promise<void> => {
+    if (autosave === undefined) throw new Error('Autosave controller is unavailable.');
+    autosaveRequestsBlocked = true;
+    try {
+      await autosave.flushOrThrow();
+      await autosave.dispose();
+    } catch (error: unknown) {
+      autosaveRequestsBlocked = false;
+      throw error;
+    }
+  };
+  const recoverAfterSwitchFailure = (error: unknown): never => {
+    if (autosaveRequestsBlocked) {
+      window.location.reload();
+      throw error;
+    }
+    throw error;
+  };
+  const resetActiveCampaign = async (): Promise<void> => {
+    if (saveManager === undefined) throw new Error('Save manager is unavailable.');
+    try {
+      await resetCampaignAuthority({ manager: saveManager, quiesceOldWriter });
+      window.location.reload();
+    } catch (error: unknown) {
+      recoverAfterSwitchFailure(error);
+    }
+  };
+  const activateSaveSlot = async (slotId: string): Promise<void> => {
+    if (saveManager === undefined) throw new Error('Save manager is unavailable.');
+    try {
+      await activateManualCampaign(slotId, { manager: saveManager, quiesceOldWriter });
+      window.location.reload();
+    } catch (error: unknown) {
+      recoverAfterSwitchFailure(error);
+    }
+  };
+
   const playerFaction = initialState.planets.find(
     (planet) => planet.ownerEmpireId === 'player',
   )?.factionId ?? 'aegis';
@@ -271,7 +339,7 @@ async function bootstrap(): Promise<void> {
       if (gameRef.current !== undefined) updateGamePresentation(gameRef.current, state);
       spaceMapUiRef.current?.refresh();
       updateE2eRuntimeDiagnostics(state);
-      if (source !== 'clock') autosave?.request(state, runtimeMetadata);
+      if (source !== 'clock') requestAutosave(state);
     },
   });
 
@@ -281,10 +349,7 @@ async function bootstrap(): Promise<void> {
   );
   const game = createGame('phaser-game', initialState, spaceMapNavigation);
   gameRef.current = game;
-  const spaceMapUi = mountSpaceMapNavigation(
-    spaceMapNavigation,
-    () => application.getState(),
-  );
+  const spaceMapUi = mountSpaceMapNavigation(spaceMapNavigation, () => application.getState());
   spaceMapUiRef.current = spaceMapUi;
   updateE2eRuntimeDiagnostics(initialState);
 
@@ -361,6 +426,8 @@ async function bootstrap(): Promise<void> {
     getState: () => application.getState(),
     getRuntimeMetadata: () => runtimeMetadata,
     writeStatus: setStatus,
+    onNewCampaign: resetActiveCampaign,
+    onActivateSlot: activateSaveSlot,
   });
   const systemWorkspace = mountSystemWorkspace({
     saves: saveWorkspace,
@@ -509,11 +576,11 @@ async function bootstrap(): Promise<void> {
     realTimeSource,
     applyCheckpoint: (checkpoint, saveRequested) => {
       runtimeMetadata = checkpoint.runtimeMetadata;
-      autosave?.stage(checkpoint.state, runtimeMetadata);
+      stageAutosave(checkpoint.state, runtimeMetadata);
       if (checkpoint.state !== application.getState()) {
         application.applyState(checkpoint.state, 'clock', '');
       }
-      if (saveRequested) autosave?.request(application.getState(), runtimeMetadata);
+      if (saveRequested) requestAutosave(application.getState(), runtimeMetadata);
     },
     onDiagnostic: (diagnostic) => {
       if (diagnostic === 'clock-rollback') {
@@ -529,20 +596,19 @@ async function bootstrap(): Promise<void> {
   const acknowledgeReturnSummary = async (): Promise<void> => {
     const { pendingReturnSummary: _pendingReturnSummary, ...nextRuntimeMetadata } = runtimeMetadata;
     runtimeMetadata = nextRuntimeMetadata;
+    if (autosaveRequestsBlocked) return;
     autosave?.setRuntimeMetadata(runtimeMetadata);
-    autosave?.request(application.getState(), runtimeMetadata);
-    await autosave?.flush();
+    requestAutosave(application.getState(), runtimeMetadata);
+    await flushAutosaveWriter();
   };
   if (runtimeMetadata.pendingReturnSummary !== undefined) {
-    showCampaignReturnSummary(
-      runtimeMetadata.pendingReturnSummary,
-      acknowledgeReturnSummary,
-    );
+    showCampaignReturnSummary(runtimeMetadata.pendingReturnSummary, acknowledgeReturnSummary);
   }
 
   const flushAutosave = (): void => {
-    autosave?.request(application.getState(), runtimeMetadata);
-    void autosave?.flush();
+    if (autosaveRequestsBlocked) return;
+    requestAutosave(application.getState(), runtimeMetadata);
+    void flushAutosaveWriter();
   };
   window.addEventListener('pagehide', flushAutosave);
   window.addEventListener('beforeunload', () => {
