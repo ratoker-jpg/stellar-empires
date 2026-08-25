@@ -44,6 +44,13 @@ async function waitForSlot(page: Page, slotId: string): Promise<string> {
   return stored;
 }
 
+async function ensureRecoverySnapshot(page: Page): Promise<string> {
+  await page.evaluate(() => {
+    window.dispatchEvent(new Event('pagehide'));
+  });
+  return waitForSlot(page, 'autosave.snapshot');
+}
+
 async function selectAegisCampaign(page: Page, seed: number): Promise<void> {
   await expect(page.getByRole('heading', { name: 'Настройте кампанию' })).toBeVisible({
     timeout: APP_READY_TIMEOUT,
@@ -123,9 +130,12 @@ test('replayable campaign lifecycle keeps storage authority safe across real rel
 
   await saveManualSlot(page, 'manual-survivor');
 
+  const snapshotBeforeImport = await ensureRecoverySnapshot(page);
+  expect(snapshotBeforeImport).not.toBeNull();
+  expect(seedFromSaveJson(snapshotBeforeImport)).toBe(111);
   const primaryBeforeImport = await readSlotJson(page, 'autosave');
-  const snapshotBeforeImport = await readSlotJson(page, 'autosave.snapshot');
   if (primaryBeforeImport === null) throw new Error('Primary autosave missing before Import.');
+  expect(seedFromSaveJson(primaryBeforeImport)).toBe(111);
 
   await markCurrentDocument(page);
   await dispatchImportFile(page, primaryBeforeImport, '');
@@ -142,13 +152,6 @@ test('replayable campaign lifecycle keeps storage authority safe across real rel
   expect(await readSlotJson(page, 'autosave')).toBe(primaryBeforeImport);
   expect(await readSlotJson(page, 'autosave.snapshot')).toBe(snapshotBeforeImport);
 
-  await importSaveThroughUi(page, primaryBeforeImport, 'manual-import');
-  await expect(page.locator('.save-manager-message')).toHaveText('Импортирован слот manual-import');
-  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
-  expect(await readSlotJson(page, 'autosave')).toBe(primaryBeforeImport);
-  expect(await readSlotJson(page, 'autosave.snapshot')).toBe(snapshotBeforeImport);
-  expect(seedFromSaveJson(await readSlotJson(page, 'manual-import'))).toBe(111);
-
   await page.getByRole('button', { name: 'Новая партия' }).click();
   const cancelPanel = page.locator('[data-new-campaign-confirm]');
   await expect(cancelPanel).toBeVisible();
@@ -156,19 +159,21 @@ test('replayable campaign lifecycle keeps storage authority safe across real rel
   await expect(cancelPanel).toBeHidden();
   await expect(page.locator('[data-current-seed]')).toHaveText('111');
   expect(seedFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(111);
+  expect(seedFromSaveJson(await readSlotJson(page, 'autosave.snapshot'))).toBe(111);
 
   await setNextCampaignSeed(page, 222);
   await confirmNewCampaign(page);
   expect(await readSlotJson(page, 'autosave')).toBeNull();
   expect(await readSlotJson(page, 'autosave.snapshot')).toBeNull();
   expect(seedFromSaveJson(await readSlotJson(page, 'manual-survivor'))).toBe(111);
-  expect(seedFromSaveJson(await readSlotJson(page, 'manual-import'))).toBe(111);
 
   await selectAegisCampaign(page, 222);
   const campaignB = await waitForSlot(page, 'autosave');
+  const campaignBGalaxy = galaxyFromSaveJson(campaignB);
   expect(seedFromSaveJson(campaignB)).toBe(222);
-  expect(galaxyFromSaveJson(campaignB)).not.toBe(campaignAGalaxy);
+  expect(campaignBGalaxy).not.toBe(campaignAGalaxy);
   await saveManualSlot(page, 'manual-b');
+  const manualBPayload = await waitForSlot(page, 'manual-b');
 
   await setNextCampaignSeed(page, 111);
   await confirmNewCampaign(page);
@@ -180,16 +185,38 @@ test('replayable campaign lifecycle keeps storage authority safe across real rel
   const campaignASecond = await waitForSlot(page, 'autosave');
   expect(galaxyFromSaveJson(campaignASecond)).toBe(campaignAGalaxy);
 
-  const manualBRow = page.locator('[data-save-slot-id="manual-b"]');
-  await expect(manualBRow).toHaveCount(1);
+  const snapshotABeforePositiveImport = await ensureRecoverySnapshot(page);
+  expect(snapshotABeforePositiveImport).not.toBeNull();
+  expect(seedFromSaveJson(snapshotABeforePositiveImport)).toBe(111);
+  const primaryABeforePositiveImport = await readSlotJson(page, 'autosave');
+  if (primaryABeforePositiveImport === null) throw new Error('Primary A missing before positive Import.');
+  expect(seedFromSaveJson(primaryABeforePositiveImport)).toBe(111);
+
   await markCurrentDocument(page);
-  await manualBRow.getByRole('button', { name: 'Загрузить' }).click();
+  await importSaveThroughUi(page, manualBPayload, 'manual-import');
+  await expect(page.locator('.save-manager-message')).toHaveText('Импортирован слот manual-import');
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+  await expect(page.locator('[data-current-seed]')).toHaveText('111');
+  expect(await readSlotJson(page, 'autosave')).toBe(primaryABeforePositiveImport);
+  expect(await readSlotJson(page, 'autosave.snapshot')).toBe(snapshotABeforePositiveImport);
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-import'))).toBe(222);
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-b'))).toBe(222);
+
+  const importedRow = page.locator('[data-save-slot-id="manual-import"]');
+  await expect(importedRow).toHaveCount(1);
+  await markCurrentDocument(page);
+  await importedRow.getByRole('button', { name: 'Загрузить' }).click();
   await waitForApp(page);
   await expectNewDocument(page);
   await expect(page.locator('[data-current-seed]')).toHaveText('222');
   expect(seedFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(222);
+  expect(galaxyFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(campaignBGalaxy);
   const snapshotAfterLoad = await readSlotJson(page, 'autosave.snapshot');
-  if (snapshotAfterLoad !== null) expect(seedFromSaveJson(snapshotAfterLoad)).toBe(222);
+  if (snapshotAfterLoad !== null) {
+    expect(seedFromSaveJson(snapshotAfterLoad)).toBe(222);
+    expect(galaxyFromSaveJson(snapshotAfterLoad)).toBe(campaignBGalaxy);
+  }
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-import'))).toBe(222);
   expect(seedFromSaveJson(await readSlotJson(page, 'manual-b'))).toBe(222);
   expect(seedFromSaveJson(await readSlotJson(page, 'manual-survivor'))).toBe(111);
 
@@ -199,4 +226,7 @@ test('replayable campaign lifecycle keeps storage authority safe across real rel
   await expectNewDocument(page);
   await expect(page.locator('[data-current-seed]')).toHaveText('222');
   expect(seedFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(222);
+  expect(galaxyFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(campaignBGalaxy);
+  const snapshotAfterReload = await readSlotJson(page, 'autosave.snapshot');
+  if (snapshotAfterReload !== null) expect(seedFromSaveJson(snapshotAfterReload)).toBe(222);
 });
