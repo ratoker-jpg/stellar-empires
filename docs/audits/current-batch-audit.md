@@ -28,39 +28,50 @@ PR2 #184  → 691078ab9ce5b0ab48e7aa69e71fe72322528af0
 PR3 #185  → e974c09e7779b4cf3bbc6d0279b8d35f177a29e6
 ```
 
-`POST-1.0-STRATEGIC-FEEDBACK-TRUTH` is COMPLETE. Archive: `docs/audits/completed/post-1.0-strategic-feedback-truth.md`. There is no PR4.
+`POST-1.0-STRATEGIC-FEEDBACK-TRUTH` is COMPLETE. There is no PR4.
 
-## 2. Graphify evidence
+## 2. Evidence
 
-Repository-pinned Graphify is `0.8.38`. Baseline runtime-tree evidence from #1402 remains valid for the starting runtime tree:
+Repository-pinned Graphify is `0.8.38`. The runtime tree remains the PR #185 tree:
 
 - 464 code files;
 - 3,639 nodes;
 - 12,757 edges;
 - 145 communities;
-- 100% extraction;
-- exit 0.
+- 100% extraction.
 
-Graphify is an accelerator only. Selected findings and controller blockers below are confirmed by direct source/tests/UI.
+Graphify is an accelerator only; controller findings below were resolved against direct current-main source.
 
-## 3. Fresh product sweep
+### 2.1 `SaveManager.import()` production callers — CLOSED
 
-| Domain | Classification | Current-main finding |
-|---|---|---|
-| economy / research / production | VERIFIED | Existing producer→consumer paths remain wired; no new blocker found. |
-| fleets / combat / PvE / Arena | VERIFIED / DISPROVED stale gaps | Stable combat identity, Arena canonical reports, tactical snapshots and combat-only ranking remain closed. |
-| intelligence / logistics / colonization | VERIFIED | Existing deterministic runtime and UI consumers remain live. |
-| bots | VERIFIED + RESEARCH | Personality/risk/outcome recovery has consumers; `difficulty` remains internal dead metadata without a current player-facing contract. |
-| endgame | VERIFIED | Organic Obelisk, Fresh Game → Terminal, terminal freeze/save-load and bounded faction matrix remain permanent gates. |
-| save/load / campaign switching | VERIFIED GAP | Campaign switching lifecycle is unsafe/incomplete: no safe new-campaign replacement path, and current manual-slot activation can race with the old autosave writer during reload. |
-| replayability / browser UX | VERIFIED GAP | Real fresh games reuse one hard-coded seed source; current E2E harness also bypasses the interactive picker required by lifecycle Browser acceptance. |
-| advertised mechanics | VERIFIED seam / DECISION | Bank credit-efficiency remains evidence-gated; no credit system is authorized. |
+Graphify import-dependency evidence for current runtime shows production imports of `SaveManager` from:
 
-## 4. Strongest VERIFIED gap — campaign switching lifecycle
+- `src/main.ts`;
+- `src/runtime/campaignBootstrap.ts`;
+- `src/storage/AutoSaveController.ts`;
+- `src/storage/loadAutosave.ts`;
+- `src/ui/saveManager.ts`.
 
-This is one coherent player-facing lifecycle/data-flow problem, not multiple independent features.
+Direct inspection of those production files finds the player-facing `.import(...)` call only in `src/ui/saveManager.ts#onImport()`.
 
-### 4.1 Hard-coded real-browser seed
+The other production consumers use construction plus save/snapshot/recover/bootstrap behavior and do not call `SaveManager.import(...)`.
+
+`tests/storage/saveManager.test.ts` also imports `SaveManager`, but it is test-only and is not a production authority path.
+
+Therefore there is no unresolved second production import caller: player-facing import safety can be enforced at the save-manager UI boundary. Generic `SaveManager.import()` may still be hardened if a focused regression proves that is the minimal safer implementation, but such hardening is not required by architecture.
+
+## 3. Strongest VERIFIED gap — campaign lifecycle authority
+
+The strongest gap is one coherent player-facing `System / Saves → persistence authority → bootstrap` lifecycle problem:
+
+1. ordinary fresh-game bootstrap reuses one hard-coded seed source;
+2. safe New Campaign replacement is missing and old autosave can resurrect during reload;
+3. current manual-slot activation can write selected B into primary and then old in-memory A can pagehide-flush over B;
+4. current Import can bypass storage-only intent and write a payload directly into reserved `autosave` / `autosave.snapshot` authority.
+
+These are one implementation boundary, not four separate features.
+
+### 3.1 Hard-coded real-browser seed
 
 `src/main.ts#createFreshGame()` currently uses:
 
@@ -68,92 +79,68 @@ This is one coherent player-facing lifecycle/data-flow problem, not multiple ind
 createInitialGameState('stellar-empires-m1', ...)
 ```
 
-for ordinary fresh campaigns. The seed drives generated universe, neutral forces, space objects and deterministic world-event choice. Same seed source reproduces the same initial state; different explicit seeds must produce different deterministic world evidence.
+Seed materially drives deterministic generated-world/PvE variation.
 
 **Classification:** VERIFIED replayability gap.
 
-### 4.2 No safe new-campaign lifecycle
+### 3.2 New-campaign resurrection race
 
-Bootstrap restores a valid primary autosave, or `autosave.snapshot` if primary is missing/invalid, before fresh-game selection. Reserved slots are protected in the current UI and terminal campaigns intentionally freeze.
+Current page lifecycle can flush the old campaign through `pagehide`, hidden `visibilitychange`, campaign-clock and application-transition autosave producers. Reserved-slot deletion before writer quiescence can therefore recreate the old campaign.
 
-A player therefore has no normal safe in-app route to replace the current local campaign and reach the real new-game picker while preserving manual saves.
+**Classification:** VERIFIED lifecycle/data-integrity gap.
 
-**Classification:** VERIFIED lifecycle gap.
-
-### 4.3 New-campaign autosave resurrection race
-
-`src/main.ts` registers `pagehide` and hidden `visibilitychange` handlers that call the autosave flush path. Campaign-clock checkpoints and application transitions can also stage/request saves. `AutoSaveController` may own a delayed timer, pending save, active write and write chain.
-
-Therefore deleting `autosave.snapshot` and `autosave` before quiescing the old writer is unsafe: reload/pagehide can recreate the old campaign after deletion.
-
-**Classification:** VERIFIED persistence/lifecycle blocker.
-
-### 4.4 Manual-save activation resurrection race
+### 3.3 Manual-slot activation resurrection race
 
 Current `src/ui/saveManager.ts#activateSlot()` does:
 
 ```text
-load selected manual slot
-→ save selected state/runtime metadata into autosave
-→ window.location.reload()
+load manual B
+→ save B into primary autosave
+→ reload
 ```
 
-But the same old page still owns the live autosave writer. During reload, `pagehide`/hidden visibility can request+flush the old in-memory campaign and overwrite the newly selected manual state in primary `autosave`.
+while the old A `AutoSaveController` remains live. Reload can let old A overwrite B.
 
-This is the same campaign-switch authority race as new-campaign reset. The implementation contract must therefore use one common rule:
+**Classification:** VERIFIED lifecycle/data-integrity gap.
+
+### 3.4 Reserved-slot import authority bypass
+
+Current `src/ui/saveManager.ts#onImport()` computes:
 
 ```text
-ANY CAMPAIGN SWITCH
-→ quiesce old writer
-→ perform authoritative persistence switch
-→ reload/bootstrap
+targetSlotId =
+  target.length > 0 && !isReservedSlot(target)
+    ? target
+    : undefined
 ```
 
-Minimum covered switches:
+and calls:
 
-- `Новая партия`;
-- `Загрузить` / activate manual save.
+```text
+options.manager.import(json, targetSlotId)
+```
 
-**Classification:** VERIFIED P1 lifecycle/data-integrity blocker.
+Current `SaveManager.import()` uses:
 
-### 4.5 Current Browser harness bypasses the new-game dialog
+```text
+const slotId = targetSlotId?.trim() || parsed.value.slotId;
+```
 
-`playwright.config.ts` runs Browser E2E with `VITE_E2E=1`. Current `createFreshGame()` uses fixed E2E selection whenever E2E runtime is enabled and bypasses `selectNewGameCampaign()`.
+Therefore blank target or a typed reserved target can pass `undefined`, allowing a payload whose own `slotId` is `autosave` or `autosave.snapshot` to mutate reserved campaign authority.
 
-A lifecycle Browser test cannot truthfully claim `reset → real new-game dialog → explicit seed` without a narrow deterministic E2E seam.
+Consequences:
 
-**Classification:** VERIFIED Browser-acceptance blocker.
+- imported `autosave` can be overwritten by the live old writer;
+- imported `autosave.snapshot` can become unexpected future recovery authority;
+- Import can silently become a campaign-authority transition even though the UI presents it as storage import.
 
-## 5. Lower-priority findings
+**Classification:** VERIFIED P2 authority-bypass gap.
 
-- Bank / credit efficiency: producer exists, authoritative credit semantics do not. **REJECT direct implementation**.
-- `BotDifficulty`: dead/internal metadata, no current player promise. **RESEARCH / no standalone PR**.
-- achievements/meta progression: **RESEARCH**.
-- moving-object trajectories: **RESEARCH**.
-- further bot differentiation: **RESEARCH**.
+### 3.5 Browser picker reachability
 
-Nemexia remains reference, never specification. Campaign-switch/replay lifecycle is `KEEP_STELLAR`; achievements/trajectories remain `RESEARCH`; direct Bank/credit formula port is `REJECT`.
+Browser E2E runs with `VITE_E2E=1`, while current `createFreshGame()` bypasses the real picker under that mode. One narrow deterministic E2E seam remains required for truthful lifecycle acceptance.
 
-## 6. DISPROVED stale gaps
-
-Do not reopen without new evidence:
-
-- Organic Fresh Game → Terminal blocked;
-- Organic Obelisk unavailable;
-- terminal save/load/partition determinism missing;
-- faction terminal closure Aegis-only;
-- normal/Arena stable combat identity missing;
-- Arena absent from unified reports;
-- immutable tactical combat feedback missing;
-- ranking generic-success inflation;
-- bots unable to perform legal PvP;
-- bot personalities having no runtime effect;
-- research UI/runtime requirement drift;
-- fake multiple construction queues;
-- wholly static world;
-- broad Scrapyard/Trade Center/Ecology advertised-effect ghosts.
-
-## 7. DECISION — one implementation PR
+## 4. DECISION — one implementation PR
 
 Proposed batch:
 
@@ -165,61 +152,41 @@ Only work item:
 
 Exact implementation count: **1**.
 
-One PR remains the minimum coherent boundary because seed authority, new-campaign reset and manual-save activation all traverse the same bootstrap/persistence/UI lifecycle. Splitting manual activation into a separate PR would duplicate the same writer-quiescence coordination and leave an incomplete campaign-switch boundary.
+Reason: New Campaign, manual activation and import/storage all meet at one `System / Saves` authority boundary; seed/new-game bootstrap is the same player lifecycle. Splitting the P2 into a second PR would create duplicate authority rules and an intermediate unsafe UI state.
 
 Implementation remains unauthorized until controller-approved merge of Audit #186.
 
-## 8. Player-facing seed contract
+## 5. Player-facing seed contract
 
-The player-facing campaign seed is an explicit **uint32 numeric seed**.
-
-Binding semantics:
-
-- explicit numeric seed becomes existing persisted `GameState.seed` exactly;
-- legacy string seed source remains compatible through existing `normalizeSeed(string)` semantics;
-- real UI generates a fresh uint32 seed **suggestion** before GameState creation;
-- player may reroll the suggestion;
+- player-facing seed is explicit uint32;
+- explicit numeric seed becomes exact persisted `GameState.seed`;
+- legacy string source remains compatible through existing `normalizeSeed(string)`;
+- real UI may suggest/reroll a uint32 via Web Crypto before state creation;
 - same explicit seed + same faction/settings reproduces the same deterministic initial world;
-- different explicit seeds must produce demonstrably different deterministic world evidence;
-- if restart knows the current campaign seed, implementation may guarantee only the immediate suggestion differs from the current seed;
-- no global-history uniqueness promise is made for uint32;
-- Web Crypto may be used only for real-user pre-state suggestion;
+- different explicit seeds must produce different deterministic world evidence;
+- no global-history uniqueness promise;
 - `Date.now()`, wallclock-derived seed and `Math.random()` are forbidden;
-- unit/Browser tests use explicit fixed seeds only.
+- unit/Browser tests use explicit fixed seeds;
+- schema v19 / save v6 / migration none.
 
-Persistence stays schema v19 / save v6 / migration none.
+## 6. Binding common campaign-switch authority
 
-## 9. Binding common campaign-switch authority
-
-### 9.1 General rule
-
-Any switch away from the current in-memory campaign must obey:
+Any actual switch away from current in-memory campaign A must obey:
 
 ```text
 validate target/intent
-→ block new autosave requests from old page
+→ block new old-page autosave requests
 → drain pending/active old-writer work with failure propagation
 → dispose/quiesce old AutoSaveController
 → perform authoritative persistence switch
 → reload through existing bootstrap
 ```
 
-After quiescence, no `pagehide`, `visibilitychange`, campaign-clock checkpoint, application transition or other old-page callback may be able to write the old campaign again.
+After quiescence, `pagehide`, hidden `visibilitychange`, campaign-clock checkpoints and application transitions may not write A again.
 
-`src/storage/AutoSaveController.ts` remains **read/verify by default**. Main-level lifecycle coordination is preferred if it can prove this contract. A minimal controller change is allowed only if a regression proves existing public semantics cannot safely express quiescence.
+`src/storage/AutoSaveController.ts` remains read/verify by default. Main/UI coordination is preferred if existing controller semantics are sufficient.
 
-### 9.2 New-campaign reset ordering
-
-After destructive confirmation:
-
-1. block new old-page autosave requests;
-2. drain/quiesce/dispose the writer with failure propagation;
-3. delete `autosave.snapshot`;
-4. only after snapshot deletion succeeds delete primary `autosave`;
-5. preserve all manual/user-named slots;
-6. reload through existing bootstrap;
-7. `loadAutosave()` must be `missing`, so the real new-game path can run;
-8. pagehide/visibility cannot resurrect the old campaign.
+### 6.1 New Campaign
 
 ```text
 confirm
@@ -228,265 +195,409 @@ confirm
 → delete autosave
 → reload/bootstrap
 → loadAutosave() == missing
-→ interactive new-game picker
+→ real new-game path
 ```
 
-### 9.3 Manual-slot activation snapshot authority decision
+Manual/user-named slots survive.
 
-Direct source resolves snapshot precedence now:
+### 6.2 Manual `Загрузить`
 
-- `loadAutosave()` delegates to `SaveManager.recover()`;
-- a valid primary `autosave` always wins;
-- `autosave.snapshot` is consulted only if primary is missing/invalid.
+Recovery precedence is direct-source resolved:
 
-However leaving an old-campaign snapshot after activating manual B would preserve stale A as future fallback. The binding manual activation contract therefore **must remove the stale snapshot before replacing primary**. No old-A recovery snapshot may remain after the switch.
+- valid primary wins;
+- snapshot is fallback only when primary is missing/invalid.
 
-Immediate recreation of a snapshot is **not required** for correctness. The authoritative minimum is:
+Binding ordering:
 
 ```text
-manual B validated
-→ quiesce old writer A
+validate/load manual B
+→ block A autosave producers
+→ drain/quiesce/dispose A writer
 → delete stale autosave.snapshot(A)
-→ save B state + B runtimeMetadata into primary autosave
+→ write B state + B runtimeMetadata into primary autosave
+→ preserve manual B
 → reload/bootstrap
 → loadAutosave() resolves primary B
 ```
 
-The manual source slot B itself is never modified/deleted. Normal autosave may create a fresh B-derived recovery snapshot later. If implementation chooses to recreate the snapshot immediately, it may contain only B and must not reintroduce A.
+Immediate B snapshot recreation is not required; if implementation creates one immediately, it may contain B only.
 
-This decision removes the critical UNKNOWN: stale A cannot override or later recover over the selected campaign after a successful manual switch.
+## 7. Binding Import contract — STORAGE ONLY
 
-### 9.4 Manual-slot activation success ordering
+Import is **not** a campaign switch.
 
-On `Загрузить` manual slot B:
+Player-facing Import must never directly mutate reserved campaign authority.
 
-1. validate/load B without changing active state;
-2. block new autosave requests from current campaign A;
-3. drain pending timer/save, active write and write chain with failure propagation;
-4. dispose/quiesce old writer A;
-5. delete stale `autosave.snapshot` while primary A remains authoritative;
-6. only after snapshot deletion succeeds, write B state and B runtime metadata into primary `AUTOSAVE_SLOT_ID`;
-7. keep manual slot B unchanged;
-8. reload through existing bootstrap;
-9. bootstrap must resolve primary B, never old A;
-10. pagehide/visibility during reload cannot write A back.
+### 7.1 Required UI target
 
-`src/storage/SaveManager.ts` is implementation-authorized for a narrow ordered campaign-switch helper if that reduces duplication. No new persistence subsystem is authorized.
+On JSON import the UI requires an explicit target slot that is:
 
-## 10. Binding failure semantics
+- non-empty;
+- not `autosave`;
+- not `autosave.snapshot`.
 
-### New-campaign reset
+Binding validation:
 
-- cancel before quiesce → no state change; current autosave continues normally;
-- quiesce/drain failure → delete neither reserved slot; keep/re-enable a working autosave path or reload surviving current primary;
-- snapshot delete failure → primary remains untouched/recoverable;
-- primary delete failure after snapshot deletion → primary remains recovery authority;
-- after destructive-phase failure, do not leave the current page indefinitely with autosave silently disabled; reload surviving primary is allowed/preferred.
+- blank target → explicit validation error, no import;
+- target `autosave` → explicit validation error, no import;
+- target `autosave.snapshot` → explicit validation error, no import;
+- player UI must never call `SaveManager.import(json, undefined)`.
 
-### Manual-slot activation
+### 7.2 Payload `slotId` has no player-facing authority
 
-- manual load/validation failure → no switch and no autosave shutdown;
-- writer quiesce/drain failure → do not delete snapshot, do not overwrite primary, selected manual slot remains untouched, existing campaign A remains authoritative;
-- stale-snapshot deletion failure → do not overwrite primary; A remains authoritative;
-- primary write of B failure after snapshot deletion → do not reload into a mixed/ambiguous state; existing IndexedDB `put` transaction failure must leave the prior committed primary as authority, and the safest recovery is reload of the surviving primary A to reconstruct a normal autosave controller;
-- if primary B write succeeds, B is authoritative; reload is allowed only after the old writer is inert and stale A snapshot is absent;
-- no failure path may leave the app silently with autosave disabled indefinitely.
+Imported JSON may claim any original `slotId`, including:
 
-## 11. Binding deterministic E2E seam
+- `autosave`;
+- `autosave.snapshot`;
+- another manual name.
 
-Existing Browser tests retain current deterministic fixture bootstrap.
+For player UI import, that original ID is data only. The UI-selected explicit manual target controls storage destination.
 
-Add one narrow E2E-only interactive-new-game mode, semantic shape:
+Example:
+
+```text
+payload.slotId = autosave
+target = manual-import
+→ store rewritten envelope only as manual-import
+→ primary autosave unchanged
+→ autosave.snapshot unchanged
+```
+
+### 7.3 No writer quiescence and no reload for Import
+
+Because compliant Import is storage-only:
+
+- current primary/snapshot authority stays unchanged;
+- current campaign stays active;
+- old `AutoSaveController` does not need quiescence;
+- no reload occurs;
+- Import never silently activates the imported campaign.
+
+To play an imported campaign:
+
+```text
+Import JSON → manual slot
+→ user later presses Загрузить
+→ safe campaign-switch contract from §6.2
+→ only then imported campaign becomes active
+```
+
+This preserves exactly one campaign-authority transition: `Загрузить`.
+
+### 7.4 Generic API policy
+
+Direct caller resolution proves the only production `SaveManager.import(...)` consumer is `src/ui/saveManager.ts`.
+
+Therefore the binding minimum is UI-boundary enforcement. `src/storage/SaveManager.ts` remains implementation-authorized and may be hardened with a narrow helper/API guard if focused regression evidence shows that is the simplest safer implementation.
+
+No new persistence architecture is authorized.
+
+## 8. Binding failure semantics
+
+### New Campaign
+
+- cancel before quiesce → no change;
+- quiesce/drain failure → delete neither reserved slot;
+- snapshot delete failure → primary untouched;
+- primary delete failure → surviving primary remains recovery authority;
+- no failed switch leaves autosave silently disabled indefinitely.
+
+### Manual activation
+
+- load/validation failure → no switch;
+- quiesce/drain failure → persistence untouched; A remains authority;
+- stale snapshot delete failure → do not overwrite primary;
+- B primary write failure after snapshot deletion → no ambiguous reload; prior committed primary A remains authority and may be reloaded;
+- successful B write → reload only with old writer inert and stale A snapshot absent;
+- manual source B remains preserved.
+
+### Import
+
+- blank target → validation error, no import;
+- reserved target → validation error, no import;
+- malformed JSON → existing parse/validation error, no storage mutation;
+- valid manual target → exactly that manual slot is written;
+- any import failure → current primary and snapshot unchanged;
+- import never silently activates the imported campaign.
+
+## 9. Deterministic E2E seam
+
+Existing Browser tests retain current fixture bootstrap.
+
+Focused lifecycle acceptance may use:
 
 ```text
 VITE_E2E=1
 + interactiveNewGame=1
-+ explicit fixed uint32 campaignSeed=<value>
++ campaignSeed=<explicit fixed uint32>
 ```
 
-Exact parameter spelling may be adjusted, but semantics are binding:
+Exact query names may vary, but semantics are binding:
 
-- default E2E tests still bypass the interactive picker;
-- only focused campaign-lifecycle acceptance opts into the real picker;
-- focused test supplies/injects an explicit fixed uint32 seed;
-- Browser test never depends on Web Crypto;
-- seam may live in `src/runtime/e2eScenario.ts` plus narrow `src/main.ts` coordination;
-- `playwright.config.ts` remains read/verify unless a regression proves config change necessary.
+- default E2E behavior stays deterministic and unchanged;
+- only focused lifecycle test reaches real picker;
+- focused test uses fixed explicit seed, never Web Crypto;
+- seam may live in `src/runtime/e2eScenario.ts` plus narrow `src/main.ts`;
+- `playwright.config.ts` remains read/verify unless regression proves a minimal change necessary.
 
-## 12. Expected implementation/read-write paths
+## 10. Authorized implementation paths after Audit merge only
 
-Primary implementation-authorized paths after Audit merge only:
+Primary read/write:
 
-- `src/main.ts` — common campaign-switch orchestration, old-writer quiescence guard/reference, E2E picker selection;
-- `src/ui/saveManager.ts` — `Новая партия` and manual-slot activation through common safe switch contract;
-- `src/storage/SaveManager.ts` — ordered reserved-slot switch helper if useful;
-- `src/simulation/createInitialGameState.ts` — narrow explicit numeric-seed path;
-- `src/simulation/seed.ts` — only if a uint32 validator/helper is needed;
-- `src/ui/newGameFactionPicker.ts` — visible seed field, reroll and fixed-seed injection;
-- `src/runtime/e2eScenario.ts` — E2E-only interactive-new-game/fixed-seed seam.
+- `src/main.ts`;
+- `src/ui/saveManager.ts`;
+- `src/storage/SaveManager.ts`;
+- `src/simulation/createInitialGameState.ts`;
+- `src/simulation/seed.ts` only if narrow uint32 helper is needed;
+- `src/ui/newGameFactionPicker.ts`;
+- `src/runtime/e2eScenario.ts`.
 
-Expected focused tests:
-
-- `tests/simulation/createInitialGameState.test.ts`;
-- `src/ui/newGameFactionPicker.test.ts`;
-- `tests/storage/saveManager.test.ts`;
-- focused lifecycle/autosave regressions for reset and manual activation;
-- focused Browser test such as `tests/e2e/campaignLifecycle.spec.ts`.
-
-Read/verify unless a failing regression proves a necessary minimal change:
+Read/verify unless direct regression proves a necessary minimal change:
 
 - `src/storage/AutoSaveController.ts`;
 - `src/storage/loadAutosave.ts`;
 - `src/runtime/campaignBootstrap.ts`;
-- `playwright.config.ts`;
 - `src/storage/IndexedDbSaveRepository.ts`;
-- universe/world-event/endgame runtime.
+- `playwright.config.ts`.
 
-## 13. Regression-first implementation contract
+Expected focused tests include:
 
-The implementation PR must start with RED semantic regressions before runtime changes.
+- `tests/simulation/createInitialGameState.test.ts`;
+- `src/ui/newGameFactionPicker.test.ts`;
+- `tests/storage/saveManager.test.ts`;
+- focused campaign lifecycle/autosave authority regressions;
+- focused Browser lifecycle spec.
 
-Required RED coverage covers three player lifecycle failures plus E2E reachability:
+## 11. Regression-first implementation contract
 
-1. current real-browser fresh path resolves to the same hard-coded seed/world;
-2. **new-campaign reset resurrection:** primary A + snapshot A + manual slot exist; old writer has pending/current A; reset attempts deletion/reload; pagehide can otherwise recreate A;
-3. **manual-slot activation resurrection:** current campaign A in memory, primary A, snapshot A, manual B; current activation writes B primary then reloads while old writer can pagehide-flush A back over B;
-4. current `VITE_E2E=1` bootstrap bypasses the interactive picker.
+Implementation starts with semantic RED coverage for:
 
-RED failure must be on semantic assertions, not lint/type/fixture noise.
+1. repeated hard-coded default seed/world;
+2. new-campaign reset resurrection;
+3. manual-slot activation resurrection;
+4. reserved-slot import authority bypass;
+5. current E2E real-picker bypass.
 
-## 14. Focused unit/storage acceptance
+### 11.1 Import RED/acceptance matrix
+
+**A — payload primary + blank target**
+
+```text
+payload.slotId = autosave
+target = blank
+
+CURRENT: can write reserved autosave through fallback.
+EXPECTED: rejected before authority mutation.
+```
+
+**B — payload snapshot + reserved target**
+
+```text
+payload.slotId = autosave.snapshot
+target = autosave.snapshot
+
+CURRENT: UI converts target to undefined, generic import falls back to reserved payload id.
+EXPECTED: rejected.
+```
+
+**C — reserved payload + explicit manual target**
+
+```text
+payload.slotId = autosave
+target = manual-import
+
+EXPECTED:
+stored only as manual-import
+primary autosave unchanged
+snapshot unchanged
+current campaign unchanged
+no reload
+```
+
+**D — activation only through `Загрузить`**
+
+```text
+valid manual import
+→ user presses Загрузить manual-import
+→ quiesced manual-activation contract
+→ imported campaign becomes active only here
+```
+
+### 11.2 Existing lifecycle regressions retained
+
+New Campaign regression must prove pending/current A cannot recreate deleted reserved state through simulated pagehide/reload.
+
+Manual activation regression must prove:
+
+```text
+A in memory
++ primary A
++ snapshot A
++ manual B
++ pending/current A writer
+→ activate B
+→ quiesce A
+→ delete stale snapshot A
+→ primary B
+→ simulated pagehide/reload
+→ loadAutosave() resolves B
+→ never A
+→ manual B remains
+```
+
+## 12. Focused unit/storage acceptance
 
 Minimum deterministic coverage:
 
-1. explicit uint32 is preserved exactly as `GameState.seed`;
-2. same numeric seed produces identical initial state/world evidence;
-3. different numeric seeds produce different deterministic world evidence;
-4. legacy string seed-source behavior is unchanged;
-5. seed UI validates uint32 bounds and generator is injectable;
-6. common campaign-switch code quiesces old writer before authoritative persistence mutation;
-7. reset snapshot deletion precedes primary deletion;
-8. reset failure rules preserve a recoverable current campaign and working autosave after recovery;
-9. successful reset plus simulated pagehide/reload leaves `loadAutosave()` missing and manual slots intact;
-10. manual B is validated before quiescence;
-11. manual switch quiesces A before deleting stale snapshot or overwriting primary;
-12. stale snapshot A is removed before B becomes primary;
-13. after successful manual activation, `loadAutosave()` resolves B from primary and cannot recover A;
-14. simulated pagehide/reload after manual activation cannot overwrite B with A;
-15. manual source slot B remains present and unchanged;
-16. manual validation/quiesce/snapshot-delete/primary-write failures obey section 10 and do not leave autosave silently disabled;
-17. existing save/import/export/recovery tests remain green.
+1. explicit uint32 seed persistence/reproducibility/difference;
+2. legacy string-seed compatibility;
+3. New Campaign quiescence before reserved deletion;
+4. successful reset + pagehide/reload leaves `loadAutosave()` missing;
+5. manual activation quiesces A before stale snapshot deletion / B primary write;
+6. successful manual activation + pagehide/reload resolves B and never A;
+7. manual source slot remains present;
+8. blank import target is rejected before `SaveManager.import`;
+9. `autosave` import target is rejected;
+10. `autosave.snapshot` import target is rejected;
+11. payload `slotId=autosave` + `manual-import` target writes only `manual-import`;
+12. payload `slotId=autosave.snapshot` + manual target also writes only manual target;
+13. primary/snapshot/current campaign remain unchanged after storage-only import;
+14. malformed/failing import leaves authority untouched;
+15. existing save/import/export/recovery tests remain green.
 
-## 15. Browser acceptance
+## 13. Browser acceptance
 
-Focused lifecycle Browser acceptance must prove both switch types.
+Focused lifecycle Browser acceptance must prove:
 
-### New campaign
+### New Campaign
 
-1. start from persisted running/terminal campaign with primary + snapshot + manual save;
-2. `System → Saves → Новая партия` is visible;
-3. cancel leaves current campaign intact;
-4. confirm causes old writer quiescence before reserved deletion;
-5. real pagehide/reload does not resurrect old campaign;
-6. actual new-game dialog is reached through the dedicated E2E mode;
-7. explicit fixed uint32 seed is used, not Web Crypto;
-8. same seed reproduces same deterministic world evidence;
-9. different seed changes deterministic world evidence;
-10. manual save survives.
+- persisted A + snapshot + manual save;
+- cancel preserves A;
+- confirm quiesces A before deletion;
+- real reload cannot resurrect A;
+- actual picker is reached via deterministic E2E seam;
+- explicit fixed seed is honored/reproducible;
+- manual saves survive.
 
-### Manual save activation
+### Manual activation
 
-1. create/persist manual slot B;
-2. continue/change current campaign A so A and B have distinguishable seed/state/runtime evidence;
-3. ensure primary A and recovery snapshot A exist;
-4. choose `Загрузить` B;
-5. real reload occurs only after old writer A is quiesced and stale snapshot A is removed;
-6. loaded runtime/seed/state evidence corresponds to B;
-7. pagehide/visibility cannot overwrite B with A;
-8. recovery cannot restore A instead of B;
-9. manual slot B remains present after activation.
+- manual B exists;
+- current A is changed so A/B have distinguishable seed/state/runtime evidence;
+- primary/snapshot A exist;
+- `Загрузить B`;
+- real reload occurs after quiescence and stale snapshot removal;
+- B seed/state/runtime wins;
+- A cannot overwrite B on pagehide or return via recovery;
+- manual B remains.
 
-Production Pages smoke and the existing full Browser suite remain mandatory.
+### Import storage-only
 
-## 16. Determinism / persistence / performance
+1. current campaign A active;
+2. primary A + snapshot A exist;
+3. choose JSON whose original `slotId` is `autosave`;
+4. blank target is rejected;
+5. reserved `autosave` target is rejected;
+6. reserved `autosave.snapshot` target is rejected;
+7. primary A unchanged;
+8. snapshot A unchanged;
+9. no reload/campaign switch occurs;
+10. import same JSON with explicit `manual-import`;
+11. `manual-import` appears in save list while A stays active;
+12. click `Загрузить manual-import`;
+13. reuse safe manual activation assertions so quiescence occurs and imported campaign becomes active only then.
+
+Assertions may share helpers with the manual-load Browser scenario; do not duplicate the entire flow unnecessarily.
+
+Production Pages smoke and full Browser suite remain mandatory.
+
+## 14. Determinism / persistence / performance
 
 - schema v19;
 - save format v6;
 - migration none;
-- existing `GameState.seed` remains persisted deterministic authority;
-- no wallclock RNG;
+- `GameState.seed` remains deterministic authority;
+- no wallclock RNG for campaign seed;
 - Web Crypto only suggests real-user pre-state seed;
-- tests use explicit fixed seeds;
+- import does not mutate active campaign authority;
+- no new persistence subsystem;
 - no new simulation loop;
-- common campaign-switch coordination is bounded persistence/UI work;
-- Organic Fresh Game → Terminal, Organic Obelisk, terminal save-load/partition determinism, bounded faction matrix and campaign catch-up performance remain mandatory.
+- Organic Fresh Game → Terminal, Organic Obelisk, terminal save-load/partition determinism, bounded faction matrix and catch-up performance remain mandatory.
 
-## 17. Risks / non-goals
+## 15. Risks / non-goals
 
 Primary risks:
 
-- old campaign resurrection from pagehide/visibility autosave during reset;
-- manual activation B overwritten by old in-memory A during reload;
-- stale snapshot A surviving a successful switch and later recovering over B;
+- old A resurrection on New Campaign;
+- old A overwriting manually activated B;
+- stale A snapshot recovering over B;
+- reserved import silently mutating primary/snapshot authority;
+- import target validation accidentally falling back to payload `slotId`;
 - silent disabled autosave after failed switch;
-- false seed reproducibility if displayed numeric seed is re-hashed;
-- E2E acceptance that never reaches the real picker;
-- random/flaky Browser seed generation;
-- accidental mutation/deletion of manual source slots.
+- false seed reproducibility;
+- Browser acceptance that bypasses real picker.
 
 Non-goals:
 
+- no Import-as-campaign-switch flow;
+- no new persistence architecture;
+- no schema/save bump;
+- no second implementation PR for import repair;
 - no achievements/meta progression;
-- no global history/seed uniqueness database;
 - no cloud saves;
 - no Bank/credit subsystem;
 - no moving trajectories;
 - no combat/economy/bot rebalance;
-- no campaign difficulty system;
-- no schema/save bump;
-- no persistence architecture rewrite;
-- no second implementation PR for manual-load repair.
+- no campaign difficulty system.
 
-## 18. Critical UNKNOWN closure
+## 16. Critical UNKNOWN closure
 
 ```text
 criticalUnknownsResolved = true
 criticalUnknowns = []
 ```
 
-Resolved before Audit readiness:
+Resolved:
 
-1. numeric seed authority: explicit uint32 → exact `GameState.seed`; legacy string source remains compatible;
-2. default seed wording: fresh suggestion/reroll, not global uniqueness;
-3. common switch authority: old autosave writer must be inert before reset deletion or manual activation overwrite;
-4. reset snapshot authority: snapshot delete before primary delete;
-5. manual activation snapshot authority: stale old-campaign snapshot is deleted before writing selected manual campaign into primary; immediate snapshot recreation is not required;
-6. failure semantics: no ambiguous reload and no silently disabled autosave page;
-7. reset resurrection regression: successful reset + pagehide/reload leaves `loadAutosave()` missing;
-8. manual activation regression: successful B activation + pagehide/reload resolves B and never A;
-9. Browser reachability: one deterministic `VITE_E2E=1` query mode reaches the real dialog with explicit fixed seed.
+1. numeric seed authority;
+2. common old-writer quiescence rule;
+3. New Campaign snapshot/primary ordering;
+4. manual activation snapshot authority;
+5. manual-switch failure semantics;
+6. deterministic real-picker E2E reachability;
+7. all production `SaveManager.import(...)` callers;
+8. Import product decision: storage-only;
+9. reserved target policy: both reserved IDs forbidden;
+10. payload `slotId` cannot grant player-facing authority;
+11. storage-only import does not quiesce writer or reload;
+12. imported campaign becomes active only through safe `Загрузить`.
 
-## 19. Audit acceptance gate
+## 17. Audit acceptance gate
 
-Before Audit PR #186 may be Ready:
+Before #186 may be Ready:
 
 - diff remains docs/control-plane only;
-- all three controller lifecycle blockers are reflected in binding Audit/control-plane docs;
-- the P1 manual-activation review thread is replied to only after docs contain quiescence, snapshot authority and regression/Browser coverage, then resolved;
-- fresh exact-head CI SUCCESS after the last docs commit;
+- binding docs mirror seed, New Campaign, manual activation and storage-only import authority;
+- P2 reserved-import review thread is replied to only after docs contain:
+  - storage-only decision;
+  - reserved-target prohibition;
+  - direct-callers closure;
+  - unit/storage regressions;
+  - Browser acceptance;
+- then P2 thread is resolved;
+- fresh exact-head CI SUCCESS after final docs commit;
 - fresh exact-head Graphify SUCCESS using pinned 0.8.38;
 - fresh exact-head Browser E2E SUCCESS;
 - production Pages smoke SUCCESS;
 - unresolved review threads = 0;
-- submitted blocking reviews = 0;
-- comments checked;
+- reviews and comments checked;
+- no blocking review;
 - `mergeable=true`;
 - base remains `main`;
-- live `main` remains starting baseline unless explicitly reconciled;
+- live `main` unchanged or explicitly reconciled;
 - PR head stable;
 - PR body contains final exact-head evidence;
-- PR is Ready (`draft=false`) and not merged.
+- PR Ready (`draft=false`) and not merged.
 
-## 20. Stop boundary
+## 18. Stop boundary
 
-After #186 is Ready: **STOP for controller review. Do not merge the Audit. Do not create the implementation branch. Do not start PR1.**
+After #186 is Ready: **STOP for controller review. Do not merge Audit. Do not create implementation branch. Do not start PR1.**
