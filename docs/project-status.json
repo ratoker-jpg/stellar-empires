@@ -1,5 +1,5 @@
 {
-  "statusVersion": 97,
+  "statusVersion": 98,
   "updatedAt": "2026-08-25",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -18,7 +18,7 @@
   "nextPrAfterActive": null,
   "nextPrKind": "implementation-only-after-controller-approved-audit-merge",
   "nextWorkItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
-  "currentMilestone": "fresh post-1.0 Audit / safe campaign switching lifecycle and replayable seed authority",
+  "currentMilestone": "fresh post-1.0 Audit / safe campaign authority including storage-only import and replayable seed lifecycle",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -31,9 +31,18 @@
     "auditMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
     "archive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
     "implementation": [
-      { "pr": 183, "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5" },
-      { "pr": 184, "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0" },
-      { "pr": 185, "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6" }
+      {
+        "pr": 183,
+        "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5"
+      },
+      {
+        "pr": 184,
+        "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0"
+      },
+      {
+        "pr": 185,
+        "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6"
+      }
     ],
     "hasPr4": false
   },
@@ -41,7 +50,7 @@
     "workItem": "POST-1.0-NEXT-PRODUCT-3",
     "auditPr": 186,
     "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "status": "docs-only-post-ready-p1-resolved-fresh-gates-required",
+    "status": "docs-only-post-ready-reserved-import-p2-resolved-fresh-gates-required",
     "implementationAuthorized": false,
     "proposedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
     "proposedImplementationCount": 1,
@@ -53,11 +62,26 @@
     "controllerFindingsResolved": [
       "new-campaign autosave resurrection race",
       "VITE_E2E interactive new-game dialog reachability",
-      "manual-slot activation resurrection race and stale snapshot authority"
+      "manual-slot activation resurrection race and stale snapshot authority",
+      "reserved-slot import authority bypass"
     ],
+    "saveManagerImportProductionCallers": [
+      "src/ui/saveManager.ts#onImport()"
+    ],
+    "saveManagerImportProductionCallerAudit": {
+      "graphifyImportersChecked": [
+        "src/main.ts",
+        "src/runtime/campaignBootstrap.ts",
+        "src/storage/AutoSaveController.ts",
+        "src/storage/loadAutosave.ts",
+        "src/ui/saveManager.ts"
+      ],
+      "onlyProductionImportMethodCaller": "src/ui/saveManager.ts#onImport()",
+      "criticalUnknownClosed": true
+    },
     "graphify": {
       "version": "0.8.38",
-      "baselineSourceRun": 1402,
+      "sourceEvidenceRun": 1419,
       "sameRuntimeTreeAsStartingMain": true,
       "files": 464,
       "nodes": 3639,
@@ -78,7 +102,7 @@
         "order": 1,
         "pr": null,
         "status": "pending-controller-audit-approval",
-        "purpose": "safe common campaign-switch lifecycle for new-campaign reset and manual-slot activation, with reproducible variable uint32 seeds and deterministic Browser coverage"
+        "purpose": "one safe System/Saves lifecycle covering storage-only import, quiesced campaign switching, and reproducible variable uint32 seed bootstrap"
       }
     ],
     "stateSchema": 19,
@@ -88,10 +112,10 @@
   },
   "verifiedProductGaps": [
     "real browser fresh-game bootstrap hard-codes one seed source so repeated same-setting campaigns reuse the same generated world",
-    "after recoverable autosave exists player UI has no safe new-campaign replacement lifecycle while preserving manual slots",
-    "deleting reserved saves without first quiescing the live AutoSaveController can resurrect the old campaign through pagehide visibility clock or transition writes",
-    "manual-slot activation currently writes selected B into primary autosave then reloads while old in-memory A can pagehide-flush over B",
-    "the Browser harness always enables VITE_E2E and current createFreshGame bypasses the interactive new-game picker"
+    "New Campaign replacement can resurrect old state unless the current autosave writer is quiesced before reserved deletion",
+    "manual-slot activation can write selected B primary then allow old in-memory A to pagehide-flush over B",
+    "player Import can pass undefined target and let payload slotId write reserved autosave or autosave.snapshot authority",
+    "Browser harness enables VITE_E2E and current createFreshGame bypasses the real new-game picker"
   ],
   "researchOnly": [
     "achievements / meta progression",
@@ -106,6 +130,20 @@
     "nextBatchImplementationCount": 1,
     "commonCampaignSwitchRequiresWriterQuiescence": true,
     "newCampaignAndManualActivationShareOneLifecyclePr": true,
+    "importBelongsToSameLifecyclePr": true,
+    "playerImportIsStorageOnly": true,
+    "playerImportRequiresExplicitManualTarget": true,
+    "playerImportBlankTargetRejected": true,
+    "playerImportReservedTargetsRejected": [
+      "autosave",
+      "autosave.snapshot"
+    ],
+    "playerImportNeverPassesUndefinedTarget": true,
+    "importPayloadSlotIdCannotGrantPlayerAuthority": true,
+    "storageOnlyImportDoesNotQuiesceWriter": true,
+    "storageOnlyImportDoesNotReload": true,
+    "importedCampaignActivatesOnlyViaSafeLoad": true,
+    "genericSaveManagerImportHardeningOptional": true,
     "numericCampaignSeedIsPersistedAuthority": true,
     "legacyStringSeedSourceCompatibilityRequired": true,
     "suggestedSeedMayUseWebCryptoBeforeStateCreation": true,
@@ -157,5 +195,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and Audit PR state"
   ],
-  "nextAction": "Run fresh exact-head CI, Graphify, Browser E2E and production smoke after the final manual-activation blocker-resolution docs commit; reply to and resolve the P1 thread after binding docs exist; verify reviews/comments, mergeability, head and live main; finalize PR body; mark #186 Ready; post-Ready recheck; STOP. Do not merge #186 and do not create or start the implementation branch."
+  "nextAction": "After final P2 docs commit run fresh exact-head CI, Graphify, Browser E2E and production smoke; reply to and resolve reserved-import P2 thread only after binding docs exist; verify reviews/comments, mergeability, head and live main; finalize PR body; mark #186 Ready; post-Ready recheck; STOP. Do not merge #186 and do not create or start implementation branch."
 }
