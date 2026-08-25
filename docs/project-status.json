@@ -1,5 +1,5 @@
 {
-  "statusVersion": 99,
+  "statusVersion": 100,
   "updatedAt": "2026-08-25",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -75,7 +75,7 @@
         "pr": 187,
         "status": "active-closure-staged",
         "mergeSha": null,
-        "purpose": "safe replayable campaign lifecycle covering exact uint32 seed, quiesced campaign switching, storage-only import and deterministic Browser acceptance"
+        "purpose": "safe replayable campaign lifecycle covering exact uint32 seed, serialized quiesced campaign switching, storage-only import and deterministic Browser acceptance"
       }
     ],
     "stateSchema": 19,
@@ -87,6 +87,7 @@
     "pr": 187,
     "startingMain": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
     "runtimeHeadBeforeControlPlane": "5e60bd7998e031b04b67826caae6e7103c6d7f3b",
+    "postReadyP2FixHead": "7d9b6a1e63656b127acc44428bbcfa4384c9c893",
     "status": "runtime-complete-closure-staged",
     "regressionFirstCommit": "e1b402442b437d581bb10b59782332a47a354b82",
     "historicalRedCiRun": 2300,
@@ -104,6 +105,15 @@
       "productionSmokeRun": 1544,
       "productionSmoke": "success"
     },
+    "postReadyP2Fixes": {
+      "campaignSwitchSingleFlight": true,
+      "concurrentSecondSwitchStartsNoAuthorityMutation": true,
+      "singleReloadIntent": true,
+      "manualActivationFailurePlayerVisible": true,
+      "manualActivationFailureNoReload": true,
+      "manualActivationFailureReenablesAction": true,
+      "manualActivationFailureHandled": true
+    },
     "browserAcceptance": {
       "realRecoverySnapshotA": true,
       "importStorageOnly": true,
@@ -113,7 +123,10 @@
       "oldCampaignResurrectionPrevented": true,
       "sameSeedReproduction": true,
       "differentSeedWorldEvidence": true,
-      "manualSaveSurvivesReset": true
+      "manualSaveSurvivesReset": true,
+      "manualActivationFailureVisible": true,
+      "manualActivationFailureKeepsAuthority": true,
+      "manualActivationFailureHasNoUnhandledPageError": true
     },
     "finalExactHeadGatesRequiredAfterControlPlane": true
   },
@@ -129,6 +142,8 @@
     "doNotGuessNemexiaFormulas": true,
     "doNotCreateCreditSubsystemForGhostField": true,
     "commonCampaignSwitchRequiresWriterQuiescence": true,
+    "campaignSwitchSingleFlight": true,
+    "concurrentCampaignSwitchRejectedBeforeLifecycleCallback": true,
     "playerImportIsStorageOnly": true,
     "playerImportRequiresExplicitManualTarget": true,
     "playerImportReservedTargetsRejected": [
@@ -144,6 +159,8 @@
     "mathRandomSeedForbidden": true,
     "manualSaveSlotsMustSurviveNewCampaignReset": true,
     "manualSourceSlotMustSurviveActivation": true,
+    "manualActivationFailurePlayerVisible": true,
+    "manualActivationFailureDoesNotReload": true,
     "autosaveWriterMustBeQuiescedBeforeReservedMutation": true,
     "newCampaignRecoverySnapshotMustBeClearedBeforePrimaryAutosave": true,
     "manualActivationMustDeleteStaleSnapshotBeforePrimaryReplacement": true,
@@ -171,5 +188,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and PR #187 state"
   ],
-  "nextAction": "Require fresh exact-head CI, Graphify, Browser E2E and production Pages smoke on PR #187 after closure docs; verify review threads/reviews/comments, changed files, mergeability and live main; finalize PR body; mark #187 Ready; perform post-Ready exact-head recheck; then STOP. Do not merge #187, do not create PR2, and do not start the next Audit before controller merge."
+  "nextAction": "Require fresh exact-head CI, Graphify, Browser E2E and production Pages smoke on PR #187 after the final implementation/control-plane commit; verify review threads/reviews/comments, changed files, mergeability and live main; finalize PR body; mark #187 Ready; perform post-Ready exact-head recheck; then STOP. Do not merge #187, do not create PR2, and do not start the next Audit before controller merge."
 }

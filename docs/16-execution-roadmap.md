@@ -39,17 +39,22 @@ There is no PR2.
 - snapshot-before-primary deletion ordering;
 - manual save survival across reset;
 - safe manual Load with stale snapshot removal before primary replacement;
+- one shared single-flight campaign-switch gate around the complete main-level authority transaction/reload path;
+- concurrent Load/New Campaign attempts are rejected before a second persistence/recovery/reload sequence starts;
+- manual Load validation/activation failures are player-visible through the save-manager status path, do not reload or mutate authority, and re-enable the action control;
 - storage-only Import with explicit manual destination;
 - rejection of reserved Import destinations;
 - imported campaign activation only through subsequent safe Load;
 - deterministic focused E2E real-picker seam without changing default E2E fixture behavior;
 - protection against old campaign resurrection;
 - save-manager stale-render race protection;
-- focused Browser campaign lifecycle coverage including a real recovery snapshot.
+- focused Browser campaign lifecycle coverage including a real recovery snapshot and stale-manual-slot failure UX.
 
 ## Campaign authority rules
 
-Actual campaign switch:
+Actual campaign switches are single-flight. The gate is acquired before the main-level lifecycle callback; a concurrent second switch is rejected before it can enter quiescence, persistence mutation, failure recovery, or reload.
+
+The accepted switch follows:
 
 ```text
 validate target/intent
@@ -81,6 +86,8 @@ validate B
 → B wins recovery
 ```
 
+A missing/invalid manual target fails before quiescence. Save Manager catches that rejection, reports it visibly and re-enables `Загрузить`; current authority and document remain unchanged.
+
 Import:
 
 ```text
@@ -110,9 +117,9 @@ Controller-verified pre-closure gates:
 - Browser E2E #1544 — SUCCESS;
 - production Pages smoke #1544 — SUCCESS.
 
-Focused Browser acceptance proves a real non-null `autosave.snapshot` for A, storage-only Import into `manual-import`, no activation/reload on Import, activation only through `Загрузить manual-import`, real reload into B, and no stale A resurrection. New Campaign, same/different seed determinism and manual-save survival are also green.
+Focused lifecycle acceptance additionally covers controlled concurrent switch attempts in both orders and the real Browser case where a valid rendered manual slot disappears before Load. The latter produces a visible error without reload, authority replacement or unhandled page error.
 
-These runs are not final evidence after the closure-doc commit.
+These runs are not final evidence after later implementation/control-plane commits.
 
 ## Current delivery sequence
 
@@ -120,8 +127,9 @@ These runs are not final evidence after the closure-doc commit.
 main de5e37f...
 → Audit #186 merged/accepted
 → PR #187 runtime implementation complete
-→ strengthened Browser acceptance green at 5e60bd7...
-→ closure docs/control-plane commit
+→ strengthened Browser acceptance
+→ post-Ready P2 single-flight + Load error handling fix
+→ final closure docs/control-plane commit
 → fresh exact-head CI + Graphify + Browser + production smoke
 → review threads/reviews/comments clean
 → mergeable + main/head stable

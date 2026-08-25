@@ -41,7 +41,9 @@ There is no PR2.
 
 ### Safe campaign switches
 
-Every actual campaign switch first makes the old writer inert:
+Every real campaign switch first acquires the shared main-level single-flight gate. While it is active, a second Load/New Campaign attempt is rejected before it can start its own quiescence, persistence mutation, recovery path or reload.
+
+The active switch then makes the old writer inert:
 
 ```text
 validate target/intent
@@ -77,6 +79,8 @@ validate/load manual B
 
 Old campaign A cannot be written again after successful quiescence. Failed quiescence mutates no reserved authority; stale snapshot deletion precedes primary replacement.
 
+If a manual slot becomes missing/invalid after render but before click, Load fails before quiescence. Save Manager catches the rejection, shows a player-visible error through the existing status path, re-enables the Load control, and leaves authority/document unchanged without an unhandled rejection.
+
 ## Import is STORAGE ONLY
 
 Player Import requires an explicit non-empty manual target and rejects:
@@ -98,9 +102,18 @@ Import JSON
 
 An imported campaign becomes active only when the user later presses `Загрузить`, which uses the safe quiesced manual-activation path.
 
-## Focused Browser acceptance
+## Focused acceptance
 
-`tests/e2e/campaignLifecycle.spec.ts` now proves the complete binding lifecycle against real app/storage behavior:
+Controlled unit/storage barriers prove both concurrent orders:
+
+```text
+Load B starts → New Campaign attempted
+New Campaign starts → Load B attempted
+```
+
+In each case exactly one switch transaction is active, the second attempt starts no persistence operation, snapshot/primary writes do not interleave, and only one reload intent is produced.
+
+Focused Browser `tests/e2e/campaignLifecycle.spec.ts` proves the complete binding lifecycle against real app/storage behavior:
 
 - actual picker reached through the narrow deterministic E2E seam;
 - fixed seed is honored;
@@ -113,7 +126,8 @@ An imported campaign becomes active only when the user later presses `Загру
 - Import writes distinct B only to `manual-import`;
 - `Загрузить manual-import` is the point that performs real reload and activates B;
 - after Load/reload, primary and any recreated snapshot are B, never stale A;
-- manual-import, manual-b and manual-survivor remain manual slots.
+- manual-import, manual-b and manual-survivor remain manual slots;
+- deleting a valid rendered manual slot before Load produces a player-visible error, no reload/authority replacement, a re-enabled Load button, and no page-level unhandled error.
 
 ## Regression and pre-closure evidence
 
@@ -135,7 +149,7 @@ Controller-verified on that head:
 - Browser E2E #1544 — SUCCESS;
 - production Pages smoke #1544 — SUCCESS.
 
-These are historical pre-closure runs. The closure docs/control-plane commit requires fresh exact-head gates before Ready.
+These are historical pre-closure runs. Any later implementation/control-plane commit requires fresh exact-head gates before Ready.
 
 ## Required continuation reading
 
@@ -152,7 +166,7 @@ These are historical pre-closure runs. The closure docs/control-plane commit req
 
 ## Current stop rule
 
-Finish only #187 closure: fresh exact-head CI + Graphify + Browser E2E + production smoke, review/comment loop, mergeability/main/head check, final PR body, Ready, post-Ready recheck, STOP.
+Finish only #187 closure: fresh exact-head CI + Graphify + Browser E2E + production smoke after the final implementation/control-plane commit, reply/resolve valid P2 threads after the fix, review/comment loop, mergeability/main/head check, final PR body, Ready, post-Ready recheck, STOP.
 
 The batch becomes COMPLETE only after controller merges #187; the generated squash SHA is unknown until then. After that controller merge, the next authorized category is a fresh docs-only Audit from fresh `main`.
 

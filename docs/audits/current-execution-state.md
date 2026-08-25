@@ -54,7 +54,9 @@ Assets, lint and typecheck were green before the intended lifecycle assertions f
 
 ### Common campaign switch authority
 
-Actual campaign switches first make the old writer inert:
+Every real campaign switch first enters one shared main-level single-flight gate. A second Load/New Campaign attempt while a switch is active is rejected before its lifecycle callback starts, so it cannot quiesce, delete, save, enter recovery, or issue a second reload.
+
+The active switch then follows:
 
 ```text
 validate target/intent
@@ -97,9 +99,11 @@ Player Import requires an explicit non-empty manual target and rejects `autosave
 
 Payload `slotId` does not grant destination authority. Import writes only the explicit manual target, does not quiesce the writer, does not reload, and does not activate the imported campaign. Activation happens only when the user later presses `Загрузить`, which reuses the safe campaign-switch path above.
 
-### UI race protection
+### Save-manager failure/race protection
 
 The save-manager async rendering path ignores stale render completions so an older asynchronous list result cannot overwrite newer lifecycle state after a switch/import refresh.
+
+A rendered manual slot can become missing/invalid before click. `Загрузить` now catches that activation rejection, routes a clear error through the existing save-manager message/status path, and re-enables its action button. Validation failure occurs before quiescence, so authority is unchanged and no reload is issued; the rejection is handled rather than escaping as an unhandled promise rejection.
 
 ## Focused acceptance
 
@@ -112,6 +116,7 @@ Unit/storage regression coverage proves:
 - manual source slot preservation;
 - Import target rejection and storage-only destination rewriting;
 - reserved authority remains unchanged by Import;
+- controlled Load B → New Campaign and New Campaign → Load B concurrency is single-flight, the second switch starts no persistence mutation, and only one reload intent is produced;
 - stale save-manager render completion cannot overwrite the newest rendered state.
 
 Focused Browser `tests/e2e/campaignLifecycle.spec.ts` proves on the real app/storage path:
@@ -127,7 +132,8 @@ Focused Browser `tests/e2e/campaignLifecycle.spec.ts` proves on the real app/sto
 - Import writes distinct campaign B to `manual-import` without reload;
 - only `Загрузить manual-import` performs the real reload and makes B authoritative;
 - after Load/reload, primary and any recreated snapshot contain B, never stale A;
-- manual-import/manual-b/manual-survivor remain manual slots with their expected campaign seeds.
+- manual-import/manual-b/manual-survivor remain manual slots with their expected campaign seeds;
+- when a previously rendered manual slot is removed before `Загрузить`, the player receives a visible error, the Load control is re-enabled, the current document/authority remains active, and no page-level unhandled error appears.
 
 ## Pre-closure runtime gates
 
@@ -142,7 +148,7 @@ Controller-verified on that head:
 - Browser E2E #1544 — SUCCESS;
 - production Pages smoke #1544 — SUCCESS.
 
-These are pre-closure evidence only and are not final exact-head evidence after this control-plane commit.
+These are pre-closure evidence only and are not final exact-head evidence after later control-plane or implementation commits.
 
 ## Batch closure
 
@@ -159,6 +165,6 @@ After controller merge, the only authorized next category is a fresh docs-only A
 
 ## Exact next action
 
-This closure commit changes the head. Require fresh exact-head CI + Graphify + Browser E2E + production Pages smoke; inspect inline threads, submitted reviews, conversation comments and changed files; verify `mergeable=true`, stable head/base and live `main`; finalize the PR body; mark #187 Ready; perform a post-Ready exact-head recheck; then STOP for controller review.
+Require fresh exact-head CI + Graphify + Browser E2E + production Pages smoke after the final implementation/control-plane commit; inspect inline threads, submitted reviews, conversation comments and changed files; verify `mergeable=true`, stable head/base and live `main`; finalize the PR body; mark #187 Ready; perform a post-Ready exact-head recheck; then STOP for controller review.
 
 **Do not merge #187. Do not create PR2. Do not start the next Audit.**

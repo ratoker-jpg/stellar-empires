@@ -27,6 +27,8 @@ PR1 #187  → current implementation + closure PR; generated squash SHA unknown 
 - `autosave.snapshot` deletion before primary `autosave` deletion during New Campaign;
 - manual save preservation across reset;
 - safe manual Load that validates the target, quiesces the old writer, removes stale snapshot authority, writes the selected campaign as primary, then reloads;
+- a shared main-level single-flight gate serializes every real campaign authority switch, so concurrent Load/New Campaign attempts cannot start a second persistence transaction or second reload path;
+- manual Load activation failures are caught and surfaced through the existing player-visible save-manager status path, with the action control re-enabled and no unhandled rejection;
 - storage-only Import requiring an explicit non-reserved manual target;
 - rejection of `autosave` and `autosave.snapshot` as Import destinations;
 - imported campaign activation only through the later safe Load path;
@@ -47,6 +49,8 @@ Historical RED CI: **#2300**.
 
 That semantic RED exposed the hard-coded ordinary fresh-game seed, New Campaign resurrection, unsafe manual activation, reserved-slot Import authority bypass, and the E2E real-picker bypass. Assets/lint/typecheck reached green before the intentional lifecycle assertions failed.
 
+Post-Ready P2 regression coverage additionally proves with controlled promises/barriers that Load B → New Campaign and New Campaign → Load B remain single-flight with no interleaved authority mutation and only one reload intent. Browser coverage removes a previously rendered manual slot before click and proves failed Load is player-visible, does not reload or replace authority, re-enables the button, and produces no page-level unhandled error.
+
 ## Pre-closure runtime evidence
 
 Exact pre-closure runtime head:
@@ -60,7 +64,7 @@ Controller-verified on that head:
 - Browser E2E #1544 — SUCCESS;
 - production Pages smoke #1544 — SUCCESS.
 
-These runs are historical pre-closure evidence only. The closure docs commit changes the exact head, so fresh exact-head gates are required before Ready.
+These runs are historical pre-closure evidence only. Any later implementation/control-plane commit changes the exact head, so fresh exact-head gates are required before Ready.
 
 ## Closure semantics
 

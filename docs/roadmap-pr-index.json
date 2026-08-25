@@ -1,5 +1,5 @@
 {
-  "indexVersion": 35,
+  "indexVersion": 36,
   "updatedAt": "2026-08-25",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -21,7 +21,7 @@
     "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
     "branch": "agent/post-1.0-replayable-campaign-lifecycle",
     "startingMain": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
-    "status": "runtime-complete-closure-staged-for-controller-review",
+    "status": "runtime-complete-post-ready-p2-fixed-closure-staged",
     "implementationAuthorized": true
   },
   "completedPreviousPhase": {
@@ -74,8 +74,10 @@
         "mergeSha": null,
         "contracts": {
           "commonCampaignSwitch": "validate target -> quiesce old writer -> authoritative persistence switch -> reload/bootstrap",
+          "singleFlight": "one shared main-level gate covers the complete campaign-switch callback; a concurrent second switch is rejected before lifecycle mutation/recovery/reload",
           "safeReset": "quiesce writer -> delete autosave.snapshot -> delete autosave -> reload",
           "manualActivation": "validate manual B -> quiesce A -> delete stale autosave.snapshot(A) -> write B primary -> reload -> B wins",
+          "manualActivationFailureUx": "missing/invalid rendered manual target fails before quiescence, stays on current authority, shows player-visible error, re-enables Load and does not reload",
           "import": "storage-only: explicit non-empty non-reserved manual target; payload slotId cannot write reserved authority; no quiesce/reload; activation only via safe Load",
           "seed": "explicit uint32 -> exact GameState.seed; legacy string source compatible",
           "e2e": "default VITE_E2E fixture retained; focused interactive-new-game mode uses fixed uint32 seed and real picker",
