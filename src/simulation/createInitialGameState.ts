@@ -21,7 +21,7 @@ import {
 import { createInitialWorldEventState } from './pve/worldEvents';
 import { createInitialPveMetaState } from './pveMeta/reputation';
 import { createInitialResearchStates } from './research/researchState';
-import { normalizeSeed } from './seed';
+import { resolveSeed } from './seed';
 import type { GameState } from './types';
 import {
   createUniverseModel,
@@ -35,17 +35,19 @@ export interface InitialGameConfiguration {
   readonly campaignSettings?: CampaignSettings;
 }
 
+export type InitialGameSeedSource = string | number;
+
 export function createInitialGameState(
-  seedSource: string,
+  seedSource: InitialGameSeedSource,
   playerFaction?: FactionId,
   topologyPreset?: UniverseTopologyPresetId,
 ): GameState;
 export function createInitialGameState(
-  seedSource: string,
+  seedSource: InitialGameSeedSource,
   configuration?: InitialGameConfiguration,
 ): GameState;
 export function createInitialGameState(
-  seedSource: string,
+  seedSource: InitialGameSeedSource,
   factionOrConfiguration: FactionId | InitialGameConfiguration = 'aegis',
   legacyTopologyPreset: UniverseTopologyPresetId = 'campaign',
 ): GameState {
@@ -56,7 +58,7 @@ export function createInitialGameState(
   const campaignSettings = legacySignature
     ? createCampaignSettings({ scenarioPreset: legacyTopologyPreset })
     : createCampaignSettings(factionOrConfiguration.campaignSettings);
-  const seed = normalizeSeed(seedSource);
+  const seed = resolveSeed(seedSource);
   const universe = createUniverseModel(seed, campaignSettings.scenarioPreset);
   const galaxy = materializeGalaxy(universe, 1);
   const empires = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'] as const;
