@@ -1,0 +1,276 @@
+import { expect, test, type Page } from '@playwright/test';
+
+const APP_READY_TIMEOUT = 45_000;
+const FACTION_BUTTON_NAME = 'Начать кампанию: Директорат «Эгида»';
+
+async function waitForApp(page: Page): Promise<void> {
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true', {
+    timeout: APP_READY_TIMEOUT,
+  });
+}
+
+async function readSlotJson(page: Page, slotId: string): Promise<string | null> {
+  return page.evaluate(async (id) => new Promise<string | null>((resolve, reject) => {
+    const open = indexedDB.open('stellar-empires', 1);
+    open.onerror = () => reject(open.error ?? new Error('IndexedDB open failed.'));
+    open.onsuccess = () => {
+      const database = open.result;
+      const transaction = database.transaction('saves', 'readonly');
+      const request = transaction.objectStore('saves').get(id);
+      request.onerror = () => reject(request.error ?? new Error('IndexedDB read failed.'));
+      request.onsuccess = () => {
+        resolve(request.result === undefined ? null : JSON.stringify(request.result));
+      };
+      transaction.oncomplete = () => database.close();
+    };
+  }), slotId);
+}
+
+async function deleteSlotDirect(page: Page, slotId: string): Promise<void> {
+  await page.evaluate(async (id) => new Promise<void>((resolve, reject) => {
+    const open = indexedDB.open('stellar-empires', 1);
+    open.onerror = () => reject(open.error ?? new Error('IndexedDB open failed.'));
+    open.onsuccess = () => {
+      const database = open.result;
+      const transaction = database.transaction('saves', 'readwrite');
+      const request = transaction.objectStore('saves').delete(id);
+      request.onerror = () => reject(request.error ?? new Error('IndexedDB delete failed.'));
+      transaction.oncomplete = () => {
+        database.close();
+        resolve();
+      };
+      transaction.onerror = () => reject(transaction.error ?? new Error('IndexedDB transaction failed.'));
+    };
+  }), slotId);
+}
+
+function seedFromSaveJson(json: string | null): number | null {
+  if (json === null) return null;
+  return (JSON.parse(json) as { readonly state: { readonly seed: number } }).state.seed;
+}
+
+function galaxyFromSaveJson(json: string | null): string | null {
+  if (json === null) return null;
+  const parsed = JSON.parse(json) as { readonly state: { readonly galaxy: unknown } };
+  return JSON.stringify(parsed.state.galaxy);
+}
+
+async function waitForSlot(page: Page, slotId: string): Promise<string> {
+  await expect.poll(() => readSlotJson(page, slotId), { timeout: 15_000 }).not.toBeNull();
+  const stored = await readSlotJson(page, slotId);
+  if (stored === null) throw new Error(`Expected save slot ${slotId}.`);
+  return stored;
+}
+
+async function ensureRecoverySnapshot(page: Page): Promise<string> {
+  await page.evaluate(() => {
+    window.dispatchEvent(new Event('pagehide'));
+  });
+  return waitForSlot(page, 'autosave.snapshot');
+}
+
+async function selectAegisCampaign(page: Page, seed: number): Promise<void> {
+  await expect(page.getByRole('heading', { name: 'Настройте кампанию' })).toBeVisible({
+    timeout: APP_READY_TIMEOUT,
+  });
+  await expect(page.getByLabel('Seed кампании')).toHaveValue(String(seed));
+  await page.getByRole('button', { name: FACTION_BUTTON_NAME }).click();
+  await waitForApp(page);
+  await expect(page.locator('[data-current-seed]')).toHaveText(String(seed));
+  await waitForSlot(page, 'autosave');
+}
+
+async function saveManualSlot(page: Page, slotId: string): Promise<void> {
+  await page.getByLabel('Название слота сохранения').fill(slotId);
+  await page.getByRole('button', { name: 'Сохранить текущую партию' }).click();
+  await expect(page.locator(`[data-save-slot-id="${slotId}"]`)).toHaveCount(1);
+  await waitForSlot(page, slotId);
+}
+
+async function setNextCampaignSeed(page: Page, seed: number): Promise<void> {
+  await page.evaluate((nextSeed) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('campaignSeed', String(nextSeed));
+    window.history.replaceState(null, '', url);
+  }, seed);
+}
+
+async function markCurrentDocument(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    document.documentElement.dataset.campaignLifecycleDocument = 'old';
+  });
+}
+
+async function expectNewDocument(page: Page): Promise<void> {
+  await expect(page.locator('html')).not.toHaveAttribute('data-campaign-lifecycle-document', 'old');
+}
+
+async function confirmNewCampaign(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Новая партия' }).click();
+  const panel = page.locator('[data-new-campaign-confirm]');
+  await expect(panel).toBeVisible();
+  await markCurrentDocument(page);
+  await panel.getByRole('button', { name: 'Подтвердить' }).click();
+  await expect(page.getByRole('heading', { name: 'Настройте кампанию' })).toBeVisible({
+    timeout: APP_READY_TIMEOUT,
+  });
+  await expectNewDocument(page);
+}
+
+async function dispatchImportFile(page: Page, json: string, targetSlotId: string): Promise<void> {
+  await page.getByLabel('Название слота сохранения').fill(targetSlotId);
+  await page.evaluate(({ payload, target }) => {
+    const slotInput = document.querySelector<HTMLInputElement>('input[aria-label="Название слота сохранения"]');
+    const fileInput = document.querySelector<HTMLInputElement>('input[aria-label="Импорт сохранения JSON"]');
+    if (slotInput === null || fileInput === null) throw new Error('Save manager import controls missing.');
+    if (slotInput.value !== target) throw new Error('Import target was not applied.');
+    const transfer = new DataTransfer();
+    transfer.items.add(new File([payload], 'campaign.json', { type: 'application/json' }));
+    fileInput.files = transfer.files;
+    fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+  }, { payload: json, target: targetSlotId });
+}
+
+async function importSaveThroughUi(page: Page, json: string, targetSlotId: string): Promise<void> {
+  await dispatchImportFile(page, json, targetSlotId);
+  await expect(page.locator(`[data-save-slot-id="${targetSlotId}"]`)).toHaveCount(1);
+}
+
+test('replayable campaign lifecycle keeps storage authority safe across real reloads', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto('/?e2e=1&interactiveNewGame=1&campaignSeed=111#/system/saves');
+
+  await selectAegisCampaign(page, 111);
+  const campaignAFirst = await waitForSlot(page, 'autosave');
+  const campaignAGalaxy = galaxyFromSaveJson(campaignAFirst);
+  expect(campaignAGalaxy).not.toBeNull();
+
+  await saveManualSlot(page, 'manual-survivor');
+
+  const snapshotBeforeImport = await ensureRecoverySnapshot(page);
+  expect(snapshotBeforeImport).not.toBeNull();
+  expect(seedFromSaveJson(snapshotBeforeImport)).toBe(111);
+  const primaryBeforeImport = await readSlotJson(page, 'autosave');
+  if (primaryBeforeImport === null) throw new Error('Primary autosave missing before Import.');
+  expect(seedFromSaveJson(primaryBeforeImport)).toBe(111);
+
+  await markCurrentDocument(page);
+  await dispatchImportFile(page, primaryBeforeImport, '');
+  await expect(page.locator('.save-manager-message')).toHaveText('Для импорта укажите имя ручного слота');
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+
+  await dispatchImportFile(page, primaryBeforeImport, 'autosave');
+  await expect(page.locator('.save-manager-message')).toHaveText('Импорт в autosave и autosave.snapshot запрещён');
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+
+  await dispatchImportFile(page, primaryBeforeImport, 'autosave.snapshot');
+  await expect(page.locator('.save-manager-message')).toHaveText('Импорт в autosave и autosave.snapshot запрещён');
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+  expect(await readSlotJson(page, 'autosave')).toBe(primaryBeforeImport);
+  expect(await readSlotJson(page, 'autosave.snapshot')).toBe(snapshotBeforeImport);
+
+  await page.getByRole('button', { name: 'Новая партия' }).click();
+  const cancelPanel = page.locator('[data-new-campaign-confirm]');
+  await expect(cancelPanel).toBeVisible();
+  await cancelPanel.getByRole('button', { name: 'Отмена' }).click();
+  await expect(cancelPanel).toBeHidden();
+  await expect(page.locator('[data-current-seed]')).toHaveText('111');
+  expect(seedFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(111);
+  expect(seedFromSaveJson(await readSlotJson(page, 'autosave.snapshot'))).toBe(111);
+
+  await setNextCampaignSeed(page, 222);
+  await confirmNewCampaign(page);
+  expect(await readSlotJson(page, 'autosave')).toBeNull();
+  expect(await readSlotJson(page, 'autosave.snapshot')).toBeNull();
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-survivor'))).toBe(111);
+
+  await selectAegisCampaign(page, 222);
+  const campaignB = await waitForSlot(page, 'autosave');
+  const campaignBGalaxy = galaxyFromSaveJson(campaignB);
+  expect(seedFromSaveJson(campaignB)).toBe(222);
+  expect(campaignBGalaxy).not.toBe(campaignAGalaxy);
+  await saveManualSlot(page, 'manual-b');
+  const manualBPayload = await waitForSlot(page, 'manual-b');
+
+  await setNextCampaignSeed(page, 111);
+  await confirmNewCampaign(page);
+  expect(await readSlotJson(page, 'autosave')).toBeNull();
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-b'))).toBe(222);
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-survivor'))).toBe(111);
+
+  await selectAegisCampaign(page, 111);
+  const campaignASecond = await waitForSlot(page, 'autosave');
+  expect(galaxyFromSaveJson(campaignASecond)).toBe(campaignAGalaxy);
+
+  const snapshotABeforePositiveImport = await ensureRecoverySnapshot(page);
+  expect(snapshotABeforePositiveImport).not.toBeNull();
+  expect(seedFromSaveJson(snapshotABeforePositiveImport)).toBe(111);
+  const primaryABeforePositiveImport = await readSlotJson(page, 'autosave');
+  if (primaryABeforePositiveImport === null) throw new Error('Primary A missing before positive Import.');
+  expect(seedFromSaveJson(primaryABeforePositiveImport)).toBe(111);
+
+  await markCurrentDocument(page);
+  await importSaveThroughUi(page, manualBPayload, 'manual-import');
+  await expect(page.locator('.save-manager-message')).toHaveText('Импортирован слот manual-import');
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+  await expect(page.locator('[data-current-seed]')).toHaveText('111');
+  expect(await readSlotJson(page, 'autosave')).toBe(primaryABeforePositiveImport);
+  expect(await readSlotJson(page, 'autosave.snapshot')).toBe(snapshotABeforePositiveImport);
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-import'))).toBe(222);
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-b'))).toBe(222);
+
+  const importedRow = page.locator('[data-save-slot-id="manual-import"]');
+  await expect(importedRow).toHaveCount(1);
+  await markCurrentDocument(page);
+  await importedRow.getByRole('button', { name: 'Загрузить' }).click();
+  await waitForApp(page);
+  await expectNewDocument(page);
+  await expect(page.locator('[data-current-seed]')).toHaveText('222');
+  expect(seedFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(222);
+  expect(galaxyFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(campaignBGalaxy);
+  const snapshotAfterLoad = await readSlotJson(page, 'autosave.snapshot');
+  if (snapshotAfterLoad !== null) {
+    expect(seedFromSaveJson(snapshotAfterLoad)).toBe(222);
+    expect(galaxyFromSaveJson(snapshotAfterLoad)).toBe(campaignBGalaxy);
+  }
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-import'))).toBe(222);
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-b'))).toBe(222);
+  expect(seedFromSaveJson(await readSlotJson(page, 'manual-survivor'))).toBe(111);
+
+  await markCurrentDocument(page);
+  await page.reload();
+  await waitForApp(page);
+  await expectNewDocument(page);
+  await expect(page.locator('[data-current-seed]')).toHaveText('222');
+  expect(seedFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(222);
+  expect(galaxyFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(campaignBGalaxy);
+  const snapshotAfterReload = await readSlotJson(page, 'autosave.snapshot');
+  if (snapshotAfterReload !== null) expect(seedFromSaveJson(snapshotAfterReload)).toBe(222);
+
+  const staleManualRow = page.locator('[data-save-slot-id="manual-import"]');
+  const staleManualLoad = staleManualRow.getByRole('button', { name: 'Загрузить' });
+  await expect(staleManualRow).toHaveCount(1);
+  await expect(staleManualLoad).toBeEnabled();
+  const primaryBeforeFailedLoad = await readSlotJson(page, 'autosave');
+  const snapshotBeforeFailedLoad = await readSlotJson(page, 'autosave.snapshot');
+  const pageErrors: string[] = [];
+  page.on('pageerror', (error) => { pageErrors.push(error.message); });
+  await markCurrentDocument(page);
+  await deleteSlotDirect(page, 'manual-import');
+
+  await staleManualLoad.click();
+  await expect(page.locator('.save-manager-message')).toContainText('Не удалось загрузить manual-import');
+  await expect(staleManualLoad).toBeEnabled();
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+  expect(seedFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(222);
+  expect(galaxyFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(campaignBGalaxy);
+  const snapshotAfterFailedLoad = await readSlotJson(page, 'autosave.snapshot');
+  if (snapshotBeforeFailedLoad === null) {
+    expect(snapshotAfterFailedLoad).toBeNull();
+  } else {
+    expect(seedFromSaveJson(snapshotAfterFailedLoad)).toBe(222);
+  }
+  expect(seedFromSaveJson(primaryBeforeFailedLoad)).toBe(222);
+  expect(pageErrors).toEqual([]);
+});

@@ -7,6 +7,7 @@ import {
   type CampaignSettings,
   type WorldSpeed,
 } from '../simulation/campaign/settings';
+import { parseUint32Seed, UINT32_MAX } from '../simulation/seed';
 import type { UniverseTopologyPresetId } from '../simulation/universe/model';
 
 export interface NewGameFactionOption {
@@ -35,6 +36,12 @@ export interface NewGameSpeedOption {
 export interface NewGameCampaignSelection {
   readonly faction: FactionArtKey;
   readonly campaignSettings: CampaignSettings;
+  readonly seed: number;
+}
+
+export interface NewGameCampaignPickerOptions {
+  readonly initialSeed?: number;
+  readonly suggestSeed?: () => number;
 }
 
 export const NEW_GAME_FACTION_OPTIONS: readonly NewGameFactionOption[] =
@@ -67,6 +74,12 @@ export const NEW_GAME_ORIENTATION =
 export const NEW_GAME_TERMINAL_NOTE =
   'Офлайн-прогрессия включена. Настройки после старта изменить нельзя. Победа фиксируется после стабилизации финальных Врат; поражение — если победит другая сторона. После завершения кампания останавливается.';
 
+export function suggestCampaignSeed(): number {
+  const values = new Uint32Array(1);
+  crypto.getRandomValues(values);
+  return values[0]!;
+}
+
 function formatHours(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(1).replace('.', ',');
 }
@@ -87,12 +100,10 @@ function createFactionChoice(
   button.style.setProperty('--faction-accent', option.accent);
   button.style.setProperty('--faction-background', `url("${option.backgroundUrl}")`);
   button.setAttribute('aria-label', `Начать кампанию: ${option.name}`);
-
   const hero = document.createElement('img');
   hero.className = 'new-game-faction__hero';
   hero.src = option.heroUrl;
   hero.alt = '';
-
   const copy = document.createElement('span');
   copy.className = 'new-game-faction__copy';
   const emblem = document.createElement('img');
@@ -147,8 +158,12 @@ function createSelect<T extends string | number>(
   return { label, select };
 }
 
-export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
+export function selectNewGameCampaign(
+  options: NewGameCampaignPickerOptions = {},
+): Promise<NewGameCampaignSelection> {
   return new Promise((resolve) => {
+    const suggestSeed = options.suggestSeed ?? suggestCampaignSeed;
+    const initialSeed = options.initialSeed ?? suggestSeed();
     const dialog = document.createElement('dialog');
     dialog.className = 'new-game-dialog';
     dialog.setAttribute('aria-labelledby', 'new-game-title');
@@ -161,40 +176,48 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
     title.id = 'new-game-title';
     title.textContent = 'Настройте кампанию';
     const description = document.createElement('p');
-    description.textContent =
-      'Размер мира, скорость и профиль фиксируются при создании и сохраняются внутри партии.';
+    description.textContent = 'Размер мира, скорость, профиль и seed фиксируются при создании и сохраняются внутри партии.';
     header.append(eyebrow, title, description);
 
     const scenario = createSelect(
       'Размер мира',
-      NEW_GAME_SCENARIO_OPTIONS.map((option) => ({
-        value: option.id,
-        name: option.name,
-        detail: option.detail,
-      })),
+      NEW_GAME_SCENARIO_OPTIONS.map((option) => ({ value: option.id, name: option.name, detail: option.detail })),
       'campaign',
     );
     const speed = createSelect(
       'Скорость мира',
-      NEW_GAME_SPEED_OPTIONS.map((option) => ({
-        value: option.value,
-        name: option.name,
-        detail: option.detail,
-      })),
+      NEW_GAME_SPEED_OPTIONS.map((option) => ({ value: option.value, name: option.name, detail: option.detail })),
       2,
     );
+    const seedLabel = document.createElement('label');
+    seedLabel.className = 'new-game-setting';
+    const seedCaption = document.createElement('span');
+    seedCaption.textContent = 'Seed кампании';
+    const seedInput = document.createElement('input');
+    seedInput.type = 'text';
+    seedInput.inputMode = 'numeric';
+    seedInput.value = String(initialSeed);
+    seedInput.setAttribute('aria-label', 'Seed кампании');
+    seedInput.dataset.campaignSeed = 'true';
+    const reroll = document.createElement('button');
+    reroll.type = 'button';
+    reroll.textContent = 'Другой seed';
+    reroll.dataset.rerollSeed = 'true';
+    reroll.addEventListener('click', () => { seedInput.value = String(suggestSeed()); });
+    const seedError = document.createElement('small');
+    seedError.dataset.seedError = 'true';
+    seedLabel.append(seedCaption, seedInput, reroll, seedError);
+
     const settings = document.createElement('section');
     settings.className = 'new-game-settings';
     settings.setAttribute('aria-label', 'Неизменяемые настройки кампании');
-    settings.append(scenario.label, speed.label, createProgressionProfileIdentity());
+    settings.append(scenario.label, speed.label, seedLabel, createProgressionProfileIdentity());
 
     const duration = document.createElement('p');
     duration.className = 'new-game-note';
     duration.dataset.campaignDurationExpectation = 'true';
     const updateDuration = (): void => {
-      duration.textContent = formatCompressedCampaignDurationExpectation(
-        Number(speed.select.value) as WorldSpeed,
-      );
+      duration.textContent = formatCompressedCampaignDurationExpectation(Number(speed.select.value) as WorldSpeed);
     };
     speed.select.addEventListener('change', updateDuration);
     updateDuration();
@@ -207,6 +230,14 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
     const grid = document.createElement('div');
     grid.className = 'new-game-faction-grid';
     const finish = (faction: FactionArtKey): void => {
+      const seed = parseUint32Seed(seedInput.value);
+      if (seed === undefined) {
+        seedError.textContent = `Seed должен быть целым числом от 0 до ${UINT32_MAX}.`;
+        seedInput.setAttribute('aria-invalid', 'true');
+        return;
+      }
+      seedError.textContent = '';
+      seedInput.removeAttribute('aria-invalid');
       const scenarioPreset = scenario.select.value as UniverseTopologyPresetId;
       const worldSpeed = Number(speed.select.value) as WorldSpeed;
       const campaignSettings = createCampaignSettings({
@@ -217,11 +248,9 @@ export function selectNewGameCampaign(): Promise<NewGameCampaignSelection> {
       });
       dialog.close();
       dialog.remove();
-      resolve({ faction, campaignSettings });
+      resolve({ faction, campaignSettings, seed });
     };
-    for (const option of NEW_GAME_FACTION_OPTIONS) {
-      grid.append(createFactionChoice(option, finish));
-    }
+    for (const option of NEW_GAME_FACTION_OPTIONS) grid.append(createFactionChoice(option, finish));
 
     const note = document.createElement('p');
     note.className = 'new-game-note';

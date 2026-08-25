@@ -1,3 +1,16 @@
+export const UINT32_MAX = 0xffff_ffff;
+
+export function isUint32Seed(value: number): boolean {
+  return Number.isInteger(value) && value >= 0 && value <= UINT32_MAX;
+}
+
+export function parseUint32Seed(value: string): number | undefined {
+  const normalized = value.trim();
+  if (!/^\d+$/.test(normalized)) return undefined;
+  const parsed = Number(normalized);
+  return isUint32Seed(parsed) ? parsed : undefined;
+}
+
 export function normalizeSeed(value: string): number {
   let hash = 2166136261;
 
@@ -7,6 +20,14 @@ export function normalizeSeed(value: string): number {
   }
 
   return hash >>> 0;
+}
+
+export function resolveSeed(value: string | number): number {
+  if (typeof value === 'string') return normalizeSeed(value);
+  if (!isUint32Seed(value)) {
+    throw new Error(`Campaign seed must be an integer from 0 to ${UINT32_MAX}.`);
+  }
+  return value;
 }
 
 export function createSeededRandom(seed: number): () => number {

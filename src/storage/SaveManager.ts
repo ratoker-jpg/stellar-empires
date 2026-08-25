@@ -1,5 +1,6 @@
 import type { ProgressionProfileId, WorldSpeed } from '../simulation/campaign/settings';
 import type { GameState } from '../simulation/types';
+import { AUTOSAVE_SLOT_ID } from './AutoSaveController';
 import { createSaveEnvelope, parseSaveJson, serializeSave } from './saveFormat';
 import { createCampaignRuntimeMetadata } from './runtimeMetadata';
 import type {
@@ -9,6 +10,10 @@ import type {
 } from './types';
 
 export const AUTOSAVE_SNAPSHOT_SLOT_ID = 'autosave.snapshot' as const;
+
+export function isReservedSaveSlot(slotId: string): boolean {
+  return slotId === AUTOSAVE_SLOT_ID || slotId === AUTOSAVE_SNAPSHOT_SLOT_ID;
+}
 
 export interface SaveSlotSummary {
   readonly slotId: string;
@@ -139,9 +144,15 @@ export class SaveManager {
   }
 
   async import(json: string, targetSlotId?: string): Promise<SaveEnvelope> {
+    const slotId = targetSlotId?.trim() ?? '';
+    if (slotId.length === 0) {
+      throw new Error('Import requires an explicit manual target slot.');
+    }
+    if (isReservedSaveSlot(slotId)) {
+      throw new Error(`Import target ${slotId} is reserved for autosave authority.`);
+    }
     const parsed = parseSaveJson(json);
     if (!parsed.ok) throw new Error(`${parsed.code}: ${parsed.message}`);
-    const slotId = targetSlotId?.trim() || parsed.value.slotId;
     const imported = createSaveEnvelope(
       slotId,
       parsed.value.state,

@@ -1,5 +1,5 @@
 {
-  "indexVersion": 34,
+  "indexVersion": 36,
   "updatedAt": "2026-08-25",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,22 +7,22 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 185,
-    "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
+    "lastMergedPr": 186,
+    "mergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
     "runtimeBaselinePr": 185,
     "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "lastCompletedAuditPr": 182,
-    "lastCompletedAuditMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
-    "lastCompletedAuditArchive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md"
+    "lastCompletedAuditPr": 186,
+    "lastCompletedAuditMergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
+    "lastCompletedAuditArchive": "docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md"
   },
   "active": {
-    "pr": 186,
-    "kind": "audit",
-    "workItem": "POST-1.0-NEXT-PRODUCT-3",
-    "branch": "audit/post-1.0-next-product-3",
-    "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "status": "post-ready-reserved-import-p2-resolved-fresh-gates-required",
-    "implementationAuthorized": false
+    "pr": 187,
+    "kind": "implementation-closure",
+    "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
+    "branch": "agent/post-1.0-replayable-campaign-lifecycle",
+    "startingMain": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
+    "status": "runtime-complete-post-ready-p2-fixed-closure-staged",
+    "implementationAuthorized": true
   },
   "completedPreviousPhase": {
     "id": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
@@ -52,10 +52,12 @@
   "currentAudit": {
     "id": "POST-1.0-NEXT-PRODUCT-3",
     "pr": 186,
-    "status": "docs-only-post-ready-reserved-import-p2-resolved",
-    "mergeSha": null,
-    "implementationAuthorized": false,
-    "proposedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
+    "status": "merged-controller-accepted-archived-for-closure",
+    "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
+    "mergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
+    "archive": "docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md",
+    "implementationAuthorized": true,
+    "acceptedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
     "complexity": "bounded-cross-layer",
     "implementationCount": 1,
     "targetStateSchema": 19,
@@ -63,28 +65,23 @@
     "schemaMigrationRequired": false,
     "criticalUnknownsResolved": true,
     "criticalUnknowns": [],
-    "controllerFindingsResolved": [
-      "new-campaign autosave resurrection race",
-      "E2E interactive new-game dialog bypass",
-      "manual-slot activation resurrection race and stale snapshot authority",
-      "reserved-slot import authority bypass"
-    ],
     "workItems": [
       {
         "id": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
         "order": 1,
-        "pr": null,
-        "status": "pending-controller-audit-approval",
+        "pr": 187,
+        "status": "active-closure-staged",
+        "mergeSha": null,
         "contracts": {
           "commonCampaignSwitch": "validate target -> quiesce old writer -> authoritative persistence switch -> reload/bootstrap",
+          "singleFlight": "one shared main-level gate covers the complete campaign-switch callback; a concurrent second switch is rejected before lifecycle mutation/recovery/reload",
           "safeReset": "quiesce writer -> delete autosave.snapshot -> delete autosave -> reload",
           "manualActivation": "validate manual B -> quiesce A -> delete stale autosave.snapshot(A) -> write B primary -> reload -> B wins",
-          "manualSnapshotAuthority": "stale A snapshot removed before B primary replacement; immediate B snapshot recreation not required",
+          "manualActivationFailureUx": "missing/invalid rendered manual target fails before quiescence, stays on current authority, shows player-visible error, re-enables Load and does not reload",
           "import": "storage-only: explicit non-empty non-reserved manual target; payload slotId cannot write reserved authority; no quiesce/reload; activation only via safe Load",
-          "importProductionCaller": "src/ui/saveManager.ts#onImport() only",
-          "failureRecovery": "validation failures mutate nothing; no ambiguous reload; authority stays on committed primary/snapshot; no silent disabled autosave page",
-          "e2e": "VITE_E2E remains enabled; focused real-picker mode uses fixed uint32 seed",
           "seed": "explicit uint32 -> exact GameState.seed; legacy string source compatible",
+          "e2e": "default VITE_E2E fixture retained; focused interactive-new-game mode uses fixed uint32 seed and real picker",
+          "browserSnapshot": "real autosave mechanism produces non-null snapshot A; Import preserves it; successful Load removes/replaces stale A authority",
           "schema": 19,
           "save": 6,
           "migration": "none"
@@ -153,16 +150,23 @@
       "pr": 186,
       "kind": "audit",
       "workItem": "POST-1.0-NEXT-PRODUCT-3",
-      "status": "active-docs-only",
+      "status": "merged-archived-for-closure",
+      "mergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba"
+    },
+    {
+      "pr": 187,
+      "kind": "implementation-closure",
+      "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
+      "status": "active-closure-staged",
       "mergeSha": null
     }
   ],
   "next": {
     "pr": null,
-    "kind": "implementation",
-    "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
+    "kind": "audit",
+    "workItem": null,
     "implementationAuthorized": false,
-    "prerequisite": "controller-approved merge of Audit #186, then resolve fresh main",
-    "instruction": "Do not merge #186 autonomously. Do not create or start implementation branch before controller approval and Audit merge."
+    "prerequisite": "controller-approved merge of PR #187, then resolve fresh main and create a fresh docs-only Audit",
+    "instruction": "No PR2 exists. Do not merge #187 autonomously and do not start the next Audit before controller merge."
   }
 }

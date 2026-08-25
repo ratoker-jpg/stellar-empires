@@ -3,6 +3,7 @@ import type { GameState } from '../simulation/types';
 import { AUTOSAVE_SLOT_ID } from '../storage/AutoSaveController';
 import {
   AUTOSAVE_SNAPSHOT_SLOT_ID,
+  isReservedSaveSlot,
   type SaveManager,
   type SaveSlotSummary,
 } from '../storage/SaveManager';
@@ -13,6 +14,8 @@ export interface SaveManagerUiOptions {
   readonly getState: () => GameState;
   readonly getRuntimeMetadata?: () => CampaignRuntimeMetadata | undefined;
   readonly writeStatus: (message: string) => void;
+  readonly onNewCampaign?: () => Promise<void>;
+  readonly onActivateSlot?: (slotId: string) => Promise<void>;
 }
 
 export interface SaveManagerUiMount {
@@ -60,12 +63,19 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
   const host = document.querySelector<HTMLElement>('#system-saves-view');
   if (host === null) throw new Error('System saves workspace is missing.');
   let active = false;
+  let renderGeneration = 0;
   host.innerHTML = `
     <section class="save-manager-campaign" aria-label="Настройки текущей кампании"></section>
     <section class="save-manager-controls">
       <label><span>Имя ручного слота</span><input type="text" value="manual-1" maxlength="48" aria-label="Название слота сохранения" /></label>
       <button type="button" data-save-action="create">Сохранить текущую партию</button>
+      <button type="button" data-save-action="new-campaign">Новая партия</button>
       <label><span>Импорт JSON</span><input type="file" accept="application/json,.json" aria-label="Импорт сохранения JSON" /></label>
+    </section>
+    <section class="save-manager-confirm" data-new-campaign-confirm hidden>
+      <p>Новая партия удалит текущий autosave. Ручные сохранения останутся.</p>
+      <button type="button" data-new-campaign-action="cancel">Отмена</button>
+      <button type="button" data-new-campaign-action="confirm">Подтвердить</button>
     </section>
     <p class="save-manager-message" role="status"></p>
     <div class="save-manager-list"></div>
@@ -73,6 +83,10 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
   const campaign = host.querySelector<HTMLElement>('.save-manager-campaign')!;
   const slotInput = host.querySelector<HTMLInputElement>('input[type="text"]')!;
   const saveButton = host.querySelector<HTMLButtonElement>('[data-save-action="create"]')!;
+  const newCampaignButton = host.querySelector<HTMLButtonElement>('[data-save-action="new-campaign"]')!;
+  const confirmPanel = host.querySelector<HTMLElement>('[data-new-campaign-confirm]')!;
+  const cancelNewCampaign = host.querySelector<HTMLButtonElement>('[data-new-campaign-action="cancel"]')!;
+  const confirmNewCampaign = host.querySelector<HTMLButtonElement>('[data-new-campaign-action="confirm"]')!;
   const importInput = host.querySelector<HTMLInputElement>('input[type="file"]')!;
   const message = host.querySelector<HTMLElement>('.save-manager-message')!;
   const list = host.querySelector<HTMLElement>('.save-manager-list')!;
@@ -84,46 +98,46 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
   };
 
   const renderCampaign = (): void => {
-    const settings = options.getState().campaignSettings;
+    const state = options.getState();
+    const settings = state.campaignSettings;
     campaign.innerHTML = `
+      <div><span>Seed</span><strong data-current-seed>${state.seed}</strong></div>
       <div><span>Сценарий</span><strong>${settings.scenarioPreset}</strong></div>
       <div><span>Скорость мира</span><strong>${formatWorldSpeed(settings.worldSpeed)}</strong></div>
       <div><span>Профиль прогрессии</span><strong data-progression-profile="${settings.progressionProfile}">${formatProgressionProfile(settings.progressionProfile)}</strong></div>
       <div><span>Офлайн-прогрессия</span><strong>Включена</strong></div>
       <div><span>Создана</span><strong>${settings.createdAtReal}</strong></div>
-      <p>Настройки входят в checksum партии и не изменяются после создания.</p>
+      <p>Настройки и seed входят в checksum партии и не изменяются после создания.</p>
     `;
   };
 
   const activateSlot = async (summary: SaveSlotSummary): Promise<void> => {
     if (options.manager === undefined) return;
-    const loaded = await options.manager.load(summary.slotId);
-    if (loaded.status !== 'loaded') {
-      showMessage(`Слот ${summary.slotId} не прошёл проверку`, true);
+    if (options.onActivateSlot !== undefined) {
+      await options.onActivateSlot(summary.slotId);
       return;
     }
-    await options.manager.save(
-      AUTOSAVE_SLOT_ID,
-      loaded.save.state,
-      loaded.save.runtimeMetadata,
-    );
-    showMessage(`Слот ${summary.slotId} активирован · перезапуск`);
-    window.location.reload();
+    throw new Error('Campaign activation is unavailable.');
   };
 
   const render = async (): Promise<void> => {
     if (!active) return;
+    const generation = ++renderGeneration;
     renderCampaign();
-    list.replaceChildren();
     if (options.manager === undefined) {
+      list.replaceChildren();
       saveButton.disabled = true;
+      newCampaignButton.disabled = true;
       importInput.disabled = true;
       list.textContent = 'Локальное хранилище недоступно в текущем браузере.';
       return;
     }
     saveButton.disabled = false;
+    newCampaignButton.disabled = options.onNewCampaign === undefined;
     importInput.disabled = false;
     const summaries = await options.manager.list();
+    if (!active || generation !== renderGeneration) return;
+    list.replaceChildren();
     if (summaries.length === 0) {
       list.textContent = 'Сохранённых партий пока нет.';
       return;
@@ -131,6 +145,7 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
     for (const summary of summaries) {
       const row = document.createElement('article');
       row.className = `save-slot${summary.valid ? '' : ' is-invalid'}`;
+      row.dataset.saveSlotId = summary.slotId;
       const details = document.createElement('div');
       const name = document.createElement('strong');
       name.textContent = summary.slotId;
@@ -139,15 +154,24 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
         ? `${summary.savedAt} · ${summary.scenarioPreset ?? 'campaign'} · x${summary.worldSpeed ?? 1} · ${summary.progressionProfile === undefined ? 'legacy-v1' : summary.progressionProfile} · ${formatWorldTime(summary.elapsedSeconds)}`
         : `${summary.savedAt} · ${summary.errorCode ?? 'INVALID'}`;
       const cursor = document.createElement('small');
-      cursor.textContent = summary.valid && summary.lastActiveAtReal !== undefined
-        ? `Последняя активность: ${summary.lastActiveAtReal}`
-        : '';
+      cursor.textContent = summary.valid && summary.lastActiveAtReal !== undefined ? `Последняя активность: ${summary.lastActiveAtReal}` : '';
       details.append(name, meta, cursor);
       const actions = document.createElement('div');
       actions.className = 'save-slot-actions';
       if (summary.valid) {
         actions.append(
-          createAction('Загрузить', () => activateSlot(summary)),
+          createAction('Загрузить', async () => {
+            try {
+              await activateSlot(summary);
+            } catch (error: unknown) {
+              showMessage(
+                error instanceof Error
+                  ? `Не удалось загрузить ${summary.slotId}: ${error.message}`
+                  : `Не удалось загрузить ${summary.slotId}`,
+                true,
+              );
+            }
+          }),
           createAction('Экспорт', async () => {
             downloadJson(summary.slotId, await options.manager!.export(summary.slotId));
             showMessage(`Слот ${summary.slotId} экспортирован`);
@@ -174,38 +198,47 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
       return;
     }
     saveButton.disabled = true;
-    void options.manager.save(
-      slotId,
-      options.getState(),
-      options.getRuntimeMetadata?.(),
-    )
-      .then(async () => {
-        showMessage(`Слот ${slotId} сохранён`);
-        await render();
-      })
+    void options.manager.save(slotId, options.getState(), options.getRuntimeMetadata?.())
+      .then(async () => { showMessage(`Слот ${slotId} сохранён`); await render(); })
       .catch((error: unknown) => showMessage(error instanceof Error ? error.message : 'Ошибка сохранения', true))
       .finally(() => { saveButton.disabled = false; });
+  };
+
+  const onNewCampaign = (): void => { confirmPanel.hidden = false; };
+  const onCancelNewCampaign = (): void => { confirmPanel.hidden = true; };
+  const onConfirmNewCampaign = (): void => {
+    if (options.onNewCampaign === undefined) return;
+    confirmNewCampaign.disabled = true;
+    void options.onNewCampaign()
+      .catch((error: unknown) => showMessage(error instanceof Error ? error.message : 'Ошибка создания новой партии', true))
+      .finally(() => { confirmNewCampaign.disabled = false; });
   };
 
   const onImport = (): void => {
     const file = importInput.files?.[0];
     if (file === undefined || options.manager === undefined) return;
-    const target = slotInput.value.trim();
-    const targetSlotId = target.length > 0 && !isReservedSlot(target) ? target : undefined;
+    const targetSlotId = slotInput.value.trim();
+    if (targetSlotId.length === 0) {
+      showMessage('Для импорта укажите имя ручного слота', true);
+      importInput.value = '';
+      return;
+    }
+    if (isReservedSaveSlot(targetSlotId)) {
+      showMessage('Импорт в autosave и autosave.snapshot запрещён', true);
+      importInput.value = '';
+      return;
+    }
     importInput.disabled = true;
     void file.text()
       .then((json) => options.manager!.import(json, targetSlotId))
-      .then(async (save) => {
-        showMessage(`Импортирован слот ${save.slotId}`);
-        await render();
-      })
+      .then(async (save) => { showMessage(`Импортирован слот ${save.slotId}`); await render(); })
       .catch((error: unknown) => showMessage(error instanceof Error ? error.message : 'Ошибка импорта', true))
-      .finally(() => {
-        importInput.value = '';
-        importInput.disabled = false;
-      });
+      .finally(() => { importInput.value = ''; importInput.disabled = false; });
   };
   saveButton.addEventListener('click', onSave);
+  newCampaignButton.addEventListener('click', onNewCampaign);
+  cancelNewCampaign.addEventListener('click', onCancelNewCampaign);
+  confirmNewCampaign.addEventListener('click', onConfirmNewCampaign);
   importInput.addEventListener('change', onImport);
 
   return {
@@ -216,11 +249,18 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
     },
     deactivate: () => {
       active = false;
+      renderGeneration += 1;
       host.hidden = true;
+      confirmPanel.hidden = true;
     },
     refresh: () => { void render(); },
     dispose: () => {
+      active = false;
+      renderGeneration += 1;
       saveButton.removeEventListener('click', onSave);
+      newCampaignButton.removeEventListener('click', onNewCampaign);
+      cancelNewCampaign.removeEventListener('click', onCancelNewCampaign);
+      confirmNewCampaign.removeEventListener('click', onConfirmNewCampaign);
       importInput.removeEventListener('change', onImport);
       host.replaceChildren();
     },

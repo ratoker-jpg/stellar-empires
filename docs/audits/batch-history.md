@@ -25,7 +25,20 @@ schema v19 / save v6 / migration none
 
 The accepted Audit #182 contract is archived verbatim at `docs/audits/completed/post-1.0-strategic-feedback-truth.md`.
 
-There is no PR4. A fresh docs-only product Audit `POST-1.0-NEXT-PRODUCT-3` starts from exact main `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6`; no successor implementation is authorized until that Audit is controller-approved and merged.
+## Current closure staging
+
+The next accepted Audit and implementation chain is delivered but not yet merged complete:
+
+```text
+POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE → closure STAGED / pending controller merge
+Audit #186 → de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba
+PR1 #187  → implementation + closure PR; generated squash SHA UNKNOWN until controller merge
+schema v19 / save v6 / migration none
+```
+
+The accepted Audit #186 contract is archived verbatim at `docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md`.
+
+#187 is the only implementation PR in this batch. There is no PR2. The batch must not be added to the completed table until controller-approved merge of #187. After that merge, the only authorized next category is a fresh docs-only Audit from the resulting fresh `main`.
 
 ## Recording rules
 
