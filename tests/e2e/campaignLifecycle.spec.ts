@@ -58,7 +58,7 @@ async function selectAegisCampaign(page: Page, seed: number): Promise<void> {
 async function saveManualSlot(page: Page, slotId: string): Promise<void> {
   await page.getByLabel('Название слота сохранения').fill(slotId);
   await page.getByRole('button', { name: 'Сохранить текущую партию' }).click();
-  await expect(page.locator(`[data-save-slot-id="${slotId}"]`)).toBeVisible();
+  await expect(page.locator(`[data-save-slot-id="${slotId}"]`)).toHaveCount(1);
   await waitForSlot(page, slotId);
 }
 
@@ -92,7 +92,7 @@ async function confirmNewCampaign(page: Page): Promise<void> {
   await expectNewDocument(page);
 }
 
-async function importSaveThroughUi(page: Page, json: string, targetSlotId: string): Promise<void> {
+async function dispatchImportFile(page: Page, json: string, targetSlotId: string): Promise<void> {
   await page.getByLabel('Название слота сохранения').fill(targetSlotId);
   await page.evaluate(({ payload, target }) => {
     const slotInput = document.querySelector<HTMLInputElement>('input[aria-label="Название слота сохранения"]');
@@ -104,7 +104,11 @@ async function importSaveThroughUi(page: Page, json: string, targetSlotId: strin
     fileInput.files = transfer.files;
     fileInput.dispatchEvent(new Event('change', { bubbles: true }));
   }, { payload: json, target: targetSlotId });
-  await expect(page.locator(`[data-save-slot-id="${targetSlotId}"]`)).toBeVisible();
+}
+
+async function importSaveThroughUi(page: Page, json: string, targetSlotId: string): Promise<void> {
+  await dispatchImportFile(page, json, targetSlotId);
+  await expect(page.locator(`[data-save-slot-id="${targetSlotId}"]`)).toHaveCount(1);
 }
 
 test('replayable campaign lifecycle keeps storage authority safe across real reloads', async ({ page }) => {
@@ -122,8 +126,25 @@ test('replayable campaign lifecycle keeps storage authority safe across real rel
   const primaryBeforeImport = await readSlotJson(page, 'autosave');
   const snapshotBeforeImport = await readSlotJson(page, 'autosave.snapshot');
   if (primaryBeforeImport === null) throw new Error('Primary autosave missing before Import.');
+
+  await markCurrentDocument(page);
+  await dispatchImportFile(page, primaryBeforeImport, '');
+  await expect(page.locator('.save-manager-message')).toHaveText('Для импорта укажите имя ручного слота');
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+
+  await dispatchImportFile(page, primaryBeforeImport, 'autosave');
+  await expect(page.locator('.save-manager-message')).toHaveText('Импорт в autosave и autosave.snapshot запрещён');
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+
+  await dispatchImportFile(page, primaryBeforeImport, 'autosave.snapshot');
+  await expect(page.locator('.save-manager-message')).toHaveText('Импорт в autosave и autosave.snapshot запрещён');
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+  expect(await readSlotJson(page, 'autosave')).toBe(primaryBeforeImport);
+  expect(await readSlotJson(page, 'autosave.snapshot')).toBe(snapshotBeforeImport);
+
   await importSaveThroughUi(page, primaryBeforeImport, 'manual-import');
   await expect(page.locator('.save-manager-message')).toHaveText('Импортирован слот manual-import');
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
   expect(await readSlotJson(page, 'autosave')).toBe(primaryBeforeImport);
   expect(await readSlotJson(page, 'autosave.snapshot')).toBe(snapshotBeforeImport);
   expect(seedFromSaveJson(await readSlotJson(page, 'manual-import'))).toBe(111);
@@ -160,7 +181,7 @@ test('replayable campaign lifecycle keeps storage authority safe across real rel
   expect(galaxyFromSaveJson(campaignASecond)).toBe(campaignAGalaxy);
 
   const manualBRow = page.locator('[data-save-slot-id="manual-b"]');
-  await expect(manualBRow).toBeVisible();
+  await expect(manualBRow).toHaveCount(1);
   await markCurrentDocument(page);
   await manualBRow.getByRole('button', { name: 'Загрузить' }).click();
   await waitForApp(page);
