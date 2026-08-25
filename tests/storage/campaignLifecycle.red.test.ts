@@ -7,6 +7,7 @@ import { loadAutosave } from '../../src/storage/loadAutosave';
 import { SaveManager } from '../../src/storage/SaveManager';
 import {
   activateManualCampaign,
+  createCampaignSwitchGate,
   resetCampaignAuthority,
 } from '../../src/storage/campaignLifecycle';
 import { createSaveEnvelope, serializeSave } from '../../src/storage/saveFormat';
@@ -47,6 +48,12 @@ class ControlledSaveRepository implements SaveRepository {
 
 const NOW_A = '2026-08-25T08:00:00.000Z';
 const NOW_B = '2026-08-25T08:01:00.000Z';
+
+function createBarrier(): { readonly promise: Promise<void>; readonly release: () => void } {
+  let release!: () => void;
+  const promise = new Promise<void>((resolve) => { release = resolve; });
+  return { promise, release };
+}
 
 async function seedCampaignA(repository: SaveRepository): Promise<{
   readonly manager: SaveManager;
@@ -137,6 +144,97 @@ describe('POST-1.0 replayable campaign lifecycle acceptance', () => {
     if (restored.status !== 'loaded') return;
     expect(restored.source).toBe('primary');
     expect(restored.state.seed).toBe(manualB.seed);
+    expect((await repository.get('manual-b'))?.state.seed).toBe(manualB.seed);
+  });
+
+  it('keeps Load B single-flight when New Campaign is attempted mid-switch', async () => {
+    const repository = new ControlledSaveRepository();
+    const { manager, manualB } = await seedCampaignA(repository);
+    repository.events.length = 0;
+    const gate = createCampaignSwitchGate();
+    const quiesceEntered = createBarrier();
+    const releaseQuiesce = createBarrier();
+    let reloadIntents = 0;
+    let secondQuiesceCalls = 0;
+
+    const loadB = gate.run(async () => {
+      await activateManualCampaign('manual-b', {
+        manager,
+        quiesceOldWriter: async () => {
+          repository.events.push('load:quiesce');
+          quiesceEntered.release();
+          await releaseQuiesce.promise;
+        },
+      });
+      reloadIntents += 1;
+    });
+    await quiesceEntered.promise;
+    expect(gate.active).toBe(true);
+    const eventsBeforeSecondSwitch = [...repository.events];
+
+    await expect(gate.run(async () => {
+      await resetCampaignAuthority({
+        manager,
+        quiesceOldWriter: async () => { secondQuiesceCalls += 1; },
+      });
+      reloadIntents += 1;
+    })).rejects.toThrow('Переключение кампании уже выполняется');
+
+    expect(secondQuiesceCalls).toBe(0);
+    expect(repository.events).toEqual(eventsBeforeSecondSwitch);
+    expect(repository.events).not.toContain('delete:autosave.snapshot');
+    expect(repository.events).not.toContain('delete:autosave');
+
+    releaseQuiesce.release();
+    await loadB;
+    expect(reloadIntents).toBe(1);
+    expect(gate.active).toBe(false);
+    expect(repository.events.filter((event) => event === 'delete:autosave.snapshot')).toHaveLength(1);
+    expect(repository.events.filter((event) => event === 'delete:autosave')).toHaveLength(0);
+    const restored = await loadAutosave(repository);
+    expect(restored.status).toBe('loaded');
+    if (restored.status !== 'loaded') return;
+    expect(restored.state.seed).toBe(manualB.seed);
+  });
+
+  it('keeps New Campaign single-flight when Load B is attempted mid-switch', async () => {
+    const repository = new ControlledSaveRepository();
+    const { manager, manualB } = await seedCampaignA(repository);
+    repository.events.length = 0;
+    const gate = createCampaignSwitchGate();
+    const quiesceEntered = createBarrier();
+    const releaseQuiesce = createBarrier();
+    let reloadIntents = 0;
+
+    const reset = gate.run(async () => {
+      await resetCampaignAuthority({
+        manager,
+        quiesceOldWriter: async () => {
+          repository.events.push('reset:quiesce');
+          quiesceEntered.release();
+          await releaseQuiesce.promise;
+        },
+      });
+      reloadIntents += 1;
+    });
+    await quiesceEntered.promise;
+    const eventsBeforeSecondSwitch = [...repository.events];
+
+    await expect(gate.run(async () => {
+      await activateManualCampaign('manual-b', {
+        manager,
+        quiesceOldWriter: async () => undefined,
+      });
+      reloadIntents += 1;
+    })).rejects.toThrow('Переключение кампании уже выполняется');
+
+    expect(repository.events).toEqual(eventsBeforeSecondSwitch);
+    expect(repository.events).not.toContain('get:manual-b');
+    releaseQuiesce.release();
+    await reset;
+
+    expect(reloadIntents).toBe(1);
+    await expect(loadAutosave(repository)).resolves.toEqual({ status: 'missing' });
     expect((await repository.get('manual-b'))?.state.seed).toBe(manualB.seed);
   });
 

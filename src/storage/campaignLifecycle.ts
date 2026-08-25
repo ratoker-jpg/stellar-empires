@@ -7,6 +7,34 @@ export interface CampaignAuthoritySwitchOptions {
   readonly quiesceOldWriter: () => Promise<void>;
 }
 
+export interface CampaignSwitchGate {
+  readonly active: boolean;
+  run<T>(operation: () => Promise<T>): Promise<T>;
+}
+
+export class CampaignSwitchInProgressError extends Error {
+  constructor() {
+    super('Переключение кампании уже выполняется.');
+    this.name = 'CampaignSwitchInProgressError';
+  }
+}
+
+export function createCampaignSwitchGate(): CampaignSwitchGate {
+  let active = false;
+  return {
+    get active() { return active; },
+    async run<T>(operation: () => Promise<T>): Promise<T> {
+      if (active) throw new CampaignSwitchInProgressError();
+      active = true;
+      try {
+        return await operation();
+      } finally {
+        active = false;
+      }
+    },
+  };
+}
+
 export async function resetCampaignAuthority(
   options: CampaignAuthoritySwitchOptions,
 ): Promise<void> {

@@ -160,7 +160,18 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
       actions.className = 'save-slot-actions';
       if (summary.valid) {
         actions.append(
-          createAction('Загрузить', () => activateSlot(summary)),
+          createAction('Загрузить', async () => {
+            try {
+              await activateSlot(summary);
+            } catch (error: unknown) {
+              showMessage(
+                error instanceof Error
+                  ? `Не удалось загрузить ${summary.slotId}: ${error.message}`
+                  : `Не удалось загрузить ${summary.slotId}`,
+                true,
+              );
+            }
+          }),
           createAction('Экспорт', async () => {
             downloadJson(summary.slotId, await options.manager!.export(summary.slotId));
             showMessage(`Слот ${summary.slotId} экспортирован`);

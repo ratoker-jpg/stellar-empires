@@ -61,6 +61,7 @@ import {
 } from './storage/AutoSaveController';
 import {
   activateManualCampaign,
+  createCampaignSwitchGate,
   resetCampaignAuthority,
 } from './storage/campaignLifecycle';
 import { IndexedDbSaveRepository } from './storage/IndexedDbSaveRepository';
@@ -292,23 +293,27 @@ async function bootstrap(): Promise<void> {
     }
     throw error;
   };
+  const campaignSwitchGate = createCampaignSwitchGate();
+  const runCampaignSwitch = async (operation: () => Promise<void>): Promise<void> => campaignSwitchGate.run(
+    async () => {
+      try {
+        await operation();
+        window.location.reload();
+      } catch (error: unknown) {
+        recoverAfterSwitchFailure(error);
+      }
+    },
+  );
   const resetActiveCampaign = async (): Promise<void> => {
     if (saveManager === undefined) throw new Error('Save manager is unavailable.');
-    try {
-      await resetCampaignAuthority({ manager: saveManager, quiesceOldWriter });
-      window.location.reload();
-    } catch (error: unknown) {
-      recoverAfterSwitchFailure(error);
-    }
+    await runCampaignSwitch(() => resetCampaignAuthority({ manager: saveManager!, quiesceOldWriter }));
   };
   const activateSaveSlot = async (slotId: string): Promise<void> => {
     if (saveManager === undefined) throw new Error('Save manager is unavailable.');
-    try {
-      await activateManualCampaign(slotId, { manager: saveManager, quiesceOldWriter });
-      window.location.reload();
-    } catch (error: unknown) {
-      recoverAfterSwitchFailure(error);
-    }
+    await runCampaignSwitch(() => activateManualCampaign(slotId, {
+      manager: saveManager!,
+      quiesceOldWriter,
+    }).then(() => undefined));
   };
 
   const playerFaction = initialState.planets.find(

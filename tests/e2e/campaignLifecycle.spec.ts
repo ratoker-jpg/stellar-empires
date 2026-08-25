@@ -26,6 +26,24 @@ async function readSlotJson(page: Page, slotId: string): Promise<string | null> 
   }), slotId);
 }
 
+async function deleteSlotDirect(page: Page, slotId: string): Promise<void> {
+  await page.evaluate(async (id) => new Promise<void>((resolve, reject) => {
+    const open = indexedDB.open('stellar-empires', 1);
+    open.onerror = () => reject(open.error ?? new Error('IndexedDB open failed.'));
+    open.onsuccess = () => {
+      const database = open.result;
+      const transaction = database.transaction('saves', 'readwrite');
+      const request = transaction.objectStore('saves').delete(id);
+      request.onerror = () => reject(request.error ?? new Error('IndexedDB delete failed.'));
+      transaction.oncomplete = () => {
+        database.close();
+        resolve();
+      };
+      transaction.onerror = () => reject(transaction.error ?? new Error('IndexedDB transaction failed.'));
+    };
+  }), slotId);
+}
+
 function seedFromSaveJson(json: string | null): number | null {
   if (json === null) return null;
   return (JSON.parse(json) as { readonly state: { readonly seed: number } }).state.seed;
@@ -229,4 +247,30 @@ test('replayable campaign lifecycle keeps storage authority safe across real rel
   expect(galaxyFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(campaignBGalaxy);
   const snapshotAfterReload = await readSlotJson(page, 'autosave.snapshot');
   if (snapshotAfterReload !== null) expect(seedFromSaveJson(snapshotAfterReload)).toBe(222);
+
+  const staleManualRow = page.locator('[data-save-slot-id="manual-import"]');
+  const staleManualLoad = staleManualRow.getByRole('button', { name: 'Загрузить' });
+  await expect(staleManualRow).toHaveCount(1);
+  await expect(staleManualLoad).toBeEnabled();
+  const primaryBeforeFailedLoad = await readSlotJson(page, 'autosave');
+  const snapshotBeforeFailedLoad = await readSlotJson(page, 'autosave.snapshot');
+  const pageErrors: string[] = [];
+  page.on('pageerror', (error) => { pageErrors.push(error.message); });
+  await markCurrentDocument(page);
+  await deleteSlotDirect(page, 'manual-import');
+
+  await staleManualLoad.click();
+  await expect(page.locator('.save-manager-message')).toContainText('Не удалось загрузить manual-import');
+  await expect(staleManualLoad).toBeEnabled();
+  await expect(page.locator('html')).toHaveAttribute('data-campaign-lifecycle-document', 'old');
+  expect(seedFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(222);
+  expect(galaxyFromSaveJson(await readSlotJson(page, 'autosave'))).toBe(campaignBGalaxy);
+  const snapshotAfterFailedLoad = await readSlotJson(page, 'autosave.snapshot');
+  if (snapshotBeforeFailedLoad === null) {
+    expect(snapshotAfterFailedLoad).toBeNull();
+  } else {
+    expect(seedFromSaveJson(snapshotAfterFailedLoad)).toBe(222);
+  }
+  expect(seedFromSaveJson(primaryBeforeFailedLoad)).toBe(222);
+  expect(pageErrors).toEqual([]);
 });
