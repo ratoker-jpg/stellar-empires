@@ -1,56 +1,60 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Release 1.0 closed; docs-only Audit #186 active  
+**Status:** Release 1.0 closed; PR #187 runtime complete / batch closure staged  
 **Updated:** 2026-08-25  
-**Verified current main / Audit starting main:** `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6`  
-**Last merged PR:** #185 `fix: make combat ranking victories truthful`  
-**Active PR:** #186 `docs: audit next post-1.0 product batch`  
-**Runtime:** schema v19 / save format v6  
-**Implementation authorized:** false
+**Verified current main / PR #187 starting main:** `de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba`  
+**Last merged PR:** #186 `docs: audit next post-1.0 product batch`  
+**Active PR:** #187 `feat: add safe replayable campaign lifecycle`  
+**Runtime:** schema v19 / save format v6 / migration none  
+**Implementation authorized:** true for the single Audit #186 work item; implementation now complete
 
-## Completed boundary
+## Accepted Audit boundary
 
 ```text
-Audit #182 → b09887489db7754f0c0b2672649db9283b879732
-PR1 #183  → 83a4942c35aac8d7f0b02f7730f0646c171c98b5
-PR2 #184  → 691078ab9ce5b0ab48e7aa69e71fe72322528af0
-PR3 #185  → e974c09e7779b4cf3bbc6d0279b8d35f177a29e6
+Audit #186 → de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba
+accepted batch → POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE
+implementation count → 1
 ```
 
-`POST-1.0-STRATEGIC-FEEDBACK-TRUTH` is complete. There is no PR4.
+The accepted Audit contract is archived verbatim at:
 
-## Current entrypoint
+`docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md`
 
-Only docs-only Audit #186 is active:
+Only implementation work item:
 
-`POST-1.0-NEXT-PRODUCT-3`
+`POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE` → PR #187.
 
-Proposed successor, still unauthorized:
+There is no PR2.
 
-`POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE`
+## Delivered lifecycle
 
-Exactly one implementation PR:
+#187 delivers one coherent `System / Saves → persistence authority → bootstrap` lifecycle:
 
-`POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE`
+- exact uint32 player campaign seed;
+- real seed picker plus Web Crypto reroll/suggestion;
+- legacy string seed compatibility;
+- deterministic same-seed reproduction and different-seed generated-world evidence;
+- New Campaign cancel/confirm;
+- old autosave writer quiescence before reserved authority mutation;
+- snapshot-before-primary deletion ordering;
+- manual save survival across reset;
+- safe manual Load with stale snapshot removal before primary replacement;
+- storage-only Import with explicit manual destination;
+- rejection of reserved Import destinations;
+- imported campaign activation only through subsequent safe Load;
+- deterministic focused E2E real-picker seam without changing default E2E fixture behavior;
+- protection against old campaign resurrection;
+- save-manager stale-render race protection;
+- focused Browser campaign lifecycle coverage including a real recovery snapshot.
 
-## Strongest verified lifecycle problem
+## Campaign authority rules
 
-One coherent player-facing problem now includes:
-
-- hard-coded repeated fresh-game seed source;
-- unsafe/missing New Campaign replacement;
-- unsafe manual `Загрузить` authority switch;
-- Import reserved-slot authority bypass.
-
-All are inside one `System / Saves → authority → bootstrap` boundary.
-
-## Binding campaign-switch rule
-
-Actual campaign switches:
+Actual campaign switch:
 
 ```text
 validate target/intent
-→ quiesce old autosave writer
+→ block old autosave producers
+→ drain/quiesce/dispose old writer
 → authoritative persistence switch
 → reload/bootstrap
 ```
@@ -62,114 +66,73 @@ quiesce A
 → delete autosave.snapshot
 → delete autosave
 → reload
+→ fresh-game picker/bootstrap
 ```
 
-Manual activation:
+Manual Load:
 
 ```text
 validate B
 → quiesce A
 → delete stale autosave.snapshot(A)
 → write B primary
+→ preserve manual B
 → reload
+→ B wins recovery
 ```
 
-Manual source B survives. Valid primary wins recovery; stale A snapshot must not survive B activation.
-
-## Binding Import rule — storage only
-
-Import is **not** a campaign switch.
-
-Direct source/caller audit resolves that `src/ui/saveManager.ts#onImport()` is the only production `SaveManager.import(...)` caller.
-
-Player UI must:
-
-- require explicit non-empty target;
-- reject `autosave`;
-- reject `autosave.snapshot`;
-- never pass `undefined`;
-- ignore payload `slotId` for destination authority;
-- always rewrite valid payload into the explicit manual target.
-
-Therefore:
+Import:
 
 ```text
-Import JSON → manual slot only
-→ primary/snapshot unchanged
-→ current campaign unchanged
-→ no writer quiesce
+require explicit non-reserved manual target
+→ write manual slot only
+→ primary/snapshot/current campaign unchanged
+→ no quiesce
 → no reload
+→ activation only through later Load
 ```
 
-An imported campaign becomes active only later through `Загрузить`, which uses the safe campaign-switch contract.
+## Regression-first and Browser evidence
 
-Generic `SaveManager.import()` may be narrowly hardened if regression evidence shows it is the minimal safer implementation; no persistence rewrite.
+Historical RED:
 
-## Import regressions
+- commit `e1b402442b437d581bb10b59782332a47a354b82`;
+- CI #2300.
 
-Required RED/acceptance:
+Exact pre-closure runtime head:
 
-1. payload `slotId=autosave` + blank target → reject before mutation;
-2. payload `slotId=autosave.snapshot` + target `autosave.snapshot` → reject;
-3. payload `slotId=autosave` + target `manual-import` → store only manual slot, authority unchanged;
-4. later `Загрузить manual-import` → quiesced switch, then and only then activation.
+`5e60bd7998e031b04b67826caae6e7103c6d7f3b`
 
-## Browser acceptance
+Controller-verified pre-closure gates:
 
-Focused lifecycle Browser acceptance must prove:
+- CI #2314 — SUCCESS;
+- Graphify #1443 — SUCCESS;
+- Browser E2E #1544 — SUCCESS;
+- production Pages smoke #1544 — SUCCESS.
 
-- New Campaign real reload cannot resurrect A and reaches real picker through deterministic E2E seam;
-- manual B activation quiesces A, removes stale A snapshot and reloads into B;
-- storage-only Import rejects blank/reserved targets, preserves A authority/no reload, stores explicit manual target, and activates only through subsequent safe `Загрузить`.
+Focused Browser acceptance proves a real non-null `autosave.snapshot` for A, storage-only Import into `manual-import`, no activation/reload on Import, activation only through `Загрузить manual-import`, real reload into B, and no stale A resurrection. New Campaign, same/different seed determinism and manual-save survival are also green.
 
-## Seed / E2E contract
-
-```text
-VITE_E2E=1
-+ interactiveNewGame=1
-+ campaignSeed=<fixed uint32>
-```
-
-- explicit uint32 = exact `GameState.seed`;
-- legacy string seed compatible;
-- Web Crypto only for real-user pre-state suggestion;
-- no wallclock/`Date.now()`/`Math.random()` seed;
-- schema v19 / save v6 / migration none.
-
-## Authorized implementation paths after Audit merge only
-
-Primary:
-
-- `src/main.ts`;
-- `src/ui/saveManager.ts`;
-- `src/storage/SaveManager.ts`;
-- `src/simulation/createInitialGameState.ts`;
-- `src/simulation/seed.ts` if narrow helper needed;
-- `src/ui/newGameFactionPicker.ts`;
-- `src/runtime/e2eScenario.ts`.
-
-Read/verify:
-
-- `src/storage/AutoSaveController.ts`;
-- `src/storage/loadAutosave.ts`;
-- `src/runtime/campaignBootstrap.ts`;
-- `src/storage/IndexedDbSaveRepository.ts`;
-- `playwright.config.ts`.
+These runs are not final evidence after the closure-doc commit.
 
 ## Current delivery sequence
 
 ```text
-main e974c09...
-→ docs-only Audit #186
-→ binding reserved-import P2 resolution
-→ fresh exact-head CI + Graphify + Browser/Pages
-→ reply/resolve P2 thread
-→ threads/reviews/comments clean
+main de5e37f...
+→ Audit #186 merged/accepted
+→ PR #187 runtime implementation complete
+→ strengthened Browser acceptance green at 5e60bd7...
+→ closure docs/control-plane commit
+→ fresh exact-head CI + Graphify + Browser + production smoke
+→ review threads/reviews/comments clean
 → mergeable + main/head stable
 → final PR body
 → Ready
-→ post-Ready recheck
+→ post-Ready exact-head recheck
 → STOP
 ```
 
-**Do not merge #186. Do not create implementation branch. Do not start PR1.**
+The batch is closure STAGED while #187 is unmerged. It becomes `POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE → COMPLETE` only after controller-approved squash merge of #187. Do not invent the generated #187 squash SHA.
+
+After controller merge, the only permitted next category is a fresh docs-only Audit from fresh `main`.
+
+**Do not merge #187. Do not create PR2. Do not start the next Audit.**
