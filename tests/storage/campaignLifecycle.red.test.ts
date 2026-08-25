@@ -220,6 +220,7 @@ describe('POST-1.0 replayable campaign lifecycle acceptance', () => {
       quiesceOldWriter: async () => undefined,
     })).rejects.toThrow('put failed: autosave');
 
+    repository.failPutSlot = undefined;
     const restored = await loadAutosave(repository);
     expect(restored.status).toBe('loaded');
     if (restored.status !== 'loaded') return;
