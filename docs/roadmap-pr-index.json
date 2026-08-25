@@ -1,5 +1,5 @@
 {
-  "indexVersion": 33,
+  "indexVersion": 34,
   "updatedAt": "2026-08-25",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -21,7 +21,7 @@
     "workItem": "POST-1.0-NEXT-PRODUCT-3",
     "branch": "audit/post-1.0-next-product-3",
     "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "status": "post-ready-manual-activation-p1-resolved-fresh-gates-required",
+    "status": "post-ready-reserved-import-p2-resolved-fresh-gates-required",
     "implementationAuthorized": false
   },
   "completedPreviousPhase": {
@@ -31,16 +31,28 @@
     "auditMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
     "archive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
     "workItems": [
-      { "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH", "pr": 183, "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5" },
-      { "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK", "pr": 184, "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0" },
-      { "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH", "pr": 185, "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6" }
+      {
+        "id": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+        "pr": 183,
+        "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5"
+      },
+      {
+        "id": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
+        "pr": 184,
+        "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0"
+      },
+      {
+        "id": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
+        "pr": 185,
+        "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6"
+      }
     ],
     "hasPr4": false
   },
   "currentAudit": {
     "id": "POST-1.0-NEXT-PRODUCT-3",
     "pr": 186,
-    "status": "docs-only-post-ready-p1-resolved",
+    "status": "docs-only-post-ready-reserved-import-p2-resolved",
     "mergeSha": null,
     "implementationAuthorized": false,
     "proposedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
@@ -54,7 +66,8 @@
     "controllerFindingsResolved": [
       "new-campaign autosave resurrection race",
       "E2E interactive new-game dialog bypass",
-      "manual-slot activation resurrection race and stale snapshot authority"
+      "manual-slot activation resurrection race and stale snapshot authority",
+      "reserved-slot import authority bypass"
     ],
     "workItems": [
       {
@@ -65,11 +78,13 @@
         "contracts": {
           "commonCampaignSwitch": "validate target -> quiesce old writer -> authoritative persistence switch -> reload/bootstrap",
           "safeReset": "quiesce writer -> delete autosave.snapshot -> delete autosave -> reload",
-          "manualActivation": "validate manual B -> quiesce A -> delete stale autosave.snapshot(A) -> write B to primary autosave -> reload -> primary B wins",
-          "manualSnapshotAuthority": "stale A snapshot must be removed before B primary replacement; immediate B snapshot recreation is not required",
-          "failureRecovery": "no persistence mutation on quiesce failure; no ambiguous reload; surviving committed primary remains authority; no silent disabled autosave page",
-          "e2e": "VITE_E2E remains enabled; one explicit interactive-new-game query mode reaches real dialog with fixed uint32 seed",
-          "seed": "explicit uint32 -> exact GameState.seed; legacy string seed source compatible",
+          "manualActivation": "validate manual B -> quiesce A -> delete stale autosave.snapshot(A) -> write B primary -> reload -> B wins",
+          "manualSnapshotAuthority": "stale A snapshot removed before B primary replacement; immediate B snapshot recreation not required",
+          "import": "storage-only: explicit non-empty non-reserved manual target; payload slotId cannot write reserved authority; no quiesce/reload; activation only via safe Load",
+          "importProductionCaller": "src/ui/saveManager.ts#onImport() only",
+          "failureRecovery": "validation failures mutate nothing; no ambiguous reload; authority stays on committed primary/snapshot; no silent disabled autosave page",
+          "e2e": "VITE_E2E remains enabled; focused real-picker mode uses fixed uint32 seed",
+          "seed": "explicit uint32 -> exact GameState.seed; legacy string source compatible",
           "schema": 19,
           "save": 6,
           "migration": "none"
@@ -78,15 +93,69 @@
     ]
   },
   "sequence": [
-    { "pr": 178, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT", "status": "merged-archived", "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77" },
-    { "pr": 179, "kind": "implementation", "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "status": "merged", "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
-    { "pr": 180, "kind": "implementation", "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "status": "merged", "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
-    { "pr": 181, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "status": "merged", "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" },
-    { "pr": 182, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-2", "status": "merged-archived", "mergeSha": "b09887489db7754f0c0b2672649db9283b879732" },
-    { "pr": 183, "kind": "implementation", "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH", "status": "merged", "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5" },
-    { "pr": 184, "kind": "implementation", "workItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK", "status": "merged", "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0" },
-    { "pr": 185, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH", "status": "merged", "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6" },
-    { "pr": 186, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-3", "status": "active-docs-only", "mergeSha": null }
+    {
+      "pr": 178,
+      "kind": "audit",
+      "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT",
+      "status": "merged-archived",
+      "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77"
+    },
+    {
+      "pr": 179,
+      "kind": "implementation",
+      "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY",
+      "status": "merged",
+      "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db"
+    },
+    {
+      "pr": 180,
+      "kind": "implementation",
+      "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK",
+      "status": "merged",
+      "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd"
+    },
+    {
+      "pr": 181,
+      "kind": "implementation-closure",
+      "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE",
+      "status": "merged",
+      "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d"
+    },
+    {
+      "pr": 182,
+      "kind": "audit",
+      "workItem": "POST-1.0-NEXT-PRODUCT-2",
+      "status": "merged-archived",
+      "mergeSha": "b09887489db7754f0c0b2672649db9283b879732"
+    },
+    {
+      "pr": 183,
+      "kind": "implementation",
+      "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH",
+      "status": "merged",
+      "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5"
+    },
+    {
+      "pr": 184,
+      "kind": "implementation",
+      "workItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK",
+      "status": "merged",
+      "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0"
+    },
+    {
+      "pr": 185,
+      "kind": "implementation-closure",
+      "workItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH",
+      "status": "merged",
+      "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6"
+    },
+    {
+      "pr": 186,
+      "kind": "audit",
+      "workItem": "POST-1.0-NEXT-PRODUCT-3",
+      "status": "active-docs-only",
+      "mergeSha": null
+    }
   ],
   "next": {
     "pr": null,
@@ -94,6 +163,6 @@
     "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
     "implementationAuthorized": false,
     "prerequisite": "controller-approved merge of Audit #186, then resolve fresh main",
-    "instruction": "Do not merge #186 autonomously. Do not create or start the implementation branch before controller approval and Audit merge."
+    "instruction": "Do not merge #186 autonomously. Do not create or start implementation branch before controller approval and Audit merge."
   }
 }
