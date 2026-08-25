@@ -1,94 +1,223 @@
 # Current execution state
 
-**State:** PR3 / final batch closure staged for controller review  
-**Updated:** 2026-08-24  
-**Batch:** `POST-1.0-STRATEGIC-FEEDBACK-TRUTH`  
-**Accepted Audit:** #182 — MERGED at `b09887489db7754f0c0b2672649db9283b879732`  
-**PR1:** #183 — MERGED at `83a4942c35aac8d7f0b02f7730f0646c171c98b5`  
-**PR2:** #184 — MERGED at `691078ab9ce5b0ab48e7aa69e71fe72322528af0`  
-**Active PR:** #185 `fix: make combat ranking victories truthful`  
-**Branch:** `agent/post-1.0-combat-ranking-truth`  
-**Work item:** `POST-1.0-PR3-COMBAT-RANKING-TRUTH`  
-**Exact starting main:** `691078ab9ce5b0ab48e7aa69e71fe72322528af0`  
-**Runtime:** schema v19 / save format v6 / migration none
+**State:** Audit #186 post-Ready reserved-import P2 resolved in docs / fresh exact-head gates required before Ready  
+**Updated:** 2026-08-25  
+**Active Audit:** #186 `docs: audit next post-1.0 product batch`  
+**Audit work item:** `POST-1.0-NEXT-PRODUCT-3`  
+**Branch:** `audit/post-1.0-next-product-3`  
+**Exact starting main:** `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6`  
+**Runtime baseline:** schema v19 / save format v6  
+**Implementation authorized:** false
 
-## Regression-first evidence
-
-RED commit: `3e64edea741c80bfda6d5966db42ef45470cf5a3`.
-
-CI #2269 reached the real test suite with assets, lint and typecheck green. The targeted ranking regression failed exactly because the existing metric counted two successful non-combat operations plus one Arena victory as three victories:
+## Completed boundary
 
 ```text
-expected 1
-received 3
+POST-1.0-STRATEGIC-FEEDBACK-TRUTH → COMPLETE
+Audit #182 → b09887489db7754f0c0b2672649db9283b879732
+PR1 #183  → 83a4942c35aac8d7f0b02f7730f0646c171c98b5
+PR2 #184  → 691078ab9ce5b0ab48e7aa69e71fe72322528af0
+PR3 #185  → e974c09e7779b4cf3bbc6d0279b8d35f177a29e6
 ```
 
-Failing test: `counts only combat victories when successful operations and Arena history are mixed`.
+There is no PR4.
 
-## PR3 implementation truth
+## Audit decision
 
-Runtime implementation head before closure docs:
+Proposed batch:
 
-`280b9e9c1e6605ced9837e845bb2d430c315406d`
+`POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE`
 
-The ranking producer still derives from `createUnifiedMissionReports()`; no second Arena or Solar War history path was added.
+Exactly one proposed implementation item:
 
-A report counts as one combat victory for an empire only when:
+`POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE`
 
-- `kind === 'battle'`, the empire is primary, and `outcome === 'success'`; or
-- `kind === 'battle'`, the empire is secondary, and the primary outcome is `failure`; or
-- `kind === 'solar-war'`, the empire is primary, and `outcome === 'success'`.
+Implementation remains unauthorized until controller-approved Audit merge.
 
-Therefore normal PvP attacker wins, defender wins, pirate/PvE battle wins, Arena victories and Solar War victories count. Expedition success, space-object success, intelligence/system/world-event results, battle draws/failures for the losing side, Arena draw/defeat/withdrawal and Solar War draw/defeat do not count.
+## Strongest verified problem
 
-Canonical report IDs are consumed once through a deterministic `Set`, preventing duplicate report identity from inflating the score. Existing ranking ordering remains score descending then empire ID. The existing score weight remains exactly `victories * 500`.
+The player-facing campaign lifecycle authority problem includes:
 
-Player-facing wording is now explicit: `Боевые победы` and `боев. побед`.
+1. repeated hard-coded default world seed;
+2. unsafe/missing New Campaign switch;
+3. unsafe manual-slot activation switch;
+4. reserved-slot Import authority bypass.
 
-## Targeted acceptance
+This remains one coherent `System / Saves → persistence authority → bootstrap → seed/new-game` PR.
 
-`src/ui/commandRanking.test.ts` proves:
+## Common campaign-switch authority
 
-- successful expedition and space-object operations do not inflate victories;
-- Arena victory counts once;
-- Arena draw/defeat/withdrawn do not count;
-- PvP attacker victory increments attacker only;
-- PvP defender victory increments defender only;
-- pirate combat victory counts, including legacy battle-mode inference;
-- Solar War victory counts while draw/defeat do not;
-- duplicate canonical report ID counts at most once;
-- event history order does not affect victories or score;
-- one combat victory changes the existing score component by exactly 500;
-- real schema-v19/save-v6 round trip preserves derived victories and score;
-- existing deterministic ranking behavior remains green.
-
-`tests/e2e/combatFeedback.spec.ts` checks the real `#/ranking` route and the explicit `Боевые победы` label/count while retaining PR2 combat-feedback assertions.
-
-## Runtime-head gates before closure docs
-
-Exact runtime head `280b9e9c1e6605ced9837e845bb2d430c315406d`:
-
-- CI #2270 — SUCCESS: assets, lint, typecheck, full tests, build, compressed progression, campaign performance, Organic Obelisk, Organic Fresh Game → Terminal, terminal save/load + partition determinism and bounded faction matrix all green;
-- Graphify #1401 — SUCCESS with repository-pinned Graphify 0.8.38;
-- Browser E2E #1500 — SUCCESS;
-- production Pages smoke in #1500 — SUCCESS.
-
-## Batch closure
-
-The accepted Audit #182 is preserved verbatim at:
-
-`docs/audits/completed/post-1.0-strategic-feedback-truth.md`
-
-The closing chain is:
+Actual campaign switches follow:
 
 ```text
-#182 audit → #183 PR1 → #184 PR2 → #185 PR3/closure
+validate target/intent
+→ block new old-page autosave requests
+→ drain pending/active work with failure propagation
+→ dispose/quiesce old AutoSaveController
+→ authoritative persistence switch
+→ reload/bootstrap
 ```
 
-#185 has no merge SHA yet and none is invented. The batch is closure-staged now and becomes complete only after controller-approved merge of #185. There is no PR4. After merge, the only permitted successor is a fresh docs-only Audit from fresh `main`.
+### New Campaign
 
-## Exact next action
+```text
+confirm
+→ quiesce A
+→ delete autosave.snapshot
+→ delete autosave
+→ reload
+→ loadAutosave() == missing
+```
 
-This closure-doc commit changes the head. Require fresh exact-head CI + Graphify + Browser E2E + production Pages smoke, then inspect review threads/reviews/comments, verify live `main` remains `691078ab9ce5b0ab48e7aa69e71fe72322528af0`, require `mergeable=true`, finalize the PR body, mark #185 Ready, verify the same head again, and STOP for controller review.
+### Manual `Загрузить`
 
-**Do not merge #185. Do not create PR4 or the next Audit before controller handling.**
+```text
+validate/load manual B
+→ quiesce A
+→ delete stale autosave.snapshot(A)
+→ write B state + runtimeMetadata into primary autosave
+→ preserve manual B
+→ reload
+→ loadAutosave() resolves primary B
+```
+
+Valid primary wins recovery; snapshot is fallback only for missing/invalid primary. Immediate B snapshot recreation is not required and, if used, may contain B only.
+
+## Import authority — STORAGE ONLY
+
+Direct current-main source proves the P2:
+
+- UI turns blank/reserved target into `undefined`;
+- generic `SaveManager.import()` then falls back to payload `slotId`;
+- a payload claiming `autosave` or `autosave.snapshot` can therefore write reserved authority.
+
+Direct caller closure:
+
+- production modules importing `SaveManager`: `main.ts`, `campaignBootstrap.ts`, `AutoSaveController.ts`, `loadAutosave.ts`, `ui/saveManager.ts`;
+- direct inspection finds `.import(...)` only in `src/ui/saveManager.ts#onImport()`;
+- no other production import caller remains UNKNOWN.
+
+Binding player UI contract:
+
+```text
+JSON selected
+→ require explicit non-empty target
+→ reject autosave
+→ reject autosave.snapshot
+→ call import with explicit manual target only
+→ rewrite payload into that manual slot
+→ primary/snapshot unchanged
+→ current campaign unchanged
+→ no quiesce
+→ no reload
+```
+
+Payload's original `slotId` has no player-facing authority.
+
+To play an imported campaign:
+
+```text
+Import → manual slot
+→ later Загрузить
+→ safe quiesced manual-activation switch
+```
+
+Generic `SaveManager.import()` may remain as-is if UI regression proves the boundary sufficient. Narrow API hardening is allowed only if focused regression shows it is minimally safer.
+
+## Failure semantics
+
+Import:
+
+- blank target → explicit validation error, no import;
+- reserved target → explicit validation error, no import;
+- malformed JSON → existing validation error, no mutation;
+- valid manual target → exactly that slot is written;
+- import failure → primary/snapshot/current campaign unchanged;
+- import never activates a campaign.
+
+Switch failures retain prior contract: no persistence mutation on quiesce failure, no ambiguous reload, no silent disabled-autosave page.
+
+## Required regression-first evidence
+
+RED now covers:
+
+1. hard-coded default seed;
+2. New Campaign resurrection;
+3. manual activation resurrection;
+4. reserved-slot import authority bypass;
+5. E2E picker bypass.
+
+Import matrix:
+
+- payload `autosave` + blank target → rejected;
+- payload `autosave.snapshot` + target `autosave.snapshot` → rejected;
+- payload `autosave` + target `manual-import` → only `manual-import` changes;
+- after valid import, campaign activates only when user later presses `Загрузить manual-import`.
+
+## Browser acceptance
+
+Focused lifecycle Browser test must add storage-only import evidence:
+
+1. A active with primary A + snapshot A;
+2. import payload whose original ID is `autosave`;
+3. blank/reserved target rejected;
+4. primary/snapshot A unchanged;
+5. no reload and A stays active;
+6. import to explicit `manual-import`;
+7. manual slot appears while A remains active;
+8. `Загрузить manual-import` then reuses safe quiesced manual activation and only then switches.
+
+Existing New Campaign and manual activation acceptance remains binding.
+
+## Seed / E2E contract
+
+- player seed = uint32;
+- explicit numeric seed = exact `GameState.seed`;
+- legacy string seed remains compatible;
+- real UI may use Web Crypto only for pre-state suggestion;
+- no wallclock/`Date.now()`/`Math.random()` seed;
+- focused Browser real-picker seam remains `VITE_E2E=1 + interactiveNewGame + fixed campaignSeed`;
+- schema v19 / save v6 / migration none.
+
+## Authorized implementation paths after Audit merge only
+
+Primary:
+
+- `src/main.ts`;
+- `src/ui/saveManager.ts`;
+- `src/storage/SaveManager.ts`;
+- `src/simulation/createInitialGameState.ts`;
+- `src/simulation/seed.ts` only if narrow uint32 helper is needed;
+- `src/ui/newGameFactionPicker.ts`;
+- `src/runtime/e2eScenario.ts`.
+
+Read/verify unless focused regression proves minimal change necessary:
+
+- `src/storage/AutoSaveController.ts`;
+- `src/storage/loadAutosave.ts`;
+- `src/runtime/campaignBootstrap.ts`;
+- `src/storage/IndexedDbSaveRepository.ts`;
+- `playwright.config.ts`.
+
+```text
+criticalUnknownsResolved = true
+criticalUnknowns = []
+```
+
+## Current safety boundary
+
+Audit #186 remains docs-only. No runtime/test/package/workflow implementation changes. No implementation branch exists.
+
+## Next action
+
+After this final docs/control-plane commit:
+
+1. fresh exact-head CI + pinned Graphify + Browser E2E + production Pages smoke;
+2. reply to P2 thread with exact storage-only resolution, then resolve it;
+3. check unresolved threads/reviews/comments;
+4. confirm `mergeable=true`, stable head and live main;
+5. finalize PR body;
+6. mark Ready;
+7. post-Ready exact-head recheck;
+8. STOP.
+
+**Do not merge #186. Do not create implementation branch. Do not start PR1.**
