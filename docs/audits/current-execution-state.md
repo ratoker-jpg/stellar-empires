@@ -1,12 +1,12 @@
 # Current execution state
 
-**State:** visual/navigation implementation ready for GitHub delivery
+**State:** visual/navigation implementation PR #189 is open; GitHub checks pending
 **Updated:** 2026-08-29
 **Batch:** FULL-VISUAL-NAVIGATION-REDESIGN
 **Audit baseline:** main at ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa (PR #188 merge)
 **Audit PR:** #188 merged
 **Active implementation:** UI-01-SHELL-PLANET-COMMAND-CENTRE and UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE
-**Work items:** completed locally on `codex/full-visual-navigation-redesign`; GitHub delivery is authorized by the user
+**Work items:** UI-01-SHELL-PLANET-COMMAND-CENTRE and UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE are delivered by PR #189 from `codex/full-visual-navigation-redesign`
 
 ## Last completed atomic action
 
@@ -23,6 +23,7 @@
 - Fixed the prepared-fleet target observer so the visual target notice is not mistaken for a `<select>` and no longer produces repeated unhandled runtime errors during route changes.
 - Merged Audit PR #188 and updated local `main` to its squash merge commit `ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa`.
 - Rebased the delivery setup on that fresh main through a recoverable stash; the visual implementation reapplied without conflicts on `codex/full-visual-navigation-redesign`.
+- Committed the implementation as `4b19fc0` (`feat: redesign visual navigation shell`), pushed the branch, and opened implementation PR #189.
 
 ## Last successful validation
 
@@ -31,7 +32,7 @@
 - Saved-page inspection verified the six-zone planet selector, persistent HUD/resource groups, planet switcher, global menu, quick links, galaxy, flights, buildings, reports, ships, laboratory and settings reference surfaces.
 - Graphify code-only graph was generated and queried successfully for shell and planet navigation hubs using pinned Graphify version 0.8.38.
 - Local browser matrix currently covers 48 primary-route/viewport cases plus 76 nested-route cases; the mobile rail regression was rechecked across 38 nested routes.
-- Final local validation for this slice: 781 unit tests passed, all 40 E2E tests passed with one worker, lint/typecheck/build passed, and the Windows visual baseline is present for the redesigned command overview.
+- Final local validation for this slice: lint, typecheck and production build pass. The updated Windows visual baseline passes on a separate repeat run with one Playwright worker; focused app-shell and accessibility E2E gates also passed during this delivery.
 
 ## Current divergence and correction
 
@@ -46,7 +47,7 @@ The inherited status files described PR #187 as active. Actual GitHub state wins
 
 ## Exact next action
 
-Review the staged implementation diff, commit it on `codex/full-visual-navigation-redesign`, push it, open the implementation PR, and run its available checks.
+Review the available GitHub checks for PR #189. If they all pass and no review issue is found, squash-merge it into main, then archive this audit and update the continuation/status records with the merge SHA.
 
 ## Blockers
 
@@ -54,4 +55,4 @@ None. No formula, simulation, persistence, bot or asset-rights change is include
 
 ## Safe to continue
 
-Yes. The work is safe to commit and publish from the dedicated implementation branch.
+Yes. The work is safely published in PR #189 and awaits its normal GitHub checks.

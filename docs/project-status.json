@@ -11,14 +11,14 @@
   "verifiedMainBaseline": "PR #188 merge / fresh main for FULL-VISUAL-NAVIGATION-REDESIGN implementation",
   "runtimeBaselinePr": 185,
   "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-  "activePr": null,
-  "activePrKind": "implementation-delivery",
+  "activePr": 189,
+  "activePrKind": "implementation-review",
   "activeWorkItem": "FULL-VISUAL-NAVIGATION-REDESIGN",
   "activeBranch": "codex/full-visual-navigation-redesign",
   "nextPrAfterActive": null,
-  "nextPrKind": "implementation-pr-pending",
-  "nextWorkItem": "UI-01-SHELL-PLANET-COMMAND-CENTRE",
-  "currentMilestone": "FULL-VISUAL-NAVIGATION-REDESIGN / implementation ready for delivery",
+  "nextPrKind": "merge-after-checks",
+  "nextWorkItem": null,
+  "currentMilestone": "FULL-VISUAL-NAVIGATION-REDESIGN / implementation PR #189 awaiting checks",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -51,7 +51,7 @@
     "auditPr": 188,
     "startingMain": "ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa",
     "mergeSha": "ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa",
-    "status": "merged-implementation-delivery",
+    "status": "implementation-pr-open",
     "archive": null,
     "implementationAuthorized": true,
     "acceptedBatchId": "FULL-VISUAL-NAVIGATION-REDESIGN",
@@ -62,7 +62,7 @@
   },
   "proposedBatch": {
     "id": "FULL-VISUAL-NAVIGATION-REDESIGN",
-    "status": "implementation-delivery",
+    "status": "implementation-pr-open",
     "complexity": "heavy",
     "implementationAuthorized": true,
     "archive": null,
@@ -70,16 +70,16 @@
       {
         "id": "UI-01-SHELL-PLANET-COMMAND-CENTRE",
         "order": 1,
-        "pr": null,
-        "status": "ready-for-pr",
+        "pr": 189,
+        "status": "in-review",
         "mergeSha": null,
         "purpose": "persistent shell, direct planet/zone navigation and scroll-safe construction workspace"
       },
       {
         "id": "UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE",
         "order": 2,
-        "pr": null,
-        "status": "ready-for-pr",
+        "pr": 189,
+        "status": "in-review",
         "mergeSha": null,
         "purpose": "shared visual system and responsive/visibility hardening across every remaining route family"
       }
@@ -194,5 +194,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and PR #187 state"
   ],
-  "nextAction": "Commit and push codex/full-visual-navigation-redesign, open the implementation PR, and run its available checks before merge."
+  "nextAction": "Review GitHub checks for PR #189; when they pass, squash-merge it and complete the audit archival/status handoff."
 }
