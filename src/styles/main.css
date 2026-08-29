@@ -55,8 +55,11 @@ button {
 }
 
 .app-shell {
+  display: flex;
+  flex-direction: column;
   width: min(1920px, 100%);
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0 auto;
   padding: 12px;
 }
@@ -64,6 +67,7 @@ button {
 .topbar {
   position: relative;
   z-index: 5;
+  flex: 0 0 auto;
   display: grid;
   grid-template-columns: minmax(240px, 360px) minmax(560px, 1fr) minmax(270px, 340px);
   align-items: center;
@@ -236,13 +240,19 @@ button {
 .game-layout {
   display: grid;
   grid-template-columns: 82px minmax(0, 1fr) 354px;
-  min-height: calc(100vh - 116px);
+  flex: 1 1 auto;
   border: 1px solid rgb(71 199 241 / 18%);
   border-top: 0;
   border-radius: 0 0 12px 12px;
   overflow: hidden;
   background: rgb(2 7 13 / 88%);
   box-shadow: 0 26px 70px rgb(0 0 0 / 34%);
+}
+
+/* Планетарный командный центр заполняет точный остаток высоты оболочки:
+   страница не скроллится, внутренние области скроллятся сами (UI-01). */
+.game-layout.is-planet-view {
+  min-height: 0;
 }
 
 .side-rail {
@@ -611,6 +621,7 @@ noscript {
 }
 
 @media (max-width: 1120px) {
+
   .topbar {
     grid-template-columns: 240px 1fr;
   }

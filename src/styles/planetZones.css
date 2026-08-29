@@ -10,8 +10,15 @@
   display: none !important;
 }
 
-.game-layout.is-planet-view {
+/* Планетарный командный центр занимает ровно свободный остаток высоты оболочки
+   (flex-basis 0 + grow): страница не скроллится по вертикали, все внутренние
+   области имеют собственные скролл-регионы (UI-01).
+   Селектор html body даёт специфичность выше compact/mobile-правил
+   accessibilityRuntime.css (0,2,1), которые иначе сжимают планету в колонку. */
+html body .game-layout.is-planet-view {
   grid-template-columns: minmax(0, 1fr);
+  flex: 1 1 0;
+  min-height: 0;
 }
 
 .game-layout.is-planet-view .command-panel {
@@ -23,11 +30,11 @@
 }
 
 .planet-view {
-  display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 9px;
-  height: calc(100vh - 206px);
-  min-height: 560px;
+  height: 100%;
+  min-height: 400px;
   padding: 12px;
   overflow: hidden;
   background:
@@ -36,6 +43,21 @@
     linear-gradient(180deg, color-mix(in srgb, var(--se-bg-panel) 66%, black), var(--se-bg-void));
 }
 
+.planet-view > * {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.planet-view > #planet-core-workspace,
+.planet-view > .planet-development-surface {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Элементы с hidden не должны резервировать место в колонке планетарного экрана. */
+.planet-view > [hidden] {
+  display: none !important;
+}
 .planet-header {
   position: relative;
   display: flex;
@@ -64,7 +86,28 @@
 }
 
 .planet-header__identity {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 auto;
   min-width: 0;
+}
+
+.planet-breadcrumbs {
+  padding: 5px 8px;
+}
+
+.planet-breadcrumbs .shell-breadcrumbs__trail {
+  gap: 3px;
+}
+
+.planet-breadcrumbs button {
+  padding: 2px 5px;
+  font-size: 0.6rem;
+}
+
+.planet-galaxy-action {
+  margin-right: 8px;
+  white-space: nowrap;
 }
 
 .planet-title-row {
@@ -387,6 +430,18 @@
   opacity: 0.48;
 }
 
+#planet-core-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 0;
+}
+
+#planet-core-workspace > .planet-workspace {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .planet-workspace {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr) 294px;
@@ -414,6 +469,8 @@
   gap: 12px;
   padding: 14px;
   overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .planet-context-panel[data-mode="resource"] {
@@ -621,6 +678,9 @@
   z-index: 1;
   height: 100%;
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .planet-overview-stage[hidden],
@@ -772,6 +832,11 @@
   box-shadow: var(--se-glow-accent);
 }
 
+.planet-zone-marker:focus-visible {
+  outline: 2px solid var(--se-accent-strong);
+  outline-offset: 2px;
+}
+
 .planet-zone-marker span {
   font-size: 0.62rem;
   font-weight: 760;
@@ -854,6 +919,8 @@
   min-height: 0;
   padding: 4px;
   overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .planet-building-node {
@@ -943,6 +1010,8 @@
   flex-direction: column;
   gap: 8px;
   overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .operation-card {
@@ -1134,10 +1203,23 @@
 
 @media (max-height: 780px) {
   .planet-view {
-    height: calc(100vh - 184px);
-    min-height: 520px;
+    min-height: 360px;
     gap: 7px;
     padding: 9px;
+  }
+
+  /* Короткие вьюпорты: шапка зоны компактнее, сетка зданий получает
+     гарантированный минимум высоты, стейдж скроллит её целиком (UI-01). */
+  .planet-zone-stage {
+    grid-template-rows: auto minmax(150px, 1fr);
+  }
+
+  .planet-zone-stage__header {
+    padding: 0 3px 6px;
+  }
+
+  .planet-zone-stage__header > p {
+    display: none;
   }
 
   .planet-header {

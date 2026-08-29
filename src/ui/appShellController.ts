@@ -396,39 +396,45 @@ export class AppShellController {
   }
 
   private renderBreadcrumbs(snapshot: AppShellSnapshot): void {
-    const host = document.querySelector<HTMLElement>('#shell-breadcrumbs');
-    if (host === null) return;
-    host.replaceChildren();
-    const trail = document.createElement('div');
-    trail.className = 'shell-breadcrumbs__trail';
-    for (const [index, entry] of snapshot.breadcrumbs.entries()) {
-      if (index > 0) {
-        const separator = document.createElement('span');
-        separator.className = 'shell-breadcrumbs__separator';
-        separator.textContent = '›';
-        separator.setAttribute('aria-hidden', 'true');
-        trail.append(separator);
+    const hosts = document.querySelectorAll<HTMLElement>('[data-shell-breadcrumbs-host]');
+    if (hosts.length === 0) return;
+    for (const host of hosts) {
+      // Только один хост видим одновременно (панель контекста либо планетарный
+      // экран); return-действие рендерится исключительно в видимый хост, чтобы
+      // [data-shell-return] оставался уникальным в документе (UI-01).
+      const hostVisible = host.getClientRects().length > 0;
+      host.replaceChildren();
+      const trail = document.createElement('div');
+      trail.className = 'shell-breadcrumbs__trail';
+      for (const [index, entry] of snapshot.breadcrumbs.entries()) {
+        if (index > 0) {
+          const separator = document.createElement('span');
+          separator.className = 'shell-breadcrumbs__separator';
+          separator.textContent = '›';
+          separator.setAttribute('aria-hidden', 'true');
+          trail.append(separator);
+        }
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = entry.label;
+        button.dataset.breadcrumbId = entry.id;
+        button.disabled = entry.current;
+        if (entry.current) button.setAttribute('aria-current', 'page');
+        else button.addEventListener('click', () => this.navigate(entry.route));
+        trail.append(button);
       }
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.textContent = entry.label;
-      button.dataset.breadcrumbId = entry.id;
-      button.disabled = entry.current;
-      if (entry.current) button.setAttribute('aria-current', 'page');
-      else button.addEventListener('click', () => this.navigate(entry.route));
-      trail.append(button);
-    }
-    host.append(trail);
+      host.append(trail);
 
-    if (snapshot.returnRoute !== null) {
-      const returnRoute = snapshot.returnRoute;
-      const returnButton = document.createElement('button');
-      returnButton.type = 'button';
-      returnButton.className = 'shell-breadcrumbs__return';
-      returnButton.dataset.shellReturn = returnRoute.family;
-      returnButton.textContent = `Вернуться: ${getShellRouteDisplayName(returnRoute, this.#options.getState())}`;
-      returnButton.addEventListener('click', () => this.navigate(returnRoute));
-      host.append(returnButton);
+      if (snapshot.returnRoute !== null && hostVisible) {
+        const returnRoute = snapshot.returnRoute;
+        const returnButton = document.createElement('button');
+        returnButton.type = 'button';
+        returnButton.className = 'shell-breadcrumbs__return';
+        returnButton.dataset.shellReturn = returnRoute.family;
+        returnButton.textContent = `Вернуться: ${getShellRouteDisplayName(returnRoute, this.#options.getState())}`;
+        returnButton.addEventListener('click', () => this.navigate(returnRoute));
+        host.append(returnButton);
+      }
     }
   }
 
