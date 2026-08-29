@@ -116,6 +116,19 @@
 }
 
 @media (max-width: 760px) {
+  #galaxy-view {
+    padding-top: 132px;
+  }
+
+  #galaxy-view #phaser-game {
+    height: calc(100% - 132px);
+  }
+
+  #galaxy-view .space-map-overlay {
+    top: 132px;
+    height: calc(100% - 132px);
+  }
+
   .space-map-navigation {
     top: 8px;
     right: 8px;

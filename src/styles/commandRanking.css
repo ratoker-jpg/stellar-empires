@@ -15,6 +15,17 @@
   backdrop-filter: blur(6px);
 }
 
+/* The ranking surface is rendered inside the shell, not as a modal dialog. */
+#ranking-view.command-ranking-dialog {
+  width: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 .command-ranking-header {
   display: flex;
   justify-content: space-between;

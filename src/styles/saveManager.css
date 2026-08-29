@@ -104,6 +104,59 @@
   color: #ff9b8f;
 }
 
+.save-manager-confirm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  margin: 0 22px 14px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--se-warning) 48%, transparent);
+  border-radius: var(--se-radius-md);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--se-warning) 12%, transparent), transparent 60%),
+    color-mix(in srgb, var(--se-bg-card) 82%, black 18%);
+  box-shadow: inset 0 1px rgb(255 255 255 / 4%);
+}
+
+.save-manager-confirm[hidden] {
+  display: none;
+}
+
+.save-manager-confirm p {
+  color: var(--se-text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.save-manager-confirm button {
+  min-height: var(--se-control-md);
+  padding: 0 14px;
+  border: 1px solid var(--se-border-default);
+  border-radius: var(--se-radius-sm);
+  color: var(--se-text-primary);
+  background: linear-gradient(180deg, var(--se-bg-raised), var(--se-bg-deep));
+  cursor: pointer;
+}
+
+.save-manager-confirm button:last-child {
+  border-color: color-mix(in srgb, var(--se-danger) 54%, transparent);
+  color: #ffd6d4;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--se-danger) 30%, var(--se-bg-card)), var(--se-bg-deep));
+}
+
+.save-manager-confirm button:hover,
+.save-manager-confirm button:focus-visible {
+  border-color: var(--se-border-strong);
+  box-shadow: var(--se-glow-accent);
+}
+
+.save-manager-confirm button:last-child:hover,
+.save-manager-confirm button:last-child:focus-visible {
+  border-color: color-mix(in srgb, var(--se-danger) 80%, white 20%);
+  box-shadow: 0 0 22px rgb(255 111 104 / 18%);
+}
+
 .save-manager-list {
   display: grid;
   gap: 8px;
@@ -153,6 +206,33 @@
   gap: 7px;
 }
 
+html[data-viewport-mode="mobile"] .save-manager-campaign,
+html[data-viewport-mode="mobile"] .save-manager-controls,
+html[data-viewport-mode="mobile"] .save-manager-confirm {
+  grid-template-columns: 1fr;
+}
+
+html[data-viewport-mode="mobile"] .save-manager-campaign p {
+  grid-column: auto;
+}
+
+html[data-viewport-mode="mobile"] .save-manager-confirm {
+  margin-inline: 12px;
+}
+
+html[data-viewport-mode="mobile"] .save-manager-confirm button {
+  width: 100%;
+}
+
+html[data-viewport-mode="mobile"] .save-slot {
+  align-items: stretch;
+  flex-direction: column;
+}
+
+html[data-viewport-mode="mobile"] .save-slot-actions {
+  justify-content: flex-start;
+}
+
 @media (max-width: 720px) {
   .save-manager-campaign,
   .save-manager-controls {
@@ -170,5 +250,14 @@
 
   .save-slot-actions {
     justify-content: flex-start;
+  }
+
+  .save-manager-confirm {
+    grid-template-columns: 1fr;
+    margin-inline: 12px;
+  }
+
+  .save-manager-confirm button {
+    width: 100%;
   }
 }

@@ -72,7 +72,7 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
       <button type="button" data-save-action="new-campaign">Новая партия</button>
       <label><span>Импорт JSON</span><input type="file" accept="application/json,.json" aria-label="Импорт сохранения JSON" /></label>
     </section>
-    <section class="save-manager-confirm" data-new-campaign-confirm hidden>
+    <section class="save-manager-confirm" data-new-campaign-confirm role="group" aria-label="Подтверждение новой партии" hidden>
       <p>Новая партия удалит текущий autosave. Ручные сохранения останутся.</p>
       <button type="button" data-new-campaign-action="cancel">Отмена</button>
       <button type="button" data-new-campaign-action="confirm">Подтвердить</button>
@@ -204,7 +204,10 @@ export function mountSaveManager(options: SaveManagerUiOptions): SaveManagerUiMo
       .finally(() => { saveButton.disabled = false; });
   };
 
-  const onNewCampaign = (): void => { confirmPanel.hidden = false; };
+  const onNewCampaign = (): void => {
+    confirmPanel.hidden = false;
+    confirmNewCampaign.focus();
+  };
   const onCancelNewCampaign = (): void => { confirmPanel.hidden = true; };
   const onConfirmNewCampaign = (): void => {
     if (options.onNewCampaign === undefined) return;

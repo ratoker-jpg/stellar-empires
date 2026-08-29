@@ -108,3 +108,101 @@
     font-size: 0.54rem;
   }
 }
+
+/* One visible global command deck: every primary destination remains reachable
+   without an overflow rail. The grouping mirrors the permanent menu hierarchy
+   of the reference interface. */
+.side-rail {
+  display: grid;
+  grid-template-columns: minmax(370px, 1.55fr) minmax(205px, 0.9fr) minmax(190px, 0.8fr) minmax(112px, 0.45fr);
+  gap: 0;
+  min-height: 92px;
+  padding: 5px 8px 0;
+  overflow: visible;
+}
+
+.side-rail::before,
+.side-rail::after { display: none; }
+
+.rail-group {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 6px;
+  min-width: 0;
+  padding: 0 7px 5px;
+}
+
+.rail-group__label {
+  display: grid;
+  align-items: center;
+  min-height: 0;
+  padding-right: 5px;
+  border-right: 1px solid var(--se-border-subtle);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: center;
+}
+
+.rail-group__items {
+  display: grid;
+  grid-template-columns: repeat(var(--navigation-items, 1), minmax(0, 1fr));
+  gap: 4px;
+  min-width: 0;
+}
+
+.rail-group--gameplay { --navigation-items: 4; }
+.rail-group--development { --navigation-items: 2; }
+.rail-group--information { --navigation-items: 2; }
+.rail-group--utility { --navigation-items: 1; }
+
+.side-rail .rail-button,
+.side-rail .rail-button--information,
+.side-rail .rail-button--utility,
+.rail-group--compact .rail-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 68px;
+  padding-inline: 5px;
+}
+
+@media (max-width: 1180px) {
+  .side-rail {
+    grid-template-columns: minmax(330px, 1.55fr) minmax(185px, 0.9fr) minmax(175px, 0.8fr) minmax(96px, 0.45fr);
+  }
+
+  .rail-group { grid-template-columns: 34px minmax(0, 1fr); padding-inline: 4px; }
+  .rail-group__label { font-size: 0.54rem; }
+  .side-rail .rail-button small { font-size: 0.56rem; }
+}
+
+@media (max-width: 760px) {
+  html[data-viewport-mode='mobile'] .side-rail {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3px;
+    max-height: none;
+    min-height: 0;
+    padding: 5px;
+  }
+
+  html[data-viewport-mode='mobile'] .rail-group {
+    display: grid;
+    grid-template-columns: 37px minmax(0, 1fr);
+    width: 100%;
+    padding: 0 2px;
+    border-left: 0;
+  }
+
+  html[data-viewport-mode='mobile'] .rail-group__items { display: grid; }
+
+  html[data-viewport-mode='mobile'] .side-rail .rail-button {
+    min-height: 48px;
+    padding: 3px;
+  }
+
+  html[data-viewport-mode='mobile'] .rail-button__icon,
+  html[data-viewport-mode='mobile'] .rail-button > span:first-child {
+    width: 23px;
+    height: 23px;
+  }
+}

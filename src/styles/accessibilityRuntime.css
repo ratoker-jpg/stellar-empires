@@ -29,21 +29,101 @@
   border: 0 !important;
 }
 
+/* Author-level layout rules such as `display: grid` must never resurrect a
+   route panel that the router marked hidden. */
+[hidden] {
+  display: none !important;
+}
+
 :where(button, a, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid color-mix(in srgb, var(--se-accent, #47c7f1) 82%, white);
   outline-offset: 3px;
 }
 
+:where([data-shell-heading], h1[tabindex="-1"]):focus-visible {
+  outline: none;
+  box-shadow: -4px 0 0 color-mix(in srgb, var(--se-accent, #47c7f1) 82%, white);
+}
+
 html[data-viewport-mode='compact'] .app-shell {
+  display: flex;
+  height: 100vh;
   min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+html[data-viewport-mode='compact'] body {
+  overflow: hidden;
+}
+
+html[data-viewport-mode='compact'] .topbar,
+html[data-viewport-mode='compact'] .side-rail {
+  flex: 0 0 auto;
 }
 
 html[data-viewport-mode='compact'] .topbar {
   grid-template-columns: 190px minmax(500px, 1fr) 250px;
 }
 
+@media (max-width: 1120px) {
+  html[data-viewport-mode='compact'] .topbar {
+    grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  }
+
+  html[data-viewport-mode='compact'] .resource-strip {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  html[data-viewport-mode='compact'] .topbar-status {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
 html[data-viewport-mode='compact'] .game-layout {
+  height: auto;
+  min-height: 0;
+  flex: 1 1 auto;
   grid-template-columns: 244px minmax(0, 1fr);
+}
+
+html[data-viewport-mode='compact'] .command-panel,
+html[data-viewport-mode='compact'] .view-stack {
+  min-height: 0;
+}
+
+html[data-viewport-mode='compact'] .view-stack {
+  height: 100%;
+  overflow: hidden;
+}
+
+html[data-viewport-mode='compact'] :is(
+  #galaxy-view,
+  .development-primary-view,
+  .operations-primary-view,
+  .command-primary-view,
+  .system-primary-view
+) {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+
+html[data-viewport-mode='compact'] .game-layout.is-planet-view {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-viewport-mode='compact'] .game-layout.is-planet-view .view-stack {
+  grid-column: 1;
+}
+
+html[data-viewport-mode='compact'] .planet-view {
+  height: 100%;
+  min-height: 0;
 }
 
 html[data-viewport-mode='compact'] .context-help,
@@ -53,6 +133,12 @@ html[data-viewport-mode='compact'] .brand-subtitle {
 
 html[data-viewport-mode='compact'] .resource-chip {
   min-height: 56px;
+}
+
+html[data-viewport-mode='compact'] .resource-chip strong {
+  font-size: 0.70rem;
+  letter-spacing: -0.02em;
+  text-overflow: clip;
 }
 
 html[data-viewport-mode='mobile'] .app-shell {
@@ -84,8 +170,28 @@ html[data-viewport-mode='mobile'] .side-rail {
   position: sticky;
   top: 0;
   z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
   min-height: 62px;
-  padding-top: 3px;
+  gap: 4px;
+  overflow: visible;
+  padding: 4px;
+}
+
+html[data-viewport-mode='mobile'] .rail-group {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-inline: 3px;
+}
+
+html[data-viewport-mode='mobile'] .rail-group__items {
+  flex-wrap: wrap;
+}
+
+html[data-viewport-mode='mobile'] .side-rail .rail-button {
+  flex: 1 1 64px;
+  min-width: 64px;
 }
 
 html[data-viewport-mode='mobile'] .rail-button {
@@ -110,6 +216,10 @@ html[data-viewport-mode='mobile'] .game-layout {
   border-radius: 0;
 }
 
+html[data-viewport-mode='mobile'] .game-layout.is-planet-view .view-stack {
+  grid-column: auto;
+}
+
 html[data-viewport-mode='mobile'] .command-panel {
   display: none;
 }
@@ -117,6 +227,17 @@ html[data-viewport-mode='mobile'] .command-panel {
 html[data-viewport-mode='mobile'] .view-stack,
 html[data-viewport-mode='mobile'] .game-stage {
   min-height: calc(100vh - 220px);
+}
+
+html[data-viewport-mode='mobile'] :is(
+  .development-primary-view,
+  .operations-primary-view,
+  .command-primary-view,
+  .system-primary-view
+) {
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
 }
 
 html[data-viewport-mode='mobile'] .stage-footer {
