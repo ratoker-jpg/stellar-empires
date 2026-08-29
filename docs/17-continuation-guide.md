@@ -6,25 +6,26 @@ Release 1.0 remains closed. Persistence remains schema v19 / save format v6 / mi
 
 Current exact live `main` / starting main for PR #187:
 
-`de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba`
+`0894ac4bc30e81e2713ff9e50c9463972b4de8d6`
 
 Audit #186 is merged and accepted at that SHA. Its accepted contract is archived verbatim at:
 
 `docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md`
 
-## Only active work
+## Current Audit
 
 ```text
-POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE
-POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE
-PR #187
-branch agent/post-1.0-replayable-campaign-lifecycle
-kind implementation-closure
-runtime implementation complete
-closure staged / pending controller merge
+FULL-VISUAL-NAVIGATION-REDESIGN
+branch audit/full-visual-navigation-redesign
+kind docs-only Audit
+baseline main 0894ac4bc30e81e2713ff9e50c9463972b4de8d6
+implementation blocked until Audit merge
+authorized implementation count after merge: 2
 ```
 
-There is no PR2.
+Reference collection: `D:\\Xuina\\WHAT\\saved_pages`
+
+The saved pages are a visual and navigation reference only. They do not authorize copying Nemexia HTML, remote code, branding or images.
 
 ## Delivered authority lifecycle
 
@@ -166,8 +167,4 @@ These are historical pre-closure runs. Any later implementation/control-plane co
 
 ## Current stop rule
 
-Finish only #187 closure: fresh exact-head CI + Graphify + Browser E2E + production smoke after the final implementation/control-plane commit, reply/resolve valid P2 threads after the fix, review/comment loop, mergeability/main/head check, final PR body, Ready, post-Ready recheck, STOP.
-
-The batch becomes COMPLETE only after controller merges #187; the generated squash SHA is unknown until then. After that controller merge, the next authorized category is a fresh docs-only Audit from fresh `main`.
-
-**Do not merge #187. Do not create PR2. Do not start the next Audit.**
+Complete and merge the docs-only FULL-VISUAL-NAVIGATION-REDESIGN Audit after its checks pass. Do not start either implementation item before that merge. After the Audit merge, create UI-01 from the resulting fresh `main`, then UI-02 only after UI-01 is accepted and its combined state is validated.

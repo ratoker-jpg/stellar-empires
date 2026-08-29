@@ -6,19 +6,19 @@
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 186,
-  "lastMergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
-  "verifiedMainBaseline": "Audit #186 squash / exact starting main for PR #187",
+  "lastMergedPr": 187,
+  "lastMergeSha": "0894ac4bc30e81e2713ff9e50c9463972b4de8d6",
+  "verifiedMainBaseline": "PR #187 merge / fresh main for FULL-VISUAL-NAVIGATION-REDESIGN Audit",
   "runtimeBaselinePr": 185,
   "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-  "activePr": 187,
-  "activePrKind": "implementation-closure",
-  "activeWorkItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
-  "activeBranch": "agent/post-1.0-replayable-campaign-lifecycle",
+  "activePr": null,
+  "activePrKind": "docs-only-audit",
+  "activeWorkItem": "FULL-VISUAL-NAVIGATION-REDESIGN",
+  "activeBranch": "audit/full-visual-navigation-redesign",
   "nextPrAfterActive": null,
-  "nextPrKind": "fresh-docs-only-audit-after-controller-approved-pr187-merge",
-  "nextWorkItem": null,
-  "currentMilestone": "POST-1.0 replayable campaign lifecycle / only implementation PR and batch closure",
+  "nextPrKind": "implementation-after-audit-merge",
+  "nextWorkItem": "UI-01-SHELL-PLANET-COMMAND-CENTRE",
+  "currentMilestone": "FULL-VISUAL-NAVIGATION-REDESIGN / Audit in preparation",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -47,41 +47,47 @@
     "hasPr4": false
   },
   "currentAuditState": {
-    "workItem": "POST-1.0-NEXT-PRODUCT-3",
-    "auditPr": 186,
-    "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "mergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
-    "status": "merged-controller-accepted-archived-for-closure",
-    "archive": "docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md",
-    "implementationAuthorized": true,
-    "acceptedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
-    "acceptedImplementationCount": 1,
-    "targetStateSchema": 19,
-    "targetSaveFormat": 6,
-    "schemaMigrationRequired": false,
+    "workItem": "FULL-VISUAL-NAVIGATION-REDESIGN",
+    "auditPr": null,
+    "startingMain": "0894ac4bc30e81e2713ff9e50c9463972b4de8d6",
+    "mergeSha": null,
+    "status": "in-preparation",
+    "archive": null,
+    "implementationAuthorized": false,
+    "acceptedBatchId": "FULL-VISUAL-NAVIGATION-REDESIGN",
+    "acceptedImplementationCount": 2,
+    "complexity": "heavy",
     "criticalUnknownsResolved": true,
     "criticalUnknowns": []
   },
   "proposedBatch": {
-    "id": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
-    "status": "closure-staged-completes-on-pr187-merge",
-    "complexity": "bounded-cross-layer",
-    "implementationAuthorized": true,
-    "archive": "docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md",
+    "id": "FULL-VISUAL-NAVIGATION-REDESIGN",
+    "status": "audit-in-preparation",
+    "complexity": "heavy",
+    "implementationAuthorized": false,
+    "archive": null,
     "workItems": [
       {
-        "id": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
+        "id": "UI-01-SHELL-PLANET-COMMAND-CENTRE",
         "order": 1,
-        "pr": 187,
-        "status": "active-closure-staged",
+        "pr": null,
+        "status": "pending-audit-merge",
         "mergeSha": null,
-        "purpose": "safe replayable campaign lifecycle covering exact uint32 seed, serialized quiesced campaign switching, storage-only import and deterministic Browser acceptance"
+        "purpose": "persistent shell, direct planet/zone navigation and scroll-safe construction workspace"
+      },
+      {
+        "id": "UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE",
+        "order": 2,
+        "pr": null,
+        "status": "pending-ui-01",
+        "mergeSha": null,
+        "purpose": "shared visual system and responsive/visibility hardening across every remaining route family"
       }
     ],
     "stateSchema": 19,
     "saveFormat": 6,
     "migration": "none",
-    "hasSecondImplementationPr": false
+    "hasSecondImplementationPr": true
   },
   "activeImplementationState": {
     "pr": 187,
@@ -188,5 +194,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and PR #187 state"
   ],
-  "nextAction": "Require fresh exact-head CI, Graphify, Browser E2E and production Pages smoke on PR #187 after the final implementation/control-plane commit; verify review threads/reviews/comments, changed files, mergeability and live main; finalize PR body; mark #187 Ready; perform post-Ready exact-head recheck; then STOP. Do not merge #187, do not create PR2, and do not start the next Audit before controller merge."
+  "nextAction": "Publish the docs-only FULL-VISUAL-NAVIGATION-REDESIGN Audit from fresh main; validate and merge it, then begin UI-01 from the resulting main. Do not implement before the Audit merge."
 }
