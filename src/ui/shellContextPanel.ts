@@ -36,6 +36,7 @@ function ensureBreadcrumbHost(): HTMLElement {
   const breadcrumbs = document.createElement('nav');
   breadcrumbs.id = 'shell-breadcrumbs';
   breadcrumbs.className = 'shell-breadcrumbs';
+  breadcrumbs.dataset.shellBreadcrumbsHost = 'true';
   breadcrumbs.setAttribute('aria-label', 'Путь и возврат');
   panel.prepend(breadcrumbs);
   return breadcrumbs;

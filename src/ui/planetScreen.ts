@@ -18,6 +18,7 @@ import {
   type BuildingCardViewModel,
 } from './planetViewModel';
 import { createResourceZoneViewModel } from './resourceZoneViewModel';
+import { getPlanetZoneTarget } from './planetZoneTargets';
 
 const NUMBER_FORMAT = new Intl.NumberFormat('ru-RU');
 const ZONE_IDS: readonly PlanetZoneId[] = ['resource', 'industry', 'military'];
@@ -36,6 +37,44 @@ const ZONE_DESCRIPTIONS: Readonly<Record<PlanetZoneId, string>> = {
   industry: 'Командование, исследования, производство кораблей и логистика колонии.',
   military: 'Сенсоры, оборонительная сеть, ремонт и готовность планетарного гарнизона.',
 };
+
+function zoneTargetLabel(mode: PlanetWorkspaceMode): string {
+  return getPlanetZoneTarget(mode).label;
+}
+
+function zoneTargetDescription(mode: PlanetWorkspaceMode): string {
+  return getPlanetZoneTarget(mode).description;
+}
+
+function ensurePlanetBreadcrumbs(): void {
+  const existing = document.querySelector<HTMLElement>('#planet-breadcrumbs');
+  if (existing !== null) return;
+  const identity = document.querySelector<HTMLElement>('.planet-header__identity');
+  if (identity === null) return;
+  const nav = document.createElement('nav');
+  nav.id = 'planet-breadcrumbs';
+  nav.className = 'shell-breadcrumbs planet-breadcrumbs';
+  nav.dataset.shellBreadcrumbsHost = 'true';
+  nav.setAttribute('aria-label', 'Маршрут планетарного экрана');
+  identity.append(nav);
+}
+
+function ensurePlanetGalaxyAction(): void {
+  const existing = document.querySelector<HTMLButtonElement>('#planet-galaxy-action');
+  if (existing !== null) return;
+  const controls = document.querySelector<HTMLElement>('.planet-header-controls');
+  if (controls === null) return;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.id = 'planet-galaxy-action';
+  button.className = 'se-button se-button--secondary planet-galaxy-action';
+  button.textContent = 'К галактике';
+  button.setAttribute('aria-label', 'Открыть карту Вселенной и галактик');
+  button.addEventListener('click', () => {
+    window.location.hash = '#/space';
+  });
+  controls.prepend(button);
+}
 
 let currentState: GameState | undefined;
 let activePlanetId: string | undefined;
@@ -279,6 +318,8 @@ function renderModeTabs(planet: PlanetState): void {
     const button = requireElement<HTMLButtonElement>(`[data-planet-mode="${mode}"]`);
     const active = mode === activeMode;
     button.setAttribute('aria-selected', String(active));
+    button.setAttribute('aria-label', `${zoneTargetLabel(mode)} · ${zoneTargetDescription(mode)}`);
+    button.title = zoneTargetDescription(mode);
     button.tabIndex = active ? 0 : -1;
   }
 
@@ -461,6 +502,11 @@ function createZoneMarker(planet: PlanetState, zoneId: PlanetZoneId): HTMLButton
   const button = document.createElement('button');
   button.type = 'button';
   button.className = `planet-zone-marker planet-zone-marker--${zoneId}`;
+  button.dataset.zone = zoneId;
+  button.setAttribute(
+    'aria-label',
+    `${ZONE_LABELS[zoneId]} зона · занято ${zone.usedFields} из ${zone.fieldLimit} полей`,
+  );
   const label = document.createElement('span');
   label.textContent = ZONE_LABELS[zoneId];
   const fill = document.createElement('strong');
@@ -531,14 +577,7 @@ function renderPlanetZoneStage(planet: PlanetState): void {
   zoneStage.dataset.zone = activeMode;
   setText('#planet-zone-title', `${ZONE_LABELS[activeMode]} зона`);
   setText('#planet-zone-description', ZONE_DESCRIPTIONS[activeMode]);
-  setText(
-    '#planet-zone-kicker',
-    activeMode === 'resource'
-      ? 'Добывающий сектор'
-      : activeMode === 'industry'
-        ? 'Производственный сектор'
-        : 'Оборонительный сектор',
-  );
+  setText('#planet-zone-kicker', getPlanetZoneTarget(activeMode).kicker);
 
   const grid = requireElement<HTMLElement>('#planet-building-grid');
   grid.replaceChildren();
@@ -612,7 +651,8 @@ function renderBuildingDetails(planet: PlanetState, panel: HTMLElement): void {
 
   const eyebrow = document.createElement('p');
   eyebrow.className = 'panel-label';
-  eyebrow.textContent = `${ZONE_LABELS[card.zoneId]} зона`;
+  eyebrow.textContent = `${zoneTargetLabel(card.zoneId)} зона · ${zoneTargetDescription(card.zoneId)}`;
+  eyebrow.title = zoneTargetDescription(card.zoneId);
   const heading = document.createElement('h2');
   heading.textContent = card.name;
   const level = document.createElement('p');
@@ -802,6 +842,8 @@ function bindModeTabs(): void {
 }
 
 function bindPlanetControls(): void {
+  ensurePlanetBreadcrumbs();
+  ensurePlanetGalaxyAction();
   requireElement<HTMLButtonElement>('#nav-galaxy').addEventListener('click', () => setActiveView('galaxy'));
   requireElement<HTMLButtonElement>('#nav-planet').addEventListener('click', () => {
     setActiveView('planet');
