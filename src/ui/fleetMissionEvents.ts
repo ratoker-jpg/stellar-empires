@@ -242,7 +242,7 @@ function installPreparedTargetBridge(): void {
 
       const fleetId = missionSelect.dataset.testid?.replace(/^mission-kind-/, '');
       const targetSelect = Array.from(
-        document.querySelectorAll<HTMLSelectElement>('[data-testid^="mission-target-"]'),
+        document.querySelectorAll<HTMLSelectElement>('select[data-testid^="mission-target-"]'),
       ).find((select) => select.dataset.testid === `mission-target-${fleetId}`);
       if (
         targetSelect === undefined ||
@@ -312,7 +312,7 @@ function installPreparedTargetBridge(): void {
     preparedNoticeWasVisible = true;
     if (control !== null) control.hidden = false;
     const targetSelectors = Array.from(
-      document.querySelectorAll<HTMLSelectElement>('[data-testid^="mission-target-"]'),
+      document.querySelectorAll<HTMLSelectElement>('select[data-testid^="mission-target-"]'),
     );
     const targetExists = targetSelectors.some((select) =>
       Array.from(select.options).some((option) => option.value === prepared.targetId));

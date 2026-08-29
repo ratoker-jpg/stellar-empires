@@ -31,6 +31,7 @@ function ensureTab(
   const button = document.createElement('button');
   button.type = 'button';
   button.setAttribute('role', 'tab');
+  button.setAttribute('aria-controls', 'operations-workspace-host');
   button.dataset.operationsMode = mode;
   button.textContent = label;
   const before = tabs.querySelector(beforeSelector);

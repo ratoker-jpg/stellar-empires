@@ -173,16 +173,17 @@
   top: 0;
   z-index: 5;
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   padding: 10px 22px;
-  overflow-x: auto;
+  overflow: visible;
   border-bottom: 1px solid var(--se-border-subtle);
   background: color-mix(in srgb, var(--se-bg-hud) 95%, transparent);
   backdrop-filter: blur(12px);
 }
 
 .command-route-tabs button {
-  flex: 0 0 auto;
+  flex: 1 1 138px;
   min-height: 38px;
   padding: 0 13px;
   border: 1px solid var(--se-border-subtle);
@@ -239,6 +240,41 @@
   padding-left: 0;
 }
 
+.command-progress article,
+.command-doctrine-cards article,
+.commander-ship-card {
+  border-color: var(--se-border-subtle);
+  background: var(--se-bg-card);
+}
+
+.command-progress {
+  padding-top: 0;
+}
+
+.command-doctrine-form,
+.flagship-form,
+.fleet-doctrine-form {
+  align-items: end;
+  padding: 13px;
+  border: 1px solid var(--se-border-subtle);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--se-bg-card) 86%, black);
+}
+
+.command-doctrine-form label,
+.flagship-form label,
+.fleet-doctrine-form label {
+  color: var(--se-text-secondary);
+}
+
+.command-doctrine-form select,
+.flagship-form select,
+.fleet-doctrine-form select {
+  border-color: var(--se-border-default);
+  color: var(--se-text-primary);
+  background: var(--se-bg-panel);
+}
+
 .command-doctrine-form,
 .flagship-form,
 .fleet-doctrine-form {
@@ -287,6 +323,30 @@
   border: 1px solid var(--se-border-subtle);
   border-radius: 9px;
   background: var(--se-bg-panel);
+}
+
+.system-campaign-profile {
+  display: grid;
+  grid-template-columns: minmax(130px, auto) minmax(0, 1fr);
+  gap: 5px 14px;
+  align-items: baseline;
+  padding: 13px;
+  border: 1px solid var(--se-border-subtle);
+  border-radius: 9px;
+  background: var(--se-bg-panel);
+}
+
+.system-campaign-profile span {
+  color: var(--se-text-secondary);
+}
+
+.system-campaign-profile strong {
+  overflow-wrap: anywhere;
+}
+
+.system-campaign-profile small {
+  grid-column: 1 / -1;
+  color: var(--se-text-muted);
 }
 
 .system-settings-card > label input {
@@ -379,5 +439,22 @@ html[data-motion-preference="reduce"] * {
   .command-route-header {
     padding-top: 15px;
     padding-bottom: 11px;
+  }
+}
+
+@media (max-width: 760px) {
+  .command-route-header { padding: 16px 14px 12px; }
+
+  .command-route-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 8px 12px;
+  }
+
+  .command-route-tabs button {
+    width: 100%;
+    min-height: 42px;
+    padding-inline: 8px;
+    white-space: normal;
   }
 }

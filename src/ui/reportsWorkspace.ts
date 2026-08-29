@@ -75,6 +75,7 @@ function ensureReportTab(
   const button = document.createElement('button');
   button.type = 'button';
   button.setAttribute('role', 'tab');
+  button.setAttribute('aria-controls', 'mission-reports-view');
   button.dataset.reportFilter = filter;
   button.textContent = label;
   const before = beforeSelector === undefined ? null : tabs.querySelector(beforeSelector);

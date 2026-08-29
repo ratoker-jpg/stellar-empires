@@ -14,6 +14,10 @@
   margin: 0;
 }
 
+.research-screen-workspace > header .panel-label {
+  margin-bottom: 6px;
+}
+
 .research-screen-summary {
   padding: 14px 22px 8px;
   color: #9bb2c2;

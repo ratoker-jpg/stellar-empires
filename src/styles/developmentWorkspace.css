@@ -39,15 +39,17 @@
 
 .planet-development-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 7px;
   padding: 8px 18px;
-  overflow-x: auto;
+  overflow: visible;
   border-bottom: 1px solid rgb(96 205 255 / 14%);
   background: rgba(4, 14, 24, 0.92);
 }
 
 .planet-development-tabs button {
-  min-height: 36px;
+  flex: 1 1 140px;
+  min-height: 38px;
   padding: 0 14px;
   border: 1px solid rgb(96 205 255 / 18%);
   border-radius: 6px;
@@ -125,5 +127,17 @@
 
   .hud-colony-context {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .planet-development-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 8px 10px;
+  }
+
+  .planet-development-tabs button {
+    width: 100%;
+    padding-inline: 8px;
+    white-space: normal;
   }
 }
