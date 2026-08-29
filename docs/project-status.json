@@ -1,14 +1,15 @@
 {
-  "statusVersion": 100,
-  "updatedAt": "2026-08-25",
+  "statusVersion": 101,
+  "updatedAt": "2026-08-30",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 187,
-  "lastMergeSha": "0894ac4bc30e81e2713ff9e50c9463972b4de8d6",
-  "verifiedMainBaseline": "PR #187 merge / fresh main for FULL-VISUAL-NAVIGATION-REDESIGN Audit",
+  "lastMergedPr": 188,
+  "lastMergeSha": "ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa",
+  "verifiedMainBaseline": "PR #188 merge / fresh main for FULL-VISUAL-NAVIGATION-REDESIGN UI-01 implementation",
+  "programPlan": "docs/30-nemexia-full-prototype-program.md",
   "runtimeBaselinePr": 185,
   "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
   "activePr": null,
@@ -18,7 +19,7 @@
   "nextPrAfterActive": null,
   "nextPrKind": "implementation-after-audit-merge",
   "nextWorkItem": "UI-01-SHELL-PLANET-COMMAND-CENTRE",
-  "currentMilestone": "FULL-VISUAL-NAVIGATION-REDESIGN / Audit in preparation",
+  "currentMilestone": "FULL-VISUAL-NAVIGATION-REDESIGN / Audit merged, UI-01 next",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -48,10 +49,10 @@
   },
   "currentAuditState": {
     "workItem": "FULL-VISUAL-NAVIGATION-REDESIGN",
-    "auditPr": null,
+    "auditPr": 188,
     "startingMain": "0894ac4bc30e81e2713ff9e50c9463972b4de8d6",
-    "mergeSha": null,
-    "status": "in-preparation",
+    "mergeSha": "ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa",
+    "status": "merged",
     "archive": null,
     "implementationAuthorized": false,
     "acceptedBatchId": "FULL-VISUAL-NAVIGATION-REDESIGN",
@@ -194,5 +195,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and PR #187 state"
   ],
-  "nextAction": "Publish the docs-only FULL-VISUAL-NAVIGATION-REDESIGN Audit from fresh main; validate and merge it, then begin UI-01 from the resulting main. Do not implement before the Audit merge."
+  "nextAction": "Create UI-01-SHELL-PLANET-COMMAND-CENTRE implementation PR from fresh main at ec2b1fe1, citing Audit PR #188 and the stable work-item ID. The NEMEXIA-PROTO program plan (docs/30) defines subsequent batches and starts only after Phase 0 closure."
 }

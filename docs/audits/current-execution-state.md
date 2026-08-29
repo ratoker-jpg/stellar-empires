@@ -1,11 +1,11 @@
 # Current execution state
 
-**State:** fresh visual/navigation Audit PR in preparation
-**Updated:** 2026-08-25
+**State:** FULL-VISUAL-NAVIGATION-REDESIGN Audit merged; UI-01 implementation is next
+**Updated:** 2026-08-30
 **Batch:** FULL-VISUAL-NAVIGATION-REDESIGN
 **Audit baseline:** main at 0894ac4bc30e81e2713ff9e50c9463972b4de8d6 (PR #187 merge)
-**Audit PR:** this branch / PR number assigned after publication
-**Active implementation:** none; implementation is blocked until this Audit PR merges
+**Audit PR:** #188 — merged with commit ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa
+**Active implementation:** none yet; UI-01-SHELL-PLANET-COMMAND-CENTRE is authorized and must be created from fresh main at ec2b1fe1
 **Work items authorized after audit merge:** UI-01-SHELL-PLANET-COMMAND-CENTRE, then UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE
 
 ## Last completed atomic action
@@ -37,7 +37,7 @@ They are not part of this Audit PR.
 
 ## Exact next action
 
-Publish this docs-only Audit PR from fresh main, run its documentation/status checks plus Graphify/asset validation, and merge it only after reviewing the diff and required checks. Then create UI-01 from the resulting fresh main and cite this Audit PR and the stable work-item ID in its PR body.
+The Audit PR #188 is merged (GitHub state wins over the inherited "in preparation" status files; reconciled in the docs/30 program-plan PR). Create UI-01-SHELL-PLANET-COMMAND-CENTRE from fresh main at ec2b1fe1, cite Audit PR #188 and the stable work-item ID in its PR body. The follow-up program of Nemexia-prototype batches is defined in docs/30-nemexia-full-prototype-program.md and starts only after Phase 0 (UI-01 + UI-02) closes.
 
 ## Blockers
 
