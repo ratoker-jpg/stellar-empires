@@ -2,17 +2,16 @@
 
 **Status:** product/visual contract for `REFERENCE-NAVIGATION-REDESIGN-V2`  
 **Source:** owner-supplied `stellar_references_and_html.zip`  
-**Policy:** reference for composition and interaction only; use Stellar code, branding and owned/generated assets
+**Policy:** use the bundle for composition/interaction evidence; runtime remains Stellar-owned code, branding and assets
 
 ## Reference bundle inventory
 
 The supplied bundle contains:
 
-- `stellar_empires_full_command.html` — interactive one-page visual/navigation prototype;
-- 20 desktop reference screenshots at 1672×941;
-- one narrow fleet-sidebar crop (`03_fleets_sidebar_reference.png`, 411×897).
+- `stellar_empires_full_command.html` — interactive one-page navigation/visual prototype;
+- **20 screenshots total:** 19 desktop screenshots at 1672×941 and one narrow fleet-sidebar crop at 411×897.
 
-Reference screenshots:
+Reference screens:
 
 1. `01_planet_main.png`
 2. `02_universe.png`
@@ -35,9 +34,11 @@ Reference screenshots:
 19. `19_arena.png`
 20. `20_ship_upgrades.png`
 
+The HTML references 60+ distinct existing Stellar repository asset paths and also relies heavily on gradients/canvas/CSS rendering. Procedural rendering is therefore part of the accepted visual approach.
+
 ## Canonical primary navigation
 
-The reference HTML defines one persistent primary navigation row. Stellar must preserve this order and visible label set at desktop widths:
+The reference HTML defines one persistent primary row. Desktop order and labels are fixed:
 
 | Order | Label | Current route family | Canonical destination |
 | ---: | --- | --- | --- |
@@ -53,37 +54,35 @@ The reference HTML defines one persistent primary navigation row. Stellar must p
 
 Rules:
 
-- no visible `Игра / Развитие / Данные / Система` group labels in the primary row;
-- one active tab only;
-- badges may appear on a primary tab but may not change its position;
+- no visible `Игра / Развитие / Данные / Система` group labels in the global row;
+- exactly one active primary destination;
+- badges do not change order;
 - active state is readable without colour alone;
-- global navigation remains separate from local tabs/filters;
-- route memory remains a convenience, not a second hidden navigation system.
+- global navigation and local tabs/filters/zones are visually distinct;
+- route memory remains a convenience, not a second navigation authority.
 
 ## Persistent shell anatomy
 
 ### Header
 
-Reference structure:
-
 ```text
 logo | primary navigation | campaign/world status
 ```
 
-Keep the header persistent across all routes. The campaign/status block may show current world time, save status, version and active world/system context, but must not dominate the primary navigation.
+The header persists across routes. Status/version/save/world-time content remains subordinate to primary navigation.
 
 ### Resource/status strip
 
-Resource and capacity status is persistent and visually compact. Current Stellar data remains authoritative. The visual target is the reference hierarchy, not reference values.
+Current Stellar resource/capacity data remains authoritative. The reference defines density/hierarchy only, not values or formulas.
 
 ### Left contextual rail
 
-The left rail is **context**, not global navigation.
+The left rail is context, not global navigation.
 
 Planet default:
 
 ```text
-mini planet
+mini planet/context
 → Resource zone
 → Industry zone
 → Military zone
@@ -91,111 +90,94 @@ mini planet
 → compact planet passport/status
 ```
 
-Fleet/task screens may replace part of the left rail with fleet/task lists or filters, matching `03_fleets_sidebar_reference.png`, while retaining access to active colony/resources through the shell.
+Fleet/task screens may replace some planet context with task lists/filters, matching `03_fleets_sidebar_reference.png`, while global resource/colony context remains available through the shell.
 
 ### Main surface
 
-The center is always the dominant task. It may be a planet scene, map, card/catalog grid, technology tree, reports reader, table or settings form.
+The centre is always the dominant task: planet scene, map, catalog/grid, research tree, table, report reader or settings form.
 
 ### Right contextual rail
 
-Use only when the task benefits from it:
+Render only when it adds task value:
 
-- build/production queue;
+- queue/progress;
 - selected object/ship/building details;
 - costs/requirements;
-- action controls;
-- campaign/profile summary.
+- actions;
+- profile/campaign summary.
 
-Do not render a generic right rail with low-value filler merely to preserve a three-column shape.
+Do not keep filler panels solely to force three columns.
 
 ## Route-specific composition
 
-### Planet
+### Planet — refs 01, 14, 15, 16
 
-Reference: `01`, `14`, `15`, `16`.
+- persistent top navigation;
+- clear planet title/coordinates;
+- direct Resource/Industry/Military actions in left context;
+- overview as planet command centre;
+- zone grid/catalog in centre;
+- selected building/queue/actions on right where applicable;
+- distinct locked/available/selected/upgrading states;
+- Shipyard, Defense and Ship Upgrades remain contextual surfaces under their existing route owner.
 
-- top navigation remains visible;
-- planet title and coordinates are clear;
-- three zone actions remain visible in the left rail;
-- overview is a visual planet command centre;
-- zone screens use building/catalog grid in the center and queue/detail/actions on the right;
-- locked/available/selected/upgrading states are visually distinct;
-- `Shipyard`, `Defense` and `Ship Upgrades` stay contextual surfaces under their current owning route contract.
+### Universe — ref 02
 
-### Universe
-
-Reference: `02`.
-
-- keep `Universe → Galaxy → Solar System` breadcrumb hierarchy;
-- coordinate jump is explicit;
+- preserve `Universe → Galaxy → Solar System` hierarchy;
+- explicit coordinate jump;
 - map/canvas dominates;
-- map tools are subordinate and do not cover selected objects;
-- selected object/planet detail is obvious and stable;
-- no map navigation mutates simulation state.
+- tools remain subordinate;
+- selected object detail is stable and obvious;
+- map navigation must not mutate `GameState`.
 
-### Fleets
+### Fleets — refs 03, 04, 05, 06
 
-Reference: `03`, `04`, `05`, `06`.
+- fleet context/list belongs in left rail;
+- compose uses staged flow;
+- step 1 = composition/ship selection;
+- step 2 = destination/mission/summary/confirmation;
+- active/battle states retain current semantics;
+- catalog/list/detail patterns are consistent.
 
-- fleet context/list belongs in the left rail;
-- compose uses a clear staged flow rather than a wall of controls;
-- step 1: fleet composition/ship selection;
-- step 2: destination/mission/summary/confirmation;
-- active/battle views keep current route semantics;
-- catalogs and upgrades use consistent card/list/detail patterns.
+### Operations — refs 07, 13, 17, 18, 19
 
-### Operations
-
-Reference: `07`, `13`, `17`, `18`, `19`.
-
-- one operations owner route with explicit local modes;
+- one owner route with explicit local modes;
 - overview, market, events, arena and Solar War each get a dominant task surface;
-- remaining current modes (`expeditions`, `objects`, `alliances`, `logistics`) use the same local-tab and detail pattern;
-- operation tabs may wrap/compact at small widths but never become global tabs.
+- expeditions, objects, alliances and logistics use the same local-tab/detail language;
+- local modes never become global tabs.
 
-### Science
+### Science — ref 08
 
-Reference: `08`.
+- research tree/list central;
+- selected technology detail/requirements as secondary context;
+- queue/progress visible;
+- category controls stay local.
 
-- research tree/list is central;
-- selected technology detail and requirements are right-context content;
-- queue/progress is visible;
-- category filters stay local to research.
+### Command — ref 09
 
-### Command
+- overview, doctrine, fleet doctrine and upgrades remain local modes;
+- game data/mechanics unchanged;
+- one consistent local active-state treatment.
 
-Reference: `09`, with ship-upgrade presentation coordinated with `20` where relevant.
+### Reports — ref 10
 
-- overview, doctrine, fleet doctrine and upgrades remain local command modes;
-- current game data and mechanics are unchanged;
-- local tabs use one consistent active-state treatment.
-
-### Reports
-
-Reference: `10`.
-
-Target three-part reading model when space permits:
+Desktop target where space permits:
 
 ```text
-report filters/folders | report list | selected report reader
+filters/folders | report list | selected report reader
 ```
 
-At compact widths this may collapse to list → reader navigation, but the selected report and return path must remain explicit.
+Compact may collapse to list → reader, but selected report and return path stay explicit.
 
-### Ranking
+### Ranking — ref 12
 
-Reference: `12`.
+- ranking table/list central;
+- profile summary secondary;
+- both remain readable at release widths.
 
-- ranking table/list is central;
-- player/profile summary is a secondary context panel;
-- ranking and profile must remain readable at release widths.
+### Settings — ref 11
 
-### Settings
-
-Reference: `11`.
-
-Canonical local sections:
+Canonical local categories:
 
 - Graphics;
 - Sound;
@@ -204,22 +186,24 @@ Canonical local sections:
 - Notifications;
 - Campaign & Saves.
 
-Existing settings/save behavior remains authoritative. This is a visual/navigation regrouping only.
+Existing settings/save semantics remain authoritative; this is visual/navigation regrouping only.
+
+### Ship upgrades — ref 20
+
+Use the reference presentation inside the existing owning production/military/command task context. Do not invent a new gameplay route solely to match the screenshot.
 
 ## Visual system rules
 
 - dark industrial sci-fi shell;
-- restrained cyan active/accent states;
-- gold reserved for campaign/commander/meta emphasis;
-- strong thin borders and clipped/chamfered geometry may be used, but readability wins over decoration;
-- cards/panels use consistent spacing, title hierarchy and selected states;
-- no decorative effect may obscure text, keyboard focus or pointer targets;
-- reduced-motion must disable or simplify non-essential movement;
-- procedural CSS/canvas/SVG is allowed and preferred over blocking on missing decorative raster art.
+- restrained cyan for active/interactive emphasis;
+- gold only for commander/campaign/meta emphasis;
+- strong thin borders/chamfered geometry where readable;
+- consistent panel spacing/title hierarchy/selection states;
+- effects never obscure text, focus or pointer targets;
+- reduced-motion simplifies non-essential movement;
+- procedural CSS/SVG/canvas is preferred over blocking on missing decorative raster art.
 
 ## Responsive contract
-
-Reference fidelity is primarily desktop, but Stellar release gates remain broader.
 
 Required viewports:
 
@@ -229,19 +213,17 @@ Required viewports:
 - 1024×768;
 - 768×1024.
 
-Desktop: preserve the full primary top row and contextual multi-column layout.
+Desktop preserves the full primary top row and contextual multi-column composition.
 
-Compact/tablet: contextual rails may collapse or stack. The primary destinations must remain reachable in one deliberate action, local tabs remain distinguishable from primary destinations, and the document must not horizontally overflow.
+Compact/tablet may collapse/stack contextual rails. Every primary destination remains reachable in one deliberate action, local navigation stays distinguishable from global navigation, and the document must not horizontally overflow.
 
 ## Asset policy
 
-The reference HTML contains explicit paths to existing Stellar repository assets and also uses many CSS/canvas procedural visuals. Therefore:
-
-1. use existing runtime assets first;
-2. use CSS/SVG/canvas for non-critical decorative visuals where practical;
-3. if a final illustration is missing, ship a procedural placeholder and record it in `docs/ui/reference-navigation-missing-assets.md`;
-4. never silently copy an image from the reference bundle or an external source into runtime;
-5. replacement art must have explicit provenance and an existing/extended runtime asset binding.
+1. Existing runtime assets first.
+2. CSS/SVG/canvas for non-critical decorative visuals where practical.
+3. Missing final illustration → procedural fallback + row in `docs/ui/reference-navigation-missing-assets.md`.
+4. Never silently copy reference-bundle/external pixels into runtime.
+5. Final replacement art requires explicit provenance and runtime binding.
 
 ## Acceptance summary
 
@@ -249,9 +231,9 @@ The redesign is complete only when:
 
 - all nine primary destinations use the canonical top navigation;
 - the four current navigation groups are no longer rendered as the global shell;
-- all 20 reference screens have a mapped and reachable Stellar state;
-- navigation/history/reload/keyboard behavior stays correct;
-- navigation does not mutate the state checksum;
-- all supported viewports avoid page-level horizontal overflow and clipped essential actions;
-- missing final art is either resolved or recorded with a procedural fallback;
-- lint, typecheck, unit, build, asset audit, Browser E2E, accessibility and intentional visual baselines pass.
+- all 20 reference states have a mapped/reachable Stellar route/state;
+- keyboard/history/reload/route-memory behavior remains correct;
+- navigation-only actions preserve checksum;
+- supported viewports avoid document horizontal overflow and clipped essential actions;
+- missing final art is resolved or recorded with stable procedural fallback;
+- assets, lint, typecheck, unit, build, Browser E2E, accessibility and intentional visual baselines pass.
