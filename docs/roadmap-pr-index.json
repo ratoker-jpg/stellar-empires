@@ -1,5 +1,5 @@
 {
-  "indexVersion": 38,
+  "indexVersion": 39,
   "updatedAt": "2026-08-30",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,22 +7,22 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 194,
-    "mergeSha": "7ad1046dfad7a34b712354765b6f9ebbcd41ed9e",
+    "lastMergedPr": 197,
+    "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57",
     "runtimeBaselinePr": 185,
     "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "lastCompletedAuditPr": 188,
-    "lastCompletedAuditMergeSha": "ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa",
-    "lastCompletedAuditArchive": "docs/audits/completed/full-visual-navigation-redesign.md"
+    "lastCompletedAuditPr": 196,
+    "lastCompletedAuditMergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513",
+    "lastCompletedAuditArchive": "docs/audits/completed/nemexia-proto-ui-parity.md"
   },
   "active": {
-    "pr": 194,
-    "kind": "implementation",
-    "workItem": "NEM-01-UNIVERSE-EMPIRE-SCALING",
-    "branch": "feat/nem-01-universe-empire-scaling",
-    "startingMain": "2c6160bbe2611b26a309ac5f7b4c8519bc7ecd16",
-    "status": "merged",
-    "implementationAuthorized": true
+    "pr": null,
+    "kind": "none",
+    "workItem": null,
+    "branch": null,
+    "startingMain": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57",
+    "status": "no-active-batch",
+    "implementationAuthorized": false
   },
   "completedPreviousPhase": {
     "id": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
@@ -50,12 +50,12 @@
     "hasPr4": false
   },
   "currentAudit": {
-    "id": "NEMEXIA-PROTO-SIM-SCALING",
-    "pr": 193,
-    "status": "merged-implementation-in-progress",
-    "startingMain": "2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3",
-    "mergeSha": "2c6160bbe2611b26a309ac5f7b4c8519bc7ecd16",
-    "contract": "docs/audits/current-batch-audit.md"
+    "id": "NEMEXIA-PROTO-UI-PARITY",
+    "pr": 196,
+    "status": "completed-archived",
+    "startingMain": "15c846cb05d21e08415ce5f69e3134f8f8ec4b18",
+    "mergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513",
+    "contract": "docs/audits/completed/nemexia-proto-ui-parity.md"
   },
   "sequence": [
     {
@@ -148,13 +148,27 @@
       "workItem": "NEM-01-UNIVERSE-EMPIRE-SCALING",
       "status": "merged",
       "mergeSha": "7ad1046dfad7a34b712354765b6f9ebbcd41ed9e"
+    },
+    {
+      "pr": 196,
+      "kind": "audit",
+      "workItem": "NEMEXIA-PROTO-UI-PARITY",
+      "status": "merged-archived",
+      "mergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513"
+    },
+    {
+      "pr": 197,
+      "kind": "implementation-closure",
+      "workItem": "NEMEXIA-PROTO-UI-PARITY",
+      "status": "merged",
+      "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57"
     }
   ],
   "next": {
     "pr": null,
-    "kind": "implementation",
-    "workItem": "NEM-02-BOT-SCHEDULER-BATCHING-PERF",
-    "implementationAuthorized": true,
-    "prerequisite": "create NEM-02 from fresh main at 7ad1046d citing the NEMEXIA-PROTO-SIM-SCALING audit (PR #193) and the stable work-item ID"
+    "kind": "audit",
+    "workItem": "owner-prioritized-next-batch",
+    "implementationAuthorized": false,
+    "prerequisite": "NEMEXIA-PROTO-UI-PARITY is closed. The owner must re-prioritize the deferred NEM-02 batch or select another scope; start from fresh main and create a new Audit before implementation."
   }
 }

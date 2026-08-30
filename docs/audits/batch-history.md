@@ -11,6 +11,7 @@ This file is the compact historical index for completed roadmap audit batches. G
 | `POST-1.0-NEMEXIA-PARITY` | bounded-sequential | #173 | #174–#177 | completed; #177 closure → `53cf207f30f1a51f864d77f61969937e0d1ad59c` | `docs/audits/completed/post-1.0-nemexia-parity.md` |
 | `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` | bounded-sequential | #178 | #179–#181 | completed; #181 closure → `a1249615d55e9ffebc60889c3ab4d5ff72d8933d` | `docs/audits/completed/post-1.0-bot-strategy-differentiation.md` |
 | `POST-1.0-STRATEGIC-FEEDBACK-TRUTH` | medium | #182 | #183–#185 | completed; #185 closure → `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6` | `docs/audits/completed/post-1.0-strategic-feedback-truth.md` |
+| `NEMEXIA-PROTO-UI-PARITY` | medium | #196 | #197 | completed; #197 closure → `b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57` | `docs/audits/completed/nemexia-proto-ui-parity.md` |
 
 ## Current completed boundary
 
