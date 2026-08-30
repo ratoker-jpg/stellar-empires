@@ -1,6 +1,6 @@
 {
-  "indexVersion": 36,
-  "updatedAt": "2026-08-25",
+  "indexVersion": 37,
+  "updatedAt": "2026-08-30",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
@@ -50,44 +50,12 @@
     "hasPr4": false
   },
   "currentAudit": {
-    "id": "POST-1.0-NEXT-PRODUCT-3",
-    "pr": 186,
-    "status": "merged-controller-accepted-archived-for-closure",
-    "startingMain": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "mergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
-    "archive": "docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md",
-    "implementationAuthorized": true,
-    "acceptedBatchId": "POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE",
-    "complexity": "bounded-cross-layer",
-    "implementationCount": 1,
-    "targetStateSchema": 19,
-    "targetSaveFormat": 6,
-    "schemaMigrationRequired": false,
-    "criticalUnknownsResolved": true,
-    "criticalUnknowns": [],
-    "workItems": [
-      {
-        "id": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
-        "order": 1,
-        "pr": 187,
-        "status": "active-closure-staged",
-        "mergeSha": null,
-        "contracts": {
-          "commonCampaignSwitch": "validate target -> quiesce old writer -> authoritative persistence switch -> reload/bootstrap",
-          "singleFlight": "one shared main-level gate covers the complete campaign-switch callback; a concurrent second switch is rejected before lifecycle mutation/recovery/reload",
-          "safeReset": "quiesce writer -> delete autosave.snapshot -> delete autosave -> reload",
-          "manualActivation": "validate manual B -> quiesce A -> delete stale autosave.snapshot(A) -> write B primary -> reload -> B wins",
-          "manualActivationFailureUx": "missing/invalid rendered manual target fails before quiescence, stays on current authority, shows player-visible error, re-enables Load and does not reload",
-          "import": "storage-only: explicit non-empty non-reserved manual target; payload slotId cannot write reserved authority; no quiesce/reload; activation only via safe Load",
-          "seed": "explicit uint32 -> exact GameState.seed; legacy string source compatible",
-          "e2e": "default VITE_E2E fixture retained; focused interactive-new-game mode uses fixed uint32 seed and real picker",
-          "browserSnapshot": "real autosave mechanism produces non-null snapshot A; Import preserves it; successful Load removes/replaces stale A authority",
-          "schema": 19,
-          "save": 6,
-          "migration": "none"
-        }
-      }
-    ]
+    "id": "NEMEXIA-PROTO-SIM-SCALING",
+    "pr": 193,
+    "status": "closure-and-fresh-audit-docs-pr-pending-controller-merge",
+    "startingMain": "2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3",
+    "mergeSha": null,
+    "contract": "docs/audits/current-batch-audit.md"
   },
   "sequence": [
     {
@@ -159,14 +127,27 @@
       "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
       "status": "active-closure-staged",
       "mergeSha": null
+    },
+    {
+      "pr": 191,
+      "kind": "implementation",
+      "workItem": "UI-01-SHELL-PLANET-COMMAND-CENTRE",
+      "status": "merged-archived",
+      "mergeSha": "4718358ba483204f2fa6c3cd655ecdac044dc66f"
+    },
+    {
+      "pr": 192,
+      "kind": "implementation",
+      "workItem": "UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE",
+      "status": "merged-archived",
+      "mergeSha": "2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3"
     }
   ],
   "next": {
     "pr": null,
-    "kind": "audit",
-    "workItem": null,
-    "implementationAuthorized": false,
-    "prerequisite": "controller-approved merge of PR #187, then resolve fresh main and create a fresh docs-only Audit",
-    "instruction": "No PR2 exists. Do not merge #187 autonomously and do not start the next Audit before controller merge."
+    "kind": "implementation",
+    "workItem": "NEM-01-UNIVERSE-EMPIRE-SCALING",
+    "implementationAuthorized": true,
+    "prerequisite": "controller-approved merge of PR #193, then create NEM-01 from fresh main citing the audit and work-item ID"
   }
 }

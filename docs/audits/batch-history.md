@@ -48,3 +48,17 @@ The accepted Audit #186 contract is archived verbatim at `docs/audits/completed/
 - Do not append a proposed future implementation batch to the completed table before delivery.
 - For dependent implementation PRs, every successor branch must start from the latest merged `main`.
 - Closing an audited batch does not itself authorize another implementation PR or feature batch.
+
+## FULL-VISUAL-NAVIGATION-REDESIGN — completed 2026-08-30
+
+```text
+FULL-VISUAL-NAVIGATION-REDESIGN → COMPLETE
+Audit #188 → ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa
+PR1 #191 (UI-01-SHELL-PLANET-COMMAND-CENTRE) → 4718358ba483204f2fa6c3cd655ecdac044dc66f
+PR2 #192 (UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE) → 2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3
+schema v19 / save v6 / migration none
+```
+
+The accepted Audit #188 contract is archived verbatim at `docs/audits/completed/full-visual-navigation-redesign.md`.
+
+Both implementation PRs were created from fresh main in the authorized order, merged with 10/10 green checks (CI, Browser E2E, Graphify audit, production Pages smoke), and stayed presentation-only: schema, save format, formulas, bot logic and route semantics are unchanged. The empire-overview visual baseline was refreshed from the CI render of the exact merged head. The follow-up program of Nemexia-prototype batches is defined in `docs/30-nemexia-full-prototype-program.md`; the next authorized category is the fresh docs-only Audit `NEMEXIA-PROTO-SIM-SCALING` delivered by the same docs PR that records this closure.
