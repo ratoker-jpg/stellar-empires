@@ -40,6 +40,80 @@ html body .panel-label {
   text-shadow: 0 0 12px var(--se-accent-soft);
 }
 
+/* Nemexia-style command chrome: every non-planet route keeps the active
+   colony visible as a compact orbital badge in the context rail. It is
+   decorative only and does not replace the live colony selector or state. */
+html body .game-layout:not(.is-planet-view) .command-panel .panel-block--hero {
+  position: relative;
+  padding: 68px 12px 10px;
+  overflow: hidden;
+}
+
+html body .game-layout:not(.is-planet-view) .command-panel .panel-block--hero::before {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--se-border-strong);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgb(255 255 255 / 72%) 0 2%, transparent 3%),
+    radial-gradient(circle at 65% 68%, rgb(85 216 255 / 50%), transparent 48%),
+    url('/assets/generated/universe/planets/planet-01.webp') center / 92% no-repeat,
+    radial-gradient(circle, var(--se-accent-soft), rgb(1 7 14 / 92%) 70%);
+  box-shadow:
+    0 0 0 6px rgb(85 216 255 / 8%),
+    0 0 24px rgb(85 216 255 / 28%),
+    inset 0 0 14px rgb(85 216 255 / 30%);
+  content: "";
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+html body .game-layout:not(.is-planet-view) .command-panel .panel-block--hero::after {
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 62px;
+  height: 62px;
+  border: 1px solid rgb(85 216 255 / 35%);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  transform: translateX(-50%) rotate(-20deg);
+}
+
+html body .game-layout:not(.is-planet-view) .command-panel .panel-block--hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+html body .game-layout:not(.is-planet-view) .view-stack {
+  background:
+    linear-gradient(90deg, rgb(85 216 255 / 5%) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(rgb(85 216 255 / 4%) 1px, transparent 1px) 0 0 / 48px 48px,
+    radial-gradient(circle at 50% 38%, rgb(36 145 201 / 15%), transparent 44%),
+    var(--se-bg-void);
+}
+
+html body .game-layout:not(.is-planet-view) .game-stage {
+  border: 1px solid rgb(117 202 239 / 22%);
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 35%),
+    inset 0 0 70px rgb(35 152 208 / 10%),
+    0 0 30px rgb(0 0 0 / 24%);
+}
+
+html body .game-layout:not(.is-planet-view) .space-map-navigation,
+html body .game-layout:not(.is-planet-view) .operations-route-header,
+html body .game-layout:not(.is-planet-view) .command-route-header {
+  background:
+    linear-gradient(90deg, rgb(85 216 255 / 15%), transparent 42%),
+    linear-gradient(180deg, rgb(4 16 28 / 94%), rgb(2 8 15 / 88%));
+  box-shadow: 0 10px 24px rgb(0 0 0 / 32%), inset 0 1px rgb(255 255 255 / 5%);
+}
+
 html body :is(input, select, textarea):focus-visible {
   border-color: var(--se-border-strong);
   outline: 2px solid var(--se-accent-soft);
