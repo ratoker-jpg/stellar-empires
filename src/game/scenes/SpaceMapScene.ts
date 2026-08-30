@@ -453,6 +453,20 @@ export class SpaceMapScene extends Phaser.Scene {
   }
 
   private readonly handleKeyDown = (event: KeyboardEvent): void => {
+    // Клавиатурная карта принадлежит космической карте только пока активно
+    // её семейство оболочки; иначе стрелки/Enter перехватывают чужие
+    // воркспейсы и диалоги (UI-02).
+    if (document.documentElement.dataset.shellRouteFamily !== 'space') return;
+    const target = event.target;
+    if (target instanceof HTMLElement) {
+      if (target.closest('input, select, textarea') !== null) return;
+      if (
+        (event.key === 'Enter' || event.key === ' ') &&
+        target.closest('button, [role="tab"], a[href]') !== null
+      ) {
+        return;
+      }
+    }
     const intent = getSpaceMapKeyboardIntent(this.#route, event.key);
     if (intent.type === 'none') return;
     event.preventDefault();

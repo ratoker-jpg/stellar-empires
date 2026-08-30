@@ -294,6 +294,9 @@ export function mountSpaceMapNavigation(
   };
   window.addEventListener(SPACE_MAP_SELECTION_EVENT, onSelection);
   const onGlobalKeyDown = (event: KeyboardEvent): void => {
+    // Escape-возврат по иерархии карты действует только внутри семейства
+    // Вселенной, чтобы не перехватывать закрытие диалогов и фильтров (UI-02).
+    if (document.documentElement.dataset.shellRouteFamily !== 'space') return;
     if (event.key !== 'Escape' || navigation.snapshot.route.level === 'universe') return;
     event.preventDefault();
     event.stopImmediatePropagation();
