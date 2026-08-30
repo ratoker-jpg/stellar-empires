@@ -41,7 +41,7 @@ export function factionForEmpire(empireId: string, playerFaction: FactionId, see
 }
 
 function createHomeColony(
-  systemName: string,
+  system: { readonly id: string; readonly name: string },
   planet: PlanetModel,
   empireId: string,
   playerFaction: FactionId,
@@ -53,10 +53,10 @@ function createHomeColony(
   return {
     id: `colony-${planet.id}`,
     galaxyPlanetId: planet.id,
-    systemId: systemName,
+    systemId: system.id,
     position: planet.position,
     coordinate: planet.coordinate,
-    name: `${systemName} ${planet.position}`,
+    name: `${system.name} ${planet.position}`,
     ownerEmpireId: empireId,
     factionId,
     specializationId: 'balanced',
@@ -86,7 +86,7 @@ export function createInitialPlanetStates(
         continue;
       }
       planets.push(createHomeColony(
-        system.name,
+        system,
         planet,
         planet.ownerEmpireId,
         playerFaction,
@@ -111,7 +111,7 @@ export function createInitialPlanetStates(
     }
     const system = selectStarSystemDescriptor(universe, home.coordinate.galaxy, home.coordinate.solarSystem);
     planets.push(createHomeColony(
-      system.name,
+      system,
       descriptor,
       home.empireId,
       playerFaction,
