@@ -1,25 +1,25 @@
 {
-  "statusVersion": 104,
+  "statusVersion": 106,
   "updatedAt": "2026-08-30",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 195,
-  "lastMergeSha": "15c846cb05d21e08415ce5f69e3134f8f8ec4b18",
-  "verifiedMainBaseline": "PR #195 merge / owner-prioritized NEMEXIA-PROTO-UI-PARITY audit baseline",
+  "lastMergedPr": 196,
+  "lastMergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513",
+  "verifiedMainBaseline": "PR #196 merge / NEMEXIA-PROTO-UI-PARITY implementation baseline",
   "programPlan": "docs/30-nemexia-full-prototype-program.md",
   "runtimeBaselinePr": 185,
   "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-  "activePr": null,
-  "activePrKind": "audit-pending",
-  "activeWorkItem": "NEMEXIA-PROTO-UI-PARITY",
-  "activeBranch": "audit/nemexia-ui-parity",
+  "activePr": 197,
+  "activePrKind": "implementation-remote-delivery",
+  "activeWorkItem": "NEMEXIA-PROTO-UI-PARITY-REMOTE-DELIVERY",
+  "activeBranch": "feat/ui-parity-04-assets-qa",
   "nextPrAfterActive": null,
-  "nextPrKind": "audit-review",
-  "nextWorkItem": "UI-PARITY-01-SHELL-PLANET",
-  "currentMilestone": "NEMEXIA-PROTO-UI-PARITY / audit prepared, implementation blocked until audit merge",
+  "nextPrKind": "implementation-sequential",
+  "nextWorkItem": "UI-PARITY-02-MAPS-FLEETS-OPERATIONS",
+  "currentMilestone": "NEMEXIA-PROTO-UI-PARITY / remote delivery in progress",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -49,10 +49,10 @@
   },
   "currentAuditState": {
     "workItem": "NEMEXIA-PROTO-UI-PARITY",
-    "auditPr": null,
+    "auditPr": 196,
     "startingMain": "15c846cb05d21e08415ce5f69e3134f8f8ec4b18",
-    "mergeSha": null,
-    "status": "prepared-local",
+    "mergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513",
+    "status": "merged",
     "archive": null,
     "implementationAuthorized": true,
     "acceptedBatchId": "NEMEXIA-PROTO-UI-PARITY",
@@ -63,16 +63,16 @@
   },
   "proposedBatch": {
     "id": "NEMEXIA-PROTO-UI-PARITY",
-    "status": "audit-pending-review",
+    "status": "remote-delivery-in-progress",
     "complexity": "medium",
-    "implementationAuthorized": false,
+    "implementationAuthorized": true,
     "archive": null,
     "workItems": [
       {
         "id": "UI-PARITY-01-SHELL-PLANET",
         "order": 1,
         "pr": null,
-        "status": "blocked-until-audit-merge",
+        "status": "complete-pending-remote-delivery",
         "mergeSha": null,
         "purpose": "Nemexia-style persistent shell and complete planet/development visual composition"
       },
@@ -80,7 +80,7 @@
         "id": "UI-PARITY-02-MAPS-FLEETS-OPERATIONS",
         "order": 2,
         "pr": null,
-        "status": "blocked-until-ui-01",
+        "status": "complete-pending-remote-delivery",
         "mergeSha": null,
         "purpose": "clear map, fleet and operations workspaces with discoverable actions"
       },
@@ -88,7 +88,7 @@
         "id": "UI-PARITY-03-DEVELOPMENT-DATA",
         "order": 3,
         "pr": null,
-        "status": "blocked-until-ui-02",
+        "status": "complete-pending-remote-delivery",
         "mergeSha": null,
         "purpose": "science, command, reports, ranking and system information architecture"
       },
@@ -96,7 +96,7 @@
         "id": "UI-PARITY-04-ASSETS-CLEANUP-QA",
         "order": 4,
         "pr": null,
-        "status": "blocked-until-ui-03",
+        "status": "complete-pending-remote-delivery",
         "mergeSha": null,
         "purpose": "original assets, route-wide cleanup, visual baselines and final QA"
       }
@@ -184,5 +184,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and PR #187 state"
   ],
-  "nextAction": "Review and publish the NEMEXIA-PROTO-UI-PARITY docs-only Audit from main at 15c846c. After its merge, create UI-PARITY-01-SHELL-PLANET from fresh main; NEM-02 remains deferred until the UI batch closes."
+  "nextAction": "Review the local UI parity batch on feat/ui-parity-04-assets-qa. Remote push, PR creation and merge remain intentionally deferred by the owner; NEM-02 remains deferred."
 }

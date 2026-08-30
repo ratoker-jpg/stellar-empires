@@ -47,11 +47,11 @@ function breadcrumbButton(
 function renderBreadcrumbs(route: SpaceMapRoute, navigation: SpaceMapNavigationController): void {
   const container = requireElement<HTMLElement>('#space-map-breadcrumbs');
   const items: HTMLButtonElement[] = [
-    breadcrumbButton('Universe', { level: 'universe' }, navigation, route.level === 'universe'),
+    breadcrumbButton('Вселенная', { level: 'universe' }, navigation, route.level === 'universe'),
   ];
   if (route.level !== 'universe') {
     items.push(breadcrumbButton(
-      `Galaxy ${route.galaxy}`,
+      `Галактика ${route.galaxy}`,
       {
         level: 'galaxy',
         galaxy: route.galaxy,
@@ -64,7 +64,7 @@ function renderBreadcrumbs(route: SpaceMapRoute, navigation: SpaceMapNavigationC
     ));
   }
   if (route.level === 'solar-system') {
-    items.push(breadcrumbButton(`Solar system ${route.solarSystem}`, route, navigation, true));
+    items.push(breadcrumbButton(`Солнечная система ${route.solarSystem}`, route, navigation, true));
   }
   container.replaceChildren();
   items.forEach((item, index) => {
@@ -100,6 +100,19 @@ function selectionForRoute(state: GameState, route: SpaceMapRoute): SpaceMapSele
       };
 }
 
+function activeColonySelection(state: GameState): SpaceMapSelectionDetail | null {
+  const colony = state.planets.find((planet) => planet.ownerEmpireId === 'player');
+  if (colony === undefined) return null;
+  return {
+    kind: 'position',
+    galaxy: colony.coordinate.galaxy,
+    solarSystem: colony.coordinate.solarSystem,
+    position: colony.coordinate.position,
+    label: colony.name,
+    objectKind: 'planet',
+  };
+}
+
 function renderActionButton(action: SpaceMapAction): HTMLElement {
   const wrapper = document.createElement('div');
   wrapper.className = 'space-map-action-row';
@@ -133,8 +146,13 @@ function renderActionButton(action: SpaceMapAction): HTMLElement {
   return wrapper;
 }
 
-function renderDetails(state: GameState, selection: SpaceMapSelectionDetail | null): void {
+function renderDetails(
+  state: GameState,
+  selection: SpaceMapSelectionDetail | null,
+  isContextSelection = false,
+): void {
   const container = requireElement<HTMLElement>('#space-map-selection-details');
+  container.toggleAttribute('data-context-selection', isContextSelection);
   if (selection === null) {
     container.textContent = 'Выбери объект на карте.';
     return;
@@ -145,6 +163,15 @@ function renderDetails(state: GameState, selection: SpaceMapSelectionDetail | nu
   container.dataset.relation = details.relation;
   container.dataset.intelQuality = details.intelQuality;
   const header = document.createElement('header');
+  if (isContextSelection) {
+    const visual = document.createElement('span');
+    visual.className = 'space-map-context-planet';
+    visual.setAttribute('aria-hidden', 'true');
+    const contextLabel = document.createElement('small');
+    contextLabel.className = 'space-map-detail-kicker';
+    contextLabel.textContent = 'Активная колония';
+    header.append(visual, contextLabel);
+  }
   const title = document.createElement('strong');
   title.textContent = details.label;
   const coordinate = document.createElement('span');
@@ -256,13 +283,16 @@ export function mountSpaceMapNavigation(
     }
     requireElement<HTMLElement>('#space-map-footer-level').textContent = route.level;
     requireElement<HTMLElement>('#space-map-footer-coordinate').textContent = routeCoordinate(route);
-    const selection = route.level === 'solar-system' &&
+    const selectedOnCurrentSolarRoute = route.level === 'solar-system' &&
       latestSelection !== null &&
       latestSelection.galaxy === route.galaxy &&
       latestSelection.solarSystem === route.solarSystem
       ? latestSelection
-      : selectionForRoute(state, route);
-    renderDetails(state, selection);
+      : null;
+    const routeSelection = selectionForRoute(state, route);
+    const contextSelection = route.level === 'solar-system' ? null : activeColonySelection(state);
+    const selection = selectedOnCurrentSolarRoute ?? routeSelection ?? contextSelection;
+    renderDetails(state, selection, selection !== null && selection === contextSelection);
     renderOverlay(state, route);
   };
   const unsub = navigation.subscribe(renderSnapshot);

@@ -1,0 +1,238 @@
+/* UI-PARITY-05 — high-visibility Nemexia-inspired primary navigation.
+   The routing contract stays in appShellController/screenRegistry; this layer
+   only turns those existing route buttons into recognisable command modules. */
+
+html body .side-rail {
+  align-items: center;
+  min-height: 98px;
+  padding: 9px 15px;
+  border-bottom-color: var(--se-border-strong);
+  background:
+    linear-gradient(180deg, rgb(10 30 41 / 98%), rgb(3 13 21 / 98%)),
+    var(--se-bg-hud);
+  box-shadow:
+    inset 0 -1px rgb(85 216 255 / 26%),
+    0 14px 32px rgb(0 0 0 / 28%);
+}
+
+html body .rail-group {
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  padding: 0 7px;
+  border-left: 0;
+}
+
+html body .rail-group:not(:first-of-type)::before {
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  background: linear-gradient(180deg, transparent, rgb(85 216 255 / 34%), transparent);
+}
+
+html body .rail-group__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+html body .rail-group__items {
+  gap: 7px;
+}
+
+html body .side-rail .rail-button,
+html body .side-rail .rail-button--information,
+html body .side-rail .rail-button--utility,
+html body .rail-group--compact .rail-button {
+  position: relative;
+  flex: 0 0 92px;
+  min-height: 78px;
+  gap: 4px;
+  padding: 6px 6px 7px;
+  overflow: hidden;
+  border: 1px solid rgb(85 216 255 / 20%);
+  border-radius: 12px 4px 12px 4px;
+  background:
+    linear-gradient(145deg, rgb(85 216 255 / 10%), transparent 48%),
+    linear-gradient(180deg, rgb(10 29 42 / 94%), rgb(3 12 20 / 96%));
+  box-shadow: inset 0 1px rgb(255 255 255 / 5%);
+}
+
+html body .side-rail .rail-button::before {
+  position: absolute;
+  right: 9px;
+  bottom: 0;
+  left: 9px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgb(85 216 255 / 72%), transparent);
+  content: "";
+  opacity: 0.48;
+}
+
+html body .side-rail .rail-button::after {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 7px;
+  height: 7px;
+  border-top: 1px solid rgb(185 242 255 / 56%);
+  border-right: 1px solid rgb(185 242 255 / 56%);
+  content: "";
+  opacity: 0.7;
+}
+
+html body .side-rail .rail-button:hover:not(:disabled) {
+  border-color: rgb(130 225 255 / 62%);
+  background:
+    radial-gradient(circle at 50% 0%, rgb(85 216 255 / 20%), transparent 70%),
+    linear-gradient(180deg, rgb(12 40 56 / 96%), rgb(3 14 23 / 98%));
+  box-shadow: 0 0 22px rgb(85 216 255 / 16%), inset 0 1px rgb(255 255 255 / 8%);
+  transform: translateY(-2px);
+}
+
+html body .side-rail .rail-button.is-active {
+  border-color: rgb(130 225 255 / 78%);
+  background:
+    radial-gradient(circle at 50% 0%, rgb(85 216 255 / 31%), transparent 70%),
+    linear-gradient(180deg, rgb(13 54 70 / 98%), rgb(4 20 30 / 98%));
+  box-shadow:
+    0 0 26px rgb(85 216 255 / 24%),
+    inset 0 -3px var(--se-accent),
+    inset 0 1px rgb(255 255 255 / 10%);
+}
+
+html body .side-rail .rail-button.is-active::before {
+  opacity: 1;
+}
+
+html body .rail-button__icon,
+html body .rail-button > span:first-child {
+  width: 37px;
+  height: 37px;
+  border-color: rgb(185 242 255 / 42%);
+  border-radius: 50%;
+  background-color: rgb(1 9 15 / 76%);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 76%;
+  box-shadow: inset 0 0 13px rgb(85 216 255 / 14%);
+  color: transparent;
+  font-size: 0;
+}
+
+html body .rail-button small {
+  position: relative;
+  z-index: 1;
+  color: var(--se-text-secondary);
+  font-size: 0.57rem;
+  font-weight: 780;
+  letter-spacing: 0.045em;
+  text-shadow: 0 1px rgb(0 0 0 / 72%);
+}
+
+html body .rail-button.is-active small {
+  color: var(--se-accent-strong);
+}
+
+html body #nav-planet .rail-button__icon {
+  background-image: url('/assets/generated/universe/planets/planet-11.webp');
+  background-size: 106%;
+}
+
+html body #nav-galaxy .rail-button__icon {
+  background-image: url('/assets/backgrounds/galaxy.svg');
+  background-size: 155%;
+}
+
+html body #nav-fleet .rail-button__icon {
+  background-image: url('/assets/generated/catalog/ships/aegis/cruiser.webp');
+  background-size: 132%;
+}
+
+html body #nav-operations .rail-button__icon {
+  background-image: url('/assets/factions/aegis/emblem.svg');
+  background-size: 82%;
+}
+
+html body #nav-research .rail-button__icon {
+  background-image: url('/assets/icons/resource-crystal.svg');
+}
+
+html body #nav-empire .rail-button__icon {
+  background-image: url('/assets/factions/synod/emblem.svg');
+  background-size: 78%;
+}
+
+html body #nav-reports .rail-button__icon {
+  background-image: url('/assets/icons/resource-metal.svg');
+}
+
+html body #nav-rating .rail-button__icon {
+  background-image: url('/assets/icons/resource-energy.svg');
+}
+
+html body #nav-system .rail-button__icon {
+  background-image: url('/assets/icons/resource-gas.svg');
+}
+
+html body .rail-button__badge {
+  z-index: 3;
+  top: 5px;
+  right: 7px;
+  min-width: 19px;
+  height: 19px;
+  border: 1px solid rgb(255 255 255 / 65%);
+  box-shadow: 0 0 14px rgb(255 101 101 / 42%);
+}
+
+@media (max-width: 1180px) {
+  html body .side-rail {
+    min-height: 88px;
+    padding-inline: 9px;
+  }
+
+  html body .rail-group {
+    padding-inline: 4px;
+  }
+
+  html body .side-rail .rail-button,
+  html body .side-rail .rail-button--information,
+  html body .side-rail .rail-button--utility,
+  html body .rail-group--compact .rail-button {
+    flex-basis: 78px;
+    min-height: 67px;
+  }
+
+  html body .rail-button__icon,
+  html body .rail-button > span:first-child {
+    width: 31px;
+    height: 31px;
+  }
+}
+
+@media (max-height: 780px) {
+  html body .side-rail {
+    min-height: 74px !important;
+    height: 74px !important;
+    padding-block: 4px;
+  }
+
+  html body .side-rail .rail-button,
+  html body .side-rail .rail-button--information,
+  html body .side-rail .rail-button--utility,
+  html body .rail-group--compact .rail-button {
+    min-height: 61px !important;
+    padding-block: 4px;
+  }
+
+  html body .rail-button__icon,
+  html body .rail-button > span:first-child {
+    width: 27px;
+    height: 27px;
+  }
+}

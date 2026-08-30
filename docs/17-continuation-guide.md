@@ -2,30 +2,23 @@
 
 ## Current handoff
 
-Release 1.0 remains closed. Persistence remains schema v19 / save format v6 / migration none.
+`main` is at the merged UI-parity Audit PR #196:
 
-Current exact live `main` / starting main for PR #187:
+`175e52c8b2b8752c1f9a272261867d1c0b213513`
 
-`0894ac4bc30e81e2713ff9e50c9463972b4de8d6`
+The authorized implementation branch is `feat/ui-parity-04-assets-qa`. It contains the complete local Nemexia-inspired UI-parity batch and is now being delivered remotely at the owner's request.
 
-Audit #186 is merged and accepted at that SHA. Its accepted contract is archived verbatim at:
-
-`docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md`
-
-## Current Audit
+## Current delivery
 
 ```text
-FULL-VISUAL-NAVIGATION-REDESIGN
-branch audit/full-visual-navigation-redesign
-kind docs-only Audit
-baseline main 0894ac4bc30e81e2713ff9e50c9463972b4de8d6
-implementation blocked until Audit merge
-authorized implementation count after merge: 2
+NEMEXIA-PROTO-UI-PARITY
+baseline main 175e52c8b2b8752c1f9a272261867d1c0b213513 (PR #196)
+branch feat/ui-parity-04-assets-qa
+PR #197 https://github.com/ratoker-jpg/stellar-empires/pull/197
+status: await checks, then merge
 ```
 
-Reference collection: `D:\\Xuina\\WHAT\\saved_pages`
-
-The saved pages are a visual and navigation reference only. They do not authorize copying Nemexia HTML, remote code, branding or images.
+The implementation keeps formulas, state transitions and persistence unchanged. It rebuilds command navigation, the planet command centre, map context panels and the visual treatment of the primary routes using Stellar-owned assets only. The Nemexia saved pages at `D:\\Xuina\\WHAT\\saved_pages` remain visual and interaction references only; they do not authorize copying external code, branding or images.
 
 ## Delivered authority lifecycle
 
