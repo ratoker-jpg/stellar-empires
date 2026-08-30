@@ -84,11 +84,32 @@ Required behavior:
 | `19_arena.png` | Operations arena |
 | `20_ship_upgrades.png` | Ship-upgrade workspace in owning task context |
 
-## Verified implementation surface
+## Shared existing contracts
 
-### Shell/navigation core
+Important existing functions/types/registries:
 
-Expected paths:
+- `SHELL_SCREEN_REGISTRY`
+- `SHELL_NAVIGATION_GROUPS`
+- `AppShellController.navigate()` / `navigateToFamily()` / `renderNavigation()`
+- `parseAppShellRoute()` / `serializeAppShellRoute()`
+- `ShellNavigationContextModel`
+- route dataset attributes on `<html>`
+
+Asset/data flow:
+
+- use current `public/assets/**` and runtime resolvers/manifests first;
+- controls/navigation/status visuals should remain CSS/SVG-native when practical;
+- reference screenshots are never runtime assets;
+- procedural fallback is allowed only under `docs/ui/reference-navigation-missing-assets.md`;
+- Player navigation changes visually; bots/reducer/simulation/save authority do not change.
+
+## NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV
+
+**Purpose / outcome:** replace the current grouped side rail with the canonical reference shell while preserving route authority.
+
+### Exact expected repository path envelope
+
+Runtime/UI:
 
 - `index.html`
 - `src/ui/screenRegistry.ts`
@@ -98,59 +119,32 @@ Expected paths:
 - `src/ui/globalHud.ts`
 - `src/ui/globalHudViewModel.ts`
 - `src/ui/shellContextPanel.ts`
+- `src/ui/planetScreen.ts`
+
+Styles:
+
 - `src/styles/designTokens.css`
 - `src/styles/main.css`
 - `src/styles/globalHud.css`
 - `src/styles/navigationHierarchy.css`
 - `src/styles/shellBreadcrumbs.css`
 - `src/styles/uiPrimitives.css`
+- `src/styles/planet.css`
+- `src/styles/planetWorkspace.css`
+- `src/styles/uiParityShellPlanet.css`
+- `src/styles/uiParityNavigationArt.css`
+- `src/styles/uiParityPlanetCommandArt.css`
+- `src/styles/uiParityPolish.css`
 
-Important current functions/types/registries:
+Acceptance tests:
 
-- `SHELL_SCREEN_REGISTRY`
-- `SHELL_NAVIGATION_GROUPS`
-- `AppShellController.navigate()` / `navigateToFamily()` / `renderNavigation()`
-- `parseAppShellRoute()` / `serializeAppShellRoute()`
-- `ShellNavigationContextModel`
-- route dataset attributes on `<html>`
+- `tests/e2e/navigationUsability.spec.ts`
+- `tests/e2e/appShellFullGate.spec.ts`
+- `tests/e2e/planetCommandCentre.spec.ts`
 
-### Workspace consumers
+No other runtime path is pre-authorized for NAV-V2-01. A required additional path must be called out as scope divergence in the implementation PR; if it changes route/state architecture rather than presentation plumbing, stop and return to a fresh Audit amendment before editing it.
 
-Expected paths, only where required by the actual diff:
-
-- `src/ui/planetScreen.ts`
-- `src/ui/developmentWorkspaceRouter.ts`
-- `src/ui/fleetOperationsWorkspace.ts`
-- `src/ui/operationsWorkspace.ts`
-- `src/ui/researchScreen.ts`
-- `src/ui/commandWorkspace.ts`
-- `src/ui/reportsWorkspace.ts`
-- `src/ui/commandRankingScreen.ts`
-- `src/ui/systemWorkspace.ts`
-- `src/ui/saveManager.ts`
-- `src/ui/spaceMapNavigation.ts`
-- their current view-model/style modules
-
-### Asset flow
-
-- Use current `public/assets/**` and runtime resolvers/manifests first.
-- Controls/navigation/status visuals should remain CSS/SVG-native when practical.
-- Reference screenshots are never runtime assets.
-- Procedural fallback is allowed only under `docs/ui/reference-navigation-missing-assets.md`.
-
-### Player/bot/persistence consumers
-
-- Player navigation is affected visually.
-- Bot behavior is not affected.
-- Reducer/simulation commands are not changed.
-- Save schema/format/migration are not changed.
-- Route-memory storage behavior remains existing authority unless a recorded compatibility fix is required.
-
-## NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV
-
-**Purpose / outcome:** replace the current grouped side rail with the canonical reference shell while preserving route authority.
-
-**Ordered implementation:**
+### Ordered implementation
 
 1. Introduce shell geometry/tokens for the new header/context grid.
 2. Render nine primary buttons from the current registry in exact reference order; remove visible group labels.
@@ -160,7 +154,7 @@ Expected paths, only where required by the actual diff:
 6. Place breadcrumbs/return context without duplicating route authority.
 7. Migrate focused unit/Browser tests.
 
-**Acceptance gate:**
+### Acceptance gate
 
 - nine exact labels/order at desktop widths;
 - all primary routes reachable;
@@ -176,7 +170,63 @@ Expected paths, only where required by the actual diff:
 
 **Purpose / outcome:** apply one visual composition language across all 20 reference states after the shell exists.
 
-**Ordered implementation:**
+### Exact expected repository path envelope
+
+Runtime/UI:
+
+- `src/ui/planetScreen.ts`
+- `src/ui/developmentWorkspaceRouter.ts`
+- `src/ui/fleetOperationsWorkspace.ts`
+- `src/ui/operationsWorkspace.ts`
+- `src/ui/researchScreen.ts`
+- `src/ui/productionScreen.ts`
+- `src/ui/shipUpgradesScreen.ts`
+- `src/ui/commandWorkspace.ts`
+- `src/ui/reportsWorkspace.ts`
+- `src/ui/commandRankingScreen.ts`
+- `src/ui/systemWorkspace.ts`
+- `src/ui/saveManager.ts`
+- `src/ui/spaceMapNavigation.ts`
+
+Styles:
+
+- `src/styles/planetZones.css`
+- `src/styles/planetDevelopment.css`
+- `src/styles/developmentWorkspace.css`
+- `src/styles/developmentPresentation.css`
+- `src/styles/spaceMap.css`
+- `src/styles/galaxyIntel.css`
+- `src/styles/uiParityMapsFleetOps.css`
+- `src/styles/operationsWorkspace.css`
+- `src/styles/operationsRoutes.css`
+- `src/styles/market.css`
+- `src/styles/worldEvents.css`
+- `src/styles/arenaOperations.css`
+- `src/styles/endgameOperations.css`
+- `src/styles/research.css`
+- `src/styles/production.css`
+- `src/styles/shipUpgrades.css`
+- `src/styles/missionReports.css`
+- `src/styles/commandSystemRoutes.css`
+- `src/styles/commandRanking.css`
+- `src/styles/saveManager.css`
+- `src/styles/uiParityDevelopmentData.css`
+- `src/styles/uiParitySurfaceArt.css`
+- `src/styles/uiParityPolish.css`
+
+Acceptance/tests/docs:
+
+- `tests/e2e/navigationUsability.spec.ts`
+- `tests/e2e/appShellFullGate.spec.ts`
+- `tests/e2e/planetCommandCentre.spec.ts`
+- `tests/e2e/universeNavigation.spec.ts`
+- `tests/e2e/workspaceResponsiveGate.spec.ts`
+- `tests/e2e/qualityGates.spec.ts`
+- `docs/ui/reference-navigation-missing-assets.md`
+
+No other runtime path is pre-authorized for NAV-V2-02. A required additional path must be called out as scope divergence in the implementation PR; if it introduces a new gameplay route, state field, command, persistence behavior or asset authority, stop and return to a fresh Audit amendment before editing it.
+
+### Ordered implementation
 
 1. Planet overview + resource/industry/military zones.
 2. Universe/galaxy/solar-system hierarchy and selection details.
@@ -187,7 +237,7 @@ Expected paths, only where required by the actual diff:
 7. Add/maintain procedural placeholders and missing-art ledger.
 8. Run full route/viewport/accessibility/visual-baseline matrix and remove only proven-obsolete presentation code.
 
-**Acceptance gate:**
+### Acceptance gate
 
 - every reference screenshot has a reachable Stellar route/state mapping;
 - gameplay state/semantics unchanged;
