@@ -1,5 +1,5 @@
 {
-  "indexVersion": 37,
+  "indexVersion": 38,
   "updatedAt": "2026-08-30",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,21 +7,21 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 186,
-    "mergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
+    "lastMergedPr": 194,
+    "mergeSha": "7ad1046dfad7a34b712354765b6f9ebbcd41ed9e",
     "runtimeBaselinePr": 185,
     "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-    "lastCompletedAuditPr": 186,
-    "lastCompletedAuditMergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
-    "lastCompletedAuditArchive": "docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md"
+    "lastCompletedAuditPr": 188,
+    "lastCompletedAuditMergeSha": "ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa",
+    "lastCompletedAuditArchive": "docs/audits/completed/full-visual-navigation-redesign.md"
   },
   "active": {
-    "pr": 187,
-    "kind": "implementation-closure",
-    "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
-    "branch": "agent/post-1.0-replayable-campaign-lifecycle",
-    "startingMain": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba",
-    "status": "runtime-complete-post-ready-p2-fixed-closure-staged",
+    "pr": 194,
+    "kind": "implementation",
+    "workItem": "NEM-01-UNIVERSE-EMPIRE-SCALING",
+    "branch": "feat/nem-01-universe-empire-scaling",
+    "startingMain": "2c6160bbe2611b26a309ac5f7b4c8519bc7ecd16",
+    "status": "merged",
     "implementationAuthorized": true
   },
   "completedPreviousPhase": {
@@ -52,9 +52,9 @@
   "currentAudit": {
     "id": "NEMEXIA-PROTO-SIM-SCALING",
     "pr": 193,
-    "status": "closure-and-fresh-audit-docs-pr-pending-controller-merge",
+    "status": "merged-implementation-in-progress",
     "startingMain": "2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3",
-    "mergeSha": null,
+    "mergeSha": "2c6160bbe2611b26a309ac5f7b4c8519bc7ecd16",
     "contract": "docs/audits/current-batch-audit.md"
   },
   "sequence": [
@@ -125,8 +125,8 @@
       "pr": 187,
       "kind": "implementation-closure",
       "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE",
-      "status": "active-closure-staged",
-      "mergeSha": null
+      "status": "merged",
+      "mergeSha": "0894ac4bc30e81e2713ff9e50c9463972b4de8d6"
     },
     {
       "pr": 191,
@@ -141,13 +141,20 @@
       "workItem": "UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE",
       "status": "merged-archived",
       "mergeSha": "2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3"
+    },
+    {
+      "pr": 194,
+      "kind": "implementation",
+      "workItem": "NEM-01-UNIVERSE-EMPIRE-SCALING",
+      "status": "merged",
+      "mergeSha": "7ad1046dfad7a34b712354765b6f9ebbcd41ed9e"
     }
   ],
   "next": {
     "pr": null,
     "kind": "implementation",
-    "workItem": "NEM-01-UNIVERSE-EMPIRE-SCALING",
+    "workItem": "NEM-02-BOT-SCHEDULER-BATCHING-PERF",
     "implementationAuthorized": true,
-    "prerequisite": "controller-approved merge of PR #193, then create NEM-01 from fresh main citing the audit and work-item ID"
+    "prerequisite": "create NEM-02 from fresh main at 7ad1046d citing the NEMEXIA-PROTO-SIM-SCALING audit (PR #193) and the stable work-item ID"
   }
 }
