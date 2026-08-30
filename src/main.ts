@@ -28,6 +28,7 @@ import './styles/globalHud.css';
 import './styles/commandDoctrine.css';
 import './styles/fleetDoctrine.css';
 import './styles/commandSystemRoutes.css';
+import './styles/uiParityShellPlanet.css';
 import { bindFactionRuntimeAssets } from './assets/bindFactionRuntimeAssets';
 import { createGame, updateGamePresentation } from './game/createGame';
 import {
