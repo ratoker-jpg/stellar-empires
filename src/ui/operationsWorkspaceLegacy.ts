@@ -840,13 +840,15 @@ export function mountOperationsWorkspace(options: OperationsWorkspaceOptions): O
 
   const onObjectTarget = ((event: Event): void => {
     pendingObjectId = (event as CustomEvent<SpaceObjectTargetRequest>).detail.objectId;
-    options.navigateToMode('objects');
+    if (active) options.navigateToMode('objects');
   }) as EventListener;
   window.addEventListener(SPACE_OBJECT_TARGET_EVENT, onObjectTarget);
 
   const onSystemSelected = ((event: Event): void => {
     intelSearch = (event as CustomEvent<GalaxySystemSelectionDetail>).detail.systemName;
-    options.navigateToMode('overview');
+    // Выбор системы на космической карте обновляет контекст операций,
+    // но не должен перехватывать активное семейство оболочки (UI-02).
+    if (active) options.navigateToMode('overview');
   }) as EventListener;
   window.addEventListener(GALAXY_SYSTEM_SELECTED_EVENT, onSystemSelected);
 
