@@ -319,7 +319,7 @@ describe('POST-1.0-PR2 combat identity and defender doctrine regressions', () =>
       })}`);
     }
     expect(parsed.value.formatVersion).toBe(6);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     const loadedBattle = parsed.value.state.eventLog.find(
       (entry) => entry.event.payload.type === 'BATTLE_REPORT' &&
         entry.event.payload.report.id === resolved.report.id,

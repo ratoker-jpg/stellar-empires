@@ -26,7 +26,7 @@ describe('unit catalog and inventory', () => {
     const managedPlanets = state.planets.filter((planet) =>
       state.empires.includes(planet.ownerEmpireId),
     );
-    expect(state.schemaVersion).toBe(19);
+    expect(state.schemaVersion).toBe(20);
     expect(state.campaignSettings.worldSpeed).toBe(1);
     expect(state.fleets).toEqual([]);
     expect(state.debrisFields).toEqual([]);

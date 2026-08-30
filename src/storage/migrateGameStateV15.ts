@@ -9,7 +9,7 @@ import {
 import type { GameState } from '../simulation/types';
 import { migrateGameStateV14 } from './migrateGameStateV14';
 
-export type LegacyCampaignSettingsV15 = Omit<CampaignSettings, 'progressionProfile'>;
+export type LegacyCampaignSettingsV15 = Omit<CampaignSettings, 'progressionProfile' | 'botEmpireCount'>;
 
 export type LegacyGameStateV15 = Omit<GameState, 'schemaVersion' | 'campaignSettings'> & {
   readonly schemaVersion: 15;

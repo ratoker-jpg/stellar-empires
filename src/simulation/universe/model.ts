@@ -5,6 +5,7 @@ import type {
   StarClass,
   StarSystemModel,
 } from '../galaxy/types';
+import { hashText } from '../seed';
 import {
   SOLAR_SYSTEM_POSITION_COUNT,
   UNIVERSE_SLOT_COUNT,
@@ -13,8 +14,10 @@ import {
   parseSystemCoordinate,
   planetIdForCoordinate,
   systemIdForCoordinate,
+  sameSpaceCoordinate,
   type SpaceCoordinate,
 } from '../space/coordinates';
+import { PLAYER_EMPIRE_ID, LEGACY_BOT_EMPIRE_IDS } from '../bots/profiles';
 
 export type UniverseTopologyPresetId = 'test' | 'campaign' | 'fidelity';
 
@@ -45,11 +48,18 @@ export interface UniverseGalaxyDescriptor {
   readonly systemCount: number;
 }
 
+export interface UniverseHomePlanet {
+  readonly coordinate: SpaceCoordinate;
+  readonly empireId: string;
+}
+
 export interface UniverseModel {
   readonly presetId: UniverseTopologyPresetId;
   readonly positionsPerSystem: typeof SOLAR_SYSTEM_POSITION_COUNT;
   readonly slots: readonly UniverseSlotDescriptor[];
   readonly galaxies: readonly UniverseGalaxyDescriptor[];
+  /** Canonical home-world assignment; drives ownership of lazily resolved planets. */
+  readonly homePlanets: readonly UniverseHomePlanet[];
 }
 
 export interface SolarPositionDescriptor {
@@ -82,19 +92,17 @@ const SYSTEM_PREFIXES = [
   'Solace',
   'Kepler',
 ] as const;
-const HOME_OWNERS: readonly string[] = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'];
+
+/** Canonical legacy home systems inside galaxy 1 (player + the three legacy bots). */
+const LEGACY_HOME_COORDINATES: readonly SpaceCoordinate[] = [
+  { galaxy: 1, solarSystem: 1, position: 1 },
+  { galaxy: 1, solarSystem: 2, position: 1 },
+  { galaxy: 1, solarSystem: 3, position: 1 },
+  { galaxy: 1, solarSystem: 4, position: 1 },
+] as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function hashText(value: string): number {
-  let hash = 2_166_136_261;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16_777_619);
-  }
-  return hash >>> 0;
 }
 
 function valueAt<T>(values: readonly T[], hash: number): T {
@@ -109,9 +117,88 @@ export function getUniverseTopologyPreset(
   return UNIVERSE_TOPOLOGY_PRESETS[presetId];
 }
 
+/**
+ * Deterministic home-world assignment (docs/30 D-1): the player always roots at
+ * galaxy 1 system 1, legacy bots keep their historical homes, and generated
+ * bots claim one home per system along a seed-hashed traversal until every
+ * bot is placed or the systems are exhausted.
+ */
+export function assignHomeWorlds(
+  seed: number,
+  presetId: UniverseTopologyPresetId,
+  empireIds: readonly string[],
+): readonly UniverseHomePlanet[] {
+  const preset = getUniverseTopologyPreset(presetId);
+  const homes: UniverseHomePlanet[] = [];
+  const taken = new Set<string>();
+  const remaining: string[] = [];
+  for (const empireId of empireIds) {
+    if (empireId === PLAYER_EMPIRE_ID) {
+      const coordinate = LEGACY_HOME_COORDINATES[0];
+      if (coordinate === undefined) throw new Error('Legacy home layout is missing the player coordinate.');
+      homes.push({ coordinate, empireId });
+      taken.add(`${coordinate.galaxy}:${coordinate.solarSystem}`);
+      continue;
+    }
+    remaining.push(empireId);
+  }
+
+  const legacyIndex = new Map(LEGACY_BOT_EMPIRE_IDS.map((id, index) => [id, index + 1]));
+  const generated: string[] = [];
+  for (const empireId of remaining) {
+    const legacySlot = legacyIndex.get(empireId);
+    if (legacySlot === undefined) {
+      generated.push(empireId);
+      continue;
+    }
+    const coordinate = LEGACY_HOME_COORDINATES[legacySlot];
+    if (coordinate === undefined) throw new Error(`Legacy home coordinate is missing: ${empireId}.`);
+    homes.push({ coordinate, empireId });
+    taken.add(`${coordinate.galaxy}:${coordinate.solarSystem}`);
+  }
+
+  if (generated.length > 0) {
+    const systems: SpaceCoordinate[] = [];
+    for (let galaxySlot = 1; galaxySlot <= preset.galaxyCount; galaxySlot += 1) {
+      for (let solarSystem = 1; solarSystem <= preset.systemsPerGalaxy; solarSystem += 1) {
+        if (!taken.has(`${galaxySlot}:${solarSystem}`)) {
+          systems.push({ galaxy: galaxySlot, solarSystem, position: 1 });
+        }
+      }
+    }
+    const ordered = systems
+      .map((coordinate) => ({
+        coordinate,
+        order: hashText(`${seed}:home:${coordinate.galaxy}:${coordinate.solarSystem}`),
+      }))
+      .sort((left, right) =>
+        left.order - right.order || left.coordinate.galaxy - right.coordinate.galaxy ||
+        left.coordinate.solarSystem - right.coordinate.solarSystem)
+      .map((entry) => entry.coordinate);
+    if (ordered.length < generated.length) {
+      throw new Error(
+        `Universe preset ${presetId} cannot host ${generated.length} generated bot homes (only ${ordered.length} systems remain).`,
+      );
+    }
+    for (let index = 0; index < generated.length; index += 1) {
+      const coordinate = ordered[index];
+      const empireId = generated[index];
+      if (coordinate === undefined) throw new Error('Home assignment exhausted the universe systems.');
+      if (empireId === undefined) throw new Error('Home assignment ran out of bot empires.');
+      homes.push({ coordinate, empireId });
+    }
+  }
+
+  return homes.sort((left, right) =>
+    left.coordinate.galaxy - right.coordinate.galaxy ||
+    left.coordinate.solarSystem - right.coordinate.solarSystem ||
+    left.coordinate.position - right.coordinate.position);
+}
+
 export function createUniverseModel(
   seed: number,
   presetId: UniverseTopologyPresetId = 'campaign',
+  empireIds?: readonly string[],
 ): UniverseModel {
   const preset = getUniverseTopologyPreset(presetId);
   const galaxies = Array.from(
@@ -139,6 +226,7 @@ export function createUniverseModel(
     positionsPerSystem: SOLAR_SYSTEM_POSITION_COUNT,
     slots,
     galaxies,
+    homePlanets: empireIds === undefined ? [] : assignHomeWorlds(seed, presetId, empireIds),
   };
 }
 
@@ -147,17 +235,33 @@ export function isUniverseModel(value: unknown): value is UniverseModel {
     (value.presetId !== 'test' && value.presetId !== 'campaign' && value.presetId !== 'fidelity') ||
     value.positionsPerSystem !== SOLAR_SYSTEM_POSITION_COUNT ||
     !Array.isArray(value.slots) || value.slots.length !== UNIVERSE_SLOT_COUNT ||
-    !Array.isArray(value.galaxies)) return false;
+    !Array.isArray(value.galaxies) || !Array.isArray(value.homePlanets)) return false;
   const preset = getUniverseTopologyPreset(value.presetId);
   if (value.galaxies.length !== preset.galaxyCount) return false;
-  return value.slots.every((slot, index) =>
+  const slotsValid = value.slots.every((slot, index) =>
     isRecord(slot) && slot.slot === index + 1 &&
     (slot.state === 'populated' || slot.state === 'empty') &&
-    (slot.galaxyId === null || typeof slot.galaxyId === 'string')) &&
-    value.galaxies.every((galaxy, index) =>
-      isRecord(galaxy) && galaxy.id === `galaxy-${index + 1}` &&
-      galaxy.slot === index + 1 && Number.isInteger(galaxy.seed) &&
-      galaxy.systemCount === preset.systemsPerGalaxy);
+    (slot.galaxyId === null || typeof slot.galaxyId === 'string'));
+  const galaxiesValid = value.galaxies.every((galaxy, index) =>
+    isRecord(galaxy) && galaxy.id === `galaxy-${index + 1}` &&
+    galaxy.slot === index + 1 && Number.isInteger(galaxy.seed) &&
+    galaxy.systemCount === preset.systemsPerGalaxy);
+  const homeCoordinates = new Set<string>();
+  const homeEmpireIds = new Set<string>();
+  const homesValid = value.homePlanets.every((home) =>
+    isRecord(home) && isSpaceCoordinate(home.coordinate) &&
+    typeof home.empireId === 'string' && home.empireId.length > 0 &&
+    home.coordinate.position === 1 &&
+    home.coordinate.galaxy <= preset.galaxyCount &&
+    home.coordinate.solarSystem <= preset.systemsPerGalaxy &&
+    (() => {
+      const key = `${home.coordinate.galaxy}:${home.coordinate.solarSystem}`;
+      if (homeCoordinates.has(key) || homeEmpireIds.has(home.empireId)) return false;
+      homeCoordinates.add(key);
+      homeEmpireIds.add(home.empireId);
+      return true;
+    })());
+  return slotsValid && galaxiesValid && homesValid;
 }
 
 export function selectMigrationPresetForSystemCount(
@@ -226,9 +330,7 @@ export function selectPlanetDescriptor(
   const galaxy = universe.galaxies.find((candidate) => candidate.slot === coordinate.galaxy);
   if (galaxy === undefined || coordinate.solarSystem > galaxy.systemCount) return null;
   const roll = hashText(`${galaxy.seed}:${coordinate.solarSystem}:${coordinate.position}:planet`);
-  const homeOwner = coordinate.galaxy === 1 && coordinate.position === 1
-    ? HOME_OWNERS[coordinate.solarSystem - 1] ?? null
-    : null;
+  const homeOwner = homeOwnerForCoordinate(universe, coordinate);
   const occupied = homeOwner !== null || coordinate.position <= 3 || roll % 100 < 48;
   if (!occupied) return null;
   let biome = valueAt(PLANET_BIOMES, Math.floor(roll / 7));
@@ -241,6 +343,16 @@ export function selectPlanetDescriptor(
     size: 90 + (Math.floor(roll / 17) % 111),
     ownerEmpireId: homeOwner,
   };
+}
+
+export function homeOwnerForCoordinate(
+  universe: UniverseModel,
+  coordinate: SpaceCoordinate,
+): string | null {
+  for (const home of universe.homePlanets) {
+    if (sameSpaceCoordinate(home.coordinate, coordinate)) return home.empireId;
+  }
+  return null;
 }
 
 export function materializeSolarSystem(

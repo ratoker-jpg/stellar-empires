@@ -368,7 +368,7 @@ describe('command ranking', () => {
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
     expect(parsed.value.formatVersion).toBe(6);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     const after = createPlayerCommandProfile(parsed.value.state);
     expect(after.victories).toBe(before.victories);
     expect(after.score).toBe(before.score);

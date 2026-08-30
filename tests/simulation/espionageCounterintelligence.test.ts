@@ -362,7 +362,7 @@ describe('espionage and counter-intelligence', () => {
     const parsed = parseSaveJson(serializeSave(envelope));
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
-      expect(parsed.value.state.schemaVersion).toBe(19);
+      expect(parsed.value.state.schemaVersion).toBe(20);
       expect(parsed.value.state.intelligence).toEqual(first.state.intelligence);
     }
   });

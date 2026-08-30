@@ -29,7 +29,7 @@ describe('alliance and solo participation foundation', () => {
     const state = createInitialGameState('endgame-participation-initial');
     const current = participation(state);
 
-    expect(state.schemaVersion).toBe(19);
+    expect(state.schemaVersion).toBe(20);
     expect(current.alliances).toEqual([]);
     expect(current.membershipHistory).toEqual([]);
     expect(current.participants.map((entry) => entry.empireId)).toEqual(state.empires);

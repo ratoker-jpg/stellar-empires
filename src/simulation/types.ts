@@ -361,7 +361,7 @@ export interface ExecutedGameEvent {
 }
 
 export interface GameState {
-  readonly schemaVersion: 16 | 17 | 18 | 19;
+  readonly schemaVersion: 16 | 17 | 18 | 19 | 20;
   readonly seed: number;
   readonly campaignSettings: CampaignSettings;
   readonly clock: GameClock;

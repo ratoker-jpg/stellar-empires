@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BotProfile } from '../../src/simulation/bots/profiles';
+import { DEFAULT_BOT_PROFILES, type BotProfile } from '../../src/simulation/bots/profiles';
 import {
   createEmptyCatchUpSummary,
   mergeCatchUpSummaries,
@@ -125,6 +125,7 @@ function createCanonicalTwoColonyState(
       fleet.originPlanetId !== playerHome.id &&
       !(fleet.location.type === 'planet' && fleet.location.planetId === playerHome.id)),
     botAutomation: {
+      profiles: initial.botAutomation.profiles ?? DEFAULT_BOT_PROFILES,
       nextDecisionAtByEmpire: {
         ...initial.botAutomation.nextDecisionAtByEmpire,
         [empireId]: 0,

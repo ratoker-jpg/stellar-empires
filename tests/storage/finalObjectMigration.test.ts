@@ -37,7 +37,7 @@ describe('final-object persistence migration', () => {
     if (!parsed.ok) return;
 
     expect(parsed.value.formatVersion).toBe(6);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     expect(parsed.value.runtimeMetadata).toEqual(legacy.runtimeMetadata);
     expect(parsed.value.state.endgameFinalObjects).toEqual({
       activeProjects: [],
@@ -54,7 +54,7 @@ describe('final-object persistence migration', () => {
     const state = createInitialGameState('final-object-v6-roundtrip');
     const save = createSaveEnvelope('current-v6', state, SAVE_TIME);
     expect(save.formatVersion).toBe(6);
-    expect(save.state.schemaVersion).toBe(19);
+    expect(save.state.schemaVersion).toBe(20);
     expect(parseSaveJson(serializeSave(save))).toEqual({ ok: true, value: save });
   });
 

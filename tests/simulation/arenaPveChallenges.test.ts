@@ -436,7 +436,7 @@ describe('local deterministic Arena challenges', () => {
     if (!parsed.ok) return;
 
     expect(parsed.value.formatVersion).toBe(6);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     const loadedEntry = activeArenaEntry(parsed.value.state);
     expect('resolutionSeed' in loadedEntry).toBe(false);
 
@@ -549,7 +549,7 @@ describe('local deterministic Arena challenges', () => {
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
     expect(parsed.value.formatVersion).toBe(6);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     expect(latestArenaResult(parsed.value.state).tacticalSnapshot).toEqual(result.tacticalSnapshot);
   });
 

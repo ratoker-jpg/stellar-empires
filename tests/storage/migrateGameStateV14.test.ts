@@ -68,7 +68,7 @@ describe('schema v14 through v19 migration', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.formatVersion).toBe(6);
-      expect(parsed.value.state.schemaVersion).toBe(19);
+      expect(parsed.value.state.schemaVersion).toBe(20);
       expect(parsed.value.state.pveMeta?.reputations.every((entry) => entry.reputation === 0)).toBe(true);
       expect(parsed.value.state.endgameParticipation?.participants.every(
         (entry) => entry.allianceId === null && entry.soloEligible,
@@ -107,7 +107,7 @@ describe('schema v14 through v19 migration', () => {
       campaignSettings: settings,
     });
     expect(first.value.clock.elapsedSeconds).toBe(150);
-    expect(first.value.schemaVersion).toBe(19);
+    expect(first.value.schemaVersion).toBe(20);
     expect(first.value.campaignSettings).toEqual(settings);
     expect(createStateChecksum(first.value)).toBe(createStateChecksum(second.value));
     expect(createStateChecksum(first.value)).not.toBe(createStateChecksum(direct));

@@ -48,7 +48,7 @@ describe('PvE meta persistence migration', () => {
     if (!parsed.ok) return;
 
     expect(parsed.value.formatVersion).toBe(6);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     expect(parsed.value.state.pveMeta).toEqual({
       reputations: legacy.current.empires.map((empireId) => ({ empireId, reputation: 0 })),
       activeArenaEntries: [],
@@ -184,7 +184,7 @@ describe('PvE meta persistence migration', () => {
       savedAt: SAVED_AT,
       runtimeMetadata: createCampaignRuntimeMetadata(SAVED_AT),
       checksum: 'unused',
-      state: { ...current, schemaVersion: 20 },
+      state: { ...current, schemaVersion: 21 },
     }))).toMatchObject({ ok: false, code: 'INVALID_SAVE_SHAPE' });
   });
 });

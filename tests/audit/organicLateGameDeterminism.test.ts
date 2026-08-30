@@ -44,7 +44,7 @@ describe('POST-1.0-PR1 organic terminal determinism', () => {
       maximumRealSeconds: CHECKPOINT_REAL_SECONDS,
     });
     expect(checkpoint.complete).toBe(false);
-    expect(checkpoint.state.schemaVersion).toBe(19);
+    expect(checkpoint.state.schemaVersion).toBe(20);
 
     const direct = continueOrganicTerminalScenario(checkpoint.state, {
       ...INPUT,
@@ -57,7 +57,7 @@ describe('POST-1.0-PR1 organic terminal determinism', () => {
     const parsed = parseSaveJson(serializeSave(save));
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) throw new Error(parsed.message);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     expect(createStateChecksum(parsed.value.state)).toBe(createStateChecksum(checkpoint.state));
 
     const saveLoaded = continueOrganicTerminalScenario(parsed.value.state, {

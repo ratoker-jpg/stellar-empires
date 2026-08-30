@@ -52,6 +52,7 @@ import {
   DEFAULT_CAMPAIGN_CREATED_AT_REAL,
   formatProgressionProfile,
   formatWorldSpeed,
+  LEGACY_BOT_EMPIRE_COUNT,
 } from './simulation/campaign/settings';
 import { createInitialGameState } from './simulation/createInitialGameState';
 import type { GameState } from './simulation/types';
@@ -174,6 +175,8 @@ async function createFreshGame(statusPrefix = 'Новая партия'): Promis
         scenarioPreset: 'campaign',
         worldSpeed: 1,
         createdAtReal: DEFAULT_CAMPAIGN_CREATED_AT_REAL,
+        // E2E regression worlds stay on the historical three-bot layout.
+        botEmpireCount: LEGACY_BOT_EMPIRE_COUNT,
       }),
     };
   } else {
@@ -181,9 +184,14 @@ async function createFreshGame(statusPrefix = 'Новая партия'): Promis
       throw new Error('interactiveNewGame=1 requires a valid uint32 campaignSeed.');
     }
     const fixedSeed = interactiveE2e.seed;
-    selection = await selectNewGameCampaign(fixedSeed === undefined ? {} : {
+    selection = await selectNewGameCampaign(fixedSeed === undefined ? {
+      // Interactive E2E campaigns stay on the legacy three-bot layout so the
+      // regression suite keeps its baseline until NEM-02 lands the batching.
+      botEmpireCount: LEGACY_BOT_EMPIRE_COUNT,
+    } : {
       initialSeed: fixedSeed,
       suggestSeed: () => fixedSeed,
+      botEmpireCount: LEGACY_BOT_EMPIRE_COUNT,
     });
     seedSource = selection.seed;
   }
