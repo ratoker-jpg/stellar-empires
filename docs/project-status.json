@@ -1,5 +1,5 @@
 {
-  "statusVersion": 105,
+  "statusVersion": 106,
   "updatedAt": "2026-08-30",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
@@ -13,13 +13,13 @@
   "runtimeBaselinePr": 185,
   "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
   "activePr": null,
-  "activePrKind": "implementation-sequential",
-  "activeWorkItem": "UI-PARITY-01-SHELL-PLANET",
-  "activeBranch": "feat/ui-parity-01-shell-planet",
+  "activePrKind": "local-only-implementation",
+  "activeWorkItem": "LOCAL-UI-PARITY-QA",
+  "activeBranch": "feat/ui-parity-04-assets-qa",
   "nextPrAfterActive": null,
   "nextPrKind": "implementation-sequential",
   "nextWorkItem": "UI-PARITY-02-MAPS-FLEETS-OPERATIONS",
-  "currentMilestone": "NEMEXIA-PROTO-UI-PARITY / Audit #196 merged, UI-PARITY-01 in progress",
+  "currentMilestone": "NEMEXIA-PROTO-UI-PARITY / local implementation completed; remote delivery intentionally deferred",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -63,7 +63,7 @@
   },
   "proposedBatch": {
     "id": "NEMEXIA-PROTO-UI-PARITY",
-    "status": "audit-merged-implementation-in-progress",
+    "status": "local-implementation-complete-pending-owner-review",
     "complexity": "medium",
     "implementationAuthorized": true,
     "archive": null,
@@ -72,7 +72,7 @@
         "id": "UI-PARITY-01-SHELL-PLANET",
         "order": 1,
         "pr": null,
-        "status": "in-progress",
+        "status": "complete-local-only",
         "mergeSha": null,
         "purpose": "Nemexia-style persistent shell and complete planet/development visual composition"
       },
@@ -80,7 +80,7 @@
         "id": "UI-PARITY-02-MAPS-FLEETS-OPERATIONS",
         "order": 2,
         "pr": null,
-        "status": "blocked-until-ui-01",
+        "status": "complete-local-only",
         "mergeSha": null,
         "purpose": "clear map, fleet and operations workspaces with discoverable actions"
       },
@@ -88,7 +88,7 @@
         "id": "UI-PARITY-03-DEVELOPMENT-DATA",
         "order": 3,
         "pr": null,
-        "status": "blocked-until-ui-02",
+        "status": "complete-local-only",
         "mergeSha": null,
         "purpose": "science, command, reports, ranking and system information architecture"
       },
@@ -96,7 +96,7 @@
         "id": "UI-PARITY-04-ASSETS-CLEANUP-QA",
         "order": 4,
         "pr": null,
-        "status": "blocked-until-ui-03",
+        "status": "complete-local-only",
         "mergeSha": null,
         "purpose": "original assets, route-wide cleanup, visual baselines and final QA"
       }
@@ -184,5 +184,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and PR #187 state"
   ],
-  "nextAction": "Implement UI-PARITY-01-SHELL-PLANET from fresh main at 175e52c, citing Audit PR #196 and the stable work-item ID. Validate shell/planet routes before opening the first implementation PR. NEM-02 remains deferred until the UI batch closes."
+  "nextAction": "Review the local UI parity batch on feat/ui-parity-04-assets-qa. Remote push, PR creation and merge remain intentionally deferred by the owner; NEM-02 remains deferred."
 }

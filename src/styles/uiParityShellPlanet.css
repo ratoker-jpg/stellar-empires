@@ -537,7 +537,9 @@ body {
   }
 
   .planet-galaxy-action {
-    display: none;
+    min-width: 92px;
+    padding-inline: 9px;
+    font-size: 0.5rem;
   }
 
   .planet-selector-label {
