@@ -1,5 +1,10 @@
 import { createInitialBotAutomationState } from './bots/state';
 import {
+  buildBotEmpireIds,
+  createBotProfilesForEmpires,
+  PLAYER_EMPIRE_ID,
+} from './bots/profiles';
+import {
   createCampaignSettings,
   type CampaignSettings,
 } from './campaign/settings';
@@ -25,6 +30,7 @@ import { resolveSeed } from './seed';
 import type { GameState } from './types';
 import {
   createUniverseModel,
+  getUniverseTopologyPreset,
   materializeGalaxy,
   type UniverseTopologyPresetId,
 } from './universe/model';
@@ -59,17 +65,26 @@ export function createInitialGameState(
     ? createCampaignSettings({ scenarioPreset: legacyTopologyPreset })
     : createCampaignSettings(factionOrConfiguration.campaignSettings);
   const seed = resolveSeed(seedSource);
-  const universe = createUniverseModel(seed, campaignSettings.scenarioPreset);
+  const empires = [PLAYER_EMPIRE_ID, ...buildBotEmpireIds(campaignSettings.botEmpireCount)];
+  const preset = getUniverseTopologyPreset(campaignSettings.scenarioPreset);
+  if (empires.length > preset.galaxyCount * preset.systemsPerGalaxy) {
+    throw new Error(
+      `Universe preset ${campaignSettings.scenarioPreset} cannot host ${empires.length} empires (one home per system).`,
+    );
+  }
+  const universe = createUniverseModel(seed, campaignSettings.scenarioPreset, empires);
   const galaxy = materializeGalaxy(universe, 1);
-  const empires = ['player', 'aegis-bot', 'synod-bot', 'veyra-bot'] as const;
   const colonies = createInitialPlanetStates(
+    universe,
     galaxy,
     playerFaction,
     campaignSettings.progressionProfile,
+    seed,
   );
   const neutralForces = createInitialNeutralForces(galaxy, seed);
+  const botProfiles = createBotProfilesForEmpires(seed, empires);
   return {
-    schemaVersion: 19,
+    schemaVersion: 20,
     seed,
     campaignSettings,
     clock: {
@@ -95,7 +110,7 @@ export function createInitialGameState(
     endgameParticipation: createInitialEndgameParticipationState(empires),
     endgameFinalObjects: createInitialEndgameFinalObjectState(),
     campaignResult: createInitialCampaignResult(),
-    botAutomation: createInitialBotAutomationState(empires, 0),
+    botAutomation: createInitialBotAutomationState(empires, 0, botProfiles),
     nextEventSequence: 0,
     pendingEvents: [],
     commandLog: [],

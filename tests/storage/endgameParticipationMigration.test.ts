@@ -42,7 +42,7 @@ describe('endgame participation persistence migration', () => {
     if (!parsed.ok) return;
 
     expect(parsed.value.formatVersion).toBe(6);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     expect(parsed.value.runtimeMetadata).toEqual(legacy.runtimeMetadata);
     expect(parsed.value.state.endgameParticipation).toEqual({
       alliances: [],

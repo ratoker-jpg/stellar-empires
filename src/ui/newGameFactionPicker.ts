@@ -4,11 +4,15 @@ import {
   createCampaignSettings,
   DEFAULT_PROGRESSION_PROFILE_ID,
   formatProgressionProfile,
+  PROTOTYPE_BOT_EMPIRE_COUNT,
   type CampaignSettings,
   type WorldSpeed,
 } from '../simulation/campaign/settings';
 import { parseUint32Seed, UINT32_MAX } from '../simulation/seed';
-import type { UniverseTopologyPresetId } from '../simulation/universe/model';
+import {
+  getUniverseTopologyPreset,
+  type UniverseTopologyPresetId,
+} from '../simulation/universe/model';
 
 export interface NewGameFactionOption {
   readonly id: FactionArtKey;
@@ -42,6 +46,11 @@ export interface NewGameCampaignSelection {
 export interface NewGameCampaignPickerOptions {
   readonly initialSeed?: number;
   readonly suggestSeed?: () => number;
+  /**
+   * Overrides the prototype bot count for consumers that need the legacy
+   * three-bot layout (E2E regression campaigns); production keeps 100.
+   */
+  readonly botEmpireCount?: number;
 }
 
 export const NEW_GAME_FACTION_OPTIONS: readonly NewGameFactionOption[] =
@@ -60,6 +69,16 @@ export const NEW_GAME_SCENARIO_OPTIONS: readonly NewGameScenarioOption[] = [
   { id: 'campaign', name: 'Основная кампания', detail: '6 галактик · 27 систем' },
   { id: 'fidelity', name: 'Большая вселенная', detail: '15 галактик · 81 система' },
 ];
+
+/**
+ * Until the dedicated bot-count picker lands (docs/30 NEM-18), fresh prototype
+ * campaigns always host PROTOTYPE_BOT_EMPIRE_COUNT bots; presets whose one-home-
+ * per-system capacity cannot fit them stay out of the picker.
+ */
+export function canPresetHostPrototypeWorld(presetId: UniverseTopologyPresetId): boolean {
+  const preset = getUniverseTopologyPreset(presetId);
+  return preset.galaxyCount * preset.systemsPerGalaxy >= PROTOTYPE_BOT_EMPIRE_COUNT + 1;
+}
 
 export const NEW_GAME_SPEED_OPTIONS: readonly NewGameSpeedOption[] = [
   { value: 1, name: 'x1', detail: 'Базовый темп' },
@@ -181,7 +200,9 @@ export function selectNewGameCampaign(
 
     const scenario = createSelect(
       'Размер мира',
-      NEW_GAME_SCENARIO_OPTIONS.map((option) => ({ value: option.id, name: option.name, detail: option.detail })),
+      NEW_GAME_SCENARIO_OPTIONS
+        .filter((option) => canPresetHostPrototypeWorld(option.id))
+        .map((option) => ({ value: option.id, name: option.name, detail: option.detail })),
       'campaign',
     );
     const speed = createSelect(
@@ -245,6 +266,9 @@ export function selectNewGameCampaign(
         worldSpeed,
         progressionProfile: DEFAULT_PROGRESSION_PROFILE_ID,
         createdAtReal: new Date().toISOString(),
+        // Fresh prototype campaigns run the full offline Nemexia scale:
+        // 1 player empire + 100 autonomous bot empires (docs/30 D-1).
+        botEmpireCount: options.botEmpireCount ?? PROTOTYPE_BOT_EMPIRE_COUNT,
       });
       dialog.close();
       dialog.remove();

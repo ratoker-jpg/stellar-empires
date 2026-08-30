@@ -143,9 +143,10 @@ function getNextScheduledBotDecision(
   state: GameState,
   profiles: readonly BotProfile[],
 ): ScheduledBotDecision | undefined {
+  const activeEmpires = new Set(state.empires);
   let next: ScheduledBotDecision | undefined;
   for (const profile of profiles) {
-    if (!state.empires.includes(profile.empireId)) continue;
+    if (!activeEmpires.has(profile.empireId)) continue;
     const candidateAt =
       state.botAutomation.nextDecisionAtByEmpire[profile.empireId] ??
       state.clock.elapsedSeconds;
@@ -256,7 +257,9 @@ export function advanceCampaignTime(
   if (!Number.isSafeInteger(operationBudget) || operationBudget < 1) {
     throw new Error('Campaign operation budget must be a positive safe integer.');
   }
-  const botProfiles = options.botProfiles ?? DEFAULT_BOT_PROFILES;
+  // Profiles are stored on the v20 automation state; the constant set only
+  // serves states that predate the stored profile list.
+  const botProfiles = options.botProfiles ?? state.botAutomation.profiles ?? DEFAULT_BOT_PROFILES;
   const startTime = state.clock.elapsedSeconds;
   const targetTime = startTime + requestedGameSeconds;
   if (!Number.isSafeInteger(targetTime)) {

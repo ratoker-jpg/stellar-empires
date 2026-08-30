@@ -67,7 +67,7 @@ describe('save format', () => {
     if (!parsed.ok) return;
 
     expect(parsed.value.formatVersion).toBe(6);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     expect(parsed.value.state.campaignSettings).toEqual(createCampaignSettings({
       scenarioPreset: parsed.value.state.universe.presetId,
       worldSpeed: 1,
@@ -251,7 +251,7 @@ describe('save format', () => {
     expect(parsed.ok).toBe(true);
     if (parsed.ok) {
       expect(parsed.value.state.fleets[0]?.mission).toBeNull();
-      expect(parsed.value.state.schemaVersion).toBe(19);
+      expect(parsed.value.state.schemaVersion).toBe(20);
       expect(parsed.value.state.campaignSettings.worldSpeed).toBe(1);
     }
   });

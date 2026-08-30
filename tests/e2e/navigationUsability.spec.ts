@@ -165,6 +165,13 @@ test('keyboard, history, reload and reduced motion remain equivalent', async ({ 
   await page.setViewportSize(RELEASE_VIEWPORTS[0]);
   await page.goto('/?e2e=1#/operations/market');
   await expectReady(page);
+  // The first reload settles storage-authority normalization of the freshly
+  // created E2E campaign (the fixture tops up gas above its storage-derived
+  // capacity; the parse-time economy repair clamps it back). Baseline
+  // checksum stability is asserted from that settled state onward — this
+  // keeps the test independent of the fixture bootstrap race.
+  await page.reload();
+  await expectReady(page);
   const checksum = await page.locator('html').getAttribute('data-state-checksum');
 
   await page.locator('#nav-operations').focus();

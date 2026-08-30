@@ -129,7 +129,7 @@ describe('Solar War tactical feedback', () => {
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
     expect(parsed.value.formatVersion).toBe(6);
-    expect(parsed.value.state.schemaVersion).toBe(19);
+    expect(parsed.value.state.schemaVersion).toBe(20);
     expect(parsed.value.state.endgameParticipation?.solarWar.history.at(-1)?.battleReport.attackerTacticalSnapshot)
       .toEqual(result.battleReport.attackerTacticalSnapshot);
 

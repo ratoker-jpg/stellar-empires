@@ -564,9 +564,9 @@ function getScheduledProfiles(
 
 export function getNextBotDecisionAt(
   state: GameState,
-  profiles: readonly BotProfile[] = DEFAULT_BOT_PROFILES,
+  profiles?: readonly BotProfile[],
 ): number | undefined {
-  return getScheduledProfiles(state, profiles)[0]?.nextDecisionAt;
+  return getScheduledProfiles(state, resolveStateProfiles(state, profiles))[0]?.nextDecisionAt;
 }
 
 function getNextDueProfile(
@@ -584,6 +584,7 @@ function advanceProfileCursor(
   return {
     ...state,
     botAutomation: {
+      ...state.botAutomation,
       nextDecisionAtByEmpire: {
         ...state.botAutomation.nextDecisionAtByEmpire,
         [due.profile.empireId]:
@@ -593,11 +594,23 @@ function advanceProfileCursor(
   };
 }
 
+/**
+ * Bot profiles are part of the schema-v20 automation state; the legacy
+ * hard-coded set only serves states that predate the stored profile list.
+ */
+function resolveStateProfiles(
+  state: GameState,
+  profiles?: readonly BotProfile[],
+): readonly BotProfile[] {
+  return profiles ?? state.botAutomation.profiles ?? DEFAULT_BOT_PROFILES;
+}
+
 export function runBotScheduler(
   state: GameState,
-  profiles: readonly BotProfile[] = DEFAULT_BOT_PROFILES,
+  profiles?: readonly BotProfile[],
   maxDecisions = MAX_BOT_DECISIONS_PER_RUN,
 ): BotSchedulerResult {
+  const resolvedProfiles = resolveStateProfiles(state, profiles);
   if (!Number.isInteger(maxDecisions) || maxDecisions < 1) {
     throw new Error('Bot scheduler decision budget must be a positive integer.');
   }
@@ -608,7 +621,7 @@ export function runBotScheduler(
   let processedDecisions = 0;
 
   while (processedDecisions < maxDecisions) {
-    const due = getNextDueProfile(working, profiles);
+    const due = getNextDueProfile(working, resolvedProfiles);
     if (due === undefined) break;
     working = advanceProfileCursor(working, due);
     const decision = runProfileDecision(working, due.profile, due.nextDecisionAt);
@@ -623,6 +636,6 @@ export function runBotScheduler(
     audit,
     diagnostics,
     processedDecisions,
-    hasMoreDueDecisions: getNextDueProfile(working, profiles) !== undefined,
+    hasMoreDueDecisions: getNextDueProfile(working, resolvedProfiles) !== undefined,
   };
 }

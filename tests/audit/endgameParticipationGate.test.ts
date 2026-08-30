@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { runCampaignCatchUp } from '../../src/runtime/campaignTimeRuntime';
+import { DEFAULT_BOT_PROFILES } from '../../src/simulation/bots/profiles';
 import { advanceCampaignTime } from '../../src/simulation/campaign/time';
 import { createStateChecksum } from '../../src/simulation/checksum';
 import { createInitialGameState } from '../../src/simulation/createInitialGameState';
@@ -71,7 +72,7 @@ function migrateLegacyState(seed: string, factionId: FactionId): GameState {
   if (!parsed.ok) throw new Error(parsed.message);
 
   expect(parsed.value.formatVersion).toBe(6);
-  expect(parsed.value.state.schemaVersion).toBe(19);
+  expect(parsed.value.state.schemaVersion).toBe(20);
   expect(parsed.value.runtimeMetadata).toEqual(legacy.runtimeMetadata);
   const playerPlanet = parsed.value.state.planets.find(
     (planet) => planet.ownerEmpireId === 'player',
@@ -96,6 +97,7 @@ function withFastDeterministicTime(state: GameState): GameState {
     pendingEvents: [],
     logisticsRoutes: [],
     botAutomation: {
+      profiles: state.botAutomation.profiles ?? DEFAULT_BOT_PROFILES,
       nextDecisionAtByEmpire: Object.fromEntries(
         state.empires
           .filter((empireId) => empireId !== 'player')

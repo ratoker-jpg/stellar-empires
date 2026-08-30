@@ -30,7 +30,9 @@ test('production Pages build survives real new game, save/load, navigation and r
     }),
   ).toBe(true);
 
-  await dialog.locator('.new-game-setting__select').nth(0).selectOption('test');
+  // The prototype dialog only offers presets that can host the 100-bot world
+  // (docs/30 NEM-01); the compact test sector returns with the NEM-18 picker.
+  await dialog.locator('.new-game-setting__select').nth(0).selectOption('campaign');
   await dialog.locator('.new-game-setting__select').nth(1).selectOption('10');
   await dialog.locator('.new-game-faction--aegis').click();
 

@@ -22,6 +22,16 @@ export function normalizeSeed(value: string): number {
   return hash >>> 0;
 }
 
+/** FNV-1a text hash used for deterministic roll selection across the simulation. */
+export function hashText(value: string): number {
+  let hash = 2_166_136_261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16_777_619);
+  }
+  return hash >>> 0;
+}
+
 export function resolveSeed(value: string | number): number {
   if (typeof value === 'string') return normalizeSeed(value);
   if (!isUint32Seed(value)) {

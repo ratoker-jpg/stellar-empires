@@ -37,6 +37,12 @@ export function spaceCoordinateKey(coordinate: SpaceCoordinate): string {
   return `${coordinate.galaxy}:${coordinate.solarSystem}:${coordinate.position}`;
 }
 
+export function sameSpaceCoordinate(left: SpaceCoordinate, right: SpaceCoordinate): boolean {
+  return left.galaxy === right.galaxy &&
+    left.solarSystem === right.solarSystem &&
+    left.position === right.position;
+}
+
 export function compareSpaceCoordinates(
   left: SpaceCoordinate,
   right: SpaceCoordinate,

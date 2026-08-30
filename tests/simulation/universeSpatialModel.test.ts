@@ -68,7 +68,7 @@ describe('Universe spatial model', () => {
       const first = createInitialGameState('preset-checksum', 'aegis', presetId);
       const second = createInitialGameState('preset-checksum', 'aegis', presetId);
       expect(createStateChecksum(first)).toBe(createStateChecksum(second));
-      expect(first.schemaVersion).toBe(19);
+      expect(first.schemaVersion).toBe(20);
       expect(first.campaignSettings.scenarioPreset).toBe(presetId);
     }
   });
