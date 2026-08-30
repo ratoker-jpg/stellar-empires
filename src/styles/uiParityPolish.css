@@ -1,0 +1,165 @@
+/* UI-PARITY-04 — shared finishing pass and viewport safety. */
+
+html body [data-shell-heading]:focus-visible {
+  /* Route changes focus the heading for screen-reader/keyboard continuity;
+     avoid turning every page title into a large rectangular visual artifact. */
+  outline: none;
+  text-shadow: 0 0 18px var(--se-accent-soft);
+}
+
+html body .rail-group {
+  position: relative;
+}
+
+html body .rail-group:not(:first-of-type)::before {
+  position: absolute;
+  top: 18px;
+  bottom: 4px;
+  left: -1px;
+  width: 1px;
+  content: "";
+  background: linear-gradient(180deg, transparent, var(--se-border-default), transparent);
+}
+
+html body .rail-button {
+  transition:
+    color var(--se-transition-fast),
+    border-color var(--se-transition-fast),
+    background var(--se-transition-fast),
+    box-shadow var(--se-transition-fast),
+    transform var(--se-transition-fast);
+}
+
+html body .rail-button.is-active .rail-button__icon,
+html body .rail-button:hover:not(:disabled) .rail-button__icon {
+  border-color: currentColor;
+  box-shadow: 0 0 14px var(--se-accent-soft);
+}
+
+html body .panel-label {
+  text-shadow: 0 0 12px var(--se-accent-soft);
+}
+
+html body :is(input, select, textarea):focus-visible {
+  border-color: var(--se-border-strong);
+  outline: 2px solid var(--se-accent-soft);
+  outline-offset: 2px;
+}
+
+html body progress {
+  accent-color: var(--se-accent);
+}
+
+html body .workspace-dialog,
+html body dialog {
+  scrollbar-color: var(--se-accent) rgb(0 0 0 / 28%);
+}
+
+@media (max-width: 900px) {
+  html body .topbar {
+    grid-template-columns: 180px minmax(0, 1fr);
+  }
+
+  html body .topbar-status {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    border-top: 1px solid var(--se-border-subtle);
+    border-left: 0;
+    padding: 7px 0 0;
+  }
+
+  html body .topbar {
+    min-height: 136px;
+  }
+
+  html body .resource-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  html body .planet-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  html body .planet-header-controls {
+    width: 100%;
+  }
+
+  html body .planet-workspace {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+
+  html body .planet-context-panel,
+  html body .planet-details-panel {
+    max-height: none;
+    overflow: visible;
+  }
+
+  html body .planet-stage {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 620px) {
+  html body .app-shell {
+    min-width: 320px;
+    padding: 4px;
+  }
+
+  html body .topbar {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  html body .brand-lockup,
+  html body .topbar-status {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  html body .brand-lockup {
+    border-right: 0;
+  }
+
+  html body .resource-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html body .side-rail {
+    min-height: 66px !important;
+  }
+
+  html body .side-rail .rail-button {
+    flex-basis: 76px;
+  }
+
+  html body .planet-mode-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html body .planet-queue-bar {
+    grid-template-columns: 1fr;
+  }
+
+  html body .planet-queue-heading {
+    border-right: 0;
+    border-bottom: 1px solid var(--se-border-subtle);
+  }
+
+  html body .planet-build-queue {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html body .planet-time-controls {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  html body .planet-overview-hero {
+    grid-template-columns: 1fr;
+  }
+
+  html body .planet-overview-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

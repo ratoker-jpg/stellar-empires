@@ -31,6 +31,7 @@ import './styles/commandSystemRoutes.css';
 import './styles/uiParityShellPlanet.css';
 import './styles/uiParityMapsFleetOps.css';
 import './styles/uiParityDevelopmentData.css';
+import './styles/uiParityPolish.css';
 import { bindFactionRuntimeAssets } from './assets/bindFactionRuntimeAssets';
 import { createGame, updateGamePresentation } from './game/createGame';
 import {
