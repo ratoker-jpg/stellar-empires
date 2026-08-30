@@ -1,66 +1,120 @@
-# NEMEXIA-PROTO-SIM-SCALING — current batch audit
+# NEMEXIA-PROTO-UI-PARITY — current batch audit
 
-**State:** fresh docs-only Audit for Phase 1 of `docs/30-nemexia-full-prototype-program.md`
-**Complexity:** heavy; maximum two implementation PRs
-**Audit baseline:** main at 2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3 (PR #192 merge)
-**Program plan:** `docs/30-nemexia-full-prototype-program.md` (PR #190)
-**Scope:** simulation scale only — 100 autonomous bot empires on the existing rules; no new gameplay behaviour
+**State:** fresh docs-only Audit for the owner-prioritized full Nemexia-style visual/navigation batch
+**Complexity:** medium; four independently reviewable implementation PRs
+**Audit baseline:** `main` at `15c846cb05d21e08415ce5f69e3134f8f8ec4b18` (PR #195)
+**Reference:** `D:\Xuina\WHAT\saved_pages` plus repository research under `docs/research/nemexia-browser-audit/`
+**Scope:** visual composition, navigation clarity, original assets and responsive/accessibility presentation only
 
-## Verified baseline and reconciliation
+## Decision and deferred work
 
-- **VERIFIED:** PR #192 is merged (squash SHA 2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3); local main is fast-forwarded to the same commit. UI-01 (#191) and UI-02 (#192) close the FULL-VISUAL-NAVIGATION-REDESIGN batch, archived at `docs/audits/completed/full-visual-navigation-redesign.md`.
-- **VERIFIED:** the simulation currently creates exactly three bot empires (`aegis-bot`, `synod-bot`, `veyra-bot`) in `createInitialGameState.ts`; profiles are hard-coded and `botAutomation.nextDecisionAtByEmpire` is keyed per existing empire only.
-- **VERIFIED:** the universe preset `campaign` materializes galaxy 1 only (6 systems × 27 bodies) while `fidelity` describes 15×81; the reducer, ranking, reports and PvE viewers branch on the three fixed bot empire ids in multiple places.
-- **VERIFIED:** bots execute synchronously inside `advanceCampaignTime` (`campaign/time.ts`) with a 32-decision budget per run; the `BotAutomationController` + `botScheduler.worker.ts` path exists but is not wired into `main.ts`.
-- **VERIFIED:** save v6 / schema v19; migration chain ends at v19; checksum/replay gates cover the current state shape.
-- **VERIFIED:** the campaign-time performance test exists (`tests/simulation/campaignTimePerformance.test.ts`) and is excluded from the default CI test run.
-- **DECISION:** the offline Nemexia prototype requires 1 player + 100 bot empires (`docs/30` G-1) before any personality work. Scale lands first, behaviour diversification second (Phase 2).
+- **DECISION:** the owner explicitly reprioritized the UI parity batch ahead of the authorized NEM-02 simulation scheduler batch.
+- **DECISION:** NEM-02 is deferred and preserved in `docs/audits/deferred/nemexia-proto-sim-scaling.md`; no simulation work is part of this batch.
+- **VERIFIED:** the prior visual foundation is already merged through UI-01 PR #191 and UI-02 PR #192. This batch addresses the remaining gap between that foundation and the complete Nemexia-style screen composition.
+- **VERIFIED:** the local saved-page collection has seven top-level HTML captures, and the repository contains 15 curated Nemexia screen captures plus structured research catalogs.
+- **DECISION:** reproduce layout and interaction patterns with Stellar-owned DOM, code, branding and assets. Do not copy Nemexia HTML, remote scripts, branding or images.
+
+## Current architecture and graph evidence
+
+- **VERIFIED:** `src/ui/screenRegistry.ts` is the top-level navigation registry with nine route families: planet, space, fleets, operations, research, command, reports, ranking and system.
+- **VERIFIED:** `src/ui/appShellRoute.ts` owns route serialization/normalization and the nested surfaces: planet modes overview/resource/industry/military with zone/shipyard/defense/upgrades surfaces; fleet modes overview/compose/active/battles; operations modes overview/expeditions/objects/events/arena/alliances/solar-war/market/logistics; command modes overview/doctrine/fleet-doctrine/upgrades; report filters all/combat/expedition/object/event/intelligence/endgame; system modes saves/settings.
+- **VERIFIED:** `src/ui/appShellController.ts` owns navigation activation, route memory, focus heading, active state and family-specific activation callbacks.
+- **VERIFIED:** `src/ui/planetScreen.ts`, `src/ui/developmentWorkspaceRouter.ts`, `src/ui/fleetOperationsWorkspace.ts`, `src/ui/operationsWorkspace.ts`, `src/ui/researchScreen.ts`, `src/ui/commandWorkspace.ts`, `src/ui/reportsWorkspace.ts` and `src/ui/systemWorkspace.ts` own the primary workspace mounts.
+- **VERIFIED:** Graphify was rebuilt from the current source/test baseline: 3,738 nodes and 13,034 edges. It confirms the shell/controller and workspace modules are connected through shared state/types; Graphify is treated as supporting evidence and was checked against source and tests.
+- **KNOWN LIMITATION:** Graphify is code-only and does not model saved HTML visual assets, CSS pixel geometry or browser hit-testing. Those require direct asset inspection and Playwright/manual browser gates.
+
+## Target interaction contract
+
+Every screen must follow the same readable composition:
+
+```text
+persistent header / resources / campaign status
+→ stable primary navigation and contextual breadcrumb
+→ left context and selection
+→ central task surface
+→ right actions, queue or detail
+→ explicit return/next action
+```
+
+Required behavior:
+
+- top-level navigation remains available without hiding the current route;
+- the active planet and current coordinates remain visible where they affect the task;
+- nested tabs are visible, labelled and never clipped behind a private horizontal scroll;
+- one primary action is visually dominant per panel, with destructive actions separated;
+- overlays and dialogs stay within the viewport and have an obvious close/escape path;
+- keyboard focus, `aria-current`/`aria-selected`, headings and status announcements remain valid;
+- no formula, simulation, persistence schema, save format, bot behavior or command semantics change.
 
 ## Work items
 
-### NEM-01-UNIVERSE-EMPIRE-SCALING
+### UI-PARITY-01-SHELL-PLANET
 
-**Purpose and player-visible outcome:** a fresh campaign starts with 1 player empire and 100 autonomous bot empires distributed deterministically across the materialized universe; existing v19 saves keep loading unchanged with their historical three-bot world.
+**Outcome:** the shell and all planet/development surfaces feel like one coherent command interface.
 
-**Expected paths:** `src/simulation/types.ts`, `src/simulation/createInitialGameState.ts`, `src/simulation/universe/model.ts`, `src/simulation/galaxy/generateGalaxy.ts`, `src/storage/migrateGameStateV20.ts` (new), `src/storage/saveFormat.ts`, reducer/ranking/reports/PvE viewer branches keyed on fixed bot ids, `tests/simulation/*` fixtures.
+**Expected paths:** `src/main.ts`, `index.html`, `src/ui/globalHud.ts`, `src/ui/globalHudViewModel.ts`, `src/ui/appShellController.ts`, `src/ui/shellContextPanel.ts`, `src/ui/planetScreen.ts`, `src/ui/developmentWorkspaceRouter.ts`, `src/ui/planetViewModel.ts`, `src/styles/designTokens.css`, `src/styles/globalHud.css`, `src/styles/navigationHierarchy.css`, `src/styles/planet.css`, `src/styles/planetWorkspace.css`, `src/styles/planetZones.css`, `src/styles/developmentWorkspace.css`, `src/styles/developmentPresentation.css`, `src/styles/uiPrimitives.css`.
 
-**Contract:**
+**Verified current gap:** the route and three-zone mechanics exist, but the shell must be visually re-composed around a persistent Nemexia-like header, planet switcher, hot-links, queue/status strip, left context and central/right task surfaces.
 
-- schema v20 adds `campaignSettings.botEmpireCount` (uint32, default 3 for migrated saves, 100 for fresh prototype campaigns);
-- deterministic, seed-derived generation of 100 bot empires and their home worlds (deterministic sparsification of the preset; all preset galaxies materialized);
-- every fixed `empireId` branch (createInitialGameState, universe model, generateGalaxy, reducer, ranking, reports, pveOperationsPlannerLegacy viewer remap) becomes data-driven over `state.empires`;
-- migration v19→v20 keeps old saves on their three-bot layout and stamps `botEmpireCount = 3`;
-- checksum, replay and save-format gates updated; save v6 format versioning rules preserved.
+**Acceptance:** planet overview, resource, industry, military, shipyard, defense and upgrades are reachable from the same visible shell; construction content stays inside the viewport at compact and mobile widths; no duplicate or hidden route content is visible; visual screenshots and axe checks pass.
 
-**Acceptance gate:** `npm run check` green including migration tests; a fresh v20 campaign with 100 bots loads, saves, reloads and replays deterministically; v19 fixtures still pass.
+### UI-PARITY-02-MAPS-FLEETS-OPERATIONS
 
-### NEM-02-BOT-SCHEDULER-BATCHING-PERF
+**Outcome:** Universe → Galaxy → Solar System, fleets and operations use clear map/workspace compositions with discoverable actions.
 
-**Purpose and player-visible outcome:** the campaign tick and catch-up stay inside their budgets with 101 empires; the player does not feel the 100 bots.
+**Expected paths:** `src/ui/spaceMapNavigation.ts`, `src/ui/spaceMapViewModel.ts`, `src/ui/spaceMapOverlayViewModel.ts`, `src/ui/spaceObjectsPanel.ts`, `src/ui/fleetOperationsWorkspace.ts`, `src/ui/operationsWorkspace.ts`, `src/ui/galaxyIntelPanel.ts`, `src/ui/expeditionPanel.ts`, `src/ui/logisticsRoutesPanel.ts`, `src/ui/arenaOperationsPanel.ts`, `src/ui/endgameOperationsPanel.ts`, `src/styles/spaceMap.css`, `src/styles/spaceObjects.css`, `src/styles/operationsWorkspace.css`, `src/styles/operationsRoutes.css`, `src/styles/missions.css`, `src/styles/galaxyIntel.css`, `src/styles/logistics.css`, `src/styles/arenaOperations.css`, `src/styles/endgameOperations.css`.
 
-**Expected paths:** `src/simulation/bots/scheduler.ts` (or the current scheduler module set), `src/simulation/campaign/time.ts`, `src/simulation/intelligence/*`, `src/simulation/pve/pveOperationsView.ts`, `tests/audit/*`, CI workflow.
+**Verified current gap:** navigation and domain modules exist, but the target composition needs a dominant map/canvas, stable left selection/context, right action/detail rail, clear breadcrumbs/coordinates and consistent route tabs across every nested mode.
 
-**Contract:**
+**Acceptance:** all three map levels, four fleet modes and nine operation modes open through visible route controls; selected object/fleet/mission context is not lost; map controls, filters and action panels do not overlap or clip; responsive and keyboard gates pass.
 
-- batched bot decisions (K=16 profiles per operation per `docs/30` D-3) with stable dedup keys and index/cache optimizations per D-4;
-- history/scaling limits for bot-generated reports and intelligence so save size stays bounded;
-- duplicate summary paths deduplicated;
-- performance gates in CI: organic fresh→terminal with 100 bots, catch-up 7d × worldSpeed 10 within 2 minutes, save-size guard ≤ 8 MB.
+### UI-PARITY-03-DEVELOPMENT-DATA
 
-**Acceptance gate:** the 100-bot organic gate is green in CI; catch-up and save-size gates green; `npm run check` and the full Browser E2E suite green; no formula, combat or personality changes.
+**Outcome:** science, command, reports, ranking and system screens share the same polished information architecture.
+
+**Expected paths:** `src/ui/researchScreen.ts`, `src/ui/commandWorkspace.ts`, `src/ui/commandDoctrineScreen.ts`, `src/ui/fleetDoctrineScreen.ts`, `src/ui/commandRankingScreen.ts`, `src/ui/reportsWorkspace.ts`, `src/ui/missionReportsPanel.ts`, `src/ui/empireOverview.ts`, `src/ui/saveManager.ts`, `src/ui/systemWorkspace.ts`, `src/styles/research.css`, `src/styles/commandSystemRoutes.css`, `src/styles/commandDoctrine.css`, `src/styles/commandRanking.css`, `src/styles/missionReports.css`, `src/styles/saveManager.css`, `src/styles/empire.css`.
+
+**Verified current gap:** the screens expose their data and route state, but their visual hierarchy, detail/queue relationships, tab semantics and empty/loading/error states need one shared presentation contract.
+
+**Acceptance:** research tree/detail/queue, command modes, all report filters, ranking and both system modes have a clear primary surface and readable secondary panels; save/load error and disabled states remain player-visible; no data or persistence behavior changes.
+
+### UI-PARITY-04-ASSETS-CLEANUP-QA
+
+**Outcome:** the complete visual pass is consistent, asset-backed and regression-safe across every registered route.
+
+**Expected paths:** `src/assets/**`, `src/styles/aegisAssets.css`, `src/styles/factionTheme.css`, `src/styles/main.css`, `src/styles/uiPrimitives.css`, `src/ui/designSystemSandbox.ts`, `tests/e2e/navigationUsability.spec.ts`, `tests/e2e/planetCommandCentre.spec.ts`, `tests/e2e/universeNavigation.spec.ts`, `tests/e2e/workspaceResponsiveGate.spec.ts`, `tests/e2e/appShellFullGate.spec.ts`, `tests/e2e/qualityGates.spec.ts`, asset audit scripts and the relevant snapshot directories.
+
+**Verified current gap:** original assets and visual baselines exist, but the full route matrix must be checked together after the three implementation packages. Unmounted legacy UI modules are candidates for cleanup only after their consumers are proven absent.
+
+**Acceptance:** all registered route families and nested modes pass the route matrix at desktop, compact and mobile widths; no document or workspace horizontal overflow; no visible tab/action outside the viewport; no unhandled browser errors; lint, typecheck, build, unit, accessibility and visual gates pass.
+
+## Asset and provenance contract
+
+- Prefer existing Stellar assets and runtime asset registries before generating new art.
+- New ImageGen assets are allowed only as original Stellar-owned substitutes for missing backgrounds, zone illustrations, map surfaces or decorative art; they must be reviewed for readability, licensing/provenance and file size.
+- SVG/CSS-native icons remain preferred for controls, status, navigation and focus states.
+- Saved Nemexia files are references for layout and interaction only; they are not runtime dependencies.
 
 ## Required validation
 
-- `npm run check` (assets:check, lint, typecheck, vitest, build) including the performance test locally;
-- new/updated migration, scheduler, checksum and performance tests;
-- full Browser E2E suite plus production Pages smoke on the exact final implementation head.
+- `npm run assets:check`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run test -- --maxWorkers=1`
+- `npm run build`
+- focused UI unit tests for each changed router/view model
+- full Playwright route matrix with one worker at desktop, compact and mobile viewports
+- `navigationUsability`, `planetCommandCentre`, `universeNavigation`, `workspaceResponsiveGate`, `appShellFullGate`, accessibility and visual baseline tests
+- manual screenshot review of every top-level route and every nested mode; record any intentional baseline changes
 
 ## Explicit non-goals
 
-- no bot personality generation, traits, memory or diplomacy (Phase 2+);
-- no new player-facing content, UI redesigns or alliance mechanics;
-- no changes to combat formulas, economy curves or save-authority semantics beyond the v20 fields.
+- no formulas, economy values, simulation rules, bot scheduler, combat, save schema or migration changes;
+- no direct Nemexia HTML/CSS/JS/remote asset or branding copy;
+- no new social/diplomacy mechanics in the visual batch;
+- no removal of an existing domain module until Graphify/source search and tests prove it is unmounted and unused;
+- no hidden horizontal scrolling as a substitute for layout work.
 
 ## Batch decision
 
-Heavy two-PR batch executed strictly in order NEM-01 → NEM-02. A material scope change requires a replacement audit before implementation expands.
+Medium four-PR batch executed in strict order: UI-PARITY-01 → UI-PARITY-02 → UI-PARITY-03 → UI-PARITY-04. Each implementation PR must cite this Audit PR and its stable work-item ID. The last PR archives this audit, updates batch history/status/continuation guidance and validates the combined route matrix.

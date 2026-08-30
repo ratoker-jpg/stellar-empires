@@ -1,25 +1,25 @@
 {
-  "statusVersion": 103,
+  "statusVersion": 104,
   "updatedAt": "2026-08-30",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 194,
-  "lastMergeSha": "7ad1046dfad7a34b712354765b6f9ebbcd41ed9e",
-  "verifiedMainBaseline": "PR #194 merge / fresh main for NEMEXIA-PROTO-SIM-SCALING NEM-02 implementation",
+  "lastMergedPr": 195,
+  "lastMergeSha": "15c846cb05d21e08415ce5f69e3134f8f8ec4b18",
+  "verifiedMainBaseline": "PR #195 merge / owner-prioritized NEMEXIA-PROTO-UI-PARITY audit baseline",
   "programPlan": "docs/30-nemexia-full-prototype-program.md",
   "runtimeBaselinePr": 185,
   "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
   "activePr": null,
-  "activePrKind": "implementation-sequential",
-  "activeWorkItem": "NEMEXIA-PROTO-SIM-SCALING",
-  "activeBranch": null,
+  "activePrKind": "audit-pending",
+  "activeWorkItem": "NEMEXIA-PROTO-UI-PARITY",
+  "activeBranch": "audit/nemexia-ui-parity",
   "nextPrAfterActive": null,
-  "nextPrKind": "implementation-sequential",
-  "nextWorkItem": "NEM-02-BOT-SCHEDULER-BATCHING-PERF",
-  "currentMilestone": "NEMEXIA-PROTO-SIM-SCALING / NEM-01 merged (PR #194), NEM-02 next",
+  "nextPrKind": "audit-review",
+  "nextWorkItem": "UI-PARITY-01-SHELL-PLANET",
+  "currentMilestone": "NEMEXIA-PROTO-UI-PARITY / audit prepared, implementation blocked until audit merge",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
@@ -48,41 +48,57 @@
     "hasPr4": false
   },
   "currentAuditState": {
-    "workItem": "NEMEXIA-PROTO-SIM-SCALING",
-    "auditPr": 193,
-    "startingMain": "2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3",
-    "mergeSha": "2c6160bbe2611b26a309ac5f7b4c8519bc7ecd16",
-    "status": "merged",
+    "workItem": "NEMEXIA-PROTO-UI-PARITY",
+    "auditPr": null,
+    "startingMain": "15c846cb05d21e08415ce5f69e3134f8f8ec4b18",
+    "mergeSha": null,
+    "status": "prepared-local",
     "archive": null,
     "implementationAuthorized": true,
-    "acceptedBatchId": "NEMEXIA-PROTO-SIM-SCALING",
-    "acceptedImplementationCount": 2,
-    "complexity": "heavy",
+    "acceptedBatchId": "NEMEXIA-PROTO-UI-PARITY",
+    "acceptedImplementationCount": 4,
+    "complexity": "medium",
     "criticalUnknownsResolved": true,
     "criticalUnknowns": []
   },
   "proposedBatch": {
-    "id": "NEMEXIA-PROTO-SIM-SCALING",
-    "status": "audit-merged-implementation-in-progress",
-    "complexity": "heavy",
-    "implementationAuthorized": true,
+    "id": "NEMEXIA-PROTO-UI-PARITY",
+    "status": "audit-pending-review",
+    "complexity": "medium",
+    "implementationAuthorized": false,
     "archive": null,
     "workItems": [
       {
-        "id": "NEM-01-UNIVERSE-EMPIRE-SCALING",
+        "id": "UI-PARITY-01-SHELL-PLANET",
         "order": 1,
-        "pr": 194,
-        "status": "merged",
-        "mergeSha": "7ad1046dfad7a34b712354765b6f9ebbcd41ed9e",
-        "purpose": "every new production campaign spawns 1 player + 100 deterministic personality bot empires, schema v20"
+        "pr": null,
+        "status": "blocked-until-audit-merge",
+        "mergeSha": null,
+        "purpose": "Nemexia-style persistent shell and complete planet/development visual composition"
       },
       {
-        "id": "NEM-02-BOT-SCHEDULER-BATCHING-PERF",
+        "id": "UI-PARITY-02-MAPS-FLEETS-OPERATIONS",
         "order": 2,
         "pr": null,
-        "status": "pending-nem-01",
+        "status": "blocked-until-ui-01",
         "mergeSha": null,
-        "purpose": "bot scheduler batching and perf hardening so the 101-empire world keeps interactive tick budgets"
+        "purpose": "clear map, fleet and operations workspaces with discoverable actions"
+      },
+      {
+        "id": "UI-PARITY-03-DEVELOPMENT-DATA",
+        "order": 3,
+        "pr": null,
+        "status": "blocked-until-ui-02",
+        "mergeSha": null,
+        "purpose": "science, command, reports, ranking and system information architecture"
+      },
+      {
+        "id": "UI-PARITY-04-ASSETS-CLEANUP-QA",
+        "order": 4,
+        "pr": null,
+        "status": "blocked-until-ui-03",
+        "mergeSha": null,
+        "purpose": "original assets, route-wide cleanup, visual baselines and final QA"
       }
     ],
     "stateSchema": 20,
@@ -168,5 +184,5 @@
     "docs/17-continuation-guide.md",
     "actual GitHub main and PR #187 state"
   ],
-  "nextAction": "Create NEM-02-BOT-SCHEDULER-BATCHING-PERF implementation PR from fresh main at 7ad1046d, citing Audit PR #193 and the stable work-item ID. NEM-01 (#194) merged: schema v20, every new production campaign spawns 1 player + 100 bot empires."
+  "nextAction": "Review and publish the NEMEXIA-PROTO-UI-PARITY docs-only Audit from main at 15c846c. After its merge, create UI-PARITY-01-SHELL-PLANET from fresh main; NEM-02 remains deferred until the UI batch closes."
 }
