@@ -6,6 +6,7 @@
 **Audit baseline:** `main` at `175e52c8b2b8752c1f9a272261867d1c0b213513` (PR #196 merge)
 **Deferred batch:** NEMEXIA-PROTO-SIM-SCALING / NEM-02, preserved at `docs/audits/deferred/nemexia-proto-sim-scaling.md`
 **Active work item:** NEMEXIA-PROTO-UI-PARITY-REMOTE-DELIVERY
+**Remote PR:** [#197](https://github.com/ratoker-jpg/stellar-empires/pull/197)
 
 ## Last completed atomic action
 
@@ -26,7 +27,7 @@
 
 ## Exact next action
 
-Publish the review branch, open the implementation PR against `main`, wait for its available checks and merge only when no blocking result remains.
+Wait for the available checks on PR #197 and merge it into `main` only when no blocking result remains.
 
 ## Blockers and decisions
 

@@ -12,7 +12,7 @@
   "programPlan": "docs/30-nemexia-full-prototype-program.md",
   "runtimeBaselinePr": 185,
   "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-  "activePr": null,
+  "activePr": 197,
   "activePrKind": "implementation-remote-delivery",
   "activeWorkItem": "NEMEXIA-PROTO-UI-PARITY-REMOTE-DELIVERY",
   "activeBranch": "feat/ui-parity-04-assets-qa",

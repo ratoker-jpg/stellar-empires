@@ -14,7 +14,8 @@ The authorized implementation branch is `feat/ui-parity-04-assets-qa`. It contai
 NEMEXIA-PROTO-UI-PARITY
 baseline main 175e52c8b2b8752c1f9a272261867d1c0b213513 (PR #196)
 branch feat/ui-parity-04-assets-qa
-status: publish branch, open implementation PR, await checks, then merge
+PR #197 https://github.com/ratoker-jpg/stellar-empires/pull/197
+status: await checks, then merge
 ```
 
 The implementation keeps formulas, state transitions and persistence unchanged. It rebuilds command navigation, the planet command centre, map context panels and the visual treatment of the primary routes using Stellar-owned assets only. The Nemexia saved pages at `D:\\Xuina\\WHAT\\saved_pages` remain visual and interaction references only; they do not authorize copying external code, branding or images.
