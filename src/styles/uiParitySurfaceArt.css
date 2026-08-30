@@ -1,0 +1,211 @@
+/* UI-PARITY-07 — shared command-surface treatment for every primary route.
+   This is intentionally presentation-only: each screen keeps its own controls,
+   state and keyboard contract, but no route falls back to plain boxed forms. */
+
+html body .operations-route-header,
+html body .command-route-header,
+html body .research-screen-summary,
+html body .mission-reports-summary,
+html body .save-manager-campaign,
+html body .command-profile-hero {
+  position: relative;
+  overflow: hidden;
+  border-color: rgb(85 216 255 / 39%);
+  border-radius: 14px 3px 14px 3px;
+  background:
+    linear-gradient(100deg, rgb(85 216 255 / 14%), transparent 48%),
+    linear-gradient(180deg, rgb(7 30 42 / 97%), rgb(2 12 19 / 98%));
+  box-shadow: inset 0 1px rgb(255 255 255 / 7%), 0 14px 28px rgb(0 0 0 / 22%);
+}
+
+html body .operations-route-header::after,
+html body .command-route-header::after,
+html body .research-screen-summary::after,
+html body .mission-reports-summary::after,
+html body .save-manager-campaign::after,
+html body .command-profile-hero::after {
+  position: absolute;
+  right: -38px;
+  bottom: -52px;
+  width: 148px;
+  height: 148px;
+  border: 1px solid rgb(129 231 255 / 22%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 23px rgb(85 216 255 / 3%), 0 0 38px rgb(85 216 255 / 11%);
+  content: "";
+  pointer-events: none;
+}
+
+html body .operations-route-header h1,
+html body .command-route-header h1,
+html body .research-screen-summary h1,
+html body .mission-reports-summary h1,
+html body .command-profile-hero h1 {
+  letter-spacing: 0.09em;
+  text-shadow: 0 0 20px rgb(106 226 255 / 20%);
+}
+
+html body .operations-route-tabs,
+html body .command-route-tabs {
+  gap: 8px;
+  padding: 10px 18px;
+  border-bottom-color: rgb(85 216 255 / 30%);
+  background: linear-gradient(180deg, rgb(5 22 32 / 96%), rgb(2 12 19 / 92%));
+}
+
+html body .operations-route-tabs button,
+html body .command-route-tabs button {
+  min-height: 40px;
+  border-color: rgb(85 216 255 / 22%);
+  border-radius: 9px 2px 9px 2px;
+  background:
+    linear-gradient(145deg, rgb(85 216 255 / 8%), transparent 52%),
+    rgb(2 14 21 / 92%);
+  font-weight: 770;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+html body .operations-route-tabs button[aria-selected="true"],
+html body .command-route-tabs button[aria-selected="true"] {
+  border-color: rgb(126 232 255 / 76%);
+  background:
+    radial-gradient(circle at 50% 0, rgb(85 216 255 / 26%), transparent 78%),
+    linear-gradient(180deg, rgb(8 52 67 / 96%), rgb(3 23 32 / 98%));
+  box-shadow: inset 0 -3px #64dfff, 0 0 18px rgb(85 216 255 / 13%);
+}
+
+html body .operations-summary article,
+html body .research-card,
+html body .empire-colony-card,
+html body .command-progress article,
+html body .command-doctrine-cards article,
+html body .commander-ship-card,
+html body .fleet-doctrine-summary article,
+html body .fleet-doctrine-skills article,
+html body .mission-report-card,
+html body .mission-reports-comparison article,
+html body .save-slot,
+html body .system-settings-card,
+html body .system-campaign-profile,
+html body .operations-launcher,
+html body .mission-create,
+html body .mission-fleet-card,
+html body .space-object-card,
+html body .world-event-card,
+html body .galaxy-intel-card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgb(85 216 255 / 25%);
+  border-radius: 11px 3px 11px 3px;
+  background:
+    linear-gradient(145deg, rgb(85 216 255 / 7%), transparent 52%),
+    linear-gradient(180deg, rgb(5 24 34 / 96%), rgb(2 11 18 / 97%));
+  box-shadow: inset 0 1px rgb(255 255 255 / 4%), 0 9px 18px rgb(0 0 0 / 13%);
+}
+
+html body .operations-summary article::before,
+html body .research-card::before,
+html body .empire-colony-card::before,
+html body .command-progress article::before,
+html body .command-doctrine-cards article::before,
+html body .commander-ship-card::before,
+html body .fleet-doctrine-summary article::before,
+html body .fleet-doctrine-skills article::before,
+html body .mission-report-card::before,
+html body .save-slot::before,
+html body .system-settings-card::before,
+html body .operations-launcher::before,
+html body .mission-create::before,
+html body .mission-fleet-card::before,
+html body .space-object-card::before,
+html body .world-event-card::before,
+html body .galaxy-intel-card::before {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  width: 42%;
+  height: 2px;
+  background: linear-gradient(90deg, #69e4ff, transparent);
+  content: "";
+  opacity: 0.66;
+}
+
+html body .operations-summary article:hover,
+html body .research-card:hover,
+html body .empire-colony-card:hover,
+html body .command-progress article:hover,
+html body .command-doctrine-cards article:hover,
+html body .commander-ship-card:hover,
+html body .fleet-doctrine-summary article:hover,
+html body .fleet-doctrine-skills article:hover,
+html body .mission-report-card:hover,
+html body .save-slot:hover,
+html body .operations-launcher:hover,
+html body .mission-fleet-card:hover,
+html body .space-object-card:hover,
+html body .world-event-card:hover,
+html body .galaxy-intel-card:hover {
+  border-color: rgb(123 231 255 / 72%);
+  box-shadow: 0 0 24px rgb(85 216 255 / 15%), inset 0 1px rgb(255 255 255 / 7%);
+}
+
+html body .operations-summary strong,
+html body .research-card h2,
+html body .empire-colony-card h2,
+html body .command-progress strong,
+html body .command-doctrine-cards h2,
+html body .commander-ship-card h2,
+html body .fleet-doctrine-summary strong,
+html body .fleet-doctrine-skills h2,
+html body .mission-report-card h2,
+html body .save-slot h2,
+html body .system-settings-card h2 {
+  color: var(--se-text-primary);
+  letter-spacing: 0.035em;
+}
+
+html body .research-screen-queue,
+html body .mission-reports-controls,
+html body .incoming-intelligence-section,
+html body .save-manager-controls,
+html body .save-manager-confirm {
+  border-color: rgb(85 216 255 / 29%);
+  border-radius: 12px 3px 12px 3px;
+  background:
+    linear-gradient(100deg, rgb(85 216 255 / 8%), transparent 42%),
+    rgb(2 13 20 / 96%);
+}
+
+html body .research-action,
+html body .primary-button,
+html body .system-settings-card button,
+html body .save-manager-controls button,
+html body .save-manager-confirm button {
+  min-height: 34px;
+  border-color: rgb(116 228 255 / 54%);
+  border-radius: 8px 2px 8px 2px;
+  background: linear-gradient(180deg, rgb(17 78 99 / 94%), rgb(3 34 48 / 98%));
+  box-shadow: inset 0 1px rgb(255 255 255 / 9%);
+  font-weight: 760;
+  letter-spacing: 0.045em;
+}
+
+html body .research-action:hover:not(:disabled),
+html body .primary-button:hover:not(:disabled),
+html body .system-settings-card button:hover:not(:disabled),
+html body .save-manager-controls button:hover:not(:disabled),
+html body .save-manager-confirm button:hover:not(:disabled) {
+  border-color: rgb(172 243 255 / 88%);
+  box-shadow: 0 0 20px rgb(85 216 255 / 19%), inset 0 1px rgb(255 255 255 / 14%);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+  html body .operations-route-header,
+  html body .command-route-header { border-radius: 10px 2px 10px 2px; }
+  html body .operations-route-tabs,
+  html body .command-route-tabs { padding: 8px; gap: 5px; }
+  html body .operations-route-tabs button,
+  html body .command-route-tabs button { min-height: 35px; padding-inline: 9px; font-size: .56rem; }
+}

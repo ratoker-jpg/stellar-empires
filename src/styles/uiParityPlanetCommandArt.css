@@ -1,0 +1,533 @@
+/* UI-PARITY-06 — planet command centre.
+   The existing tabs, queue and building actions remain the source of truth.
+   This layer makes the three playable zones immediately legible, with the
+   active colony as the centrepiece instead of a generic dashboard. */
+
+html body .planet-view {
+  gap: 11px;
+  padding: 14px;
+  background:
+    radial-gradient(circle at 50% 30%, rgb(78 207 255 / 12%), transparent 31%),
+    radial-gradient(circle at 88% 7%, rgb(255 189 76 / 8%), transparent 24%),
+    linear-gradient(180deg, #061824 0%, #02080e 78%);
+}
+
+html body .planet-header {
+  min-height: 98px;
+  border-color: rgb(96 220 255 / 42%);
+  border-radius: 15px 4px 15px 4px;
+  background:
+    linear-gradient(105deg, rgb(85 216 255 / 18%), transparent 42%),
+    linear-gradient(180deg, rgb(255 255 255 / 5%), transparent 76%),
+    linear-gradient(90deg, #071e2b, #06121b 72%, #081621);
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 8%),
+    0 16px 34px rgb(0 0 0 / 23%);
+}
+
+html body .planet-header::before {
+  position: absolute;
+  top: -74px;
+  left: 38%;
+  width: 190px;
+  height: 190px;
+  border: 1px solid rgb(104 224 255 / 14%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 22px rgb(104 224 255 / 3%), 0 0 50px rgb(85 216 255 / 11%);
+  content: "";
+  pointer-events: none;
+}
+
+html body .planet-header__identity,
+html body .planet-header-controls {
+  position: relative;
+  z-index: 1;
+}
+
+html body .planet-header h1 {
+  font-size: clamp(1.55rem, 2.8vw, 2.7rem);
+  letter-spacing: 0.075em;
+  text-shadow: 0 0 18px rgb(129 226 255 / 28%);
+}
+
+html body .planet-coordinate-chip {
+  border-radius: 3px 12px 3px 12px;
+  box-shadow: inset 0 0 18px rgb(85 216 255 / 10%);
+}
+
+html body .planet-mode-tabs {
+  grid-template-columns: 1.18fr repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  min-height: 72px;
+  padding: 0 6px;
+}
+
+html body .planet-mode-tab {
+  min-height: 70px;
+  gap: 10px;
+  padding: 9px 12px;
+  border-color: rgb(85 216 255 / 24%);
+  border-radius: 12px 3px 12px 3px;
+  background:
+    linear-gradient(145deg, rgb(90 220 255 / 10%), transparent 42%),
+    linear-gradient(180deg, rgb(6 26 38 / 96%), rgb(2 11 17 / 97%));
+}
+
+html body .planet-mode-tab::before {
+  position: relative;
+  width: 39px;
+  height: 39px;
+  flex-basis: 39px;
+  border-color: rgb(117 229 255 / 66%);
+  background: radial-gradient(circle, rgb(85 216 255 / 18%), rgb(2 12 19 / 94%) 66%);
+  box-shadow: inset 0 0 14px rgb(85 216 255 / 16%), 0 0 14px rgb(85 216 255 / 9%);
+  font-size: 0.98rem;
+}
+
+html body .planet-mode-tab:nth-child(2)::before {
+  color: #71e6ba;
+  border-color: rgb(113 230 186 / 72%);
+  background: radial-gradient(circle, rgb(78 216 159 / 22%), rgb(2 17 18 / 94%) 66%);
+}
+
+html body .planet-mode-tab:nth-child(3)::before {
+  color: #ffc66f;
+  border-color: rgb(255 198 111 / 74%);
+  background: radial-gradient(circle, rgb(255 176 76 / 22%), rgb(22 13 5 / 94%) 66%);
+}
+
+html body .planet-mode-tab:nth-child(4)::before {
+  color: #ff8389;
+  border-color: rgb(255 131 137 / 74%);
+  background: radial-gradient(circle, rgb(255 100 109 / 22%), rgb(23 5 9 / 94%) 66%);
+}
+
+html body .planet-mode-tab span {
+  font-size: 0.69rem;
+  letter-spacing: 0.075em;
+}
+
+html body .planet-mode-tab strong {
+  padding: 3px 5px;
+  border: 1px solid rgb(169 238 255 / 22%);
+  border-radius: 5px;
+  background: rgb(0 0 0 / 23%);
+  font-size: 0.62rem;
+}
+
+html body .planet-mode-tab[aria-selected="true"] {
+  border-color: rgb(126 232 255 / 88%);
+  background:
+    radial-gradient(circle at 12% 18%, rgb(85 216 255 / 31%), transparent 43%),
+    linear-gradient(180deg, rgb(9 54 70 / 98%), rgb(3 22 31 / 98%));
+  box-shadow: 0 0 24px rgb(85 216 255 / 17%), inset 0 -3px #67ddff;
+}
+
+html body .planet-mode-tab[aria-selected="true"]::after {
+  right: 8px;
+  left: 8px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #6de6ff, transparent);
+}
+
+html body .planet-queue-bar {
+  min-height: 74px;
+  border-color: rgb(85 216 255 / 34%);
+  border-radius: 12px 3px 12px 3px;
+  background:
+    linear-gradient(90deg, rgb(85 216 255 / 12%), transparent 33%),
+    linear-gradient(180deg, #071a26, #030c13);
+}
+
+html body .planet-queue-heading::before {
+  display: inline-grid;
+  width: 25px;
+  height: 25px;
+  margin-right: 8px;
+  border: 1px solid rgb(112 228 255 / 58%);
+  border-radius: 50%;
+  color: #74e5ff;
+  content: "▣";
+  place-items: center;
+}
+
+html body .planet-queue-slot {
+  position: relative;
+  min-height: 49px;
+  border-radius: 7px 2px 7px 2px;
+  background: linear-gradient(145deg, rgb(105 227 255 / 8%), transparent 50%), rgb(1 11 17 / 90%);
+}
+
+html body .planet-workspace {
+  grid-template-columns: 250px minmax(420px, 1fr) 306px;
+  gap: 11px;
+}
+
+html body .planet-context-panel,
+html body .planet-stage,
+html body .planet-details-card {
+  border-color: rgb(85 216 255 / 29%);
+  border-radius: 14px 3px 14px 3px;
+}
+
+html body .planet-context-panel,
+html body .planet-details-card {
+  background:
+    linear-gradient(145deg, rgb(85 216 255 / 9%), transparent 38%),
+    linear-gradient(180deg, rgb(5 24 34 / 98%), rgb(2 10 16 / 98%));
+}
+
+html body .planet-context-panel::before,
+html body .planet-details-card::before {
+  display: block;
+  height: 2px;
+  margin: -2px 0 8px;
+  background: linear-gradient(90deg, var(--se-accent), transparent 72%);
+  content: "";
+}
+
+html body .planet-context-stat {
+  min-height: 34px;
+  border-left: 2px solid rgb(85 216 255 / 22%);
+  background: rgb(1 12 19 / 82%);
+}
+
+html body .planet-stage {
+  background:
+    linear-gradient(rgb(126 226 255 / 4%) 1px, transparent 1px) 0 0 / 34px 34px,
+    linear-gradient(90deg, rgb(126 226 255 / 4%) 1px, transparent 1px) 0 0 / 34px 34px,
+    radial-gradient(circle at 50% 47%, rgb(64 197 255 / 19%), transparent 35%),
+    radial-gradient(circle at 50% 50%, #0a2230, #02070b 72%);
+}
+
+html body .planet-overview-stage {
+  grid-template-rows: minmax(268px, 1fr) auto auto;
+  gap: 12px;
+  padding: 18px;
+}
+
+html body .planet-overview-hero {
+  grid-template-columns: minmax(280px, 1.08fr) minmax(250px, 0.92fr);
+  gap: 20px;
+}
+
+html body .planet-visual {
+  min-height: 250px;
+  isolation: isolate;
+}
+
+html body .planet-visual::before,
+html body .planet-visual::after {
+  position: absolute;
+  z-index: -1;
+  border: 1px solid rgb(106 223 255 / 26%);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+html body .planet-visual::before {
+  width: min(90%, 390px);
+  aspect-ratio: 1;
+  border-style: dashed;
+  box-shadow: 0 0 42px rgb(65 198 255 / 16%);
+}
+
+html body .planet-visual::after {
+  width: min(72%, 304px);
+  aspect-ratio: 1;
+  border-color: rgb(182 244 255 / 18%);
+  transform: rotate(36deg) scaleY(.76);
+}
+
+html body .planet-orbit {
+  width: min(98%, 408px);
+  border-color: rgb(104 224 255 / 48%);
+  box-shadow: 0 0 28px rgb(79 212 255 / 25%), inset 0 0 17px rgb(72 193 255 / 10%);
+}
+
+html body .planet-orbit::before,
+html body .planet-orbit::after {
+  width: 9px;
+  height: 9px;
+  background: #92edff;
+  box-shadow: 0 0 15px #78e8ff;
+}
+
+html body .planet-sphere {
+  width: clamp(204px, 22vw, 308px);
+  border-color: rgb(175 241 255 / 82%);
+  background-image:
+    radial-gradient(circle at 27% 23%, rgb(255 255 255 / 58%), transparent 8%),
+    radial-gradient(circle at 36% 35%, rgb(73 220 255 / 48%), transparent 27%),
+    linear-gradient(135deg, rgb(35 169 243 / 22%), rgb(2 9 15 / 54%)),
+    url('/assets/generated/universe/planets/planet-11.webp');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover, cover, cover, 112%;
+  box-shadow:
+    -28px 23px 50px rgb(0 0 0 / 72%),
+    0 0 64px rgb(72 209 255 / 42%),
+    inset -32px -24px 53px rgb(0 0 0 / 73%),
+    inset 13px 8px 26px rgb(255 255 255 / 19%);
+}
+
+html body .planet-sphere::after {
+  position: absolute;
+  inset: 5%;
+  border: 1px solid rgb(199 247 255 / 22%);
+  border-radius: 50%;
+  content: "";
+  opacity: 0.85;
+}
+
+html body .planet-visual[data-faction="synod"] .planet-sphere {
+  background-image:
+    radial-gradient(circle at 27% 23%, rgb(236 255 242 / 48%), transparent 8%),
+    radial-gradient(circle at 36% 35%, rgb(92 229 154 / 42%), transparent 27%),
+    linear-gradient(135deg, rgb(42 180 104 / 24%), rgb(2 9 9 / 56%)),
+    url('/assets/generated/universe/planets/planet-09.webp');
+}
+
+html body .planet-visual[data-faction="veyra"] .planet-sphere {
+  background-image:
+    radial-gradient(circle at 27% 23%, rgb(255 231 231 / 48%), transparent 8%),
+    radial-gradient(circle at 36% 35%, rgb(255 102 107 / 42%), transparent 27%),
+    linear-gradient(135deg, rgb(182 45 58 / 28%), rgb(16 2 5 / 59%)),
+    url('/assets/generated/universe/planets/planet-19.webp');
+}
+
+html body .planet-overview-copy {
+  position: relative;
+  align-self: center;
+  padding: 18px 18px 18px 26px;
+  border-left: 2px solid rgb(102 226 255 / 62%);
+  background: linear-gradient(90deg, rgb(85 216 255 / 10%), transparent 72%);
+}
+
+html body .planet-overview-copy::after {
+  position: absolute;
+  top: 9px;
+  right: 0;
+  width: 42px;
+  height: 42px;
+  border-top: 1px solid rgb(152 239 255 / 46%);
+  border-right: 1px solid rgb(152 239 255 / 46%);
+  content: "";
+}
+
+html body .planet-overview-copy h2 {
+  font-size: clamp(2.1rem, 4vw, 4.25rem);
+  letter-spacing: 0.085em;
+  text-shadow: 0 0 24px rgb(113 225 255 / 24%);
+}
+
+html body .planet-overview-copy > p:last-child {
+  max-width: 39ch;
+  font-size: 0.76rem;
+}
+
+html body .planet-zone-markers {
+  gap: 10px;
+}
+
+html body .planet-zone-marker {
+  position: relative;
+  min-height: 62px;
+  padding: 10px 13px 10px 55px;
+  overflow: hidden;
+  border-color: rgb(85 216 255 / 28%);
+  border-radius: 10px 3px 10px 3px;
+  background:
+    linear-gradient(145deg, rgb(85 216 255 / 8%), transparent 51%),
+    rgb(2 14 22 / 92%);
+}
+
+html body .planet-zone-marker::before {
+  position: absolute;
+  top: 50%;
+  left: 13px;
+  display: grid;
+  width: 29px;
+  height: 29px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: #6fe5ff;
+  content: "◇";
+  font-size: 0.83rem;
+  place-items: center;
+  transform: translateY(-50%);
+}
+
+html body .planet-zone-marker--industry::before { color: #ffc66f; content: "▥"; }
+html body .planet-zone-marker--military::before { color: #ff8389; content: "✦"; }
+
+html body .planet-zone-marker span {
+  font-size: 0.68rem;
+  letter-spacing: 0.065em;
+}
+
+html body .planet-zone-marker strong {
+  padding: 4px 6px;
+  border-radius: 5px;
+  background: rgb(0 0 0 / 24%);
+  font-size: 0.66rem;
+}
+
+html body .planet-zone-marker:hover,
+html body .planet-zone-marker:focus-visible {
+  border-color: rgb(128 231 255 / 78%);
+  background:
+    radial-gradient(circle at 12% 50%, rgb(85 216 255 / 24%), transparent 40%),
+    rgb(3 22 31 / 96%);
+  box-shadow: 0 0 19px rgb(85 216 255 / 13%);
+}
+
+html body .planet-overview-metrics {
+  gap: 7px;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+
+html body .planet-overview-metrics .planet-context-stat {
+  min-height: 52px;
+  border: 1px solid rgb(85 216 255 / 21%);
+  border-left: 2px solid rgb(85 216 255 / 46%);
+  border-radius: 8px 2px 8px 2px;
+  background: linear-gradient(145deg, rgb(85 216 255 / 8%), transparent 56%), rgb(2 13 20 / 94%);
+}
+
+html body .planet-zone-stage {
+  padding: 18px;
+}
+
+html body .planet-zone-stage__header {
+  padding: 12px 14px;
+  border: 1px solid rgb(85 216 255 / 23%);
+  border-radius: 9px 2px 9px 2px;
+  background: linear-gradient(90deg, rgb(85 216 255 / 11%), transparent 64%);
+}
+
+html body .planet-zone-stage__header h2 {
+  font-size: 1.22rem;
+  letter-spacing: 0.085em;
+}
+
+html body .planet-building-grid {
+  grid-template-columns: repeat(auto-fit, minmax(176px, 1fr));
+  gap: 13px;
+  padding: 12px 4px;
+}
+
+html body .planet-building-node {
+  border-color: rgb(85 216 255 / 25%);
+  border-radius: 12px 3px 12px 3px;
+  background:
+    linear-gradient(145deg, rgb(85 216 255 / 8%), transparent 42%),
+    rgb(2 13 20 / 95%);
+}
+
+html body .planet-building-node:hover,
+html body .planet-building-node.is-selected {
+  border-color: rgb(132 232 255 / 84%);
+  box-shadow: 0 0 25px rgb(85 216 255 / 18%), 0 16px 30px rgb(0 0 0 / 34%);
+}
+
+@media (max-width: 1380px) {
+  html body .planet-workspace { grid-template-columns: 218px minmax(360px, 1fr) 268px; }
+  html body .planet-overview-stage { grid-template-rows: minmax(224px, 1fr) auto auto; }
+  html body .planet-sphere { width: clamp(174px, 20vw, 252px); }
+  html body .planet-overview-copy h2 { font-size: clamp(1.75rem, 3.5vw, 3.2rem); }
+}
+
+@media (max-width: 1180px) {
+  html body .planet-view { padding: 9px; }
+  html body .planet-header { min-height: 82px; }
+  html body .planet-mode-tabs { min-height: 59px; gap: 6px; }
+  html body .planet-mode-tab { min-height: 57px; padding-inline: 8px; }
+  html body .planet-mode-tab::before { width: 31px; height: 31px; flex-basis: 31px; }
+  html body .planet-workspace { grid-template-columns: 188px minmax(320px, 1fr) 236px; gap: 8px; }
+  html body .planet-overview-stage { padding: 12px; }
+  html body .planet-overview-hero { grid-template-columns: minmax(190px, .9fr) minmax(190px, 1fr); gap: 10px; }
+  html body .planet-zone-marker { min-height: 54px; padding-left: 47px; }
+  html body .planet-zone-marker::before { left: 10px; width: 27px; height: 27px; }
+}
+
+/* The tablet portrait command centre deliberately becomes a scrollable
+   sequence of full-width modules. Keeping the desktop minimum track sizes
+   here creates a one-pixel horizontal leak at 768px and hides the action
+   panel instead of making it reachable. */
+@media (max-width: 900px) {
+  html body .planet-view {
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  html body .planet-mode-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+    padding-inline: 0;
+  }
+
+  html body .planet-mode-tab {
+    min-width: 0;
+  }
+
+  html body .planet-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    overflow: visible;
+  }
+
+  html body .planet-context-panel,
+  html body .planet-stage,
+  html body .planet-details-card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  html body .planet-stage {
+    min-height: 470px;
+  }
+
+  html body .planet-overview-stage {
+    grid-template-rows: minmax(235px, 1fr) auto auto;
+  }
+
+  html body .planet-overview-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  html body .planet-overview-copy {
+    margin: 0 14px;
+  }
+
+  html body .planet-visual {
+    min-height: 225px;
+  }
+
+  html body .planet-sphere {
+    width: min(240px, 60vw);
+  }
+}
+
+@media (max-height: 780px) {
+  html body .planet-view { gap: 7px; padding: 8px; }
+  html body .planet-header { min-height: 73px; padding-block: 9px; }
+  html body .planet-header h1 { font-size: 1.28rem; }
+  html body .planet-mode-tabs { min-height: 48px; }
+  html body .planet-mode-tab { min-height: 48px; padding-block: 4px; }
+  html body .planet-mode-tab::before { width: 25px; height: 25px; flex-basis: 25px; }
+  html body .planet-mode-tab span { font-size: .57rem; }
+  html body .planet-queue-bar { min-height: 58px; }
+  html body .planet-overview-stage { grid-template-rows: minmax(150px, 1fr) auto auto; padding: 10px; }
+  html body .planet-visual { min-height: 145px; }
+  html body .planet-sphere { width: clamp(128px, 15vw, 188px); }
+  html body .planet-overview-copy { padding: 10px 11px 10px 17px; }
+  html body .planet-overview-copy h2 { font-size: clamp(1.35rem, 2.6vw, 2.2rem); }
+  html body .planet-zone-marker { min-height: 43px; padding-block: 6px; }
+  html body .planet-zone-marker::before { width: 22px; height: 22px; font-size: .62rem; }
+  html body .planet-overview-metrics .planet-context-stat { min-height: 39px; }
+}
