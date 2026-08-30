@@ -413,3 +413,26 @@
     transition: none;
   }
 }
+
+/* UI-02: единый каркас рабочих экранов.
+   Спецификатор html поднимает правила выше поздних min/max-height
+   developmentWorkspace/operationsRoutes/commandSystemRoutes. */
+html .view-stack > .development-primary-view,
+html .view-stack > .operations-primary-view,
+html .view-stack > .command-primary-view,
+html .view-stack > .system-primary-view {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+
+/* Широкие таблицы данных скроллятся внутри собственного контейнера:
+   скрытое переполнение запрещено, страница не расширяется. */
+html .operations-route-content table,
+html .command-route-content table,
+html .system-route-content table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}

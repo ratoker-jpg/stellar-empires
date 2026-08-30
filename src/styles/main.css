@@ -714,3 +714,18 @@ noscript {
     display: none;
   }
 }
+
+/* UI-02: рабочие семейства (research/fleets/operations/command/ranking/reports/system)
+   получают точный остаток высоты оболочки: страница не скроллится по вертикали,
+   каждый воркспейс скроллит своё содержимое внутри собственного контейнера.
+   Карта Вселенной (space) сохраняет контракт min-height 620px с page-scroll. */
+html[data-shell-route-family='research'] .game-layout,
+html[data-shell-route-family='fleets'] .game-layout,
+html[data-shell-route-family='operations'] .game-layout,
+html[data-shell-route-family='command'] .game-layout,
+html[data-shell-route-family='ranking'] .game-layout,
+html[data-shell-route-family='reports'] .game-layout,
+html[data-shell-route-family='system'] .game-layout {
+  flex: 1 1 0;
+  min-height: 0;
+}
