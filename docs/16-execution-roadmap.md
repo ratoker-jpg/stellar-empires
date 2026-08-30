@@ -1,146 +1,130 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Release 1.0 closed; PR #187 runtime complete / batch closure staged  
-**Updated:** 2026-08-25  
-**Verified current main / PR #187 starting main:** `de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba`  
-**Last merged PR:** #186 `docs: audit next post-1.0 product batch`  
-**Active PR:** #187 `feat: add safe replayable campaign lifecycle`  
-**Runtime:** schema v19 / save format v6 / migration none  
-**Implementation authorized:** true for the single Audit #186 work item; implementation now complete
+**Status:** Release 1.0 closed; docs-only navigation Audit PR #199 active  
+**Updated:** 2026-08-31  
+**Verified starting main:** `7e328020ebb8296701011197deb9e81ac6e2fb56` (PR #198 merge)  
+**Active PR:** #199 `docs: audit reference navigation redesign v2`  
+**Active batch:** `REFERENCE-NAVIGATION-REDESIGN-V2`  
+**Runtime boundary:** schema v20 / save format v6 / no migration in this visual batch  
+**Implementation authorized:** false until Audit #199 merges
 
-## Accepted Audit boundary
+## Current goal
 
-```text
-Audit #186 → de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba
-accepted batch → POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE
-implementation count → 1
-```
+Rebuild the Stellar global navigation and route composition against the owner-supplied `stellar_references_and_html.zip` while preserving Stellar mechanics, route authority, persistence and owned assets.
 
-The accepted Audit contract is archived verbatim at:
+The supplied reference is now the immediate visual/navigation target. The durable contract is:
 
-`docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md`
+`docs/ui/reference-navigation-contract.md`
 
-Only implementation work item:
+Missing/fallback art is tracked in:
 
-`POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE` → PR #187.
+`docs/ui/reference-navigation-missing-assets.md`
 
-There is no PR2.
+## Verified starting architecture
 
-## Delivered lifecycle
-
-#187 delivers one coherent `System / Saves → persistence authority → bootstrap` lifecycle:
-
-- exact uint32 player campaign seed;
-- real seed picker plus Web Crypto reroll/suggestion;
-- legacy string seed compatibility;
-- deterministic same-seed reproduction and different-seed generated-world evidence;
-- New Campaign cancel/confirm;
-- old autosave writer quiescence before reserved authority mutation;
-- snapshot-before-primary deletion ordering;
-- manual save survival across reset;
-- safe manual Load with stale snapshot removal before primary replacement;
-- one shared single-flight campaign-switch gate around the complete main-level authority transaction/reload path;
-- concurrent Load/New Campaign attempts are rejected before a second persistence/recovery/reload sequence starts;
-- manual Load validation/activation failures are player-visible through the save-manager status path, do not reload or mutate authority, and re-enable the action control;
-- storage-only Import with explicit manual destination;
-- rejection of reserved Import destinations;
-- imported campaign activation only through subsequent safe Load;
-- deterministic focused E2E real-picker seam without changing default E2E fixture behavior;
-- protection against old campaign resurrection;
-- save-manager stale-render race protection;
-- focused Browser campaign lifecycle coverage including a real recovery snapshot and stale-manual-slot failure UX.
-
-## Campaign authority rules
-
-Actual campaign switches are single-flight. The gate is acquired before the main-level lifecycle callback; a concurrent second switch is rejected before it can enter quiescence, persistence mutation, failure recovery, or reload.
-
-The accepted switch follows:
+Current `main` still renders nine route families through four visible navigation groups in a side rail:
 
 ```text
-validate target/intent
-→ block old autosave producers
-→ drain/quiesce/dispose old writer
-→ authoritative persistence switch
-→ reload/bootstrap
+Игра
+Развитие
+Данные
+Система
 ```
 
-New Campaign:
+The route model itself is already centralized and useful. The redesign should keep that authority and replace the visual shell around it rather than create a second routing system.
+
+Canonical target primary navigation:
 
 ```text
-quiesce A
-→ delete autosave.snapshot
-→ delete autosave
-→ reload
-→ fresh-game picker/bootstrap
+Планета | Вселенная | Флоты | Операции | Наука | Командование | Отчёты | Рейтинг | Настройки
 ```
 
-Manual Load:
+Contextual colony/zone/task navigation moves to contextual rails and local tabs.
+
+## Audit #199 boundary
+
+Audit #199 is documentation/control-plane only. It changes no runtime code.
+
+It must establish:
+
+- exact target shell/navigation hierarchy;
+- mapping of all 20 supplied reference screens to existing Stellar routes/states;
+- source/test/CSS paths expected to change;
+- responsive, keyboard, history, reload and checksum gates;
+- procedural fallback policy for missing decorative art;
+- exact two-PR heavy implementation sequence.
+
+## Accepted implementation sequence after Audit merge
+
+### 1. NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV
+
+Goal: replace the grouped global side rail with the canonical nine-item top navigation and introduce contextual colony/planet/task rails.
+
+Primary risk: broad DOM/CSS changes can break focus, route selectors, history and viewport ownership.
+
+Acceptance requires:
+
+- all nine primary destinations visible/reachable;
+- exact reference order;
+- one active route only;
+- keyboard/history/reload parity;
+- active colony and three planet zones remain directly reachable;
+- no duplicate old global launcher;
+- navigation-only checksum stability;
+- no page-level horizontal overflow at the required viewport matrix.
+
+### 2. NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA
+
+Goal: apply the reference composition language to Planet, Universe, Fleets, Operations, Science, Command, Reports, Ranking, Settings, Market, zones, Solar War, Events, Arena and Ship Upgrades.
+
+Acceptance requires all 20 reference states mapped/reachable, coherent local navigation, responsive tables/forms/dialogs, procedural fallback rows for unresolved art, and the full quality matrix green.
+
+## Asset policy
 
 ```text
-validate B
-→ quiesce A
-→ delete stale autosave.snapshot(A)
-→ write B primary
-→ preserve manual B
-→ reload
-→ B wins recovery
+existing Stellar asset
+→ procedural CSS/SVG/canvas fallback
+→ missing-art ledger row
+→ later owned/provenanced replacement if needed
 ```
 
-A missing/invalid manual target fails before quiescence. Save Manager catches that rejection, reports it visibly and re-enables `Загрузить`; current authority and document remain unchanged.
+Do not copy screenshots or third-party reference art into runtime. Missing decorative art is not a blocker when the procedural fallback is stable, original and recorded.
 
-Import:
+## Required gates
 
-```text
-require explicit non-reserved manual target
-→ write manual slot only
-→ primary/snapshot/current campaign unchanged
-→ no quiesce
-→ no reload
-→ activation only through later Load
-```
+- `npm run assets:check`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run test -- --maxWorkers=1`
+- `npm run build`
+- full single-worker Playwright route matrix
+- navigation usability
+- app-shell full gate
+- planet command centre
+- universe navigation
+- responsive workspace gate
+- WCAG/accessibility gate
+- intentional visual baseline review at 1672×941 and release viewports
 
-## Regression-first and Browser evidence
+## Historical warning
 
-Historical RED:
-
-- commit `e1b402442b437d581bb10b59782332a47a354b82`;
-- CI #2300.
-
-Exact pre-closure runtime head:
-
-`5e60bd7998e031b04b67826caae6e7103c6d7f3b`
-
-Controller-verified pre-closure gates:
-
-- CI #2314 — SUCCESS;
-- Graphify #1443 — SUCCESS;
-- Browser E2E #1544 — SUCCESS;
-- production Pages smoke #1544 — SUCCESS.
-
-Focused lifecycle acceptance additionally covers controlled concurrent switch attempts in both orders and the real Browser case where a valid rendered manual slot disappears before Load. The latter produces a visible error without reload, authority replacement or unhandled page error.
-
-These runs are not final evidence after later implementation/control-plane commits.
+PR #189 is an old implementation PR based on Audit #188 / `ec2b1fe1...`. It predates later merged UI work and is not the current continuation path. Do not merge or continue it as a substitute for the #199 batch.
 
 ## Current delivery sequence
 
 ```text
-main de5e37f...
-→ Audit #186 merged/accepted
-→ PR #187 runtime implementation complete
-→ strengthened Browser acceptance
-→ post-Ready P2 single-flight + Load error handling fix
-→ final closure docs/control-plane commit
-→ fresh exact-head CI + Graphify + Browser + production smoke
-→ review threads/reviews/comments clean
-→ mergeable + main/head stable
-→ final PR body
-→ Ready
-→ post-Ready exact-head recheck
-→ STOP
+main 7e328020...
+→ docs-only Audit PR #199
+→ review changed files / JSON / checks
+→ squash-merge #199
+→ fresh main
+→ NAV-V2-01
+→ validate + merge
+→ fresh main
+→ NAV-V2-02
+→ combined closure / archive
 ```
 
-The batch is closure STAGED while #187 is unmerged. It becomes `POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE → COMPLETE` only after controller-approved squash merge of #187. Do not invent the generated #187 squash SHA.
+## Current stop rule
 
-After controller merge, the only permitted next category is a fresh docs-only Audit from fresh `main`.
-
-**Do not merge #187. Do not create PR2. Do not start the next Audit.**
+Do not implement from the Audit branch. Finish and merge #199 first. After its merge, start only `NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV` from fresh `main`; PR2 remains blocked until PR1 is merged and validated.
