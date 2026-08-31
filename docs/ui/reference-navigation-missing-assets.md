@@ -37,6 +37,12 @@ The supplied HTML reference contains **60+ distinct existing Stellar repository 
 | NAV-ASSET-005 | Market / Reports | charts/status/data marks | `NOT_NEEDED` | DOM/SVG/canvas | Keep data-driven; do not replace with static images. |
 | NAV-ASSET-006 | Settings / Campaign | emblem / section icons | `PROCEDURAL_OK` | existing faction emblem + CSS/SVG | Final art optional; must remain Stellar-owned branding. |
 
+## Implementation closeout — PR #202
+
+PR #202 did not discover a new final-art dependency. The route-composition work uses existing Stellar mechanical/planet/faction artwork plus stable DOM/CSS procedural presentation for categories, staged fleet composition, report hierarchy, contextual rails and settings sections.
+
+No row is promoted to `MISSING_FINAL_ART`. The six initial rows remain sufficient for the completed reference-navigation batch.
+
 ## Row template during implementation
 
 ```text
