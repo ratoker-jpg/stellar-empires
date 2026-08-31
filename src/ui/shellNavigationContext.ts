@@ -335,7 +335,11 @@ export class ShellNavigationContextModel {
   ): void {
     this.#campaignKey = campaignKey(state);
     if (route.family === 'planet') this.#activePlanetId = route.planetId;
-    this.#lastRoutes.set(route.family, route);
+    if (route.family === 'system' && route.mode === 'saves') {
+      this.#lastRoutes.set('system', createDefaultShellRoute('system', state, this.#activePlanetId));
+    } else {
+      this.#lastRoutes.set(route.family, route);
+    }
     if (previousRoute !== null && previousRoute.family !== route.family) {
       this.#originRoute = previousRoute;
     }
