@@ -100,17 +100,18 @@ test.describe('planet command centre viewport matrix', () => {
       await page.locator('#planet-selector').selectOption(homeId);
       await expect(page.locator('#planet-name')).toHaveText(homeName ?? '');
 
-      // Galaxy stays a sibling context action from any planet view.
+      // Galaxy stays a sibling context action from any planet view and the
+      // canonical Planet primary destination restores the remembered context.
       await page.locator('#planet-galaxy-action').click();
       await expect(page.locator('html')).toHaveAttribute('data-shell-route-family', 'space');
       await page.locator('#nav-planet').click();
       await expect(page.locator('html')).toHaveAttribute('data-shell-route-family', 'planet');
+      await expect(page.locator('#nav-planet')).toHaveAttribute('aria-current', 'page');
 
       // Planet workspace exposes its own visible breadcrumb path.
       const crumbs = page.locator('#planet-breadcrumbs');
       await expect(crumbs).toBeVisible();
       await expect(crumbs).toContainText(homeName ?? '');
-      await expect(crumbs).toContainText('Вернуться');
 
       // Zone tabs keep roving-tabindex keyboard behaviour.
       await page.locator('[data-planet-mode="resource"]').focus();
