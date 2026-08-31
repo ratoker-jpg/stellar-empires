@@ -138,6 +138,26 @@ html body dialog {
   scrollbar-color: var(--se-accent) rgb(0 0 0 / 28%);
 }
 
+/* NAV-V2-01 — the desktop shell owns exactly one viewport. Route workspaces
+   scroll inside .view-stack instead of expanding the document. */
+@media (min-width: 901px) {
+  html body .app-shell {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  html body .game-layout,
+  html body .view-stack {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
 @media (max-width: 900px) {
   html body .topbar {
     grid-template-columns: 180px minmax(0, 1fr);
