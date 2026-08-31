@@ -158,7 +158,17 @@ html body dialog {
   }
 }
 
+/* accessibilityRuntime.css marks the 900–955px range as compact and carries
+   a legacy 940px-minimum header template. Keep the canonical shell columns
+   authoritative there so campaign status/resources cannot be clipped. */
+@media (min-width: 901px) and (max-width: 955px) {
+  html[data-viewport-mode='compact'] body .topbar {
+    grid-template-columns: 158px minmax(0, 1fr) 192px;
+  }
+}
+
 @media (max-width: 900px) {
+  html[data-viewport-mode='compact'] body .topbar,
   html body .topbar {
     grid-template-columns: 180px minmax(0, 1fr);
   }
