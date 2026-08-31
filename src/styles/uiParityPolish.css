@@ -11,6 +11,15 @@ html body .rail-group {
   position: relative;
 }
 
+/* NAV-V2-01 turns .side-rail into the nine-column primary navigation grid.
+   Legacy container ornaments from globalHud.css become anonymous grid items,
+   so suppress only those container pseudo-elements. Button ornaments remain. */
+html body .side-rail::before,
+html body .side-rail::after {
+  display: none !important;
+  content: none !important;
+}
+
 html body .rail-group:not(:first-of-type)::before {
   position: absolute;
   top: 18px;
