@@ -1,5 +1,5 @@
 {
-  "indexVersion": 41,
+  "indexVersion": 42,
   "updatedAt": "2026-08-31",
   "repository": "ratoker-jpg/stellar-empires",
   "roadmapVersion": 6,
@@ -7,72 +7,77 @@
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "authoritativeBaseline": {
-    "lastMergedPr": 201,
-    "mergeSha": "256a7fff09cac19ad0ad11f3558e29c63c75071b",
-    "runtimeBaselinePr": 201,
-    "runtimeBaselineSha": "256a7fff09cac19ad0ad11f3558e29c63c75071b",
+    "lastMergedPr": 202,
+    "mergeSha": "466ec55f1751d36fd4a30175f7669f89ebe9a6a6",
+    "runtimeBaselinePr": 202,
+    "runtimeBaselineSha": "466ec55f1751d36fd4a30175f7669f89ebe9a6a6",
     "lastCompletedAuditPr": 199,
     "lastCompletedAuditMergeSha": "87e6bf87dd9617ffe81ca00680a3c9f39bd536da",
     "lastCompletedAuditArchive": "docs/audits/completed/reference-navigation-redesign-v2.md"
   },
   "active": {
-    "pr": 202,
-    "kind": "implementation-closure",
-    "workItem": "NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA",
-    "branch": "feat/nav-v2-02-reference-route-composition-qa",
-    "startingMain": "256a7fff09cac19ad0ad11f3558e29c63c75071b",
-    "status": "open-validation-running",
-    "implementationAuthorized": true
+    "pr": 203,
+    "kind": "audit",
+    "workItem": "STRICT-REFERENCE-VISUAL-PARITY-V3",
+    "branch": "audit/strict-reference-visual-parity-v3",
+    "startingMain": "466ec55f1751d36fd4a30175f7669f89ebe9a6a6",
+    "status": "audit-pr-open",
+    "implementationAuthorized": false
   },
   "currentAudit": {
-    "id": "REFERENCE-NAVIGATION-REDESIGN-V2",
-    "pr": 199,
-    "status": "merged-closure-staged",
-    "startingMain": "7e328020ebb8296701011197deb9e81ac6e2fb56",
-    "mergeSha": "87e6bf87dd9617ffe81ca00680a3c9f39bd536da",
+    "id": "STRICT-REFERENCE-VISUAL-PARITY-V3",
+    "pr": 203,
+    "status": "open",
+    "startingMain": "466ec55f1751d36fd4a30175f7669f89ebe9a6a6",
+    "mergeSha": null,
     "contract": "docs/audits/current-batch-audit.md",
-    "archive": "docs/audits/completed/reference-navigation-redesign-v2.md",
-    "referenceContract": "docs/ui/reference-navigation-contract.md",
-    "missingAssetLedger": "docs/ui/reference-navigation-missing-assets.md",
+    "detail": "docs/audits/strict-reference-visual-parity-v3.md",
+    "visualContract": "docs/ui/reference-visual-parity-spec.md",
+    "raceThemeContract": "docs/ui/race-theme-token-spec.md",
+    "missingAssetLedger": "docs/ui/missing-visual-assets.md",
     "complexity": "heavy",
-    "implementationCount": 2
+    "implementationCountAfterMerge": 2
   },
-  "currentBatch": {
+  "previousBatch": {
     "id": "REFERENCE-NAVIGATION-REDESIGN-V2",
-    "status": "final-pr-open",
+    "status": "completed",
+    "auditPr": 199,
+    "auditMergeSha": "87e6bf87dd9617ffe81ca00680a3c9f39bd536da",
+    "archive": "docs/audits/completed/reference-navigation-redesign-v2.md",
     "workItems": [
       {
         "id": "NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV",
         "pr": 201,
-        "status": "merged",
         "mergeSha": "256a7fff09cac19ad0ad11f3558e29c63c75071b"
       },
       {
         "id": "NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA",
         "pr": 202,
-        "status": "open",
+        "mergeSha": "466ec55f1751d36fd4a30175f7669f89ebe9a6a6"
+      }
+    ]
+  },
+  "currentBatch": {
+    "id": "STRICT-REFERENCE-VISUAL-PARITY-V3",
+    "status": "audit-pr-open",
+    "workItems": [
+      {
+        "id": "VISUAL-V3-01-PLANET-STRICT-PARITY",
+        "pr": null,
+        "status": "pending-audit-merge",
+        "mergeSha": null
+      },
+      {
+        "id": "VISUAL-V3-02-ALL-ROUTES-STRICT-PARITY",
+        "pr": null,
+        "status": "pending-visual-v3-01",
         "mergeSha": null
       }
     ],
     "schema": 20,
     "saveFormat": 6,
-    "migration": "unchanged"
-  },
-  "completedPreviousPhase": {
-    "id": "NEMEXIA-PROTO-UI-PARITY",
-    "status": "completed",
-    "auditPr": 196,
-    "auditMergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513",
-    "archive": "docs/audits/completed/nemexia-proto-ui-parity.md",
-    "workItems": [
-      {
-        "id": "NEMEXIA-PROTO-UI-PARITY",
-        "pr": 197,
-        "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57"
-      }
-    ],
-    "closurePr": 198,
-    "closureMergeSha": "7e328020ebb8296701011197deb9e81ac6e2fb56"
+    "migration": "unchanged",
+    "raceThemes": ["Aegis", "Synod", "Veyra"]
   },
   "deferred": {
     "id": "NEMEXIA-PROTO-SIM-SCALING",
@@ -85,37 +90,28 @@
     },
     "remaining": {
       "workItem": "NEM-02-BOT-SCHEDULER-BATCHING-PERF",
-      "status": "deferred-requires-fresh-audit-revalidation"
+      "status": "deferred-by-controller-visual-priority"
     }
   },
   "sequence": [
-    { "pr": 178, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-AUDIT", "status": "merged-archived", "mergeSha": "4b96d457fad1577a0663210864381a0d3a33cb77" },
-    { "pr": 179, "kind": "implementation", "workItem": "POST-1.0-PR1-COMPRESSED-PERSONALITY-STRATEGY", "status": "merged", "mergeSha": "7620975e1cd604c8bcdce0bac748e32e276061db" },
-    { "pr": 180, "kind": "implementation", "workItem": "POST-1.0-PR2-PERSONALITY-TACTICAL-RISK", "status": "merged", "mergeSha": "f0cfcb7d2944b8380cf8b3157ae1570bbbbb17cd" },
-    { "pr": 181, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-BOT-OUTCOME-ADAPTATION-GATE", "status": "merged", "mergeSha": "a1249615d55e9ffebc60889c3ab4d5ff72d8933d" },
-    { "pr": 182, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-2", "status": "merged-archived", "mergeSha": "b09887489db7754f0c0b2672649db9283b879732" },
-    { "pr": 183, "kind": "implementation", "workItem": "POST-1.0-PR1-ARENA-COMBAT-IDENTITY-TRUTH", "status": "merged", "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5" },
-    { "pr": 184, "kind": "implementation", "workItem": "POST-1.0-PR2-UNIFIED-COMBAT-FEEDBACK", "status": "merged", "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0" },
-    { "pr": 185, "kind": "implementation-closure", "workItem": "POST-1.0-PR3-COMBAT-RANKING-TRUTH", "status": "merged", "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6" },
-    { "pr": 186, "kind": "audit", "workItem": "POST-1.0-NEXT-PRODUCT-3", "status": "merged-archived-for-closure", "mergeSha": "de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba" },
-    { "pr": 187, "kind": "implementation-closure", "workItem": "POST-1.0-PR1-REPLAYABLE-CAMPAIGN-LIFECYCLE", "status": "merged", "mergeSha": "0894ac4bc30e81e2713ff9e50c9463972b4de8d6" },
-    { "pr": 188, "kind": "audit", "workItem": "FULL-VISUAL-NAVIGATION-REDESIGN", "status": "merged-superseded-by-later-ui-batches", "mergeSha": "ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa" },
-    { "pr": 191, "kind": "implementation", "workItem": "UI-01-SHELL-PLANET-COMMAND-CENTRE", "status": "merged-archived", "mergeSha": "4718358ba483204f2fa6c3cd655ecdac044dc66f" },
-    { "pr": 192, "kind": "implementation", "workItem": "UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE", "status": "merged-archived", "mergeSha": "2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3" },
+    { "pr": 188, "kind": "audit", "workItem": "FULL-VISUAL-NAVIGATION-REDESIGN", "status": "merged", "mergeSha": "ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa" },
+    { "pr": 191, "kind": "implementation", "workItem": "UI-01-SHELL-PLANET-COMMAND-CENTRE", "status": "merged", "mergeSha": "4718358ba483204f2fa6c3cd655ecdac044dc66f" },
+    { "pr": 192, "kind": "implementation", "workItem": "UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE", "status": "merged", "mergeSha": "2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3" },
     { "pr": 193, "kind": "audit", "workItem": "NEMEXIA-PROTO-SIM-SCALING", "status": "merged-deferred-after-nem-01", "mergeSha": "15c846cb05d21e08415ce5f69e3134f8f8ec4b18" },
     { "pr": 194, "kind": "implementation", "workItem": "NEM-01-UNIVERSE-EMPIRE-SCALING", "status": "merged", "mergeSha": "7ad1046dfad7a34b712354765b6f9ebbcd41ed9e" },
-    { "pr": 196, "kind": "audit", "workItem": "NEMEXIA-PROTO-UI-PARITY", "status": "merged-archived", "mergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513" },
-    { "pr": 197, "kind": "implementation-closure", "workItem": "NEMEXIA-PROTO-UI-PARITY", "status": "merged", "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57" },
+    { "pr": 196, "kind": "audit", "workItem": "NEMEXIA-PROTO-UI-PARITY", "status": "merged", "mergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513" },
+    { "pr": 197, "kind": "implementation", "workItem": "NEMEXIA-PROTO-UI-PARITY", "status": "merged", "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57" },
     { "pr": 198, "kind": "docs-closure", "workItem": "NEMEXIA-PROTO-UI-PARITY", "status": "merged", "mergeSha": "7e328020ebb8296701011197deb9e81ac6e2fb56" },
-    { "pr": 199, "kind": "audit", "workItem": "REFERENCE-NAVIGATION-REDESIGN-V2", "status": "merged-archived", "mergeSha": "87e6bf87dd9617ffe81ca00680a3c9f39bd536da" },
+    { "pr": 199, "kind": "audit", "workItem": "REFERENCE-NAVIGATION-REDESIGN-V2", "status": "merged", "mergeSha": "87e6bf87dd9617ffe81ca00680a3c9f39bd536da" },
     { "pr": 201, "kind": "implementation", "workItem": "NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV", "status": "merged", "mergeSha": "256a7fff09cac19ad0ad11f3558e29c63c75071b" },
-    { "pr": 202, "kind": "implementation-closure", "workItem": "NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA", "status": "open", "mergeSha": null }
+    { "pr": 202, "kind": "implementation-closure", "workItem": "NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA", "status": "merged", "mergeSha": "466ec55f1751d36fd4a30175f7669f89ebe9a6a6" },
+    { "pr": 203, "kind": "audit", "workItem": "STRICT-REFERENCE-VISUAL-PARITY-V3", "status": "open", "mergeSha": null }
   ],
   "next": {
     "pr": null,
-    "kind": "docs-only-audit",
-    "workItem": "REVALIDATE-NEM-02-BOT-SCHEDULER-BATCHING-PERF",
+    "kind": "implementation-after-audit-merge",
+    "workItem": "VISUAL-V3-01-PLANET-STRICT-PARITY",
     "implementationAuthorized": false,
-    "prerequisite": "Squash-merge PR #202 after exact-head green checks and zero unresolved review threads. Then start a fresh docs-only Audit from the resulting main to revalidate deferred NEM-02 before any simulation implementation."
+    "prerequisite": "Squash-merge Audit PR #203, then create VISUAL-V3-01 from the resulting fresh main. VISUAL-V3-02 remains blocked until Planet strict parity is merged and controller-accepted."
   }
 }
