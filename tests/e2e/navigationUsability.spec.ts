@@ -5,6 +5,24 @@ const RELEASE_VIEWPORTS = [
   { width: 1920, height: 1080 },
 ] as const;
 
+const CANONICAL_DESKTOP_VIEWPORTS = [
+  { width: 1366, height: 768 },
+  { width: 1672, height: 941 },
+  { width: 1920, height: 1080 },
+] as const;
+
+const PRIMARY_LABELS = [
+  'Планета',
+  'Вселенная',
+  'Флоты',
+  'Операции',
+  'Наука',
+  'Командование',
+  'Отчёты',
+  'Рейтинг',
+  'Настройки',
+] as const;
+
 const PRIMARY_WORKSPACES = [
   ['nav-planet', 'planet', '#planet-view'],
   ['nav-galaxy', 'space', '#galaxy-view'],
@@ -133,6 +151,42 @@ async function runAcceptedTaskBudgets(page: Page): Promise<void> {
 
   await expectChecksum(page, checksum);
 }
+
+test('canonical desktop shell exposes one nine-item primary row in reference order', async ({ page }) => {
+  for (const viewport of CANONICAL_DESKTOP_VIEWPORTS) {
+    await page.setViewportSize(viewport);
+    await page.goto('/?e2e=1#/planet/missing/overview');
+    await expectReady(page);
+
+    await expect(page.locator('.side-rail .rail-button small')).toHaveText([...PRIMARY_LABELS]);
+    await expect(page.locator('.rail-group__label:visible')).toHaveCount(0);
+
+    const geometry = await page.evaluate(() => {
+      const topbar = document.querySelector<HTMLElement>('.topbar')!.getBoundingClientRect();
+      const nav = document.querySelector<HTMLElement>('.side-rail')!.getBoundingClientRect();
+      const buttons = Array.from(document.querySelectorAll<HTMLElement>('.side-rail .rail-button'))
+        .map((button) => button.getBoundingClientRect());
+      return {
+        topbarTop: topbar.top,
+        topbarBottom: topbar.bottom,
+        navTop: nav.top,
+        navBottom: nav.bottom,
+        buttonTops: buttons.map((rect) => Math.round(rect.top)),
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    });
+
+    expect(geometry.navTop).toBeGreaterThanOrEqual(geometry.topbarTop - 1);
+    expect(geometry.navBottom).toBeLessThanOrEqual(geometry.topbarBottom + 1);
+    expect(Math.max(...geometry.buttonTops) - Math.min(...geometry.buttonTops)).toBeLessThanOrEqual(2);
+    expect(geometry.overflow).toBeLessThanOrEqual(1);
+  }
+
+  await page.locator('#nav-system').click();
+  await expect(page).toHaveURL(/#\/system\/settings$/);
+  await expect(page.locator('#system-settings-view')).toBeVisible();
+  await expect(page.locator('#nav-system')).toHaveAttribute('aria-current', 'page');
+});
 
 test('every primary destination is reachable without a competing legacy launcher', async ({ page }) => {
   await page.goto('/?e2e=1#/planet/missing/overview');
