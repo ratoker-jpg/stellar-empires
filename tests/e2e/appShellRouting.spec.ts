@@ -60,6 +60,29 @@ test('primary family activation restores the latest valid subroute', async ({ pa
   await expect(page.locator('[data-operations-mode="logistics"]')).toHaveAttribute('aria-selected', 'true');
 });
 
+test('bare and malformed System routes normalize to Settings', async ({ page }) => {
+  await page.goto('/?e2e=1#/system');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/system\/settings$/);
+  await expect(page.locator('html')).toHaveAttribute('data-shell-route-family', 'system');
+  await expect(page.locator('#system-settings-view')).toBeVisible();
+
+  await page.goto('/?e2e=1#/system/not-a-mode');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/system\/settings$/);
+  await expect(page.locator('#system-settings-view')).toBeVisible();
+});
+
+test('compact canonical header stays fully inside the 940px viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 940, height: 900 });
+  await page.goto('/?e2e=1#/system/settings');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  const status = await page.locator('.topbar-status').boundingBox();
+  expect(status).not.toBeNull();
+  expect(Math.ceil((status?.x ?? 0) + (status?.width ?? 0))).toBeLessThanOrEqual(940);
+  await expect(page.locator('.topbar-status')).toBeInViewport();
+});
+
 test('the typed registry exposes canonical primary controls and visible keyboard order', async ({ page }) => {
   await page.goto('/?e2e=1#/space/universe');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
