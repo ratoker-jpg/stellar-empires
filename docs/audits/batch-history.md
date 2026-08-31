@@ -11,35 +11,25 @@ This file is the compact historical index for completed roadmap audit batches. G
 | `POST-1.0-NEMEXIA-PARITY` | bounded-sequential | #173 | #174–#177 | completed; #177 closure → `53cf207f30f1a51f864d77f61969937e0d1ad59c` | `docs/audits/completed/post-1.0-nemexia-parity.md` |
 | `POST-1.0-BOT-STRATEGY-DIFFERENTIATION` | bounded-sequential | #178 | #179–#181 | completed; #181 closure → `a1249615d55e9ffebc60889c3ab4d5ff72d8933d` | `docs/audits/completed/post-1.0-bot-strategy-differentiation.md` |
 | `POST-1.0-STRATEGIC-FEEDBACK-TRUTH` | medium | #182 | #183–#185 | completed; #185 closure → `e974c09e7779b4cf3bbc6d0279b8d35f177a29e6` | `docs/audits/completed/post-1.0-strategic-feedback-truth.md` |
+| `FULL-VISUAL-NAVIGATION-REDESIGN` | heavy | #188 | #191–#192 | completed; #191 → `4718358ba483204f2fa6c3cd655ecdac044dc66f`, #192 → `2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3` | `docs/audits/completed/full-visual-navigation-redesign.md` |
 | `NEMEXIA-PROTO-UI-PARITY` | medium | #196 | #197 | completed; #197 closure → `b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57` | `docs/audits/completed/nemexia-proto-ui-parity.md` |
-
-## Current completed boundary
-
-```text
-POST-1.0-STRATEGIC-FEEDBACK-TRUTH → COMPLETE
-Audit #182 → b09887489db7754f0c0b2672649db9283b879732
-#183 → 83a4942c35aac8d7f0b02f7730f0646c171c98b5
-#184 → 691078ab9ce5b0ab48e7aa69e71fe72322528af0
-#185 → e974c09e7779b4cf3bbc6d0279b8d35f177a29e6
-schema v19 / save v6 / migration none
-```
-
-The accepted Audit #182 contract is archived verbatim at `docs/audits/completed/post-1.0-strategic-feedback-truth.md`.
+| `REFERENCE-NAVIGATION-REDESIGN-V2` | heavy | #199 | #201, #202 | closure staged in #202; #201 → `256a7fff09cac19ad0ad11f3558e29c63c75071b`; #202 squash recorded after merge | `docs/audits/completed/reference-navigation-redesign-v2.md` |
 
 ## Current closure staging
 
-The next accepted Audit and implementation chain is delivered but not yet merged complete:
-
 ```text
-POST-1.0-REPLAYABLE-CAMPAIGN-LIFECYCLE → closure STAGED / pending controller merge
-Audit #186 → de5e37f4ac69bbcf8707267272fe03a1e2c3b7ba
-PR1 #187  → implementation + closure PR; generated squash SHA UNKNOWN until controller merge
-schema v19 / save v6 / migration none
+REFERENCE-NAVIGATION-REDESIGN-V2 → CLOSURE STAGED IN PR #202
+Audit #199 → 87e6bf87dd9617ffe81ca00680a3c9f39bd536da
+NAV-V2-01 / PR #201 → 256a7fff09cac19ad0ad11f3558e29c63c75071b
+NAV-V2-02 / PR #202 → active; generated squash SHA unknown until merge
+schema v20 / save v6 / migration none
 ```
 
-The accepted Audit #186 contract is archived verbatim at `docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md`.
+The accepted Audit #199 contract is archived verbatim at `docs/audits/completed/reference-navigation-redesign-v2.md`.
 
-#187 is the only implementation PR in this batch. There is no PR2. The batch must not be added to the completed table until controller-approved merge of #187. After that merge, the only authorized next category is a fresh docs-only Audit from the resulting fresh `main`.
+PR #202 is the second and final implementation PR in this heavy batch. It owns the combined route/viewport/accessibility validation and the batch closeout. No simulation, formula, bot, schema or persistence work is part of this batch.
+
+After #202 merges, the next implementation is **not** automatically authorized. The deferred simulation item `NEM-02-BOT-SCHEDULER-BATCHING-PERF` remains the next program candidate, but it must first be revalidated from fresh `main` in a docs-only Audit because its original SIM-SCALING contract predates several merged UI/runtime batches.
 
 ## Recording rules
 
@@ -49,17 +39,3 @@ The accepted Audit #186 contract is archived verbatim at `docs/audits/completed/
 - Do not append a proposed future implementation batch to the completed table before delivery.
 - For dependent implementation PRs, every successor branch must start from the latest merged `main`.
 - Closing an audited batch does not itself authorize another implementation PR or feature batch.
-
-## FULL-VISUAL-NAVIGATION-REDESIGN — completed 2026-08-30
-
-```text
-FULL-VISUAL-NAVIGATION-REDESIGN → COMPLETE
-Audit #188 → ec2b1fe1cd27a9512f0bc3a9a5bab7554a9aa0aa
-PR1 #191 (UI-01-SHELL-PLANET-COMMAND-CENTRE) → 4718358ba483204f2fa6c3cd655ecdac044dc66f
-PR2 #192 (UI-02-WORKSPACE-VISUAL-CONSISTENCY-AND-RESPONSIVE-GATE) → 2ccb9ab59f1795a63fd8cccdc52f7af0f2a108d3
-schema v19 / save v6 / migration none
-```
-
-The accepted Audit #188 contract is archived verbatim at `docs/audits/completed/full-visual-navigation-redesign.md`.
-
-Both implementation PRs were created from fresh main in the authorized order, merged with 10/10 green checks (CI, Browser E2E, Graphify audit, production Pages smoke), and stayed presentation-only: schema, save format, formulas, bot logic and route semantics are unchanged. The empire-overview visual baseline was refreshed from the CI render of the exact merged head. The follow-up program of Nemexia-prototype batches is defined in `docs/30-nemexia-full-prototype-program.md`; the next authorized category is the fresh docs-only Audit `NEMEXIA-PROTO-SIM-SCALING` delivered by the same docs PR that records this closure.

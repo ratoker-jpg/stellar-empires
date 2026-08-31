@@ -1,130 +1,103 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Release 1.0 closed; docs-only navigation Audit PR #199 active  
+**Status:** Release 1.0 closed; final `REFERENCE-NAVIGATION-REDESIGN-V2` implementation PR #202 active  
 **Updated:** 2026-08-31  
-**Verified starting main:** `7e328020ebb8296701011197deb9e81ac6e2fb56` (PR #198 merge)  
-**Active PR:** #199 `docs: audit reference navigation redesign v2`  
-**Active batch:** `REFERENCE-NAVIGATION-REDESIGN-V2`  
-**Runtime boundary:** schema v20 / save format v6 / no migration in this visual batch  
-**Implementation authorized:** false until Audit #199 merges
+**Verified merged main:** `256a7fff09cac19ad0ad11f3558e29c63c75071b` (PR #201 merge)  
+**Active PR:** #202 `feat: complete reference route composition v2`  
+**Active work-item:** `NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA`  
+**Runtime boundary:** schema v20 / save format v6 / no migration in this visual batch
 
 ## Current goal
 
-Rebuild the Stellar global navigation and route composition against the owner-supplied `stellar_references_and_html.zip` while preserving Stellar mechanics, route authority, persistence and owned assets.
+Close the owner-supplied `stellar_references_and_html.zip` navigation/composition batch with all 20 supplied reference states mapped to existing Stellar route/state owners and with responsive/accessibility/visual quality gates green.
 
-The supplied reference is now the immediate visual/navigation target. The durable contract is:
+Durable contracts:
 
-`docs/ui/reference-navigation-contract.md`
+- `docs/ui/reference-navigation-contract.md`;
+- `docs/ui/reference-navigation-missing-assets.md`;
+- accepted Audit #199 archived at `docs/audits/completed/reference-navigation-redesign-v2.md`.
 
-Missing/fallback art is tracked in:
+## Completed checkpoint — NAV-V2-01
 
-`docs/ui/reference-navigation-missing-assets.md`
+PR #201 squash:
 
-## Verified starting architecture
+`256a7fff09cac19ad0ad11f3558e29c63c75071b`
 
-Current `main` still renders nine route families through four visible navigation groups in a side rail:
+Delivered:
 
-```text
-Игра
-Развитие
-Данные
-Система
-```
+- persistent canonical nine-item top navigation;
+- exact order `Планета / Вселенная / Флоты / Операции / Наука / Командование / Отчёты / Рейтинг / Настройки`;
+- contextual planet/task rails instead of competing global navigation;
+- Settings as the System landing while Saves stays local;
+- keyboard/history/reload/checksum continuity;
+- viewport-owned desktop shell;
+- compact-header clipping and bare-System fallback regressions fixed.
 
-The route model itself is already centralized and useful. The redesign should keep that authority and replace the visual shell around it rather than create a second routing system.
+## Active checkpoint — NAV-V2-02
 
-Canonical target primary navigation:
+PR #202 starts from the exact #201 merge SHA.
 
-```text
-Планета | Вселенная | Флоты | Операции | Наука | Командование | Отчёты | Рейтинг | Настройки
-```
+Player-visible composition:
 
-Contextual colony/zone/task navigation moves to contextual rails and local tabs.
+1. Planet overview and three development zones retain direct contextual access.
+2. Universe keeps Universe → Galaxy → Solar System hierarchy, coordinate jump and stable selection detail.
+3. Fleet compose is presented as stage 1 composition and stage 2 target/mission/confirmation without new gameplay state.
+4. Operations overview/market/events/arena/Solar War/logistics stay local modes of one owner route.
+5. Science uses category context, technology catalog, selected-tech detail/requirements and the existing global research queue.
+6. Reports uses filters/journal plus a selected-reader visual hierarchy on desktop.
+7. Settings exposes Graphics, Sound, Interface, Controls, Notifications and Campaign & Saves as local categories; only existing browser-local presentation settings are mutable.
+8. Ranking, production and ship-upgrades share the same dark industrial sci-fi visual language.
+9. The Browser matrix explicitly includes 1672×941 plus release/compact viewports.
 
-## Audit #199 boundary
+No simulation, formula, bot, route-family, schema, save-format or migration change is allowed.
 
-Audit #199 is documentation/control-plane only. It changes no runtime code.
+## Required closeout gate
 
-It must establish:
+PR #202 may merge only when its exact head has:
 
-- exact target shell/navigation hierarchy;
-- mapping of all 20 supplied reference screens to existing Stellar routes/states;
-- source/test/CSS paths expected to change;
-- responsive, keyboard, history, reload and checksum gates;
-- procedural fallback policy for missing decorative art;
-- exact two-PR heavy implementation sequence.
+- `npm run assets:check` equivalent green;
+- lint green;
+- typecheck green;
+- unit suite green;
+- build green;
+- Graphify green;
+- Browser E2E green;
+- production Pages smoke green;
+- route/viewport/reference composition gate green;
+- accessibility/WCAG and intentional visual-baseline gates green;
+- zero unresolved review threads;
+- mergeable=true and no live-main drift.
 
-## Accepted implementation sequence after Audit merge
+Ordinary failures are fixed inside PR #202.
 
-### 1. NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV
+## Batch closure state
 
-Goal: replace the grouped global side rail with the canonical nine-item top navigation and introduce contextual colony/planet/task rails.
-
-Primary risk: broad DOM/CSS changes can break focus, route selectors, history and viewport ownership.
-
-Acceptance requires:
-
-- all nine primary destinations visible/reachable;
-- exact reference order;
-- one active route only;
-- keyboard/history/reload parity;
-- active colony and three planet zones remain directly reachable;
-- no duplicate old global launcher;
-- navigation-only checksum stability;
-- no page-level horizontal overflow at the required viewport matrix.
-
-### 2. NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA
-
-Goal: apply the reference composition language to Planet, Universe, Fleets, Operations, Science, Command, Reports, Ranking, Settings, Market, zones, Solar War, Events, Arena and Ship Upgrades.
-
-Acceptance requires all 20 reference states mapped/reachable, coherent local navigation, responsive tables/forms/dialogs, procedural fallback rows for unresolved art, and the full quality matrix green.
-
-## Asset policy
+`REFERENCE-NAVIGATION-REDESIGN-V2` is a heavy two-implementation-PR batch:
 
 ```text
-existing Stellar asset
-→ procedural CSS/SVG/canvas fallback
-→ missing-art ledger row
-→ later owned/provenanced replacement if needed
+Audit #199 → 87e6bf87dd9617ffe81ca00680a3c9f39bd536da
+NAV-V2-01 / #201 → 256a7fff09cac19ad0ad11f3558e29c63c75071b
+NAV-V2-02 / #202 → active; final squash SHA unknown until merge
 ```
 
-Do not copy screenshots or third-party reference art into runtime. Missing decorative art is not a blocker when the procedural fallback is stable, original and recorded.
+The Audit is archived verbatim and batch history is staged in #202. The generated #202 squash SHA is recorded after merge by the next Audit or an explicitly permitted docs-only closure record.
 
-## Required gates
+## Next work is Audit-only
 
-- `npm run assets:check`
-- `npm run lint`
-- `npm run typecheck`
-- `npm run test -- --maxWorkers=1`
-- `npm run build`
-- full single-worker Playwright route matrix
-- navigation usability
-- app-shell full gate
-- planet command centre
-- universe navigation
-- responsive workspace gate
-- WCAG/accessibility gate
-- intentional visual baseline review at 1672×941 and release viewports
+The previously accepted simulation item `NEM-02-BOT-SCHEDULER-BATCHING-PERF` was deferred when the owner prioritized UI work. NEM-01 is already merged (#194), but the NEM-02 contract predates several later batches.
+
+Therefore after #202:
+
+```text
+fresh main
+→ docs-only Audit: revalidate deferred NEM-02
+→ measure current 100-bot scheduler/catch-up/save/perf truth
+→ keep/amend/reject NEM-02 contract
+→ implementation only after that Audit merges
+```
+
+Do not start NEM-02 directly from #202 or from its old audit baseline.
 
 ## Historical warning
 
-PR #189 is an old implementation PR based on Audit #188 / `ec2b1fe1...`. It predates later merged UI work and is not the current continuation path. Do not merge or continue it as a substitute for the #199 batch.
-
-## Current delivery sequence
-
-```text
-main 7e328020...
-→ docs-only Audit PR #199
-→ review changed files / JSON / checks
-→ squash-merge #199
-→ fresh main
-→ NAV-V2-01
-→ validate + merge
-→ fresh main
-→ NAV-V2-02
-→ combined closure / archive
-```
-
-## Current stop rule
-
-Do not implement from the Audit branch. Finish and merge #199 first. After its merge, start only `NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV` from fresh `main`; PR2 remains blocked until PR1 is merged and validated.
+PR #189 remains stale historical work from the old #188 baseline and is not a continuation branch. Do not merge or reuse it.
