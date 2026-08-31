@@ -4,111 +4,81 @@
 
 Actual GitHub state is authoritative.
 
-Live merged baseline before the active PR:
+Live merged baseline:
 
-`256a7fff09cac19ad0ad11f3558e29c63c75071b`
+`466ec55f1751d36fd4a30175f7669f89ebe9a6a6`
 
-This is squash merge PR #201, `NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV`.
+This is squash merge PR #202, completing `REFERENCE-NAVIGATION-REDESIGN-V2`.
 
 Active work:
 
 ```text
-REFERENCE-NAVIGATION-REDESIGN-V2
-Audit PR #199 → merged 87e6bf87dd9617ffe81ca00680a3c9f39bd536da
-PR1 #201 → merged 256a7fff09cac19ad0ad11f3558e29c63c75071b
-PR2 #202 → NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA
-branch feat/nav-v2-02-reference-route-composition-qa
-kind implementation-closure
+STRICT-REFERENCE-VISUAL-PARITY-V3
+Audit PR #203
+branch audit/strict-reference-visual-parity-v3
+kind docs-only Audit
+implementation blocked until Audit merge
 ```
 
-Owner reference input: `stellar_references_and_html.zip`, supplied 2026-08-31.
+Owner reference input: `stellar_references_and_html.zip` plus controller comparison screenshots.
 
-## Product state after PR1
+## Why this Audit supersedes the previous next action
 
-Canonical global navigation is implemented in this exact order:
+PR #202 is technically green and merged, but controller comparison shows that the resulting Planet screen is still visually far from the supplied reference. The user explicitly reprioritized visual parity ahead of deferred NEM-02 simulation work.
 
-```text
-Планета
-→ Вселенная
-→ Флоты
-→ Операции
-→ Наука
-→ Командование
-→ Отчёты
-→ Рейтинг
-→ Настройки
-```
+Therefore do **not** resume NEM-02 after #202. The current authority is Audit #203.
 
-The old visible four-group launcher is no longer the global authority. `Настройки` is the canonical System landing and campaign/saves remain local System content. Route/history/checksum semantics remain Stellar-owned.
+## Strict visual contracts
 
-## PR #202 scope
+Read these before visual implementation:
 
-PR #202 is the second and final implementation PR of the heavy batch. It applies the 20-screen reference composition language without changing gameplay authority:
+1. `docs/audits/strict-reference-visual-parity-v3.md`;
+2. `docs/ui/reference-visual-parity-spec.md`;
+3. `docs/ui/race-theme-token-spec.md`;
+4. `docs/ui/missing-visual-assets.md`;
+5. `docs/ui/reference-visual-parity-checklist.md`.
 
-- Planet overview and Resource / Industry / Military contexts remain route-owned surfaces;
-- Universe keeps `Universe → Galaxy → Solar System` and coordinate navigation;
-- Fleet compose is visually staged as composition then target/mission while existing CREATE_FLEET / SEND_FLEET semantics remain unchanged;
-- Operations keeps its existing overview, market, events, arena, Solar War and logistics modes;
-- Science uses local research categories, technology catalog and selected-tech detail/requirements/queue;
-- Reports uses a dense journal/master-detail presentation over the existing report model;
-- Settings exposes the canonical local categories Graphics, Sound, Interface, Controls, Notifications, Campaign & Saves without inventing GameState options;
-- Ranking, production and ship-upgrades share the same industrial sci-fi panel language;
-- 1672×941 reference width is an explicit Browser gate in addition to release viewports.
+## Locked visual requirements
 
-## Safety boundary
+- match exact reference composition as closely as practical;
+- Planet refs `01/14/15/16` first;
+- remove default top-strip Hangar;
+- retain Population;
+- missing final art uses procedural CSS/SVG/canvas/generated fallback and is ledgered with exact dimensions;
+- three visual themes are required: Aegis blue/cyan, Synod emerald/green, Veyra red/orange;
+- theme authority stays existing `html[data-faction]` / `applyFactionShellIdentity()`;
+- no gameplay/simulation/schema/save/route change.
 
-Unchanged in this batch:
+## Implementation sequence after #203 merge
 
-- schema v20;
-- save format v6;
-- migrations;
-- economy/combat/research formulas;
-- bot behavior/scheduler;
-- campaign lifecycle authority;
-- gameplay route families and commands.
+1. `VISUAL-V3-01-PLANET-STRICT-PARITY`
+   - Planet overview;
+   - Resource zone;
+   - Industrial zone;
+   - Military zone;
+   - top resource strip correction;
+   - Aegis/Synod/Veyra theme foundation;
+   - strict 1672×941 screenshot comparison.
 
-Reference screenshots, copied Nemexia HTML/CSS/JS and third-party art are not runtime dependencies.
+2. `VISUAL-V3-02-ALL-ROUTES-STRICT-PARITY`
+   - Universe;
+   - Fleets;
+   - Operations / Market / Solar War / Events / Arena;
+   - Science;
+   - Command;
+   - Reports;
+   - Ranking;
+   - Settings;
+   - Ship Upgrades;
+   - route-wide final visual/accessibility/asset QA.
 
-## Asset rule
+PR2 is blocked until PR1 is merged and controller-accepted visually.
 
-Existing Stellar assets and stable CSS/SVG/canvas visuals remain preferred. The accepted missing-art ledger is:
+## Missing-art rule
 
-`docs/ui/reference-navigation-missing-assets.md`
+No missing decorative image blocks implementation. Use the procedural fallback, then add/update the exact row in `docs/ui/missing-visual-assets.md` with dimensions, format and race ownership.
 
-No newly discovered decorative gap in PR #202 requires final raster art to ship the batch.
-
-## Batch closure
-
-The accepted Audit #199 is archived verbatim at:
-
-`docs/audits/completed/reference-navigation-redesign-v2.md`
-
-PR #202 must not merge until its exact head has green:
-
-- assets audit;
-- lint;
-- typecheck;
-- unit suite;
-- build;
-- Graphify;
-- Browser E2E;
-- production Pages smoke;
-- responsive/reference viewport matrix;
-- accessibility/visual-baseline gates;
-- zero unresolved review threads;
-- no live-main drift.
-
-The generated #202 squash SHA cannot be known from inside #202. Record it in the next docs-only Audit or an explicitly permitted tiny docs closure record after merge.
-
-## Next program candidate
-
-`NEM-02-BOT-SCHEDULER-BATCHING-PERF` remains deferred at:
-
-`docs/audits/deferred/nemexia-proto-sim-scaling.md`
-
-NEM-01 already merged in PR #194. NEM-02 was accepted on an older baseline before the subsequent UI batches, so **do not start its implementation directly after #202**.
-
-The next safe action after #202 merge is a fresh docs-only Audit from the new `main` that revalidates NEM-02 against current source, tests, schema v20, 100-bot campaign behavior and current performance gates. That Audit may keep, amend or reject the old NEM-02 contract based on current evidence.
+Do not copy reference pixels or third-party art into runtime.
 
 ## Required startup reading
 
@@ -116,17 +86,17 @@ The next safe action after #202 merge is a fresh docs-only Audit from the new `m
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`;
 3. `docs/audits/current-execution-state.md`;
 4. `docs/audits/current-batch-audit.md`;
-5. `docs/audits/completed/reference-navigation-redesign-v2.md`;
-6. `docs/ui/reference-navigation-contract.md`;
-7. `docs/ui/reference-navigation-missing-assets.md`;
-8. `docs/project-status.json`;
-9. `docs/roadmap-pr-index.json`;
-10. `docs/16-execution-roadmap.md`;
-11. `docs/audits/deferred/nemexia-proto-sim-scaling.md`;
-12. actual GitHub `main` and active PR state.
+5. `docs/audits/strict-reference-visual-parity-v3.md`;
+6. `docs/ui/reference-visual-parity-spec.md`;
+7. `docs/ui/race-theme-token-spec.md`;
+8. `docs/ui/missing-visual-assets.md`;
+9. `docs/project-status.json`;
+10. `docs/roadmap-pr-index.json`;
+11. `docs/16-execution-roadmap.md`;
+12. actual GitHub `main` and PR #203 state.
 
 ## Exact continuation rule
 
-If PR #202 is still open: continue only #202 until exact-head green and review-clean, then squash-merge.
+If Audit #203 is open: continue only the docs-only Audit until exact-head green/review-clean, then squash-merge.
 
-If #202 is already merged: reconcile its generated squash SHA, then create a fresh **docs-only Audit** for deferred NEM-02. Do not start simulation implementation without that fresh Audit merge.
+If #203 is merged: create only `VISUAL-V3-01-PLANET-STRICT-PARITY` from the resulting fresh `main`. Do not start `VISUAL-V3-02` or NEM-02 yet.
