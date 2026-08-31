@@ -117,9 +117,13 @@ test('complete primary shell routes are canonical, visually flat and modal-free'
   await expect(page.locator('#system-saves-view')).toBeVisible();
   await expect(page.locator('.save-manager-controls')).toBeVisible();
 
-  await page.locator('[data-system-mode="settings"]').click();
+  // Visiting Saves must never rebind the global Settings destination.
+  await page.locator('#nav-research').click();
+  await expect(page).toHaveURL(/#\/research$/);
+  await page.locator('#nav-system').click();
   await expect(page).toHaveURL(/#\/system\/settings$/);
   await expect(page.locator('#system-settings-view')).toBeVisible();
+
   await page.locator('[name="compact-layout"]').check();
   await expect(page.locator('html')).toHaveAttribute('data-ui-density', 'compact');
   await page.locator('[name="reduce-motion"]').check();
@@ -127,7 +131,7 @@ test('complete primary shell routes are canonical, visually flat and modal-free'
   await expect(page.locator('html')).toHaveAttribute('data-reduced-motion', 'true');
 
   await page.goBack();
-  await expect(page).toHaveURL(/#\/system\/saves$/);
+  await expect(page).toHaveURL(/#\/research$/);
   await page.goForward();
   await expect(page).toHaveURL(/#\/system\/settings$/);
   await page.reload();
