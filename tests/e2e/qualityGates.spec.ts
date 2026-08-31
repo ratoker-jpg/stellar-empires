@@ -7,14 +7,14 @@ const EMPIRE_OVERVIEW_BASELINE_HEIGHT = 640;
 const VISUAL_SIGNATURE_COLUMNS = 12;
 const VISUAL_SIGNATURE_ROWS = 8;
 const EMPIRE_OVERVIEW_VISUAL_SIGNATURE = [
-  50, 61, 45, 32, 31, 31, 30, 30, 31, 31, 31, 32,
-  35, 35, 28, 27, 31, 26, 26, 26, 27, 26, 26, 28,
-  35, 40, 34, 18, 38, 38, 29, 20, 43, 35, 34, 23,
-  47, 46, 35, 33, 28, 28, 51, 54, 46, 33, 28, 27,
-  34, 23, 34, 23, 27, 18, 36, 21, 37, 21, 27, 17,
-  30, 28, 28, 24, 29, 22, 31, 25, 30, 23, 30, 19,
-  29, 26, 18, 12, 12, 14, 29, 26, 16, 12, 12, 13,
-  19, 20, 23, 24, 19, 19, 18, 19, 26, 26, 18, 16,
+  47, 34, 36, 27, 24, 19, 19, 19, 19, 19, 19, 19,
+  35, 35, 28, 27, 31, 26, 25, 26, 26, 25, 25, 27,
+  35, 40, 34, 18, 38, 38, 29, 20, 43, 35, 34, 22,
+  46, 45, 34, 33, 28, 27, 49, 52, 44, 31, 27, 24,
+  34, 23, 34, 23, 27, 17, 35, 21, 37, 20, 27, 15,
+  29, 28, 28, 24, 29, 22, 31, 25, 30, 23, 30, 18,
+  28, 26, 18, 12, 12, 13, 29, 26, 16, 12, 12, 12,
+  18, 19, 22, 22, 17, 17, 17, 18, 25, 25, 17, 14,
 ] as const;
 
 async function openStableEmpireOverview(page: Page): Promise<void> {
@@ -90,9 +90,17 @@ test('empire overview has no WCAG A/AA automated accessibility violations', asyn
 test('empire overview visual signature remains stable', async ({ page }) => {
   await openStableEmpireOverview(page);
 
-  // The canonical shell intentionally changed the component's available width.
+  // The canonical shell owns the desktop viewport and Command owns its internal
+  // scroll. Verify the player starts at the real route header before Playwright
+  // scrolls the taller overview element into view for a deterministic capture.
+  const commandWorkspace = page.locator('#command-view');
+  await expect(commandWorkspace.locator('.command-route-header')).toBeVisible();
+  expect(await commandWorkspace.evaluate((element) => element.scrollTop)).toBe(0);
+
   // Keep the regression signal textual and deterministic so CI can validate the
   // rendered component without requiring binary snapshot updates through GitHub.
+  // With internal scroll ownership, locator.screenshot() brings the overview to
+  // the top of Command and the sticky local tabs intentionally overlay row one.
   const overview = page.locator('#command-overview-view');
   const box = await overview.boundingBox();
   expect(box).not.toBeNull();
