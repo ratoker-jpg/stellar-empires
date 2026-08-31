@@ -42,8 +42,14 @@ test('production Pages build survives real new game, save/load, navigation and r
   await expect(page.locator('.brand-logo')).toBeVisible();
   expect(notFoundResponses).toEqual([]);
 
+  // NAV-V2: the top-level Settings destination intentionally lands on settings.
+  // Saves remain a local System tab and are still one explicit action away.
   await page.locator('#nav-system').click();
+  await expect(page).toHaveURL(new RegExp(`${PRODUCTION_PATH.replaceAll('/', '\\/')}#/system/settings$`));
+  await expect(page.locator('#system-settings-view')).toBeVisible();
+  await page.locator('[data-system-mode="saves"]').click();
   await expect(page).toHaveURL(new RegExp(`${PRODUCTION_PATH.replaceAll('/', '\\/')}#/system/saves$`));
+
   const saveButton = page.locator('[data-save-action="create"]');
   await expect(saveButton).toBeEnabled();
   await saveButton.click();
