@@ -1,48 +1,160 @@
-/* UI-PARITY-05 — high-visibility Nemexia-inspired primary navigation.
-   The routing contract stays in appShellController/screenRegistry; this layer
-   only turns those existing route buttons into recognisable command modules. */
+/* NAV-V2-01 — canonical reference shell and primary navigation.
+   The route/state contract stays in AppShellController. This stylesheet only
+   recomposes the existing shell into the reference hierarchy:
+   brand | nine global destinations | campaign status, then resources/context. */
 
-html body .side-rail {
-  align-items: center;
-  min-height: 98px;
-  padding: 9px 15px;
-  border-bottom-color: var(--se-border-strong);
-  background:
-    linear-gradient(180deg, rgb(10 30 41 / 98%), rgb(3 13 21 / 98%)),
-    var(--se-bg-hud);
-  box-shadow:
-    inset 0 -1px rgb(85 216 255 / 26%),
-    0 14px 32px rgb(0 0 0 / 28%);
+/* Desktop shell --------------------------------------------------------- */
+html body .app-shell {
+  display: grid;
+  grid-template-columns: minmax(190px, 236px) minmax(0, 1fr) minmax(236px, 310px);
+  grid-template-rows: minmax(78px, auto) minmax(62px, auto) minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 8px;
 }
 
-html body .rail-group {
-  position: relative;
-  flex-direction: row;
-  align-items: center;
+html body .topbar {
+  grid-column: 1 / -1;
+  grid-row: 1 / 3;
+  display: grid;
+  grid-template-columns: minmax(190px, 236px) minmax(0, 1fr) minmax(236px, 310px);
+  grid-template-rows: minmax(78px, auto) minmax(62px, auto);
   gap: 0;
-  padding: 0 7px;
-  border-left: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgb(85 216 255 / 30%);
+  border-radius: 10px 10px 0 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgb(85 216 255 / 8%), transparent 48%),
+    linear-gradient(180deg, rgb(7 24 36 / 99%), rgb(2 11 18 / 99%));
+  box-shadow:
+    inset 0 -1px rgb(85 216 255 / 24%),
+    0 16px 38px rgb(0 0 0 / 34%);
 }
 
-html body .rail-group:not(:first-of-type)::before {
-  top: 10px;
-  bottom: 10px;
-  left: 0;
-  background: linear-gradient(180deg, transparent, rgb(85 216 255 / 34%), transparent);
+html body .topbar::after {
+  display: none;
+}
+
+html body .brand-lockup {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px 12px;
+  border-right: 1px solid rgb(85 216 255 / 15%);
+  background: linear-gradient(90deg, rgb(85 216 255 / 7%), transparent 78%);
+}
+
+html body .brand-logo {
+  width: min(100%, 205px);
+  max-height: 42px;
+}
+
+html body .brand-subtitle {
+  margin: 0;
+  font-size: 0.54rem;
+  letter-spacing: 0.1em;
+}
+
+html body .hud-colony-context {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+html body .hud-colony-context label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: var(--se-text-muted);
+  font-size: 0.5rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+html body .hud-colony-context select {
+  width: 100%;
+  min-width: 0;
+  height: 24px;
+  padding: 2px 5px;
+  border: 1px solid rgb(85 216 255 / 24%);
+  border-radius: 4px;
+  background: rgb(2 13 21 / 92%);
+  color: var(--se-text-primary);
+  font-size: 0.62rem;
+}
+
+html body .hud-colony-context > div {
+  display: none;
+}
+
+html body .topbar-status {
+  grid-column: 3;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px 11px;
+  border-left: 1px solid rgb(85 216 255 / 15%);
+  background: linear-gradient(270deg, rgb(226 177 82 / 7%), transparent 82%);
+}
+
+html body .topbar-status strong {
+  color: #d9f5ff;
+}
+
+html body .resource-strip {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 5px;
+  min-width: 0;
+  padding: 6px 8px;
+  border-top: 1px solid rgb(85 216 255 / 14%);
+  background: rgb(1 8 14 / 72%);
+}
+
+html body .resource-chip {
+  min-height: 48px;
+  border-radius: 5px 1px 5px 1px;
+}
+
+/* The nav remains the existing .side-rail JS hook for compatibility, but it
+   is no longer a side rail or a grouped launcher. Group wrappers are layout-
+   transparent and the nine registered routes form one canonical row. */
+html body .side-rail {
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 7;
+  display: grid;
+  grid-template-columns: repeat(9, minmax(62px, 1fr));
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  padding: 8px 9px;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+html body .rail-group,
+html body .rail-group__items {
+  display: contents;
 }
 
 html body .rail-group__label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-html body .rail-group__items {
-  gap: 7px;
+  display: none !important;
 }
 
 html body .side-rail .rail-button,
@@ -50,60 +162,73 @@ html body .side-rail .rail-button--information,
 html body .side-rail .rail-button--utility,
 html body .rail-group--compact .rail-button {
   position: relative;
-  flex: 0 0 92px;
-  min-height: 78px;
-  gap: 4px;
-  padding: 6px 6px 7px;
+  display: grid;
+  grid-template-rows: 31px auto;
+  place-items: center;
+  gap: 3px;
+  width: 100%;
+  min-width: 0;
+  min-height: 60px;
+  padding: 4px 3px 5px;
   overflow: hidden;
-  border: 1px solid rgb(85 216 255 / 20%);
-  border-radius: 12px 4px 12px 4px;
+  border: 1px solid rgb(85 216 255 / 17%);
+  border-radius: 7px 2px 7px 2px;
   background:
-    linear-gradient(145deg, rgb(85 216 255 / 10%), transparent 48%),
-    linear-gradient(180deg, rgb(10 29 42 / 94%), rgb(3 12 20 / 96%));
-  box-shadow: inset 0 1px rgb(255 255 255 / 5%);
+    linear-gradient(145deg, rgb(85 216 255 / 8%), transparent 46%),
+    linear-gradient(180deg, rgb(9 27 40 / 88%), rgb(2 11 18 / 92%));
+  color: #8faab8;
+  box-shadow: inset 0 1px rgb(255 255 255 / 4%);
+  cursor: pointer;
+  opacity: 1;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
 }
 
 html body .side-rail .rail-button::before {
   position: absolute;
-  right: 9px;
+  right: 7px;
   bottom: 0;
-  left: 9px;
+  left: 7px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgb(85 216 255 / 72%), transparent);
   content: "";
-  opacity: 0.48;
+  background: linear-gradient(90deg, transparent, rgb(85 216 255 / 72%), transparent);
+  opacity: 0.28;
 }
 
 html body .side-rail .rail-button::after {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 7px;
-  height: 7px;
-  border-top: 1px solid rgb(185 242 255 / 56%);
-  border-right: 1px solid rgb(185 242 255 / 56%);
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid rgb(185 242 255 / 46%);
+  border-right: 1px solid rgb(185 242 255 / 46%);
   content: "";
-  opacity: 0.7;
+  opacity: 0.62;
 }
 
 html body .side-rail .rail-button:hover:not(:disabled) {
-  border-color: rgb(130 225 255 / 62%);
+  border-color: rgb(130 225 255 / 54%);
   background:
-    radial-gradient(circle at 50% 0%, rgb(85 216 255 / 20%), transparent 70%),
-    linear-gradient(180deg, rgb(12 40 56 / 96%), rgb(3 14 23 / 98%));
-  box-shadow: 0 0 22px rgb(85 216 255 / 16%), inset 0 1px rgb(255 255 255 / 8%);
-  transform: translateY(-2px);
+    radial-gradient(circle at 50% 0%, rgb(85 216 255 / 17%), transparent 68%),
+    linear-gradient(180deg, rgb(11 38 54 / 94%), rgb(2 14 23 / 96%));
+  box-shadow: 0 0 18px rgb(85 216 255 / 12%), inset 0 1px rgb(255 255 255 / 7%);
+  transform: translateY(-1px);
 }
 
 html body .side-rail .rail-button.is-active {
-  border-color: rgb(130 225 255 / 78%);
+  border-color: rgb(130 225 255 / 82%);
   background:
-    radial-gradient(circle at 50% 0%, rgb(85 216 255 / 31%), transparent 70%),
-    linear-gradient(180deg, rgb(13 54 70 / 98%), rgb(4 20 30 / 98%));
+    radial-gradient(circle at 50% 0%, rgb(85 216 255 / 29%), transparent 70%),
+    linear-gradient(180deg, rgb(12 51 68 / 98%), rgb(3 19 29 / 98%));
+  color: var(--se-accent-strong);
   box-shadow:
-    0 0 26px rgb(85 216 255 / 24%),
+    0 0 22px rgb(85 216 255 / 19%),
     inset 0 -3px var(--se-accent),
-    inset 0 1px rgb(255 255 255 / 10%);
+    inset 0 1px rgb(255 255 255 / 9%);
 }
 
 html body .side-rail .rail-button.is-active::before {
@@ -112,15 +237,16 @@ html body .side-rail .rail-button.is-active::before {
 
 html body .rail-button__icon,
 html body .rail-button > span:first-child {
-  width: 37px;
-  height: 37px;
-  border-color: rgb(185 242 255 / 42%);
+  display: block;
+  width: 29px;
+  height: 29px;
+  border: 1px solid rgb(185 242 255 / 34%);
   border-radius: 50%;
-  background-color: rgb(1 9 15 / 76%);
+  background-color: rgb(1 9 15 / 78%);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 76%;
-  box-shadow: inset 0 0 13px rgb(85 216 255 / 14%);
+  box-shadow: inset 0 0 12px rgb(85 216 255 / 13%);
   color: transparent;
   font-size: 0;
 }
@@ -128,11 +254,17 @@ html body .rail-button > span:first-child {
 html body .rail-button small {
   position: relative;
   z-index: 1;
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
   color: var(--se-text-secondary);
-  font-size: 0.57rem;
+  font-size: clamp(0.48rem, 0.56vw, 0.58rem);
   font-weight: 780;
-  letter-spacing: 0.045em;
-  text-shadow: 0 1px rgb(0 0 0 / 72%);
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 html body .rail-button.is-active small {
@@ -181,58 +313,437 @@ html body #nav-system .rail-button__icon {
 }
 
 html body .rail-button__badge {
+  position: absolute;
   z-index: 3;
-  top: 5px;
-  right: 7px;
-  min-width: 19px;
-  height: 19px;
-  border: 1px solid rgb(255 255 255 / 65%);
-  box-shadow: 0 0 14px rgb(255 101 101 / 42%);
+  top: 4px;
+  right: 5px;
+  min-width: 17px;
+  height: 17px;
+  border: 1px solid rgb(255 255 255 / 62%);
+  box-shadow: 0 0 12px rgb(255 101 101 / 38%);
 }
 
-@media (max-width: 1180px) {
-  html body .side-rail {
-    min-height: 88px;
-    padding-inline: 9px;
+/* Context + workspace --------------------------------------------------- */
+html body .game-layout {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: minmax(224px, 268px) minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgb(85 216 255 / 24%);
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+}
+
+html body .command-panel {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  border-right: 1px solid rgb(85 216 255 / 15%);
+  border-left: 0;
+}
+
+html body .view-stack {
+  min-width: 0;
+}
+
+/* Planet owns its richer contextual left rail internally. The generic shell
+   context would otherwise duplicate it, so only the planet route collapses
+   the outer context column. */
+html[data-shell-route-family='planet'] body .game-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-shell-route-family='planet'] body #shell-context-panel {
+  display: none;
+}
+
+/* Planet contextual rail ----------------------------------------------- */
+html[data-shell-route-family='planet'] body #planet-view:not([hidden]) {
+  position: relative;
+  display: grid;
+  grid-template-columns: 216px minmax(0, 1fr) 272px;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px;
+  overflow: hidden;
+}
+
+html[data-shell-route-family='planet'] body .planet-header {
+  grid-column: 2 / 4;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 78px;
+  margin: 0;
+}
+
+html[data-shell-route-family='planet'] body .planet-header-controls {
+  position: static;
+  min-width: 118px;
+}
+
+html[data-shell-route-family='planet'] body .planet-selector-label {
+  position: absolute;
+  z-index: 4;
+  top: 10px;
+  left: 10px;
+  width: 216px;
+  min-width: 0;
+  margin: 0;
+  padding: 7px 8px;
+  border: 1px solid rgb(85 216 255 / 22%);
+  border-radius: 7px 2px 7px 2px;
+  background: rgb(2 13 21 / 94%);
+}
+
+html[data-shell-route-family='planet'] body .planet-mode-tabs {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 5px;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 62px 0 0;
+  border: 0;
+  background: transparent;
+}
+
+html[data-shell-route-family='planet'] body .planet-mode-tab {
+  flex: 0 0 auto;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 45px;
+  border-radius: 7px 2px 7px 2px;
+}
+
+html[data-shell-route-family='planet'] body #planet-development-tabs:not([hidden]) {
+  grid-column: 2 / 4;
+  grid-row: 2;
+  margin: 0;
+}
+
+html[data-shell-route-family='planet'] body #planet-core-workspace:not([hidden]),
+html[data-shell-route-family='planet'] body #planet-core-workspace:not([hidden]) > .planet-workspace {
+  display: contents;
+}
+
+html[data-shell-route-family='planet'] body .planet-queue-bar {
+  grid-column: 2 / 4;
+  grid-row: 3;
+  min-width: 0;
+  margin: 0;
+}
+
+html[data-shell-route-family='planet'] body .planet-context-panel {
+  grid-column: 1;
+  grid-row: 4;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+html[data-shell-route-family='planet'] body .planet-stage {
+  grid-column: 2;
+  grid-row: 4;
+  min-width: 0;
+  min-height: 0;
+}
+
+html[data-shell-route-family='planet'] body .planet-details-panel {
+  grid-column: 3;
+  grid-row: 4;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+html[data-shell-route-family='planet'] body .planet-development-surface:not([hidden]) {
+  grid-column: 2 / 4;
+  grid-row: 3 / 5;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Compact desktop ------------------------------------------------------- */
+@media (max-width: 1380px) {
+  html body .app-shell,
+  html body .topbar {
+    grid-template-columns: 172px minmax(0, 1fr) 218px;
   }
 
-  html body .rail-group {
-    padding-inline: 4px;
+  html body .brand-logo {
+    max-height: 36px;
+  }
+
+  html body .brand-subtitle,
+  html body .hud-activity-badges {
+    display: none;
+  }
+
+  html body .side-rail {
+    grid-template-columns: repeat(9, minmax(54px, 1fr));
+    gap: 3px;
+    padding-inline: 5px;
   }
 
   html body .side-rail .rail-button,
   html body .side-rail .rail-button--information,
   html body .side-rail .rail-button--utility,
   html body .rail-group--compact .rail-button {
-    flex-basis: 78px;
-    min-height: 67px;
+    grid-template-rows: 27px auto;
+    min-height: 54px;
   }
 
   html body .rail-button__icon,
   html body .rail-button > span:first-child {
-    width: 31px;
-    height: 31px;
+    width: 25px;
+    height: 25px;
+  }
+
+  html body .game-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  html[data-shell-route-family='planet'] body #planet-view:not([hidden]) {
+    grid-template-columns: 198px minmax(0, 1fr) 244px;
+  }
+
+  html[data-shell-route-family='planet'] body .planet-selector-label {
+    width: 198px;
   }
 }
 
-@media (max-height: 780px) {
+@media (max-width: 1120px) {
+  html body .app-shell,
+  html body .topbar {
+    grid-template-columns: 158px minmax(0, 1fr) 192px;
+  }
+
+  html body .topbar-status {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    padding-inline: 7px;
+  }
+
+  html body .hud-emblem-socket {
+    width: 34px;
+    height: 34px;
+  }
+
+  html body .topbar-status small,
+  html body #hud-save-state,
+  html body .build-badge {
+    display: none;
+  }
+
+  html body .resource-strip {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 3px;
+    padding-inline: 5px;
+  }
+
+  html body .resource-chip {
+    grid-template-columns: 24px minmax(0, 1fr);
+    padding-inline: 5px;
+  }
+
+  html body .resource-chip img {
+    width: 22px;
+    height: 22px;
+  }
+
+  html body .resource-chip em {
+    display: none;
+  }
+
   html body .side-rail {
-    min-height: 74px !important;
-    height: 74px !important;
-    padding-block: 4px;
+    grid-template-columns: repeat(9, minmax(48px, 1fr));
+  }
+
+  html body .rail-button small {
+    font-size: 0.47rem;
+  }
+
+  html body .game-layout {
+    grid-template-columns: 198px minmax(0, 1fr);
+  }
+
+  html[data-shell-route-family='planet'] body #planet-view:not([hidden]) {
+    grid-template-columns: 184px minmax(0, 1fr) 218px;
+  }
+
+  html[data-shell-route-family='planet'] body .planet-selector-label {
+    width: 184px;
+  }
+}
+
+/* Tablet/mobile: contextual rails may stack, but every global destination
+   remains directly visible in the primary navigation. */
+@media (max-width: 900px) {
+  html body .app-shell {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  html body .topbar {
+    order: 1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    border-radius: 0;
+  }
+
+  html body .brand-lockup {
+    grid-column: 1;
+    grid-row: 1;
+    border-right: 0;
+  }
+
+  html body .topbar-status {
+    grid-column: 2;
+    grid-row: 1;
+    border-left: 0;
+  }
+
+  html body .resource-strip {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  html body .side-rail {
+    order: 2;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
+    padding: 5px;
+    border-bottom: 1px solid rgb(85 216 255 / 22%);
+    background: rgb(2 12 20 / 98%);
   }
 
   html body .side-rail .rail-button,
   html body .side-rail .rail-button--information,
   html body .side-rail .rail-button--utility,
   html body .rail-group--compact .rail-button {
-    min-height: 61px !important;
-    padding-block: 4px;
+    min-height: 52px;
+  }
+
+  html body .game-layout {
+    order: 3;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 0;
+    border-radius: 0;
+  }
+
+  html body .command-panel {
+    max-height: 240px;
+    border-right: 0;
+    border-bottom: 1px solid rgb(85 216 255 / 14%);
+  }
+
+  html[data-shell-route-family='planet'] body #planet-view:not([hidden]) {
+    display: block;
+    padding: 8px;
+    overflow: auto;
+  }
+
+  html[data-shell-route-family='planet'] body .planet-header,
+  html[data-shell-route-family='planet'] body .planet-mode-tabs,
+  html[data-shell-route-family='planet'] body #planet-development-tabs:not([hidden]),
+  html[data-shell-route-family='planet'] body .planet-queue-bar,
+  html[data-shell-route-family='planet'] body .planet-context-panel,
+  html[data-shell-route-family='planet'] body .planet-stage,
+  html[data-shell-route-family='planet'] body .planet-details-panel,
+  html[data-shell-route-family='planet'] body .planet-development-surface:not([hidden]) {
+    position: static;
+    display: revert;
+    width: auto;
+    margin-bottom: 8px;
+  }
+
+  html[data-shell-route-family='planet'] body .planet-selector-label {
+    position: static;
+    width: auto;
+  }
+
+  html[data-shell-route-family='planet'] body .planet-mode-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0;
+  }
+
+  html[data-shell-route-family='planet'] body #planet-core-workspace:not([hidden]) {
+    display: block;
+  }
+
+  html[data-shell-route-family='planet'] body #planet-core-workspace:not([hidden]) > .planet-workspace {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-height: 780px) and (min-width: 901px) {
+  html body .app-shell {
+    grid-template-rows: 70px 54px minmax(0, 1fr);
+  }
+
+  html body .topbar {
+    grid-template-rows: 70px 54px;
+  }
+
+  html body .brand-logo {
+    max-height: 28px;
+  }
+
+  html body .hud-colony-context label > span {
+    display: none;
+  }
+
+  html body .hud-colony-context select {
+    height: 21px;
+    font-size: 0.56rem;
+  }
+
+  html body .side-rail {
+    min-height: 0 !important;
+    height: auto !important;
+    padding-block: 5px;
+  }
+
+  html body .side-rail .rail-button,
+  html body .side-rail .rail-button--information,
+  html body .side-rail .rail-button--utility,
+  html body .rail-group--compact .rail-button {
+    min-height: 52px !important;
+    padding-block: 3px;
   }
 
   html body .rail-button__icon,
   html body .rail-button > span:first-child {
-    width: 27px;
-    height: 27px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .side-rail .rail-button {
+    transition: none;
+  }
+
+  html body .side-rail .rail-button:hover:not(:disabled) {
+    transform: none;
   }
 }

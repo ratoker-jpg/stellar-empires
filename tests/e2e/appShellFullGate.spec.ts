@@ -33,6 +33,18 @@ const LEGACY_DOM = [
   '#nav-fleet-doctrine',
 ] as const;
 
+const PRIMARY_LABELS = [
+  'Планета',
+  'Вселенная',
+  'Флоты',
+  'Операции',
+  'Наука',
+  'Командование',
+  'Отчёты',
+  'Рейтинг',
+  'Настройки',
+] as const;
+
 test('new campaign exposes immutable compressed duration expectations at release viewports', async ({ browser }) => {
   for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
     const context = await browser.newContext({ viewport });
@@ -60,7 +72,7 @@ test('new campaign exposes immutable compressed duration expectations at release
   }
 });
 
-test('complete primary shell routes are canonical, grouped and modal-free', async ({ page }) => {
+test('complete primary shell routes are canonical, visually flat and modal-free', async ({ page }) => {
   await page.goto('/?e2e=1#/command/overview');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
 
@@ -68,12 +80,9 @@ test('complete primary shell routes are canonical, grouped and modal-free', asyn
   await expect(page.locator('#command-overview-view')).toBeVisible();
   await expect(page.locator('#nav-empire')).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('.side-rail .rail-button')).toHaveCount(9);
-  await expect(page.locator('.side-rail .rail-group')).toHaveCount(4);
-  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'development');
-  await expect(page.locator('html')).toHaveAttribute('data-shell-navigation-group', 'development');
-  await expect(page.locator('[data-navigation-group="development"]')).toHaveClass(/is-active/);
+  await expect(page.locator('.side-rail .rail-button small')).toHaveText([...PRIMARY_LABELS]);
+  await expect(page.locator('.side-rail .rail-group__label:visible')).toHaveCount(0);
   await expect(page.locator('#nav-galaxy')).toContainText('Вселенная');
-  await expect(page.locator('#nav-operations')).toHaveAttribute('data-shell-navigation-group', 'gameplay');
   await expect(page.locator('#nav-operations')).not.toHaveClass(/rail-button--utility/);
   for (const selector of LEGACY_DOM) await expect(page.locator(selector)).toHaveCount(0);
   await expect(page.locator('.runtime-showcase')).toHaveCount(0);
@@ -87,25 +96,34 @@ test('complete primary shell routes are canonical, grouped and modal-free', asyn
 
   await page.locator('#nav-operations').click();
   await expect(page).toHaveURL(/#\/operations\/overview$/);
-  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'gameplay');
-  await expect(page.locator('[data-navigation-group="gameplay"]')).toHaveClass(/is-active/);
+  await expect(page.locator('#nav-operations')).toHaveAttribute('aria-current', 'page');
 
   await page.locator('#nav-rating').click();
   await expect(page).toHaveURL(/#\/ranking$/);
   await expect(page.locator('#ranking-view')).toBeVisible();
   await expect(page.locator('#ranking-list-view .command-ranking-entry').first()).toBeVisible();
   await expect(page.locator('#shell-context-content')).toContainText('Место');
-  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'information');
 
+  // The canonical top-level System destination is Settings.
   await page.locator('#nav-system').click();
-  await expect(page).toHaveURL(/#\/system\/saves$/);
+  await expect(page).toHaveURL(/#\/system\/settings$/);
   await expect(page.locator('#system-view')).toBeVisible();
+  await expect(page.locator('#system-settings-view')).toBeVisible();
+  await expect(page.locator('#nav-system')).toHaveAttribute('aria-current', 'page');
+
+  // Campaign/save controls remain a local System destination.
+  await page.locator('[data-system-mode="saves"]').click();
+  await expect(page).toHaveURL(/#\/system\/saves$/);
   await expect(page.locator('#system-saves-view')).toBeVisible();
   await expect(page.locator('.save-manager-controls')).toBeVisible();
-  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'utility');
-  await page.locator('[data-system-mode="settings"]').click();
+
+  // Visiting Saves must never rebind the global Settings destination.
+  await page.locator('#nav-research').click();
+  await expect(page).toHaveURL(/#\/research$/);
+  await page.locator('#nav-system').click();
   await expect(page).toHaveURL(/#\/system\/settings$/);
   await expect(page.locator('#system-settings-view')).toBeVisible();
+
   await page.locator('[name="compact-layout"]').check();
   await expect(page.locator('html')).toHaveAttribute('data-ui-density', 'compact');
   await page.locator('[name="reduce-motion"]').check();
@@ -113,7 +131,7 @@ test('complete primary shell routes are canonical, grouped and modal-free', asyn
   await expect(page.locator('html')).toHaveAttribute('data-reduced-motion', 'true');
 
   await page.goBack();
-  await expect(page).toHaveURL(/#\/system\/saves$/);
+  await expect(page).toHaveURL(/#\/research$/);
   await page.goForward();
   await expect(page).toHaveURL(/#\/system\/settings$/);
   await page.reload();

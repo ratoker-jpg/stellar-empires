@@ -220,11 +220,11 @@ export function parseAppShellRoute(
   }
   if (segments[0] === 'system') {
     const requested = segments[1];
-    const mode = isSystemShellMode(requested) ? requested : 'saves';
+    const mode = isSystemShellMode(requested) ? requested : 'settings';
     return parsedRoute(
       { family: 'system', mode },
       requested !== undefined && requested !== mode
-        ? 'Раздел системы не распознан. Открыты сохранения.'
+        ? 'Раздел системы не распознан. Открыты настройки.'
         : null,
     );
   }

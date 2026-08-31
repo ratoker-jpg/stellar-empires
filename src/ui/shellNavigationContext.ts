@@ -185,7 +185,7 @@ export function createDefaultShellRoute(
     case 'command': return { family: 'command', mode: 'overview' };
     case 'reports': return { family: 'reports', filter: 'all' };
     case 'ranking': return { family: 'ranking' };
-    case 'system': return { family: 'system', mode: 'saves' };
+    case 'system': return { family: 'system', mode: 'settings' };
   }
 }
 
@@ -335,7 +335,11 @@ export class ShellNavigationContextModel {
   ): void {
     this.#campaignKey = campaignKey(state);
     if (route.family === 'planet') this.#activePlanetId = route.planetId;
-    this.#lastRoutes.set(route.family, route);
+    if (route.family === 'system' && route.mode === 'saves') {
+      this.#lastRoutes.set('system', createDefaultShellRoute('system', state, this.#activePlanetId));
+    } else {
+      this.#lastRoutes.set(route.family, route);
+    }
     if (previousRoute !== null && previousRoute.family !== route.family) {
       this.#originRoute = previousRoute;
     }

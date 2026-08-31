@@ -11,6 +11,15 @@ html body .rail-group {
   position: relative;
 }
 
+/* NAV-V2-01 turns .side-rail into the nine-column primary navigation grid.
+   Legacy container ornaments from globalHud.css become anonymous grid items,
+   so suppress only those container pseudo-elements. Button ornaments remain. */
+html body .side-rail::before,
+html body .side-rail::after {
+  display: none !important;
+  content: none !important;
+}
+
 html body .rail-group:not(:first-of-type)::before {
   position: absolute;
   top: 18px;
@@ -129,7 +138,37 @@ html body dialog {
   scrollbar-color: var(--se-accent) rgb(0 0 0 / 28%);
 }
 
+/* NAV-V2-01 — the desktop shell owns exactly one viewport. Route workspaces
+   scroll inside .view-stack instead of expanding the document. */
+@media (min-width: 901px) {
+  html body .app-shell {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  html body .game-layout,
+  html body .view-stack {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+/* accessibilityRuntime.css marks the 900–955px range as compact and carries
+   a legacy 940px-minimum header template. Keep the canonical shell columns
+   authoritative there so campaign status/resources cannot be clipped. */
+@media (min-width: 901px) and (max-width: 955px) {
+  html[data-viewport-mode='compact'] body .topbar {
+    grid-template-columns: 158px minmax(0, 1fr) 192px;
+  }
+}
+
 @media (max-width: 900px) {
+  html[data-viewport-mode='compact'] body .topbar,
   html body .topbar {
     grid-template-columns: 180px minmax(0, 1fr);
   }

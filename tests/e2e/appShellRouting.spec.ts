@@ -19,8 +19,9 @@ test('Planet and Space routes restore through URL, history, breadcrumbs and relo
   await expect(page.locator('html')).toHaveAttribute('data-shell-route-family', 'space');
   await expect(page.locator('#galaxy-view')).toBeVisible();
   await expect(page.locator('#planet-view')).toBeHidden();
-  await expect(page.locator('[data-shell-return="planet"]')).toContainText('Промышленная зона');
 
+  // NAV-V2: the canonical primary row owns cross-family navigation. Route
+  // memory remains the convenience layer and restores the latest Planet state.
   await page.locator('#nav-planet').click();
   await expect(page).toHaveURL(/#\/planet\/[^/]+\/industry$/);
   await expect(page.locator('html')).toHaveAttribute('data-shell-route-family', 'planet');
@@ -48,7 +49,6 @@ test('primary family activation restores the latest valid subroute', async ({ pa
 
   await page.locator('#nav-reports').click();
   await expect(page).toHaveURL(/#\/reports\/all$/);
-  await expect(page.locator('[data-shell-return="operations"]')).toContainText('Логистика');
 
   await page.locator('#nav-operations').click();
   await expect(page).toHaveURL(/#\/operations\/logistics$/);
@@ -60,7 +60,30 @@ test('primary family activation restores the latest valid subroute', async ({ pa
   await expect(page.locator('[data-operations-mode="logistics"]')).toHaveAttribute('aria-selected', 'true');
 });
 
-test('the typed registry exposes grouped primary controls and visible keyboard order', async ({ page }) => {
+test('bare and malformed System routes normalize to Settings', async ({ page }) => {
+  await page.goto('/?e2e=1#/system');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/system\/settings$/);
+  await expect(page.locator('html')).toHaveAttribute('data-shell-route-family', 'system');
+  await expect(page.locator('#system-settings-view')).toBeVisible();
+
+  await page.goto('/?e2e=1#/system/not-a-mode');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  await expect(page).toHaveURL(/#\/system\/settings$/);
+  await expect(page.locator('#system-settings-view')).toBeVisible();
+});
+
+test('compact canonical header stays fully inside the 940px viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 940, height: 900 });
+  await page.goto('/?e2e=1#/system/settings');
+  await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
+  const status = await page.locator('.topbar-status').boundingBox();
+  expect(status).not.toBeNull();
+  expect(Math.ceil((status?.x ?? 0) + (status?.width ?? 0))).toBeLessThanOrEqual(940);
+  await expect(page.locator('.topbar-status')).toBeInViewport();
+});
+
+test('the typed registry exposes canonical primary controls and visible keyboard order', async ({ page }) => {
   await page.goto('/?e2e=1#/space/universe');
   await expect(page.locator('html')).toHaveAttribute('data-app-ready', 'true');
   const ids = await page.locator('.side-rail [data-shell-screen]').evaluateAll((buttons) =>
@@ -77,7 +100,6 @@ test('the typed registry exposes grouped primary controls and visible keyboard o
     'nav-rating',
     'nav-system',
   ]);
-  await expect(page.locator('.side-rail')).toHaveAttribute('data-active-group', 'gameplay');
   await page.locator('#nav-galaxy').focus();
   await page.keyboard.press('ArrowLeft');
   await expect(page.locator('#nav-planet')).toBeFocused();

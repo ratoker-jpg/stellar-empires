@@ -118,10 +118,15 @@ describe('application shell routes', () => {
       canonicalHash: '#/reports/all',
       error: 'Фильтр отчётов не распознан. Открыт единый журнал.',
     });
+    expect(parseAppShellRoute('#/system', state, planetId)).toEqual({
+      route: { family: 'system', mode: 'settings' },
+      canonicalHash: '#/system/settings',
+      error: null,
+    });
     expect(parseAppShellRoute('#/system/missing', state, planetId)).toEqual({
-      route: { family: 'system', mode: 'saves' },
-      canonicalHash: '#/system/saves',
-      error: 'Раздел системы не распознан. Открыты сохранения.',
+      route: { family: 'system', mode: 'settings' },
+      canonicalHash: '#/system/settings',
+      error: 'Раздел системы не распознан. Открыты настройки.',
     });
   });
 
