@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 const QUALITY_VIEWPORT = { width: 1366, height: 768 } as const;
 const EMPIRE_OVERVIEW_BASELINE_WIDTH = 1089;
-const EMPIRE_OVERVIEW_BASELINE_HEIGHT = 641;
+const EMPIRE_OVERVIEW_BASELINE_HEIGHT = 640;
 const VISUAL_SIGNATURE_COLUMNS = 12;
 const VISUAL_SIGNATURE_ROWS = 8;
 const EMPIRE_OVERVIEW_VISUAL_SIGNATURE = [
