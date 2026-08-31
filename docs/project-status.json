@@ -1,115 +1,95 @@
 {
-  "statusVersion": 107,
-  "updatedAt": "2026-08-30",
+  "statusVersion": 108,
+  "updatedAt": "2026-08-31",
   "repository": "ratoker-jpg/stellar-empires",
   "defaultBranch": "main",
   "publicPagesUrl": "https://ratoker-jpg.github.io/stellar-empires/",
   "roadmapVersion": 6,
   "releaseTarget": "1.0.0",
-  "lastMergedPr": 197,
-  "lastMergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57",
-  "verifiedMainBaseline": "PR #197 merge / NEMEXIA-PROTO-UI-PARITY completed",
+  "lastMergedPr": 198,
+  "lastMergeSha": "7e328020ebb8296701011197deb9e81ac6e2fb56",
+  "verifiedMainBaseline": "PR #198 merge / fresh main for REFERENCE-NAVIGATION-REDESIGN-V2 Audit",
   "programPlan": "docs/30-nemexia-full-prototype-program.md",
   "runtimeBaselinePr": 185,
   "runtimeBaselineSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6",
-  "activePr": null,
-  "activePrKind": null,
-  "activeWorkItem": null,
-  "activeBranch": null,
+  "activePr": 199,
+  "activePrKind": "docs-only-audit",
+  "activeWorkItem": "REFERENCE-NAVIGATION-REDESIGN-V2",
+  "activeBranch": "audit/reference-navigation-redesign-v2",
   "nextPrAfterActive": null,
-  "nextPrKind": "audit-required",
-  "nextWorkItem": "owner-prioritized-next-batch",
-  "currentMilestone": "NEMEXIA-PROTO-UI-PARITY / completed",
+  "nextPrKind": "implementation-after-audit-merge",
+  "nextWorkItem": "NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV",
+  "currentMilestone": "REFERENCE-NAVIGATION-REDESIGN-V2 / Audit PR #199 open",
   "authoritativeRoadmap": "docs/29-post-1.0-nemexia-reference-roadmap.md",
   "historicalReleaseRoadmap": "docs/27-playable-game-roadmap-v5.md",
   "deliveryProtocol": "docs/28-audit-first-autonomous-delivery-protocol.md",
   "currentAudit": "docs/audits/current-batch-audit.md",
   "currentExecutionState": "docs/audits/current-execution-state.md",
+  "referenceNavigationContract": "docs/ui/reference-navigation-contract.md",
+  "referenceNavigationMissingAssets": "docs/ui/reference-navigation-missing-assets.md",
   "previousBatch": {
-    "batchId": "POST-1.0-STRATEGIC-FEEDBACK-TRUTH",
+    "batchId": "NEMEXIA-PROTO-UI-PARITY",
     "status": "completed",
-    "auditPr": 182,
-    "auditMergeSha": "b09887489db7754f0c0b2672649db9283b879732",
-    "archive": "docs/audits/completed/post-1.0-strategic-feedback-truth.md",
+    "auditPr": 196,
+    "auditMergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513",
+    "archive": "docs/audits/completed/nemexia-proto-ui-parity.md",
     "implementation": [
       {
-        "pr": 183,
-        "mergeSha": "83a4942c35aac8d7f0b02f7730f0646c171c98b5"
-      },
-      {
-        "pr": 184,
-        "mergeSha": "691078ab9ce5b0ab48e7aa69e71fe72322528af0"
-      },
-      {
-        "pr": 185,
-        "mergeSha": "e974c09e7779b4cf3bbc6d0279b8d35f177a29e6"
+        "pr": 197,
+        "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57"
       }
     ],
-    "hasPr4": false
+    "closurePr": 198,
+    "closureMergeSha": "7e328020ebb8296701011197deb9e81ac6e2fb56"
   },
   "currentAuditState": {
-    "workItem": "NEMEXIA-PROTO-UI-PARITY",
-    "auditPr": 196,
-    "startingMain": "15c846cb05d21e08415ce5f69e3134f8f8ec4b18",
-    "mergeSha": "175e52c8b2b8752c1f9a272261867d1c0b213513",
-    "status": "completed",
-    "archive": "docs/audits/completed/nemexia-proto-ui-parity.md",
-    "implementationAuthorized": true,
-    "acceptedBatchId": "NEMEXIA-PROTO-UI-PARITY",
-    "acceptedImplementationCount": 4,
-    "complexity": "medium",
+    "workItem": "REFERENCE-NAVIGATION-REDESIGN-V2",
+    "auditPr": 199,
+    "startingMain": "7e328020ebb8296701011197deb9e81ac6e2fb56",
+    "mergeSha": null,
+    "status": "audit-pr-open",
+    "archive": null,
+    "implementationAuthorized": false,
+    "acceptedBatchId": "REFERENCE-NAVIGATION-REDESIGN-V2",
+    "acceptedImplementationCount": 2,
+    "complexity": "heavy",
     "criticalUnknownsResolved": true,
     "criticalUnknowns": []
   },
   "proposedBatch": {
-    "id": "NEMEXIA-PROTO-UI-PARITY",
-    "status": "completed",
-    "complexity": "medium",
-    "implementationAuthorized": true,
-    "archive": "docs/audits/completed/nemexia-proto-ui-parity.md",
+    "id": "REFERENCE-NAVIGATION-REDESIGN-V2",
+    "status": "audit-pr-open",
+    "complexity": "heavy",
+    "implementationAuthorized": false,
+    "archive": null,
     "workItems": [
       {
-        "id": "UI-PARITY-01-SHELL-PLANET",
+        "id": "NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV",
         "order": 1,
-        "pr": 197,
-        "status": "merged",
-        "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57",
-        "purpose": "Nemexia-style persistent shell and complete planet/development visual composition"
+        "pr": null,
+        "status": "pending-audit-merge",
+        "mergeSha": null,
+        "purpose": "replace the four-group side rail with the canonical nine-item top navigation and contextual planet/task rails"
       },
       {
-        "id": "UI-PARITY-02-MAPS-FLEETS-OPERATIONS",
+        "id": "NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA",
         "order": 2,
-        "pr": 197,
-        "status": "merged",
-        "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57",
-        "purpose": "clear map, fleet and operations workspaces with discoverable actions"
-      },
-      {
-        "id": "UI-PARITY-03-DEVELOPMENT-DATA",
-        "order": 3,
-        "pr": 197,
-        "status": "merged",
-        "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57",
-        "purpose": "science, command, reports, ranking and system information architecture"
-      },
-      {
-        "id": "UI-PARITY-04-ASSETS-CLEANUP-QA",
-        "order": 4,
-        "pr": 197,
-        "status": "merged",
-        "mergeSha": "b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57",
-        "purpose": "original assets, route-wide cleanup, visual baselines and final QA"
+        "pr": null,
+        "status": "pending-nav-v2-01",
+        "mergeSha": null,
+        "purpose": "apply the supplied 20-screen reference composition across route workspaces and close responsive/accessibility/asset QA"
       }
     ],
     "stateSchema": 20,
     "saveFormat": 6,
-    "migration": "v19-to-v20-deterministic",
-    "hasSecondImplementationPr": true
+    "migration": "unchanged",
+    "proceduralFallbacksAllowed": true,
+    "missingAssetLedgerRequired": true
   },
   "activeImplementationState": {
     "pr": 197,
     "startingMain": "175e52c8b2b8752c1f9a272261867d1c0b213513",
-    "status": "merged",
+    "status": "previous-batch-merged",
     "schema": 20,
     "save": 6,
     "migration": "unchanged",
@@ -169,20 +149,24 @@
     "newCampaignsSpawnOnePlayerPlusHundredBotEmpires": true,
     "botEmpireCountIsOptionalCampaignSettingsField": true,
     "interactiveE2eCampaignsKeepLegacyThreeBotLayout": true,
-    "botIdentityIsDeterministicFromCampaignSeed": true
+    "botIdentityIsDeterministicFromCampaignSeed": true,
+    "referenceNavigationUsesCanonicalNineItemTopRow": true,
+    "referenceImagesAreNotRuntimeDependencies": true,
+    "proceduralVisualFallbacksAllowed": true,
+    "proceduralFallbacksRequireMissingAssetLedger": true
   },
   "requiredStartupReading": [
     "AGENTS.md",
     "docs/28-audit-first-autonomous-delivery-protocol.md",
     "docs/audits/current-batch-audit.md",
     "docs/audits/current-execution-state.md",
-    "docs/audits/batch-history.md",
-    "docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md",
+    "docs/ui/reference-navigation-contract.md",
+    "docs/ui/reference-navigation-missing-assets.md",
     "docs/project-status.json",
     "docs/roadmap-pr-index.json",
     "docs/16-execution-roadmap.md",
     "docs/17-continuation-guide.md",
-    "actual GitHub main and PR #187 state"
+    "actual GitHub main and PR #199 state"
   ],
-  "nextAction": "NEMEXIA-PROTO-UI-PARITY is merged. Start a fresh Audit only after the owner prioritizes the next batch; NEM-02 remains deferred."
+  "nextAction": "Review and squash-merge docs-only Audit PR #199. After merge, create NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV from the resulting fresh main; do not start NAV-V2-02 before NAV-V2-01 is merged and validated."
 }

@@ -2,161 +2,138 @@
 
 ## Current handoff
 
-`main` is at the merged UI-parity implementation PR #197:
+Live `main` before the active Audit is:
 
-`b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57`
+`7e328020ebb8296701011197deb9e81ac6e2fb56`
 
-The Nemexia-inspired UI-parity batch is complete and merged. Its Audit #196 is archived at `docs/audits/completed/nemexia-proto-ui-parity.md`.
+This is docs closure PR #198 after the completed `NEMEXIA-PROTO-UI-PARITY` implementation.
 
-## Current delivery
-
-```text
-NEMEXIA-PROTO-UI-PARITY
-Audit #196 → 175e52c8b2b8752c1f9a272261867d1c0b213513
-PR #197 → b1c3c1b8c1b003dd645ca7e9b33f7903ebee2c57
-status: completed; 10/10 GitHub checks green
-```
-
-The implementation keeps formulas, state transitions and persistence unchanged. It rebuilds command navigation, the planet command centre, map context panels and the visual treatment of the primary routes using Stellar-owned assets only. The Nemexia saved pages at `D:\\Xuina\\WHAT\\saved_pages` remain visual and interaction references only; they do not authorize copying external code, branding or images. The next work requires a fresh Audit from this merged `main`; NEM-02 remains deferred.
-
-## Delivered authority lifecycle
-
-### Seed / fresh game
-
-- player-facing seed is uint32 `0..4294967295`;
-- numeric seed is persisted exactly as `GameState.seed`;
-- legacy string source compatibility remains;
-- real picker offers seed input and Web Crypto reroll/suggestion before state creation;
-- tests use explicit fixed seeds;
-- same seed + same faction/settings reproduces deterministic initial-world evidence;
-- different seed changes deterministic generated-world evidence;
-- no wallclock/`Date.now()`/`Math.random()` simulation seed.
-
-### Safe campaign switches
-
-Every real campaign switch first acquires the shared main-level single-flight gate. While it is active, a second Load/New Campaign attempt is rejected before it can start its own quiescence, persistence mutation, recovery path or reload.
-
-The active switch then makes the old writer inert:
+Active work:
 
 ```text
-validate target/intent
-→ block old-page autosave producers
-→ drain pending/active work with failure propagation
-→ dispose/quiesce old AutoSaveController
-→ authoritative persistence switch
-→ reload/bootstrap
+REFERENCE-NAVIGATION-REDESIGN-V2
+Audit PR #199
+branch audit/reference-navigation-redesign-v2
+kind docs-only Audit
+implementation blocked until Audit merge
 ```
 
-New Campaign:
+Owner reference input: `stellar_references_and_html.zip` supplied 2026-08-31.
+
+## Product decision
+
+The next product work is a complete visual/navigation restructuring against the new reference bundle, not a simulation batch.
+
+Canonical desktop primary navigation is fixed to:
 
 ```text
-confirm
-→ quiesce A
-→ delete autosave.snapshot
-→ delete autosave
-→ reload
-→ missing authority reaches real fresh-game path
+Планета
+→ Вселенная
+→ Флоты
+→ Операции
+→ Наука
+→ Командование
+→ Отчёты
+→ Рейтинг
+→ Настройки
 ```
 
-Manual `Загрузить`:
+The current four visible navigation groups (`Игра / Развитие / Данные / Система`) are an implementation detail to remove from the rendered global shell. Existing route families/hash semantics remain the authority unless the accepted Audit records a narrow presentation-routing exception.
+
+Planet/task navigation becomes contextual: active colony, three planet zones, task lists/filters and local tabs belong in left/right contextual rails, not as competing global navigation.
+
+## Reference authority
+
+Read these before changing UI:
+
+1. `docs/audits/current-batch-audit.md` — exact batch implementation contract;
+2. `docs/ui/reference-navigation-contract.md` — durable visual/navigation target and 20-screen mapping;
+3. `docs/ui/reference-navigation-missing-assets.md` — missing-art/procedural-fallback ledger.
+
+The reference ZIP is layout/interaction evidence only. Do not commit reference screenshots, copied third-party HTML/CSS/JS or external art as runtime dependencies.
+
+## Asset rule
+
+Missing decorative images do **not** block implementation.
+
+Use this order:
 
 ```text
-validate/load manual B
-→ quiesce A
-→ delete stale autosave.snapshot(A)
-→ write B state + runtimeMetadata as primary autosave
-→ preserve manual B
-→ reload
-→ primary B wins recovery
+existing Stellar asset
+→ CSS/SVG/canvas procedural visual
+→ ledger row for missing final art
+→ later owned/provenanced replacement
 ```
 
-Old campaign A cannot be written again after successful quiescence. Failed quiescence mutates no reserved authority; stale snapshot deletion precedes primary replacement.
+Every unresolved final-art gap discovered by implementation must be recorded in `docs/ui/reference-navigation-missing-assets.md` before merge.
 
-If a manual slot becomes missing/invalid after render but before click, Load fails before quiescence. Save Manager catches the rejection, shows a player-visible error through the existing status path, re-enables the Load control, and leaves authority/document unchanged without an unhandled rejection.
+## Accepted implementation sequence after Audit merge
 
-## Import is STORAGE ONLY
+Heavy batch, maximum two implementation PRs:
 
-Player Import requires an explicit non-empty manual target and rejects:
+1. `NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV`
+   - replace grouped side rail with canonical nine-item top row;
+   - preserve route/history/focus/checksum behavior;
+   - build contextual colony/planet/task rails;
+   - route `Настройки` to the settings experience while keeping campaign/saves as local system content.
 
-- `autosave`;
-- `autosave.snapshot`.
+2. `NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA`
+   - apply the shared composition to all 20 supplied reference surfaces;
+   - finish route-wide responsive/accessibility/visual-baseline QA;
+   - close or ledger any final-art gaps with procedural fallbacks.
 
-Payload `slotId` never grants player-facing destination authority.
+Do not start PR2 from an unmerged PR1 branch. Each dependent PR starts from the latest merged `main`.
 
-```text
-Import JSON
-→ explicit manual target
-→ write manual slot only
-→ primary/snapshot unchanged
-→ current campaign unchanged
-→ no writer quiescence
-→ no reload
-```
+## Historical/stale branch warning
 
-An imported campaign becomes active only when the user later presses `Загрузить`, which uses the safe quiesced manual-activation path.
+PR #189 (`feat: redesign visual navigation shell`) remains open from the old Audit #188 baseline `ec2b1fe1...`.
 
-## Focused acceptance
+It predates later merged UI work (#191–#197) and is **not** the current implementation baseline. Do not continue or merge #189 as a substitute for the new #199 Audit sequence.
 
-Controlled unit/storage barriers prove both concurrent orders:
+## Runtime boundary
 
-```text
-Load B starts → New Campaign attempted
-New Campaign starts → Load B attempted
-```
+This navigation batch changes presentation/navigation only.
 
-In each case exactly one switch transaction is active, the second attempt starts no persistence operation, snapshot/primary writes do not interleave, and only one reload intent is produced.
+Unchanged:
 
-Focused Browser `tests/e2e/campaignLifecycle.spec.ts` proves the complete binding lifecycle against real app/storage behavior:
+- schema v20;
+- save format v6;
+- simulation formulas;
+- economy/combat/research balance;
+- bot behavior/scheduler;
+- campaign authority lifecycle.
 
-- actual picker reached through the narrow deterministic E2E seam;
-- fixed seed is honored;
-- same seed later reproduces the same deterministic galaxy evidence;
-- different seed produces different galaxy evidence;
-- manual saves survive New Campaign reset;
-- New Campaign cancel preserves A and confirm removes reserved A authority before real reload;
-- a real page lifecycle/autosave path creates a non-null `autosave.snapshot` containing A;
-- Import leaves current A, primary A and snapshot A unchanged and does not reload;
-- Import writes distinct B only to `manual-import`;
-- `Загрузить manual-import` is the point that performs real reload and activates B;
-- after Load/reload, primary and any recreated snapshot are B, never stale A;
-- manual-import, manual-b and manual-survivor remain manual slots;
-- deleting a valid rendered manual slot before Load produces a player-visible error, no reload/authority replacement, a re-enabled Load button, and no page-level unhandled error.
+Navigation-only Browser checks must keep the game-state checksum stable.
 
-## Regression and pre-closure evidence
+## Required validation after implementation
 
-Historical RED:
+At minimum:
 
-```text
-e1b402442b437d581bb10b59782332a47a354b82
-CI #2300
-```
+- `npm run assets:check`;
+- `npm run lint`;
+- `npm run typecheck`;
+- `npm run test -- --maxWorkers=1`;
+- `npm run build`;
+- focused navigation/unit tests;
+- full single-worker Playwright route matrix;
+- navigation usability, app-shell, planet command centre, universe, responsive and accessibility gates;
+- intentional visual-baseline review at 1672×941 plus release viewports.
 
-Pre-closure runtime head:
-
-`5e60bd7998e031b04b67826caae6e7103c6d7f3b`
-
-Controller-verified on that head:
-
-- CI #2314 — SUCCESS;
-- Graphify #1443 — SUCCESS;
-- Browser E2E #1544 — SUCCESS;
-- production Pages smoke #1544 — SUCCESS.
-
-These are historical pre-closure runs. Any later implementation/control-plane commit requires fresh exact-head gates before Ready.
-
-## Required continuation reading
+## Required startup reading
 
 1. `AGENTS.md`;
 2. `docs/28-audit-first-autonomous-delivery-protocol.md`;
 3. `docs/audits/current-batch-audit.md`;
 4. `docs/audits/current-execution-state.md`;
-5. `docs/audits/batch-history.md`;
-6. `docs/audits/completed/post-1.0-replayable-campaign-lifecycle.md`;
+5. `docs/ui/reference-navigation-contract.md`;
+6. `docs/ui/reference-navigation-missing-assets.md`;
 7. `docs/project-status.json`;
 8. `docs/roadmap-pr-index.json`;
 9. `docs/16-execution-roadmap.md`;
-10. actual GitHub main / PR #187 / workflows / threads / reviews / comments.
+10. actual GitHub `main` and PR #199 state.
 
 ## Current stop rule
 
-Complete and merge the docs-only FULL-VISUAL-NAVIGATION-REDESIGN Audit after its checks pass. Do not start either implementation item before that merge. After the Audit merge, create UI-01 from the resulting fresh `main`, then UI-02 only after UI-01 is accepted and its combined state is validated.
+Finish and squash-merge docs-only Audit PR #199 after diff/check review. Do not start implementation before that merge.
+
+After #199 merges, create only `NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV` from the resulting fresh `main`. `NAV-V2-02` remains blocked until PR1 is merged and validated.
