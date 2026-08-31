@@ -62,6 +62,37 @@ html body .brand-subtitle {
 }
 
 html body .hud-colony-context {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+html body .hud-colony-context label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: var(--se-text-muted);
+  font-size: 0.5rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+html body .hud-colony-context select {
+  width: 100%;
+  min-width: 0;
+  height: 24px;
+  padding: 2px 5px;
+  border: 1px solid rgb(85 216 255 / 24%);
+  border-radius: 4px;
+  background: rgb(2 13 21 / 92%);
+  color: var(--se-text-primary);
+  font-size: 0.62rem;
+}
+
+html body .hud-colony-context > div {
   display: none;
 }
 
@@ -671,6 +702,19 @@ html[data-shell-route-family='planet'] body .planet-development-surface:not([hid
 
   html body .topbar {
     grid-template-rows: 70px 54px;
+  }
+
+  html body .brand-logo {
+    max-height: 28px;
+  }
+
+  html body .hud-colony-context label > span {
+    display: none;
+  }
+
+  html body .hud-colony-context select {
+    height: 21px;
+    font-size: 0.56rem;
   }
 
   html body .side-rail {
