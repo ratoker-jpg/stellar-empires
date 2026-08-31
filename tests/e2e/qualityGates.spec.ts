@@ -52,7 +52,10 @@ async function createVisualSignature(page: Page, screenshotBase64: string): Prom
         for (let y = yStart; y < yEnd; y += 1) {
           for (let x = xStart; x < xEnd; x += 1) {
             const offset = (y * canvas.width + x) * 4;
-            luminance += pixels[offset] * 0.2126 + pixels[offset + 1] * 0.7152 + pixels[offset + 2] * 0.0722;
+            const red = pixels[offset] ?? 0;
+            const green = pixels[offset + 1] ?? 0;
+            const blue = pixels[offset + 2] ?? 0;
+            luminance += red * 0.2126 + green * 0.7152 + blue * 0.0722;
             count += 1;
           }
         }
@@ -100,7 +103,11 @@ test('empire overview visual signature remains stable', async ({ page }) => {
   const signature = await createVisualSignature(page, screenshot.toString('base64'));
   expect(signature).toHaveLength(EMPIRE_OVERVIEW_VISUAL_SIGNATURE.length);
 
-  const deltas = signature.map((value, index) => Math.abs(value - EMPIRE_OVERVIEW_VISUAL_SIGNATURE[index]));
+  const deltas = signature.map((value, index) => {
+    const expectedValue = EMPIRE_OVERVIEW_VISUAL_SIGNATURE[index];
+    if (expectedValue === undefined) throw new Error(`Visual signature index ${index} is outside the baseline.`);
+    return Math.abs(value - expectedValue);
+  });
   const meanDelta = deltas.reduce((total, value) => total + value, 0) / deltas.length;
   expect(meanDelta).toBeLessThanOrEqual(2);
   expect(Math.max(...deltas)).toBeLessThanOrEqual(10);
