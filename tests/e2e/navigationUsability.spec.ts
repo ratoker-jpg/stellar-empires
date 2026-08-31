@@ -89,11 +89,11 @@ async function runAcceptedTaskBudgets(page: Page): Promise<void> {
   await page.getByRole('button', { name: /^Исследовательский комплекс/ }).click();
   await expect(page).toHaveURL(/#\/research$/);
   await expect(page.locator('#research-view')).toBeVisible();
-  await expect(page.locator('[data-shell-return="planet"]')).toBeVisible();
+  await expect(page.locator('#nav-planet')).toBeVisible();
   await expectReleaseLayout(page, '#research-view');
 
-  // One return action restores the exact originating colony and zone.
-  await page.locator('[data-shell-return="planet"]').click();
+  // One canonical primary activation restores the exact originating colony and zone.
+  await page.locator('#nav-planet').click();
   await expect(page).toHaveURL(new RegExp(`#\\/planet\\/${encodeURIComponent(planetId)}\\/industry$`));
 
   // Exact local development destinations require one gateway action from their relevant zone.
