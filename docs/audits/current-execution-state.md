@@ -1,8 +1,9 @@
 # Current execution state
 
-**State:** docs-only corrective visual Audit in progress  
+**State:** docs-only corrective visual Audit PR #203 open  
 **Updated:** 2026-08-31  
 **Batch:** `STRICT-REFERENCE-VISUAL-PARITY-V3`  
+**Audit PR:** #203 `docs: audit strict reference visual parity v3`  
 **Starting main:** `466ec55f1751d36fd4a30175f7669f89ebe9a6a6` (PR #202 squash)  
 **Branch:** `audit/strict-reference-visual-parity-v3`  
 **Reference:** owner-supplied `stellar_references_and_html.zip` plus controller comparison screenshots
@@ -28,6 +29,7 @@ The previous navigation/reference batch is technically green and structurally us
 - `docs/ui/reference-visual-parity-spec.md`
 - `docs/ui/race-theme-token-spec.md`
 - `docs/ui/missing-visual-assets.md`
+- `docs/ui/reference-visual-parity-checklist.md`
 
 ## Proposed implementation sequence after Audit merge
 
@@ -38,7 +40,7 @@ PR2 starts only after PR1 merges and its screenshot comparison is accepted.
 
 ## Exact next action
 
-Open and validate the docs-only Audit PR from exact main `466ec55f...`. After merge, create only `VISUAL-V3-01-PLANET-STRICT-PARITY` from fresh main and drive the Planet screen toward refs `01/14/15/16` before touching the remaining routes.
+Validate and squash-merge docs-only Audit PR #203 from exact main `466ec55f...`. After merge, create only `VISUAL-V3-01-PLANET-STRICT-PARITY` from fresh main and drive the Planet screen toward refs `01/14/15/16` before touching remaining routes.
 
 ## Blockers
 
