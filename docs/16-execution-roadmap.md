@@ -1,103 +1,78 @@
 # Execution Roadmap Stellar Empires — current entrypoint
 
-**Status:** Release 1.0 closed; final `REFERENCE-NAVIGATION-REDESIGN-V2` implementation PR #202 active  
+**Status:** Release 1.0 closed; docs-only corrective visual Audit PR #203 active  
 **Updated:** 2026-08-31  
-**Verified merged main:** `256a7fff09cac19ad0ad11f3558e29c63c75071b` (PR #201 merge)  
-**Active PR:** #202 `feat: complete reference route composition v2`  
-**Active work-item:** `NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA`  
-**Runtime boundary:** schema v20 / save format v6 / no migration in this visual batch
+**Verified merged main:** `466ec55f1751d36fd4a30175f7669f89ebe9a6a6` (PR #202 squash)  
+**Active PR:** #203 `docs: audit strict reference visual parity v3`  
+**Active work-item:** `STRICT-REFERENCE-VISUAL-PARITY-V3`  
+**Runtime boundary:** schema v20 / save format v6 / no migration in this visual program
 
 ## Current goal
 
-Close the owner-supplied `stellar_references_and_html.zip` navigation/composition batch with all 20 supplied reference states mapped to existing Stellar route/state owners and with responsive/accessibility/visual quality gates green.
+Correct the post-#202 visual mismatch against the owner-supplied reference screens. The new acceptance target is strict screenshot-level parity, not merely matching route structure or information architecture.
 
 Durable contracts:
 
-- `docs/ui/reference-navigation-contract.md`;
-- `docs/ui/reference-navigation-missing-assets.md`;
-- accepted Audit #199 archived at `docs/audits/completed/reference-navigation-redesign-v2.md`.
+- `docs/audits/strict-reference-visual-parity-v3.md`;
+- `docs/ui/reference-visual-parity-spec.md`;
+- `docs/ui/race-theme-token-spec.md`;
+- `docs/ui/missing-visual-assets.md`;
+- `docs/ui/reference-visual-parity-checklist.md`.
 
-## Completed checkpoint — NAV-V2-01
+## Controller correction
 
-PR #201 squash:
-
-`256a7fff09cac19ad0ad11f3558e29c63c75071b`
-
-Delivered:
-
-- persistent canonical nine-item top navigation;
-- exact order `Планета / Вселенная / Флоты / Операции / Наука / Командование / Отчёты / Рейтинг / Настройки`;
-- contextual planet/task rails instead of competing global navigation;
-- Settings as the System landing while Saves stays local;
-- keyboard/history/reload/checksum continuity;
-- viewport-owned desktop shell;
-- compact-header clipping and bare-System fallback regressions fixed.
-
-## Active checkpoint — NAV-V2-02
-
-PR #202 starts from the exact #201 merge SHA.
-
-Player-visible composition:
-
-1. Planet overview and three development zones retain direct contextual access.
-2. Universe keeps Universe → Galaxy → Solar System hierarchy, coordinate jump and stable selection detail.
-3. Fleet compose is presented as stage 1 composition and stage 2 target/mission/confirmation without new gameplay state.
-4. Operations overview/market/events/arena/Solar War/logistics stay local modes of one owner route.
-5. Science uses category context, technology catalog, selected-tech detail/requirements and the existing global research queue.
-6. Reports uses filters/journal plus a selected-reader visual hierarchy on desktop.
-7. Settings exposes Graphics, Sound, Interface, Controls, Notifications and Campaign & Saves as local categories; only existing browser-local presentation settings are mutable.
-8. Ranking, production and ship-upgrades share the same dark industrial sci-fi visual language.
-9. The Browser matrix explicitly includes 1672×941 plus release/compact viewports.
-
-No simulation, formula, bot, route-family, schema, save-format or migration change is allowed.
-
-## Required closeout gate
-
-PR #202 may merge only when its exact head has:
-
-- `npm run assets:check` equivalent green;
-- lint green;
-- typecheck green;
-- unit suite green;
-- build green;
-- Graphify green;
-- Browser E2E green;
-- production Pages smoke green;
-- route/viewport/reference composition gate green;
-- accessibility/WCAG and intentional visual-baseline gates green;
-- zero unresolved review threads;
-- mergeable=true and no live-main drift.
-
-Ordinary failures are fixed inside PR #202.
-
-## Batch closure state
-
-`REFERENCE-NAVIGATION-REDESIGN-V2` is a heavy two-implementation-PR batch:
+The previous `REFERENCE-NAVIGATION-REDESIGN-V2` batch is complete:
 
 ```text
 Audit #199 → 87e6bf87dd9617ffe81ca00680a3c9f39bd536da
 NAV-V2-01 / #201 → 256a7fff09cac19ad0ad11f3558e29c63c75071b
-NAV-V2-02 / #202 → active; final squash SHA unknown until merge
+NAV-V2-02 / #202 → 466ec55f1751d36fd4a30175f7669f89ebe9a6a6
 ```
 
-The Audit is archived verbatim and batch history is staged in #202. The generated #202 squash SHA is recorded after merge by the next Audit or an explicitly permitted docs-only closure record.
+Its routing/shell work is foundation only. Controller comparison shows the Planet result is still visually too far from the supplied reference, so visual parity is again the active priority ahead of deferred NEM-02 simulation work.
 
-## Next work is Audit-only
+## Audit #203 locked requirements
 
-The previously accepted simulation item `NEM-02-BOT-SCHEDULER-BATCHING-PERF` was deferred when the owner prioritized UI work. NEM-01 is already merged (#194), but the NEM-02 contract predates several later batches.
+- target as close to 1:1 as practical against exact named reference screens;
+- first implementation target: Planet refs `01/14/15/16`;
+- remove Hangar from the default top resource strip;
+- keep Population visible;
+- use deterministic procedural CSS/SVG/canvas/generated visuals when final art is missing;
+- record every missing final image with dimensions/format/theme;
+- support three distinct visual themes for existing factions Aegis / Synod / Veyra;
+- use existing `html[data-faction]` / faction identity as theme authority;
+- no simulation/formula/bot/schema/save/route-semantic change.
 
-Therefore after #202:
+## Proposed implementation after Audit merge
+
+### 1. VISUAL-V3-01-PLANET-STRICT-PARITY
+
+Planet overview + Resource / Industry / Military zones. This PR defines the accepted shared shell/race-theme visual language.
+
+Merge gate includes controller screenshot comparison against refs `01/14/15/16` at 1672×941 in addition to normal Browser/accessibility checks.
+
+### 2. VISUAL-V3-02-ALL-ROUTES-STRICT-PARITY
+
+After PR1 merges and is visually accepted, propagate the accepted language to Universe, Fleets, Operations/Market/Solar War/Events/Arena, Science, Command, Reports, Ranking, Settings and Ship Upgrades using the exact dependency/path/test map in the Audit.
+
+## Deferred work
+
+`NEM-02-BOT-SCHEDULER-BATCHING-PERF` remains deferred. Do not start it while `STRICT-REFERENCE-VISUAL-PARITY-V3` is active.
+
+## Current delivery sequence
 
 ```text
-fresh main
-→ docs-only Audit: revalidate deferred NEM-02
-→ measure current 100-bot scheduler/catch-up/save/perf truth
-→ keep/amend/reject NEM-02 contract
-→ implementation only after that Audit merges
+main 466ec55f...
+→ docs-only Audit #203
+→ squash-merge after exact-head green/review-clean
+→ fresh main
+→ VISUAL-V3-01 Planet strict parity
+→ controller visual acceptance + merge
+→ fresh main
+→ VISUAL-V3-02 remaining strict parity
+→ batch closeout
 ```
 
-Do not start NEM-02 directly from #202 or from its old audit baseline.
+## Current stop rule
 
-## Historical warning
-
-PR #189 remains stale historical work from the old #188 baseline and is not a continuation branch. Do not merge or reuse it.
+Do not implement from the Audit branch. Finish and merge #203 first. After merge start only `VISUAL-V3-01-PLANET-STRICT-PARITY` from fresh `main`.
