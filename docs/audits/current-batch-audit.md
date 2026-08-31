@@ -1,66 +1,30 @@
-# REFERENCE-NAVIGATION-REDESIGN-V2 — closure pointer
+# STRICT-REFERENCE-VISUAL-PARITY-V3 — current batch audit
 
-**State:** final implementation/closure PR #202 open  
+**State:** docs-only Audit branch; implementation blocked until merge  
 **Updated:** 2026-08-31  
-**Accepted Audit:** PR #199 → `87e6bf87dd9617ffe81ca00680a3c9f39bd536da`  
-**Accepted contract archive:** `docs/audits/completed/reference-navigation-redesign-v2.md`  
-**PR1:** `NAV-V2-01-CANONICAL-SHELL-PRIMARY-NAV` / #201 → `256a7fff09cac19ad0ad11f3558e29c63c75071b`  
-**PR2:** `NAV-V2-02-REFERENCE-ROUTE-COMPOSITION-QA` / #202 → active  
-**Schema/save:** v20 / v6, unchanged by this batch
+**Baseline:** `main` at `466ec55f1751d36fd4a30175f7669f89ebe9a6a6`  
+**Detailed Audit:** `docs/audits/strict-reference-visual-parity-v3.md`  
+**Visual contract:** `docs/ui/reference-visual-parity-spec.md`  
+**Asset ledger:** `docs/ui/missing-visual-assets.md`  
+**Race theme spec:** `docs/ui/race-theme-token-spec.md`
 
-## Authority
+## Controller correction
 
-The exact accepted Audit #199 contract is archived verbatim at:
+The previous navigation/reference batch is structurally complete but visually insufficient against the owner-supplied reference screens. This batch supersedes the previous next-action priority: visual parity is again the active product priority before deferred NEM-02 simulation work.
 
-`docs/audits/completed/reference-navigation-redesign-v2.md`
+## Locked requirements
 
-Use that archive for the complete path envelope, ordered implementation plan, 20-screen mapping, acceptance gates, non-goals and persistence/determinism rules.
+- target as close to 1:1 as practical per exact reference screenshot;
+- Planet refs `01/14/15/16` first;
+- default top strip: remove Hangar, keep Population;
+- procedural visuals allowed for missing final art;
+- every missing image recorded with dimensions/format/theme;
+- three distinct runtime faction themes: Aegis / Synod / Veyra;
+- no gameplay/simulation/schema/save changes.
 
-Actual GitHub state is authoritative over stale historical wording.
+## Authorized batch after Audit merge
 
-## Delivered batch
+1. `VISUAL-V3-01-PLANET-STRICT-PARITY`
+2. `VISUAL-V3-02-ALL-ROUTES-STRICT-PARITY`
 
-### NAV-V2-01 — merged
-
-PR #201 delivered the canonical nine-item top navigation, contextual planet/task rails, Settings as the System landing, viewport-owned desktop shell, and route/history/checksum continuity.
-
-### NAV-V2-02 — active closure
-
-PR #202 applies the accepted reference composition across the mapped route states:
-
-- Science category → catalog → selected technology detail/requirements/queue;
-- Fleet compose staged visually as composition then target/mission, without new gameplay state;
-- Reports journal/master-detail hierarchy over existing report data;
-- Settings local categories Graphics / Sound / Interface / Controls / Notifications / Campaign & Saves without inventing GameState settings;
-- shared Planet / Universe / Operations / Ranking / production / ship-upgrade presentation language;
-- required 1672×941 reference baseline plus release viewport coverage;
-- batch archive/status/history/continuation closeout.
-
-No simulation formula, gameplay command, route family, bot behavior, GameState field, schema, save format or migration change is authorized or introduced.
-
-## Merge gate for #202
-
-Before squash-merge require on the exact final head:
-
-- assets audit green;
-- lint green;
-- typecheck green;
-- unit suite green;
-- build green;
-- Graphify green;
-- Browser E2E green;
-- production Pages smoke green;
-- reference/responsive/accessibility/visual gates green;
-- zero unresolved review threads;
-- mergeable=true;
-- no live-main drift.
-
-Ordinary CI or review failures are fixed inside #202.
-
-## Next action after #202
-
-Do **not** start another implementation batch automatically.
-
-The deferred program candidate is `NEM-02-BOT-SCHEDULER-BATCHING-PERF` from `docs/audits/deferred/nemexia-proto-sim-scaling.md`. Its accepted contract predates later merged work. After #202 merges, start a fresh docs-only Audit from the resulting `main` to revalidate current 100-bot scheduler, catch-up, save-size and performance truth before any NEM-02 implementation.
-
-The generated #202 squash SHA is recorded by that next Audit or by an explicitly permitted tiny docs-only closure record, because #202 cannot self-reference its future merge commit.
+Strictly sequential from fresh `main`.
