@@ -185,7 +185,7 @@ export function createDefaultShellRoute(
     case 'command': return { family: 'command', mode: 'overview' };
     case 'reports': return { family: 'reports', filter: 'all' };
     case 'ranking': return { family: 'ranking' };
-    case 'system': return { family: 'system', mode: 'saves' };
+    case 'system': return { family: 'system', mode: 'settings' };
   }
 }
 
